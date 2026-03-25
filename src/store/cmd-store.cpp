@@ -60,9 +60,9 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
     xtra_stock = std::min(14 + 26, ((hgt > MAIN_TERM_MIN_ROWS) ? (hgt - MAIN_TERM_MIN_ROWS) : 0));
     store_bottom = MIN_STOCK + xtra_stock;
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     StoreSaleType store_num;
-    const auto &grid = floor.get_grid(player_ptr->get_position());
+    const auto &grid = floor.get_grid(creature.get_position());
 
     if (specified_store.has_value()) {
         // 指定された店舗を使用
@@ -187,7 +187,7 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
             } else {
                 msg_print(_("ザックからアイテムがあふれてしまった！", "Your pack overflows!"));
                 auto item = item_inventory.clone();
-                const auto item_name = describe_flavor(*player_ptr, item, 0);
+                const auto item_name = describe_flavor(creature, item, 0);
                 msg_format(_("%sが落ちた。(%c)", "You drop %s (%c)."), item_name.data(), index_to_label(i_idx));
                 vary_item(creature, i_idx, -255);
                 handle_stuff(creature);

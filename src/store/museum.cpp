@@ -6,7 +6,6 @@
 #include "store/store.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 #include "view/display-store.h"
 
@@ -17,7 +16,6 @@
  */
 void museum_remove_object(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (st_ptr->stock_num <= 0) {
         msg_print(_("博物館には何も置いてありません。", "The Museum is empty."));
         return;
@@ -36,7 +34,7 @@ void museum_remove_object(CreatureEntity &creature)
 
     const short item_num = *item_num_opt + store_top;
     const auto &item = *st_ptr->stock[item_num];
-    const auto item_name = describe_flavor(*player_ptr, item, 0);
+    const auto item_name = describe_flavor(creature, item, 0);
     msg_print(_("展示をやめさせたアイテムは二度と見ることはできません！", "Once removed from the Museum, an item will be gone forever!"));
     if (!input_check(format(_("本当に%sの展示をやめさせますか？", "Really order to remove %s from the Museum? "), item_name.data()))) {
         return;

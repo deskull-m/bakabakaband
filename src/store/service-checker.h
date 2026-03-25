@@ -1,7 +1,7 @@
 #pragma once
 
 enum class StoreSaleType;
+class CreatureEntity;
 class ItemEntity;
-class PlayerType;
-bool store_will_buy(PlayerType *, const ItemEntity *o_ptr, StoreSaleType store_num);
+bool store_will_buy(CreatureEntity &creature, const ItemEntity *o_ptr, StoreSaleType store_num);
 void mass_produce(ItemEntity *o_ptr, StoreSaleType store_num);

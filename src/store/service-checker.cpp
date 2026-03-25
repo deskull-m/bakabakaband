@@ -7,9 +7,9 @@
 #include "sv-definition/sv-rod-types.h"
 #include "sv-definition/sv-scroll-types.h"
 #include "sv-definition/sv-weapon-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 
@@ -217,7 +217,7 @@ static bool switch_store_check(const ItemEntity &item, StoreSaleType store_num)
  * Note that a shop-keeper must refuse to buy "worthless" items
  */
 
-bool store_will_buy(PlayerType *, const ItemEntity *o_ptr, StoreSaleType store_num)
+bool store_will_buy(CreatureEntity & /*creature*/, const ItemEntity *o_ptr, StoreSaleType store_num)
 {
     if ((store_num == StoreSaleType::HOME) || (store_num == StoreSaleType::MUSEUM)) {
         return true;

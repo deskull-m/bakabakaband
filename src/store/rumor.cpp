@@ -148,8 +148,8 @@ public:
 
 class ProcessRumor {
 public:
-    ProcessRumor(CreatureEntity *creature_ptr, std::span<const std::string> tokens)
-        : player_ptr(static_cast<PlayerType *>(creature_ptr))
+    ProcessRumor(CreatureEntity &creature, std::span<const std::string> tokens)
+        : creature(creature)
         , tokens(tokens)
     {
     }
@@ -159,7 +159,7 @@ public:
         ItemEntity item(artifact_rumor.bi_id);
         item.fa_id = artifact_rumor.fa_id;
         item.ident = IDENT_STORE;
-        const auto artifact_name = describe_flavor(*player_ptr, item, OD_NAME_ONLY);
+        const auto artifact_name = describe_flavor(this->creature, item, OD_NAME_ONLY);
         this->print_rumor(artifact_name);
     }
 
@@ -195,8 +195,9 @@ public:
         this->print_rumor(town_name);
 
         const uint32_t visit = (1U << (town_rumor.t_idx - 1));
-        if ((town_rumor.t_idx != SECRET_TOWN) && !(player_ptr->visit & visit)) {
-            player_ptr->visit |= visit;
+        auto &player = static_cast<PlayerType &>(this->creature);
+        if ((town_rumor.t_idx != SECRET_TOWN) && !(player.visit & visit)) {
+            player.visit |= visit;
             msg_erase();
             msg_print(_("{}に行ったことがある気がする。", "You feel you have been to {}."), town_name);
         }
@@ -209,7 +210,7 @@ private:
         msg_print(rumor_msg);
     }
 
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
     std::span<const std::string> tokens;
 };
 
@@ -233,5 +234,5 @@ void display_rumor(CreatureEntity &creature, bool ex)
         return;
     }
 
-    std::visit(ProcessRumor(&creature, *tokens), RumorFactory::create_rumor(*tokens));
+    std::visit(ProcessRumor(creature, *tokens), RumorFactory::create_rumor(*tokens));
 }

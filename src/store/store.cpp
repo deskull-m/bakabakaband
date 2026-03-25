@@ -288,7 +288,7 @@ static void store_create(CreatureEntity &creature, short fix_k_idx, StoreSaleTyp
         if (store_num == StoreSaleType::BLACK) {
             level = bm_boost + randint0(25);
             level = std::min(128, level);
-            bi_id = player_ptr->current_floor_ptr->select_baseitem_id(level, 0x00000000);
+            bi_id = creature.current_floor_ptr->select_baseitem_id(level, 0x00000000);
             if (bi_id == 0) {
                 continue;
             }
@@ -305,7 +305,7 @@ static void store_create(CreatureEntity &creature, short fix_k_idx, StoreSaleTyp
         q_ptr = &forge;
         q_ptr->generate(bi_id);
         ItemMagicApplier(*player_ptr, q_ptr, level, AM_NO_FIXED_ART).execute();
-        if (!store_will_buy(player_ptr, q_ptr, store_num)) {
+        if (!store_will_buy(creature, q_ptr, store_num)) {
             continue;
         }
 
