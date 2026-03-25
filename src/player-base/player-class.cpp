@@ -456,7 +456,7 @@ void CreatureClass::break_samurai_stance(std::initializer_list<SamuraiStanceType
 
     for (auto stance : stance_list) {
         if (samurai_data->stance == stance) {
-            set_action(&static_cast<PlayerType &>(this->creature), ACTION_NONE);
+            set_action(this->creature, ACTION_NONE);
             samurai_data->stance = SamuraiStanceType::NONE;
             break;
         }

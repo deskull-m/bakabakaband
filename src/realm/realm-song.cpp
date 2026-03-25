@@ -43,8 +43,7 @@ static void start_singing(CreatureEntity &creature, SPELL_IDX spell, int32_t son
     set_singing_song_id(creature, (byte)spell);
 
     /* Now the player is singing */
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    set_action(player_ptr, ACTION_SING);
+    set_action(creature, ACTION_SING);
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);

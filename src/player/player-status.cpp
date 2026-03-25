@@ -311,7 +311,7 @@ static void update_bonuses(CreatureEntity &creature)
 
     if (!CreatureClass(*player_ptr).monk_stance_is(MonkStanceType::NONE)) {
         if (none_bits(empty_hands_status, EMPTY_HAND_MAIN)) {
-            set_action(player_ptr, ACTION_NONE);
+            set_action(creature, ACTION_NONE);
         }
     }
 

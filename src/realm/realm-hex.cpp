@@ -476,7 +476,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
                 SpellHex spell_hex(creature);
                 spell_hex.reset_casting_flag(spell);
                 if (!spell_hex.is_spelling_any()) {
-                    set_action(player_ptr, ACTION_NONE);
+                    set_action(creature, ACTION_NONE);
                 }
             }
         }
@@ -555,7 +555,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
                 SpellHex spell_hex(creature);
                 spell_hex.reset_casting_flag(HEX_RESTORE);
                 if (!spell_hex.is_spelling_any()) {
-                    set_action(player_ptr, ACTION_NONE);
+                    set_action(creature, ACTION_NONE);
                 }
 
                 static constexpr auto flags = {
@@ -744,7 +744,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         SpellHex spell_hex(creature);
         spell_hex.set_casting_flag(spell);
         if (player_ptr->action != ACTION_SPELL) {
-            set_action(player_ptr, ACTION_SPELL);
+            set_action(creature, ACTION_SPELL);
         }
     }
 

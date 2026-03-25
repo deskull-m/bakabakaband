@@ -16,7 +16,7 @@
 
 static void set_stance(CreatureEntity &creature, const MonkStanceType new_stance)
 {
-    set_action(&static_cast<PlayerType &>(creature), ACTION_MONK_STANCE);
+    set_action(creature, ACTION_MONK_STANCE);
     CreatureClass pc(creature);
     if (pc.monk_stance_is(new_stance)) {
         msg_print(_("構え直した。", "You reassume a stance."));
@@ -62,7 +62,7 @@ bool choose_monk_stance(CreatureEntity &creature)
 
         if ((choice == 'a') || (choice == 'A')) {
             if (creature.action == ACTION_MONK_STANCE) {
-                set_action(&static_cast<PlayerType &>(creature), ACTION_NONE);
+                set_action(creature, ACTION_NONE);
             } else {
                 msg_print(_("もともと構えていない。", "You are not in a special stance."));
             }

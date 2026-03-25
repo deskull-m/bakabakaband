@@ -614,7 +614,7 @@ bool fishing(CreatureEntity &creature)
         return false;
     }
 
-    set_action(player_ptr, ACTION_FISH);
+    set_action(*player_ptr, ACTION_FISH);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
     return true;
 }

@@ -285,7 +285,7 @@ bool hayagake(CreatureEntity &creature)
     auto *player_ptr = &player;
     PlayerEnergy energy(creature);
     if (player_ptr->action == ACTION_HAYAGAKE) {
-        set_action(player_ptr, ACTION_NONE);
+        set_action(creature, ACTION_NONE);
         energy.reset_player_turn();
         return true;
     }
@@ -295,7 +295,7 @@ bool hayagake(CreatureEntity &creature)
     if (terrain.flags.has_not(TerrainCharacteristics::PROJECTION) || (!player_ptr->levitation && terrain.flags.has(TerrainCharacteristics::DEEP))) {
         msg_print(_("ここでは素早く動けない。", "You cannot run in here."));
     } else {
-        set_action(player_ptr, ACTION_HAYAGAKE);
+        set_action(creature, ACTION_HAYAGAKE);
     }
 
     energy.reset_player_turn();

@@ -274,7 +274,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
         }
 
         if (player_ptr->action == ACTION_MONK_STANCE) {
-            set_action(player_ptr, ACTION_NONE);
+            set_action(creature, ACTION_NONE);
         }
 
         player_ptr->ride_monster(grid.m_idx);
