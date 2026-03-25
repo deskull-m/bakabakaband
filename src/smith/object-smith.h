@@ -1,15 +1,14 @@
 #pragma once
 
-#include "system/system-variables.h"
-
 #include "object-enchant/tr-flags.h"
+#include "system/system-variables.h"
 
 #include <memory>
 #include <tl/optional.hpp>
 #include <unordered_map>
 
+class CreatureEntity;
 class ItemEntity;
-class PlayerType;
 class ISmithInfo;
 struct essence_drain_type;
 class ItemTester;
@@ -28,7 +27,7 @@ public:
     //! エッセンスとその抽出量を表すタプルのリスト
     using DrainEssenceResult = std::vector<std::tuple<SmithEssenceType, int>>;
 
-    Smith(PlayerType *player_ptr);
+    Smith(CreatureEntity &creature);
 
     static const std::vector<SmithEssenceType> &get_essence_list();
     static concptr get_essence_name(SmithEssenceType essence);
@@ -58,6 +57,6 @@ private:
     static const std::vector<essence_drain_type> essence_drain_info_table;
     static const std::vector<std::shared_ptr<ISmithInfo>> smith_info_table;
 
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
     std::shared_ptr<smith_data_type> smith_data;
 };
