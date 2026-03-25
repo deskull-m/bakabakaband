@@ -201,7 +201,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
         case REW_POLY_SLF:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「汝、新たなる姿を必要とせり！」", "'Thou needst a new form, mortal!'"));
-            do_poly_self(this->player_ptr);
+            do_poly_self(*this->player_ptr);
             reward = _("変異した。", "polymorphing");
             break;
         case REW_GAIN_EXP:
@@ -324,7 +324,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
             break;
         case REW_POLY_WND:
             msg_format(_("%sの力が触れるのを感じた。", "You feel the power of %s touch you."), this->name.data());
-            do_poly_wounds(this->player_ptr);
+            do_poly_wounds(*this->player_ptr);
             reward = _("傷が変化した。", "polymorphing wounds");
             break;
         case REW_AUGM_ABL:

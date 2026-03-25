@@ -1,5 +1,6 @@
 #include "status/experience.h"
 #include "player-base/player-race.h"
+#include "player-info/race-types.h"
 #include "player/player-status.h"
 #include "system/creature-entity.h"
 #include "view/display-messages.h"

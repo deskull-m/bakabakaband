@@ -85,7 +85,7 @@ void effect_player_nuke(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     if (one_in_(5)) { /* 6 */
         msg_print(_("奇形的な変身を遂げた！", "You undergo a freakish metamorphosis!"));
         if (one_in_(4)) { /* 4 */
-            do_poly_self(player_ptr);
+            do_poly_self(creature);
         } else {
             status_shuffle(*player_ptr);
         }

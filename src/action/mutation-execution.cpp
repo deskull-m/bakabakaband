@@ -181,7 +181,7 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
             return false;
         }
 
-        do_poly_self(player_ptr);
+        do_poly_self(creature);
         return true;
     case PlayerMutationType::MIDAS_TCH:
         return alchemy(creature);

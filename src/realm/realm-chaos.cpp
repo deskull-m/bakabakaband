@@ -461,7 +461,7 @@ tl::optional<std::string> do_chaos_spell(CreatureEntity &creature, SPELL_IDX spe
             if (!input_check(_("変身します。よろしいですか？", "You will polymorph yourself. Are you sure? "))) {
                 return tl::nullopt;
             }
-            do_poly_self(player_ptr);
+            do_poly_self(creature);
         }
     } break;
 

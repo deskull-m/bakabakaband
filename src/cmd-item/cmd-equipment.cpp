@@ -351,7 +351,7 @@ void do_cmd_wield(CreatureEntity &creature)
         auto is_specific_race = pr.equals(PlayerRaceType::VAMPIRE);
         is_specific_race |= pr.equals(PlayerRaceType::ANDROID);
         if (!is_specific_race) {
-            change_race(player_ptr, PlayerRaceType::VAMPIRE, "");
+            change_race(*player_ptr, PlayerRaceType::VAMPIRE, "");
         }
     }
 

@@ -362,7 +362,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
     }
 
     if (creature.muta.has(PlayerMutationType::POLY_WOUND) && one_in_(3000)) {
-        do_poly_wounds(&static_cast<PlayerType &>(creature));
+        do_poly_wounds(creature);
     }
 
     if (creature.muta.has(PlayerMutationType::WASTING) && one_in_(3000)) {
