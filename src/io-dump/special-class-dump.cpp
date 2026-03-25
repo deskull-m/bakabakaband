@@ -17,7 +17,6 @@
 #include "smith/object-smith.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
-#include "system/player-type-definition.h"
 #include "util/enum-converter.h"
 #include "util/flag-group.h"
 #include <algorithm>
@@ -99,7 +98,6 @@ static void dump_magic_eater(CreatureEntity &creature, FILE *fff)
  */
 static void dump_smith(CreatureEntity &creature, FILE *fff)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     fprintf(fff, _("\n\n  [手に入れたエッセンス]\n\n", "\n\n  [Get Essence]\n\n"));
     fprintf(fff, _("エッセンス   個数     エッセンス   個数     エッセンス   個数", "Essence      Num      Essence      Num      Essence      Num "));
 
@@ -107,7 +105,7 @@ static void dump_smith(CreatureEntity &creature, FILE *fff)
     auto n = essences.size();
     std::vector<int> amounts;
     std::transform(essences.begin(), essences.end(), std::back_inserter(amounts),
-        [smith = Smith(player_ptr)](SmithEssenceType e) { return smith.get_essence_num_of_posessions(e); });
+        [smith = Smith(creature)](SmithEssenceType e) { return smith.get_essence_num_of_posessions(e); });
 
     auto row = n / 3 + 1;
     for (auto i = 0U; i < row; i++) {
