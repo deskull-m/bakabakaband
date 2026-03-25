@@ -90,7 +90,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
 
     short i_idx;
     const auto options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s_none, options, FuncItemTester([](CreatureEntity *c, const ItemEntity *o, StoreSaleType st) { return store_will_buy(static_cast<PlayerType *>(c), o, st); }, *player_ptr, store_num));
+    auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s_none, options, FuncItemTester([](CreatureEntity *c, const ItemEntity *o, StoreSaleType st) { return store_will_buy(*c, o, st); }, *player_ptr, store_num));
     if (o_ptr == nullptr) {
         return;
     }
@@ -127,7 +127,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
 
     bool placed = false;
     if ((store_num != StoreSaleType::HOME) && (store_num != StoreSaleType::MUSEUM)) {
-        const auto item_name = describe_flavor(*player_ptr, selling_item, 0);
+        const auto item_name = describe_flavor(creature, selling_item, 0);
         msg_format(_("%s(%c)を売却する。", "Selling %s (%c)."), item_name.data(), index_to_label(i_idx));
         msg_erase();
 
@@ -161,7 +161,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
             }
 
             const auto value = sold_item.calc_price() * sold_item.number;
-            const auto sold_item_name = describe_flavor(*player_ptr, sold_item, 0);
+            const auto sold_item_name = describe_flavor(creature, sold_item, 0);
             msg_format(_("%sを $%dで売却しました。", "You sold %s for %d gold."), sold_item_name.data(), price);
 
             if (record_sell) {
@@ -191,7 +191,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
             }
         }
     } else if (store_num == StoreSaleType::MUSEUM) {
-        const auto museum_item_name = describe_flavor(*player_ptr, selling_item, OD_NAME_ONLY);
+        const auto museum_item_name = describe_flavor(creature, selling_item, OD_NAME_ONLY);
         if (-1 == store_check_num(&selling_item, store_num)) {
             msg_print(_("それと同じ品物は既に博物館にあるようです。", "The Museum already has one of those items."));
         } else {
@@ -218,7 +218,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
         }
     } else {
         distribute_charges(o_ptr, &selling_item, amt);
-        const auto item_name = describe_flavor(*player_ptr, selling_item, 0);
+        const auto item_name = describe_flavor(creature, selling_item, 0);
         msg_format(_("%sを置いた。(%c)", "You drop %s (%c)."), item_name.data(), index_to_label(i_idx));
         placed = true;
         vary_item(creature, i_idx, -amt);
