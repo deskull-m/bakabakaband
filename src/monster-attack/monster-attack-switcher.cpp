@@ -245,7 +245,7 @@ static void calc_blow_drain_exp(CreatureEntity &creature, MonsterAttackPlayer *m
         return;
     }
 
-    (void)drain_exp(player_ptr, d, d / 10, hold_exp_prob);
+    (void)drain_exp(creature, d, d / 10, hold_exp_prob);
 }
 
 /*!

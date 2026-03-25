@@ -269,7 +269,7 @@ bool process_un_power(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 bool check_drain_hp(CreatureEntity &creature, const int32_t d)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    bool resist_drain = !drain_exp(player_ptr, d, d / 10, 50);
+    bool resist_drain = !drain_exp(creature, d, d / 10, 50);
     if (player_ptr->mimic_form != MimicKindType::NONE) {
         return CreatureRace(player_ptr).is_mimic_nonliving() ? true : resist_drain;
     }
