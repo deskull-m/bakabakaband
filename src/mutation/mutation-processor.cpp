@@ -150,10 +150,10 @@ void process_world_aux_mutation(CreatureEntity &creature)
                 if (one_in_(3)) {
                     lose_all_info(creature);
                 } else {
-                    wiz_dark(&static_cast<PlayerType &>(creature));
+                    wiz_dark(creature);
                 }
                 (void)teleport_player_aux(creature, 100, false, i2enum<teleport_flags>(TELEPORT_NONMAGICAL | TELEPORT_PASSIVE));
-                wiz_dark(&static_cast<PlayerType &>(creature));
+                wiz_dark(creature);
                 msg_print(_("あなたは見知らぬ場所で目が醒めた...頭が痛い。", "You wake up somewhere with a sore head..."));
                 msg_print(_("何も覚えていない。どうやってここに来たかも分からない！", "You can't remember a thing or how you got here!"));
             } else {

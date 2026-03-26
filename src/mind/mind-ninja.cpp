@@ -372,7 +372,7 @@ bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
         break;
     case MindNinjaType::DETECT_NEAR:
         if (plev > 44) {
-            wiz_lite(player_ptr, true);
+            wiz_lite(creature, true);
         }
 
         detect_monsters_normal(creature, DETECT_RAD_DEFAULT);

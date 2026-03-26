@@ -280,7 +280,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
                 int count = get_singing_count(creature);
 
                 if (count >= 19) {
-                    wiz_lite(player_ptr, false);
+                    wiz_lite(creature, false);
                 }
                 if (count >= 11) {
                     map_area(creature, rad);

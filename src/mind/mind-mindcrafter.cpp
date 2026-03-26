@@ -150,8 +150,7 @@ bool cast_mindcrafter_spell(CreatureEntity &creature, MindMindcrafterType spell)
         if (plev > 44) {
             chg_virtue(creature, Virtue::KNOWLEDGE, 1);
             chg_virtue(creature, Virtue::ENLIGHTEN, 1);
-            auto *player_ptr = &static_cast<PlayerType &>(creature);
-            wiz_lite(player_ptr, false);
+            wiz_lite(creature, false);
         } else if (plev > 19) {
             map_area(creature, DETECT_RAD_MAP);
         }

@@ -449,7 +449,7 @@ tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX sp
             fire_ball(creature, AttributeType::LITE, Direction::self(), dam, rad);
             chg_virtue(creature, Virtue::KNOWLEDGE, 1);
             chg_virtue(creature, Virtue::ENLIGHTEN, 1);
-            wiz_lite(player_ptr, false);
+            wiz_lite(creature, false);
 
             CreatureRace race(&creature);
             if (race.life() == PlayerRaceLifeType::UNDEAD && race.tr_flags().has(TR_VUL_LITE) && !has_resist_lite(creature)) {

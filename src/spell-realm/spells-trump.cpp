@@ -215,7 +215,7 @@ void cast_shuffle(CreatureEntity &creature)
         msg_print(_("《太陽》だ。", "It's the Sun."));
         chg_virtue(creature, Virtue::KNOWLEDGE, 1);
         chg_virtue(creature, Virtue::ENLIGHTEN, 1);
-        wiz_lite(&player, false);
+        wiz_lite(creature, false);
         return;
     }
 

@@ -333,6 +333,6 @@ bool lose_all_info(CreatureEntity &creature)
         SubWindowRedrawingFlag::FOUND_ITEMS,
     };
     rfu.set_flags(flags_swrf);
-    wiz_dark(static_cast<PlayerType *>(&creature));
+    wiz_dark(creature);
     return true;
 }
