@@ -399,7 +399,7 @@ tl::optional<std::string> do_sorcery_spell(CreatureEntity &creature, SPELL_IDX s
             chg_virtue(creature, Virtue::KNOWLEDGE, 1);
             chg_virtue(creature, Virtue::ENLIGHTEN, 1);
 
-            wiz_lite(player_ptr, false);
+            wiz_lite(creature, false);
 
             if (!player_ptr->telepathy) {
                 set_tim_esp(creature, dice.roll() + base, false);

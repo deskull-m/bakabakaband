@@ -135,7 +135,7 @@ bool activate_judgement(CreatureEntity &creature, std::string_view name)
     chg_virtue(creature, Virtue::KNOWLEDGE, 1);
     chg_virtue(creature, Virtue::ENLIGHTEN, 1);
     auto &player = static_cast<PlayerType &>(creature);
-    wiz_lite(&player, false);
+    wiz_lite(creature, false);
 
     msg_format(_("%sはあなたの体力を奪った...", "The %s drains your vitality..."), name.data());
     take_hit(player, DAMAGE_LOSELIFE, Dice::roll(3, 8), _("審判の宝石", "the Jewel of Judgement"));

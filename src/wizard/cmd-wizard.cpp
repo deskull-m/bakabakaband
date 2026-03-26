@@ -256,7 +256,7 @@ bool exe_cmd_debug(CreatureEntity &creature, char cmd)
         for (const auto &pos : floor.get_area()) {
             floor.get_grid(pos).info |= CAVE_GLOW | CAVE_MARK;
         }
-        wiz_lite(static_cast<PlayerType *>(&creature), false);
+        wiz_lite(creature, false);
         return true;
     }
     case 'v': {
@@ -269,7 +269,7 @@ bool exe_cmd_debug(CreatureEntity &creature, char cmd)
         }
     }
     case 'w':
-        wiz_lite(static_cast<PlayerType *>(&creature), CreatureClass(creature).equals(PlayerClassType::NINJA));
+        wiz_lite(creature, CreatureClass(creature).equals(PlayerClassType::NINJA));
         return true;
     case 'x':
         gain_exp(creature, command_arg ? command_arg : (creature.exp + 1));

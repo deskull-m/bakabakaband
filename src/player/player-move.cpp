@@ -188,7 +188,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
         }
 
         if (floor.is_underground() && floor.get_dungeon_definition().flags.has(DungeonFeatureType::FORGET)) {
-            wiz_dark(&player);
+            wiz_dark(creature);
         }
 
         if (mpe_mode & MPE_HANDLE_STUFF) {

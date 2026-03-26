@@ -331,11 +331,11 @@ bool QuaffEffects::booze()
     if (one_in_(3)) {
         lose_all_info(this->creature);
     } else {
-        wiz_dark(static_cast<PlayerType *>(&this->creature));
+        wiz_dark(this->creature);
     }
 
     (void)teleport_player_aux(this->creature, 100, false, i2enum<teleport_flags>(TELEPORT_NONMAGICAL | TELEPORT_PASSIVE));
-    wiz_dark(static_cast<PlayerType *>(&this->creature));
+    wiz_dark(this->creature);
     msg_print(_("知らない場所で目が醒めた。頭痛がする。", "You wake up somewhere with a sore head..."));
     msg_print(_("何も思い出せない。どうやってここへ来たのかも分からない！", "You can't remember a thing or how you got here!"));
     return ident;
@@ -477,7 +477,7 @@ bool QuaffEffects::enlightenment()
     msg_print(_("自分の置かれている状況が脳裏に浮かんできた...", "An image of your surroundings forms in your mind..."));
     chg_virtue(this->creature, Virtue::KNOWLEDGE, 1);
     chg_virtue(this->creature, Virtue::ENLIGHTEN, 1);
-    wiz_lite(static_cast<PlayerType *>(&this->creature), false);
+    wiz_lite(this->creature, false);
     return true;
 }
 
@@ -491,7 +491,7 @@ bool QuaffEffects::star_enlightenment()
     chg_virtue(this->creature, Virtue::KNOWLEDGE, 1);
     chg_virtue(this->creature, Virtue::ENLIGHTEN, 2);
     msg_erase();
-    wiz_lite(static_cast<PlayerType *>(&this->creature), false);
+    wiz_lite(this->creature, false);
     (void)do_inc_stat(this->creature, A_INT);
     (void)do_inc_stat(this->creature, A_WIS);
     (void)detect_traps(this->creature, DETECT_RAD_DEFAULT, true);

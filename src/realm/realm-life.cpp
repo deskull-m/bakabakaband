@@ -340,7 +340,7 @@ tl::optional<std::string> do_life_spell(CreatureEntity &creature, SPELL_IDX spel
 
     case 27: {
         if (cast) {
-            wiz_lite(player_ptr, false);
+            wiz_lite(creature, false);
         }
     } break;
 

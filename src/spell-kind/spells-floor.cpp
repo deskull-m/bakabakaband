@@ -32,7 +32,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
@@ -44,10 +43,10 @@
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param ninja 忍者かどうか
  */
-void wiz_lite(PlayerType *player_ptr, bool ninja)
+void wiz_lite(CreatureEntity &creature, bool ninja)
 {
     /* Memorize objects */
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     for (auto &item_ptr : floor.o_list) {
         if (!item_ptr->is_valid()) {
             continue;
@@ -106,17 +105,17 @@ void wiz_lite(PlayerType *player_ptr, bool ninja)
         SubWindowRedrawingFlag::FOUND_ITEMS,
     };
     rfu.set_flags(flags_swrf);
-    if (floor.grid_array[player_ptr->y][player_ptr->x].info & CAVE_GLOW) {
-        set_superstealth(*player_ptr, false);
+    if (floor.grid_array[creature.y][creature.x].info & CAVE_GLOW) {
+        set_superstealth(creature, false);
     }
 }
 
 /*
  * Forget the dungeon map (ala "Thinking of Maud...").
  */
-void wiz_dark(PlayerType *player_ptr)
+void wiz_dark(CreatureEntity &creature)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     /* Forget every grid */
     for (const auto &pos : floor.get_area(FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         auto &grid = floor.get_grid(pos);
@@ -132,7 +131,7 @@ void wiz_dark(PlayerType *player_ptr)
     });
 
     /* Forget all objects */
-    for (auto &item_ptr : player_ptr->current_floor_ptr->o_list) {
+    for (auto &item_ptr : floor.o_list) {
         if (!item_ptr->is_valid()) {
             continue;
         }
@@ -241,7 +240,6 @@ void map_area(CreatureEntity &creature, POSITION range)
  */
 bool destroy_area(CreatureEntity &creature, const POSITION y1, const POSITION x1, POSITION r, bool in_generate)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const Pos2D pos1(y1, x1);
 
     /* Prevent destruction of quest levels and town */
@@ -343,7 +341,7 @@ bool destroy_area(CreatureEntity &creature, const POSITION y1, const POSITION x1
                         item.get_fixed_artifact().is_generated = false;
 
                         if (in_generate && cheat_peek) {
-                            const auto item_name = describe_flavor(*player_ptr, item, (OD_NAME_ONLY | OD_STORE));
+                            const auto item_name = describe_flavor(creature, item, (OD_NAME_ONLY | OD_STORE));
                             msg_format(_("伝説のアイテム (%s) は生成中に*破壊*された。", "Artifact (%s) was *destroyed* during generation."), item_name.data());
                         }
                     } else if (in_generate && cheat_peek && item.is_random_artifact()) {
@@ -446,8 +444,8 @@ bool destroy_area(CreatureEntity &creature, const POSITION y1, const POSITION x1
 
     if (flag) {
         msg_print(_("燃えるような閃光が発生した！", "There is a searing blast of light!"));
-        if (!has_resist_blind(*player_ptr) && !has_resist_lite(*player_ptr)) {
-            (void)BadStatusSetter(*player_ptr).mod_blindness(10 + randint1(10));
+        if (!has_resist_blind(creature) && !has_resist_lite(creature)) {
+            (void)BadStatusSetter(creature).mod_blindness(10 + randint1(10));
         }
     }
 
@@ -470,7 +468,7 @@ bool destroy_area(CreatureEntity &creature, const POSITION y1, const POSITION x1
     };
     rfu.set_flags(flags_swrf);
     if (floor.grid_array[creature.y][creature.x].info & CAVE_GLOW) {
-        set_superstealth(*player_ptr, false);
+        set_superstealth(creature, false);
     }
 
     return true;
