@@ -25,7 +25,6 @@
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "util/string-processor.h"
 
 static bool check_item_features(CreatureEntity &creature, const autopick_type &entry, const ItemEntity &item, const ItemKindType tval)
@@ -35,8 +34,7 @@ static bool check_item_features(CreatureEntity &creature, const autopick_type &e
     }
 
     if (entry.has(FLG_FAVORITE_WEAPONS)) {
-        auto *player_ptr = static_cast<PlayerType *>(&creature);
-        return object_is_favorite(player_ptr, &item);
+        return object_is_favorite(creature, &item);
     }
 
     if (entry.has(FLG_ARMORS)) {
@@ -294,8 +292,7 @@ bool is_autopick_match(CreatureEntity &creature, const ItemEntity *o_ptr, const 
     }
 
     if (entry.has(FLG_UNREADABLE)) {
-        auto *player_ptr = static_cast<PlayerType *>(&creature);
-        const auto unreadable_book = bi_key.is_spell_book() && !check_book_realm(*player_ptr, bi_key);
+        const auto unreadable_book = bi_key.is_spell_book() && !check_book_realm(creature, bi_key);
         if (!unreadable_book) {
             return false;
         }
