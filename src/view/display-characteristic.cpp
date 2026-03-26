@@ -16,8 +16,8 @@
 #include "player/permanent-resistances.h"
 #include "player/race-resistances.h"
 #include "player/temporary-resistances.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "util/bit-flags-calculator.h"
@@ -412,10 +412,9 @@ static void display_other_resistance_info(
  */
 all_player_flags get_player_state_flags(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     all_player_flags f;
     player_flags(creature, f.player_flags);
-    tim_player_flags(player_ptr, f.tim_player_flags);
+    tim_player_flags(creature, f.tim_player_flags);
     player_immunity(creature, f.player_imm);
     tim_player_immunity(creature, f.tim_player_imm);
     known_obj_immunity(creature, f.known_obj_imm);
