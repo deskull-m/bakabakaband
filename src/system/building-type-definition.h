@@ -39,7 +39,7 @@ public:
 
 //!< モンスター闘技場定義.
 constexpr auto NUM_GLADIATORS = 4;
-class PlayerType; //!< @todo 暫定、後で消す.
+class CreatureEntity;
 class MeleeArena {
 public:
     ~MeleeArena() = default;
@@ -58,7 +58,7 @@ public:
     void set_gladiator(int n, const MeleeGladiator &gladiator);
     const std::array<MeleeGladiator, NUM_GLADIATORS> &get_gladiators() const; //!< @detail セーブデータへの書き込みにしか使わないこと.
     std::vector<std::string> build_gladiators_names() const; //!< @detail 要素数は常にNUM_GLADIATORSと同じ.
-    void update_gladiators(PlayerType *player_ptr);
+    void update_gladiators(CreatureEntity &creature);
 
 private:
     MeleeArena() = default;
@@ -68,8 +68,8 @@ private:
     int wager = 0;
     std::array<MeleeGladiator, NUM_GLADIATORS> gladiators{};
 
-    std::pair<int, bool> set_gladiators(PlayerType *player_ptr, int mon_level);
-    MonraceId search_gladiator(PlayerType *player_ptr, int mon_level, int num_gladiator) const;
+    std::pair<int, bool> set_gladiators(CreatureEntity &creature, int mon_level);
+    MonraceId search_gladiator(CreatureEntity &creature, int mon_level, int num_gladiator) const;
     int matches_gladiator(MonraceId monrace_id, int current_num) const;
     std::pair<int, int> set_odds(int current_total, bool is_applicable);
 };

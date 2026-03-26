@@ -193,7 +193,7 @@ void WorldTurnProcessor::process_monster_arena()
         msg_erase();
         this->player_ptr->energy_need = 0;
         auto &melee_arena = MeleeArena::get_instance();
-        melee_arena.update_gladiators(player_ptr);
+        melee_arena.update_gladiators(*this->player_ptr);
         return;
     }
 
@@ -224,7 +224,7 @@ void WorldTurnProcessor::process_monster_arena_winner(int win_m_idx)
 
     msg_erase();
     this->player_ptr->energy_need = 0;
-    melee_arena.update_gladiators(this->player_ptr);
+    melee_arena.update_gladiators(*this->player_ptr);
 }
 
 void WorldTurnProcessor::process_monster_arena_draw()
@@ -239,7 +239,7 @@ void WorldTurnProcessor::process_monster_arena_draw()
     msg_erase();
     this->player_ptr->energy_need = 0;
     auto &melee_arena = MeleeArena::get_instance();
-    melee_arena.update_gladiators(player_ptr);
+    melee_arena.update_gladiators(*this->player_ptr);
 }
 
 void WorldTurnProcessor::decide_auto_save()

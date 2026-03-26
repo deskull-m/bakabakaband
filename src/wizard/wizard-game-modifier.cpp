@@ -67,7 +67,6 @@ static void display_wizard_game_modifier_menu()
  */
 void wizard_game_modifier(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     screen_save();
     display_wizard_game_modifier_menu();
 
@@ -83,7 +82,7 @@ void wizard_game_modifier(CreatureEntity &creature)
         break;
     case 'g': {
         auto &melee_arena = MeleeArena::get_instance();
-        melee_arena.update_gladiators(player_ptr);
+        melee_arena.update_gladiators(creature);
         break;
     }
     case 'q':
