@@ -168,7 +168,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
         if (load_game) {
             player_ptr->energy_need = 0;
             auto &melee_arena = MeleeArena::get_instance();
-            melee_arena.update_gladiators(player_ptr);
+            melee_arena.update_gladiators(creature);
         } else {
             msg_print(_("試合開始！", "Ready..Fight!"));
             msg_erase();

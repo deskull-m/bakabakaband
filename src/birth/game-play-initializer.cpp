@@ -132,8 +132,7 @@ void player_wipe_without_name(CreatureEntity &creature)
     world.set_arena(true);
     world.knows_daily_bounty = false;
     auto &melee_arena = MeleeArena::get_instance();
-    melee_arena.update_gladiators(player_ptr);
-    player_ptr->muta.clear();
+    melee_arena.update_gladiators(creature);
 
     player_ptr->virtues.clear();
 

@@ -48,7 +48,7 @@ bool melee_arena_comm(CreatureEntity &creature)
     auto &world = AngbandWorld::get_instance();
     if ((world.game_turn - world.arena_start_turn) > TURNS_PER_TICK * 250) {
         auto &melee_arena = MeleeArena::get_instance();
-        melee_arena.update_gladiators(player_ptr);
+        melee_arena.update_gladiators(creature);
         world.arena_start_turn = world.game_turn;
     }
 
