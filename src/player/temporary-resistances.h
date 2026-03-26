@@ -1,8 +1,7 @@
 #pragma once
 
+#include "object-enchant/tr-flags.h"
 #include "system/angband.h"
 
-#include "object-enchant/tr-flags.h"
-
-class PlayerType;
-void tim_player_flags(PlayerType *player_ptr, TrFlags &flags);
+class CreatureEntity;
+void tim_player_flags(CreatureEntity &creature, TrFlags &flags);
