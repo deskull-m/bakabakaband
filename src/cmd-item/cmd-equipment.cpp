@@ -96,14 +96,13 @@ static void do_curse_on_equip(OBJECT_IDX slot, ItemEntity &item, CreatureEntity 
  */
 void do_cmd_equip(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     command_wrk = true;
     if (easy_floor) {
         command_wrk = USE_EQUIP;
     }
 
     screen_save();
-    (void)show_equipment(player_ptr, 0, USE_FULL, AllMatchItemTester());
+    (void)show_equipment(creature, 0, USE_FULL, AllMatchItemTester());
     auto weight = calc_inventory_weight(creature);
     auto weight_lim = calc_weight_limit(creature);
     const auto mes = _("装備： 合計 %3d.%1d kg (限界の%d%%) コマンド: ", "Equipment: carrying %d.%d pounds (%d%% of capacity). Command: ");

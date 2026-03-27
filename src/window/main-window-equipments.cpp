@@ -11,6 +11,7 @@
 #include "object/item-use-flags.h"
 #include "object/object-info.h"
 #include "player/player-status-flags.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "term/gameterm.h"
@@ -29,8 +30,9 @@
  * @param target_item アイテムの選択処理を行うか否か。
  * @return 選択したアイテムのタグ
  */
-COMMAND_CODE show_equipment(PlayerType *player_ptr, int target_item, BIT_FLAGS mode, const ItemTester &item_tester)
+COMMAND_CODE show_equipment(CreatureEntity &creature, int target_item, BIT_FLAGS mode, const ItemTester &item_tester)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     COMMAND_CODE i;
     int j, k, l;
     COMMAND_CODE out_index[23]{};
@@ -43,15 +45,15 @@ COMMAND_CODE show_equipment(PlayerType *player_ptr, int target_item, BIT_FLAGS m
     for (k = 0, i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
         const auto &item = *player_ptr->inventory[i];
         auto only_slot = !(player_ptr->select_ring_slot ? is_ring_slot(i) : (item_tester.okay(&item) || any_bits(mode, USE_FULL)));
-        auto is_any_hand = (i == INVEN_MAIN_HAND) && can_attack_with_sub_hand(*player_ptr);
-        is_any_hand |= (i == INVEN_SUB_HAND) && can_attack_with_main_hand(*player_ptr);
-        auto is_two_handed = is_any_hand && has_two_handed_weapons(*player_ptr);
+        auto is_any_hand = (i == INVEN_MAIN_HAND) && can_attack_with_sub_hand(creature);
+        is_any_hand |= (i == INVEN_SUB_HAND) && can_attack_with_main_hand(creature);
+        auto is_two_handed = is_any_hand && has_two_handed_weapons(creature);
         only_slot &= !is_two_handed || any_bits(mode, IGNORE_BOTHHAND_SLOT);
         if (only_slot) {
             continue;
         }
 
-        const auto item_name = describe_flavor(*player_ptr, item, 0);
+        const auto item_name = describe_flavor(creature, item, 0);
         if (is_two_handed) {
             out_desc[k] = _("(武器を両手持ち)", "(wielding with two-hands)");
             out_color[k] = TERM_WHITE;
@@ -86,7 +88,7 @@ COMMAND_CODE show_equipment(PlayerType *player_ptr, int target_item, BIT_FLAGS m
     }
 
     col = (len > wid - _(6, 4)) ? 0 : (wid - len - 1);
-    const auto equip_label = prepare_label_string(*player_ptr, USE_EQUIP, item_tester);
+    const auto equip_label = prepare_label_string(creature, USE_EQUIP, item_tester);
     for (j = 0; j < k; j++) {
         i = out_index[j];
         const auto &item = *player_ptr->inventory[i];
@@ -117,7 +119,7 @@ COMMAND_CODE show_equipment(PlayerType *player_ptr, int target_item, BIT_FLAGS m
         }
 
         if (show_labels) {
-            const auto label = format(_("%-7s: ", "%-14s: "), mention_use(*player_ptr, i));
+            const auto label = format(_("%-7s: ", "%-14s: "), mention_use(creature, i));
             put_str(label, j + 1, cur_col);
             c_put_str(out_color[j], out_desc[j], j + 1, _(cur_col + 9, cur_col + 16));
         } else {
