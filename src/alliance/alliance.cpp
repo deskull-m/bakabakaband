@@ -227,7 +227,7 @@ bool Alliance::isAnnihilated()
     return false;
 }
 
-bool Alliance::isFriendly([[maybe_unused]] PlayerType *creature_ptr) const
+bool Alliance::isFriendly([[maybe_unused]] const CreatureEntity &creature) const
 {
     return false;
 }
