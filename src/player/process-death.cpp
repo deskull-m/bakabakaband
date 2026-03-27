@@ -338,7 +338,7 @@ static bool show_dead_player_items(CreatureEntity &creature)
 {
     if (creature.equip_cnt) {
         term_clear();
-        (void)show_equipment(static_cast<PlayerType *>(&creature), 0, USE_FULL, AllMatchItemTester());
+        (void)show_equipment(creature, 0, USE_FULL, AllMatchItemTester());
         prt(_("装備していたアイテム: -続く-", "You are using: -more-"), 0, 0);
         if (inkey() == ESCAPE) {
             return true;

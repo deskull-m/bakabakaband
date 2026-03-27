@@ -357,7 +357,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
             fis.n1 = I2A(fis.e1 - INVEN_MAIN_HAND);
             fis.n2 = I2A(fis.e2 - INVEN_MAIN_HAND);
             if (command_see) {
-                get_item_label = show_equipment(player_ptr, fis.menu_line, mode, item_tester);
+                get_item_label = show_equipment(creature, fis.menu_line, mode, item_tester);
             }
         } else if (command_wrk == USE_FLOOR) {
             int j = fis.floor_top;
