@@ -135,9 +135,9 @@ void process_player(CreatureEntity &creature)
             update_monster(*player_ptr, m_idx, false);
         }
 
-        WorldTurnProcessor(player_ptr).print_time();
-        WorldTurnProcessor(player_ptr).print_world_collapse();
-        WorldTurnProcessor(player_ptr).print_cheat_position();
+        WorldTurnProcessor(creature).print_time();
+        WorldTurnProcessor(creature).print_world_collapse();
+        WorldTurnProcessor(creature).print_cheat_position();
 
     } else if (!(load && player_ptr->energy_need <= 0)) {
         player_ptr->energy_need -= speed_to_energy(static_cast<CreatureEntity &>(*player_ptr).get_speed());
@@ -147,9 +147,9 @@ void process_player(CreatureEntity &creature)
         return;
     }
     if (!command_rep) {
-        WorldTurnProcessor(player_ptr).print_time();
-        WorldTurnProcessor(player_ptr).print_world_collapse();
-        WorldTurnProcessor(player_ptr).print_cheat_position();
+        WorldTurnProcessor(creature).print_time();
+        WorldTurnProcessor(creature).print_world_collapse();
+        WorldTurnProcessor(creature).print_cheat_position();
     }
 
     if (fresh_once && (continuous_action_running(creature) || !command_rep)) {

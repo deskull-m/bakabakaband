@@ -67,7 +67,6 @@ static void print_dungeon(CreatureEntity &creature)
  */
 void redraw_stuff(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (!rfu.any_main()) {
         return;
@@ -110,9 +109,9 @@ void redraw_stuff(CreatureEntity &creature)
         };
         rfu.reset_flags(flags);
         print_frame_basic(creature);
-        WorldTurnProcessor(player_ptr).print_time();
-        WorldTurnProcessor(player_ptr).print_world_collapse();
-        WorldTurnProcessor(player_ptr).print_cheat_position();
+        WorldTurnProcessor(creature).print_time();
+        WorldTurnProcessor(creature).print_world_collapse();
+        WorldTurnProcessor(creature).print_cheat_position();
         print_dungeon(creature);
     }
 

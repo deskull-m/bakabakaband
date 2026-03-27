@@ -253,7 +253,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
             break;
         }
 
-        WorldTurnProcessor(player_ptr).process_world();
+        WorldTurnProcessor(creature).process_world();
         handle_stuff(*player_ptr);
 
         move_cursor_relative(player_ptr->y, player_ptr->x);

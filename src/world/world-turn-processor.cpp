@@ -210,8 +210,8 @@ void WorldTurnProcessor::process_monster_arena()
 
 void WorldTurnProcessor::process_monster_arena_winner(int win_m_idx)
 {
-    const auto &monster = this->player_ptr->current_floor_ptr->m_list[win_m_idx];
-    const auto m_name = monster_desc(*this->player_ptr, monster, 0);
+    const auto &monster = this->creature.current_floor_ptr->m_list[win_m_idx];
+    const auto m_name = monster_desc(this->creature, monster, 0);
     msg_format(_("%sが勝利した！", "%s won!"), m_name.data());
     msg_erase();
 
@@ -220,14 +220,14 @@ void WorldTurnProcessor::process_monster_arena_winner(int win_m_idx)
         msg_print(_("おめでとうございます。", "Congratulations."));
         const auto payback = melee_arena.get_payback();
         msg_format(_("%d＄を受け取った。", "You received %d gold."), payback);
-        this->player_ptr->au += payback;
+        this->creature.au += payback;
     } else {
         msg_print(_("残念でした。", "You lost gold."));
     }
 
     msg_erase();
-    this->player_ptr->energy_need = 0;
-    melee_arena.update_gladiators(*this->player_ptr);
+    this->creature.energy_need = 0;
+    melee_arena.update_gladiators(this->creature);
 }
 
 void WorldTurnProcessor::process_monster_arena_draw()
