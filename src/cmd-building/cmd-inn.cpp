@@ -179,12 +179,11 @@ static bool stay_inn(CreatureEntity &creature)
         return false;
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &world = AngbandWorld::get_instance();
     const auto &[prev_day, prev_hour, prev_min] = world.extract_date_time(InnerGameData::get_instance().get_start_race());
     write_diary_stay_inn(creature, prev_hour);
     world.pass_game_turn_by_stay();
-    wc_ptr->plus_timed_world_collapsion(&world, player_ptr, 25000);
+    wc_ptr->plus_timed_world_collapsion(&world, creature, 25000);
     prevent_turn_overflow(creature);
     if ((prev_hour >= 18) && (prev_hour <= 23)) {
         determine_daily_bounty(creature);
