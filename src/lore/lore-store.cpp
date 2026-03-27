@@ -7,6 +7,7 @@
 #include "lore/lore-store.h"
 #include "core/window-redrawer.h"
 #include "monster/monster-info.h"
+#include "system/creature-entity.h"
 #include "system/floor-type-definition.h"
 #include "system/monster-entity.h" //!< @todo 違和感、m_ptr は外から与えることとしたい.
 #include "system/player-type-definition.h"
@@ -23,15 +24,15 @@ static int count_lore_mflag_group(const EnumClassFlagGroup<T> &flags, const Enum
 
 /*!
  * @brief モンスターの調査による思い出補完処理 / Learn about a monster (by "probing" it)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param r_idx 補完されるモンスター種族ID
  * @return 明らかになった情報の度数
  * @details
  * Return the number of new flags learnt.  -Mogami-
  */
-int lore_do_probe(PlayerType *player_ptr, MonraceId r_idx)
+int lore_do_probe(CreatureEntity &creature, MonraceId r_idx)
 {
-    (void)player_ptr;
+    (void)creature;
     int n = 0;
     auto monrace = &MonraceList::get_instance().get_monrace(r_idx);
     if (monrace.r_wake != MAX_UCHAR) {
@@ -107,14 +108,14 @@ int lore_do_probe(PlayerType *player_ptr, MonraceId r_idx)
 
 /*!
  * @brief モンスターの撃破に伴うドロップ情報の記憶処理 / Take note that the given monster just dropped some treasure
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスター情報のID
  * @param num_item 手に入れたアイテム数
  * @param num_gold 手に入れた財宝の単位数
  */
-void lore_treasure(PlayerType *player_ptr, MONSTER_IDX m_idx, ITEM_NUMBER num_item, ITEM_NUMBER num_gold)
+void lore_treasure(CreatureEntity &creature, MONSTER_IDX m_idx, ITEM_NUMBER num_item, ITEM_NUMBER num_gold)
 {
-    auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+    auto &monster = creature.current_floor_ptr->m_list[m_idx];
     auto &monrace = monster.get_monrace();
     if (!monster.is_original_ap()) {
         return;
