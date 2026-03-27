@@ -430,7 +430,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         auto force_hostile = monster_has_hostile_to_player(*player_ptr, 0, -1, new_monrace);
         force_hostile |= floor.inside_arena;
         if (m_ptr->alliance_idx != AllianceType::NONE) {
-            should_be_friendly |= alliance_list.at(m_ptr->alliance_idx)->isFriendly(player_ptr);
+            should_be_friendly |= alliance_list.at(m_ptr->alliance_idx)->isFriendly(player);
         }
         if (should_be_friendly && !force_hostile) {
             m_ptr->set_friendly();

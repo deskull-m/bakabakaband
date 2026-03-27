@@ -2816,6 +2816,8 @@
     <ClCompile Include="..\..\src\info-reader\party-reader.cpp">
       <Filter>info-reader</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\monster-floor\party-generator.cpp" />
+    <ClCompile Include="..\..\src\system\creature-entity.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -5966,9 +5968,6 @@
     <ClInclude Include="..\..\src\alliance\alliance-meldor.h">
       <Filter>alliance</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\alliance\alliance-new.h">
-      <Filter>alliance</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-none.h">
       <Filter>alliance</Filter>
     </ClInclude>
@@ -6080,6 +6079,7 @@
     <ClInclude Include="..\..\src\info-reader\party-reader.h">
       <Filter>info-reader</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\monster-floor\party-generator.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\wall.bmp" />

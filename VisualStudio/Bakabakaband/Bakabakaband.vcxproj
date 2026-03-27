@@ -1164,7 +1164,6 @@
     <ClInclude Include="..\..\src\alliance\alliance-naked-knights.h" />
     <ClInclude Include="..\..\src\alliance\alliance-nanman.h" />
     <ClInclude Include="..\..\src\alliance\alliance-nanto-orthodox.h" />
-    <ClInclude Include="..\..\src\alliance\alliance-new.h" />
     <ClInclude Include="..\..\src\alliance\alliance-nibelung.h" />
     <ClInclude Include="..\..\src\alliance\alliance-none.h" />
     <ClInclude Include="..\..\src\alliance\alliance-numenor.h" />
