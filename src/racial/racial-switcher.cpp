@@ -269,7 +269,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
 
         return identify_fully(*player_ptr, true);
     case PlayerClassType::MIRROR_MASTER: {
-        SpellsMirrorMaster smm(player_ptr);
+        SpellsMirrorMaster smm(*player_ptr);
         if (command == -3) {
             smm.remove_all_mirrors(true);
             return true;

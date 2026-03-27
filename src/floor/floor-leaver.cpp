@@ -489,7 +489,7 @@ void leave_floor(CreatureEntity &creature)
     auto *player_ptr = &player;
 
     preserve_pet(creature);
-    SpellsMirrorMaster(player_ptr).remove_all_mirrors(false);
+    SpellsMirrorMaster(creature).remove_all_mirrors(false);
     set_superstealth(creature, false);
 
     new_floor_id = 0;
