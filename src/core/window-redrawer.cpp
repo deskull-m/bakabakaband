@@ -90,7 +90,7 @@ void redraw_stuff(CreatureEntity &creature)
 
     if (rfu.has(MainWindowRedrawingFlag::MAP)) {
         rfu.reset_flag(MainWindowRedrawingFlag::MAP);
-        print_map(player_ptr);
+        print_map(creature);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::BASIC)) {
