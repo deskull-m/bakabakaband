@@ -16,7 +16,6 @@
  */
 void do_cmd_view_map(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     screen_save();
     prt(_("お待ち下さい...", "Please wait..."), 0, 0);
     term_fresh();
@@ -24,7 +23,7 @@ void do_cmd_view_map(CreatureEntity &creature)
     display_autopick = 0;
 
     int cy, cx;
-    display_map(player_ptr, &cy, &cx);
+    display_map(creature, &cy, &cx);
     if (autopick_list.empty() || AngbandWorld::get_instance().is_wild_mode()) {
         const auto &[wid, hgt] = term_get_size();
         constexpr auto msg = _("何かキーを押すとゲームに戻ります", "Hit any key to continue");
@@ -65,7 +64,7 @@ void do_cmd_view_map(CreatureEntity &creature)
             display_autopick &= ~flag;
         }
 
-        display_map(player_ptr, &cy, &cx);
+        display_map(creature, &cy, &cx);
     }
 
     display_autopick = 0;

@@ -135,7 +135,6 @@ static bool is_revealed_wall(const FloorType &floor, const Pos2D &pos)
 DisplaySymbolPair map_info(CreatureEntity &creature, const Pos2D &pos)
 {
     const auto &floor = *creature.current_floor_ptr;
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &grid = floor.get_grid(pos);
     const auto &terrains = TerrainList::get_instance();
     const auto &world = AngbandWorld::get_instance();
@@ -254,13 +253,13 @@ DisplaySymbolPair map_info(CreatureEntity &creature, const Pos2D &pos)
     }
 
     if (grid.has_monster() && display_autopick != 0) {
-        symbol_pair.symbol_foreground = set_term_color(player_ptr, pos, symbol_pair.symbol_foreground);
+        symbol_pair.symbol_foreground = set_term_color(creature, pos, symbol_pair.symbol_foreground);
         return symbol_pair;
     }
 
     const auto &monster = floor.m_list[grid.m_idx];
     if (!monster.ml) {
-        symbol_pair.symbol_foreground = set_term_color(player_ptr, pos, symbol_pair.symbol_foreground);
+        symbol_pair.symbol_foreground = set_term_color(creature, pos, symbol_pair.symbol_foreground);
         return symbol_pair;
     }
 
@@ -271,18 +270,18 @@ DisplaySymbolPair map_info(CreatureEntity &creature, const Pos2D &pos)
             symbol_pair.symbol_foreground = image_monster();
         }
 
-        symbol_pair.symbol_foreground = set_term_color(player_ptr, pos, symbol_pair.symbol_foreground);
+        symbol_pair.symbol_foreground = set_term_color(creature, pos, symbol_pair.symbol_foreground);
         return symbol_pair;
     }
 
     symbol_config = monrace_ap.symbol_config;
     if (monrace_ap.visual_flags.has_none_of({ MonsterVisualType::CLEAR, MonsterVisualType::SHAPECHANGER, MonsterVisualType::CLEAR_COLOR, MonsterVisualType::MULTI_COLOR, MonsterVisualType::RANDOM_COLOR })) {
-        symbol_pair.symbol_foreground = set_term_color(player_ptr, pos, symbol_config);
+        symbol_pair.symbol_foreground = set_term_color(creature, pos, symbol_config);
         return symbol_pair;
     }
 
     if (monrace_ap.visual_flags.has_all_of({ MonsterVisualType::CLEAR, MonsterVisualType::CLEAR_COLOR })) {
-        symbol_pair.symbol_foreground = set_term_color(player_ptr, pos, symbol_pair.symbol_foreground);
+        symbol_pair.symbol_foreground = set_term_color(creature, pos, symbol_pair.symbol_foreground);
         return symbol_pair;
     }
 
@@ -311,7 +310,7 @@ DisplaySymbolPair map_info(CreatureEntity &creature, const Pos2D &pos)
     }
 
     if (monrace_ap.visual_flags.has(MonsterVisualType::CLEAR) && (symbol_pair.symbol_foreground.character != ' ') && !use_graphics) {
-        symbol_pair.symbol_foreground = set_term_color(player_ptr, pos, symbol_pair.symbol_foreground);
+        symbol_pair.symbol_foreground = set_term_color(creature, pos, symbol_pair.symbol_foreground);
         return symbol_pair;
     }
 
@@ -324,11 +323,11 @@ DisplaySymbolPair map_info(CreatureEntity &creature, const Pos2D &pos)
             symbol_pair.symbol_foreground.character = one_in_(25) ? rand_choice(image_objects) : rand_choice(image_monsters);
         }
 
-        symbol_pair.symbol_foreground = set_term_color(player_ptr, pos, symbol_pair.symbol_foreground);
+        symbol_pair.symbol_foreground = set_term_color(creature, pos, symbol_pair.symbol_foreground);
         return symbol_pair;
     }
 
-    symbol_pair.symbol_foreground = set_term_color(player_ptr, pos, { symbol_pair.symbol_foreground.color, symbol_config.character });
+    symbol_pair.symbol_foreground = set_term_color(creature, pos, { symbol_pair.symbol_foreground.color, symbol_config.character });
     return symbol_pair;
 }
 

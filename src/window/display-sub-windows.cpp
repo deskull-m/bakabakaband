@@ -447,13 +447,12 @@ void fix_message(void)
  */
 void fix_overhead(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     display_sub_windows(SubWindowRedrawingFlag::OVERHEAD,
-        [player_ptr] {
+        [&creature] {
             const auto &[wid, hgt] = term_get_size();
             if (wid > COL_MAP + 2 && hgt > ROW_MAP + 2) {
                 int cy, cx;
-                display_map(player_ptr, &cy, &cx);
+                display_map(creature, &cy, &cx);
             }
         });
 }
