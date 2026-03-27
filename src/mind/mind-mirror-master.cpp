@@ -66,7 +66,6 @@ bool check_multishadow(const CreatureEntity &creature)
  */
 bool binding_field(CreatureEntity &creature, int dam)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     /* 鏡はもっと少ない */
     int mirror_x[10]{};
     int mirror_y[10]{};
@@ -226,7 +225,7 @@ bool binding_field(CreatureEntity &creature, int dam)
 
     if (one_in_(7)) {
         msg_print(_("鏡が結界に耐えきれず、壊れてしまった。", "The field broke a mirror"));
-        SpellsMirrorMaster(&player).remove_mirror(point_y[0], point_x[0]);
+        SpellsMirrorMaster(creature).remove_mirror(point_y[0], point_x[0]);
     }
 
     return true;
@@ -386,7 +385,7 @@ bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
         break;
     case MindMirrorMasterType::MAKE_MIRROR:
         if (number_of_mirrors(*creature.current_floor_ptr) < 4 + plev / 10) {
-            const auto error = SpellsMirrorMaster(&player).place_mirror();
+            const auto error = SpellsMirrorMaster(creature).place_mirror();
             if (error) {
                 msg_print(*error);
             }
@@ -454,11 +453,11 @@ bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
             return false;
         }
 
-        SpellsMirrorMaster(&player).seeker_ray(dir, Dice::roll(11 + (plev - 5) / 4, 8));
+        SpellsMirrorMaster(creature).seeker_ray(dir, Dice::roll(11 + (plev - 5) / 4, 8));
         break;
     }
     case MindMirrorMasterType::SEALING_MIRROR:
-        SpellsMirrorMaster(&player).seal_of_mirror(plev * 4 + 100);
+        SpellsMirrorMaster(creature).seal_of_mirror(plev * 4 + 100);
         break;
     case MindMirrorMasterType::WATER_SHIELD:
         t = 20 + randint1(20);
@@ -478,7 +477,7 @@ bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
             return false;
         }
 
-        SpellsMirrorMaster(&player).super_ray(dir, 150 + randint1(2 * plev));
+        SpellsMirrorMaster(creature).super_ray(dir, 150 + randint1(2 * plev));
         break;
     }
     case MindMirrorMasterType::ILLUSION_LIGHT:
@@ -499,7 +498,7 @@ bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
         break;
     case MindMirrorMasterType::MIRROR_TUNNEL:
         msg_print(_("鏡の世界を通り抜け…  ", "You try to enter the mirror..."));
-        return SpellsMirrorMaster(&player).mirror_tunnel();
+        return SpellsMirrorMaster(creature).mirror_tunnel();
     case MindMirrorMasterType::RECALL_MIRROR:
         return recall_player(player, randint0(21) + 15);
     case MindMirrorMasterType::MULTI_SHADOW:

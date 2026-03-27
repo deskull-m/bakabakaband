@@ -12,11 +12,11 @@
 #include "monster/monster-util.h"
 #include "room/door-definition.h"
 #include "spell-class/spells-mirror-master.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "timed-effect/timed-effects.h"
@@ -52,7 +52,6 @@
  */
 bool affect_feature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, POSITION y, POSITION x, int dam, AttributeType typ)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const Pos2D pos(y, x);
     auto &floor = *creature.current_floor_ptr;
     auto &grid = floor.get_grid(pos);
@@ -426,7 +425,7 @@ bool affect_feature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, P
         if (grid.is_mirror()) {
             msg_print(_("鏡が割れた！", "The mirror was shattered!"));
             sound(SoundKind::GLASS);
-            SpellsMirrorMaster(player_ptr).remove_mirror(y, x);
+            SpellsMirrorMaster(creature).remove_mirror(y, x);
             project(creature, 0, 2, y, x, creature.level / 2 + 5, AttributeType::SHARDS,
                 (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP | PROJECT_NO_HANGEKI));
         }
@@ -448,7 +447,7 @@ bool affect_feature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, P
         if (grid.is_mirror() && creature.level < 40) {
             msg_print(_("鏡が割れた！", "The mirror was shattered!"));
             sound(SoundKind::GLASS);
-            SpellsMirrorMaster(player_ptr).remove_mirror(y, x);
+            SpellsMirrorMaster(creature).remove_mirror(y, x);
             project(creature, 0, 2, y, x, creature.level / 2 + 5, AttributeType::SHARDS,
                 (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP | PROJECT_NO_HANGEKI));
         }
@@ -468,7 +467,7 @@ bool affect_feature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, P
     }
     case AttributeType::DISINTEGRATE: {
         if (grid.is_mirror() || grid.is_rune_protection() || grid.is_rune_explosion()) {
-            SpellsMirrorMaster(player_ptr).remove_mirror(y, x);
+            SpellsMirrorMaster(creature).remove_mirror(y, x);
         }
 
         if (terrain.flags.has_not(TerrainCharacteristics::HURT_DISI) || terrain.flags.has(TerrainCharacteristics::PERMANENT)) {
