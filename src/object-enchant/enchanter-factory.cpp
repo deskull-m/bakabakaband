@@ -64,7 +64,7 @@ std::unique_ptr<EnchanterBase> EnchanterFactory::create_enchanter(CreatureEntity
     case ItemKindType::HARD_ARMOR:
         return std::make_unique<HardArmorEnchanter>(creature, o_ptr, lev, power);
     case ItemKindType::DRAG_ARMOR:
-        return std::make_unique<DragonArmorEnchanter>(&static_cast<PlayerType &>(creature), o_ptr, lev, power);
+        return std::make_unique<DragonArmorEnchanter>(creature, o_ptr, lev, power);
     case ItemKindType::LITE:
         return std::make_unique<LiteEnchanter>(creature, o_ptr, power);
     case ItemKindType::AMULET:
