@@ -827,14 +827,14 @@ static void rebuild_term(term_data *td, bool resize_window = true)
 /*!
  * @brief React to global changes
  */
-static errr term_xtra_win_react(PlayerType *player_ptr)
+static errr term_xtra_win_react(CreatureEntity &creature)
 {
     refresh_color_table();
 
     const byte current_mode = static_cast<byte>(graphic.get_mode());
     if (current_mode != arg_graphics) {
         change_graphics_mode(static_cast<graphics_mode>(arg_graphics));
-        reset_visuals(*player_ptr);
+        reset_visuals(creature);
     }
 
     for (int i = 0; i < MAX_TERM_DATA; i++) {
