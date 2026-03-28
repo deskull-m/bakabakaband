@@ -1583,7 +1583,7 @@ static void check_for_save_file(const std::string &savefile_option)
 /*!
  * @brief Process a menu command
  */
-static void process_menus(PlayerType *player_ptr, WORD wCmd)
+static void process_menus(CreatureEntity &creature, WORD wCmd)
 {
     if (!initialized) {
         plog(_("まだ初期化中です...", "You cannot do that yet..."));
@@ -1630,7 +1630,7 @@ static void process_menus(PlayerType *player_ptr, WORD wCmd)
             }
 
             msg_flag = false;
-            do_cmd_save_game(*player_ptr, false);
+            do_cmd_save_game(creature, false);
         } else {
             plog(_("今、セーブすることは出来ません。", "You may not do that right now."));
         }
@@ -1645,7 +1645,7 @@ static void process_menus(PlayerType *player_ptr, WORD wCmd)
             }
 
             msg_flag = false;
-            auto &floor = *player_ptr->current_floor_ptr;
+            auto &floor = *creature.current_floor_ptr;
             floor.forget_lite();
             floor.forget_view();
             floor.forget_mon_lite();
@@ -1846,7 +1846,7 @@ static void process_menus(PlayerType *player_ptr, WORD wCmd)
         if (arg_graphics != enum2i(graphics_mode::GRAPHICS_NONE)) {
             arg_graphics = enum2i(graphics_mode::GRAPHICS_NONE);
             if (game_in_progress) {
-                do_cmd_redraw(*player_ptr);
+                do_cmd_redraw(creature);
             }
         }
         break;
@@ -1855,7 +1855,7 @@ static void process_menus(PlayerType *player_ptr, WORD wCmd)
         if (arg_graphics != enum2i(graphics_mode::GRAPHICS_ORIGINAL)) {
             arg_graphics = enum2i(graphics_mode::GRAPHICS_ORIGINAL);
             if (game_in_progress) {
-                do_cmd_redraw(*player_ptr);
+                do_cmd_redraw(creature);
             }
         }
 
@@ -1865,7 +1865,7 @@ static void process_menus(PlayerType *player_ptr, WORD wCmd)
         if (arg_graphics != enum2i(graphics_mode::GRAPHICS_ADAM_BOLT)) {
             arg_graphics = enum2i(graphics_mode::GRAPHICS_ADAM_BOLT);
             if (game_in_progress) {
-                do_cmd_redraw(*player_ptr);
+                do_cmd_redraw(creature);
             }
         }
 
@@ -1875,7 +1875,7 @@ static void process_menus(PlayerType *player_ptr, WORD wCmd)
         if (arg_graphics != enum2i(graphics_mode::GRAPHICS_HENGBAND)) {
             arg_graphics = enum2i(graphics_mode::GRAPHICS_HENGBAND);
             if (game_in_progress) {
-                do_cmd_redraw(*player_ptr);
+                do_cmd_redraw(creature);
             }
         }
 
@@ -1897,7 +1897,7 @@ static void process_menus(PlayerType *player_ptr, WORD wCmd)
 
         init_music();
         if (game_in_progress) {
-            select_floor_music(*player_ptr);
+            select_floor_music(creature);
         }
 
         break;
@@ -2471,7 +2471,7 @@ static LRESULT PASCAL angband_window_procedure(HWND hWnd, UINT uMsg, WPARAM wPar
         return 0;
     }
     case WM_COMMAND: {
-        process_menus(p_ptr, LOWORD(wParam));
+        process_menus(*p_ptr, LOWORD(wParam));
         return 0;
     }
     case WM_ACTIVATE: {
