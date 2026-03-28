@@ -111,6 +111,7 @@
 #include "main/sound-of-music.h"
 #include "save/save.h"
 #include "system/angband.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
@@ -1009,7 +1010,7 @@ static errr term_xtra_win(int n, int v)
         return term_xtra_win_clear();
     }
     case TERM_XTRA_REACT: {
-        return term_xtra_win_react(p_ptr);
+        return term_xtra_win_react(*p_ptr);
     }
     case TERM_XTRA_DELAY: {
         return term_xtra_win_delay(v);
