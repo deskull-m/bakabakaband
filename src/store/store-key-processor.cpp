@@ -162,7 +162,7 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
         } else if (pc.equals(PlayerClassType::ELEMENTALIST)) {
             do_cmd_element_browse(*player_ptr);
         } else if (pc.equals(PlayerClassType::SMITH)) {
-            do_cmd_kaji(*player_ptr, true);
+            do_cmd_kaji(creature, true);
         } else if (pc.equals(PlayerClassType::MAGIC_EATER)) {
             do_cmd_magic_eater(*player_ptr, true, false);
         } else if (pc.equals(PlayerClassType::SNIPER)) {

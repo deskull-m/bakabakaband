@@ -402,7 +402,7 @@ void process_command(CreatureEntity &creature)
         } else if (pc.equals(PlayerClassType::ELEMENTALIST)) {
             do_cmd_element_browse(*player_ptr);
         } else if (pc.equals(PlayerClassType::SMITH)) {
-            do_cmd_kaji(*player_ptr, true);
+            do_cmd_kaji(creature, true);
         } else if (pc.equals(PlayerClassType::MAGIC_EATER)) {
             do_cmd_magic_eater(*player_ptr, true, false);
         } else if (pc.equals(PlayerClassType::SNIPER)) {
@@ -485,7 +485,7 @@ void process_command(CreatureEntity &creature)
         } else if (pc.equals(PlayerClassType::BLUE_MAGE)) {
             do_cmd_cast_learned(creature);
         } else if (pc.equals(PlayerClassType::SMITH)) {
-            do_cmd_kaji(*player_ptr, false);
+            do_cmd_kaji(creature, false);
         } else if (pc.equals(PlayerClassType::SNIPER)) {
             do_cmd_snipe(*player_ptr);
         } else {
