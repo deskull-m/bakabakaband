@@ -42,7 +42,7 @@ static concptr variant = "ZANGBAND";
  */
 static std::string parse_fixed_map_expression(CreatureEntity &creature, char **sp, char *fp)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     constexpr char b1 = '[';
     constexpr char b2 = ']';
 
@@ -174,16 +174,16 @@ static std::string parse_fixed_map_expression(CreatureEntity &creature, char **s
             v = "OFF";
         }
     } else if (streq(b + 1, "RACE")) {
-        v = player_ptr->race->title.en_string();
+        v = player.race->title.en_string();
     } else if (streq(b + 1, "CLASS")) {
-        v = (*player_ptr->pclass_ref).title.en_string();
+        v = (*player.pclass_ref).title.en_string();
     } else if (streq(b + 1, "REALM1")) {
-        v = PlayerRealm(*player_ptr).realm1().get_name().en_string();
+        v = PlayerRealm(player).realm1().get_name().en_string();
     } else if (streq(b + 1, "REALM2")) {
-        v = PlayerRealm(*player_ptr).realm2().get_name().en_string();
+        v = PlayerRealm(player).realm2().get_name().en_string();
     } else if (streq(b + 1, "PLAYER")) {
         char tmp_player_name[64]{};
-        const char *pn = player_ptr->name.c_str();
+        const char *pn = player.name.c_str();
         char *tpn = tmp_player_name;
         for (; *pn; pn++, tpn++) {
 #ifdef JP
@@ -199,11 +199,11 @@ static std::string parse_fixed_map_expression(CreatureEntity &creature, char **s
         *tpn = '\0';
         v = tmp_player_name;
     } else if (streq(b + 1, "TOWN")) {
-        v = std::to_string(player_ptr->town_num);
+        v = std::to_string(player.town_num);
     } else if (streq(b + 1, "LEVEL")) {
-        v = std::to_string(player_ptr->level);
+        v = std::to_string(player.level);
     } else if (streq(b + 1, "QUEST_NUMBER")) {
-        v = std::to_string(enum2i(player_ptr->current_floor_ptr->quest_number));
+        v = std::to_string(enum2i(player.current_floor_ptr->quest_number));
     } else if (streq(b + 1, "LEAVING_QUEST")) {
         v = std::to_string(enum2i(leaving_quest));
     } else if (prefix(b + 1, "QUEST_TYPE")) {

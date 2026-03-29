@@ -200,22 +200,22 @@ bool fear_monster(CreatureEntity &creature, const Direction &dir, PLAYER_LEVEL p
 
 bool time_walk(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return false;
     }
 
-    if (player_ptr->timewalk) {
+    auto &player = static_cast<PlayerType &>(creature);
+    if (player.timewalk) {
         msg_print(_("既に時は止まっている。", "Time is already stopped."));
         return false;
     }
 
-    player_ptr->timewalk = true;
+    player.timewalk = true;
     msg_print(_("「時よ！」", "You yell 'Time!'"));
     //	msg_print(_("「『ザ・ワールド』！時は止まった！」", "You yell 'The World! Time has stopped!'"));
     msg_erase();
 
-    player_ptr->energy_need -= 1000 + (100 + player_ptr->csp - 50) * TURNS_PER_TICK / 10;
+    player.energy_need -= 1000 + (100 + player.csp - 50) * TURNS_PER_TICK / 10;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MAP);
     rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
@@ -224,7 +224,7 @@ bool time_walk(CreatureEntity &creature)
         SubWindowRedrawingFlag::DUNGEON,
     };
     rfu.set_flags(flags);
-    handle_stuff(*player_ptr);
+    handle_stuff(player);
     return true;
 }
 
@@ -235,44 +235,44 @@ bool time_walk(CreatureEntity &creature)
  */
 void roll_hitdice(CreatureEntity &creature, spell_operation options)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return;
     }
 
+    auto &player = static_cast<PlayerType &>(creature);
     constexpr auto roll_num = 3 + PY_MAX_LEVEL - 1;
-    const auto expected_hp = player_ptr->hit_dice.maxroll() + player_ptr->hit_dice.floored_expected_value_multiplied_by(roll_num);
+    const auto expected_hp = player.hit_dice.maxroll() + player.hit_dice.floored_expected_value_multiplied_by(roll_num);
     const auto min_value = expected_hp * 3 / 4;
     const auto max_value = expected_hp * 5 / 4;
 
     /* Rerate */
     while (true) {
         /* Pre-calculate level 1 hitdice */
-        player_ptr->player_hp[0] = player_ptr->hit_dice.maxroll();
+        player.player_hp[0] = player.hit_dice.maxroll();
 
         for (int i = 1; i < 4; i++) {
-            player_ptr->player_hp[0] += player_ptr->hit_dice.roll();
+            player.player_hp[0] += player.hit_dice.roll();
         }
 
         /* Roll the hitpoint values */
         for (int i = 1; i < PY_MAX_LEVEL; i++) {
-            player_ptr->player_hp[i] = player_ptr->player_hp[i - 1] + player_ptr->hit_dice.roll();
+            player.player_hp[i] = player.player_hp[i - 1] + player.hit_dice.roll();
         }
 
         /* Require "valid" hitpoints at highest level */
-        if ((player_ptr->player_hp[PY_MAX_LEVEL - 1] >= min_value) && (player_ptr->player_hp[PY_MAX_LEVEL - 1] <= max_value)) {
+        if ((player.player_hp[PY_MAX_LEVEL - 1] >= min_value) && (player.player_hp[PY_MAX_LEVEL - 1] <= max_value)) {
             break;
         }
     }
 
-    player_ptr->knowledge &= ~(KNOW_HPRATE);
+    player.knowledge &= ~(KNOW_HPRATE);
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::HP);
     rfu.set_flag(MainWindowRedrawingFlag::HP);
     rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
     if (!(options & SPOP_NO_UPDATE)) {
-        handle_stuff(*player_ptr);
+        handle_stuff(player);
     }
 
     if (!(options & SPOP_DISPLAY_MES)) {
@@ -280,8 +280,8 @@ void roll_hitdice(CreatureEntity &creature, spell_operation options)
     }
 
     if (options & SPOP_DEBUG) {
-        msg_format(_("現在の体力ランクは %d/100 です。", "Your life rate is %d/100 now."), player_ptr->calc_life_rating());
-        player_ptr->knowledge |= KNOW_HPRATE;
+        msg_format(_("現在の体力ランクは %d/100 です。", "Your life rate is %d/100 now."), player.calc_life_rating());
+        player.knowledge |= KNOW_HPRATE;
         return;
     }
 
@@ -300,12 +300,12 @@ bool life_stream(CreatureEntity &creature, bool message, bool virtue_change)
     }
 
     restore_level(creature);
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return true;
     }
 
-    BadStatusSetter bss(*player_ptr);
+    auto &player = static_cast<PlayerType &>(creature);
+    BadStatusSetter bss(player);
     (void)bss.set_poison(0);
     (void)bss.set_blindness(0);
     (void)bss.set_confusion(0);
@@ -314,30 +314,30 @@ bool life_stream(CreatureEntity &creature, bool message, bool virtue_change)
     (void)bss.set_cut(0);
     (void)bss.set_paralysis(0);
     (void)restore_all_status(creature);
-    (void)set_berserk(*player_ptr, 0, true);
-    handle_stuff(*player_ptr);
-    hp_player(*player_ptr, 5000);
+    (void)set_berserk(player, 0, true);
+    handle_stuff(player);
+    hp_player(player, 5000);
 
     return true;
 }
 
 bool heroism(CreatureEntity &creature, int base)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return false;
     }
 
+    auto &player = static_cast<PlayerType &>(creature);
     auto ident = false;
-    if (BadStatusSetter(*player_ptr).set_fear(0)) {
+    if (BadStatusSetter(player).set_fear(0)) {
         ident = true;
     }
 
-    if (set_hero(*player_ptr, player_ptr->hero + randint1(base) + base, false)) {
+    if (set_hero(player, player.hero + randint1(base) + base, false)) {
         ident = true;
     }
 
-    if (hp_player(*player_ptr, 10)) {
+    if (hp_player(player, 10)) {
         ident = true;
     }
 
@@ -346,21 +346,21 @@ bool heroism(CreatureEntity &creature, int base)
 
 bool berserk(CreatureEntity &creature, int base)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return false;
     }
 
+    auto &player = static_cast<PlayerType &>(creature);
     auto ident = false;
-    if (BadStatusSetter(*player_ptr).set_fear(0)) {
+    if (BadStatusSetter(player).set_fear(0)) {
         ident = true;
     }
 
-    if (set_berserk(*player_ptr, player_ptr->berserk + randint1(base) + base, false)) {
+    if (set_berserk(player, player.berserk + randint1(base) + base, false)) {
         ident = true;
     }
 
-    if (hp_player(*player_ptr, 30)) {
+    if (hp_player(player, 30)) {
         ident = true;
     }
 
@@ -369,17 +369,17 @@ bool berserk(CreatureEntity &creature, int base)
 
 bool cure_light_wounds(CreatureEntity &creature, int pow)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return false;
     }
 
+    auto &player = static_cast<PlayerType &>(creature);
     auto ident = false;
-    if (hp_player(*player_ptr, pow)) {
+    if (hp_player(player, pow)) {
         ident = true;
     }
 
-    BadStatusSetter bss(*player_ptr);
+    BadStatusSetter bss(player);
     if (bss.set_blindness(0)) {
         ident = true;
     }
@@ -388,7 +388,7 @@ bool cure_light_wounds(CreatureEntity &creature, int pow)
         ident = true;
     }
 
-    if (set_berserk(*player_ptr, 0, true)) {
+    if (set_berserk(player, 0, true)) {
         ident = true;
     }
 
@@ -397,17 +397,17 @@ bool cure_light_wounds(CreatureEntity &creature, int pow)
 
 bool cure_serious_wounds(CreatureEntity &creature, int pow)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return false;
     }
 
+    auto &player = static_cast<PlayerType &>(creature);
     auto ident = false;
-    if (hp_player(*player_ptr, pow)) {
+    if (hp_player(player, pow)) {
         ident = true;
     }
 
-    BadStatusSetter bss(*player_ptr);
+    BadStatusSetter bss(player);
     if (bss.set_blindness(0)) {
         ident = true;
     }
@@ -416,11 +416,11 @@ bool cure_serious_wounds(CreatureEntity &creature, int pow)
         ident = true;
     }
 
-    if (bss.set_cut((player_ptr->effects()->cut().current() / 2) - 50)) {
+    if (bss.set_cut((player.effects()->cut().current() / 2) - 50)) {
         ident = true;
     }
 
-    if (set_berserk(*player_ptr, 0, true)) {
+    if (set_berserk(player, 0, true)) {
         ident = true;
     }
 
@@ -429,17 +429,17 @@ bool cure_serious_wounds(CreatureEntity &creature, int pow)
 
 bool cure_critical_wounds(CreatureEntity &creature, int pow)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return false;
     }
 
+    auto &player = static_cast<PlayerType &>(creature);
     auto ident = false;
-    if (hp_player(*player_ptr, pow)) {
+    if (hp_player(player, pow)) {
         ident = true;
     }
 
-    BadStatusSetter bss(*player_ptr);
+    BadStatusSetter bss(player);
     if (bss.set_blindness(0)) {
         ident = true;
     }
@@ -460,7 +460,7 @@ bool cure_critical_wounds(CreatureEntity &creature, int pow)
         ident = true;
     }
 
-    if (set_berserk(*player_ptr, 0, true)) {
+    if (set_berserk(player, 0, true)) {
         ident = true;
     }
 
@@ -469,17 +469,17 @@ bool cure_critical_wounds(CreatureEntity &creature, int pow)
 
 bool true_healing(CreatureEntity &creature, int pow)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return false;
     }
 
+    auto &player = static_cast<PlayerType &>(creature);
     auto ident = false;
-    if (hp_player(*player_ptr, pow)) {
+    if (hp_player(player, pow)) {
         ident = true;
     }
 
-    BadStatusSetter bss(*player_ptr);
+    BadStatusSetter bss(player);
     if (bss.set_blindness(0)) {
         ident = true;
     }
@@ -509,17 +509,17 @@ bool true_healing(CreatureEntity &creature, int pow)
 
 bool restore_mana(CreatureEntity &creature, bool magic_eater)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return false;
     }
 
+    auto &player = static_cast<PlayerType &>(creature);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (CreatureClass(*player_ptr).equals(PlayerClassType::MAGIC_EATER) && magic_eater) {
+    if (CreatureClass(player).equals(PlayerClassType::MAGIC_EATER) && magic_eater) {
         // 魔力復活による、魔道具術師の取り込んだ魔法の回復量
         // 取り込み数が10回未満: 3 回分回復
         // 取り込み数が10回以上: 取り込み回数/3 回分回復
-        auto magic_eater_data = CreatureClass(*player_ptr).get_specific_data<MagicEaterDataList>();
+        auto magic_eater_data = CreatureClass(player).get_specific_data<MagicEaterDataList>();
         for (auto tval : { ItemKindType::STAFF, ItemKindType::WAND }) {
             for (auto &item : magic_eater_data->get_item_group(tval)) {
                 item.charge += (item.count < 10) ? EATER_CHARGE * 3 : item.count * EATER_CHARGE / 3;
@@ -541,12 +541,12 @@ bool restore_mana(CreatureEntity &creature, bool magic_eater)
         return true;
     }
 
-    if (player_ptr->csp >= player_ptr->msp) {
+    if (player.csp >= player.msp) {
         return false;
     }
 
-    player_ptr->csp = player_ptr->msp;
-    player_ptr->csp_frac = 0;
+    player.csp = player.msp;
+    player.csp_frac = 0;
     msg_print(_("頭がハッキリとした。", "You feel your head clear."));
     rfu.set_flag(MainWindowRedrawingFlag::MP);
     static constexpr auto flags_swrf = {
@@ -559,28 +559,28 @@ bool restore_mana(CreatureEntity &creature, bool magic_eater)
 
 bool restore_all_status(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return false;
     }
 
+    auto &player = static_cast<PlayerType &>(creature);
     bool ident = false;
-    if (do_res_stat(*player_ptr, A_STR)) {
+    if (do_res_stat(player, A_STR)) {
         ident = true;
     }
-    if (do_res_stat(*player_ptr, A_INT)) {
+    if (do_res_stat(player, A_INT)) {
         ident = true;
     }
-    if (do_res_stat(*player_ptr, A_WIS)) {
+    if (do_res_stat(player, A_WIS)) {
         ident = true;
     }
-    if (do_res_stat(*player_ptr, A_DEX)) {
+    if (do_res_stat(player, A_DEX)) {
         ident = true;
     }
-    if (do_res_stat(*player_ptr, A_CON)) {
+    if (do_res_stat(player, A_CON)) {
         ident = true;
     }
-    if (do_res_stat(*player_ptr, A_CHR)) {
+    if (do_res_stat(player, A_CHR)) {
         ident = true;
     }
     return ident;
@@ -588,18 +588,18 @@ bool restore_all_status(CreatureEntity &creature)
 
 bool fishing(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return false;
     }
 
-    const auto dir = get_direction(*player_ptr);
+    auto &player = static_cast<PlayerType &>(creature);
+    const auto dir = get_direction(player);
     if (!dir) {
         return false;
     }
 
     const auto pos = creature.get_neighbor(dir);
-    player_ptr->fishing_dir = dir.dir();
+    player.fishing_dir = dir.dir();
     const auto &floor = *creature.current_floor_ptr;
     if (!floor.has_terrain_characteristics(pos, TerrainCharacteristics::WATER)) {
         msg_print(_("そこは水辺ではない。", "You can't fish here."));
@@ -608,13 +608,13 @@ bool fishing(CreatureEntity &creature)
 
     const auto &grid = floor.get_grid(pos);
     if (grid.has_monster()) {
-        const auto m_name = monster_desc(*player_ptr, floor.m_list[grid.m_idx], 0);
+        const auto m_name = monster_desc(player, floor.m_list[grid.m_idx], 0);
         msg_format(_("%sが邪魔だ！", "%s^ is standing in your way."), m_name.data());
-        PlayerEnergy(*player_ptr).reset_player_turn();
+        PlayerEnergy(player).reset_player_turn();
         return false;
     }
 
-    set_action(*player_ptr, ACTION_FISH);
+    set_action(player, ACTION_FISH);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
     return true;
 }
@@ -629,17 +629,17 @@ bool fishing(CreatureEntity &creature)
  */
 bool cosmic_cast_off(CreatureEntity &creature, ItemEntity **o_ptr_ptr)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return false;
     }
 
+    auto &player = static_cast<PlayerType &>(creature);
     auto *o_ptr = *o_ptr_ptr;
 
     /* Cast off activated item */
     INVENTORY_IDX slot;
     for (slot = INVEN_MAIN_HAND; slot <= INVEN_FEET; slot++) {
-        if (o_ptr == player_ptr->inventory[slot].get()) {
+        if (o_ptr == player.inventory[slot].get()) {
             break;
         }
     }
@@ -649,30 +649,30 @@ bool cosmic_cast_off(CreatureEntity &creature, ItemEntity **o_ptr_ptr)
     }
 
     auto item = o_ptr->clone();
-    inven_item_increase(*player_ptr, slot, (0 - o_ptr->number));
-    inven_item_optimize(*player_ptr, slot);
+    inven_item_increase(player, slot, (0 - o_ptr->number));
+    inven_item_optimize(player, slot);
 
-    const auto old_o_idx = drop_near(*player_ptr, item, creature.get_position());
+    const auto old_o_idx = drop_near(player, item, creature.get_position());
     *o_ptr_ptr = creature.current_floor_ptr->o_list[old_o_idx].get();
 
-    const auto item_name = describe_flavor(*player_ptr, item, OD_NAME_ONLY);
+    const auto item_name = describe_flavor(player, item, OD_NAME_ONLY);
     msg_format(_("%sを脱ぎ捨てた。", "You cast off %s."), item_name.data());
     sound(SoundKind::TAKE_OFF);
 
     /* Get effects */
     msg_print(_("「燃え上がれ俺の小宇宙！」", "You say, 'Burn up my cosmo!"));
     TIME_EFFECT t = 20 + randint1(20);
-    BadStatusSetter bss(*player_ptr);
+    BadStatusSetter bss(player);
     (void)bss.mod_blindness(t);
     (void)bss.set_fear(0);
-    (void)set_tim_esp(*player_ptr, player_ptr->tim_esp + t, false);
-    (void)set_tim_regen(*player_ptr, player_ptr->tim_regen + t, false);
-    (void)set_hero(*player_ptr, player_ptr->hero + t, false);
-    (void)set_blessed(*player_ptr, player_ptr->blessed + t, false);
-    (void)mod_acceleration(*player_ptr, t, false);
-    (void)set_berserk(*player_ptr, player_ptr->berserk + t, false);
-    if (CreatureClass(*player_ptr).equals(PlayerClassType::FORCETRAINER)) {
-        set_current_ki(*player_ptr, true, player_ptr->level * 5 + 190);
+    (void)set_tim_esp(player, player.tim_esp + t, false);
+    (void)set_tim_regen(player, player.tim_regen + t, false);
+    (void)set_hero(player, player.hero + t, false);
+    (void)set_blessed(player, player.blessed + t, false);
+    (void)mod_acceleration(player, t, false);
+    (void)set_berserk(player, player.berserk + t, false);
+    if (CreatureClass(player).equals(PlayerClassType::FORCETRAINER)) {
+        set_current_ki(player, true, player.level * 5 + 190);
         msg_print(_("気が爆発寸前になった。", "Your force absorbs the explosion."));
     }
 
@@ -686,37 +686,37 @@ bool cosmic_cast_off(CreatureEntity &creature, ItemEntity **o_ptr_ptr)
  */
 void apply_nexus(const MonsterEntity &monster, CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return;
     }
 
+    auto &player = static_cast<PlayerType &>(creature);
     switch (randint1(7)) {
     case 1:
     case 2:
     case 3: {
-        teleport_player(*player_ptr, 200, TELEPORT_PASSIVE);
+        teleport_player(player, 200, TELEPORT_PASSIVE);
         break;
     }
 
     case 4:
     case 5: {
-        teleport_player_to(*player_ptr, monster.y, monster.x, TELEPORT_PASSIVE);
+        teleport_player_to(player, monster.y, monster.x, TELEPORT_PASSIVE);
         break;
     }
 
     case 6: {
-        if (evaluate_percent(player_ptr->skill_sav)) {
+        if (evaluate_percent(player.skill_sav)) {
             msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
             break;
         }
 
-        teleport_level(*player_ptr, 0);
+        teleport_level(player, 0);
         break;
     }
 
     case 7: {
-        if (evaluate_percent(player_ptr->skill_sav)) {
+        if (evaluate_percent(player.skill_sav)) {
             msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
             break;
         }
@@ -734,11 +734,11 @@ void apply_nexus(const MonsterEntity &monster, CreatureEntity &creature)
  */
 void status_shuffle(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return;
     }
 
+    auto &player = static_cast<PlayerType &>(creature);
     /* Pick a pair of stats */
     int i = randint0(A_MAX);
     int j;
@@ -748,22 +748,22 @@ void status_shuffle(CreatureEntity &creature)
         ;
     }
 
-    const auto max1 = player_ptr->stat_max[i];
-    const auto cur1 = player_ptr->stat_cur[i];
-    const auto max2 = player_ptr->stat_max[j];
-    const auto cur2 = player_ptr->stat_cur[j];
+    const auto max1 = player.stat_max[i];
+    const auto cur1 = player.stat_cur[i];
+    const auto max2 = player.stat_max[j];
+    const auto cur2 = player.stat_cur[j];
 
-    player_ptr->stat_max[i] = max2;
-    player_ptr->stat_cur[i] = cur2;
-    player_ptr->stat_max[j] = max1;
-    player_ptr->stat_cur[j] = cur1;
+    player.stat_max[i] = max2;
+    player.stat_cur[i] = cur2;
+    player.stat_max[j] = max1;
+    player.stat_cur[j] = cur1;
 
     for (int k = 0; k < A_MAX; k++) {
-        if (player_ptr->stat_max[k] > player_ptr->stat_max_max[k]) {
-            player_ptr->stat_max[k] = player_ptr->stat_max_max[k];
+        if (player.stat_max[k] > player.stat_max_max[k]) {
+            player.stat_max[k] = player.stat_max_max[k];
         }
-        if (player_ptr->stat_cur[k] > player_ptr->stat_max_max[k]) {
-            player_ptr->stat_cur[k] = player_ptr->stat_max_max[k];
+        if (player.stat_cur[k] > player.stat_max_max[k]) {
+            player.stat_cur[k] = player.stat_max_max[k];
         }
     }
 

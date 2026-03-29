@@ -110,7 +110,7 @@ Direction get_aim_dir(CreatureEntity &subject, bool enable_repeat)
  */
 Direction get_direction(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     Direction dir = command_dir;
     const auto code = repeat_pull();
     if (code && Direction::is_valid_dir(*code)) {
@@ -148,7 +148,7 @@ Direction get_direction(CreatureEntity &creature)
         return dir;
     }
 
-    const auto &monster = creature.current_floor_ptr->m_list[player_ptr->riding];
+    const auto &monster = creature.current_floor_ptr->m_list[player.riding];
     const auto m_name = monster_desc(creature, monster, 0);
     const auto fmt = monster.is_confused()
                          ? _("%sは混乱している。", "%s^ is confused.")
@@ -169,7 +169,7 @@ Direction get_direction(CreatureEntity &creature)
  */
 Direction get_rep_dir(CreatureEntity &creature, bool under)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     Direction dir = command_dir;
     const auto code = repeat_pull();
     if (code && Direction::is_valid_dir(*code)) {
@@ -205,8 +205,8 @@ Direction get_rep_dir(CreatureEntity &creature, bool under)
         if (evaluate_percent(75)) {
             dir = rand_choice(Direction::directions_8());
         }
-    } else if (player_ptr->riding) {
-        const auto &monster = creature.current_floor_ptr->m_list[player_ptr->riding];
+    } else if (player.riding) {
+        const auto &monster = creature.current_floor_ptr->m_list[player.riding];
         const auto &monrace = monster.get_monrace();
         if (monster.is_confused()) {
             if (evaluate_percent(75)) {
@@ -223,7 +223,7 @@ Direction get_rep_dir(CreatureEntity &creature, bool under)
         if (is_confused) {
             msg_print(_("あなたは混乱している。", "You are confused."));
         } else {
-            const auto &monster = creature.current_floor_ptr->m_list[player_ptr->riding];
+            const auto &monster = creature.current_floor_ptr->m_list[player.riding];
             const auto m_name = monster_desc(creature, monster, 0);
             if (monster.is_confused()) {
                 msg_format(_("%sは混乱している。", "%s^ is confused."), m_name.data());
