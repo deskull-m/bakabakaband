@@ -93,10 +93,10 @@ public:
     bool is_asleep() const;
     bool is_accelerated() const;
     bool is_decelerated() const;
-    bool is_stunned() const;
-    bool is_confused() const;
-    bool is_fearful() const;
-    bool is_invulnerable() const;
+    bool is_stunned() const override;
+    bool is_confused() const override;
+    bool is_fearful() const override;
+    bool is_invulnerable() const override;
     byte get_temporary_speed() const;
     int get_speed() const override;
     bool has_living_flag(bool is_apperance = false) const;

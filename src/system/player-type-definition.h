@@ -65,6 +65,11 @@ public:
     bool is_dead() const override;
 
     bool is_player() const override;
+
+    bool is_confused() const override;
+    bool is_stunned() const override;
+    bool is_fearful() const override;
+    bool is_invulnerable() const override;
 };
 
 extern PlayerType *p_ptr;

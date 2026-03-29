@@ -258,6 +258,30 @@ public:
     virtual bool is_player() const = 0;
 
     /*!
+     * @brief クリーチャーが混乱しているかどうかを判定
+     * @return 混乱していればtrue
+     */
+    virtual bool is_confused() const = 0;
+
+    /*!
+     * @brief クリーチャーが朦朧としているかどうかを判定
+     * @return 朦朧としていればtrue
+     */
+    virtual bool is_stunned() const = 0;
+
+    /*!
+     * @brief クリーチャーが恐怖しているかどうかを判定
+     * @return 恐怖していればtrue
+     */
+    virtual bool is_fearful() const = 0;
+
+    /*!
+     * @brief クリーチャーが無敵状態かどうかを判定
+     * @return 無敵ならtrue
+     */
+    virtual bool is_invulnerable() const = 0;
+
+    /*!
      * @brief 指定した固定アーティファクトを装備しているかどうか調べる
      * @param fa_id 固定アーティファクトのID
      * @return 装備していればtrue、そうでなければfalse
