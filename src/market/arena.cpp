@@ -51,7 +51,7 @@ static tl::optional<int> process_ostensible_arena_victory()
 
 static bool check_battle_metal_babble(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     msg_print(_("最強の挑戦者が君に決闘を申し込んできた。", "The strongest challenger throws down the gauntlet to your feet."));
     msg_erase();
     if (!input_check(_("受けて立つかね？", "Do you take up the gauntlet? "))) {
@@ -63,10 +63,10 @@ static bool check_battle_metal_babble(CreatureEntity &creature)
     msg_erase();
 
     AngbandWorld::get_instance().set_arena(false);
-    reset_tim_flags(*player_ptr);
+    reset_tim_flags(player);
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::SAVE_FLOORS);
-    player_ptr->current_floor_ptr->inside_arena = true;
-    player_ptr->leaving = true;
+    player.current_floor_ptr->inside_arena = true;
+    player.leaving = true;
     return true;
 }
 
@@ -77,10 +77,10 @@ static bool check_battle_metal_babble(CreatureEntity &creature)
  */
 static bool go_to_arena(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     const auto prize_money = process_ostensible_arena_victory();
     if (prize_money) {
-        player_ptr->au += *prize_money;
+        player.au += *prize_money;
         return false;
     }
 
@@ -95,17 +95,17 @@ static bool go_to_arena(CreatureEntity &creature)
         return false;
     }
 
-    if (player_ptr->riding && !CreatureClass(*player_ptr).is_tamer()) {
+    if (player.riding && !CreatureClass(player).is_tamer()) {
         msg_print(_("ペットに乗ったままではアリーナへ入れさせてもらえなかった。", "You don't have permission to enter with pet."));
         msg_erase();
         return false;
     }
 
     AngbandWorld::get_instance().set_arena(false);
-    reset_tim_flags(*player_ptr);
+    reset_tim_flags(player);
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::SAVE_FLOORS);
-    player_ptr->current_floor_ptr->inside_arena = true;
-    player_ptr->leaving = true;
+    player.current_floor_ptr->inside_arena = true;
+    player.leaving = true;
     return true;
 }
 
@@ -116,7 +116,7 @@ static bool go_to_arena(CreatureEntity &creature)
  */
 bool arena_comm(CreatureEntity &creature, int cmd)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     switch (cmd) {
     case BACT_ARENA:
         return go_to_arena(creature);
@@ -129,12 +129,12 @@ bool arena_comm(CreatureEntity &creature, int cmd)
 
         const auto &monrace = entries.get_monrace();
         LoreTracker::get_instance().set_trackee(monrace.idx);
-        handle_stuff(*player_ptr);
+        handle_stuff(player);
         return false;
     }
     case BACT_ARENA_RULES:
         screen_save();
-        FileDisplayer(player_ptr->name).display(true, _("arena_j.txt", "arena.txt"), 0, 0);
+        FileDisplayer(player.name).display(true, _("arena_j.txt", "arena.txt"), 0, 0);
         screen_load();
         return false;
     default:

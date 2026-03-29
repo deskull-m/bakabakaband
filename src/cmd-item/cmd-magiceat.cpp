@@ -93,7 +93,7 @@
  */
 static tl::optional<BaseitemKey> select_magic_eater(CreatureEntity &creature, bool only_browse)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     bool flag, request_list;
     auto tval = ItemKindType::NONE;
     int menu_line = (use_menu ? 1 : 0);
@@ -267,14 +267,14 @@ static tl::optional<BaseitemKey> select_magic_eater(CreatureEntity &creature, bo
                 const auto &baseitem = baseitems.lookup_baseitem({ tval, sval_ctr });
                 level = (tval == ItemKindType::ROD ? baseitem.level * 5 / 6 - 5 : baseitem.level);
                 chance = level * 4 / 5 + 20;
-                chance -= 3 * (adj_mag_stat[player_ptr->stat_index[mp_ptr->spell_stat]] - 1);
+                chance -= 3 * (adj_mag_stat[player.stat_index[mp_ptr->spell_stat]] - 1);
                 level /= 2;
-                if (player_ptr->level > level) {
-                    chance -= 3 * (player_ptr->level - level);
+                if (player.level > level) {
+                    chance -= 3 * (player.level - level);
                 }
                 chance = mod_spell_chance_1(creature, chance);
-                chance = std::max<int>(chance, adj_mag_fail[player_ptr->stat_index[mp_ptr->spell_stat]]);
-                chance += player_ptr->effects()->stun().get_magic_chance_penalty();
+                chance = std::max<int>(chance, adj_mag_fail[player.stat_index[mp_ptr->spell_stat]]);
+                chance += player.effects()->stun().get_magic_chance_penalty();
                 if (chance > 95) {
                     chance = 95;
                 }
@@ -491,7 +491,7 @@ static tl::optional<BaseitemKey> select_magic_eater(CreatureEntity &creature, bo
  */
 bool do_cmd_magic_eater(CreatureEntity &creature, bool only_browse, bool powerful)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     bool use_charge = true;
 
     if (cmd_limit_confused(creature)) {
@@ -509,14 +509,14 @@ bool do_cmd_magic_eater(CreatureEntity &creature, bool only_browse, bool powerfu
     const auto &baseitem = baseitems.lookup_baseitem(*bi_key);
     auto level = (bi_key->tval() == ItemKindType::ROD ? baseitem.level * 5 / 6 - 5 : baseitem.level);
     auto chance = level * 4 / 5 + 20;
-    chance -= 3 * (adj_mag_stat[player_ptr->stat_index[mp_ptr->spell_stat]] - 1);
+    chance -= 3 * (adj_mag_stat[player.stat_index[mp_ptr->spell_stat]] - 1);
     level /= 2;
-    if (player_ptr->level > level) {
-        chance -= 3 * (player_ptr->level - level);
+    if (player.level > level) {
+        chance -= 3 * (player.level - level);
     }
     chance = mod_spell_chance_1(creature, chance);
-    chance = std::max<int>(chance, adj_mag_fail[player_ptr->stat_index[mp_ptr->spell_stat]]);
-    chance += player_ptr->effects()->stun().get_magic_chance_penalty();
+    chance = std::max<int>(chance, adj_mag_fail[player.stat_index[mp_ptr->spell_stat]]);
+    chance += player.effects()->stun().get_magic_chance_penalty();
     if (chance > 95) {
         chance = 95;
     }
@@ -546,13 +546,13 @@ bool do_cmd_magic_eater(CreatureEntity &creature, bool only_browse, bool powerfu
 
             auto dir = Direction::none();
             if (bi_key->is_aiming_rod()) {
-                dir = get_aim_dir(*player_ptr);
+                dir = get_aim_dir(player);
                 if (!dir) {
                     return false;
                 }
             }
 
-            (void)rod_effect(*player_ptr, sval.value(), dir, &use_charge, powerful);
+            (void)rod_effect(player, sval.value(), dir, &use_charge, powerful);
             if (!use_charge) {
                 return false;
             }
@@ -565,12 +565,12 @@ bool do_cmd_magic_eater(CreatureEntity &creature, bool only_browse, bool powerfu
                 return false;
             }
 
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(player);
             if (!dir) {
                 return false;
             }
 
-            (void)wand_effect(*player_ptr, sval.value(), dir, powerful, true);
+            (void)wand_effect(player, sval.value(), dir, powerful, true);
             break;
         }
         default:
@@ -579,7 +579,7 @@ bool do_cmd_magic_eater(CreatureEntity &creature, bool only_browse, bool powerfu
                 return false;
             }
 
-            (void)staff_effect(*player_ptr, sval.value(), &use_charge, powerful, true, true);
+            (void)staff_effect(player, sval.value(), &use_charge, powerful, true, true);
             if (!use_charge) {
                 return false;
             }

@@ -26,7 +26,7 @@
  */
 bool research_mon(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     bool recall = false;
     bool all = false;
     bool uniq = false;
@@ -157,7 +157,7 @@ bool research_mon(CreatureEntity &creature)
 
                 tracker.set_trackee(monrace_id);
                 handle_stuff(creature);
-                screen_roff(*player_ptr, monrace_id, MONSTER_LORE_RESEARCH);
+                screen_roff(player, monrace_id, MONSTER_LORE_RESEARCH);
                 notpicked = false;
                 old_sym = *sym;
                 old_i = i;

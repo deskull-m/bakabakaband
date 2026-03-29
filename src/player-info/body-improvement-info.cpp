@@ -43,16 +43,16 @@ void set_body_improvement_info_1(CreatureEntity &creature, self_info_type *self_
 /*!< @todo 並び順の都合で連番を付ける。まとめても良いならまとめてしまう予定 */
 void set_body_improvement_info_2(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    const auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (player_ptr->new_spells) {
+    auto &player = static_cast<PlayerType &>(creature);
+    if (player.new_spells) {
         self_ptr->info_list.emplace_back(_("あなたは呪文や祈りを学ぶことができる。", "You can learn some spells/prayers."));
     }
 
-    if (player_ptr->word_recall) {
+    if (player.word_recall) {
         self_ptr->info_list.emplace_back(_("あなたはすぐに帰還するだろう。", "You will soon be recalled."));
     }
 
-    if (player_ptr->alter_reality) {
+    if (player.alter_reality) {
         self_ptr->info_list.emplace_back(_("あなたはすぐにこの世界を離れるだろう。", "You will soon be altered."));
     }
 

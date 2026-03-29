@@ -20,7 +20,7 @@
 #include "world/world.h"
 
 ThrowCommand::ThrowCommand(CreatureEntity &creature)
-    : player_ptr(dynamic_cast<PlayerType *>(&creature))
+    : player_ptr(&static_cast<PlayerType &>(creature))
 {
 }
 

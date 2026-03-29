@@ -39,11 +39,11 @@ CreatureClass::CreatureClass(CreatureEntity &creature)
 
 bool CreatureClass::equals(PlayerClassType type) const
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&this->creature);
-    if (!player_ptr) {
+    if (!this->creature.is_player()) {
         return false;
     }
-    return player_ptr->pclass == type;
+    auto &player = static_cast<PlayerType &>(this->creature);
+    return player.pclass == type;
 }
 
 /*!
@@ -51,15 +51,15 @@ bool CreatureClass::equals(PlayerClassType type) const
  */
 TrFlags CreatureClass::tr_flags() const
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&this->creature);
-    if (!player_ptr) {
+    if (!this->creature.is_player()) {
         return TrFlags();
     }
+    auto &player = static_cast<PlayerType &>(this->creature);
 
     TrFlags flags;
-    const auto plev = player_ptr->level;
+    const auto plev = player.level;
 
-    switch (player_ptr->pclass) {
+    switch (player.pclass) {
     case PlayerClassType::WARRIOR: {
         if (plev > 29) {
             flags.set(TR_RES_FEAR);
@@ -113,7 +113,7 @@ TrFlags CreatureClass::tr_flags() const
                 flags.set(TR_SPEED);
             }
 
-            if (plev > 24 && !player_ptr->is_icky_wield[0] && !player_ptr->is_icky_wield[1]) {
+            if (plev > 24 && !player.is_icky_wield[0] && !player.is_icky_wield[1]) {
                 flags.set(TR_FREE_ACT);
             }
         }
@@ -173,52 +173,52 @@ TrFlags CreatureClass::tr_flags() const
         break;
     }
     case PlayerClassType::ELEMENTALIST:
-        if (has_element_resist(*player_ptr, ElementRealmType::FIRE, 1)) {
+        if (has_element_resist(player, ElementRealmType::FIRE, 1)) {
             flags.set(TR_RES_FIRE);
         }
-        if (has_element_resist(*player_ptr, ElementRealmType::FIRE, 30)) {
+        if (has_element_resist(player, ElementRealmType::FIRE, 30)) {
             flags.set(TR_IM_FIRE);
         }
-        if (has_element_resist(*player_ptr, ElementRealmType::ICE, 1)) {
+        if (has_element_resist(player, ElementRealmType::ICE, 1)) {
             flags.set(TR_RES_COLD);
         }
-        if (has_element_resist(*player_ptr, ElementRealmType::ICE, 30)) {
+        if (has_element_resist(player, ElementRealmType::ICE, 30)) {
             flags.set(TR_IM_COLD);
         }
-        if (has_element_resist(*player_ptr, ElementRealmType::SKY, 1)) {
+        if (has_element_resist(player, ElementRealmType::SKY, 1)) {
             flags.set(TR_RES_ELEC);
         }
-        if (has_element_resist(*player_ptr, ElementRealmType::SKY, 30)) {
+        if (has_element_resist(player, ElementRealmType::SKY, 30)) {
             flags.set(TR_IM_ELEC);
         }
-        if (has_element_resist(*player_ptr, ElementRealmType::SEA, 1)) {
+        if (has_element_resist(player, ElementRealmType::SEA, 1)) {
             flags.set(TR_RES_ACID);
         }
-        if (has_element_resist(*player_ptr, ElementRealmType::SEA, 30)) {
+        if (has_element_resist(player, ElementRealmType::SEA, 30)) {
             flags.set(TR_IM_ACID);
         }
-        if (has_element_resist(*player_ptr, ElementRealmType::DARKNESS, 1)) {
+        if (has_element_resist(player, ElementRealmType::DARKNESS, 1)) {
             flags.set(TR_RES_DARK);
         }
-        if (has_element_resist(*player_ptr, ElementRealmType::DARKNESS, 30)) {
+        if (has_element_resist(player, ElementRealmType::DARKNESS, 30)) {
             flags.set(TR_RES_NETHER);
         }
-        if (has_element_resist(*player_ptr, ElementRealmType::CHAOS, 1)) {
+        if (has_element_resist(player, ElementRealmType::CHAOS, 1)) {
             flags.set(TR_RES_CONF);
         }
-        if (has_element_resist(*player_ptr, ElementRealmType::CHAOS, 30)) {
+        if (has_element_resist(player, ElementRealmType::CHAOS, 30)) {
             flags.set(TR_RES_CHAOS);
         }
-        if (has_element_resist(*player_ptr, ElementRealmType::EARTH, 1)) {
+        if (has_element_resist(player, ElementRealmType::EARTH, 1)) {
             flags.set(TR_RES_SHARDS);
         }
-        if (has_element_resist(*player_ptr, ElementRealmType::EARTH, 30)) {
+        if (has_element_resist(player, ElementRealmType::EARTH, 30)) {
             flags.set(TR_REFLECT);
         }
-        if (has_element_resist(*player_ptr, ElementRealmType::DEATH, 1)) {
+        if (has_element_resist(player, ElementRealmType::DEATH, 1)) {
             flags.set(TR_RES_POIS);
         }
-        if (has_element_resist(*player_ptr, ElementRealmType::DEATH, 30)) {
+        if (has_element_resist(player, ElementRealmType::DEATH, 30)) {
             flags.set(TR_RES_DISEN);
         }
         break;
@@ -231,16 +231,16 @@ TrFlags CreatureClass::tr_flags() const
 
 TrFlags CreatureClass::stance_tr_flags() const
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&this->creature);
-    if (!player_ptr) {
+    if (!this->creature.is_player()) {
         return TrFlags();
     }
+    auto &player = static_cast<PlayerType &>(this->creature);
 
     TrFlags flags;
 
     switch (this->get_samurai_stance()) {
     case SamuraiStanceType::FUUJIN:
-        if (!player_ptr->effects()->blindness().is_blind()) {
+        if (!player.effects()->blindness().is_blind()) {
             flags.set(TR_REFLECT);
         }
         break;
@@ -281,14 +281,20 @@ TrFlags CreatureClass::stance_tr_flags() const
 
 bool CreatureClass::has_stun_immunity() const
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&this->creature);
-    return this->equals(PlayerClassType::BERSERKER) && player_ptr && (player_ptr->level > 34);
+    if (!this->creature.is_player()) {
+        return false;
+    }
+    auto &player = static_cast<PlayerType &>(this->creature);
+    return this->equals(PlayerClassType::BERSERKER) && (player.level > 34);
 }
 
 bool CreatureClass::has_poison_resistance() const
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&this->creature);
-    return this->equals(PlayerClassType::NINJA) && player_ptr && (player_ptr->level > 44);
+    if (!this->creature.is_player()) {
+        return false;
+    }
+    auto &player = static_cast<PlayerType &>(this->creature);
+    return this->equals(PlayerClassType::NINJA) && (player.level > 44);
 }
 
 /*!
@@ -402,8 +408,11 @@ bool CreatureClass::has_number_of_spells_learned() const
 
 bool CreatureClass::lose_balance()
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&this->creature);
-    if (!player_ptr || player_ptr->pclass != PlayerClassType::SAMURAI) {
+    if (!this->creature.is_player()) {
+        return false;
+    }
+    auto &player = static_cast<PlayerType &>(this->creature);
+    if (player.pclass != PlayerClassType::SAMURAI) {
         return false;
     }
 
@@ -423,7 +432,7 @@ bool CreatureClass::lose_balance()
         MainWindowRedrawingFlag::TIMED_EFFECT,
     };
     rfu.set_flags(flags_mwrf);
-    player_ptr->action = ACTION_NONE;
+    player.action = ACTION_NONE;
     return true;
 }
 
@@ -504,66 +513,66 @@ void CreatureClass::set_monk_stance(MonkStanceType stance) const
  */
 void CreatureClass::init_specific_data()
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&this->creature);
-    if (!player_ptr) {
+    if (!this->creature.is_player()) {
         return;
     }
+    auto &player = static_cast<PlayerType &>(this->creature);
 
-    switch (player_ptr->pclass) {
+    switch (player.pclass) {
     case PlayerClassType::SMITH:
-        player_ptr->class_specific_data = std::make_shared<smith_data_type>();
+        player.class_specific_data = std::make_shared<smith_data_type>();
         break;
     case PlayerClassType::FORCETRAINER:
-        player_ptr->class_specific_data = std::make_shared<force_trainer_data_type>();
+        player.class_specific_data = std::make_shared<force_trainer_data_type>();
         break;
     case PlayerClassType::BLUE_MAGE:
-        player_ptr->class_specific_data = std::make_shared<bluemage_data_type>();
+        player.class_specific_data = std::make_shared<bluemage_data_type>();
         break;
     case PlayerClassType::MAGIC_EATER:
-        player_ptr->class_specific_data = std::make_shared<MagicEaterDataList>();
+        player.class_specific_data = std::make_shared<MagicEaterDataList>();
         break;
     case PlayerClassType::BARD:
-        player_ptr->class_specific_data = std::make_shared<bard_data_type>();
+        player.class_specific_data = std::make_shared<bard_data_type>();
         break;
     case PlayerClassType::IMITATOR:
-        player_ptr->class_specific_data = std::make_shared<mane_data_type>();
+        player.class_specific_data = std::make_shared<mane_data_type>();
         break;
     case PlayerClassType::SNIPER:
-        player_ptr->class_specific_data = std::make_shared<SniperData>();
+        player.class_specific_data = std::make_shared<SniperData>();
         break;
     case PlayerClassType::SAMURAI:
-        player_ptr->class_specific_data = std::make_shared<samurai_data_type>();
+        player.class_specific_data = std::make_shared<samurai_data_type>();
         break;
     case PlayerClassType::MONK:
-        player_ptr->class_specific_data = std::make_shared<monk_data_type>();
+        player.class_specific_data = std::make_shared<monk_data_type>();
         break;
     case PlayerClassType::NINJA:
-        player_ptr->class_specific_data = std::make_shared<ninja_data_type>();
+        player.class_specific_data = std::make_shared<ninja_data_type>();
         break;
     case PlayerClassType::HIGH_MAGE:
-        if (PlayerRealm(*player_ptr).is_realm_hex()) {
-            player_ptr->class_specific_data = std::make_shared<spell_hex_data_type>();
+        if (PlayerRealm(player).is_realm_hex()) {
+            player.class_specific_data = std::make_shared<spell_hex_data_type>();
         } else {
-            player_ptr->class_specific_data = no_class_specific_data();
+            player.class_specific_data = no_class_specific_data();
         }
         break;
     default:
-        player_ptr->class_specific_data = no_class_specific_data();
+        player.class_specific_data = no_class_specific_data();
         break;
     }
 }
 
 bool CreatureClass::has_ninja_speed() const
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&this->creature);
-    if (!player_ptr) {
+    if (!this->creature.is_player()) {
         return false;
     }
+    auto &player = static_cast<PlayerType &>(this->creature);
 
-    auto has_ninja_speed_main = !player_ptr->inventory[INVEN_MAIN_HAND]->is_valid();
-    has_ninja_speed_main |= can_attack_with_main_hand(*player_ptr);
-    auto has_ninja_speed_sub = !player_ptr->inventory[INVEN_SUB_HAND]->is_valid();
-    has_ninja_speed_sub |= can_attack_with_sub_hand(*player_ptr);
+    auto has_ninja_speed_main = !player.inventory[INVEN_MAIN_HAND]->is_valid();
+    has_ninja_speed_main |= can_attack_with_main_hand(player);
+    auto has_ninja_speed_sub = !player.inventory[INVEN_SUB_HAND]->is_valid();
+    has_ninja_speed_sub |= can_attack_with_sub_hand(player);
     return has_ninja_speed_main && has_ninja_speed_sub;
 }
 

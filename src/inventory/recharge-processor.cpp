@@ -22,7 +22,7 @@
  */
 static void recharged_notice(CreatureEntity &creature, const ItemEntity &item)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     if (!item.is_inscribed()) {
         return;
     }
@@ -30,7 +30,7 @@ static void recharged_notice(CreatureEntity &creature, const ItemEntity &item)
     auto s = angband_strchr(item.inscription->data(), '!');
     while (s) {
         if (s[1] == '!') {
-            const auto item_name = describe_flavor(*player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+            const auto item_name = describe_flavor(player, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
 #ifdef JP
             msg_format("%sは再充填された。", item_name.data());
 #else
@@ -54,12 +54,12 @@ static void recharged_notice(CreatureEntity &creature, const ItemEntity &item)
  */
 void recharge_magic_items(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     int i;
     bool changed;
 
     for (changed = false, i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        auto &item = *player_ptr->inventory[i];
+        auto &item = *player.inventory[i];
         if (!item.is_valid()) {
             continue;
         }
@@ -85,7 +85,7 @@ void recharge_magic_items(CreatureEntity &creature)
      * one per turn. -LM-
      */
     for (changed = false, i = 0; i < INVEN_PACK; i++) {
-        auto &item = *player_ptr->inventory[i];
+        auto &item = *player.inventory[i];
         if (!item.is_valid()) {
             continue;
         }
@@ -118,7 +118,7 @@ void recharge_magic_items(CreatureEntity &creature)
         wild_regen = 20;
     }
 
-    for (const auto &item_ptr : player_ptr->current_floor_ptr->o_list) {
+    for (const auto &item_ptr : player.current_floor_ptr->o_list) {
         if (!item_ptr->is_valid()) {
             continue;
         }
