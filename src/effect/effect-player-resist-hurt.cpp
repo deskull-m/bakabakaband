@@ -80,19 +80,18 @@ void effect_player_nuke(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         return;
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     (void)BadStatusSetter(creature).mod_poison(randint0(ep_ptr->dam) + 10);
     if (one_in_(5)) { /* 6 */
         msg_print(_("奇形的な変身を遂げた！", "You undergo a freakish metamorphosis!"));
         if (one_in_(4)) { /* 4 */
             do_poly_self(creature);
         } else {
-            status_shuffle(*player_ptr);
+            status_shuffle(creature);
         }
     }
 
     if (one_in_(6)) {
-        inventory_damage(*player_ptr, BreakerAcid(), 2);
+        inventory_damage(creature, BreakerAcid(), 2);
     }
 }
 
@@ -163,9 +162,8 @@ void effect_player_plasma(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         (void)BadStatusSetter(creature).mod_stun(plus_stun);
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!(has_resist_fire(creature) || is_oppose_fire(creature) || has_immune_fire(creature))) {
-        inventory_damage(*player_ptr, BreakerAcid(), 3);
+        inventory_damage(creature, BreakerAcid(), 3);
     }
 }
 
@@ -185,10 +183,9 @@ void effect_player_nether(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     bool evaded = check_multishadow(creature);
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (CreatureRace(&creature).equals(PlayerRaceType::SPECTRE)) {
         if (!evaded) {
-            hp_player(*player_ptr, ep_ptr->dam / 4);
+            hp_player(creature, ep_ptr->dam / 4);
         }
         ep_ptr->get_damage = 0;
         return;
@@ -222,7 +219,6 @@ void effect_player_water(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     }
 
     ep_ptr->dam = ep_ptr->dam * calc_water_damage_rate(creature, CALC_RAND) / 100;
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
 
     BIT_FLAGS has_res_water = has_resist_water(creature);
     BadStatusSetter bss(creature);
@@ -236,7 +232,7 @@ void effect_player_water(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         }
 
         if (one_in_(5) && !has_res_water) {
-            inventory_damage(*player_ptr, BreakerCold(), 3);
+            inventory_damage(creature, BreakerCold(), 3);
         }
     }
 
@@ -255,7 +251,6 @@ void effect_player_chaos(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         return;
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     BadStatusSetter bss(creature);
     if (!has_resist_conf(creature) && !has_resist_chaos(creature)) {
         (void)bss.mod_confusion(randint0(20) + 10);
@@ -273,8 +268,8 @@ void effect_player_chaos(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     }
 
     if (!has_resist_chaos(creature) || one_in_(9)) {
-        inventory_damage(*player_ptr, BreakerElec(), 2);
-        inventory_damage(*player_ptr, BreakerFire(), 2);
+        inventory_damage(creature, BreakerElec(), 2);
+        inventory_damage(creature, BreakerFire(), 2);
     }
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
@@ -292,9 +287,8 @@ void effect_player_shards(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         (void)BadStatusSetter(creature).mod_cut(static_cast<TIME_EFFECT>(ep_ptr->dam));
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!has_resist_shard(creature) || one_in_(13)) {
-        inventory_damage(*player_ptr, BreakerCold(), 2);
+        inventory_damage(creature, BreakerCold(), 2);
     }
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
@@ -313,9 +307,8 @@ void effect_player_sound(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         (void)BadStatusSetter(creature).mod_stun(plus_stun);
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!has_resist_sound(creature) || one_in_(13)) {
-        inventory_damage(*player_ptr, BreakerCold(), 2);
+        inventory_damage(creature, BreakerCold(), 2);
     }
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
@@ -359,9 +352,8 @@ void effect_player_nexus(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_nexus_damage_rate(creature, CALC_RAND) / 100;
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!has_resist_shard(creature) && !check_multishadow(creature)) {
-        apply_nexus(*ep_ptr->m_ptr, *player_ptr);
+        apply_nexus(*ep_ptr->m_ptr, creature);
     }
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
@@ -395,9 +387,8 @@ void effect_player_rocket(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         (void)bss.mod_cut((ep_ptr->dam / 2));
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!has_resist_shard(creature) || one_in_(12)) {
-        inventory_damage(*player_ptr, BreakerCold(), 3);
+        inventory_damage(creature, BreakerCold(), 3);
     }
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
@@ -429,8 +420,7 @@ void effect_player_lite(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_lite_damage_rate(creature, CALC_RAND) / 100;
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    CreatureRace race(player_ptr);
+    CreatureRace race(&creature);
     if (race.life() == PlayerRaceLifeType::UNDEAD && race.tr_flags().has(TR_VUL_LITE)) {
         if (!check_multishadow(creature)) {
             msg_print(_("光で肉体が焦がされた！", "The light scorches your flesh!"));
@@ -439,11 +429,11 @@ void effect_player_lite(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 
-    if (!player_ptr->wraith_form || check_multishadow(creature)) {
+    if (!creature.wraith_form || check_multishadow(creature)) {
         return;
     }
 
-    player_ptr->wraith_form = 0;
+    creature.wraith_form = 0;
     msg_print(_("閃光のため非物質的な影の存在でいられなくなった。", "The light forces you out of your incorporeal shadow form."));
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -483,7 +473,6 @@ void effect_player_dark(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 static void effect_player_time_addition(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     switch (randint1(10)) {
     case 1:
     case 2:
@@ -502,10 +491,10 @@ static void effect_player_time_addition(CreatureEntity &creature)
     case 7:
     case 8:
     case 9:
-        msg_print(player_ptr->decrease_ability_random());
+        msg_print(static_cast<PlayerType *>(&creature)->decrease_ability_random());
         break;
     case 10:
-        msg_print(player_ptr->decrease_ability_all());
+        msg_print(static_cast<PlayerType *>(&creature)->decrease_ability_all());
         break;
     }
 }
@@ -544,23 +533,22 @@ void effect_player_gravity(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     msg_print(_("周辺の重力がゆがんだ。", "Gravity warps around you."));
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!check_multishadow(creature)) {
         teleport_player(creature, 5, TELEPORT_PASSIVE);
         BadStatusSetter bss(creature);
-        if (!player_ptr->levitation) {
+        if (!creature.levitation) {
             (void)bss.mod_deceleration(randint0(4) + 4, false);
         }
 
-        if (!(has_resist_sound(creature) || player_ptr->levitation)) {
+        if (!(has_resist_sound(creature) || creature.levitation)) {
             const auto plus_stun = randnum1<short>((ep_ptr->dam > 90) ? 35 : (ep_ptr->dam / 3 + 5));
             (void)bss.mod_stun(plus_stun);
         }
     }
 
     ep_ptr->dam = ep_ptr->dam * calc_gravity_damage_rate(creature, CALC_RAND) / 100;
-    if (!player_ptr->levitation || one_in_(13)) {
-        inventory_damage(*player_ptr, BreakerCold(), 2);
+    if (!creature.levitation || one_in_(13)) {
+        inventory_damage(creature, BreakerCold(), 2);
     }
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
@@ -610,12 +598,11 @@ void effect_player_meteor(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     }
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!has_resist_shard(creature) || one_in_(13)) {
         if (!has_immune_fire(creature)) {
-            inventory_damage(*player_ptr, BreakerFire(), 2);
+            inventory_damage(creature, BreakerFire(), 2);
         }
-        inventory_damage(*player_ptr, BreakerCold(), 2);
+        inventory_damage(creature, BreakerCold(), 2);
     }
 }
 
@@ -666,17 +653,16 @@ void effect_player_hand_doom(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_void(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto effect_mes = creature.effects()->blindness().is_blind() ? _("何かに身体が引っ張りこまれる！", "Something absorbs you!")
                                                                  : _("周辺の空間が歪んだ。", "Sight warps around you.");
     msg_print(effect_mes);
-    if (!check_multishadow(creature) && !player_ptr->levitation && !player_ptr->anti_tele) {
+    if (!check_multishadow(creature) && !creature.levitation && !creature.anti_tele) {
         (void)BadStatusSetter(creature).mod_deceleration(randint0(4) + 4, false);
     }
 
     ep_ptr->dam = ep_ptr->dam * calc_void_damage_rate(creature, CALC_RAND) / 100;
-    if (!player_ptr->levitation || one_in_(13)) {
-        inventory_damage(*player_ptr, BreakerCold(), 2);
+    if (!creature.levitation || one_in_(13)) {
+        inventory_damage(creature, BreakerCold(), 2);
     }
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
@@ -693,8 +679,7 @@ void effect_player_abyss(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         return;
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (!player_ptr->levitation) {
+    if (!creature.levitation) {
         (void)bss.mod_deceleration(randint0(4) + 4, false);
     }
 
@@ -749,8 +734,7 @@ void effect_player_spider_string(CreatureEntity &creature, EffectPlayerType *ep_
     }
 
     // 装備品に影響（糸で汚れる）
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    inventory_damage(*player_ptr, BreakerAcid(), 5);
+    inventory_damage(creature, BreakerAcid(), 5);
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }

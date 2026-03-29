@@ -35,7 +35,6 @@
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
@@ -47,18 +46,17 @@
  */
 static void calc_blow_poison(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (monap_ptr->explode) {
         return;
     }
 
-    if (!(has_resist_pois(*player_ptr) || is_oppose_pois(*player_ptr)) && !check_multishadow(*player_ptr) && BadStatusSetter(*player_ptr).mod_poison(randint1(monap_ptr->rlev) + 5)) {
+    if (!(has_resist_pois(creature) || is_oppose_pois(creature)) && !check_multishadow(creature) && BadStatusSetter(creature).mod_poison(randint1(monap_ptr->rlev) + 5)) {
         monap_ptr->obvious = true;
     }
 
-    monap_ptr->damage = monap_ptr->damage * calc_nuke_damage_rate(*player_ptr) / 100;
-    monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-    update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_POIS);
+    monap_ptr->damage = monap_ptr->damage * calc_nuke_damage_rate(creature) / 100;
+    monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+    update_smart_learn(creature, monap_ptr->m_idx, DRS_POIS);
 }
 
 /*!
@@ -68,22 +66,21 @@ static void calc_blow_poison(CreatureEntity &creature, MonsterAttackPlayer *mona
  */
 static void calc_blow_disenchant(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (monap_ptr->explode) {
         return;
     }
 
-    if (!has_resist_disen(*player_ptr) && !check_multishadow(*player_ptr) && apply_disenchant(creature, 0)) {
-        update_creature(*player_ptr);
+    if (!has_resist_disen(creature) && !check_multishadow(creature) && apply_disenchant(creature, 0)) {
+        update_creature(creature);
         monap_ptr->obvious = true;
     }
 
-    if (has_resist_disen(*player_ptr)) {
+    if (has_resist_disen(creature)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 4) / 9;
     }
 
-    monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-    update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_DISEN);
+    monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+    update_smart_learn(creature, monap_ptr->m_idx, DRS_DISEN);
 }
 
 /*!
@@ -94,31 +91,30 @@ static void calc_blow_disenchant(CreatureEntity &creature, MonsterAttackPlayer *
  */
 static void calc_blow_un_power(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     int damage_ratio = 1000;
-    if (has_dec_mana(*player_ptr)) {
+    if (has_dec_mana(creature)) {
         damage_ratio -= 75;
     }
 
-    if (has_easy_spell(*player_ptr)) {
+    if (has_easy_spell(creature)) {
         damage_ratio -= 75;
     }
 
-    bool is_magic_mastery = has_magic_mastery(*player_ptr) != 0;
+    bool is_magic_mastery = has_magic_mastery(creature) != 0;
     if (is_magic_mastery) {
         damage_ratio -= 75;
     }
 
     monap_ptr->damage = monap_ptr->damage * damage_ratio / 1000;
-    monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-    if (player_ptr->is_dead() || check_multishadow(*player_ptr)) {
+    monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+    if (creature.is_dead() || check_multishadow(creature)) {
         return;
     }
 
     int max_draining_item = is_magic_mastery ? 5 : 10;
     for (int i = 0; i < max_draining_item; i++) {
         auto i_idx = randnum0<short>(INVEN_PACK);
-        monap_ptr->o_ptr = player_ptr->inventory[i_idx].get();
+        monap_ptr->o_ptr = creature.inventory[i_idx].get();
         if (!monap_ptr->o_ptr->is_valid()) {
             continue;
         }
@@ -136,18 +132,17 @@ static void calc_blow_un_power(CreatureEntity &creature, MonsterAttackPlayer *mo
  */
 static void calc_blow_blind(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (has_resist_blind(*player_ptr)) {
+    if (has_resist_blind(creature)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 3) / 8;
     }
 
-    monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-    if (player_ptr->is_dead()) {
+    monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+    if (creature.is_dead()) {
         return;
     }
 
     process_blind_attack(creature, monap_ptr);
-    update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_BLIND);
+    update_smart_learn(creature, monap_ptr->m_idx, DRS_BLIND);
 }
 
 /*!
@@ -157,25 +152,24 @@ static void calc_blow_blind(CreatureEntity &creature, MonsterAttackPlayer *monap
  */
 static void calc_blow_confusion(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (monap_ptr->explode) {
         return;
     }
 
-    if (has_resist_conf(*player_ptr)) {
+    if (has_resist_conf(creature)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 3) / 8;
     }
 
-    monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-    if (player_ptr->is_dead()) {
+    monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+    if (creature.is_dead()) {
         return;
     }
 
-    if (!has_resist_conf(*player_ptr) && !check_multishadow(*player_ptr) && BadStatusSetter(*player_ptr).mod_confusion(3 + randint1(monap_ptr->rlev))) {
+    if (!has_resist_conf(creature) && !check_multishadow(creature) && BadStatusSetter(creature).mod_confusion(3 + randint1(monap_ptr->rlev))) {
         monap_ptr->obvious = true;
     }
 
-    update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_CONF);
+    update_smart_learn(creature, monap_ptr->m_idx, DRS_CONF);
 }
 
 /*!
@@ -185,18 +179,17 @@ static void calc_blow_confusion(CreatureEntity &creature, MonsterAttackPlayer *m
  */
 static void calc_blow_fear(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (has_resist_fear(*player_ptr)) {
+    if (has_resist_fear(creature)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 3) / 8;
     }
 
-    monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-    if (player_ptr->is_dead()) {
+    monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+    if (creature.is_dead()) {
         return;
     }
 
     process_terrify_attack(creature, monap_ptr);
-    update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_FEAR);
+    update_smart_learn(creature, monap_ptr->m_idx, DRS_FEAR);
 }
 
 /*!
@@ -206,18 +199,17 @@ static void calc_blow_fear(CreatureEntity &creature, MonsterAttackPlayer *monap_
  */
 static void calc_blow_paralysis(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (has_free_act(*player_ptr)) {
+    if (has_free_act(creature)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 3) / 8;
     }
 
-    monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-    if (player_ptr->is_dead()) {
+    monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+    if (creature.is_dead()) {
         return;
     }
 
     process_paralyze_attack(creature, monap_ptr);
-    update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_FREE);
+    update_smart_learn(creature, monap_ptr->m_idx, DRS_FREE);
 }
 
 /*!
@@ -227,21 +219,20 @@ static void calc_blow_paralysis(CreatureEntity &creature, MonsterAttackPlayer *m
  */
 static void calc_blow_drain_exp(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr, const int drain_value, const int hold_exp_prob)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    int32_t d = Dice::roll(drain_value, 6) + (player_ptr->exp / 100) * MON_DRAIN_LIFE;
+    int32_t d = Dice::roll(drain_value, 6) + (creature.exp / 100) * MON_DRAIN_LIFE;
     monap_ptr->obvious = true;
     int damage_ratio = 1000;
-    if (has_hold_exp(*player_ptr)) {
+    if (has_hold_exp(creature)) {
         damage_ratio -= 75;
     }
 
-    if (has_resist_neth(*player_ptr)) {
+    if (has_resist_neth(creature)) {
         damage_ratio -= 75;
     }
 
     monap_ptr->damage = monap_ptr->damage * damage_ratio / 1000;
-    monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-    if (player_ptr->is_dead() || check_multishadow(*player_ptr)) {
+    monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+    if (creature.is_dead() || check_multishadow(creature)) {
         return;
     }
 
@@ -255,17 +246,16 @@ static void calc_blow_drain_exp(CreatureEntity &creature, MonsterAttackPlayer *m
  */
 static void calc_blow_time(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (monap_ptr->explode) {
         return;
     }
 
     process_monster_attack_time(creature);
-    if (has_resist_time(*player_ptr)) {
+    if (has_resist_time(creature)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 4) / 9;
     }
 
-    monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+    monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
 }
 
 /*!
@@ -275,15 +265,14 @@ static void calc_blow_time(CreatureEntity &creature, MonsterAttackPlayer *monap_
  */
 static void calc_blow_drain_life(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    int32_t d = Dice::roll(60, 6) + (player_ptr->exp / 100) * MON_DRAIN_LIFE;
+    int32_t d = Dice::roll(60, 6) + (creature.exp / 100) * MON_DRAIN_LIFE;
     monap_ptr->obvious = true;
-    if (player_ptr->hold_exp) {
+    if (creature.hold_exp) {
         monap_ptr->damage = monap_ptr->damage * 9 / 10;
     }
 
-    monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-    if (player_ptr->is_dead() || check_multishadow(*player_ptr)) {
+    monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+    if (creature.is_dead() || check_multishadow(creature)) {
         return;
     }
 
@@ -298,39 +287,37 @@ static void calc_blow_drain_life(CreatureEntity &creature, MonsterAttackPlayer *
  */
 static void calc_blow_drain_mana(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     monap_ptr->obvious = true;
     int damage_ratio = 100;
-    if (has_dec_mana(*player_ptr)) {
+    if (has_dec_mana(creature)) {
         damage_ratio -= 5;
     }
 
-    if (has_easy_spell(*player_ptr)) {
+    if (has_easy_spell(creature)) {
         damage_ratio -= 5;
     }
 
-    if (has_magic_mastery(*player_ptr)) {
+    if (has_magic_mastery(creature)) {
         damage_ratio -= 5;
     }
 
     monap_ptr->damage = monap_ptr->damage * damage_ratio / 100;
     process_drain_mana(creature, monap_ptr);
-    update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_MANA);
+    update_smart_learn(creature, monap_ptr->m_idx, DRS_MANA);
 }
 
 static void calc_blow_inertia(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (player_ptr->effects()->acceleration().is_fast() || (static_cast<CreatureEntity &>(*player_ptr).get_speed() >= 130)) {
+    if (creature.effects()->acceleration().is_fast() || (static_cast<CreatureEntity &>(creature).get_speed() >= 130)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 4) / 9;
     }
 
-    monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-    if (player_ptr->is_dead() || check_multishadow(*player_ptr)) {
+    monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+    if (creature.is_dead() || check_multishadow(creature)) {
         return;
     }
 
-    if (BadStatusSetter(*player_ptr).mod_deceleration(4 + randint0(monap_ptr->rlev / 10), false)) {
+    if (BadStatusSetter(creature).mod_deceleration(4 + randint0(monap_ptr->rlev / 10), false)) {
         monap_ptr->obvious = true;
     }
 }
@@ -340,11 +327,10 @@ static void calc_blow_inertia(CreatureEntity &creature, MonsterAttackPlayer *mon
  */
 static void calc_blow_hungry(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (player_ptr->regenerate) {
+    if (creature.regenerate) {
         monap_ptr->damage = monap_ptr->damage * 2;
     }
-    if (player_ptr->slow_digest) {
+    if (creature.slow_digest) {
         monap_ptr->damage = monap_ptr->damage / 2;
     }
 
@@ -353,7 +339,6 @@ static void calc_blow_hungry(CreatureEntity &creature, MonsterAttackPlayer *mona
 
 void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     switch (monap_ptr->effect) {
     case RaceBlowEffectType::NONE:
         // ここには来ないはずだが、何らかのバグで来た場合はプレイヤーの不利益に
@@ -361,11 +346,11 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
         monap_ptr->damage = 0;
         break;
     case RaceBlowEffectType::SUPERHURT: { /* AC軽減あり / Player armor reduces total damage */
-        if (((randint1(monap_ptr->rlev * 2 + 300) > (monap_ptr->ac + 200)) || one_in_(13)) && !check_multishadow(*player_ptr)) {
+        if (((randint1(monap_ptr->rlev * 2 + 300) > (monap_ptr->ac + 200)) || one_in_(13)) && !check_multishadow(creature)) {
             monap_ptr->damage -= (monap_ptr->damage * ((monap_ptr->ac < 150) ? monap_ptr->ac : 150) / 250);
             msg_print(_("痛恨の一撃！", "It was a critical hit!"));
             monap_ptr->damage = std::max(monap_ptr->damage, monap_ptr->damage * 2);
-            monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+            monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
             break;
         }
     }
@@ -373,7 +358,7 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
     case RaceBlowEffectType::HURT: { /* AC軽減あり / Player armor reduces total damage */
         monap_ptr->obvious = true;
         monap_ptr->damage -= (monap_ptr->damage * ((monap_ptr->ac < 150) ? monap_ptr->ac : 150) / 250);
-        monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+        monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
         break;
     }
     case RaceBlowEffectType::POISON:
@@ -386,8 +371,8 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
         calc_blow_un_power(creature, monap_ptr);
         break;
     case RaceBlowEffectType::EAT_GOLD:
-        monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-        if (monap_ptr->m_ptr->is_confused() || player_ptr->is_dead() || check_multishadow(*player_ptr)) {
+        monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+        if (monap_ptr->m_ptr->is_confused() || creature.is_dead() || check_multishadow(creature)) {
             break;
         }
 
@@ -395,7 +380,7 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
         process_eat_gold(creature, monap_ptr);
         break;
     case RaceBlowEffectType::EAT_ITEM: {
-        monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+        monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
         if (!check_eat_item(creature, monap_ptr)) {
             break;
         }
@@ -405,8 +390,8 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
     }
 
     case RaceBlowEffectType::EAT_FOOD: {
-        monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-        if (player_ptr->is_dead() || check_multishadow(*player_ptr)) {
+        monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+        if (creature.is_dead() || check_multishadow(creature)) {
             break;
         }
 
@@ -414,9 +399,9 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
         break;
     }
     case RaceBlowEffectType::EAT_LITE: {
-        monap_ptr->o_ptr = player_ptr->inventory[INVEN_LITE].get();
-        monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-        if (player_ptr->is_dead() || check_multishadow(*player_ptr)) {
+        monap_ptr->o_ptr = creature.inventory[INVEN_LITE].get();
+        monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+        if (creature.is_dead() || check_multishadow(creature)) {
             break;
         }
 
@@ -430,9 +415,9 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
 
         monap_ptr->obvious = true;
         msg_print(_("酸を浴びせられた！", "You are covered in acid!"));
-        monap_ptr->get_damage += acid_dam(*player_ptr, monap_ptr->damage, monap_ptr->ddesc, false);
-        update_creature(*player_ptr);
-        update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_ACID);
+        monap_ptr->get_damage += acid_dam(creature, monap_ptr->damage, monap_ptr->ddesc, false);
+        update_creature(creature);
+        update_smart_learn(creature, monap_ptr->m_idx, DRS_ACID);
         break;
     }
     case RaceBlowEffectType::ELEC: {
@@ -442,8 +427,8 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
 
         monap_ptr->obvious = true;
         msg_print(_("電撃を浴びせられた！", "You are struck by electricity!"));
-        monap_ptr->get_damage += elec_dam(*player_ptr, monap_ptr->damage, monap_ptr->ddesc, false);
-        update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_ELEC);
+        monap_ptr->get_damage += elec_dam(creature, monap_ptr->damage, monap_ptr->ddesc, false);
+        update_smart_learn(creature, monap_ptr->m_idx, DRS_ELEC);
         break;
     }
     case RaceBlowEffectType::FIRE: {
@@ -453,8 +438,8 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
 
         monap_ptr->obvious = true;
         msg_print(_("全身が炎に包まれた！", "You are enveloped in flames!"));
-        monap_ptr->get_damage += fire_dam(*player_ptr, monap_ptr->damage, monap_ptr->ddesc, false);
-        update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_FIRE);
+        monap_ptr->get_damage += fire_dam(creature, monap_ptr->damage, monap_ptr->ddesc, false);
+        update_smart_learn(creature, monap_ptr->m_idx, DRS_FIRE);
         break;
     }
     case RaceBlowEffectType::COLD: {
@@ -464,8 +449,8 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
 
         monap_ptr->obvious = true;
         msg_print(_("全身が冷気で覆われた！", "You are covered with frost!"));
-        monap_ptr->get_damage += cold_dam(*player_ptr, monap_ptr->damage, monap_ptr->ddesc, false);
-        update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_COLD);
+        monap_ptr->get_damage += cold_dam(creature, monap_ptr->damage, monap_ptr->ddesc, false);
+        update_smart_learn(creature, monap_ptr->m_idx, DRS_COLD);
         break;
     }
     case RaceBlowEffectType::BLIND:
@@ -504,9 +489,9 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
     case RaceBlowEffectType::SHATTER: { /* AC軽減あり / Player armor reduces total damage */
         monap_ptr->obvious = true;
         monap_ptr->damage -= (monap_ptr->damage * ((monap_ptr->ac < 150) ? monap_ptr->ac : 150) / 250);
-        monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+        monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
         if (monap_ptr->damage > 23 || monap_ptr->explode) {
-            earthquake(*player_ptr, monap_ptr->m_ptr->get_position(), 8, monap_ptr->m_idx);
+            earthquake(creature, monap_ptr->m_ptr->get_position(), 8, monap_ptr->m_idx);
         }
 
         break;
@@ -539,8 +524,8 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
         calc_blow_inertia(creature, monap_ptr);
         break;
     case RaceBlowEffectType::STUN:
-        monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-        if (player_ptr->is_dead()) {
+        monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+        if (creature.is_dead()) {
             break;
         }
         process_stun_attack(creature, monap_ptr);
@@ -554,11 +539,11 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
         calc_blow_hungry(creature, monap_ptr);
         break;
     case RaceBlowEffectType::CHAOS: {
-        update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_CHAOS);
-        monap_ptr->damage = monap_ptr->damage * calc_chaos_damage_rate(*player_ptr, CALC_RAND) / 100;
-        monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+        update_smart_learn(creature, monap_ptr->m_idx, DRS_CHAOS);
+        monap_ptr->damage = monap_ptr->damage * calc_chaos_damage_rate(creature, CALC_RAND) / 100;
+        monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
 
-        const auto has_chaos_resist = has_resist_chaos(*player_ptr);
+        const auto has_chaos_resist = has_resist_chaos(creature);
 
         if (!has_chaos_resist) {
             monap_ptr->obvious = true;
@@ -566,11 +551,11 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
         if (randint1(5) < 3) {
             monap_ptr->obvious = true;
             if (!has_chaos_resist) {
-                if (player_ptr->is_dead() || check_multishadow(*player_ptr)) {
+                if (creature.is_dead() || check_multishadow(creature)) {
                     return;
                 }
 
-                int32_t d = Dice::roll(60, 6) + (player_ptr->exp / 100) * MON_DRAIN_LIFE;
+                int32_t d = Dice::roll(60, 6) + (creature.exp / 100) * MON_DRAIN_LIFE;
 
                 bool resist_drain = check_drain_hp(creature, d);
                 process_drain_life(monap_ptr, resist_drain);
@@ -579,71 +564,71 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
         }
         if (one_in_(250)) {
             monap_ptr->obvious = true;
-            const auto &floor = *player_ptr->current_floor_ptr;
+            const auto &floor = *creature.current_floor_ptr;
             if (floor.is_underground() && (!floor.is_in_quest() || !QuestType::is_fixed(floor.quest_number))) {
                 if (monap_ptr->damage > 23 || monap_ptr->explode) {
                     msg_print(_("カオスの力でダンジョンが崩れ始める！", "The dungeon tumbles by the chaotic power!"));
-                    earthquake(*player_ptr, monap_ptr->m_ptr->get_position(), 8, monap_ptr->m_idx);
+                    earthquake(creature, monap_ptr->m_ptr->get_position(), 8, monap_ptr->m_idx);
                     break;
                 }
             }
         }
         if (!one_in_(10)) {
-            if (player_ptr->is_dead()) {
+            if (creature.is_dead()) {
                 return;
             }
             monap_ptr->obvious = true;
 
-            if (!has_chaos_resist && !has_resist_conf(*player_ptr) && !check_multishadow(*player_ptr) && BadStatusSetter(*player_ptr).mod_confusion(3 + randint1(monap_ptr->rlev))) {
+            if (!has_chaos_resist && !has_resist_conf(creature) && !check_multishadow(creature) && BadStatusSetter(creature).mod_confusion(3 + randint1(monap_ptr->rlev))) {
                 monap_ptr->obvious = true;
             }
             break;
         }
 
         if (one_in_(2)) {
-            if (player_ptr->is_dead()) {
+            if (creature.is_dead()) {
                 return;
             }
             monap_ptr->obvious = true;
 
-            if (!has_chaos_resist && player_ptr->anti_tele == 0) {
+            if (!has_chaos_resist && creature.anti_tele == 0) {
                 msg_print(_("突然体が浮きだした！", "Your body floats suddenly!"));
-                teleport_player(*player_ptr, 50, TELEPORT_PASSIVE);
+                teleport_player(creature, 50, TELEPORT_PASSIVE);
             }
         } else if (!has_chaos_resist) {
-            if (player_ptr->is_dead()) {
+            if (creature.is_dead()) {
                 return;
             }
             monap_ptr->obvious = true;
 
             msg_print(_("あなたの身体はカオスの力で捻じ曲げられた！", "Your body is twisted by chaos!"));
-            (void)gain_mutation(*player_ptr, 0);
+            (void)gain_mutation(creature, 0);
         }
     } break;
 
     case RaceBlowEffectType::DEFECATE: { /* AC軽減あり / Player armor reduces total damage */
         monap_ptr->obvious = true;
         monap_ptr->damage -= (monap_ptr->damage * ((monap_ptr->ac < 150) ? monap_ptr->ac : 150) / 250);
-        monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-        if (monap_ptr->damage * 2 > randint1(player_ptr->hp)) {
-            player_defecate(*player_ptr);
+        monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+        if (monap_ptr->damage * 2 > randint1(creature.hp)) {
+            player_defecate(creature);
         }
         break;
     }
 
     case RaceBlowEffectType::SANITY_BLAST: {
-        monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-        if (player_ptr->is_dead()) {
+        monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+        if (creature.is_dead()) {
             break;
         }
-        sanity_blast(*player_ptr);
+        sanity_blast(creature);
         break;
     }
 
     case RaceBlowEffectType::GROIN_ATTACK: { /* AC軽減あり / Player armor reduces total damage */
         monap_ptr->damage -= (monap_ptr->damage * ((monap_ptr->ac < 150) ? monap_ptr->ac : 150) / 250);
-        monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-        if (player_ptr->is_dead()) {
+        monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+        if (creature.is_dead()) {
             break;
         }
         process_groin_attack(creature, monap_ptr);
@@ -651,9 +636,9 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
     }
 
     case RaceBlowEffectType::LOCKUP: { /* AC軽減あり / Player armor reduces total damage */
-        if (player_ptr->anti_tele == 0) {
-            teleport_player(*player_ptr, 50, TELEPORT_PASSIVE);
-            wall_creation(creature, player_ptr->y, player_ptr->x);
+        if (creature.anti_tele == 0) {
+            teleport_player(creature, 50, TELEPORT_PASSIVE);
+            wall_creation(creature, creature.y, creature.x);
         }
         break;
     }
@@ -661,17 +646,17 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
     case RaceBlowEffectType::DESTROY_ASSHOLE: { /* AC軽減あり / Player armor reduces total damage */
         monap_ptr->obvious = true;
         monap_ptr->damage -= (monap_ptr->damage * ((monap_ptr->ac < 150) ? monap_ptr->ac : 150) / 250);
-        monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+        monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
 
         // ダメージ量の最大HPに対する比率を計算
-        int damage_ratio = (monap_ptr->damage * 100) / player_ptr->maxhp;
+        int damage_ratio = (monap_ptr->damage * 100) / creature.maxhp;
 
         // 20%以上のダメージで肛門破壊の変異発生判定
         if (damage_ratio >= 20) {
             int chance = damage_ratio - 15; // 20%で5%、50%で35%、100%で85%の確率
             if (randint1(100) <= chance) {
                 msg_print(_("あなたの肛門が完全に破壊された！", "Your asshole has been completely destroyed!"));
-                (void)gain_mutation(*player_ptr, static_cast<int>(PlayerMutationType::DESTROYED_ASSHOLE));
+                (void)gain_mutation(creature, static_cast<int>(PlayerMutationType::DESTROYED_ASSHOLE));
             } else {
                 msg_print(_("肛門に激痛が走った！", "Your asshole is in severe pain!"));
             }
