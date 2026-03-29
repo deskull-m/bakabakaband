@@ -30,7 +30,6 @@
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "timed-effect/timed-effects.h"
 #include "tracking/health-bar-tracker.h"
@@ -63,10 +62,9 @@ mspell_cast_msg_bad_status_to_monster::mspell_cast_msg_bad_status_to_monster(con
 void spell_badstatus_message_to_player(CreatureEntity &creature, MONSTER_IDX m_idx, const mspell_cast_msg_bad_status_to_player &msgs, bool resist,
     bool saved_throw)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto m_name = monster_name(*player_ptr, m_idx);
+    const auto m_name = monster_name(creature, m_idx);
 
-    disturb(*player_ptr, true, true);
+    disturb(creature, true, true);
     if (creature.effects()->blindness().is_blind()) {
         msg_format(msgs.blind, m_name.data());
     } else {
@@ -94,13 +92,12 @@ void spell_badstatus_message_to_player(CreatureEntity &creature, MONSTER_IDX m_i
 void spell_badstatus_message_to_mons(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, const mspell_cast_msg_bad_status_to_monster &msgs, bool resist,
     bool saved_throw)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
-    bool see_either = see_monster(*player_ptr, m_idx) || see_monster(*player_ptr, t_idx);
-    bool see_t = see_monster(*player_ptr, t_idx);
+    bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
+    bool see_t = see_monster(creature, t_idx);
     bool known = monster_near_player(floor, m_idx, t_idx);
-    const auto m_name = monster_name(*player_ptr, m_idx);
-    const auto t_name = monster_name(*player_ptr, t_idx);
+    const auto m_name = monster_name(creature, m_idx);
+    const auto t_name = monster_name(creature, t_idx);
 
     if (known) {
         if (see_either) {
@@ -140,21 +137,20 @@ void spell_badstatus_message_to_mons(CreatureEntity &creature, MONSTER_IDX m_idx
  */
 MonsterSpellResult spell_RF5_DRAIN_MANA(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto m_name = monster_name(*player_ptr, m_idx);
-    const auto t_name = monster_name(*player_ptr, t_idx);
+    const auto m_name = monster_name(creature, m_idx);
+    const auto t_name = monster_name(creature, t_idx);
 
     if (target_type == MONSTER_TO_PLAYER) {
-        disturb(*player_ptr, true, true);
-    } else if (target_type == MONSTER_TO_MONSTER && see_monster(*player_ptr, m_idx)) {
+        disturb(creature, true, true);
+    } else if (target_type == MONSTER_TO_MONSTER && see_monster(creature, m_idx)) {
         /* Basic message */
         msg_format(_("%s^は精神エネルギーを%sから吸いとった。", "%s^ draws psychic energy from %s."), m_name.data(), t_name.data());
     }
 
-    const auto dam = monspell_damage(*player_ptr, MonsterAbilityType::DRAIN_MANA, m_idx, DAM_ROLL);
-    const auto proj_res = pointed(*player_ptr, y, x, m_idx, AttributeType::DRAIN_MANA, dam, target_type);
+    const auto dam = monspell_damage(creature, MonsterAbilityType::DRAIN_MANA, m_idx, DAM_ROLL);
+    const auto proj_res = pointed(creature, y, x, m_idx, AttributeType::DRAIN_MANA, dam, target_type);
     if (target_type == MONSTER_TO_PLAYER) {
-        update_smart_learn(*player_ptr, m_idx, DRS_MANA);
+        update_smart_learn(creature, m_idx, DRS_MANA);
     }
 
     auto res = MonsterSpellResult::make_valid();
@@ -176,25 +172,24 @@ MonsterSpellResult spell_RF5_DRAIN_MANA(CreatureEntity &creature, POSITION y, PO
  */
 MonsterSpellResult spell_RF5_MIND_BLAST(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &monster = creature.current_floor_ptr->m_list[m_idx];
     bool seen = (!creature.effects()->blindness().is_blind() && monster.ml);
-    const auto m_name = monster_name(*player_ptr, m_idx);
-    const auto t_name = monster_name(*player_ptr, t_idx);
+    const auto m_name = monster_name(creature, m_idx);
+    const auto t_name = monster_name(creature, t_idx);
 
     if (target_type == MONSTER_TO_PLAYER) {
-        disturb(*player_ptr, true, true);
+        disturb(creature, true, true);
         if (!seen) {
             msg_print(_("何かがあなたの精神に念を放っているようだ。", "You feel something focusing on your mind."));
         } else {
             msg_format(_("%s^があなたの瞳をじっとにらんでいる。", "%s^ gazes deep into your eyes."), m_name.data());
         }
-    } else if (target_type == MONSTER_TO_MONSTER && see_monster(*player_ptr, m_idx)) {
+    } else if (target_type == MONSTER_TO_MONSTER && see_monster(creature, m_idx)) {
         msg_format(_("%s^は%sをじっと睨んだ。", "%s^ gazes intently at %s."), m_name.data(), t_name.data());
     }
 
-    const auto dam = monspell_damage(*player_ptr, MonsterAbilityType::MIND_BLAST, m_idx, DAM_ROLL);
-    const auto proj_res = pointed(*player_ptr, y, x, m_idx, AttributeType::MIND_BLAST, dam, target_type);
+    const auto dam = monspell_damage(creature, MonsterAbilityType::MIND_BLAST, m_idx, DAM_ROLL);
+    const auto proj_res = pointed(creature, y, x, m_idx, AttributeType::MIND_BLAST, dam, target_type);
 
     auto res = MonsterSpellResult::make_valid(dam);
     res.learnable = proj_res.affected_player;
@@ -215,25 +210,24 @@ MonsterSpellResult spell_RF5_MIND_BLAST(CreatureEntity &creature, POSITION y, PO
  */
 MonsterSpellResult spell_RF5_BRAIN_SMASH(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &monster = creature.current_floor_ptr->m_list[m_idx];
     bool seen = (!creature.effects()->blindness().is_blind() && monster.ml);
-    const auto m_name = monster_name(*player_ptr, m_idx);
-    const auto t_name = monster_name(*player_ptr, t_idx);
+    const auto m_name = monster_name(creature, m_idx);
+    const auto t_name = monster_name(creature, t_idx);
 
     if (target_type == MONSTER_TO_PLAYER) {
-        disturb(*player_ptr, true, true);
+        disturb(creature, true, true);
         if (!seen) {
             msg_print(_("何かがあなたの精神に念を放っているようだ。", "You feel something focusing on your mind."));
         } else {
             msg_format(_("%s^があなたの瞳をじっとにらんでいる。", "%s^ gazes deep into your eyes."), m_name.data());
         }
-    } else if (target_type == MONSTER_TO_MONSTER && see_monster(*player_ptr, m_idx)) {
+    } else if (target_type == MONSTER_TO_MONSTER && see_monster(creature, m_idx)) {
         msg_format(_("%s^は%sをじっと睨んだ。", "%s^ gazes intently at %s."), m_name.data(), t_name.data());
     }
 
-    const auto dam = monspell_damage(*player_ptr, MonsterAbilityType::BRAIN_SMASH, m_idx, DAM_ROLL);
-    const auto proj_res = pointed(*player_ptr, y, x, m_idx, AttributeType::BRAIN_SMASH, dam, target_type);
+    const auto dam = monspell_damage(creature, MonsterAbilityType::BRAIN_SMASH, m_idx, DAM_ROLL);
+    const auto proj_res = pointed(creature, y, x, m_idx, AttributeType::BRAIN_SMASH, dam, target_type);
 
     auto res = MonsterSpellResult::make_valid(dam);
     res.learnable = proj_res.affected_player;
@@ -251,7 +245,6 @@ MonsterSpellResult spell_RF5_BRAIN_SMASH(CreatureEntity &creature, POSITION y, P
  */
 MonsterSpellResult spell_RF5_SCARE(MONSTER_IDX m_idx, CreatureEntity &creature, MONSTER_IDX t_idx, int target_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto res = MonsterSpellResult::make_valid();
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
@@ -262,8 +255,8 @@ MonsterSpellResult spell_RF5_SCARE(MONSTER_IDX m_idx, CreatureEntity &creature, 
     bool resist, saving_throw;
 
     if (target_type == MONSTER_TO_PLAYER) {
-        resist = (has_resist_fear(*player_ptr) != 0);
-        saving_throw = (randint0(100 + rlev / 2) < player_ptr->skill_sav);
+        resist = (has_resist_fear(creature) != 0);
+        saving_throw = (randint0(100 + rlev / 2) < creature.skill_sav);
 
         mspell_cast_msg_bad_status_to_player msg(_("%s^が何かをつぶやくと、恐ろしげな音が聞こえた。", "%s^ mumbles, and you hear scary noises."),
             _("%s^が恐ろしげな幻覚を作り出した。", "%s^ casts a fearful illusion."), _("しかし恐怖に侵されなかった。", "You refuse to be frightened."),
@@ -272,10 +265,10 @@ MonsterSpellResult spell_RF5_SCARE(MONSTER_IDX m_idx, CreatureEntity &creature, 
         spell_badstatus_message_to_player(creature, m_idx, msg, resist, saving_throw);
 
         if (!resist && !saving_throw) {
-            (void)BadStatusSetter(*player_ptr).mod_fear(randint0(4) + 4);
+            (void)BadStatusSetter(creature).mod_fear(randint0(4) + 4);
         }
 
-        update_smart_learn(*player_ptr, m_idx, DRS_FEAR);
+        update_smart_learn(creature, m_idx, DRS_FEAR);
         return res;
     }
 
@@ -309,7 +302,6 @@ MonsterSpellResult spell_RF5_SCARE(MONSTER_IDX m_idx, CreatureEntity &creature, 
  */
 MonsterSpellResult spell_RF5_BLIND(MONSTER_IDX m_idx, CreatureEntity &creature, MONSTER_IDX t_idx, int target_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto res = MonsterSpellResult::make_valid();
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
@@ -320,8 +312,8 @@ MonsterSpellResult spell_RF5_BLIND(MONSTER_IDX m_idx, CreatureEntity &creature, 
     bool resist, saving_throw;
 
     if (target_type == MONSTER_TO_PLAYER) {
-        resist = (has_resist_blind(*player_ptr) != 0);
-        saving_throw = (randint0(100 + rlev / 2) < player_ptr->skill_sav);
+        resist = (has_resist_blind(creature) != 0);
+        saving_throw = (randint0(100 + rlev / 2) < creature.skill_sav);
 
         mspell_cast_msg_bad_status_to_player msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
             _("%s^が呪文を唱えてあなたの目をくらました！", "%s^ casts a spell, burning your eyes!"), _("しかし効果がなかった！", "You are unaffected!"),
@@ -330,10 +322,10 @@ MonsterSpellResult spell_RF5_BLIND(MONSTER_IDX m_idx, CreatureEntity &creature, 
         spell_badstatus_message_to_player(creature, m_idx, msg, resist, saving_throw);
 
         if (!resist && !saving_throw) {
-            (void)BadStatusSetter(*player_ptr).set_blindness(12 + randint0(4));
+            (void)BadStatusSetter(creature).set_blindness(12 + randint0(4));
         }
 
-        update_smart_learn(*player_ptr, m_idx, DRS_BLIND);
+        update_smart_learn(creature, m_idx, DRS_BLIND);
         return res;
     }
 
@@ -342,7 +334,7 @@ MonsterSpellResult spell_RF5_BLIND(MONSTER_IDX m_idx, CreatureEntity &creature, 
     }
 
     concptr msg_default;
-    const auto t_name = monster_name(*player_ptr, t_idx);
+    const auto t_name = monster_name(creature, t_idx);
 
     if (streq(t_name.data(), "it")) {
         msg_default = _("%sは呪文を唱えて%sの目を焼き付かせた。", "%s^ casts a spell, burning %ss eyes.");
@@ -375,7 +367,6 @@ MonsterSpellResult spell_RF5_BLIND(MONSTER_IDX m_idx, CreatureEntity &creature, 
  */
 MonsterSpellResult spell_RF5_CONF(MONSTER_IDX m_idx, CreatureEntity &creature, MONSTER_IDX t_idx, int target_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto res = MonsterSpellResult::make_valid();
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
@@ -386,8 +377,8 @@ MonsterSpellResult spell_RF5_CONF(MONSTER_IDX m_idx, CreatureEntity &creature, M
     bool resist, saving_throw;
 
     if (target_type == MONSTER_TO_PLAYER) {
-        resist = (has_resist_conf(*player_ptr) != 0);
-        saving_throw = (randint0(100 + rlev / 2) < player_ptr->skill_sav);
+        resist = (has_resist_conf(creature) != 0);
+        saving_throw = (randint0(100 + rlev / 2) < creature.skill_sav);
 
         mspell_cast_msg_bad_status_to_player msg(_("%s^が何かをつぶやくと、頭を悩ます音がした。", "%s^ mumbles, and you hear puzzling noises."),
             _("%s^が誘惑的な幻覚を作り出した。", "%s^ creates a mesmerising illusion."),
@@ -397,10 +388,10 @@ MonsterSpellResult spell_RF5_CONF(MONSTER_IDX m_idx, CreatureEntity &creature, M
         spell_badstatus_message_to_player(creature, m_idx, msg, resist, saving_throw);
 
         if (!resist && !saving_throw) {
-            (void)BadStatusSetter(*player_ptr).mod_confusion(randint0(4) + 4);
+            (void)BadStatusSetter(creature).mod_confusion(randint0(4) + 4);
         }
 
-        update_smart_learn(*player_ptr, m_idx, DRS_CONF);
+        update_smart_learn(creature, m_idx, DRS_CONF);
         return res;
     }
 
@@ -434,7 +425,6 @@ MonsterSpellResult spell_RF5_CONF(MONSTER_IDX m_idx, CreatureEntity &creature, M
  */
 MonsterSpellResult spell_RF5_HOLD(MONSTER_IDX m_idx, CreatureEntity &creature, MONSTER_IDX t_idx, int target_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto res = MonsterSpellResult::make_valid();
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
@@ -445,8 +435,8 @@ MonsterSpellResult spell_RF5_HOLD(MONSTER_IDX m_idx, CreatureEntity &creature, M
     bool resist, saving_throw;
 
     if (target_type == MONSTER_TO_PLAYER) {
-        resist = (player_ptr->free_act != 0);
-        saving_throw = (randint0(100 + rlev / 2) < player_ptr->skill_sav);
+        resist = (creature.free_act != 0);
+        saving_throw = (randint0(100 + rlev / 2) < creature.skill_sav);
 
         mspell_cast_msg_bad_status_to_player msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
             _("%s^があなたの目をじっと見つめた！", "%s^ stares deep into your eyes!"), _("しかし効果がなかった！", "You are unaffected!"),
@@ -455,10 +445,10 @@ MonsterSpellResult spell_RF5_HOLD(MONSTER_IDX m_idx, CreatureEntity &creature, M
         spell_badstatus_message_to_player(creature, m_idx, msg, (bool)resist, saving_throw);
 
         if (!resist && !saving_throw) {
-            (void)BadStatusSetter(*player_ptr).mod_paralysis(randint0(4) + 4);
+            (void)BadStatusSetter(creature).mod_paralysis(randint0(4) + 4);
         }
 
-        update_smart_learn(*player_ptr, m_idx, DRS_FREE);
+        update_smart_learn(creature, m_idx, DRS_FREE);
         return res;
     }
 
@@ -492,18 +482,17 @@ MonsterSpellResult spell_RF5_HOLD(MONSTER_IDX m_idx, CreatureEntity &creature, M
  */
 MonsterSpellResult spell_RF6_HASTE(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    bool see_m = see_monster(*player_ptr, m_idx);
+    bool see_m = see_monster(creature, m_idx);
     const auto &monster = creature.current_floor_ptr->m_list[m_idx];
-    const auto m_name = monster_name(*player_ptr, m_idx);
-    const auto m_poss = monster_desc(*player_ptr, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
+    const auto m_name = monster_name(creature, m_idx);
+    const auto m_poss = monster_desc(creature, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
 
     mspell_cast_msg msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
         _("%s^が自分の体に念を送った。", format("%%s^ concentrates on %s body.", m_poss.data())),
         _("%s^が自分の体に念を送った。", format("%%s^ concentrates on %s body.", m_poss.data())),
         _("%s^が自分の体に念を送った。", format("%%s^ concentrates on %s body.", m_poss.data())));
 
-    monspell_message_base(*player_ptr, m_idx, t_idx, msg, creature.effects()->blindness().is_blind(), target_type);
+    monspell_message_base(creature, m_idx, t_idx, msg, creature.effects()->blindness().is_blind(), target_type);
 
     if (set_monster_fast(*creature.current_floor_ptr, m_idx, monster.get_remaining_acceleration() + 100)) {
         if (target_type == MONSTER_TO_PLAYER || (target_type == MONSTER_TO_MONSTER && see_m)) {
@@ -524,7 +513,6 @@ MonsterSpellResult spell_RF6_HASTE(CreatureEntity &creature, MONSTER_IDX m_idx, 
  */
 MonsterSpellResult spell_RF5_SLOW(MONSTER_IDX m_idx, CreatureEntity &creature, MONSTER_IDX t_idx, int target_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto res = MonsterSpellResult::make_valid();
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
@@ -535,8 +523,8 @@ MonsterSpellResult spell_RF5_SLOW(MONSTER_IDX m_idx, CreatureEntity &creature, M
     bool resist, saving_throw;
 
     if (target_type == MONSTER_TO_PLAYER) {
-        resist = (has_resist_conf(*player_ptr) != 0);
-        saving_throw = (randint0(100 + rlev / 2) < player_ptr->skill_sav);
+        resist = (has_resist_conf(creature) != 0);
+        saving_throw = (randint0(100 + rlev / 2) < creature.skill_sav);
 
         mspell_cast_msg_bad_status_to_player msg(_("%s^があなたの筋力を吸い取ろうとした！", "%s^ drains power from your muscles!"),
             _("%s^があなたの筋力を吸い取ろうとした！", "%s^ drains power from your muscles!"), _("しかし効果がなかった！", "You are unaffected!"),
@@ -545,10 +533,10 @@ MonsterSpellResult spell_RF5_SLOW(MONSTER_IDX m_idx, CreatureEntity &creature, M
         spell_badstatus_message_to_player(creature, m_idx, msg, resist, saving_throw);
 
         if (!resist && !saving_throw) {
-            (void)BadStatusSetter(*player_ptr).mod_deceleration(randint0(4) + 4, false);
+            (void)BadStatusSetter(creature).mod_deceleration(randint0(4) + 4, false);
         }
 
-        update_smart_learn(*player_ptr, m_idx, DRS_FREE);
+        update_smart_learn(creature, m_idx, DRS_FREE);
         return res;
     }
 
@@ -557,7 +545,7 @@ MonsterSpellResult spell_RF5_SLOW(MONSTER_IDX m_idx, CreatureEntity &creature, M
     }
 
     concptr msg_default;
-    const auto t_name = monster_name(*player_ptr, t_idx);
+    const auto t_name = monster_name(creature, t_idx);
 
     if (streq(t_name.data(), "it")) {
         msg_default = _("%sが%sの筋肉から力を吸いとった。", "%s^ drains power from %ss muscles.");
@@ -591,7 +579,6 @@ MonsterSpellResult spell_RF5_SLOW(MONSTER_IDX m_idx, CreatureEntity &creature, M
  */
 MonsterSpellResult spell_RF6_HEAL(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto res = MonsterSpellResult::make_valid();
 
     mspell_cast_msg msg;
@@ -600,14 +587,14 @@ MonsterSpellResult spell_RF6_HEAL(CreatureEntity &creature, MONSTER_IDX m_idx, M
     DEPTH rlev = monster_level_idx(floor, m_idx);
     const auto is_blind = creature.effects()->blindness().is_blind();
     const auto seen = (!is_blind && monster.ml);
-    const auto m_poss = monster_desc(*player_ptr, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
+    const auto m_poss = monster_desc(creature, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
 
     msg.to_player_true = _("%s^が何かをつぶやいた。", "%s^ mumbles.");
     msg.to_mons_true = _("%s^は自分の傷に念を集中した。", format("%%s^ concentrates on %s wounds.", m_poss.data()));
     msg.to_player_false = _("%s^が自分の傷に集中した。", format("%%s^ concentrates on %s wounds.", m_poss.data()));
     msg.to_mons_false = _("%s^は自分の傷に念を集中した。", format("%%s^ concentrates on %s wounds.", m_poss.data()));
 
-    monspell_message_base(*player_ptr, m_idx, t_idx, msg, is_blind, target_type);
+    monspell_message_base(creature, m_idx, t_idx, msg, is_blind, target_type);
 
     monster.hp += (rlev * 6);
     if (monster.hp >= monster.maxhp) {
@@ -625,7 +612,7 @@ MonsterSpellResult spell_RF6_HEAL(CreatureEntity &creature, MONSTER_IDX m_idx, M
         msg.to_mons_false = _("%s^は体力を回復したようだ。", "%s^ looks healthier.");
     }
 
-    monspell_message_base(*player_ptr, m_idx, t_idx, msg, !seen, target_type);
+    monspell_message_base(creature, m_idx, t_idx, msg, !seen, target_type);
     HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
     if (monster.is_riding()) {
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
@@ -637,8 +624,8 @@ MonsterSpellResult spell_RF6_HEAL(CreatureEntity &creature, MONSTER_IDX m_idx, M
 
     (void)set_monster_monfear(*creature.current_floor_ptr, m_idx, 0);
 
-    if (see_monster(*player_ptr, m_idx)) {
-        const auto m_name = monster_name(*player_ptr, m_idx);
+    if (see_monster(creature, m_idx)) {
+        const auto m_name = monster_name(creature, m_idx);
         msg_print(_(format("%s^は勇気を取り戻した。", m_name.data()), format("%s^ recovers %s courage.", m_name.data(), m_poss.data())));
     }
 
@@ -656,18 +643,17 @@ MonsterSpellResult spell_RF6_HEAL(CreatureEntity &creature, MONSTER_IDX m_idx, M
  */
 MonsterSpellResult spell_RF6_INVULNER(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &monster = creature.current_floor_ptr->m_list[m_idx];
     bool seen = (!creature.effects()->blindness().is_blind() && monster.ml);
     mspell_cast_msg msg(_("%s^が何かを力強くつぶやいた。", "%s^ mumbles powerfully."),
         _("%s^が何かを力強くつぶやいた。", "%s^ mumbles powerfully."), _("%sは無傷の球の呪文を唱えた。", "%s^ casts a Globe of Invulnerability."),
         _("%sは無傷の球の呪文を唱えた。", "%s^ casts a Globe of Invulnerability."));
 
-    monspell_message_base(*player_ptr, m_idx, t_idx, msg, !seen, target_type);
+    monspell_message_base(creature, m_idx, t_idx, msg, !seen, target_type);
 
     if (monster.ml) {
         MonraceId r_idx = monster.r_idx;
-        const auto m_name = monster_desc(*player_ptr, monster, MD_NONE);
+        const auto m_name = monster_desc(creature, monster, MD_NONE);
         switch (r_idx) {
         case MonraceId::MARIO:
         case MonraceId::LUIGI:
@@ -698,17 +684,16 @@ MonsterSpellResult spell_RF6_INVULNER(CreatureEntity &creature, MONSTER_IDX m_id
  */
 MonsterSpellResult spell_RF6_FORGET(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     DEPTH rlev = monster_level_idx(*creature.current_floor_ptr, m_idx);
-    const auto m_name = monster_name(*player_ptr, m_idx);
+    const auto m_name = monster_name(creature, m_idx);
 
-    disturb(*player_ptr, true, true);
+    disturb(creature, true, true);
 
     msg_format(_("%s^があなたの記憶を消去しようとしている。", "%s^ tries to blank your mind."), m_name.data());
 
-    if (randint0(100 + rlev / 2) < player_ptr->skill_sav) {
+    if (randint0(100 + rlev / 2) < creature.skill_sav) {
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
-    } else if (lose_all_info(*player_ptr)) {
+    } else if (lose_all_info(creature)) {
         msg_print(_("記憶が薄れてしまった。", "Your memories fade away."));
     }
 
