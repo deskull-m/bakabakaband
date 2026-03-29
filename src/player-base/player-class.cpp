@@ -29,7 +29,6 @@
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 
 CreatureClass::CreatureClass(CreatureEntity &creature)
@@ -240,7 +239,7 @@ TrFlags CreatureClass::stance_tr_flags() const
 
     switch (this->get_samurai_stance()) {
     case SamuraiStanceType::FUUJIN:
-        if (!player_ptr->effects()->blindness().is_blind()) {
+        if (!player_ptr->is_blind()) {
             flags.set(TR_REFLECT);
         }
         break;

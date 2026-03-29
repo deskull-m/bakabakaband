@@ -17,7 +17,6 @@
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -65,7 +64,7 @@ static void process_special_melee_spell(CreatureEntity &creature, melee_spell_ty
     bool is_special_magic = ms_ptr->m_ptr->ml;
     is_special_magic &= ms_ptr->maneable;
     is_special_magic &= AngbandWorld::get_instance().timewalk_m_idx == 0;
-    is_special_magic &= !player.effects()->blindness().is_blind();
+    is_special_magic &= !player.is_blind();
     is_special_magic &= pc.equals(PlayerClassType::IMITATOR);
     is_special_magic &= ms_ptr->thrown_spell != MonsterAbilityType::SPECIAL;
     if (!is_special_magic) {

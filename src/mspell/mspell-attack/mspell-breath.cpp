@@ -17,7 +17,6 @@
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monster-entity.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
 /*!
@@ -59,7 +58,7 @@ static void message_breath(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_
     const auto t_name = monster_name(creature, t_idx);
 
     if (!spell_RF4_BREATH_special_message(monster.r_idx, GF_TYPE, m_name.data())) {
-        if (creature.effects()->blindness().is_blind()) {
+        if (creature.is_blind()) {
             if (mon_to_player || (mon_to_mon && known && see_either)) {
                 msg_format(_("%s^が何かのブレスを吐いた。", "%s^ breathes."), m_name.data());
             }

@@ -45,7 +45,6 @@
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "target/target-checker.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
@@ -183,7 +182,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
             SubWindowRedrawingFlag::DUNGEON,
         };
         rfu.set_flags(flags_swrf);
-        if ((!creature.effects()->blindness().is_blind() && !no_lite(creature)) || !floor.has_trap_at(pos_new)) {
+        if ((!creature.is_blind() && !no_lite(creature)) || !floor.has_trap_at(pos_new)) {
             grid_new.info &= ~(CAVE_UNSAFE);
         }
 

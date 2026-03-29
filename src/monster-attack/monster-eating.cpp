@@ -24,14 +24,13 @@
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "tracking/health-bar-tracker.h"
 #include "view/display-messages.h"
 
 void process_eat_gold(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto is_paralyzed = player_ptr->effects()->paralysis().is_paralyzed();
+    const auto is_paralyzed = player_ptr->is_paralyzed();
     if (!is_paralyzed && evaluate_percent((adj_dex_safe[player_ptr->stat_index[A_DEX]] + player_ptr->level))) {
         msg_print(_("しかし素早く財布を守った！", "You quickly protect your money pouch!"));
         if (randint0(3)) {
@@ -90,7 +89,7 @@ bool check_eat_item(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
         return false;
     }
 
-    const auto is_paralyzed = player_ptr->effects()->paralysis().is_paralyzed();
+    const auto is_paralyzed = player_ptr->is_paralyzed();
     if (!is_paralyzed && evaluate_percent((adj_dex_safe[player_ptr->stat_index[A_DEX]] + player_ptr->level))) {
         msg_print(_("しかしあわててザックを取り返した！", "You grab hold of your backpack!"));
         monap_ptr->blinked = true;
@@ -203,7 +202,7 @@ void process_eat_lite(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
         monap_ptr->o_ptr->fuel = 1;
     }
 
-    if (!player_ptr->effects()->blindness().is_blind()) {
+    if (!player_ptr->is_blind()) {
         msg_print(_("明かりが暗くなってしまった。", "Your light dims."));
         monap_ptr->obvious = true;
     }

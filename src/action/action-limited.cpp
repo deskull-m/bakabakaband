@@ -87,7 +87,7 @@ bool cmd_limit_arena(const CreatureEntity &creature)
 
 bool cmd_limit_blind(CreatureEntity &creature)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("目が見えない。", "You can't see anything."));
         return true;
     }

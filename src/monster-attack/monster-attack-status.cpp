@@ -18,7 +18,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
 void process_blind_attack(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
@@ -89,7 +88,7 @@ void process_paralyze_attack(CreatureEntity &creature, MonsterAttackPlayer *mona
         return;
     }
 
-    const auto is_paralyzed = creature.effects()->paralysis().is_paralyzed();
+    const auto is_paralyzed = creature.is_paralyzed();
     if (!is_paralyzed && BadStatusSetter(creature).set_paralysis(3 + randint1(monap_ptr->rlev))) {
         monap_ptr->obvious = true;
     }

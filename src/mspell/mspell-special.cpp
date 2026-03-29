@@ -35,7 +35,6 @@
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 #include <algorithm>
 #include <range/v3/view.hpp>
@@ -162,7 +161,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_ROLENTO(CreatureEntity &creature, PO
     for (k = 0; k < num; k++) {
         count += summon_named_creature(*player_ptr, m_idx, y, x, MonraceId::GRENADE, mode) ? 1 : 0;
     }
-    if (player_ptr->effects()->blindness().is_blind() && count) {
+    if (player_ptr->is_blind() && count) {
         msg_print(_("多くのものが間近にばらまかれる音がする。", "You hear many things scattered nearby."));
     }
 

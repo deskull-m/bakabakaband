@@ -81,7 +81,6 @@
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
@@ -227,7 +226,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
             return false;
         }
 
-        if (!player_ptr->effects()->paralysis().is_paralyzed() && !cmd_limit_cast(creature)) {
+        if (!player_ptr->is_paralyzed() && !cmd_limit_cast(creature)) {
             handle_stuff(*player_ptr);
             command_dir = Direction::none();
             (void)do_cmd_cast(*player_ptr);

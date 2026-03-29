@@ -43,7 +43,6 @@
 #include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "window/main-window-util.h"
@@ -404,7 +403,7 @@ static void cut_off_the_upstair(CreatureEntity &creature)
         return;
     }
 
-    const auto is_blind = player_ptr->effects()->blindness().is_blind();
+    const auto is_blind = player_ptr->is_blind();
     const auto mes = is_blind
                          ? _("ゴトゴトと何か音がした。", "You hear some noises.")
                          : _("突然階段が塞がれてしまった！", "Suddenly the stairs is blocked!");

@@ -192,7 +192,7 @@ int16_t PlayerSpeed::time_effect_bonus()
 {
     auto player_ptr = static_cast<PlayerType *>(&this->creature);
     int16_t bonus = 0;
-    if (is_fast(*player_ptr)) {
+    if (player_ptr->is_fast()) {
         bonus += 10;
     }
 

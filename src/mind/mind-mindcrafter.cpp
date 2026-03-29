@@ -256,7 +256,7 @@ bool cast_mindcrafter_spell(CreatureEntity &creature, MindMindcrafterType spell)
         BadStatusSetter bss(creature);
         (void)bss.set_fear(0);
         (void)bss.set_stun(0);
-        if (!is_fast(creature) || !is_hero(creature)) {
+        if (!creature.is_fast() || !creature.is_hero()) {
             hp_player(creature, plev);
         }
 

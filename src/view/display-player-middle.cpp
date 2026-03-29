@@ -18,7 +18,6 @@
 #include "player/player-skill.h"
 #include "player/player-status-flags.h"
 #include "player/player-status-table.h"
-#include "player/player-status.h"
 #include "sv-definition/sv-bow-types.h"
 #include "system/floor/floor-info.h"
 #include "system/inner-game-data.h"
@@ -195,7 +194,7 @@ static int calc_temporary_speed(CreatureEntity &creature)
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     int tmp_speed = 0;
     if (!player_ptr->riding) {
-        if (is_fast(*player_ptr)) {
+        if (player_ptr->is_fast()) {
             tmp_speed += 10;
         }
 

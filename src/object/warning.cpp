@@ -19,7 +19,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
 #include "target/projection-path-calculator.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 #include <vector>
 
@@ -104,7 +103,7 @@ static void spell_damcalc(CreatureEntity &creature, const MonsterEntity &monster
         break;
 
     case AttributeType::MONSTER_SHOOT:
-        if (!creature.effects()->blindness().is_blind() && (has_invuln_arrow(creature))) {
+        if (!creature.is_blind() && (has_invuln_arrow(creature))) {
             dam = 0;
             ignore_wraith_form = true;
         }

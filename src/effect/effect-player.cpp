@@ -27,7 +27,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
 #include "target/projection-path-calculator.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 #include <string>
 
@@ -82,7 +81,7 @@ static bool process_bolt_reflection(CreatureEntity &creature, EffectPlayerType *
     sound(SoundKind::REFLECT);
 
     std::string mes;
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         mes = _("何かが跳ね返った！", "Something bounces!");
     } else if (CreatureClass(creature).samurai_stance_is(SamuraiStanceType::FUUJIN)) {
         mes = _("風の如く武器を振るって弾き返した！", "The attack bounces!");

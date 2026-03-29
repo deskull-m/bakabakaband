@@ -21,7 +21,6 @@
 #include "player-info/race-info.h"
 #include "player/attack-defense-types.h"
 #include "player/player-status-flags.h"
-#include "player/player-status.h"
 #include "player/special-defense-types.h"
 #include "realm/realm-song-numbers.h"
 #include "spell-realm/spells-song.h"
@@ -338,7 +337,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
         return true;
     }
 
-    if ((creature.get_speed() < 145) && is_fast(*player_ptr)) {
+    if ((creature.get_speed() < 145) && player_ptr->is_fast()) {
         return true;
     }
 

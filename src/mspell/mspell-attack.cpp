@@ -32,7 +32,6 @@
 #include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
-#include "timed-effect/timed-effects.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -263,7 +262,7 @@ static bool check_thrown_mspell(CreatureEntity &creature, msa_type *msa_ptr)
 
 static void check_mspell_imitation(CreatureEntity &creature, msa_type *msa_ptr)
 {
-    const auto seen = (!creature.effects()->blindness().is_blind() && msa_ptr->m_ptr->ml);
+    const auto seen = (!creature.is_blind() && msa_ptr->m_ptr->ml);
     const auto can_imitate = creature.current_floor_ptr->has_los_at({ msa_ptr->m_ptr->y, msa_ptr->m_ptr->x });
     CreatureClass pc(creature);
     if (!seen || !can_imitate || (AngbandWorld::get_instance().timewalk_m_idx != 0) || !pc.equals(PlayerClassType::IMITATOR)) {

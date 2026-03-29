@@ -44,7 +44,6 @@
 #include "target/grid-selector.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-getter.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "util/point-2d.h"
 #include "view/display-messages.h"
@@ -149,7 +148,7 @@ bool binding_field(CreatureEntity &creature, int dam)
             }
 
             if (floor.has_los_at(pos) && projectable(floor, p_pos, pos)) {
-                if (!(creature.effects()->blindness().is_blind()) && panel_contains(pos)) {
+                if (!(creature.is_blind()) && panel_contains(pos)) {
                     print_bolt_pict(creature, pos, pos, AttributeType::MANA);
                     move_cursor_relative(y, x);
                     term_fresh();
