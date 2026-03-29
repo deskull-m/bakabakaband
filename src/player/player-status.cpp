@@ -3102,38 +3102,6 @@ uint32_t calc_score(CreatureEntity &creature)
 }
 
 /*!
- * @param player_ptr プレイヤーへの参照ポインタ
- * @return 祝福状態ならばTRUE
- */
-bool is_tim_esp(CreatureEntity &creature)
-{
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
-    auto sniper_concent = sniper_data ? sniper_data->concent : 0;
-    return player_ptr->tim_esp || music_singing(*player_ptr, MUSIC_MIND) || (sniper_concent >= CONCENT_TELE_THRESHOLD);
-}
-
-bool is_tim_stealth(CreatureEntity &creature)
-{
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    return player_ptr->tim_stealth || music_singing(*player_ptr, MUSIC_STEALTH);
-}
-
-bool is_time_limit_esp(CreatureEntity &creature)
-{
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
-    auto sniper_concent = sniper_data ? sniper_data->concent : 0;
-    return player_ptr->tim_esp || music_singing(*player_ptr, MUSIC_MIND) || (sniper_concent >= CONCENT_TELE_THRESHOLD);
-}
-
-bool is_time_limit_stealth(CreatureEntity &creature)
-{
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    return player_ptr->tim_stealth || music_singing(*player_ptr, MUSIC_STEALTH);
-}
-
-/*!
  * @brief 口を使う継続的な処理を中断する
  * @param player_ptr プレイヤーへの参照ポインタ
  */
@@ -3147,27 +3115,6 @@ void stop_mouth(CreatureEntity &creature)
     if (SpellHex(*player_ptr).is_spelling_any()) {
         (void)SpellHex(*player_ptr).stop_all_spells();
     }
-}
-
-bool is_echizen(CreatureEntity &creature)
-{
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    return (creature.ppersonality == PERSONALITY_COMBAT) || player_ptr->is_wielding(FixedArtifactId::CRIMSON);
-}
-
-bool is_tough(CreatureEntity &creature)
-{
-    return (creature.ppersonality == PERSONALITY_TOUGH);
-}
-
-bool is_chargeman(CreatureEntity &creature)
-{
-    return creature.ppersonality == PERSONALITY_CHARGEMAN;
-}
-
-bool is_sushi_eater(CreatureEntity &creature)
-{
-    return (creature.ppersonality == PERSONALITY_SUSHI_EATER);
 }
 
 int calc_weapon_weight_limit(CreatureEntity &creature)

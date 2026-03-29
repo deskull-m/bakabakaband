@@ -9,7 +9,6 @@
 #include "player/attack-defense-types.h"
 #include "player/player-realm.h"
 #include "player/player-skill.h"
-#include "player/player-status.h"
 #include "realm/realm-song-numbers.h"
 #include "spell/spell-info.h"
 #include "spell/spells-execution.h"
@@ -106,7 +105,7 @@ bool set_tim_stealth(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
             if (creature.tim_stealth > v) {
                 return false;
             }
-        } else if (!is_time_limit_stealth(creature)) {
+        } else if (!creature.is_time_limit_stealth()) {
             msg_print(_("足音が小さくなった！", "You begin to walk silently!"));
             notice = true;
         }

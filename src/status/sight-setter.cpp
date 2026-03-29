@@ -2,7 +2,6 @@
 #include "core/disturbance.h"
 #include "core/stuff-handler.h"
 #include "game-option/disturbance-options.h"
-#include "player/player-status.h"
 #include "realm/realm-song-numbers.h"
 #include "spell-realm/spells-song.h"
 #include "system/player-type-definition.h"
@@ -52,7 +51,7 @@ bool set_tim_esp(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
             if (player.tim_esp > v) {
                 return false;
             }
-        } else if (!is_time_limit_esp(player)) {
+        } else if (!player.is_time_limit_esp()) {
             msg_print(_("意識が広がった気がする！", "You feel your consciousness expand!"));
             notice = true;
         }

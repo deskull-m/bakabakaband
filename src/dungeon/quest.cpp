@@ -21,7 +21,6 @@
 #include "object-enchant/trg-types.h"
 #include "player-status/player-energy.h"
 #include "player/player-personality-types.h"
-#include "player/player-status.h"
 #include "system/artifact-type-definition.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
@@ -394,9 +393,9 @@ void do_cmd_quest(CreatureEntity &creature)
     if (!input_check(_("クエストに入りますか？", "Do you enter? "))) {
         return;
     }
-    if (is_echizen(*player_ptr)) {
+    if (player_ptr->is_echizen()) {
         msg_print(_("『とにかく入ってみようぜぇ。』", "\"Let's go in anyway.\""));
-    } else if (is_chargeman(*player_ptr)) {
+    } else if (player_ptr->is_chargeman()) {
         msg_print(_("『全滅してやるぞ！』", "\"I'll annihilate THEM!\""));
     }
 

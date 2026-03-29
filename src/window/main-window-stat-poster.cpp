@@ -484,7 +484,7 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_NIGHTSIGHT);
     }
 
-    if (is_time_limit_esp(creature)) {
+    if (creature.is_time_limit_esp()) {
         ADD_BAR_FLAG(BAR_TELEPATHY);
     }
 
@@ -653,7 +653,7 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_SHFIRE);
     }
 
-    if (is_time_limit_stealth(creature)) {
+    if (creature.is_time_limit_stealth()) {
         ADD_BAR_FLAG(BAR_STEALTH);
     }
 

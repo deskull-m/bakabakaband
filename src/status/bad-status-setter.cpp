@@ -11,7 +11,6 @@
 #include "player-info/monk-data-type.h"
 #include "player/attack-defense-types.h"
 #include "player/player-status-flags.h"
-#include "player/player-status.h"
 #include "player/special-defense-types.h"
 #include "spell-realm/spells-hex.h"
 #include "status/base-status.h"
@@ -358,7 +357,7 @@ bool BadStatusSetter::hallucination(const TIME_EFFECT tmp_v)
         return false;
     }
 
-    if (is_chargeman(*player_ptr)) {
+    if (player_ptr->is_chargeman()) {
         v = 0;
     }
 

@@ -11,7 +11,6 @@
 #include "player/player-realm.h"
 #include "player/player-skill.h"
 #include "player/player-status-flags.h"
-#include "player/player-status.h"
 #include "player/race-info-table.h"
 #include "spell-realm/spells-hex.h"
 #include "system/item-entity.h"
@@ -128,7 +127,7 @@ int16_t PlayerStealth::time_effect_bonus()
         bonus -= 7;
     }
 
-    if (is_time_limit_stealth(*player_ptr)) {
+    if (player_ptr->is_time_limit_stealth()) {
         bonus += 999;
     }
 

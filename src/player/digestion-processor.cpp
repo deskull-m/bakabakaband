@@ -12,7 +12,6 @@
 #include "player-info/monk-data-type.h"
 #include "player-info/samurai-data-type.h"
 #include "player/player-damage.h"
-#include "player/player-status.h"
 #include "player/special-defense-types.h"
 #include "status/bad-status-setter.h"
 #include "system/angband-system.h"
@@ -58,7 +57,7 @@ void starve_player(CreatureEntity &creature)
             digestion = 100;
         }
 
-        if (is_sushi_eater(creature)) {
+        if (creature.is_sushi_eater()) {
             digestion *= 100;
         }
 
@@ -69,7 +68,7 @@ void starve_player(CreatureEntity &creature)
         return;
     }
 
-    if (!is_sushi_eater(creature) && !player_ptr->is_paralyzed() && one_in_(10)) {
+    if (!creature.is_sushi_eater() && !player_ptr->is_paralyzed() && one_in_(10)) {
         msg_print(_("あまりにも空腹で気絶してしまった。", "You faint from the lack of food."));
         disturb(creature, true, true);
         (void)BadStatusSetter(creature).mod_paralysis(1 + randint0(5));
@@ -189,7 +188,7 @@ bool set_food(CreatureEntity &creature, TIME_EFFECT v)
         switch (new_aux) {
         case 0:
             sound(SoundKind::FAINT);
-            if (is_sushi_eater(creature)) {
+            if (creature.is_sushi_eater()) {
                 msg_print(_("そろそろ寿司を食べないと死ぬぜ！", "'I'm gonna die if I don't eat sushi soon!'"));
             } else {
                 msg_print(_("あまりにも空腹で気を失ってしまった！", "You are getting faint from hunger!"));

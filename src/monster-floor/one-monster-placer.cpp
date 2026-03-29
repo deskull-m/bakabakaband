@@ -31,7 +31,6 @@
 #include "monster/monster-update.h"
 #include "monster/monster-util.h"
 #include "object/warning.h"
-#include "player/player-status.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
@@ -55,7 +54,7 @@
 static MonraceId initial_r_appearance(CreatureEntity &creature, MonraceId r_idx, BIT_FLAGS generate_mode)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (is_chargeman(*player_ptr) && any_bits(generate_mode, PM_JURAL) && none_bits(generate_mode, PM_MULTIPLY | PM_KAGE)) {
+    if (player_ptr->is_chargeman() && any_bits(generate_mode, PM_JURAL) && none_bits(generate_mode, PM_MULTIPLY | PM_KAGE)) {
         return MonraceId::ALIEN_JURAL;
     }
 

@@ -8,7 +8,6 @@
 #include "object/object-broken.h"
 #include "object/object-info.h"
 #include "object/object-stack.h"
-#include "player/player-status.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
@@ -74,15 +73,15 @@ void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, in
 #endif
 
 #ifdef JP
-        if (is_echizen(*player_ptr)) {
+        if (player_ptr->is_echizen()) {
             msg_print("やりやがったな！");
-        } else if (is_chargeman(*player_ptr)) {
+        } else if (player_ptr->is_chargeman()) {
             if (randint0(2) == 0) {
                 msg_print(_("ジュラル星人め！", ""));
             } else {
                 msg_print(_("弱い者いじめは止めるんだ！", ""));
             }
-        } else if (is_tough(*player_ptr)) {
+        } else if (player_ptr->is_tough()) {
             msg_print(_("う わ あ あ あ あ あ あ あ あ", ""));
         }
 

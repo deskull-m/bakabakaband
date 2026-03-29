@@ -27,12 +27,6 @@ std::string cnv_stat(int val);
 int16_t modify_stat_value(int value, int amount);
 uint32_t calc_score(CreatureEntity &creature);
 
-bool is_time_limit_esp(CreatureEntity &creature);
-bool is_time_limit_stealth(CreatureEntity &creature);
-bool is_echizen(CreatureEntity &creature);
-bool is_tough(CreatureEntity &creature);
-bool is_chargeman(CreatureEntity &creature);
-bool is_sushi_eater(CreatureEntity &creature);
 
 void stop_mouth(CreatureEntity &creature);
 

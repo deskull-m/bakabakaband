@@ -22,7 +22,6 @@
 #include "monster/monster-util.h"
 #include "player-base/player-class.h"
 #include "player/player-move.h"
-#include "player/player-status.h"
 #include "spell-kind/spells-launcher.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -369,7 +368,7 @@ bool teleport_player_aux(CreatureEntity &creature, POSITION dis, bool is_quantum
 
     sound(SoundKind::TELEPORT);
 #ifdef JP
-    if (is_echizen(player)) {
+    if (player.is_echizen()) {
         msg_format("『こっちだぁ、%s』", player.name.data());
     }
 #endif

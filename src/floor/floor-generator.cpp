@@ -36,7 +36,6 @@
 #include "monster/monster-status.h"
 #include "monster/monster-update.h"
 #include "monster/monster-util.h"
-#include "player/player-status.h"
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
 #include "system/dungeon/dungeon-definition.h"
@@ -607,7 +606,7 @@ void generate_floor(CreatureEntity &creature)
             why = level_gen(creature);
         }
 
-        if (is_sushi_eater(*player_ptr)) {
+        if (player_ptr->is_sushi_eater()) {
             alloc_object(*player_ptr, ALLOC_SET_BOTH, ALLOC_TYP_SUSHI, randnor(floor.width * floor.height / 20, 3));
         }
 

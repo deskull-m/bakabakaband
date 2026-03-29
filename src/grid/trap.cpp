@@ -18,7 +18,6 @@
 #include "player/player-damage.h"
 #include "player/player-status-flags.h"
 #include "player/player-status-resist.h"
-#include "player/player-status.h"
 #include "spell-kind/spells-floor.h"
 #include "spell-kind/spells-launcher.h"
 #include "spell-kind/spells-random.h"
@@ -311,11 +310,11 @@ void hit_trap(CreatureEntity &creature, bool break_trap)
         }
 
         msg_print(_("落とし戸に落ちた！", "You have fallen through a trap door!"));
-        if (is_echizen(creature)) {
+        if (creature.is_echizen()) {
             msg_print(_("くっそ～！", ""));
-        } else if (is_chargeman(creature)) {
+        } else if (creature.is_chargeman()) {
             msg_print(_("ジュラル星人の仕業に違いない！", ""));
-        } else if (is_tough(creature)) {
+        } else if (creature.is_tough()) {
             msg_print(_("う わ あ あ あ あ あ あ あ あ", ""));
         }
 
