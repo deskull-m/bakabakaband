@@ -72,7 +72,7 @@ ObjectThrowHitMonster::ObjectThrowHitMonster(CreatureEntity &creature, POSITION 
 
 ObjectThrowEntity::ObjectThrowEntity(CreatureEntity &creature, ItemEntity *q_ptr, const int delay_factor_val, const int mult, const bool boomerang, const OBJECT_IDX shuriken)
     : q_ptr(q_ptr)
-    , player_ptr(static_cast<PlayerType *>(&creature))
+    , player_ptr(&static_cast<PlayerType &>(creature))
     , shuriken(shuriken)
     , mult(mult)
     , msec(delay_factor_val)

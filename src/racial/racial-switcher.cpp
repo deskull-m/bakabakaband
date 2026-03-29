@@ -88,15 +88,15 @@
 
 bool switch_class_racial_execution(CreatureEntity &creature, const int32_t command)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    switch (player_ptr->pclass) {
+    auto &player = static_cast<PlayerType &>(creature);
+    switch (player.pclass) {
     case PlayerClassType::WARRIOR:
         return sword_dancing(creature);
     case PlayerClassType::HIGH_MAGE:
-        if (PlayerRealm(*player_ptr).is_realm_hex()) {
-            const auto retval = SpellHex(*player_ptr).stop_spells_with_selection();
+        if (PlayerRealm(player).is_realm_hex()) {
+            const auto retval = SpellHex(player).stop_spells_with_selection();
             if (retval) {
-                PlayerEnergy(*player_ptr).set_player_turn_energy(10);
+                PlayerEnergy(player).set_player_turn_energy(10);
             }
 
             return retval;
@@ -107,7 +107,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
     case PlayerClassType::SORCERER:
         return eat_magic(creature, creature.level * 2);
     case PlayerClassType::PRIEST:
-        if (!PlayerRealm(*player_ptr).realm1().is_good_attribute()) {
+        if (!PlayerRealm(player).realm1().is_good_attribute()) {
             (void)dispel_monsters(creature, creature.level * 4);
             turn_monsters(creature, creature.level * 4);
             banish_monsters(creature, creature.level * 4);
@@ -123,31 +123,31 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         probing(creature);
         return true;
     case PlayerClassType::PALADIN: {
-        const auto dir = get_aim_dir(*player_ptr);
+        const auto dir = get_aim_dir(player);
         if (!dir) {
             return false;
         }
 
-        fire_beam(creature, PlayerRealm(*player_ptr).realm1().is_good_attribute() ? AttributeType::HOLY_FIRE : AttributeType::HELL_FIRE, dir, creature.level * 3);
+        fire_beam(creature, PlayerRealm(player).realm1().is_good_attribute() ? AttributeType::HOLY_FIRE : AttributeType::HELL_FIRE, dir, creature.level * 3);
         return true;
     }
     case PlayerClassType::WARRIOR_MAGE:
         if (command == -3) {
-            return comvert_hp_to_mp(*player_ptr);
+            return comvert_hp_to_mp(player);
         } else if (command == -4) {
-            return comvert_mp_to_hp(*player_ptr);
+            return comvert_mp_to_hp(player);
         }
 
         return true;
     case PlayerClassType::CHAOS_WARRIOR:
-        return confusing_light(*player_ptr);
+        return confusing_light(player);
     case PlayerClassType::MONK:
-        if (none_bits(empty_hands(*player_ptr, true), EMPTY_HAND_MAIN)) {
+        if (none_bits(empty_hands(player, true), EMPTY_HAND_MAIN)) {
             msg_print(_("素手じゃないとできません。", "You need to be barehanded."));
             return false;
         }
 
-        if (player_ptr->riding) {
+        if (player.riding) {
             msg_print(_("乗馬中はできません。", "You need to get off a pet."));
             return false;
         }
@@ -168,10 +168,10 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         return true;
     case PlayerClassType::MINDCRAFTER:
     case PlayerClassType::FORCETRAINER:
-        return clear_mind(*player_ptr);
+        return clear_mind(player);
     case PlayerClassType::TOURIST:
         if (command == -3) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(player);
             if (!dir) {
                 return false;
             }
@@ -181,13 +181,13 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
             return true;
         }
 
-        return (command != -4) || identify_fully(*player_ptr, false);
+        return (command != -4) || identify_fully(player, false);
     case PlayerClassType::IMITATOR:
-        handle_stuff(*player_ptr);
-        return do_cmd_mane(*player_ptr, true);
+        handle_stuff(player);
+        return do_cmd_mane(player, true);
     case PlayerClassType::BEASTMASTER:
         if (command == -3) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(player);
             if (!dir) {
                 return false;
             }
@@ -208,34 +208,34 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
             return import_magic_device(creature);
         }
 
-        return (command != -4) || (!cmd_limit_cast(creature) && do_cmd_magic_eater(*player_ptr, false, true));
+        return (command != -4) || (!cmd_limit_cast(creature) && do_cmd_magic_eater(player, false, true));
     case PlayerClassType::BARD:
-        if ((get_singing_song_effect(*player_ptr) == 0) && (get_interrupting_song_effect(*player_ptr) == 0)) {
+        if ((get_singing_song_effect(player) == 0) && (get_interrupting_song_effect(player) == 0)) {
             return false;
         }
 
-        stop_singing(*player_ptr);
-        PlayerEnergy(*player_ptr).set_player_turn_energy(10);
+        stop_singing(player);
+        PlayerEnergy(player).set_player_turn_energy(10);
         return true;
     case PlayerClassType::RED_MAGE:
         if (cmd_limit_cast(creature)) {
             return false;
         }
 
-        handle_stuff(*player_ptr);
-        if (!do_cmd_cast(*player_ptr)) {
+        handle_stuff(player);
+        if (!do_cmd_cast(player)) {
             return false;
         }
 
-        if (!player_ptr->effects()->paralysis().is_paralyzed() && !cmd_limit_cast(creature)) {
-            handle_stuff(*player_ptr);
+        if (!player.effects()->paralysis().is_paralyzed() && !cmd_limit_cast(creature)) {
+            handle_stuff(player);
             command_dir = Direction::none();
-            (void)do_cmd_cast(*player_ptr);
+            (void)do_cmd_cast(player);
         }
         return true;
     case PlayerClassType::SAMURAI:
         if (command == -3) {
-            concentration(*player_ptr);
+            concentration(player);
             return true;
         }
 
@@ -243,12 +243,12 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
             return true;
         }
 
-        if (!has_melee_weapon(*player_ptr, INVEN_MAIN_HAND) && !has_melee_weapon(*player_ptr, INVEN_SUB_HAND)) {
+        if (!has_melee_weapon(player, INVEN_MAIN_HAND) && !has_melee_weapon(player, INVEN_SUB_HAND)) {
             msg_print(_("\u6b66\u5668\u3092\u6301\u305f\u306a\u3044\u3068\u3044\u3051\u307e\u305b\u3093\u3002", "You need to wield a weapon."));
             return false;
         }
 
-        if (!choose_samurai_stance(*player_ptr)) {
+        if (!choose_samurai_stance(player)) {
             return false;
         }
 
@@ -256,20 +256,20 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         return true;
     case PlayerClassType::BLUE_MAGE:
         set_action(creature, creature.action == ACTION_LEARN ? ACTION_NONE : ACTION_LEARN);
-        PlayerEnergy(*player_ptr).reset_player_turn();
+        PlayerEnergy(player).reset_player_turn();
         return true;
     case PlayerClassType::CAVALRY:
         return rodeo(creature);
     case PlayerClassType::BERSERKER:
         return recall_player(creature, randint0(21) + 15);
     case PlayerClassType::SMITH:
-        if (player_ptr->level <= 29) {
-            return ident_spell(*player_ptr, true);
+        if (player.level <= 29) {
+            return ident_spell(player, true);
         }
 
-        return identify_fully(*player_ptr, true);
+        return identify_fully(player, true);
     case PlayerClassType::MIRROR_MASTER: {
-        SpellsMirrorMaster smm(*player_ptr);
+        SpellsMirrorMaster smm(player);
         if (command == -3) {
             smm.remove_all_mirrors(true);
             return true;
@@ -282,13 +282,13 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         return true;
     }
     case PlayerClassType::NINJA:
-        return hayagake(*player_ptr);
+        return hayagake(player);
     case PlayerClassType::ELEMENTALIST:
         if (command == -3) {
-            return clear_mind(*player_ptr);
+            return clear_mind(player);
         }
         if (command == -4) {
-            return switch_element_execution(*player_ptr);
+            return switch_element_execution(player);
         }
         return true;
     default:
@@ -313,10 +313,10 @@ bool switch_mimic_racial_execution(CreatureEntity &creature)
 
 bool switch_race_racial_execution(CreatureEntity &creature, const int32_t command)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     // 性格ベースのレイシャル能力をチェック
-    if (player_ptr->ppersonality == PERSONALITY_MESUGAKI) {
-        const auto dir = get_aim_dir(*player_ptr);
+    if (player.ppersonality == PERSONALITY_MESUGAKI) {
+        const auto dir = get_aim_dir(player);
         if (!dir) {
             return false;
         }
@@ -325,7 +325,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         return true;
     }
 
-    switch (player_ptr->prace) {
+    switch (player.prace) {
     case PlayerRaceType::DWARF:
         msg_print(_("周囲を調べた。", "You examine your surroundings."));
         (void)detect_traps(creature, DETECT_RAD_DEFAULT, true);
@@ -344,7 +344,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         return true;
     case PlayerRaceType::HALF_TROLL:
         msg_print(_("うがぁぁ！", "RAAAGH!"));
-        (void)berserk(*player_ptr, 10 + randint1(player_ptr->level));
+        (void)berserk(player, 10 + randint1(player.level));
         return true;
     case PlayerRaceType::AMBERITE:
         if (command == -1) {
@@ -358,25 +358,25 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         }
 
         msg_print(_("あなたは「パターン」を心に描いてその上を歩いた...", "You picture the Pattern in your mind and walk it..."));
-        (void)true_healing(*player_ptr, 0);
-        (void)restore_all_status(*player_ptr);
+        (void)true_healing(player, 0);
+        (void)restore_all_status(player);
         (void)restore_level(creature);
         return true;
     case PlayerRaceType::BARBARIAN:
         msg_print(_("うぉぉおお！", "Raaagh!"));
-        (void)berserk(*player_ptr, 10 + randint1(player_ptr->level));
+        (void)berserk(player, 10 + randint1(player.level));
         return true;
     case PlayerRaceType::HALF_OGRE:
         msg_print(_("爆発のルーンを慎重に仕掛けた...", "You carefully set an explosive rune..."));
-        (void)create_rune_explosion(*player_ptr, player_ptr->y, player_ptr->x);
+        (void)create_rune_explosion(player, player.y, player.x);
         return true;
     case PlayerRaceType::HALF_GIANT: {
-        const auto dir = get_aim_dir(*player_ptr);
+        const auto dir = get_aim_dir(player);
         if (!dir) {
             return false;
         }
 
-        (void)wall_to_mud(*player_ptr, dir, 20 + randint1(30));
+        (void)wall_to_mud(player, dir, 20 + randint1(30));
         return true;
     }
     case PlayerRaceType::HALF_TITAN:
@@ -384,7 +384,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         (void)probing(creature);
         return true;
     case PlayerRaceType::CYCLOPS: {
-        const auto dir = get_aim_dir(*player_ptr);
+        const auto dir = get_aim_dir(player);
         if (!dir) {
             return false;
         }
@@ -394,18 +394,18 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         return true;
     }
     case PlayerRaceType::YEEK: {
-        const auto dir = get_aim_dir(*player_ptr);
+        const auto dir = get_aim_dir(player);
         if (!dir) {
             return false;
         }
 
         stop_mouth(creature);
         msg_print(_("身の毛もよだつ叫び声を上げた！", "You make a horrible scream!"));
-        (void)fear_monster(*player_ptr, dir, creature.level);
+        (void)fear_monster(player, dir, creature.level);
         return true;
     }
     case PlayerRaceType::KLACKON: {
-        const auto dir = get_aim_dir(*player_ptr);
+        const auto dir = get_aim_dir(player);
         if (!dir) {
             return false;
         }
@@ -421,7 +421,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         return true;
     }
     case PlayerRaceType::KOBOLD: {
-        const auto dir = get_aim_dir(*player_ptr);
+        const auto dir = get_aim_dir(player);
         if (!dir) {
             return false;
         }
@@ -437,7 +437,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         (void)detect_stairs(creature, DETECT_RAD_DEFAULT);
         return true;
     case PlayerRaceType::DARK_ELF: {
-        const auto dir = get_aim_dir(*player_ptr);
+        const auto dir = get_aim_dir(player);
         if (!dir) {
             return false;
         }
@@ -449,7 +449,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
     case PlayerRaceType::DRACONIAN:
         return draconian_breath(creature);
     case PlayerRaceType::MIND_FLAYER: {
-        const auto dir = get_aim_dir(*player_ptr);
+        const auto dir = get_aim_dir(player);
         if (!dir) {
             return false;
         }
@@ -459,7 +459,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         return true;
     }
     case PlayerRaceType::IMP: {
-        const auto dir = get_aim_dir(*player_ptr);
+        const auto dir = get_aim_dir(player);
         if (!dir) {
             return false;
         }
@@ -475,7 +475,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         return true;
     }
     case PlayerRaceType::GOLEM:
-        (void)set_shield(*player_ptr, randint1(20) + 30, false);
+        (void)set_shield(player, randint1(20) + 30, false);
         return true;
     case PlayerRaceType::SKELETON:
     case PlayerRaceType::ZOMBIE:
@@ -486,14 +486,14 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         (void)vampirism(creature);
         return true;
     case PlayerRaceType::SPECTRE: {
-        const auto dir = get_aim_dir(*player_ptr);
+        const auto dir = get_aim_dir(player);
         if (!dir) {
             return false;
         }
 
         stop_mouth(creature);
         msg_print(_("あなたはおどろおどろしい叫び声をあげた！", "You emit an eldritch howl!"));
-        (void)fear_monster(*player_ptr, dir, creature.level);
+        (void)fear_monster(player, dir, creature.level);
         return true;
     }
     case PlayerRaceType::SPRITE:
@@ -519,7 +519,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
     }
     default:
         msg_print(_("この種族は特殊な能力を持っていません。", "This race has no bonus power."));
-        PlayerEnergy(*player_ptr).reset_player_turn();
+        PlayerEnergy(player).reset_player_turn();
         return true;
     }
 }

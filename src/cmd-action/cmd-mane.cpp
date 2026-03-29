@@ -1193,7 +1193,6 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
  */
 bool do_cmd_mane(CreatureEntity &creature, bool baigaesi)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     int n = 0;
     PERCENTAGE chance;
     PERCENTAGE minfail = 0;
@@ -1264,7 +1263,7 @@ bool do_cmd_mane(CreatureEntity &creature, bool baigaesi)
     }
 
     mane_data->mane_list.erase(std::next(mane_data->mane_list.begin(), n));
-    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::IMITATION);
     static constexpr auto flags = {

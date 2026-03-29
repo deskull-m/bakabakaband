@@ -33,7 +33,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
@@ -48,13 +47,12 @@
  */
 static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
     auto dummy_y = monster.y;
     auto dummy_x = monster.x;
-    if (see_monster(*player_ptr, m_idx) && monster_near_player(floor, m_idx, 0)) {
-        disturb(*player_ptr, true, true);
+    if (see_monster(creature, m_idx) && monster_near_player(floor, m_idx, 0)) {
+        disturb(creature, true, true);
     }
 
     const auto &monraces = MonraceList::get_instance();
@@ -67,9 +65,9 @@ static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(CreatureEntity &creature
             return MonsterSpellResult::make_invalid();
         }
 
-        delete_monster_idx(*player_ptr, floor.grid_array[monster.y][monster.x].m_idx);
+        delete_monster_idx(creature, floor.grid_array[monster.y][monster.x].m_idx);
         for (const auto separate : it_unified->second) {
-            auto summoned_m_idx = summon_named_creature(*player_ptr, 0, dummy_y, dummy_x, separate, MD_NONE);
+            auto summoned_m_idx = summon_named_creature(creature, 0, dummy_y, dummy_x, separate, MD_NONE);
             if (!summoned_m_idx) {
                 continue;
             }
@@ -107,10 +105,10 @@ static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(CreatureEntity &creature
                 dummy_x = monster_separate.x;
             }
 
-            delete_monster_idx(*player_ptr, k);
+            delete_monster_idx(creature, k);
         }
 
-        if (auto summoned_m_idx = summon_named_creature(*player_ptr, 0, dummy_y, dummy_x, unified_unique, MD_NONE)) {
+        if (auto summoned_m_idx = summon_named_creature(creature, 0, dummy_y, dummy_x, unified_unique, MD_NONE)) {
             floor.m_list[*summoned_m_idx].hp = unified_hp;
             floor.m_list[*summoned_m_idx].maxhp = unified_maxhp;
         }
@@ -141,12 +139,11 @@ static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(CreatureEntity &creature
  */
 static MonsterSpellResult spell_RF6_SPECIAL_ROLENTO(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     int count = 0, k;
     int num = 1 + randint1(3);
     BIT_FLAGS mode = 0L;
     const auto &floor = *creature.current_floor_ptr;
-    bool see_either = see_monster(*player_ptr, m_idx) || see_monster(*player_ptr, t_idx);
+    bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool mon_to_mon = target_type == MONSTER_TO_MONSTER;
     bool mon_to_player = target_type == MONSTER_TO_PLAYER;
     bool known = monster_near_player(floor, m_idx, t_idx);
@@ -154,15 +151,15 @@ static MonsterSpellResult spell_RF6_SPECIAL_ROLENTO(CreatureEntity &creature, PO
     mspell_cast_msg_blind msg(_("%s^が何か大量に投げた。", "%s^ spreads something."),
         _("%s^は手榴弾をばらまいた。", "%s^ throws some hand grenades."), _("%s^は手榴弾をばらまいた。", "%s^ throws some hand grenades."));
 
-    monspell_message(*player_ptr, m_idx, t_idx, msg, target_type);
+    monspell_message(creature, m_idx, t_idx, msg, target_type);
     if (mon_to_player || (mon_to_mon && known && see_either)) {
-        disturb(*player_ptr, true, true);
+        disturb(creature, true, true);
     }
 
     for (k = 0; k < num; k++) {
-        count += summon_named_creature(*player_ptr, m_idx, y, x, MonraceId::GRENADE, mode) ? 1 : 0;
+        count += summon_named_creature(creature, m_idx, y, x, MonraceId::GRENADE, mode) ? 1 : 0;
     }
-    if (player_ptr->effects()->blindness().is_blind() && count) {
+    if (creature.effects()->blindness().is_blind() && count) {
         msg_print(_("多くのものが間近にばらまかれる音がする。", "You hear many things scattered nearby."));
     }
 
@@ -180,7 +177,6 @@ static MonsterSpellResult spell_RF6_SPECIAL_ROLENTO(CreatureEntity &creature, PO
  */
 static MonsterSpellResult spell_RF6_SPECIAL_B(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     mspell_cast_msg_simple msg{};
     const auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
@@ -189,16 +185,16 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(CreatureEntity &creature, POSITION
     bool monster_to_player = (target_type == MONSTER_TO_PLAYER);
     bool monster_to_monster = (target_type == MONSTER_TO_MONSTER);
     bool direct = creature.is_located_at({ y, x });
-    const auto m_name = monster_name(*player_ptr, m_idx);
+    const auto m_name = monster_name(creature, m_idx);
 
-    disturb(*player_ptr, true, true);
+    disturb(creature, true, true);
     if (one_in_(3) || !direct) {
         msg.to_player = _("%s^は突然視界から消えた!", "You lose sight of %s!");
         msg.to_mons = _("%s^は突然急上昇して視界から消えた!", "You lose sight of %s!");
 
-        simple_monspell_message(*player_ptr, m_idx, t_idx, msg, target_type);
+        simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
 
-        teleport_away(*player_ptr, m_idx, 10, TELEPORT_NONMAGICAL);
+        teleport_away(creature, m_idx, 10, TELEPORT_NONMAGICAL);
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
         return MonsterSpellResult::make_valid();
     }
@@ -210,18 +206,18 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(CreatureEntity &creature, POSITION
     msg.to_player = _("%s^があなたを掴んで空中から投げ落とした。", "%s^ snatches you, soars into the sky, and drops you.");
     msg.to_mons = _("%s^が%sを掴んで空中から投げ落とした。", "%s^ snatches %s, soars into the sky, and releases its grip.");
 
-    simple_monspell_message(*player_ptr, m_idx, t_idx, msg, target_type);
+    simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
 
     bool fear, dead; /* dummy */
     int dam = Dice::roll(4, 8);
 
     if (monster_to_player || monster_target.is_riding()) {
-        teleport_player_to(*player_ptr, monster.y, monster.x, i2enum<teleport_flags>(TELEPORT_NONMAGICAL | TELEPORT_PASSIVE));
+        teleport_player_to(creature, monster.y, monster.x, i2enum<teleport_flags>(TELEPORT_NONMAGICAL | TELEPORT_PASSIVE));
     } else {
-        teleport_monster_to(*player_ptr, t_idx, monster.y, monster.x, 100, i2enum<teleport_flags>(TELEPORT_NONMAGICAL | TELEPORT_PASSIVE));
+        teleport_monster_to(creature, t_idx, monster.y, monster.x, 100, i2enum<teleport_flags>(TELEPORT_NONMAGICAL | TELEPORT_PASSIVE));
     }
 
-    if ((monster_to_player && player_ptr->levitation) || (monster_to_monster && monrace_target.feature_flags.has(MonsterFeatureType::CAN_FLY))) {
+    if ((monster_to_player && creature.levitation) || (monster_to_monster && monrace_target.feature_flags.has(MonsterFeatureType::CAN_FLY))) {
         msg.to_player = _("あなたは静かに着地した。", "You float gently down to the ground.");
         msg.to_mons = _("%s^は静かに着地した。", "%s^ floats gently down to the ground.");
     } else {
@@ -229,26 +225,26 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(CreatureEntity &creature, POSITION
         msg.to_mons = _("%s^は地面に叩きつけられた。", "%s^ crashed into the ground.");
     }
 
-    simple_monspell_message(*player_ptr, m_idx, t_idx, msg, target_type);
+    simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
     dam += Dice::roll(6, 8);
 
     if (monster_to_player || (monster_to_monster && monster_target.is_riding())) {
-        int get_damage = take_hit(*player_ptr, DAMAGE_NOESCAPE, dam, m_name);
-        if (player_ptr->tim_eyeeye && get_damage > 0 && !player_ptr->is_dead()) {
-            const auto m_name_self = monster_desc(*player_ptr, monster, MD_PRON_VISIBLE | MD_POSSESSIVE | MD_OBJECTIVE);
+        int get_damage = take_hit(creature, DAMAGE_NOESCAPE, dam, m_name);
+        if (creature.tim_eyeeye && get_damage > 0 && !creature.is_dead()) {
+            const auto m_name_self = monster_desc(creature, monster, MD_PRON_VISIBLE | MD_POSSESSIVE | MD_OBJECTIVE);
             msg_print(_(format("攻撃が%s自身を傷つけた！", m_name.data()), format("The attack of %s has wounded %s!", m_name.data(), m_name_self.data())));
-            project(*player_ptr, 0, 0, monster.y, monster.x, get_damage, AttributeType::MISSILE, PROJECT_KILL);
-            set_tim_eyeeye(*player_ptr, player_ptr->tim_eyeeye - 5, true);
+            project(creature, 0, 0, monster.y, monster.x, get_damage, AttributeType::MISSILE, PROJECT_KILL);
+            set_tim_eyeeye(creature, creature.tim_eyeeye - 5, true);
         }
     }
 
-    if (monster_to_player && player_ptr->riding) {
-        const auto &m_ref = floor.m_list[player_ptr->riding];
-        mon_take_hit_mon(*player_ptr, player_ptr->riding, dam, &dead, &fear, m_ref.get_died_message(), m_idx);
+    if (monster_to_player && creature.riding) {
+        const auto &m_ref = floor.m_list[creature.riding];
+        mon_take_hit_mon(creature, creature.riding, dam, &dead, &fear, m_ref.get_died_message(), m_idx);
     }
 
     if (monster_to_monster) {
-        mon_take_hit_mon(*player_ptr, t_idx, dam, &dead, &fear, monster_target.get_died_message(), m_idx);
+        mon_take_hit_mon(creature, t_idx, dam, &dead, &fear, monster_target.get_died_message(), m_idx);
     }
 
     return MonsterSpellResult::make_valid();

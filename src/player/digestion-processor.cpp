@@ -28,27 +28,27 @@
  */
 void starve_player(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     if (AngbandSystem::get_instance().is_phase_out()) {
         return;
     }
 
-    if (player_ptr->food >= PY_FOOD_MAX) {
-        (void)set_food(creature, player_ptr->food - 100);
+    if (player.food >= PY_FOOD_MAX) {
+        (void)set_food(creature, player.food - 100);
     } else if (AngbandWorld::get_instance().game_turn % (TURNS_PER_TICK * 5) == 0) {
         int digestion = speed_to_energy(creature.get_speed());
-        if (player_ptr->regenerate) {
+        if (player.regenerate) {
             digestion += 20;
         }
         CreatureClass pc(creature);
         if (!pc.monk_stance_is(MonkStanceType::NONE) || !pc.samurai_stance_is(SamuraiStanceType::NONE)) {
             digestion += 20;
         }
-        if (player_ptr->cursed.has(CurseTraitType::FAST_DIGEST)) {
+        if (player.cursed.has(CurseTraitType::FAST_DIGEST)) {
             digestion += 30;
         }
 
-        if (player_ptr->slow_digest) {
+        if (player.slow_digest) {
             digestion -= 5;
         }
 
@@ -63,21 +63,21 @@ void starve_player(CreatureEntity &creature)
             digestion *= 100;
         }
 
-        (void)set_food(creature, player_ptr->food - digestion);
+        (void)set_food(creature, player.food - digestion);
     }
 
-    if ((player_ptr->food >= PY_FOOD_FAINT)) {
+    if ((player.food >= PY_FOOD_FAINT)) {
         return;
     }
 
-    if (!is_sushi_eater(creature) && !player_ptr->effects()->paralysis().is_paralyzed() && one_in_(10)) {
+    if (!is_sushi_eater(creature) && !player.effects()->paralysis().is_paralyzed() && one_in_(10)) {
         msg_print(_("あまりにも空腹で気絶してしまった。", "You faint from the lack of food."));
         disturb(creature, true, true);
         (void)BadStatusSetter(creature).mod_paralysis(1 + randint0(5));
     }
 
-    if (player_ptr->food < PY_FOOD_STARVE) {
-        int dam = (PY_FOOD_STARVE - player_ptr->food) / 10;
+    if (player.food < PY_FOOD_STARVE) {
+        int dam = (PY_FOOD_STARVE - player.food) / 10;
         if (!is_invuln(creature)) {
             take_hit(creature, DAMAGE_LOSELIFE, dam, _("空腹", "starvation"));
         }

@@ -424,17 +424,16 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
         md.r_ptr = &md.m_ptr->get_monrace();
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     // ジョークオプション：モンスターの墓石を立てる
     if (monster_tombstones) {
         screen_save();
-        print_monster_tomb(*player_ptr, *md.m_ptr);
+        print_monster_tomb(creature, *md.m_ptr);
         msg_print(_("-続けるには何かキーを押してください-", "-Press any key to continue-"));
         screen_load();
         do_cmd_redraw(creature);
     }
 
-    QuestCompletionChecker(*player_ptr, *md.m_ptr).complete();
+    QuestCompletionChecker(creature, *md.m_ptr).complete();
     on_defeat_arena_monster(creature, &md);
     if (md.m_ptr->is_riding() && process_fall_off_horse(creature, -1, false)) {
         msg_print(_("地面に落とされた。", "You have fallen from the pet you were riding."));

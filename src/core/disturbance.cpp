@@ -6,7 +6,6 @@
 #include "player/attack-defense-types.h"
 #include "status/action-setter.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
 #include "term/screen-processor.h"
@@ -24,7 +23,6 @@ void disturb(CreatureEntity &creature, bool stop_search, bool stop_travel)
         return;
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (command_rep) {
         command_rep = 0;
@@ -38,7 +36,7 @@ void disturb(CreatureEntity &creature, bool stop_search, bool stop_travel)
     if (creature.running) {
         creature.running = 0;
         if (center_player && !center_running) {
-            verify_panel(*player_ptr);
+            verify_panel(creature);
         }
 
         static constexpr auto flags = {
@@ -51,7 +49,7 @@ void disturb(CreatureEntity &creature, bool stop_search, bool stop_travel)
     if (stop_travel) {
         Travel::get_instance().stop();
         if (center_player && !center_running) {
-            verify_panel(*player_ptr);
+            verify_panel(creature);
         }
 
         rfu.set_flag(StatusRecalculatingFlag::TORCH);

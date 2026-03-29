@@ -3,7 +3,6 @@
 #include "player/player-status.h"
 #include "system/floor/floor-info.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "tracking/lore-tracker.h"
@@ -42,8 +41,7 @@ void monster_race_track(CreatureEntity &creature, MonraceId r_idx)
  */
 void object_kind_track(CreatureEntity &creature, short bi_id)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    player_ptr->tracking_bi_id = bi_id;
+    creature.tracking_bi_id = bi_id;
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::ITEM_KNOWLEDGE);
 }
 

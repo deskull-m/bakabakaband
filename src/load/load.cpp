@@ -43,7 +43,6 @@
 #include "system/angband-exceptions.h"
 #include "system/angband-system.h"
 #include "system/angband-version.h"
-#include "system/player-type-definition.h"
 #include "system/system-variables.h"
 #include "util/angband-files.h"
 #include "util/enum-converter.h"
@@ -114,7 +113,6 @@ static void rd_winner_class()
 
 static void load_player_world(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     rd_total_play_time();
     rd_world_info();
     rd_winner_class();
@@ -127,8 +125,8 @@ static void load_player_world(CreatureEntity &creature)
     rd_global_configurations(creature);
     rd_extra(creature);
 
-    if (player_ptr->energy_need < -999) {
-        player_ptr->timewalk = true;
+    if (creature.energy_need < -999) {
+        creature.timewalk = true;
     }
 
     load_note(_("特別情報をロードしました", "Loaded extra information"));
@@ -136,7 +134,6 @@ static void load_player_world(CreatureEntity &creature)
 
 static errr load_hp(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto tmp16u = rd_u16b();
     if (tmp16u > PY_MAX_LEVEL) {
         load_note(format(_("ヒットポイント配列が大きすぎる(%u)！", "Too many (%u) hitpoint entries!"), tmp16u));
@@ -144,7 +141,7 @@ static errr load_hp(CreatureEntity &creature)
     }
 
     for (auto i = 0; i < tmp16u; i++) {
-        player_ptr->player_hp[i] = rd_s16b();
+        creature.player_hp[i] = rd_s16b();
     }
 
     return 0;
@@ -152,15 +149,14 @@ static errr load_hp(CreatureEntity &creature)
 
 static void load_spells(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    player_ptr->spell_learned1 = rd_u32b();
-    player_ptr->spell_learned2 = rd_u32b();
-    player_ptr->spell_worked1 = rd_u32b();
-    player_ptr->spell_worked2 = rd_u32b();
-    player_ptr->spell_forgotten1 = rd_u32b();
-    player_ptr->spell_forgotten2 = rd_u32b();
-    player_ptr->learned_spells = rd_s16b();
-    player_ptr->add_spells = rd_s16b();
+    creature.spell_learned1 = rd_u32b();
+    creature.spell_learned2 = rd_u32b();
+    creature.spell_worked1 = rd_u32b();
+    creature.spell_worked2 = rd_u32b();
+    creature.spell_forgotten1 = rd_u32b();
+    creature.spell_forgotten2 = rd_u32b();
+    creature.learned_spells = rd_s16b();
+    creature.add_spells = rd_s16b();
 }
 
 static errr verify_checksum()
@@ -193,7 +189,6 @@ static errr verify_encoded_checksum()
  */
 static errr exe_reading_savefile(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     rd_version_info();
     if (!loading_savefile_version_is_older_than(SAVEFILE_VERSION + 1)) {
         load_note(_("セーブデータのバージョンが新しすぎる", "Savefile version is too new"));
@@ -218,18 +213,18 @@ static errr exe_reading_savefile(CreatureEntity &creature)
         return load_hp_result;
     }
 
-    sp_ptr = &sex_info[player_ptr->psex];
-    player_ptr->race = &race_info[enum2i(player_ptr->prace)];
-    cp_ptr = &class_info.at(player_ptr->pclass);
-    player_ptr->pclass_ref = &class_info.at(player_ptr->pclass);
-    player_ptr->personality = &personality_info[player_ptr->ppersonality];
+    sp_ptr = &sex_info[creature.psex];
+    creature.race = &race_info[enum2i(creature.prace)];
+    cp_ptr = &class_info.at(creature.pclass);
+    creature.pclass_ref = &class_info.at(creature.pclass);
+    creature.personality = &personality_info[creature.ppersonality];
 
-    auto short_pclass = enum2i(player_ptr->pclass);
+    auto short_pclass = enum2i(creature.pclass);
     mp_ptr = &class_magics_info[short_pclass];
 
     load_spells(creature);
     if (CreatureClass(creature).equals(PlayerClassType::MINDCRAFTER)) {
-        player_ptr->add_spells = 0;
+        creature.add_spells = 0;
     }
 
     auto load_inventory_result = load_inventory(creature);
@@ -238,8 +233,8 @@ static errr exe_reading_savefile(CreatureEntity &creature)
     }
 
     load_store(creature);
-    player_ptr->pet_follow_distance = rd_s16b();
-    player_ptr->pet_extra_flags = rd_u16b();
+    creature.pet_follow_distance = rd_s16b();
+    creature.pet_extra_flags = rd_u16b();
 
     auto restore_dungeon_result = restore_dungeon(creature);
     if (restore_dungeon_result != 0) {
@@ -291,9 +286,8 @@ static errr rd_savefile(CreatureEntity &creature)
  */
 static bool reset_save_data(CreatureEntity &creature, bool *new_game)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     *new_game = true;
-    player_ptr->is_dead_ = false;
+    creature.is_dead_ = false;
     AngbandWorld::get_instance().sf_lives++;
     return true;
 }
@@ -322,8 +316,7 @@ static bool on_read_save_data_not_supported(CreatureEntity &creature, bool *new_
  */
 static bool can_takeover_savefile(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (loading_savefile_version_is_older_than(8) && CreatureClass(*player_ptr).equals(PlayerClassType::SMITH)) {
+    if (loading_savefile_version_is_older_than(8) && CreatureClass(creature).equals(PlayerClassType::SMITH)) {
         return false;
     }
 
@@ -339,10 +332,9 @@ static bool can_takeover_savefile(CreatureEntity &creature)
  */
 bool load_savedata(CreatureEntity &creature, bool *new_game)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto what = "generic";
     AngbandWorld::get_instance().game_turn = 0;
-    player_ptr->is_dead_ = false;
+    creature.is_dead_ = false;
     if (savefile.empty()) {
         return true;
     }
@@ -430,19 +422,19 @@ bool load_savedata(CreatureEntity &creature, bool *new_game)
         return on_read_save_data_not_supported(creature, new_game);
     }
 
-    if (player_ptr->is_dead() || wc_ptr->is_blown_away()) {
+    if (creature.is_dead() || wc_ptr->is_blown_away()) {
         return reset_save_data(creature, new_game);
     }
 
     world.character_loaded = true;
     auto tmp = counts_read(creature, 2);
-    if (tmp > player_ptr->count) {
-        player_ptr->count = tmp;
+    if (tmp > creature.count) {
+        creature.count = tmp;
     }
 
     const auto play_time = world.play_time.elapsed_sec();
     if (counts_read(creature, 0) > play_time || counts_read(creature, 1) == play_time) {
-        counts_write(creature, 2, ++player_ptr->count);
+        counts_write(creature, 2, ++creature.count);
     }
 
     counts_write(creature, 1, play_time);

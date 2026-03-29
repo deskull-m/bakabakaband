@@ -29,7 +29,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "target/projection-path-calculator.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -218,7 +217,6 @@ static void place_monster_group(CreatureEntity &creature, const Pos2D &pos_cente
  */
 tl::optional<MONSTER_IDX> place_specific_monster(CreatureEntity &creature, POSITION y, POSITION x, MonraceId r_idx, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const Pos2D pos(y, x);
     const auto &floor = *creature.current_floor_ptr;
     const auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
@@ -252,7 +250,7 @@ tl::optional<MONSTER_IDX> place_specific_monster(CreatureEntity &creature, POSIT
                 }
             }
             if (d > scatter_max) {
-                msg_format_wizard(*player_ptr, CHEAT_MONSTER, _("護衛の指定生成に失敗しました。", "Failed fixed escorts."));
+                msg_format_wizard(creature, CHEAT_MONSTER, _("護衛の指定生成に失敗しました。", "Failed fixed escorts."));
             }
         }
     }
@@ -274,7 +272,7 @@ tl::optional<MONSTER_IDX> place_specific_monster(CreatureEntity &creature, POSIT
         }
 
         get_mon_num_prep_escort(creature, r_idx, *m_idx, creature.current_floor_ptr->get_monrace_hook_terrain_at(pos_neighbor));
-        const auto monrace_id = get_mon_num(*player_ptr, 0, monrace.level, 0);
+        const auto monrace_id = get_mon_num(creature, 0, monrace.level, 0);
         if (!MonraceList::is_valid(monrace_id)) {
             break;
         }
@@ -297,14 +295,13 @@ tl::optional<MONSTER_IDX> place_specific_monster(CreatureEntity &creature, POSIT
  */
 tl::optional<MONSTER_IDX> place_random_monster(CreatureEntity &creature, POSITION y, POSITION x, BIT_FLAGS mode)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const Pos2D pos(y, x);
     const auto &floor = *creature.current_floor_ptr;
     get_mon_num_prep_enum(creature, floor.get_monrace_hook(), floor.get_monrace_hook_terrain_at(pos));
     const auto &monraces = MonraceList::get_instance();
     MonraceId monrace_id;
     do {
-        monrace_id = get_mon_num(*player_ptr, 0, floor.monster_level, PM_NONE);
+        monrace_id = get_mon_num(creature, 0, floor.monster_level, PM_NONE);
     } while ((mode & PM_NO_QUEST) && MonraceList::get_instance().get_monrace(monrace_id).misc_flags.has(MonsterMiscType::NO_QUEST));
     if (!MonraceList::is_valid(monrace_id)) {
         return tl::nullopt;
@@ -323,11 +320,10 @@ tl::optional<MONSTER_IDX> place_random_monster(CreatureEntity &creature, POSITIO
 
 static tl::optional<MonraceId> select_horde_leader_r_idx(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto *floor_ptr = creature.current_floor_ptr;
 
     for (auto attempts = 1000; attempts > 0; --attempts) {
-        const auto monrace_id = get_mon_num(*player_ptr, 0, floor_ptr->monster_level, PM_NONE);
+        const auto monrace_id = get_mon_num(creature, 0, floor_ptr->monster_level, PM_NONE);
         if (!MonraceList::is_valid(monrace_id)) {
             return tl::nullopt;
         }

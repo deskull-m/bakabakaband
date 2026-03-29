@@ -38,7 +38,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
@@ -54,8 +53,7 @@
  */
 static MonraceId initial_r_appearance(CreatureEntity &creature, MonraceId r_idx, BIT_FLAGS generate_mode)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (is_chargeman(*player_ptr) && any_bits(generate_mode, PM_JURAL) && none_bits(generate_mode, PM_MULTIPLY | PM_KAGE)) {
+    if (is_chargeman(creature) && any_bits(generate_mode, PM_JURAL) && none_bits(generate_mode, PM_MULTIPLY | PM_KAGE)) {
         return MonraceId::ALIEN_JURAL;
     }
 
@@ -63,12 +61,12 @@ static MonraceId initial_r_appearance(CreatureEntity &creature, MonraceId r_idx,
         return r_idx;
     }
 
-    get_mon_num_prep_enum(*player_ptr, MonraceHook::TANUKI);
+    get_mon_num_prep_enum(creature, MonraceHook::TANUKI);
     auto attempts = 1000;
     const auto &floor = *creature.current_floor_ptr;
     auto min = std::min(floor.base_level - 5, 50);
     while (--attempts) {
-        auto ap_r_idx = get_mon_num(*player_ptr, 0, floor.base_level + 10, PM_NONE);
+        auto ap_r_idx = get_mon_num(creature, 0, floor.base_level + 10, PM_NONE);
         if (MonraceList::get_instance().get_monrace(ap_r_idx).level >= min) {
             return ap_r_idx;
         }
@@ -180,8 +178,7 @@ static bool check_procection_rune(CreatureEntity &creature, MonraceId monrace_id
 
 static void warn_unique_generation(CreatureEntity &creature, MonraceId r_idx)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (!player_ptr->warning || !AngbandWorld::get_instance().character_dungeon) {
+    if (!creature.warning || !AngbandWorld::get_instance().character_dungeon) {
         return;
     }
 
@@ -205,9 +202,9 @@ static void warn_unique_generation(CreatureEntity &creature, MonraceId r_idx)
         color = _("白く", "white");
     }
 
-    auto *o_ptr = choose_warning_item(*player_ptr);
+    auto *o_ptr = choose_warning_item(creature);
     if (o_ptr != nullptr) {
-        const auto item_name = describe_flavor(*player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+        const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
         msg_format(_("%sは%s光った。", "%s glows %s."), item_name.data(), color.data());
     } else {
         msg_format(_("%s光る物が頭に浮かんだ。", "A %s image forms in your mind."), color.data());
@@ -235,8 +232,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         return tl::nullopt;
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(const_cast<CreatureEntity *>(&player));
-    if (none_bits(mode, PM_IGNORE_TERRAIN) && (g_ptr->has(TerrainCharacteristics::PATTERN) || !monster_can_enter(player_ptr, pos.y, pos.x, monrace, 0))) {
+    if (none_bits(mode, PM_IGNORE_TERRAIN) && (g_ptr->has(TerrainCharacteristics::PATTERN) || !monster_can_enter(&player, pos.y, pos.x, monrace, 0))) {
         return tl::nullopt;
     }
 
@@ -244,7 +240,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         return tl::nullopt;
     }
 
-    msg_format_wizard(*player_ptr, CHEAT_MONSTER, _("%s(Lv%d)を生成しました。", "%s(Lv%d) was generated."), monrace.name.data(), monrace.level);
+    msg_format_wizard(player, CHEAT_MONSTER, _("%s(Lv%d)を生成しました。", "%s(Lv%d) was generated."), monrace.name.data(), monrace.level);
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE) || monrace.population_flags.has(MonsterPopulationType::NAZGUL) || (monrace.level < 10)) {
         reset_bits(mode, PM_KAGE);
     }
@@ -270,7 +266,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     if (monrace.misc_flags.has(MonsterMiscType::CHAMELEON)) {
         m_ptr->r_idx = r_idx;
-        choose_chameleon_polymorph(*player_ptr, g_ptr->m_idx, g_ptr->get_terrain_id(), summoner_m_idx);
+        choose_chameleon_polymorph(player, g_ptr->m_idx, g_ptr->get_terrain_id(), summoner_m_idx);
         m_ptr->mflag2.set(MonsterConstantFlagType::CHAMELEON);
     } else if (any_bits(mode, PM_CHAMELEON_FINAL_SUMMON)) {
         m_ptr->r_idx = r_idx;
@@ -422,12 +418,12 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     m_ptr->ml = false;
     if (any_bits(mode, PM_FORCE_PET)) {
-        set_pet(*player_ptr, *m_ptr);
+        set_pet(player, *m_ptr);
     } else {
         auto should_be_friendly = !is_summoned && new_monrace.behavior_flags.has(MonsterBehaviorType::FRIENDLY);
         should_be_friendly |= is_summoned && summoner.is_friendly();
         should_be_friendly |= any_bits(mode, PM_FORCE_FRIENDLY);
-        auto force_hostile = monster_has_hostile_to_player(*player_ptr, 0, -1, new_monrace);
+        auto force_hostile = monster_has_hostile_to_player(player, 0, -1, new_monrace);
         force_hostile |= floor.inside_arena;
         if (m_ptr->alliance_idx != AllianceType::NONE) {
             should_be_friendly |= alliance_list.at(m_ptr->alliance_idx)->isFriendly(player);
@@ -561,7 +557,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         auto m_name = monster_desc(player, *m_ptr, 0);
         msg_format(_("突如%sがあなたに襲い掛かってきた！", "Suddenly %s has ambushed you!"), m_name.data());
         disturb(player, false, true);
-        MonsterAttackPlayer(*player_ptr, g_ptr->m_idx).make_attack_normal();
+        MonsterAttackPlayer(player, g_ptr->m_idx).make_attack_normal();
     }
 
     /*
@@ -569,7 +565,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
      * A unique monster move from old saved floor.
      */
     if (world.character_dungeon && (new_monrace.kind_flags.has(MonsterKindType::UNIQUE) || new_monrace.population_flags.has(MonsterPopulationType::NAZGUL))) {
-        m_ptr->get_real_monrace().floor_id = player_ptr->floor_id;
+        m_ptr->get_real_monrace().floor_id = player.floor_id;
     }
 
     if (new_monrace.misc_flags.has(MonsterMiscType::MULTIPLY)) {

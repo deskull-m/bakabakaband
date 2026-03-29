@@ -1,12 +1,11 @@
 #include "load/load-zangband.h"
 #include "load/load-util.h"
 #include "player/attack-defense-types.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 
 void set_zangband_action(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (rd_byte() != 0) {
-        player_ptr->action = ACTION_LEARN;
+        creature.action = ACTION_LEARN;
     }
 }

@@ -331,7 +331,7 @@ void prepare_chuukei_hooks(void)
  */
 void prepare_movie_hooks(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     TermCenteredOffsetSetter tcos(tl::nullopt, tl::nullopt);
 
     if (movie_mode) {
@@ -343,7 +343,7 @@ void prepare_movie_hooks(CreatureEntity &creature)
     }
 
     std::stringstream ss;
-    ss << player_ptr->base_name << ".amv";
+    ss << player.base_name << ".amv";
     auto initial_movie_filename = ss.str();
     constexpr auto prompt = _("ムービー記録ファイル: ", "Movie file name: ");
     const auto movie_filename = input_string(prompt, 80, initial_movie_filename.data());
