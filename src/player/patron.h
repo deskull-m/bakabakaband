@@ -55,7 +55,6 @@ enum patron_reward {
     REW_SER_MONS = 36, /*!< パトロンからの報酬: モンスターの下僕下賜 */
 };
 
-class PlayerType;
 class CreatureEntity;
 enum player_ability_type : int;
 
@@ -73,7 +72,6 @@ public:
     void admire(CreatureEntity &creature);
 
 private:
-    PlayerType *player_ptr = nullptr; //!< プレイヤー参照ポインタ
     std::vector<patron_reward> reward_table; //!< 報酬テーブル
     player_ability_type boost_stat; //!< 強化能力値傾向
     tl::optional<MonraceId> monrace_id = tl::nullopt; //!< パトロンのモンスターID
