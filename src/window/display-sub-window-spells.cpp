@@ -12,7 +12,6 @@
 #include "spell/spells-execution.h"
 #include "spell/technic-info-table.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -193,8 +192,6 @@ void fix_spell(CreatureEntity &creature)
         term_activate(angband_terms[i]);
         display_spell_list(creature);
         term_fresh();
-        auto *player_ptr = static_cast<PlayerType *>(&creature);
-        player_ptr->window_flags &= ~(PW_SPELL);
         term_activate(old);
     }
 }

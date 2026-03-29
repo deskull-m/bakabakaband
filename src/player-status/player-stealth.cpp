@@ -15,7 +15,6 @@
 #include "player/race-info-table.h"
 #include "spell-realm/spells-hex.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 
@@ -115,7 +114,6 @@ int16_t PlayerStealth::mutation_bonus()
  */
 int16_t PlayerStealth::time_effect_bonus()
 {
-    auto player_ptr = static_cast<PlayerType *>(&this->creature);
     int16_t bonus = 0;
     if (PlayerRealm(this->creature).is_realm_hex()) {
         SpellHex spell_hex(this->creature);
@@ -124,11 +122,11 @@ int16_t PlayerStealth::time_effect_bonus()
         }
     }
 
-    if (is_shero(*player_ptr)) {
+    if (is_shero(this->creature)) {
         bonus -= 7;
     }
 
-    if (is_time_limit_stealth(*player_ptr)) {
+    if (is_time_limit_stealth(this->creature)) {
         bonus += 999;
     }
 
