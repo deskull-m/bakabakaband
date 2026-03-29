@@ -3,7 +3,6 @@
 #include "system/angband.h"
 
 class CreatureEntity;
-class PlayerType;
 class ThrowCommand {
 public:
     ThrowCommand(CreatureEntity &creature);
@@ -11,5 +10,5 @@ public:
     bool do_cmd_throw(int mult, bool boomerang, OBJECT_IDX shuriken);
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
 };

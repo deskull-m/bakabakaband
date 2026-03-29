@@ -3,7 +3,6 @@
 #include "system/angband.h"
 
 class CreatureEntity;
-class PlayerType;
 class ObjectZapRodEntity {
 public:
     ObjectZapRodEntity(CreatureEntity &creature);
@@ -12,7 +11,7 @@ public:
     void execute(INVENTORY_IDX i_idx);
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
 
     bool check_can_zap();
 };
