@@ -198,7 +198,7 @@ static int calc_temporary_speed(CreatureEntity &creature)
             tmp_speed += 10;
         }
 
-        if (creature.effects()->deceleration().is_slow()) {
+        if (creature.is_decelerated()) {
             tmp_speed -= 10;
         }
 

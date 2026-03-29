@@ -196,7 +196,7 @@ int16_t PlayerSpeed::time_effect_bonus()
         bonus += 10;
     }
 
-    if (this->creature.effects()->deceleration().is_slow()) {
+    if (this->creature.is_decelerated()) {
         bonus -= 10;
     }
 
