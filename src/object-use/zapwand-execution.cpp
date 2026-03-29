@@ -22,7 +22,6 @@
 #include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "view/object-describer.h"
@@ -68,7 +67,7 @@ void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
     }
 
     auto chance = this->creature.skill_dev;
-    if (this->creature.effects()->confusion().is_confused()) {
+    if (this->creature.is_confused()) {
         chance = chance / 2;
     }
 

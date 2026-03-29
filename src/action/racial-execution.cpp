@@ -47,7 +47,7 @@ bool exe_racial_power(CreatureEntity &creature, const int32_t command)
  */
 PERCENTAGE racial_chance(CreatureEntity &creature, rpi_type *rpi_ptr)
 {
-    if ((creature.level < rpi_ptr->min_level) || creature.effects()->confusion().is_confused()) {
+    if ((creature.level < rpi_ptr->min_level) || creature.is_confused()) {
         return 0;
     }
 

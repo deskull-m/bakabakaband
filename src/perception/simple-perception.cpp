@@ -25,7 +25,6 @@
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
 /*!
@@ -151,7 +150,7 @@ void sense_inventory1(CreatureEntity &creature)
     PLAYER_LEVEL plev = player_ptr->level;
     bool heavy = false;
     ItemEntity *o_ptr;
-    if (player_ptr->effects()->confusion().is_confused()) {
+    if (player_ptr->is_confused()) {
         return;
     }
 
@@ -340,7 +339,7 @@ void sense_inventory2(CreatureEntity &creature)
     PLAYER_LEVEL plev = player_ptr->level;
     ItemEntity *o_ptr;
 
-    if (player_ptr->effects()->confusion().is_confused()) {
+    if (player_ptr->is_confused()) {
         return;
     }
 

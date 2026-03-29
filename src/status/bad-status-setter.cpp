@@ -124,7 +124,7 @@ bool BadStatusSetter::set_confusion(const TIME_EFFECT tmp_v)
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    const auto is_confused = player_ptr->effects()->confusion().is_confused();
+    const auto is_confused = player_ptr->is_confused();
     if (v > 0) {
         if (!is_confused) {
             msg_print(_("あなたは混乱した！", "You are confused!"));
@@ -588,7 +588,7 @@ void BadStatusSetter::process_stun_status(const PlayerStunRank new_rank, const s
 void BadStatusSetter::clear_head()
 {
     auto *player_ptr = dynamic_cast<PlayerType *>(&this->creature);
-    if (player_ptr->effects()->stun().is_stunned()) {
+    if (player_ptr->is_stunned()) {
         return;
     }
 

@@ -141,11 +141,11 @@ void reduce_magic_effects_timeout(CreatureEntity &creature)
         (void)bss.mod_paralysis(-1);
     }
 
-    if (creature.effects()->confusion().is_confused()) {
+    if (creature.is_confused()) {
         (void)bss.mod_confusion(-1);
     }
 
-    if (effects->fear().is_fearful()) {
+    if (creature.is_fearful()) {
         (void)bss.mod_fear(-1);
     }
 

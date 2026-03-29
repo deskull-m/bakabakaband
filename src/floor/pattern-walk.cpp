@@ -188,8 +188,8 @@ bool pattern_seq(CreatureEntity &creature, const Pos2D &pos)
     int pattern_type_new = is_pattern_tile_new ? terrain_new.subtype : NOT_PATTERN_TILE;
     if (pattern_type_new == PATTERN_TILE_START) {
         const auto effects = player_ptr->effects();
-        const auto is_stunned = effects->stun().is_stunned();
-        const auto is_confused = effects->confusion().is_confused();
+        const auto is_stunned = player_ptr->is_stunned();
+        const auto is_confused = player_ptr->is_confused();
         const auto is_hallucinated = effects->hallucination().is_hallucinated();
         if (is_pattern_tile_cur || is_confused || is_stunned || is_hallucinated) {
             return true;
