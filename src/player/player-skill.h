@@ -49,7 +49,6 @@ extern std::vector<skill_table> class_skills_info;
 
 class MonraceDefinition;
 class ItemEntity;
-class PlayerType;
 class CreatureEntity;
 
 class PlayerSkill {
@@ -87,5 +86,5 @@ public:
     void limit_weapon_skills_by_max_value();
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
 };
