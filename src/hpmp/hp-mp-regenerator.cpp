@@ -28,15 +28,14 @@ int wild_regen = 20;
  */
 void regenhp(CreatureEntity &creature, int percent)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
+    if (CreatureClass(creature).samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         return;
     }
-    if (player_ptr->action == ACTION_HAYAGAKE) {
+    if (creature.action == ACTION_HAYAGAKE) {
         return;
     }
 
-    int old_chp = player_ptr->hp;
+    int old_chp = creature.hp;
 
     /*
      * Extract the new hitpoints
@@ -44,15 +43,15 @@ void regenhp(CreatureEntity &creature, int percent)
      * 'percent' is the Regen factor in unit (1/2^16)
      */
     int new_chp = 0;
-    uint32_t new_chp_frac = (player_ptr->maxhp * percent + PY_REGEN_HPBASE);
+    uint32_t new_chp_frac = (creature.maxhp * percent + PY_REGEN_HPBASE);
     s64b_lshift(&new_chp, &new_chp_frac, 16);
-    s64b_add(&(player_ptr->hp), &(player_ptr->hp_frac), new_chp, new_chp_frac);
-    if (0 < s64b_cmp(player_ptr->hp, player_ptr->hp_frac, player_ptr->maxhp, 0)) {
-        player_ptr->hp = player_ptr->maxhp;
-        player_ptr->hp_frac = 0;
+    s64b_add(&(creature.hp), &(creature.hp_frac), new_chp, new_chp_frac);
+    if (0 < s64b_cmp(creature.hp, creature.hp_frac, creature.maxhp, 0)) {
+        creature.hp = creature.maxhp;
+        creature.hp_frac = 0;
     }
 
-    if (old_chp != player_ptr->hp) {
+    if (old_chp != creature.hp) {
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::HP);
         rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
@@ -67,50 +66,49 @@ void regenhp(CreatureEntity &creature, int percent)
  */
 void regenmana(CreatureEntity &creature, MANA_POINT upkeep_factor, MANA_POINT regen_amount)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    MANA_POINT old_csp = player_ptr->csp;
+    MANA_POINT old_csp = creature.csp;
     int32_t regen_rate = regen_amount * 100 - upkeep_factor * PY_REGEN_NORMAL;
 
     /*
      * Excess mana will decay 32 times faster than normal
      * regeneration rate.
      */
-    if (player_ptr->csp > player_ptr->msp) {
+    if (creature.csp > creature.msp) {
         int32_t decay = 0;
-        uint32_t decay_frac = (player_ptr->msp * 32 * PY_REGEN_NORMAL + PY_REGEN_MNBASE);
+        uint32_t decay_frac = (creature.msp * 32 * PY_REGEN_NORMAL + PY_REGEN_MNBASE);
         s64b_lshift(&decay, &decay_frac, 16);
-        s64b_sub(&(player_ptr->csp), &(player_ptr->csp_frac), decay, decay_frac);
-        if (player_ptr->csp < player_ptr->msp) {
-            player_ptr->csp = player_ptr->msp;
-            player_ptr->csp_frac = 0;
+        s64b_sub(&(creature.csp), &(creature.csp_frac), decay, decay_frac);
+        if (creature.csp < creature.msp) {
+            creature.csp = creature.msp;
+            creature.csp_frac = 0;
         }
     }
 
     /* Regenerating mana (unless the player has excess mana) */
     else if (regen_rate > 0) {
         MANA_POINT new_mana = 0;
-        uint32_t new_mana_frac = (player_ptr->msp * regen_rate / 100 + PY_REGEN_MNBASE);
+        uint32_t new_mana_frac = (creature.msp * regen_rate / 100 + PY_REGEN_MNBASE);
         s64b_lshift(&new_mana, &new_mana_frac, 16);
-        s64b_add(&(player_ptr->csp), &(player_ptr->csp_frac), new_mana, new_mana_frac);
-        if (player_ptr->csp >= player_ptr->msp) {
-            player_ptr->csp = player_ptr->msp;
-            player_ptr->csp_frac = 0;
+        s64b_add(&(creature.csp), &(creature.csp_frac), new_mana, new_mana_frac);
+        if (creature.csp >= creature.msp) {
+            creature.csp = creature.msp;
+            creature.csp_frac = 0;
         }
     }
 
     /* Reduce mana (even when the player has excess mana) */
     if (regen_rate < 0) {
         int32_t reduce_mana = 0;
-        uint32_t reduce_mana_frac = (player_ptr->msp * (-1) * regen_rate / 100 + PY_REGEN_MNBASE);
+        uint32_t reduce_mana_frac = (creature.msp * (-1) * regen_rate / 100 + PY_REGEN_MNBASE);
         s64b_lshift(&reduce_mana, &reduce_mana_frac, 16);
-        s64b_sub(&(player_ptr->csp), &(player_ptr->csp_frac), reduce_mana, reduce_mana_frac);
-        if (player_ptr->csp < 0) {
-            player_ptr->csp = 0;
-            player_ptr->csp_frac = 0;
+        s64b_sub(&(creature.csp), &(creature.csp_frac), reduce_mana, reduce_mana_frac);
+        if (creature.csp < 0) {
+            creature.csp = 0;
+            creature.csp_frac = 0;
         }
     }
 
-    if (old_csp != player_ptr->csp) {
+    if (old_csp != creature.csp) {
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::MP);
         static constexpr auto flags = {
@@ -128,14 +126,13 @@ void regenmana(CreatureEntity &creature, MANA_POINT upkeep_factor, MANA_POINT re
  */
 void regenmagic(CreatureEntity &creature, int regen_amount)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    auto magic_eater_data = CreatureClass(*player_ptr).get_specific_data<MagicEaterDataList>();
+    auto magic_eater_data = CreatureClass(creature).get_specific_data<MagicEaterDataList>();
     if (!magic_eater_data) {
         return;
     }
 
     const int dev = 30;
-    const int mult = (dev + adj_mag_mana[player_ptr->stat_index[A_INT]]); /* x1 to x2 speed bonus for recharging */
+    const int mult = (dev + adj_mag_mana[creature.stat_index[A_INT]]); /* x1 to x2 speed bonus for recharging */
 
     for (auto tval : { ItemKindType::STAFF, ItemKindType::WAND }) {
         for (auto &item : magic_eater_data->get_item_group(tval)) {
@@ -228,10 +225,10 @@ void regenerate_monsters(CreatureEntity &creature)
  */
 void regenerate_captured_monsters(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     bool heal = false;
     for (int i = 0; i < INVEN_TOTAL; i++) {
-        auto *o_ptr = player_ptr->inventory[i].get();
+        auto *o_ptr = player.inventory[i].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
@@ -257,7 +254,7 @@ void regenerate_captured_monsters(CreatureEntity &creature)
             }
 
             // Apply hygiene-based regeneration modifier (based on player's current terrain)
-            const auto &grid = player_ptr->current_floor_ptr->get_grid(player_ptr->get_position());
+            const auto &grid = player.current_floor_ptr->get_grid(player.get_position());
             const auto &terrain = grid.get_terrain();
             if (terrain.hygiene != 0) {
                 const int hygiene_modifier = 100 + terrain.hygiene;

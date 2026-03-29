@@ -3,8 +3,8 @@
 #include "object/object-info.h"
 #include "player/player-sex.h"
 #include "sv-definition/sv-armor-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief オブジェクトを防具として装備できるかの判定 / The "wearable" tester
@@ -13,9 +13,8 @@
  */
 bool item_tester_hook_wear(CreatureEntity &creature, const ItemEntity *o_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (o_ptr->bi_key == BaseitemKey(ItemKindType::SOFT_ARMOR, SV_ABUNAI_MIZUGI)) {
-        if (player_ptr->psex == SEX_MALE) {
+        if (creature.psex == SEX_MALE) {
             return false;
         }
     }

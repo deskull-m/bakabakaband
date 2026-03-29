@@ -22,7 +22,6 @@
 #include "status/bad-status-setter.h"
 #include "status/experience.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
 #include "timed-effect/timed-effects.h"
@@ -67,7 +66,6 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
     bool cont = mode == SpellProcessType::CONTNUATION;
     bool stop = mode == SpellProcessType::STOP;
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     PLAYER_LEVEL plev = creature.level;
 
     switch (spell) {
@@ -182,7 +180,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
             }
 
             if (cont) {
-                hp_player(*player_ptr, dice.roll());
+                hp_player(creature, dice.roll());
             }
         }
 
@@ -204,7 +202,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
 
             if (cast) {
                 msg_print(_("光り輝く歌が辺りを照らした。", "Your uplifting song brings brightness to dark places..."));
-                lite_area(*player_ptr, dice.roll(), rad);
+                lite_area(creature, dice.roll(), rad);
             }
         }
         break;
@@ -242,7 +240,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         if (cast) {
             msg_print(_("激しい戦いの歌を歌った．．．", "You start singing a song of intense fighting..."));
 
-            (void)hp_player(*player_ptr, 10);
+            (void)hp_player(creature, 10);
             (void)BadStatusSetter(creature).set_fear(0);
             RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::HP);
             start_singing(creature, spell, MUSIC_HERO);
@@ -736,7 +734,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
 
         if (cast) {
             msg_print(_("英雄の歌を口ずさんだ．．．", "You chant a powerful, heroic call to arms..."));
-            (void)hp_player(*player_ptr, 10);
+            (void)hp_player(creature, 10);
             (void)BadStatusSetter(creature).set_fear(0);
             RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::HP);
             start_singing(creature, spell, MUSIC_SHERO);
@@ -781,7 +779,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (cont) {
-            hp_player(*player_ptr, dice.roll());
+            hp_player(creature, dice.roll());
             BadStatusSetter bss(creature);
             (void)bss.set_stun(0);
             (void)bss.set_cut(0);
@@ -798,7 +796,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         if (cast) {
             msg_print(
                 _("暗黒の中に光と美をふりまいた。体が元の活力を取り戻した。", "You strew light and beauty in the dark as you sing. You feel refreshed."));
-            (void)restore_all_status(*player_ptr);
+            (void)restore_all_status(creature);
             (void)restore_level(creature);
         }
     } break;

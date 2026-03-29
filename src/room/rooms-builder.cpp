@@ -46,7 +46,6 @@
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "view/display-messages.h"
 
@@ -76,8 +75,7 @@ void build_small_room(CreatureEntity &creature, POSITION x0, POSITION y0)
     }
 
     const auto d = rand_choice(Direction::directions_4());
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    place_secret_door(*player_ptr, pos + d.vec());
+    place_secret_door(creature, pos + d.vec());
 
     creature.current_floor_ptr->set_terrain_id_at(pos, TerrainTag::NONE, TerrainKind::MIMIC);
     place_bold(creature, pos.y, pos.x, GB_FLOOR);

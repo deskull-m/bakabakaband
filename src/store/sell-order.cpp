@@ -30,7 +30,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 #include "view/display-store.h"
@@ -46,13 +45,12 @@
  */
 static tl::optional<int> prompt_to_sell(CreatureEntity &creature, ItemEntity *o_ptr, StoreSaleType store_num)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto price_ask = price_item(creature, o_ptr, ot_ptr->inflate, true, store_num);
 
     price_ask = std::min(price_ask, ot_ptr->max_cost);
     price_ask *= o_ptr->number;
     const auto s = fmt::format(_("売値 ${} で売りますか？", "Do you sell for ${}? "), price_ask);
-    if (input_check_strict(*player_ptr, s, UserCheck::DEFAULT_Y)) {
+    if (input_check_strict(creature, s, UserCheck::DEFAULT_Y)) {
         return price_ask;
     }
 
@@ -66,7 +64,6 @@ static tl::optional<int> prompt_to_sell(CreatureEntity &creature, ItemEntity *o_
  */
 void store_sell(CreatureEntity &creature, StoreSaleType store_num)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     concptr q; //!< @note プロンプトメッセージ
     concptr s_none; //!< @note 売る/置くものがない場合のメッセージ
     concptr s_full; //!< @note もう置けない場合のメッセージ
@@ -90,7 +87,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
 
     short i_idx;
     const auto options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s_none, options, FuncItemTester([](CreatureEntity *c, const ItemEntity *o, StoreSaleType st) { return store_will_buy(*c, o, st); }, *player_ptr, store_num));
+    auto *o_ptr = choose_object(creature, &i_idx, q, s_none, options, FuncItemTester([](CreatureEntity *c, const ItemEntity *o, StoreSaleType st) { return store_will_buy(*c, o, st); }, creature, store_num));
     if (o_ptr == nullptr) {
         return;
     }
@@ -147,8 +144,8 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
                 chg_virtue(creature, Virtue::NATURE, 1);
             }
 
-            player_ptr->au += price;
-            store_prt_gold(player_ptr->au);
+            creature.au += price;
+            store_prt_gold(creature.au);
             const auto dummy = selling_item.calc_price() * selling_item.number;
 
             identify_item(creature, o_ptr);
@@ -165,10 +162,10 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
             msg_format(_("%sを $%dで売却しました。", "You sold %s for %d gold."), sold_item_name.data(), price);
 
             if (record_sell) {
-                exe_write_diary(*player_ptr->current_floor_ptr, DiaryKind::SELL, 0, sold_item_name);
+                exe_write_diary(*creature.current_floor_ptr, DiaryKind::SELL, 0, sold_item_name);
             }
 
-            player_ptr->plus_incident_tree("STORE_SELL", 1);
+            creature.plus_incident_tree("STORE_SELL", 1);
 
             if (!((tval == ItemKindType::FIGURINE) && (value > 0))) {
                 purchase_analyze(creature, price, value, dummy);
@@ -179,11 +176,11 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
             inven_item_increase(creature, i_idx, -amt);
             inven_item_describe(creature, i_idx);
             if (o_ptr->number > 0) {
-                autopick_alter_item(*player_ptr, i_idx, false);
+                autopick_alter_item(creature, i_idx, false);
             }
 
             inven_item_optimize(creature, i_idx);
-            auto &store = towns_info[player_ptr->town_num].get_store(store_num);
+            auto &store = towns_info[creature.town_num].get_store(store_num);
             const auto item_pos = store.carry(sold_item);
             if (item_pos) {
                 store_top = (*item_pos / store_bottom) * store_bottom;

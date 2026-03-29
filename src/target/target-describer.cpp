@@ -15,6 +15,7 @@
 #include "monster/monster-description-types.h"
 #include "object/item-tester-hooker.h"
 #include "player-base/player-race.h"
+#include "player-info/race-types.h"
 #include "player/player-status-table.h"
 #include "system/building-type-definition.h"
 #include "system/dungeon/dungeon-definition.h"
@@ -27,7 +28,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/system-variables.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
@@ -107,9 +107,8 @@ bool show_gold_on_floor = false;
  */
 static std::string evaluate_monster_exp(CreatureEntity &creature, const MonsterEntity &monster)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &monrace = monster.get_appearance_monrace();
-    if ((player_ptr->level >= PY_MAX_LEVEL) || CreatureRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
+    if ((creature.level >= PY_MAX_LEVEL) || CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
         return "**";
     }
 
@@ -121,13 +120,13 @@ static std::string evaluate_monster_exp(CreatureEntity &creature, const MonsterE
 
     int32_t exp_mon = monrace.mexp * monrace.level;
     uint32_t exp_mon_frac = 0;
-    s64b_div(&exp_mon, &exp_mon_frac, 0, (player_ptr->max_plv + 2));
+    s64b_div(&exp_mon, &exp_mon_frac, 0, (creature.max_plv + 2));
 
-    int32_t exp_adv = player_exp[player_ptr->level - 1] * player_ptr->expfact;
+    int32_t exp_adv = player_exp[creature.level - 1] * creature.expfact;
     uint32_t exp_adv_frac = 0;
     s64b_div(&exp_adv, &exp_adv_frac, 0, 100);
 
-    s64b_sub(&exp_adv, &exp_adv_frac, player_ptr->exp, player_ptr->exp_frac);
+    s64b_sub(&exp_adv, &exp_adv_frac, creature.exp, creature.exp_frac);
 
     s64b_add(&exp_adv, &exp_adv_frac, exp_mon, exp_mon_frac);
     s64b_sub(&exp_adv, &exp_adv_frac, 0, 1);
@@ -256,10 +255,9 @@ static void describe_monster_person(GridExamination *ge_ptr)
 
 static short describe_monster_item(CreatureEntity &creature, GridExamination *ge_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     for (const auto this_o_idx : ge_ptr->m_ptr->hold_o_idx_list) {
         const auto &item = *creature.current_floor_ptr->o_list[this_o_idx];
-        const auto item_name = describe_flavor(*player_ptr, item, 0);
+        const auto item_name = describe_flavor(creature, item, 0);
 #ifdef JP
         const auto out_val = format("%s%s%s%s[%s]", ge_ptr->s1, item_name.data(), ge_ptr->s2, ge_ptr->s3, ge_ptr->info);
 #else
@@ -323,13 +321,12 @@ static short describe_grid(CreatureEntity &creature, GridExamination *ge_ptr)
 
 static short describe_footing(CreatureEntity &creature, GridExamination *ge_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (ge_ptr->floor_item_index.size() != 1) {
         return CONTINUOUS_DESCRIPTION;
     }
 
     const auto &item = *creature.current_floor_ptr->o_list[ge_ptr->floor_item_index[0]];
-    const auto item_name = describe_flavor(*player_ptr, item, 0);
+    const auto item_name = describe_flavor(creature, item, 0);
 #ifdef JP
     const auto out_val = format("%s%s%s%s[%s]", ge_ptr->s1, item_name.data(), ge_ptr->s2, ge_ptr->s3, ge_ptr->info);
 #else
@@ -416,13 +413,12 @@ static short loop_describing_grid(CreatureEntity &creature, GridExamination *ge_
 
 static short describe_footing_sight(CreatureEntity &creature, GridExamination *ge_ptr, const ItemEntity &item)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (item.marked.has_not(OmType::FOUND)) {
         return CONTINUOUS_DESCRIPTION;
     }
 
     ge_ptr->boring = false;
-    const auto item_name = describe_flavor(*player_ptr, item, 0);
+    const auto item_name = describe_flavor(creature, item, 0);
 #ifdef JP
     const auto out_val = format("%s%s%s%s[%s]", ge_ptr->s1, item_name.data(), ge_ptr->s2, ge_ptr->s3, ge_ptr->info);
 #else

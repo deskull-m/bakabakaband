@@ -19,7 +19,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "util/probability-table.h"
 #include "wizard/wizard-messages.h"
 #include <array>
@@ -47,11 +46,10 @@ const std::map<NestKind, nest_pit_type> nest_types = {
 
 tl::optional<std::array<NestMonsterInfo, NUM_NEST_MON_TYPE>> pick_nest_monraces(CreatureEntity &creature, MonsterEntity &align)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     std::array<NestMonsterInfo, NUM_NEST_MON_TYPE> nest_mon_info_list{};
     const auto &monraces = MonraceList::get_instance();
     for (auto &nest_mon_info : nest_mon_info_list) {
-        const auto monrace_id = select_pit_nest_monrace_id(*player_ptr, align, 11);
+        const auto monrace_id = select_pit_nest_monrace_id(creature, align, 11);
         if (!monrace_id) {
             return tl::nullopt;
         }
@@ -91,7 +89,6 @@ Rect2D generate_large_room(CreatureEntity &creature, const Pos2D &center)
 
 void generate_inner_room(CreatureEntity &creature, const Pos2D &center, Rect2D &rectangle)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     const auto inner_rectangle = rectangle.resized(-2);
 
@@ -106,26 +103,25 @@ void generate_inner_room(CreatureEntity &creature, const Pos2D &center, Rect2D &
     /* Place a secret door */
     switch (randint1(4)) {
     case 1:
-        place_secret_door(*player_ptr, { inner_rectangle.top_left.y - 1, center.x });
+        place_secret_door(creature, { inner_rectangle.top_left.y - 1, center.x });
         break;
     case 2:
-        place_secret_door(*player_ptr, { inner_rectangle.bottom_right.y + 1, center.x });
+        place_secret_door(creature, { inner_rectangle.bottom_right.y + 1, center.x });
         break;
     case 3:
-        place_secret_door(*player_ptr, { center.y, inner_rectangle.top_left.x - 1 });
+        place_secret_door(creature, { center.y, inner_rectangle.top_left.x - 1 });
         break;
     case 4:
-        place_secret_door(*player_ptr, { center.y, inner_rectangle.bottom_right.x + 1 });
+        place_secret_door(creature, { center.y, inner_rectangle.bottom_right.x + 1 });
         break;
     }
 }
 
 void place_monsters_in_nest(CreatureEntity &creature, const Pos2D &center, std::array<NestMonsterInfo, NUM_NEST_MON_TYPE> &nest_mon_info_list)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     for (const auto &pos : Rect2D(center, Pos2DVec(2, 9))) {
         auto &nest_mon_info = rand_choice(nest_mon_info_list);
-        (void)place_specific_monster(*player_ptr, pos.y, pos.x, nest_mon_info.monrace_id, 0L);
+        (void)place_specific_monster(creature, pos.y, pos.x, nest_mon_info.monrace_id, 0L);
         nest_mon_info.used = true;
     }
 }
@@ -135,8 +131,6 @@ void output_debug_nest(CreatureEntity &creature, std::array<NestMonsterInfo, NUM
     if (!cheat_room) {
         return;
     }
-
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
 
     std::stable_sort(nest_mon_info_list.begin(), nest_mon_info_list.end(),
         [](const auto &x, const auto &y) { return x.order_nest(y); });
@@ -162,7 +156,7 @@ void output_debug_nest(CreatureEntity &creature, std::array<NestMonsterInfo, NUM
         }
 
         constexpr auto fmt_nest_num = _("Nest構成モンスターNo.%d: %s", "Nest monster No.%d: %s");
-        msg_format_wizard(*player_ptr, CHEAT_DUNGEON, fmt_nest_num, i, nest_mon_info.get_monrace().name.data());
+        msg_format_wizard(creature, CHEAT_DUNGEON, fmt_nest_num, i, nest_mon_info.get_monrace().name.data());
     }
 }
 }
@@ -206,7 +200,6 @@ const MonraceDefinition &NestMonsterInfo::get_monrace() const
  */
 bool build_type5(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     const auto nest_type = pick_nest_type(floor, nest_types);
     if (!nest_type) {
@@ -214,8 +207,8 @@ bool build_type5(CreatureEntity &creature, DungeonData *dd_ptr)
     }
 
     const auto &nest = nest_types.at(*nest_type);
-    nest.prepare_filter(*player_ptr);
-    get_mon_num_prep_enum(*player_ptr, nest.monrace_hook);
+    nest.prepare_filter(creature);
+    get_mon_num_prep_enum(creature, nest.monrace_hook);
     MonsterEntity align;
     align.sub_align = SUB_ALIGN_NEUTRAL;
 
@@ -224,7 +217,7 @@ bool build_type5(CreatureEntity &creature, DungeonData *dd_ptr)
         return false;
     }
 
-    const auto center = find_space(*player_ptr, dd_ptr, 11, 25);
+    const auto center = find_space(creature, dd_ptr, 11, 25);
     if (!center) {
         return false;
     }
@@ -234,7 +227,7 @@ bool build_type5(CreatureEntity &creature, DungeonData *dd_ptr)
 
     constexpr auto fmt_nest = _("モンスター部屋(nest)(%s%s)を生成します。", "Monster nest (%s%s)");
     const auto &nest_filter = PitNestFilter::get_instance();
-    msg_format_wizard(*player_ptr, CHEAT_DUNGEON, fmt_nest, nest.name.data(), nest_filter.nest_subtype(*nest_type).data());
+    msg_format_wizard(creature, CHEAT_DUNGEON, fmt_nest, nest.name.data(), nest_filter.nest_subtype(*nest_type).data());
     place_monsters_in_nest(creature, *center, *nest_mon_info_list);
     output_debug_nest(creature, *nest_mon_info_list);
     return true;

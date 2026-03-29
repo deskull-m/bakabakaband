@@ -38,10 +38,10 @@
 #include "spell/spells-status.h"
 #include "spell/technic-info-table.h"
 #include "status/action-setter.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/grid-selector.h"
 #include "target/target-getter.h"
@@ -63,7 +63,6 @@
  */
 tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type spell, SpellProcessType mode)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto info = mode == SpellProcessType::INFO;
     auto cast = mode == SpellProcessType::CAST;
     auto continuation = mode == SpellProcessType::CONTNUATION;
@@ -75,12 +74,12 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         /*** 1st book (0-7) ***/
     case HEX_BLESS:
         if (cast) {
-            if (!player_ptr->blessed) {
+            if (!creature.blessed) {
                 msg_print(_("高潔な気分になった！", "You feel righteous!"));
             }
         }
         if (stop) {
-            if (!player_ptr->blessed) {
+            if (!creature.blessed) {
                 msg_print(_("高潔な気分が消え失せた。", "The prayer has expired."));
             }
         }
@@ -109,7 +108,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         break;
     }
     case HEX_STINKING_MIST: {
-        const Dice dice(1, player_ptr->level / 2 + 5);
+        const Dice dice(1, creature.level / 2 + 5);
         if (info) {
             return info_damage(dice);
         }
@@ -129,12 +128,12 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
             constexpr auto q = _("どれを呪いますか？", "Which weapon do you curse?");
             constexpr auto s = _("武器を装備していない。", "You're not wielding a weapon.");
             short i_idx;
-            auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_melee_weapon));
+            auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_melee_weapon));
             if (o_ptr == nullptr) {
                 return "";
             }
 
-            const auto item_name = describe_flavor(*player_ptr, *o_ptr, OD_NAME_ONLY);
+            const auto item_name = describe_flavor(creature, *o_ptr, OD_NAME_ONLY);
             if (!input_check(format(_("本当に %s を呪いますか？", "Do you curse %s, really?"), item_name.data()))) {
                 return "";
             }
@@ -282,7 +281,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         break;
     }
     case HEX_VAMP_MIST: {
-        const Dice dice(1, player_ptr->level / 2 + 5);
+        const Dice dice(1, creature.level / 2 + 5);
         if (info) {
             return info_damage(dice);
         }
@@ -328,7 +327,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         break;
     }
     case HEX_ANTI_TELE: {
-        power = player_ptr->level * 3 / 2;
+        power = creature.level * 3 / 2;
         if (info) {
             return info_power(power);
         }
@@ -361,7 +360,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         break;
     }
     case HEX_RECHARGE: {
-        power = player_ptr->level * 2;
+        power = creature.level * 2;
         if (info) {
             return info_power(power);
         }
@@ -378,7 +377,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
             msg_print(_("死者への呼びかけを始めた。", "You start to call the dead.!"));
         }
         if (cast || continuation) {
-            animate_dead(creature, 0, player_ptr->y, player_ptr->x);
+            animate_dead(creature, 0, creature.y, creature.x);
         }
         break;
     }
@@ -387,13 +386,13 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
             constexpr auto q = _("どれを呪いますか？", "Which piece of armour do you curse?");
             constexpr auto s = _("防具を装備していない。", "You're not wearing any armor.");
             short i_idx;
-            auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_protector));
+            auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_protector));
             if (!o_ptr) {
                 return "";
             }
 
-            o_ptr = player_ptr->inventory[i_idx].get();
-            const auto item_name = describe_flavor(*player_ptr, *o_ptr, OD_NAME_ONLY);
+            o_ptr = creature.inventory[i_idx].get();
+            const auto item_name = describe_flavor(creature, *o_ptr, OD_NAME_ONLY);
             if (!input_check(format(_("本当に %s を呪いますか？", "Do you curse %s, really?"), item_name.data()))) {
                 return "";
             }
@@ -456,7 +455,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
     }
     case HEX_SHADOW_CLOAK: {
         if (cast) {
-            auto *o_ptr = player_ptr->inventory[INVEN_OUTER].get();
+            auto *o_ptr = creature.inventory[INVEN_OUTER].get();
 
             if (!o_ptr->is_valid()) {
                 msg_print(_("クロークを身につけていない！", "You are not wearing a cloak."));
@@ -469,7 +468,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
             }
         }
         if (continuation) {
-            auto *o_ptr = player_ptr->inventory[INVEN_OUTER].get();
+            auto *o_ptr = creature.inventory[INVEN_OUTER].get();
 
             if ((!o_ptr->is_valid()) || (!o_ptr->is_cursed())) {
                 exe_spell(creature, RealmType::HEX, spell, SpellProcessType::STOP);
@@ -486,7 +485,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         break;
     }
     case HEX_PAIN_TO_MANA: {
-        const Dice dice(1, player_ptr->level * 3 / 2);
+        const Dice dice(1, creature.level * 3 / 2);
         if (info) {
             return info_damage(dice);
         }
@@ -514,15 +513,15 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         }
         if (cast || continuation) {
             bool flag = false;
-            int d = (player_ptr->max_exp - player_ptr->exp);
-            int r = (player_ptr->exp / 20);
+            int d = (creature.max_exp - creature.exp);
+            int r = (creature.exp / 20);
             int i;
 
             if (d > 0) {
                 if (d < r) {
-                    player_ptr->exp = player_ptr->max_exp;
+                    creature.exp = creature.max_exp;
                 } else {
-                    player_ptr->exp += r;
+                    creature.exp += r;
                 }
 
                 /* Check the experience */
@@ -533,15 +532,15 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
 
             auto &rfu = RedrawingFlagsUpdater::get_instance();
             for (i = A_STR; i < A_MAX; i++) {
-                if (player_ptr->stat_cur[i] < player_ptr->stat_max[i]) {
-                    if (player_ptr->stat_cur[i] < 180) {
-                        player_ptr->stat_cur[i] += 10;
+                if (creature.stat_cur[i] < creature.stat_max[i]) {
+                    if (creature.stat_cur[i] < 180) {
+                        creature.stat_cur[i] += 10;
                     } else {
-                        player_ptr->stat_cur[i] += 10;
+                        creature.stat_cur[i] += 10;
                     }
 
-                    if (player_ptr->stat_cur[i] > player_ptr->stat_max[i]) {
-                        player_ptr->stat_cur[i] = player_ptr->stat_max[i];
+                    if (creature.stat_cur[i] > creature.stat_max[i]) {
+                        creature.stat_cur[i] = creature.stat_max[i];
                     }
 
                     rfu.set_flag(StatusRecalculatingFlag::BONUS);
@@ -576,17 +575,17 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
             constexpr auto q = _("どの装備品から吸収しますか？", "Which cursed equipment do you drain mana from?");
             constexpr auto s = _("呪われたアイテムを装備していない。", "You have no cursed equipment.");
             short i_idx;
-            auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_cursed));
+            auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_cursed));
             if (!o_ptr) {
                 return "";
             }
 
-            player_ptr->csp += (player_ptr->level / 5) + randint1(player_ptr->level / 5);
+            creature.csp += (creature.level / 5) + randint1(creature.level / 5);
             if (o_ptr->get_flags().has(TR_TY_CURSE) || o_ptr->curse_flags.has(CurseTraitType::TY_CURSE)) {
-                player_ptr->csp += randint1(5);
+                creature.csp += randint1(5);
             }
-            if (player_ptr->csp > player_ptr->msp) {
-                player_ptr->csp = player_ptr->msp;
+            if (creature.csp > creature.msp) {
+                creature.csp = creature.msp;
             }
 
             if (o_ptr->curse_flags.has(CurseTraitType::PERMA_CURSE)) {
@@ -627,7 +626,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         break;
     }
     case HEX_STUN_MONSTERS: {
-        power = player_ptr->level * 4;
+        power = creature.level * 4;
         if (info) {
             return info_power(power);
         }
@@ -647,7 +646,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
                 }
 
                 flag = false;
-                const auto &floor = *player_ptr->current_floor_ptr;
+                const auto &floor = *creature.current_floor_ptr;
                 for (const auto &d : Direction::directions_8()) {
                     const auto pos_neighbor = *pos_target + d.vec();
                     if (floor.get_grid(pos_neighbor).has_monster()) {
@@ -655,9 +654,9 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
                     }
                 }
 
-                const auto p_pos = player_ptr->get_position();
+                const auto p_pos = creature.get_position();
                 const auto dist = Grid::calc_distance(*pos_target, p_pos);
-                if (!floor.is_empty_at(*pos_target) || (*pos_target == p_pos) || floor.get_grid(*pos_target).is_icky() || (dist > player_ptr->level + 2)) {
+                if (!floor.is_empty_at(*pos_target) || (*pos_target == p_pos) || floor.get_grid(*pos_target).is_icky() || (dist > creature.level + 2)) {
                     msg_print(_("そこには移動できない。", "Can not teleport to there."));
                     continue;
                 }
@@ -665,7 +664,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
                 break;
             }
 
-            if (flag && randint0(player_ptr->level * player_ptr->level / 2)) {
+            if (flag && randint0(creature.level * creature.level / 2)) {
                 teleport_player_to(creature, pos_target->y, pos_target->x, TELEPORT_SPONTANEOUS);
             } else {
                 msg_print(_("おっと！", "Oops!"));
@@ -677,7 +676,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
 
         break;
     case HEX_ANTI_MAGIC: {
-        power = player_ptr->level * 3 / 2;
+        power = creature.level * 3 / 2;
         if (info) {
             return info_power(power);
         }
@@ -743,7 +742,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
     if (cast && should_continue) {
         SpellHex spell_hex(creature);
         spell_hex.set_casting_flag(spell);
-        if (player_ptr->action != ACTION_SPELL) {
+        if (creature.action != ACTION_SPELL) {
             set_action(creature, ACTION_SPELL);
         }
     }

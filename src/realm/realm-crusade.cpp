@@ -29,8 +29,8 @@
 #include "status/buff-setter.h"
 #include "status/sight-setter.h"
 #include "status/temporary-resistance.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "util/dice.h"
 #include "view/display-messages.h"
@@ -45,11 +45,10 @@
  */
 tl::optional<std::string> do_crusade_spell(CreatureEntity &creature, SPELL_IDX spell, SpellProcessType mode)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto info = mode == SpellProcessType::INFO;
     const auto cast = mode == SpellProcessType::CAST;
 
-    PLAYER_LEVEL plev = player_ptr->level;
+    PLAYER_LEVEL plev = creature.level;
 
     switch (spell) {
     case 0: {
@@ -236,7 +235,7 @@ tl::optional<std::string> do_crusade_spell(CreatureEntity &creature, SPELL_IDX s
         if (cast) {
             BadStatusSetter bss(creature);
             dispel_evil(creature, randint1(dam_sides));
-            hp_player(*player_ptr, heal);
+            hp_player(creature, heal);
             (void)bss.set_fear(0);
             (void)bss.set_poison(0);
             (void)bss.set_stun(0);
@@ -427,7 +426,7 @@ tl::optional<std::string> do_crusade_spell(CreatureEntity &creature, SPELL_IDX s
             confuse_monsters(creature, power);
             turn_monsters(creature, power);
             stasis_monsters(creature, power);
-            hp_player(*player_ptr, heal);
+            hp_player(creature, heal);
         }
     } break;
 

@@ -6,7 +6,6 @@
 #include "status/buff-setter.h"
 #include "status/element-resistance.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "view/display-messages.h"
 
@@ -22,8 +21,7 @@ bool activate_bladeturner(CreatureEntity &creature)
     msg_print(_("鎧が様々な色に輝いた...", "Your armor glows many colours..."));
     (void)BadStatusSetter(creature).set_fear(0);
     (void)set_hero(creature, randint1(50) + 50, false);
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    (void)hp_player(*player_ptr, 10);
+    (void)hp_player(creature, 10);
     (void)set_blessed(creature, randint1(50) + 50, false);
     (void)set_oppose_acid(creature, randint1(50) + 50, false);
     (void)set_oppose_elec(creature, randint1(50) + 50, false);

@@ -13,7 +13,6 @@
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
@@ -34,19 +33,18 @@
  */
 MANA_POINT mod_need_mana(CreatureEntity &creature, MANA_POINT need_mana, SPELL_IDX spell_id, RealmType realm)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
 #define MANA_CONST 2400
 #define MANA_DIV 4
 #define DEC_MANA_DIV 3
     if (PlayerRealm::is_magic(realm) || PlayerRealm::is_technic(realm)) {
-        need_mana = need_mana * (MANA_CONST + PlayerSkill::spell_exp_at(PlayerSkillRank::EXPERT) - PlayerSkill(*player_ptr).exp_of_spell(realm, spell_id)) + (MANA_CONST - 1);
-        need_mana *= player_ptr->dec_mana ? DEC_MANA_DIV : MANA_DIV;
+        need_mana = need_mana * (MANA_CONST + PlayerSkill::spell_exp_at(PlayerSkillRank::EXPERT) - PlayerSkill(creature).exp_of_spell(realm, spell_id)) + (MANA_CONST - 1);
+        need_mana *= creature.dec_mana ? DEC_MANA_DIV : MANA_DIV;
         need_mana /= MANA_CONST * MANA_DIV;
         if (need_mana < 1) {
             need_mana = 1;
         }
     } else {
-        if (player_ptr->dec_mana) {
+        if (creature.dec_mana) {
             need_mana = (need_mana + 1) * DEC_MANA_DIV / MANA_DIV;
         }
     }
@@ -119,7 +117,6 @@ PERCENTAGE mod_spell_chance_2(CreatureEntity &creature, PERCENTAGE chance)
  */
 PERCENTAGE spell_chance(CreatureEntity &creature, SPELL_IDX spell_id, RealmType use_realm)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (mp_ptr->spell_book == ItemKindType::NONE) {
         return 100;
     }
@@ -130,25 +127,25 @@ PERCENTAGE spell_chance(CreatureEntity &creature, SPELL_IDX spell_id, RealmType 
     const auto &spell = PlayerRealm::get_spell_info(use_realm, spell_id);
 
     PERCENTAGE chance = spell.sfail;
-    chance -= 3 * (player_ptr->level - spell.slevel);
-    chance -= 3 * (adj_mag_stat[player_ptr->stat_index[mp_ptr->spell_stat]] - 1);
-    if (player_ptr->riding) {
-        const auto &riding_monrace = player_ptr->current_floor_ptr->m_list[player_ptr->riding].get_monrace();
-        chance += (std::max(riding_monrace.level - player_ptr->skill_exp[PlayerSkillKindType::RIDING] / 100 - 10, 0));
+    chance -= 3 * (creature.level - spell.slevel);
+    chance -= 3 * (adj_mag_stat[creature.stat_index[mp_ptr->spell_stat]] - 1);
+    if (creature.riding) {
+        const auto &riding_monrace = creature.current_floor_ptr->m_list[creature.riding].get_monrace();
+        chance += (std::max(riding_monrace.level - creature.skill_exp[PlayerSkillKindType::RIDING] / 100 - 10, 0));
     }
 
     MANA_POINT need_mana = mod_need_mana(creature, spell.smana, spell_id, use_realm);
-    if (need_mana > player_ptr->csp) {
-        chance += 5 * (need_mana - player_ptr->csp);
+    if (need_mana > creature.csp) {
+        chance += 5 * (need_mana - creature.csp);
     }
 
-    CreatureClass pc(*player_ptr);
-    PlayerRealm pr(*player_ptr);
+    CreatureClass pc(creature);
+    PlayerRealm pr(creature);
     if (!pr.realm1().equals(use_realm) && (pc.equals(PlayerClassType::MAGE) || pc.equals(PlayerClassType::PRIEST))) {
         chance += 5;
     }
 
-    PERCENTAGE minfail = adj_mag_fail[player_ptr->stat_index[mp_ptr->spell_stat]];
+    PERCENTAGE minfail = adj_mag_fail[creature.stat_index[mp_ptr->spell_stat]];
     if (mp_ptr->has_magic_fail_rate_cap) {
         if (minfail < 5) {
             minfail = 5;
@@ -156,11 +153,11 @@ PERCENTAGE spell_chance(CreatureEntity &creature, SPELL_IDX spell_id, RealmType 
     }
 
     if ((pc.equals(PlayerClassType::PRIEST) || pc.equals(PlayerClassType::SORCERER))) {
-        if (player_ptr->is_icky_wield[0]) {
+        if (creature.is_icky_wield[0]) {
             chance += 25;
         }
 
-        if (player_ptr->is_icky_wield[1]) {
+        if (creature.is_icky_wield[1]) {
             chance += 25;
         }
     }
@@ -169,20 +166,20 @@ PERCENTAGE spell_chance(CreatureEntity &creature, SPELL_IDX spell_id, RealmType 
     PERCENTAGE penalty = (mp_ptr->spell_stat == A_WIS) ? 10 : 4;
     switch (use_realm) {
     case RealmType::NATURE:
-        if ((player_ptr->alignment > 50) || (player_ptr->alignment < -50)) {
+        if ((creature.alignment > 50) || (creature.alignment < -50)) {
             chance += penalty;
         }
         break;
     case RealmType::LIFE:
     case RealmType::CRUSADE:
-        if (player_ptr->alignment < -20) {
+        if (creature.alignment < -20) {
             chance += penalty;
         }
         break;
     case RealmType::DEATH:
     case RealmType::DAEMON:
     case RealmType::HEX:
-        if (player_ptr->alignment > 20) {
+        if (creature.alignment > 20) {
             chance += penalty;
         }
         break;
@@ -194,13 +191,13 @@ PERCENTAGE spell_chance(CreatureEntity &creature, SPELL_IDX spell_id, RealmType 
         chance = minfail;
     }
 
-    chance += player_ptr->effects()->stun().get_magic_chance_penalty();
+    chance += creature.effects()->stun().get_magic_chance_penalty();
     if (chance > 95) {
         chance = 95;
     }
 
     if (pr.realm1().equals(use_realm) || pr.realm2().equals(use_realm) || pc.is_every_magic()) {
-        auto exp = PlayerSkill(*player_ptr).exp_of_spell(use_realm, spell_id);
+        auto exp = PlayerSkill(creature).exp_of_spell(use_realm, spell_id);
         if (exp >= PlayerSkill::spell_exp_at(PlayerSkillRank::EXPERT)) {
             chance--;
         }
@@ -225,7 +222,6 @@ PERCENTAGE spell_chance(CreatureEntity &creature, SPELL_IDX spell_id, RealmType 
  */
 void print_spells(CreatureEntity &creature, SPELL_IDX target_spell_id, const SPELL_IDX *spell_ids, int num, TERM_LEN y, TERM_LEN x, RealmType use_realm)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if ((!PlayerRealm::is_magic(use_realm) && !PlayerRealm::is_technic(use_realm)) && AngbandWorld::get_instance().wizard) {
         msg_print(_("警告！ print_spell が領域なしに呼ばれた", "Warning! print_spells called with null realm"));
     }
@@ -242,8 +238,8 @@ void print_spells(CreatureEntity &creature, SPELL_IDX target_spell_id, const SPE
     put_str(buf, y, x + 29);
 
     int increment = 64;
-    CreatureClass pc(*player_ptr);
-    PlayerRealm pr(*player_ptr);
+    CreatureClass pc(creature);
+    PlayerRealm pr(creature);
     if (pc.is_every_magic()) {
         increment = 0;
     } else if (pr.realm1().equals(use_realm)) {
@@ -263,7 +259,7 @@ void print_spells(CreatureEntity &creature, SPELL_IDX target_spell_id, const SPE
         if (use_realm == RealmType::HISSATSU) {
             need_mana = spell.smana;
         } else {
-            auto exp = PlayerSkill(*player_ptr).exp_of_spell(use_realm, spell_id);
+            auto exp = PlayerSkill(creature).exp_of_spell(use_realm, spell_id);
             need_mana = mod_need_mana(creature, spell.smana, spell_id, use_realm);
             PlayerSkillRank skill_rank;
             if ((increment == 64) || (spell.slevel >= 99)) {

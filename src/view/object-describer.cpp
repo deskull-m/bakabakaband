@@ -10,7 +10,6 @@
 #include "spell/spell-info.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "term/term-color-types.h"
 #include "tracking/baseitem-tracker.h"
 #include "view/display-messages.h"
@@ -48,9 +47,8 @@ void inven_item_charges(const ItemEntity &item)
  */
 void inven_item_describe(CreatureEntity &creature, short i_idx)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &item = *creature.inventory[i_idx];
-    const auto item_name = describe_flavor(*player_ptr, item, 0);
+    const auto item_name = describe_flavor(creature, item, 0);
 #ifdef JP
     if (item.number <= 0) {
         msg_format("もう%sを持っていない。", item_name.data());
@@ -69,7 +67,6 @@ void inven_item_describe(CreatureEntity &creature, short i_idx)
  */
 void display_koff(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &tracker = BaseitemTracker::get_instance();
     if (!tracker.is_tracking()) {
         return;
@@ -80,12 +77,12 @@ void display_koff(CreatureEntity &creature)
     }
 
     const auto item = tracker.get_trackee();
-    const auto item_name = describe_flavor(*player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY | OD_STORE));
+    const auto item_name = describe_flavor(creature, item, (OD_OMIT_PREFIX | OD_NAME_ONLY | OD_STORE));
     term_putstr(0, 0, -1, TERM_WHITE, item_name);
     const auto sval = *item.bi_key.sval();
     const auto use_realm = PlayerRealm::get_realm_of_book(item.bi_key.tval());
 
-    PlayerRealm pr(*player_ptr);
+    PlayerRealm pr(creature);
     if (pr.realm1().is_available() || pr.realm2().is_available()) {
         if (!pr.realm1().equals(use_realm) && !pr.realm2().equals(use_realm)) {
             return;

@@ -290,6 +290,14 @@ public:
     virtual bool is_invulnerable() const;
 
     /*!
+     * @brief 体力ランク (0-100) を計算する
+     * @return 体力ランク
+     */
+    int calc_life_rating() const;
+    std::string decrease_ability_random();
+    std::string decrease_ability_all();
+
+    /*!
      * @brief 指定した固定アーティファクトを装備しているかどうか調べる
      * @param fa_id 固定アーティファクトのID
      * @return 装備していればtrue、そうでなければfalse

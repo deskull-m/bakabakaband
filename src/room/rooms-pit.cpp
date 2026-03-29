@@ -18,7 +18,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
 #include <algorithm>
@@ -88,11 +87,10 @@ const std::vector<TrappedMonster> place_table_trapped_pit = {
 
 tl::optional<std::array<MonraceId, NUM_PIT_MONRACES>> pick_pit_monraces(CreatureEntity &creature, MonsterEntity &align, int boost = 0)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     std::array<MonraceId, NUM_PIT_MONRACES> whats{};
     const auto &monraces = MonraceList::get_instance();
     for (auto &what : whats) {
-        const auto monrace_id = select_pit_nest_monrace_id(*player_ptr, align, boost);
+        const auto monrace_id = select_pit_nest_monrace_id(creature, align, boost);
         if (!monrace_id) {
             return tl::nullopt;
         }
@@ -137,7 +135,6 @@ void place_pit_outer(CreatureEntity &creature, const Pos2D &center)
 
 void place_pit_inner(CreatureEntity &creature, const Pos2D &center)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     const auto rectangle = Rect2D(center, PIT_SIZE).resized(-2);
     for (auto y = rectangle.top_left.y - 1; y <= rectangle.bottom_right.y + 1; y++) {
@@ -158,16 +155,16 @@ void place_pit_inner(CreatureEntity &creature, const Pos2D &center)
 
     switch (randint1(4)) {
     case 1:
-        place_secret_door(*player_ptr, { rectangle.top_left.y - 1, center.x });
+        place_secret_door(creature, { rectangle.top_left.y - 1, center.x });
         break;
     case 2:
-        place_secret_door(*player_ptr, { rectangle.bottom_right.y + 1, center.x });
+        place_secret_door(creature, { rectangle.bottom_right.y + 1, center.x });
         break;
     case 3:
-        place_secret_door(*player_ptr, { center.y, rectangle.top_left.x - 1 });
+        place_secret_door(creature, { center.y, rectangle.top_left.x - 1 });
         break;
     case 4:
-        place_secret_door(*player_ptr, { center.y, rectangle.bottom_right.x + 1 });
+        place_secret_door(creature, { center.y, rectangle.bottom_right.x + 1 });
         break;
     }
 }
@@ -211,7 +208,6 @@ void place_pit_inner(CreatureEntity &creature, const Pos2D &center)
  */
 bool build_type6(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     const auto pit_type = pick_pit_type(floor, pit_types);
     if (!pit_type) {
@@ -219,8 +215,8 @@ bool build_type6(CreatureEntity &creature, DungeonData *dd_ptr)
     }
 
     const auto &pit = pit_types.at(*pit_type);
-    pit.prepare_filter(*player_ptr);
-    get_mon_num_prep_enum(*player_ptr, pit.monrace_hook);
+    pit.prepare_filter(creature);
+    get_mon_num_prep_enum(creature, pit.monrace_hook);
     MonsterEntity align;
     align.sub_align = SUB_ALIGN_NEUTRAL;
 
@@ -229,7 +225,7 @@ bool build_type6(CreatureEntity &creature, DungeonData *dd_ptr)
         return false;
     }
 
-    const auto center = find_space(*player_ptr, dd_ptr, 11, 25);
+    const auto center = find_space(creature, dd_ptr, 11, 25);
     if (!center) {
         return false;
     }
@@ -242,60 +238,60 @@ bool build_type6(CreatureEntity &creature, DungeonData *dd_ptr)
     });
     constexpr auto fmt_generate = _("モンスター部屋(pit)(%s%s)を生成します。", "Monster pit (%s%s)");
     const auto pit_subtype = PitNestFilter::get_instance().pit_subtype(*pit_type);
-    msg_format_wizard(*player_ptr, CHEAT_DUNGEON, fmt_generate, pit.name.data(), pit_subtype.data());
+    msg_format_wizard(creature, CHEAT_DUNGEON, fmt_generate, pit.name.data(), pit_subtype.data());
 
     for (auto i = 0; i < NUM_PIT_MONRACES / 2; i++) {
         (*whats)[i] = (*whats)[i * 2];
         constexpr auto fmt_pit_num = _("Pit構成モンスター選択No.%d:%s", "Pit Monster Select No.%d:%s");
         const auto &monrace = monraces.get_monrace((*whats)[i]);
-        msg_format_wizard(*player_ptr, CHEAT_DUNGEON, fmt_pit_num, i, monrace.name.data());
+        msg_format_wizard(creature, CHEAT_DUNGEON, fmt_pit_num, i, monrace.name.data());
     }
 
     /* Top and bottom rows */
     for (auto x = center->x - 9; x <= center->x + 9; x++) {
-        place_specific_monster(*player_ptr, center->y - 2, x, (*whats)[0], PM_NO_KAGE);
-        place_specific_monster(*player_ptr, center->y + 2, x, (*whats)[0], PM_NO_KAGE);
+        place_specific_monster(creature, center->y - 2, x, (*whats)[0], PM_NO_KAGE);
+        place_specific_monster(creature, center->y + 2, x, (*whats)[0], PM_NO_KAGE);
     }
 
     /* Middle columns */
     for (auto y = center->y - 1; y <= center->y + 1; y++) {
-        place_specific_monster(*player_ptr, y, center->x - 9, (*whats)[0], PM_NO_KAGE);
-        place_specific_monster(*player_ptr, y, center->x + 9, (*whats)[0], PM_NO_KAGE);
+        place_specific_monster(creature, y, center->x - 9, (*whats)[0], PM_NO_KAGE);
+        place_specific_monster(creature, y, center->x + 9, (*whats)[0], PM_NO_KAGE);
 
-        place_specific_monster(*player_ptr, y, center->x - 8, (*whats)[1], PM_NO_KAGE);
-        place_specific_monster(*player_ptr, y, center->x + 8, (*whats)[1], PM_NO_KAGE);
+        place_specific_monster(creature, y, center->x - 8, (*whats)[1], PM_NO_KAGE);
+        place_specific_monster(creature, y, center->x + 8, (*whats)[1], PM_NO_KAGE);
 
-        place_specific_monster(*player_ptr, y, center->x - 7, (*whats)[1], PM_NO_KAGE);
-        place_specific_monster(*player_ptr, y, center->x + 7, (*whats)[1], PM_NO_KAGE);
+        place_specific_monster(creature, y, center->x - 7, (*whats)[1], PM_NO_KAGE);
+        place_specific_monster(creature, y, center->x + 7, (*whats)[1], PM_NO_KAGE);
 
-        place_specific_monster(*player_ptr, y, center->x - 6, (*whats)[2], PM_NO_KAGE);
-        place_specific_monster(*player_ptr, y, center->x + 6, (*whats)[2], PM_NO_KAGE);
+        place_specific_monster(creature, y, center->x - 6, (*whats)[2], PM_NO_KAGE);
+        place_specific_monster(creature, y, center->x + 6, (*whats)[2], PM_NO_KAGE);
 
-        place_specific_monster(*player_ptr, y, center->x - 5, (*whats)[2], PM_NO_KAGE);
-        place_specific_monster(*player_ptr, y, center->x + 5, (*whats)[2], PM_NO_KAGE);
+        place_specific_monster(creature, y, center->x - 5, (*whats)[2], PM_NO_KAGE);
+        place_specific_monster(creature, y, center->x + 5, (*whats)[2], PM_NO_KAGE);
 
-        place_specific_monster(*player_ptr, y, center->x - 4, (*whats)[3], PM_NO_KAGE);
-        place_specific_monster(*player_ptr, y, center->x + 4, (*whats)[3], PM_NO_KAGE);
+        place_specific_monster(creature, y, center->x - 4, (*whats)[3], PM_NO_KAGE);
+        place_specific_monster(creature, y, center->x + 4, (*whats)[3], PM_NO_KAGE);
 
-        place_specific_monster(*player_ptr, y, center->x - 3, (*whats)[3], PM_NO_KAGE);
-        place_specific_monster(*player_ptr, y, center->x + 3, (*whats)[3], PM_NO_KAGE);
+        place_specific_monster(creature, y, center->x - 3, (*whats)[3], PM_NO_KAGE);
+        place_specific_monster(creature, y, center->x + 3, (*whats)[3], PM_NO_KAGE);
 
-        place_specific_monster(*player_ptr, y, center->x - 2, (*whats)[4], PM_NO_KAGE);
-        place_specific_monster(*player_ptr, y, center->x + 2, (*whats)[4], PM_NO_KAGE);
+        place_specific_monster(creature, y, center->x - 2, (*whats)[4], PM_NO_KAGE);
+        place_specific_monster(creature, y, center->x + 2, (*whats)[4], PM_NO_KAGE);
     }
 
     /* Above/Below the center monster */
     for (auto x = center->x - 1; x <= center->x + 1; x++) {
-        place_specific_monster(*player_ptr, center->y + 1, x, (*whats)[5], PM_NO_KAGE);
-        place_specific_monster(*player_ptr, center->y - 1, x, (*whats)[5], PM_NO_KAGE);
+        place_specific_monster(creature, center->y + 1, x, (*whats)[5], PM_NO_KAGE);
+        place_specific_monster(creature, center->y - 1, x, (*whats)[5], PM_NO_KAGE);
     }
 
     /* Next to the center monster */
-    place_specific_monster(*player_ptr, center->y, center->x + 1, (*whats)[6], PM_NO_KAGE);
-    place_specific_monster(*player_ptr, center->y, center->x - 1, (*whats)[6], PM_NO_KAGE);
+    place_specific_monster(creature, center->y, center->x + 1, (*whats)[6], PM_NO_KAGE);
+    place_specific_monster(creature, center->y, center->x - 1, (*whats)[6], PM_NO_KAGE);
 
     /* Center monster */
-    place_specific_monster(*player_ptr, center->y, center->x, (*whats)[7], PM_NO_KAGE);
+    place_specific_monster(creature, center->y, center->x, (*whats)[7], PM_NO_KAGE);
 
     return true;
 }
@@ -346,7 +342,6 @@ bool build_type6(CreatureEntity &creature, DungeonData *dd_ptr)
  */
 bool build_type13(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     const auto pit_type = pick_pit_type(floor, pit_types);
 
@@ -361,8 +356,8 @@ bool build_type13(CreatureEntity &creature, DungeonData *dd_ptr)
     }
 
     const auto &pit = pit_types.at(*pit_type);
-    pit.prepare_filter(*player_ptr);
-    get_mon_num_prep_enum(*player_ptr, pit.monrace_hook, MonraceHookTerrain::TRAPPED_PIT);
+    pit.prepare_filter(creature);
+    get_mon_num_prep_enum(creature, pit.monrace_hook, MonraceHookTerrain::TRAPPED_PIT);
     MonsterEntity align;
     align.sub_align = SUB_ALIGN_NEUTRAL;
     auto whats = pick_pit_monraces(creature, align);
@@ -370,7 +365,7 @@ bool build_type13(CreatureEntity &creature, DungeonData *dd_ptr)
         return false;
     }
 
-    const auto center = find_space(*player_ptr, dd_ptr, 13, 25);
+    const auto center = find_space(creature, dd_ptr, 13, 25);
     if (!center) {
         return false;
     }
@@ -458,7 +453,7 @@ bool build_type13(CreatureEntity &creature, DungeonData *dd_ptr)
     });
     constexpr auto fmt = _("%s%sの罠ピットが生成されました。", "Trapped monster pit (%s%s)");
     const auto pit_subtype = PitNestFilter::get_instance().pit_subtype(*pit_type);
-    msg_format_wizard(*player_ptr, CHEAT_DUNGEON, fmt, pit.name.data(), pit_subtype.data());
+    msg_format_wizard(creature, CHEAT_DUNGEON, fmt, pit.name.data(), pit_subtype.data());
 
     for (auto i = 0; i < NUM_PIT_MONRACES / 2; i++) {
         (*whats)[i] = (*whats)[i * 2];
@@ -470,7 +465,7 @@ bool build_type13(CreatureEntity &creature, DungeonData *dd_ptr)
     const Pos2DVec vec(center->y, center->x);
     for (const auto &trapped_monster : place_table_trapped_pit) {
         const auto trapped_pos = trapped_monster.pos + vec;
-        place_specific_monster(*player_ptr, trapped_pos.y, trapped_pos.x, (*whats)[trapped_monster.strength], PM_NO_KAGE);
+        place_specific_monster(creature, trapped_pos.y, trapped_pos.x, (*whats)[trapped_monster.strength], PM_NO_KAGE);
     }
 
     return true;

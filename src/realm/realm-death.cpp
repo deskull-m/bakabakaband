@@ -25,7 +25,7 @@
 #include "status/element-resistance.h"
 #include "status/experience.h"
 #include "status/shape-changer.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "target/target-getter.h"
 #include "util/dice.h"
 
@@ -38,11 +38,10 @@
  */
 tl::optional<std::string> do_death_spell(CreatureEntity &creature, SPELL_IDX spell, SpellProcessType mode)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     bool info = mode == SpellProcessType::INFO;
     bool cast = mode == SpellProcessType::CAST;
 
-    PLAYER_LEVEL plev = player_ptr->level;
+    PLAYER_LEVEL plev = creature.level;
 
     switch (spell) {
     case 0: {
@@ -244,7 +243,7 @@ tl::optional<std::string> do_death_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (cast) {
-            project(creature, 0, rad, player_ptr->y, player_ptr->x, dam, AttributeType::POIS, PROJECT_KILL | PROJECT_ITEM);
+            project(creature, 0, rad, creature.y, creature.x, dam, AttributeType::POIS, PROJECT_KILL | PROJECT_ITEM);
         }
     } break;
 
@@ -291,7 +290,7 @@ tl::optional<std::string> do_death_spell(CreatureEntity &creature, SPELL_IDX spe
                 chg_virtue(creature, Virtue::SACRIFICE, -1);
                 chg_virtue(creature, Virtue::VITALITY, -1);
 
-                hp_player(*player_ptr, dam);
+                hp_player(creature, dam);
 
                 /*
                  * Gain nutritional sustenance:
@@ -304,10 +303,10 @@ tl::optional<std::string> do_death_spell(CreatureEntity &creature, SPELL_IDX spe
                  * ARE Gorged, it won't cure
                  * us
                  */
-                dam = player_ptr->food + std::min(5000, 100 * dam);
+                dam = creature.food + std::min(5000, 100 * dam);
 
                 /* Not gorged already */
-                if (player_ptr->food < PY_FOOD_MAX) {
+                if (creature.food < PY_FOOD_MAX) {
                     set_food(creature, dam >= PY_FOOD_MAX ? PY_FOOD_MAX - 1 : dam);
                 }
             }
@@ -316,7 +315,7 @@ tl::optional<std::string> do_death_spell(CreatureEntity &creature, SPELL_IDX spe
 
     case 14: {
         if (cast) {
-            animate_dead(creature, 0, player_ptr->y, player_ptr->x);
+            animate_dead(creature, 0, creature.y, creature.x);
         }
     } break;
 
@@ -328,7 +327,7 @@ tl::optional<std::string> do_death_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (cast) {
-            symbol_genocide(*player_ptr, power, true);
+            symbol_genocide(creature, power, true);
         }
     } break;
 
@@ -419,7 +418,7 @@ tl::optional<std::string> do_death_spell(CreatureEntity &creature, SPELL_IDX spe
 
             for (i = 0; i < 3; i++) {
                 if (hypodynamic_bolt(creature, dir, dam)) {
-                    hp_player(*player_ptr, dam);
+                    hp_player(creature, dam);
                 }
             }
         }
@@ -513,7 +512,7 @@ tl::optional<std::string> do_death_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (cast) {
-            mass_genocide(*player_ptr, power, true);
+            mass_genocide(creature, power, true);
         }
     } break;
 

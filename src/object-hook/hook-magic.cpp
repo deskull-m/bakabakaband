@@ -39,9 +39,8 @@ bool object_is_activatable(const ItemEntity *o_ptr)
  */
 bool item_tester_hook_use(CreatureEntity &creature, const ItemEntity *o_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto tval = o_ptr->bi_key.tval();
-    if (tval == player_ptr->tval_ammo) {
+    if (tval == creature.tval_ammo) {
         return true;
     }
 

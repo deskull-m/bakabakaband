@@ -13,7 +13,6 @@
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief タイプ1の部屋…通常可変長方形の部屋を生成する
@@ -22,7 +21,6 @@
  */
 bool build_type1(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     const auto &dungeon = floor.get_dungeon_definition();
     const auto is_curtain = dungeon.flags.has(DungeonFeatureType::CURTAIN) && one_in_(dungeon.flags.has(DungeonFeatureType::NO_CAVE) ? 48 : 512);
@@ -31,14 +29,14 @@ bool build_type1(CreatureEntity &creature, DungeonData *dd_ptr)
     auto height = randint1(11) + randint1(11) + 1;
     auto width = randint1(11) + randint1(11) + 1;
 
-    auto center = find_space(*player_ptr, dd_ptr, height + 2, width + 2);
+    auto center = find_space(creature, dd_ptr, height + 2, width + 2);
     if (!center) {
         /* Limit to the minimum room size, and retry */
         width = 3;
         height = 3;
 
         /* Find and reserve some space in the dungeon.  Get center of room. */
-        center = find_space(*player_ptr, dd_ptr, height + 2, width + 2);
+        center = find_space(creature, dd_ptr, height + 2, width + 2);
         if (!center) {
             return false;
         }
@@ -161,7 +159,7 @@ bool build_type1(CreatureEntity &creature, DungeonData *dd_ptr)
         place_bold(creature, bottom + 1, center->x, GB_SOLID);
     }
 
-    place_random_door(*player_ptr, *center, true);
+    place_random_door(creature, *center, true);
     if (should_close_curtain) {
         floor.set_terrain_id_at(*center, doors.get_door(DoorKind::CURTAIN).closed);
     }
@@ -175,9 +173,8 @@ bool build_type1(CreatureEntity &creature, DungeonData *dd_ptr)
  */
 bool build_type2(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
-    const auto center = find_space(*player_ptr, dd_ptr, 25, 25);
+    const auto center = find_space(creature, dd_ptr, 25, 25);
     if (!center) {
         return false;
     }
@@ -273,9 +270,8 @@ bool build_type2(CreatureEntity &creature, DungeonData *dd_ptr)
  */
 bool build_type3(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
-    const auto center = find_space(*player_ptr, dd_ptr, 11, 25);
+    const auto center = find_space(creature, dd_ptr, 11, 25);
     if (!center) {
         return false;
     }
@@ -385,24 +381,24 @@ bool build_type3(CreatureEntity &creature, DungeonData *dd_ptr)
         /* Place a secret door on the inner room */
         switch (randint0(4)) {
         case 0:
-            place_secret_door(*player_ptr, { y1b, center->x });
+            place_secret_door(creature, { y1b, center->x });
             break;
         case 1:
-            place_secret_door(*player_ptr, { y2b, center->x });
+            place_secret_door(creature, { y2b, center->x });
             break;
         case 2:
-            place_secret_door(*player_ptr, { center->y, x1a });
+            place_secret_door(creature, { center->y, x1a });
             break;
         case 3:
-            place_secret_door(*player_ptr, { center->y, x2a });
+            place_secret_door(creature, { center->y, x2a });
             break;
         }
 
         /* Place a treasure in the vault */
-        place_object(*player_ptr, *center, 0);
+        place_object(creature, *center, 0);
 
         /* Let's guard the treasure well */
-        vault_monsters(*player_ptr, *center, randint0(2) + 3);
+        vault_monsters(creature, *center, randint0(2) + 3);
 
         /* Traps naturally */
         vault_traps(floor, *center, { 4, 4 }, randint0(3) + 2);
@@ -440,10 +436,10 @@ bool build_type3(CreatureEntity &creature, DungeonData *dd_ptr)
                                            ? DoorKind::CURTAIN
                                            : (dungeon.flags.has(DungeonFeatureType::GLASS_DOOR) ? DoorKind::GLASS_DOOR : DoorKind::DOOR);
 
-                place_secret_door(*player_ptr, { center->y, x1a - 1 }, door_type);
-                place_secret_door(*player_ptr, { center->y, x2a + 1 }, door_type);
-                place_secret_door(*player_ptr, { y1b - 1, center->x }, door_type);
-                place_secret_door(*player_ptr, { y2b + 1, center->x }, door_type);
+                place_secret_door(creature, { center->y, x1a - 1 }, door_type);
+                place_secret_door(creature, { center->y, x2a + 1 }, door_type);
+                place_secret_door(creature, { y1b - 1, center->x }, door_type);
+                place_secret_door(creature, { y2b + 1, center->x }, door_type);
             }
         }
 
@@ -481,11 +477,10 @@ bool build_type3(CreatureEntity &creature, DungeonData *dd_ptr)
  */
 bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     /* Find and reserve some space in the dungeon.  Get center of room. */
     auto &floor = *creature.current_floor_ptr;
     const auto &dungeon = floor.get_dungeon_definition();
-    const auto center = find_space(*player_ptr, dd_ptr, 11, 25);
+    const auto center = find_space(creature, dd_ptr, 11, 25);
     if (!center) {
         return false;
     }
@@ -543,21 +538,21 @@ bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr)
         /* Place a secret door */
         switch (randint1(4)) {
         case 1:
-            place_secret_door(*player_ptr, { y1_inner - 1, center->x });
+            place_secret_door(creature, { y1_inner - 1, center->x });
             break;
         case 2:
-            place_secret_door(*player_ptr, { y2_inner + 1, center->x });
+            place_secret_door(creature, { y2_inner + 1, center->x });
             break;
         case 3:
-            place_secret_door(*player_ptr, { center->y, x1_inner - 1 });
+            place_secret_door(creature, { center->y, x1_inner - 1 });
             break;
         case 4:
-            place_secret_door(*player_ptr, { center->y, x2_inner + 1 });
+            place_secret_door(creature, { center->y, x2_inner + 1 });
             break;
         }
 
         /* Place a monster in the room */
-        vault_monsters(*player_ptr, *center, 1);
+        vault_monsters(creature, *center, 1);
 
         break;
     }
@@ -567,16 +562,16 @@ bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr)
         /* Place a secret door */
         switch (randint1(4)) {
         case 1:
-            place_secret_door(*player_ptr, { y1_inner - 1, center->x });
+            place_secret_door(creature, { y1_inner - 1, center->x });
             break;
         case 2:
-            place_secret_door(*player_ptr, { y2_inner + 1, center->x });
+            place_secret_door(creature, { y2_inner + 1, center->x });
             break;
         case 3:
-            place_secret_door(*player_ptr, { center->y, x1_inner - 1 });
+            place_secret_door(creature, { center->y, x1_inner - 1 });
             break;
         case 4:
-            place_secret_door(*player_ptr, { center->y, x2_inner + 1 });
+            place_secret_door(creature, { center->y, x2_inner + 1 });
             break;
         }
 
@@ -594,24 +589,24 @@ bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr)
         /* Place a locked door on the inner room */
         switch (randint1(4)) {
         case 1:
-            place_locked_door(*player_ptr, *center + Pos2DVec(-1, 0));
+            place_locked_door(creature, *center + Pos2DVec(-1, 0));
             break;
         case 2:
-            place_locked_door(*player_ptr, *center + Pos2DVec(1, 0));
+            place_locked_door(creature, *center + Pos2DVec(1, 0));
             break;
         case 3:
-            place_locked_door(*player_ptr, *center + Pos2DVec(0, -1));
+            place_locked_door(creature, *center + Pos2DVec(0, -1));
             break;
         case 4:
-            place_locked_door(*player_ptr, *center + Pos2DVec(0, 1));
+            place_locked_door(creature, *center + Pos2DVec(0, 1));
             break;
         }
 
         /* Monsters to guard the "treasure" */
-        vault_monsters(*player_ptr, *center, randint1(3) + 2);
+        vault_monsters(creature, *center, randint1(3) + 2);
 
         if (evaluate_percent(80)) {
-            place_object(*player_ptr, *center, 0);
+            place_object(creature, *center, 0);
         } else {
             floor.place_random_stairs(*center);
         }
@@ -627,16 +622,16 @@ bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr)
         /* Place a secret door */
         switch (randint1(4)) {
         case 1:
-            place_secret_door(*player_ptr, { y1_inner - 1, center->x });
+            place_secret_door(creature, { y1_inner - 1, center->x });
             break;
         case 2:
-            place_secret_door(*player_ptr, { y2_inner + 1, center->x });
+            place_secret_door(creature, { y2_inner + 1, center->x });
             break;
         case 3:
-            place_secret_door(*player_ptr, { center->y, x1_inner - 1 });
+            place_secret_door(creature, { center->y, x1_inner - 1 });
             break;
         case 4:
-            place_secret_door(*player_ptr, { center->y, x2_inner + 1 });
+            place_secret_door(creature, { center->y, x2_inner + 1 });
             break;
         }
 
@@ -678,19 +673,19 @@ bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr)
             place_grid(creature, floor.get_grid({ center->y, center->x + 5 }), GB_INNER);
 
             /* Secret doors (random top/bottom) */
-            place_secret_door(*player_ptr, { center->y - 3 + (randint1(2) * 2), center->x - 3 }, door_type);
-            place_secret_door(*player_ptr, { center->y - 3 + (randint1(2) * 2), center->x + 3 }, door_type);
+            place_secret_door(creature, { center->y - 3 + (randint1(2) * 2), center->x - 3 }, door_type);
+            place_secret_door(creature, { center->y - 3 + (randint1(2) * 2), center->x + 3 }, door_type);
 
             /* Monsters */
-            vault_monsters(*player_ptr, *center + Pos2DVec(0, -2), randint1(2));
-            vault_monsters(*player_ptr, *center + Pos2DVec(0, 2), randint1(2));
+            vault_monsters(creature, *center + Pos2DVec(0, -2), randint1(2));
+            vault_monsters(creature, *center + Pos2DVec(0, 2), randint1(2));
 
             /* Objects */
             if (one_in_(3)) {
-                place_object(*player_ptr, *center + Pos2DVec(0, -2), 0);
+                place_object(creature, *center + Pos2DVec(0, -2), 0);
             }
             if (one_in_(3)) {
-                place_object(*player_ptr, *center + Pos2DVec(0, 2), 0);
+                place_object(creature, *center + Pos2DVec(0, 2), 0);
             }
         }
 
@@ -702,16 +697,16 @@ bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr)
         /* Place a secret door */
         switch (randint1(4)) {
         case 1:
-            place_secret_door(*player_ptr, { y1_inner - 1, center->x });
+            place_secret_door(creature, { y1_inner - 1, center->x });
             break;
         case 2:
-            place_secret_door(*player_ptr, { y2_inner + 1, center->x });
+            place_secret_door(creature, { y2_inner + 1, center->x });
             break;
         case 3:
-            place_secret_door(*player_ptr, { center->y, x1_inner - 1 });
+            place_secret_door(creature, { center->y, x1_inner - 1 });
             break;
         case 4:
-            place_secret_door(*player_ptr, { center->y, x2_inner + 1 });
+            place_secret_door(creature, { center->y, x2_inner + 1 });
             break;
         }
 
@@ -725,15 +720,15 @@ bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr)
         }
 
         /* Monsters just love mazes. */
-        vault_monsters(*player_ptr, *center + Pos2DVec(0, -5), randint1(3));
-        vault_monsters(*player_ptr, *center + Pos2DVec(0, 5), randint1(3));
+        vault_monsters(creature, *center + Pos2DVec(0, -5), randint1(3));
+        vault_monsters(creature, *center + Pos2DVec(0, 5), randint1(3));
 
         /* Traps make them entertaining. */
         vault_traps(floor, *center + Pos2DVec(0, -3), { 2, 8 }, randint1(3));
         vault_traps(floor, *center + Pos2DVec(0, 3), { 2, 8 }, randint1(3));
 
         /* Mazes should have some treasure too. */
-        vault_objects(*player_ptr, *center, 3);
+        vault_objects(creature, *center, 3);
 
         break;
     }
@@ -756,26 +751,26 @@ bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr)
         /* Doors into the rooms */
         if (one_in_(2)) {
             int i = randint1(10);
-            place_secret_door(*player_ptr, { y1_inner - 1, center->x - i }, door_type);
-            place_secret_door(*player_ptr, { y1_inner - 1, center->x + i }, door_type);
-            place_secret_door(*player_ptr, { y2_inner + 1, center->x - i }, door_type);
-            place_secret_door(*player_ptr, { y2_inner + 1, center->x + i }, door_type);
+            place_secret_door(creature, { y1_inner - 1, center->x - i }, door_type);
+            place_secret_door(creature, { y1_inner - 1, center->x + i }, door_type);
+            place_secret_door(creature, { y2_inner + 1, center->x - i }, door_type);
+            place_secret_door(creature, { y2_inner + 1, center->x + i }, door_type);
         } else {
             int i = randint1(3);
-            place_secret_door(*player_ptr, { center->y + i, x1_inner - 1 }, door_type);
-            place_secret_door(*player_ptr, { center->y - i, x1_inner - 1 }, door_type);
-            place_secret_door(*player_ptr, { center->y + i, x2_inner + 1 }, door_type);
-            place_secret_door(*player_ptr, { center->y - i, x2_inner + 1 }, door_type);
+            place_secret_door(creature, { center->y + i, x1_inner - 1 }, door_type);
+            place_secret_door(creature, { center->y - i, x1_inner - 1 }, door_type);
+            place_secret_door(creature, { center->y + i, x2_inner + 1 }, door_type);
+            place_secret_door(creature, { center->y - i, x2_inner + 1 }, door_type);
         }
 
         /* Treasure, centered at the center of the cross */
-        vault_objects(*player_ptr, *center, 2 + randint1(2));
+        vault_objects(creature, *center, 2 + randint1(2));
 
         /* Gotta have some monsters. */
-        vault_monsters(*player_ptr, *center + Pos2DVec(1, -4), randint1(4));
-        vault_monsters(*player_ptr, *center + Pos2DVec(1, 4), randint1(4));
-        vault_monsters(*player_ptr, *center + Pos2DVec(-1, -4), randint1(4));
-        vault_monsters(*player_ptr, *center + Pos2DVec(-1, 4), randint1(4));
+        vault_monsters(creature, *center + Pos2DVec(1, -4), randint1(4));
+        vault_monsters(creature, *center + Pos2DVec(1, 4), randint1(4));
+        vault_monsters(creature, *center + Pos2DVec(-1, -4), randint1(4));
+        vault_monsters(creature, *center + Pos2DVec(-1, 4), randint1(4));
 
         break;
     }
@@ -795,12 +790,11 @@ bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr)
  */
 bool build_type11(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     /* Occasional light */
     auto &floor = *creature.current_floor_ptr;
     const auto should_brighten = (randint1(floor.dun_level) <= 15) && floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::DARKNESS);
     const auto rad = randint0(9);
-    const auto center = find_space(*player_ptr, dd_ptr, rad * 2 + 1, rad * 2 + 1);
+    const auto center = find_space(creature, dd_ptr, rad * 2 + 1, rad * 2 + 1);
     if (!center) {
         return false;
     }
@@ -834,7 +828,6 @@ bool build_type11(CreatureEntity &creature, DungeonData *dd_ptr)
  */
 bool build_type12(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     /* Make a random metric */
     const auto h1 = randint1(32) - 16;
     const auto h2 = randint1(16);
@@ -846,7 +839,7 @@ bool build_type12(CreatureEntity &creature, DungeonData *dd_ptr)
     const auto should_brighten = (randint1(floor.dun_level) <= 5) && floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::DARKNESS);
     const auto rad = randint1(9);
 
-    const auto center = find_space(*player_ptr, dd_ptr, rad * 2 + 3, rad * 2 + 3);
+    const auto center = find_space(creature, dd_ptr, rad * 2 + 3, rad * 2 + 3);
     if (!center) {
         return false;
     }
@@ -897,10 +890,10 @@ bool build_type12(CreatureEntity &creature, DungeonData *dd_ptr)
         build_small_room(creature, center->x, center->y);
 
         /* Place a treasure in the vault */
-        place_object(*player_ptr, *center, 0);
+        place_object(creature, *center, 0);
 
         /* Let's guard the treasure well */
-        vault_monsters(*player_ptr, *center, randint0(2) + 3);
+        vault_monsters(creature, *center, randint0(2) + 3);
 
         /* Traps naturally */
         vault_traps(floor, *center, { 4, 4 }, randint0(3) + 2);
@@ -911,15 +904,14 @@ bool build_type12(CreatureEntity &creature, DungeonData *dd_ptr)
 
 bool build_nonvault_maze(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto height = randint1(20) + randint1(20) + 1;
     auto width = randint1(20) + randint1(20) + 1;
 
-    auto center = find_space(*player_ptr, dd_ptr, height + 2, width + 2);
+    auto center = find_space(creature, dd_ptr, height + 2, width + 2);
     if (!center) {
         return false;
     }
 
-    build_maze_vault(*player_ptr, *center, { height, width }, false);
+    build_maze_vault(creature, *center, { height, width }, false);
     return true;
 }
