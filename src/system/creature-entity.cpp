@@ -63,6 +63,26 @@ Pos2D CreatureEntity::get_neighbor(const Direction &dir) const
     return this->get_position() + dir.vec();
 }
 
+bool CreatureEntity::is_stunned() const
+{
+    return this->get_timed_effect(CreatureTimedEffect::STUN) > 0;
+}
+
+bool CreatureEntity::is_confused() const
+{
+    return this->get_timed_effect(CreatureTimedEffect::CONFUSION) > 0;
+}
+
+bool CreatureEntity::is_fearful() const
+{
+    return this->get_timed_effect(CreatureTimedEffect::FEAR) > 0;
+}
+
+bool CreatureEntity::is_invulnerable() const
+{
+    return this->get_timed_effect(CreatureTimedEffect::INVULNERABILITY) > 0;
+}
+
 /*!
  * @brief ツリー構造インシデント数加算
  * @param incident_id 階層構造のインシデントID（例: "root/attack/critical"）

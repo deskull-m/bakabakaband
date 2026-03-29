@@ -228,6 +228,29 @@ bool PlayerType::is_player() const
     return true;
 }
 
+short PlayerType::get_timed_effect(CreatureTimedEffect effect) const
+{
+    const auto &eff = *this->effects();
+    switch (effect) {
+    case CreatureTimedEffect::STUN:
+        return eff.stun().current();
+    case CreatureTimedEffect::CONFUSION:
+        return eff.confusion().current();
+    case CreatureTimedEffect::FEAR:
+        return eff.fear().current();
+    case CreatureTimedEffect::INVULNERABILITY:
+        return this->invuln;
+    case CreatureTimedEffect::ACCELERATION:
+        return eff.acceleration().current();
+    case CreatureTimedEffect::DECELERATION:
+        return eff.deceleration().current();
+    case CreatureTimedEffect::SLEEP_OR_PARALYSIS:
+        return eff.paralysis().current();
+    default:
+        return 0;
+    }
+}
+
 bool PlayerType::is_confused() const
 {
     return this->effects()->confusion().is_confused();
@@ -282,7 +305,7 @@ bool PlayerType::is_blessed() const
     }
 
     const auto *hex = std::get_if<std::shared_ptr<spell_hex_data_type>>(&this->class_specific_data);
-    return hex && *hex && (*hex)->casting_spells.has(i2enum<spell_hex_type>(HEX_BLESS));
+    return hex && *hex && (*hex)->casting_spells.has(HEX_BLESS);
 }
 
 bool PlayerType::is_hero() const

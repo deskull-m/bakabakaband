@@ -9,6 +9,7 @@
 #include "player/player-personality-types.h"
 #include "player/player-skill.h"
 #include "system/angband.h"
+#include "system/creature-timed-effect-types.h"
 #include "system/system-variables.h"
 #include "util/dice.h"
 #include "util/flag-group.h"
@@ -258,28 +259,35 @@ public:
     virtual bool is_player() const = 0;
 
     /*!
+     * @brief クリーチャーの時限効果の残りターン数を取得
+     * @param effect 取得する時限効果の種別
+     * @return 残りターン数（0なら効果なし）
+     */
+    virtual short get_timed_effect(CreatureTimedEffect effect) const = 0;
+
+    /*!
      * @brief クリーチャーが混乱しているかどうかを判定
      * @return 混乱していればtrue
      */
-    virtual bool is_confused() const = 0;
+    virtual bool is_confused() const;
 
     /*!
      * @brief クリーチャーが朦朧としているかどうかを判定
      * @return 朦朧としていればtrue
      */
-    virtual bool is_stunned() const = 0;
+    virtual bool is_stunned() const;
 
     /*!
      * @brief クリーチャーが恐怖しているかどうかを判定
      * @return 恐怖していればtrue
      */
-    virtual bool is_fearful() const = 0;
+    virtual bool is_fearful() const;
 
     /*!
      * @brief クリーチャーが無敵状態かどうかを判定
      * @return 無敵ならtrue
      */
-    virtual bool is_invulnerable() const = 0;
+    virtual bool is_invulnerable() const;
 
     /*!
      * @brief クリーチャーが盲目かどうかを判定

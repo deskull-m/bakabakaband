@@ -98,6 +98,7 @@ public:
     bool is_confused() const override;
     bool is_fearful() const override;
     bool is_invulnerable() const override;
+    short get_timed_effect(CreatureTimedEffect effect) const override;
     byte get_temporary_speed() const;
     int get_speed() const override;
     bool has_living_flag(bool is_apperance = false) const;
