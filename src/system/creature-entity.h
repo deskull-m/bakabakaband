@@ -282,6 +282,33 @@ public:
     virtual bool is_invulnerable() const = 0;
 
     /*!
+     * @brief クリーチャーが盲目かどうかを判定
+     * @return 盲目ならtrue、デフォルトはfalse
+     */
+    virtual bool is_blind() const
+    {
+        return false;
+    }
+
+    /*!
+     * @brief クリーチャーが麻痺しているかどうかを判定
+     * @return 麻痺していればtrue、デフォルトはfalse
+     */
+    virtual bool is_paralyzed() const
+    {
+        return false;
+    }
+
+    /*!
+     * @brief クリーチャーが加速しているかどうかを判定
+     * @return 加速中ならtrue、デフォルトはfalse
+     */
+    virtual bool is_fast() const
+    {
+        return false;
+    }
+
+    /*!
      * @brief 指定した固定アーティファクトを装備しているかどうか調べる
      * @param fa_id 固定アーティファクトのID
      * @return 装備していればtrue、そうでなければfalse

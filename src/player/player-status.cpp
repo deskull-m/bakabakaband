@@ -3160,11 +3160,6 @@ bool is_fast(CreatureEntity &creature)
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     return creature.effects()->acceleration().is_fast() || music_singing(*player_ptr, MUSIC_SPEED) || music_singing(*player_ptr, MUSIC_SHERO);
 }
-bool is_invuln(CreatureEntity &creature)
-{
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    return player_ptr->invuln || music_singing(*player_ptr, MUSIC_INVULN);
-}
 
 bool is_hero(CreatureEntity &creature)
 {
