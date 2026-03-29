@@ -113,8 +113,7 @@ static tl::optional<bool> final_summon(CreatureEntity &creature, MonsterDeath *m
 
 static void on_dead_spawn_monsters(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&killer);
-    if (!player_ptr) {
+    if (!killer.is_player()) {
         return;
     }
     bool notice = false;
@@ -252,9 +251,9 @@ static void on_dead_drop_tval_item(CreatureEntity &killer, MonsterDeath *md_ptr)
             case 3:
                 ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
                 if (!item.is_fixed_artifact()) {
-                    auto *player_ptr = dynamic_cast<PlayerType *>(&killer);
-                    if (player_ptr) {
-                        become_random_artifact(*player_ptr, &item, false);
+                    if (killer.is_player()) {
+                        auto &player = static_cast<PlayerType &>(killer);
+                        become_random_artifact(player, &item, false);
                     }
                 }
                 break;
@@ -338,18 +337,21 @@ static void on_dead_ninja(CreatureEntity &killer, MonsterDeath *md_ptr)
 
 static void on_dead_earth_destroyer(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&killer);
-    if (!player_ptr) {
+    if (!killer.is_player()) {
         return;
     }
+    auto &player = static_cast<PlayerType &>(killer);
     msg_print(_("ワーオ！22世紀の文明の叡知が今炸裂した！", "Wow! The wisdom of 22nd century civilization has now exploded!"));
-    (void)project(*player_ptr, md_ptr->m_idx, 10, md_ptr->md_y, md_ptr->md_x, 10000, AttributeType::DISINTEGRATE, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
+    (void)project(player, md_ptr->m_idx, 10, md_ptr->md_y, md_ptr->md_x, 10000, AttributeType::DISINTEGRATE, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
 }
 
 static void on_dead_sacred_treasures(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&killer);
-    if (!player_ptr || (player_ptr->ppersonality != PERSONALITY_LAZY) || !md_ptr->drop_chosen_item) {
+    if (!killer.is_player()) {
+        return;
+    }
+    auto &player = static_cast<PlayerType &>(killer);
+    if ((player.ppersonality != PERSONALITY_LAZY) || !md_ptr->drop_chosen_item) {
         return;
     }
 
@@ -371,7 +373,7 @@ static void on_dead_sacred_treasures(CreatureEntity &killer, MonsterDeath *md_pt
     }
 
     const auto a_idx = rand_choice(candidates);
-    create_named_art(*player_ptr, a_idx, md_ptr->md_y, md_ptr->md_x);
+    create_named_art(player, a_idx, md_ptr->md_y, md_ptr->md_x);
 }
 
 static void on_dead_serpent(CreatureEntity &killer, MonsterDeath *md_ptr)
@@ -450,7 +452,6 @@ static tl::optional<ItemEntity> make_equipment(CreatureEntity &killer, const BIT
  */
 static void on_dead_random_artifact(CreatureEntity &killer, MonsterDeath *md_ptr, BaseitemRestrict restrict)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&killer);
     const auto drop_mode = md_ptr->mo_mode | AM_NO_FIXED_ART;
     while (true) {
         auto item = make_equipment(killer, drop_mode, restrict);
@@ -467,8 +468,9 @@ static void on_dead_random_artifact(CreatureEntity &killer, MonsterDeath *md_ptr
             continue;
         }
 
-        if (player_ptr) {
-            (void)become_random_artifact(*player_ptr, &*item, false);
+        if (killer.is_player()) {
+            auto &player = static_cast<PlayerType &>(killer);
+            (void)become_random_artifact(player, &*item, false);
         }
         auto is_good_random_art = !item->is_cursed();
         is_good_random_art &= item->to_h > 0;

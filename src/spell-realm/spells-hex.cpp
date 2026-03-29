@@ -33,7 +33,7 @@ constexpr int MAX_KEEP = 4;
 
 SpellHex::SpellHex(CreatureEntity &player)
     : player(player)
-    , spell_hex_data(CreatureClass(*dynamic_cast<PlayerType *>(&player)).get_specific_data<spell_hex_data_type>())
+    , spell_hex_data(CreatureClass(player).get_specific_data<spell_hex_data_type>())
 {
     if (!this->spell_hex_data) {
         return;
