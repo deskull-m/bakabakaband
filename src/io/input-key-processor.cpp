@@ -80,7 +80,6 @@
 #include "player-status/player-energy.h"
 #include "player/attack-defense-types.h"
 #include "player/digestion-processor.h"
-#include "player/player-status.h"
 #include "player/special-defense-types.h"
 #include "status/action-setter.h"
 #include "store/cmd-store.h"
@@ -466,7 +465,7 @@ void process_command(CreatureEntity &creature)
             break;
         }
 
-        if (is_shero(*player_ptr) && !pc.equals(PlayerClassType::BERSERKER)) {
+        if (player_ptr->is_shero() && !pc.equals(PlayerClassType::BERSERKER)) {
             msg_format(_("狂戦士化していて頭が回らない！", "You cannot think directly!"));
             PlayerEnergy(*player_ptr).reset_player_turn();
             break;

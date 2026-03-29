@@ -10,8 +10,6 @@
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
 #include "player-base/player-class.h"
-#include "player/player-status.h"
-#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "term/screen-processor.h"
@@ -36,7 +34,7 @@ bool cmd_limit_cast(CreatureEntity &creature)
         return true;
     }
 
-    if (is_shero(creature) && !CreatureClass(creature).equals(PlayerClassType::BERSERKER)) {
+    if (creature.is_shero() && !CreatureClass(creature).equals(PlayerClassType::BERSERKER)) {
         msg_format(_("狂戦士化していて頭が回らない！", "You cannot think directly!"));
         return true;
     }

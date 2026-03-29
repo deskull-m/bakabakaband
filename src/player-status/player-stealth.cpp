@@ -124,7 +124,7 @@ int16_t PlayerStealth::time_effect_bonus()
         }
     }
 
-    if (is_shero(*player_ptr)) {
+    if (player_ptr->is_shero()) {
         bonus -= 7;
     }
 
