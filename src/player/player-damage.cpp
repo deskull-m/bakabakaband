@@ -323,7 +323,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
     }
 
     if ((damage_type != DAMAGE_USELIFE) && (damage_type != DAMAGE_LOSELIFE)) {
-        if (is_invuln(player) && (damage < 9000)) {
+        if (player.is_invulnerable() && (damage < 9000)) {
             if (damage_type == DAMAGE_FORCE) {
                 msg_print(_("バリアが切り裂かれた！", "The attack cuts your shield of invulnerability open!"));
             } else if (one_in_(PENETRATE_INVULNERABILITY)) {

@@ -25,7 +25,6 @@
 #include "monster/monster-info.h"
 #include "monster/monster-update.h"
 #include "player/player-status-flags.h"
-#include "player/player-status.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/grid-flow.h"
@@ -919,7 +918,7 @@ bool cave_player_teleportable_bold(CreatureEntity &creature, POSITION y, POSITIO
         }
     }
 
-    if (terrain.flags.has_not(TerrainCharacteristics::LAVA) || has_immune_fire(creature) || is_invuln(creature)) {
+    if (terrain.flags.has_not(TerrainCharacteristics::LAVA) || has_immune_fire(creature) || creature.is_invulnerable()) {
         return true;
     }
 

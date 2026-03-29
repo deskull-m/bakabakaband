@@ -31,7 +31,7 @@ void set_body_improvement_info_1(CreatureEntity &creature, self_info_type *self_
         self_ptr->info_list.emplace_back(_("あなたは神秘のシールドで守られている。", "You are protected by a mystic shield."));
     }
 
-    if (is_invuln(creature)) {
+    if (creature.is_invulnerable()) {
         self_ptr->info_list.emplace_back(_("あなたは現在傷つかない。", "You are temporarily invulnerable."));
     }
 

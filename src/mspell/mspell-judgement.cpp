@@ -218,7 +218,7 @@ bool dispel_check_monster(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_I
 bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (is_invuln(*player_ptr)) {
+    if (player_ptr->is_invulnerable()) {
         return true;
     }
 

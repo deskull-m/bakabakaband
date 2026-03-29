@@ -6,7 +6,6 @@
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
 #include "game-option/disturbance-options.h"
-#include "player/player-status.h"
 #include "realm/realm-song-numbers.h"
 #include "spell-realm/spells-song.h"
 #include "system/player-type-definition.h"
@@ -104,7 +103,7 @@ bool set_invuln(CreatureEntity &creature, short v, bool do_dec)
             if (player.invuln > v) {
                 return false;
             }
-        } else if (!is_invuln(creature)) {
+        } else if (!creature.is_invulnerable()) {
             msg_print(_("無敵だ！", "Invulnerability!"));
             notice = true;
             chg_virtue(creature, Virtue::UNLIFE, -2);

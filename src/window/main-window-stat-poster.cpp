@@ -500,7 +500,7 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_PROTEVIL);
     }
 
-    if (is_invuln(creature)) {
+    if (creature.is_invulnerable()) {
         ADD_BAR_FLAG(BAR_INVULN);
     }
 

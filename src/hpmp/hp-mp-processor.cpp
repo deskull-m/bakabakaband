@@ -127,14 +127,14 @@ void process_player_hp_mp(CreatureEntity &creature)
     }
 
     const auto &player_poison = effects->poison();
-    if (player_poison.is_poisoned() && !is_invuln(*player_ptr)) {
+    if (player_poison.is_poisoned() && !player_ptr->is_invulnerable()) {
         if (take_hit(*player_ptr, DAMAGE_NOESCAPE, 1, _("毒", "poison")) > 0) {
             sound(SoundKind::DAMAGE_OVER_TIME);
         }
     }
 
     const auto &player_cut = effects->cut();
-    if (player_cut.is_cut() && !is_invuln(*player_ptr)) {
+    if (player_cut.is_cut() && !player_ptr->is_invulnerable()) {
         const auto dam = player_cut.get_damage();
         if (take_hit(*player_ptr, DAMAGE_NOESCAPE, dam, _("致命傷", "a mortal wound")) > 0) {
             sound(SoundKind::DAMAGE_OVER_TIME);
@@ -143,7 +143,7 @@ void process_player_hp_mp(CreatureEntity &creature)
 
     const CreatureRace race(player_ptr);
     if (race.life() == PlayerRaceLifeType::UNDEAD && race.tr_flags().has(TR_VUL_LITE)) {
-        if (!floor.is_underground() && !has_resist_lite(*player_ptr) && !is_invuln(*player_ptr) && AngbandWorld::get_instance().is_daytime()) {
+        if (!floor.is_underground() && !has_resist_lite(*player_ptr) && !player_ptr->is_invulnerable() && AngbandWorld::get_instance().is_daytime()) {
             if ((floor.grid_array[player_ptr->y][player_ptr->x].info & (CAVE_GLOW | CAVE_MNDK)) == CAVE_GLOW) {
                 msg_print(_("日光があなたのアンデッドの肉体を焼き焦がした！", "The sun's rays scorch your undead flesh!"));
                 take_hit(*player_ptr, DAMAGE_NOESCAPE, 1, _("日光", "sunlight"));
@@ -157,7 +157,7 @@ void process_player_hp_mp(CreatureEntity &creature)
             const auto item_name = describe_flavor(*player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
             msg_format(_("%sがあなたのアンデッドの肉体を焼き焦がした！", "The %s scorches your undead flesh!"), item_name.data());
             cave_no_regen = true;
-            if (!is_invuln(*player_ptr)) {
+            if (!player_ptr->is_invulnerable()) {
                 const auto wielding_item_name = describe_flavor(*player_ptr, item, OD_NAME_ONLY);
                 std::stringstream ss;
                 ss << _(wielding_item_name, "wielding ") << _("を装備したダメージ", wielding_item_name);
@@ -166,7 +166,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::LAVA) && !is_invuln(*player_ptr) && !has_immune_fire(*player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::LAVA) && !player_ptr->is_invulnerable() && !has_immune_fire(*player_ptr)) {
         constexpr auto mes_leviation = _("熱で火傷した！", "The heat burns you!");
         constexpr auto mes_normal = _("で火傷した！", "burns you!");
         if (deal_damege_by_feat(creature, grid, mes_leviation, mes_normal, calc_fire_damage_rate, nullptr)) {
@@ -175,7 +175,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::COLD_PUDDLE) && !is_invuln(*player_ptr) && !has_immune_cold(*player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::COLD_PUDDLE) && !player_ptr->is_invulnerable() && !has_immune_cold(*player_ptr)) {
         constexpr auto mes_leviation = _("冷気に覆われた！", "The cold engulfs you!");
         constexpr auto mes_normal = _("に凍えた！", "frostbites you!");
         if (deal_damege_by_feat(creature, grid, mes_leviation, mes_normal, calc_cold_damage_rate, nullptr)) {
@@ -184,7 +184,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::ELEC_PUDDLE) && !is_invuln(*player_ptr) && !has_immune_elec(*player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::ELEC_PUDDLE) && !player_ptr->is_invulnerable() && !has_immune_elec(*player_ptr)) {
         constexpr auto mes_leviation = _("電撃を受けた！", "The electricity shocks you!");
         constexpr auto mes_normal = _("に感電した！", "shocks you!");
         if (deal_damege_by_feat(creature, grid, mes_leviation, mes_normal, calc_elec_damage_rate, nullptr)) {
@@ -193,7 +193,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::ACID_PUDDLE) && !is_invuln(*player_ptr) && !has_immune_acid(*player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::ACID_PUDDLE) && !player_ptr->is_invulnerable() && !has_immune_acid(*player_ptr)) {
         constexpr auto mes_leviation = _("酸が飛び散った！", "The acid melts you!");
         constexpr auto mes_normal = _("に溶かされた！", "melts you!");
         if (deal_damege_by_feat(creature, grid, mes_leviation, mes_normal, calc_acid_damage_rate, nullptr)) {
@@ -202,7 +202,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::POISON_PUDDLE) && !is_invuln(*player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::POISON_PUDDLE) && !player_ptr->is_invulnerable()) {
         constexpr auto mes_leviation = _("毒気を吸い込んだ！", "The gas poisons you!");
         constexpr auto mes_normal = _("に毒された！", "poisons you!");
         if (deal_damege_by_feat(creature, grid, mes_leviation, mes_normal, calc_pois_damage_rate,
@@ -217,7 +217,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::DUNG_POOL) && !is_invuln(*player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::DUNG_POOL) && !player_ptr->is_invulnerable()) {
         cave_no_regen = deal_damege_by_feat(creature, grid, _("糞が飛び散った！", "The feced scatter to you!"), _("に浸かった！", "tainted you!"),
             calc_acid_damage_rate, [](CreatureEntity &creature, int damage) {
                 auto *player_ptr = static_cast<PlayerType *>(&creature);
@@ -237,7 +237,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::THORN) && !player_ptr->levitation && !is_invuln(*player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::THORN) && !player_ptr->levitation && !player_ptr->is_invulnerable()) {
         int damage;
         msg_print(_("棘に体が突き刺さっている！", "Your body is stuck in a thorn!"));
         if (calc_inventory_weight(*player_ptr) > calc_weight_limit(*player_ptr)) {
@@ -250,18 +250,18 @@ void process_player_hp_mp(CreatureEntity &creature)
         sound(SoundKind::TERRAIN_DAMAGE);
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::PLASMA) && !is_invuln(*player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::PLASMA) && !player_ptr->is_invulnerable()) {
         cave_no_regen = deal_damege_by_feat(creature, grid, _("に包まれた!", "engulfs you!"), _("に包まれた!", "engulfs you"), calc_plasma_damage_rate, NULL);
         sound(SoundKind::TERRAIN_DAMAGE);
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::CHAOS_TAINTED) && !is_invuln(*player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::CHAOS_TAINTED) && !player_ptr->is_invulnerable()) {
         cave_no_regen = deal_damege_by_feat(creature, grid, _("に汚染された!", "taints you!"),
             _("に汚染された!", "taints you"), calc_chaos_damage_rate_rand, NULL);
         sound(SoundKind::TERRAIN_DAMAGE);
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::VOID) && !is_invuln(*player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::VOID) && !player_ptr->is_invulnerable()) {
         cave_no_regen = deal_damege_by_feat(creature, grid, _("に巻き込まれて己の存在が薄れていく!", "erases your existence!"),
             _("に巻き込まれて己の存在が薄れていく!", "erases your existence!"), calc_void_damage_rate_rand, NULL);
         sound(SoundKind::TERRAIN_DAMAGE);
@@ -384,7 +384,7 @@ void process_player_hp_mp(CreatureEntity &creature)
      * WILL BE!
      */
     if (terrain.flags.has_none_of({ TerrainCharacteristics::MOVE, TerrainCharacteristics::CAN_FLY })) {
-        auto should_damage = !is_invuln(*player_ptr);
+        auto should_damage = !player_ptr->is_invulnerable();
         should_damage &= player_ptr->wraith_form == 0;
         should_damage &= player_ptr->tim_pass_wall == 0;
         should_damage &= (player_ptr->hp > (player_ptr->level / 5)) || !has_pass_wall(*player_ptr);
