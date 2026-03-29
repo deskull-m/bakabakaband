@@ -6,7 +6,6 @@
 enum class RaceBlowEffectType;
 enum class RaceBlowMethodType;
 class CreatureEntity;
-class PlayerType;
 class SpellHex;
 class MonsterEntity;
 class ItemEntity;
@@ -42,7 +41,7 @@ public:
     void make_attack_normal();
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
 
     static int stat_value(const int raw);
     bool check_no_blow();
