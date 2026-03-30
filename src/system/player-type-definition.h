@@ -65,6 +65,8 @@ public:
     bool is_dead() const override;
 
     bool is_player() const override;
+
+    short get_timed_effect(CreatureTimedEffect effect) const override;
 };
 
 extern PlayerType *p_ptr;
