@@ -22,7 +22,6 @@
  */
 void delete_monster_idx(CreatureEntity &creature, short m_idx)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     auto &monster = floor.m_list[m_idx];
     auto &monrace = monster.get_monrace();
@@ -60,21 +59,21 @@ void delete_monster_idx(CreatureEntity &creature, short m_idx)
     }
 
     if (HealthBarTracker::get_instance().is_tracking(m_idx)) {
-        health_track(*player_ptr, 0);
+        health_track(creature, 0);
     }
 
-    if (player_ptr->pet_t_m_idx == m_idx) {
-        player_ptr->pet_t_m_idx = 0;
+    if (creature.pet_t_m_idx == m_idx) {
+        creature.pet_t_m_idx = 0;
     }
-    if (player_ptr->riding_t_m_idx == m_idx) {
-        player_ptr->riding_t_m_idx = 0;
+    if (creature.riding_t_m_idx == m_idx) {
+        creature.riding_t_m_idx = 0;
     }
-    if (monster.is_riding()) { // player_ptr->riding == m_idx のままの方がいい？
-        player_ptr->ride_monster(0);
+    if (monster.is_riding()) { // creature.riding == m_idx のままの方がいい？
+        static_cast<PlayerType &>(creature).ride_monster(0);
     }
 
     floor.get_grid(m_pos).m_idx = 0;
-    delete_items(*player_ptr, monster.hold_o_idx_list);
+    delete_items(creature, monster.hold_o_idx_list);
 
     // 召喚元のモンスターが消滅した時は、召喚されたモンスターのparent_m_idxが
     // 召喚されたモンスター自身のm_idxを指すようにする
@@ -100,7 +99,6 @@ void delete_monster_idx(CreatureEntity &creature, short m_idx)
  */
 void wipe_monsters_list(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &monraces = MonraceList::get_instance();
     auto &floor = *creature.current_floor_ptr;
     for (auto i = floor.m_max - 1; i >= 1; i--) {
@@ -119,9 +117,9 @@ void wipe_monsters_list(CreatureEntity &creature)
     floor.reset_mproc_max();
     floor.num_repro = 0;
     Target::clear_last_target();
-    player_ptr->pet_t_m_idx = 0;
-    player_ptr->riding_t_m_idx = 0;
-    health_track(*player_ptr, 0);
+    creature.pet_t_m_idx = 0;
+    creature.riding_t_m_idx = 0;
+    health_track(creature, 0);
 }
 
 /*!

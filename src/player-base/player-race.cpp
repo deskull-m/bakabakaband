@@ -12,7 +12,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "util/bit-flags-calculator.h"
@@ -47,7 +46,7 @@ TrFlags CreatureRace::tr_flags() const
             continue;
         }
         if (cond.pclass) {
-            auto is_class_equal = CreatureClass(*static_cast<PlayerType *>(this->creature_ptr)).equals(*cond.pclass);
+            auto is_class_equal = CreatureClass(*this->creature_ptr).equals(*cond.pclass);
             if (cond.not_class && is_class_equal) {
                 continue;
             }
@@ -163,7 +162,7 @@ int16_t CreatureRace::speed() const
         const auto &terrain = floor.get_grid(this->creature_ptr->get_position()).get_terrain();
         if (terrain.flags.has(TerrainCharacteristics::WATER)) {
             result += (2 + this->creature_ptr->level / 10);
-        } else if (!static_cast<PlayerType *>(this->creature_ptr)->levitation) {
+        } else if (!this->creature_ptr->levitation) {
             result -= 2;
         }
     }

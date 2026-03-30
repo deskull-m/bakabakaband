@@ -70,7 +70,7 @@ MonsterAttackPlayer::MonsterAttackPlayer(CreatureEntity &creature, short m_idx)
     , m_ptr(&creature.current_floor_ptr->m_list[m_idx])
     , method(RaceBlowMethodType::NONE)
     , effect(RaceBlowEffectType::NONE)
-    , do_silly_attack(one_in_(2) && static_cast<PlayerType *>(&creature)->effects()->hallucination().is_hallucinated())
+    , do_silly_attack(one_in_(2) && creature.effects()->hallucination().is_hallucinated())
     , player_ptr(static_cast<PlayerType *>(&creature))
 {
 }
