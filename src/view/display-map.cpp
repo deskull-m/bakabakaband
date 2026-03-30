@@ -4,7 +4,6 @@
 #include "autopick/autopick-util.h"
 #include "game-option/map-screen-options.h"
 #include "game-option/special-options.h"
-#include "player/player-status.h"
 #include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
@@ -352,7 +351,7 @@ tl::optional<uint8_t> get_monochrome_display_color(CreatureEntity &creature)
     if (AngbandWorld::get_instance().timewalk_m_idx) {
         return TERM_DARK;
     }
-    if (is_invuln(creature) || creature.timewalk) {
+    if (creature.is_invulnerable() || creature.timewalk) {
         return TERM_WHITE;
     }
     if (creature.wraith_form) {

@@ -215,7 +215,7 @@ bool dispel_check_monster(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_I
  */
 bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    if (is_invuln(creature)) {
+    if (creature.is_invulnerable()) {
         return true;
     }
 

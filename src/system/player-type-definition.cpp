@@ -3,6 +3,8 @@
 #include "inventory/inventory-slot-types.h"
 #include "market/arena-entry.h"
 #include "monster/monster-util.h"
+#include "player-info/bard-data-type.h"
+#include "realm/realm-song-numbers.h"
 #include "system/angband-exceptions.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -199,5 +201,10 @@ bool PlayerType::is_fearful() const
 
 bool PlayerType::is_invulnerable() const
 {
-    return this->invuln > 0;
+    if (this->invuln > 0) {
+        return true;
+    }
+
+    const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
+    return bard && *bard && (*bard)->singing_song == MUSIC_INVULN;
 }
