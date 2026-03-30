@@ -52,7 +52,6 @@
 #include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
@@ -86,7 +85,7 @@ static void decide_activation_level(ae_type *ae_ptr)
 static void decide_chance_fail(CreatureEntity &creature, ae_type *ae_ptr)
 {
     ae_ptr->chance = creature.skill_dev;
-    if (creature.effects()->confusion().is_confused()) {
+    if (creature.is_confused()) {
         ae_ptr->chance = ae_ptr->chance / 2;
     }
 
