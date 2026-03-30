@@ -18,7 +18,7 @@ void set_flag_bit(BIT_FLAGS &flags, int bit_pos, bool value)
 
 PlayerSpellStatus::PlayerSpellStatus(CreatureEntity &creature)
 {
-    this->player_ptr = static_cast<PlayerType *>(&creature);
+    this->player_ptr = &static_cast<PlayerType &>(creature);
 }
 
 PlayerSpellStatus::Realm PlayerSpellStatus::realm1() const
@@ -34,7 +34,7 @@ PlayerSpellStatus::Realm PlayerSpellStatus::realm2() const
 PlayerSpellStatus::Realm::Realm(CreatureEntity &creature, bool is_realm1)
     : is_realm1(is_realm1)
 {
-    this->player_ptr = static_cast<PlayerType *>(&creature);
+    this->player_ptr = &static_cast<PlayerType &>(creature);
 }
 
 void PlayerSpellStatus::Realm::initialize()

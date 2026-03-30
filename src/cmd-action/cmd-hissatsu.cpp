@@ -38,7 +38,6 @@
 #include "status/action-setter.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/int-char-converter.h"
@@ -63,12 +62,11 @@
  */
 static int get_hissatsu_power(CreatureEntity &creature, SPELL_IDX *sn)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     int j = 0;
     int num = 0;
     POSITION y = 1;
     POSITION x = 15;
-    PLAYER_LEVEL plev = player_ptr->level;
+    PLAYER_LEVEL plev = creature.level;
     char choice;
     concptr p = _("必殺剣", "special attack");
     int menu_line = (use_menu ? 1 : 0);
@@ -106,7 +104,7 @@ static int get_hissatsu_power(CreatureEntity &creature, SPELL_IDX *sn)
     }
     choice = always_show_list ? ESCAPE : 1;
 
-    const auto realm_status = PlayerSpellStatus(*player_ptr).realm1();
+    const auto realm_status = PlayerSpellStatus(creature).realm1();
     while (!flag) {
         if (choice == ESCAPE) {
             choice = ' ';
@@ -284,7 +282,7 @@ static int get_hissatsu_power(CreatureEntity &creature, SPELL_IDX *sn)
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
 
     /* Abort if needed */
     if (!flag) {
@@ -305,25 +303,24 @@ static int get_hissatsu_power(CreatureEntity &creature, SPELL_IDX *sn)
  */
 void do_cmd_hissatsu(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     SPELL_IDX n = 0;
 
-    if (cmd_limit_confused(*player_ptr)) {
+    if (cmd_limit_confused(creature)) {
         return;
     }
-    if (!has_melee_weapon(*player_ptr, INVEN_MAIN_HAND) && !has_melee_weapon(*player_ptr, INVEN_SUB_HAND)) {
+    if (!has_melee_weapon(creature, INVEN_MAIN_HAND) && !has_melee_weapon(creature, INVEN_SUB_HAND)) {
         if (flush_failure) {
             flush();
         }
         msg_print(_("武器を持たないと必殺技は使えない！", "You need to wield a weapon!"));
         return;
     }
-    if (PlayerSpellStatus(*player_ptr).realm1().is_nothing_learned()) {
+    if (PlayerSpellStatus(creature).realm1().is_nothing_learned()) {
         msg_print(_("何も技を知らない。", "You don't know any special attacks."));
         return;
     }
 
-    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::IAI, SamuraiStanceType::FUUJIN, SamuraiStanceType::KOUKIJIN });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::IAI, SamuraiStanceType::FUUJIN, SamuraiStanceType::KOUKIJIN });
 
     if (!get_hissatsu_power(creature, &n)) {
         return;
@@ -332,7 +329,7 @@ void do_cmd_hissatsu(CreatureEntity &creature)
     const auto &spell = PlayerRealm::get_spell_info(RealmType::HISSATSU, n);
 
     /* Verify "dangerous" spells */
-    if (spell.smana > player_ptr->csp) {
+    if (spell.smana > creature.csp) {
         if (flush_failure) {
             flush();
         }
@@ -348,11 +345,11 @@ void do_cmd_hissatsu(CreatureEntity &creature)
         return;
     }
 
-    player_ptr->plus_incident_tree("USE_HISSATSU", 1);
-    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
-    player_ptr->csp -= spell.smana;
-    if (player_ptr->csp < 0) {
-        player_ptr->csp = 0;
+    creature.plus_incident_tree("USE_HISSATSU", 1);
+    PlayerEnergy(creature).set_player_turn_energy(100);
+    creature.csp -= spell.smana;
+    if (creature.csp < 0) {
+        creature.csp = 0;
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -369,41 +366,40 @@ void do_cmd_hissatsu(CreatureEntity &creature)
  */
 void do_cmd_gain_hissatsu(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
-    if (cmd_limit_blind(creature) || cmd_limit_confused(*player_ptr)) {
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
+    if (cmd_limit_blind(creature) || cmd_limit_confused(creature)) {
         return;
     }
 
-    if (!(player_ptr->new_spells)) {
+    if (!(creature.new_spells)) {
         msg_print(_("新しい必殺技を覚えることはできない！", "You cannot learn any new special attacks!"));
         return;
     }
 
 #ifdef JP
-    msg_format("あと %d 種の必殺技を学べる。", player_ptr->new_spells);
+    msg_format("あと %d 種の必殺技を学べる。", creature.new_spells);
 #else
-    msg_format("You can learn %d new special attack%s.", player_ptr->new_spells, (player_ptr->new_spells == 1 ? "" : "s"));
+    msg_format("You can learn %d new special attack%s.", creature.new_spells, (creature.new_spells == 1 ? "" : "s"));
 #endif
 
     constexpr auto q = _("どの書から学びますか? ", "Study which book? ");
     constexpr auto s = _("読める書がない。", "You have no books that you can read.");
     constexpr auto options = USE_INVEN | USE_FLOOR;
     short i_idx;
-    const auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, options, TvalItemTester(ItemKindType::HISSATSU_BOOK));
+    const auto *o_ptr = choose_object(creature, &i_idx, q, s, options, TvalItemTester(ItemKindType::HISSATSU_BOOK));
     if (o_ptr == nullptr) {
         return;
     }
 
     const auto sval = o_ptr->bi_key.sval().value();
     auto gain = false;
-    auto realm_status = PlayerSpellStatus(*player_ptr).realm1();
+    auto realm_status = PlayerSpellStatus(creature).realm1();
     for (auto i = sval * 8; i < sval * 8 + 8; i++) {
         if (realm_status.is_learned(i)) {
             continue;
         }
 
-        if (PlayerRealm::get_spell_info(RealmType::HISSATSU, i).slevel > player_ptr->level) {
+        if (PlayerRealm::get_spell_info(RealmType::HISSATSU, i).slevel > creature.level) {
             continue;
         }
 
@@ -411,14 +407,14 @@ void do_cmd_gain_hissatsu(CreatureEntity &creature)
         realm_status.set_worked(i);
         const auto &spell_name = PlayerRealm::get_spell_name(RealmType::HISSATSU, i);
         msg_format(_("%sの技を覚えた。", "You have learned the special attack of %s."), spell_name.data());
-        player_ptr->spell_order_learned.push_back(i);
+        creature.spell_order_learned.push_back(i);
         gain = true;
     }
 
     if (!gain) {
         msg_print(_("何も覚えられなかった。", "You were not able to learn any special attacks."));
     } else {
-        PlayerEnergy(*player_ptr).set_player_turn_energy(100);
+        PlayerEnergy(creature).set_player_turn_energy(100);
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::SPELLS);

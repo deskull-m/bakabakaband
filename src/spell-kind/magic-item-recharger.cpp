@@ -24,7 +24,6 @@
 #include "system/angband-exceptions.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 /*!

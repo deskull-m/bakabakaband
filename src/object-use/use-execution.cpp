@@ -34,7 +34,7 @@
  * @param i_idx 使うオブジェクトの所持品ID
  */
 ObjectUseEntity::ObjectUseEntity(CreatureEntity &creature, INVENTORY_IDX i_idx)
-    : player_ptr(static_cast<PlayerType *>(&creature))
+    : player_ptr(&static_cast<PlayerType &>(creature))
     , i_idx(i_idx)
 {
 }

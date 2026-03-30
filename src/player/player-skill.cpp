@@ -44,7 +44,7 @@ using GainAmountList = std::array<int, enum2i(PlayerSkillRank::MASTER)>;
 
 void gain_attack_skill_exp(CreatureEntity &creature, short &exp, const GainAmountList &gain_amount_list)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     auto gain_amount = 0;
     auto calc_gain_amount = [&gain_amount_list, exp](PlayerSkillRank rank, int next_rank_exp) {
         return std::min(gain_amount_list[enum2i(rank)], next_rank_exp - exp);
@@ -54,9 +54,9 @@ void gain_attack_skill_exp(CreatureEntity &creature, short &exp, const GainAmoun
         gain_amount = calc_gain_amount(PlayerSkillRank::UNSKILLED, WEAPON_EXP_BEGINNER);
     } else if (exp < WEAPON_EXP_SKILLED) {
         gain_amount = calc_gain_amount(PlayerSkillRank::BEGINNER, WEAPON_EXP_SKILLED);
-    } else if ((exp < WEAPON_EXP_EXPERT) && (player_ptr->level > 19)) {
+    } else if ((exp < WEAPON_EXP_EXPERT) && (player.level > 19)) {
         gain_amount = calc_gain_amount(PlayerSkillRank::SKILLED, WEAPON_EXP_EXPERT);
-    } else if ((exp < WEAPON_EXP_MASTER) && (player_ptr->level > 34)) {
+    } else if ((exp < WEAPON_EXP_MASTER) && (player.level > 34)) {
         gain_amount = calc_gain_amount(PlayerSkillRank::EXPERT, WEAPON_EXP_MASTER);
     }
 
@@ -66,9 +66,9 @@ void gain_attack_skill_exp(CreatureEntity &creature, short &exp, const GainAmoun
 
 void gain_spell_skill_exp_aux(CreatureEntity &creature, short &exp, const GainAmountList &gain_amount_list, int spell_level)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto dlev = player_ptr->current_floor_ptr->dun_level;
-    const auto plev = player_ptr->level;
+    auto &player = static_cast<PlayerType &>(creature);
+    const auto dlev = player.current_floor_ptr->dun_level;
+    const auto plev = player.level;
 
     auto gain_amount = 0;
     auto calc_gain_amount = [&gain_amount_list, exp](PlayerSkillRank rank, int next_rank_exp) {
@@ -99,7 +99,7 @@ void gain_spell_skill_exp_aux(CreatureEntity &creature, short &exp, const GainAm
 
 PlayerSkill::PlayerSkill(CreatureEntity &creature)
 {
-    this->player_ptr = static_cast<PlayerType *>(&creature);
+    this->player_ptr = &static_cast<PlayerType &>(creature);
 }
 
 SUB_EXP PlayerSkill::weapon_exp_at(PlayerSkillRank rank)

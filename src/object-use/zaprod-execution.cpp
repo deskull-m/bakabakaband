@@ -33,7 +33,7 @@
  * @param item 使うオブジェクトの所持品ID
  */
 ObjectZapRodEntity::ObjectZapRodEntity(CreatureEntity &creature)
-    : player_ptr(static_cast<PlayerType *>(&creature))
+    : player_ptr(&static_cast<PlayerType &>(creature))
 {
 }
 

@@ -3,8 +3,9 @@
 #include "monster/smart-learn-types.h"
 #include "mspell/smart-mspell-util.h"
 #include "player-base/player-race.h"
+#include "player-info/race-types.h"
 #include "player/player-status-flags.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "util/bit-flags-calculator.h"
 
 void add_cheat_remove_flags_others(CreatureEntity &creature, msr_type *msr_ptr)
@@ -57,12 +58,11 @@ void add_cheat_remove_flags_others(CreatureEntity &creature, msr_type *msr_ptr)
         msr_ptr->smart_flags.set(MonsterSmartLearnType::IMM_REFLECT);
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (player_ptr->free_act) {
+    if (creature.free_act) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::IMM_FREE);
     }
 
-    if (!player_ptr->msp) {
+    if (!creature.msp) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::IMM_MANA);
     }
 }

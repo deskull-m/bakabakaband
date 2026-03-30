@@ -17,7 +17,7 @@
 #include "spell/spell-info.h"
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "timed-effect/timed-effects.h"
@@ -31,19 +31,18 @@
  */
 bool do_cmd_cast_learned(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (cmd_limit_confused(*player_ptr)) {
+    if (cmd_limit_confused(creature)) {
         return false;
     }
 
-    auto selected_spell = get_learned_power(*player_ptr);
+    auto selected_spell = get_learned_power(creature);
     if (!selected_spell.has_value()) {
         return false;
     }
 
     const auto &spell = monster_powers.at(*selected_spell);
-    const auto need_mana = mod_need_mana(*player_ptr, spell.smana, 0, RealmType::NONE);
-    if (need_mana > player_ptr->csp) {
+    const auto need_mana = mod_need_mana(creature, spell.smana, 0, RealmType::NONE);
+    if (need_mana > creature.csp) {
         msg_print(_("ＭＰが足りません。", "You do not have enough mana to use this power."));
         if (!over_exert) {
             return false;
@@ -54,7 +53,7 @@ bool do_cmd_cast_learned(CreatureEntity &creature)
         }
     }
 
-    const auto chance = calculate_blue_magic_failure_probability(*player_ptr, spell, need_mana);
+    const auto chance = calculate_blue_magic_failure_probability(creature, spell, need_mana);
 
     if (evaluate_percent(chance)) {
         if (flush_failure) {
@@ -64,32 +63,32 @@ bool do_cmd_cast_learned(CreatureEntity &creature)
         msg_print(_("魔法をうまく唱えられなかった。", "You failed to concentrate hard enough!"));
         sound(SoundKind::FAIL);
         if (RF_ABILITY_SUMMON_MASK.has(*selected_spell)) {
-            cast_learned_spell(*player_ptr, *selected_spell, false);
+            cast_learned_spell(creature, *selected_spell, false);
         }
     } else {
         sound(SoundKind::ZAP);
-        if (!cast_learned_spell(*player_ptr, *selected_spell, true)) {
+        if (!cast_learned_spell(creature, *selected_spell, true)) {
             return false;
         }
     }
 
-    if (need_mana <= player_ptr->csp) {
-        player_ptr->csp -= need_mana;
+    if (need_mana <= creature.csp) {
+        creature.csp -= need_mana;
     } else {
         int oops = need_mana;
-        player_ptr->csp = 0;
-        player_ptr->csp_frac = 0;
+        creature.csp = 0;
+        creature.csp_frac = 0;
         msg_print(_("精神を集中しすぎて気を失ってしまった！", "You faint from the effort!"));
-        (void)BadStatusSetter(*player_ptr).mod_paralysis(randnum1<short>(5 * oops + 1));
+        (void)BadStatusSetter(creature).mod_paralysis(randnum1<short>(5 * oops + 1));
         chg_virtue(creature, Virtue::KNOWLEDGE, -10);
         if (one_in_(2)) {
             const auto perm = one_in_(4);
             msg_print(_("体を悪くしてしまった！", "You have damaged your health!"));
-            (void)dec_stat(*player_ptr, A_CON, 15 + randint1(10), perm);
+            (void)dec_stat(creature, A_CON, 15 + randint1(10), perm);
         }
     }
 
-    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
     static constexpr auto flags = {

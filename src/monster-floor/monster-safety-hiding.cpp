@@ -13,7 +13,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "target/projection-path-calculator.h"
 #include <span>
 
@@ -114,7 +113,6 @@ tl::optional<Pos2D> find_safety(CreatureEntity &creature, short m_idx)
 static void sweep_hiding_candidate(
     CreatureEntity &creature, const MonsterEntity &monster, std::span<const Pos2DVec> offsets, coordinate_candidate &candidate)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &floor = *creature.current_floor_ptr;
     const auto &monrace = monster.get_monrace();
     const auto p_pos = creature.get_position();
@@ -127,7 +125,7 @@ static void sweep_hiding_candidate(
         if (!monster_can_enter(&creature, pos.y, pos.x, monrace, 0)) {
             continue;
         }
-        if (projectable(floor, p_pos, pos) || !clean_shot(*player_ptr, monster.y, monster.x, pos.y, pos.x, false)) {
+        if (projectable(floor, p_pos, pos) || !clean_shot(creature, monster.y, monster.x, pos.y, pos.x, false)) {
             continue;
         }
 

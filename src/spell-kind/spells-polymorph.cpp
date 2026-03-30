@@ -20,7 +20,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
 #include "term/screen-processor.h"
@@ -75,7 +74,6 @@ static MonraceId select_polymorph_monrace_id(CreatureEntity &creature, MonraceId
  */
 bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     const auto &grid = floor.grid_array[y][x];
     auto &monster = floor.m_list[grid.m_idx];
@@ -142,13 +140,13 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
 
     if (targeted) {
         if (m_idx) {
-            Target::set_last_target(Target::create_monster_target(*player_ptr, *m_idx));
+            Target::set_last_target(Target::create_monster_target(creature, *m_idx));
         } else {
             Target::clear_last_target();
         }
     }
     if (health_tracked) {
-        health_track(*player_ptr, m_idx.value_or(0));
+        health_track(creature, m_idx.value_or(0));
     }
     return polymorphed;
 }

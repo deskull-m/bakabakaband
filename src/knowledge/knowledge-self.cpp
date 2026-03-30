@@ -66,26 +66,26 @@ static void dump_explanation(std::string_view explanation, FILE *fff)
  */
 static void dump_yourself(CreatureEntity &creature, FILE *fff)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     if (!fff) {
         return;
     }
 
     fprintf(fff, "\n\n");
-    fprintf(fff, _("種族: %s\n", "Race: %s\n"), race_info[enum2i(player_ptr->prace)].title.data());
-    dump_explanation(race_explanations[enum2i(player_ptr->prace)], fff);
+    fprintf(fff, _("種族: %s\n", "Race: %s\n"), race_info[enum2i(player.prace)].title.data());
+    dump_explanation(race_explanations[enum2i(player.prace)], fff);
 
     fprintf(fff, "\n");
-    fprintf(fff, _("職業: %s\n", "Class: %s\n"), class_info.at(player_ptr->pclass).title.data());
-    auto short_pclass = enum2i(player_ptr->pclass);
+    fprintf(fff, _("職業: %s\n", "Class: %s\n"), class_info.at(player.pclass).title.data());
+    auto short_pclass = enum2i(player.pclass);
     dump_explanation(class_explanations[short_pclass].data(), fff);
 
     fprintf(fff, "\n");
-    fprintf(fff, _("性格: %s\n", "Pesonality: %s\n"), personality_info[player_ptr->ppersonality].title.data());
-    dump_explanation(personality_explanations[player_ptr->ppersonality], fff);
+    fprintf(fff, _("性格: %s\n", "Pesonality: %s\n"), personality_info[player.ppersonality].title.data());
+    dump_explanation(personality_explanations[player.ppersonality], fff);
 
     fprintf(fff, "\n");
-    PlayerRealm pr(*player_ptr);
+    PlayerRealm pr(player);
     if (pr.realm1().is_available()) {
         fprintf(fff, _("魔法: %s\n", "Realm: %s\n"), pr.realm1().get_name().data());
         dump_explanation(pr.realm1().get_explanation(), fff);

@@ -24,7 +24,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -182,7 +181,6 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
  */
 void update_object_by_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx, POSITION ny, POSITION nx)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &monster = creature.current_floor_ptr->m_list[m_idx];
     const auto &monrace = monster.get_monrace();
     const auto &grid = creature.current_floor_ptr->grid_array[ny][nx];
@@ -200,7 +198,7 @@ void update_object_by_monster_movement(CreatureEntity &creature, turn_flags *tur
         }
 
         const auto flags = item.get_flags();
-        const auto item_name = describe_flavor(*player_ptr, item, 0);
+        const auto item_name = describe_flavor(creature, item, 0);
         const auto m_name = monster_desc(creature, monster, MD_INDEF_HIDDEN);
         update_object_flags(flags, flg_monster_kind, flgr);
 

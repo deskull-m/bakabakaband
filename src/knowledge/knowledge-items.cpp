@@ -41,7 +41,7 @@
 namespace {
 auto collect_known_fixed_artifacts(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     const auto &artifacts = ArtifactList::get_instance();
     const auto comparer = [&artifacts](auto id1, auto id2) { return artifacts.order(id1, id2); };
     std::set<FixedArtifactId, decltype(comparer)> fa_ids(comparer);
@@ -67,7 +67,7 @@ auto collect_known_fixed_artifacts(CreatureEntity &creature)
     }
 
     for (auto i = 0; i < INVEN_TOTAL; i++) {
-        const auto &item = *player_ptr->inventory[i];
+        const auto &item = *player.inventory[i];
         if (!item.is_valid()) {
             continue;
         }

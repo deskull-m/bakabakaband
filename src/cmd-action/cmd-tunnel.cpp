@@ -14,7 +14,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/target-getter.h"
@@ -35,8 +34,7 @@
  */
 void do_cmd_tunnel(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     if (command_arg) {
         command_rep = command_arg - 1;
@@ -44,29 +42,29 @@ void do_cmd_tunnel(CreatureEntity &creature)
         command_arg = 0;
     }
 
-    const auto dir = get_rep_dir(*player_ptr);
+    const auto dir = get_rep_dir(creature);
     if (!dir) {
-        disturb(*player_ptr, false, false);
+        disturb(creature, false, false);
         return;
     }
 
     auto more = false;
-    const auto pos = player_ptr->get_neighbor(dir);
-    const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    const auto pos = creature.get_neighbor(dir);
+    const auto &grid = creature.current_floor_ptr->get_grid(pos);
     const auto &terrain_mimic = grid.get_terrain(TerrainKind::MIMIC);
     if (terrain_mimic.flags.has(TerrainCharacteristics::DOOR)) {
         msg_print(_("ドアは掘れない。", "You cannot tunnel through doors."));
     } else if (terrain_mimic.flags.has_not(TerrainCharacteristics::TUNNEL)) {
         msg_print(_("そこは掘れない。", "You can't tunnel through that."));
     } else if (grid.has_monster()) {
-        PlayerEnergy(*player_ptr).set_player_turn_energy(100);
+        PlayerEnergy(creature).set_player_turn_energy(100);
         msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
-        do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
+        do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
     } else {
-        more = exe_tunnel(*player_ptr, pos.y, pos.x);
+        more = exe_tunnel(creature, pos.y, pos.x);
     }
 
     if (!more) {
-        disturb(*player_ptr, false, false);
+        disturb(creature, false, false);
     }
 }

@@ -13,7 +13,6 @@
 #include "main/sound-of-music.h"
 #include "player-base/player-class.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
@@ -66,9 +65,8 @@ static MartialArtsStyleType select_martial_arts_style_menu(MartialArtsStyleType 
  */
 void do_cmd_martial_arts_style(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     // 修行僧、狂戦士、練気術師のみ使用可能
-    CreatureClass pc(*player_ptr);
+    CreatureClass pc(creature);
     if (!pc.equals(PlayerClassType::MONK) &&
         !pc.equals(PlayerClassType::BERSERKER) &&
         !pc.equals(PlayerClassType::FORCETRAINER)) {
@@ -76,7 +74,7 @@ void do_cmd_martial_arts_style(CreatureEntity &creature)
         return;
     }
 
-    auto current_style = player_ptr->martial_arts_style;
+    auto current_style = creature.martial_arts_style;
     auto new_style = select_martial_arts_style_menu(current_style);
 
     if (new_style == MartialArtsStyleType::MAX) {
@@ -89,10 +87,10 @@ void do_cmd_martial_arts_style(CreatureEntity &creature)
         return;
     }
 
-    player_ptr->martial_arts_style = new_style;
+    creature.martial_arts_style = new_style;
 
     auto style_name = get_martial_arts_style_name(new_style);
     msg_format("武術スタイルを%sに変更しました。", style_name);
 
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
 }
