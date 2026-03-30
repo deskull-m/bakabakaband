@@ -1,6 +1,5 @@
 #pragma once
 
-class PlayerType;
 class CreatureEntity;
 
 class PlayerSpellStatus {
@@ -21,7 +20,7 @@ public:
         void set_forgotten(int spell_id, bool value = true);
 
     private:
-        PlayerType *player_ptr;
+        CreatureEntity *creature_ptr;
         bool is_realm1;
     };
 
@@ -29,5 +28,5 @@ public:
     Realm realm2() const;
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
 };
