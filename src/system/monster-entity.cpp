@@ -285,6 +285,28 @@ bool MonsterEntity::is_invulnerable() const
     return this->get_remaining_invulnerability() > 0;
 }
 
+short MonsterEntity::get_timed_effect(CreatureTimedEffect effect) const
+{
+    switch (effect) {
+    case CreatureTimedEffect::STUN:
+        return this->mtimed.at(MonsterTimedEffect::STUN);
+    case CreatureTimedEffect::CONFUSION:
+        return this->mtimed.at(MonsterTimedEffect::CONFUSION);
+    case CreatureTimedEffect::FEAR:
+        return this->mtimed.at(MonsterTimedEffect::FEAR);
+    case CreatureTimedEffect::INVULNERABILITY:
+        return this->mtimed.at(MonsterTimedEffect::INVULNERABILITY);
+    case CreatureTimedEffect::ACCELERATION:
+        return this->mtimed.at(MonsterTimedEffect::FAST);
+    case CreatureTimedEffect::DECELERATION:
+        return this->mtimed.at(MonsterTimedEffect::SLOW);
+    case CreatureTimedEffect::SLEEP_OR_PARALYSIS:
+        return this->mtimed.at(MonsterTimedEffect::SLEEP);
+    default:
+        return 0;
+    }
+}
+
 /*
  * @brief 悪夢モード、一時加速、一時減速に基づくモンスターの現在速度を返す
  */
