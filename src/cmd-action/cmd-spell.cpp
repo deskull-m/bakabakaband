@@ -1053,37 +1053,37 @@ bool do_cmd_cast(CreatureEntity &creature)
         switch (use_realm) {
         case RealmType::LIFE:
             if (randint1(100) < chance) {
-                chg_virtue(creature,Virtue::VITALITY, -1);
+                chg_virtue(creature, Virtue::VITALITY, -1);
             }
             break;
         case RealmType::DEATH:
             if (randint1(100) < chance) {
-                chg_virtue(creature,Virtue::UNLIFE, -1);
+                chg_virtue(creature, Virtue::UNLIFE, -1);
             }
             break;
         case RealmType::NATURE:
             if (randint1(100) < chance) {
-                chg_virtue(creature,Virtue::NATURE, -1);
+                chg_virtue(creature, Virtue::NATURE, -1);
             }
             break;
         case RealmType::DAEMON:
             if (randint1(100) < chance) {
-                chg_virtue(creature,Virtue::JUSTICE, 1);
+                chg_virtue(creature, Virtue::JUSTICE, 1);
             }
             break;
         case RealmType::CRUSADE:
             if (randint1(100) < chance) {
-                chg_virtue(creature,Virtue::JUSTICE, -1);
+                chg_virtue(creature, Virtue::JUSTICE, -1);
             }
             break;
         case RealmType::HEX:
             if (randint1(100) < chance) {
-                chg_virtue(creature,Virtue::COMPASSION, -1);
+                chg_virtue(creature, Virtue::COMPASSION, -1);
             }
             break;
         default:
             if (randint1(100) < chance) {
-                chg_virtue(creature,Virtue::KNOWLEDGE, -1);
+                chg_virtue(creature, Virtue::KNOWLEDGE, -1);
             }
             break;
         }
@@ -1102,7 +1102,7 @@ bool do_cmd_cast(CreatureEntity &creature)
                 take_hit(creature, DAMAGE_LOSELIFE, Dice::roll(sval + 1, 6), _("暗黒魔法の逆流", "a miscast Death spell"));
 
                 if ((spell_id > 15) && one_in_(6) && !creature.hold_exp) {
-                    lose_exp(creature,spell_id * 250);
+                    lose_exp(creature, spell_id * 250);
                 }
             }
         } else if ((tval == ItemKindType::MUSIC_BOOK) && (randint1(200) < spell_id)) {
@@ -1110,7 +1110,7 @@ bool do_cmd_cast(CreatureEntity &creature)
             aggravate_monsters(creature, 0);
         }
         if (randint1(100) >= chance) {
-            chg_virtue(creature,Virtue::CHANCE, -1);
+            chg_virtue(creature, Virtue::CHANCE, -1);
         }
     }
 
@@ -1123,7 +1123,7 @@ bool do_cmd_cast(CreatureEntity &creature)
 
         creature.plus_incident_tree("CAST_SPELL", 1);
         if (randint1(100) < chance) {
-            chg_virtue(creature,Virtue::CHANCE, 1);
+            chg_virtue(creature, Virtue::CHANCE, 1);
         }
 
         /* A spell was cast */
@@ -1135,126 +1135,126 @@ bool do_cmd_cast(CreatureEntity &creature)
             /* The spell worked */
             realm_status.set_worked(spell_id);
 
-            gain_exp(creature,e * spell.slevel);
+            gain_exp(creature, e * spell.slevel);
             RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::ITEM_KNOWLEDGE);
 
             switch (use_realm) {
             case RealmType::LIFE:
-                chg_virtue(creature,Virtue::TEMPERANCE, 1);
-                chg_virtue(creature,Virtue::COMPASSION, 1);
-                chg_virtue(creature,Virtue::VITALITY, 1);
-                chg_virtue(creature,Virtue::DILIGENCE, 1);
+                chg_virtue(creature, Virtue::TEMPERANCE, 1);
+                chg_virtue(creature, Virtue::COMPASSION, 1);
+                chg_virtue(creature, Virtue::VITALITY, 1);
+                chg_virtue(creature, Virtue::DILIGENCE, 1);
                 break;
             case RealmType::DEATH:
-                chg_virtue(creature,Virtue::UNLIFE, 1);
-                chg_virtue(creature,Virtue::JUSTICE, -1);
-                chg_virtue(creature,Virtue::FAITH, -1);
-                chg_virtue(creature,Virtue::VITALITY, -1);
+                chg_virtue(creature, Virtue::UNLIFE, 1);
+                chg_virtue(creature, Virtue::JUSTICE, -1);
+                chg_virtue(creature, Virtue::FAITH, -1);
+                chg_virtue(creature, Virtue::VITALITY, -1);
                 break;
             case RealmType::DAEMON:
-                chg_virtue(creature,Virtue::JUSTICE, -1);
-                chg_virtue(creature,Virtue::FAITH, -1);
-                chg_virtue(creature,Virtue::HONOUR, -1);
-                chg_virtue(creature,Virtue::TEMPERANCE, -1);
+                chg_virtue(creature, Virtue::JUSTICE, -1);
+                chg_virtue(creature, Virtue::FAITH, -1);
+                chg_virtue(creature, Virtue::HONOUR, -1);
+                chg_virtue(creature, Virtue::TEMPERANCE, -1);
                 break;
             case RealmType::CRUSADE:
-                chg_virtue(creature,Virtue::FAITH, 1);
-                chg_virtue(creature,Virtue::JUSTICE, 1);
-                chg_virtue(creature,Virtue::SACRIFICE, 1);
-                chg_virtue(creature,Virtue::HONOUR, 1);
+                chg_virtue(creature, Virtue::FAITH, 1);
+                chg_virtue(creature, Virtue::JUSTICE, 1);
+                chg_virtue(creature, Virtue::SACRIFICE, 1);
+                chg_virtue(creature, Virtue::HONOUR, 1);
                 break;
             case RealmType::NATURE:
-                chg_virtue(creature,Virtue::NATURE, 1);
-                chg_virtue(creature,Virtue::HARMONY, 1);
+                chg_virtue(creature, Virtue::NATURE, 1);
+                chg_virtue(creature, Virtue::HARMONY, 1);
                 break;
             case RealmType::HEX:
-                chg_virtue(creature,Virtue::JUSTICE, -1);
-                chg_virtue(creature,Virtue::FAITH, -1);
-                chg_virtue(creature,Virtue::HONOUR, -1);
-                chg_virtue(creature,Virtue::COMPASSION, -1);
+                chg_virtue(creature, Virtue::JUSTICE, -1);
+                chg_virtue(creature, Virtue::FAITH, -1);
+                chg_virtue(creature, Virtue::HONOUR, -1);
+                chg_virtue(creature, Virtue::COMPASSION, -1);
                 break;
             default:
-                chg_virtue(creature,Virtue::KNOWLEDGE, 1);
+                chg_virtue(creature, Virtue::KNOWLEDGE, 1);
                 break;
             }
         }
         switch (use_realm) {
         case RealmType::LIFE:
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::TEMPERANCE, 1);
+                chg_virtue(creature, Virtue::TEMPERANCE, 1);
             }
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::COMPASSION, 1);
+                chg_virtue(creature, Virtue::COMPASSION, 1);
             }
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::VITALITY, 1);
+                chg_virtue(creature, Virtue::VITALITY, 1);
             }
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::DILIGENCE, 1);
+                chg_virtue(creature, Virtue::DILIGENCE, 1);
             }
             break;
         case RealmType::DEATH:
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::UNLIFE, 1);
+                chg_virtue(creature, Virtue::UNLIFE, 1);
             }
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::JUSTICE, -1);
+                chg_virtue(creature, Virtue::JUSTICE, -1);
             }
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::FAITH, -1);
+                chg_virtue(creature, Virtue::FAITH, -1);
             }
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::VITALITY, -1);
+                chg_virtue(creature, Virtue::VITALITY, -1);
             }
             break;
         case RealmType::DAEMON:
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::JUSTICE, -1);
+                chg_virtue(creature, Virtue::JUSTICE, -1);
             }
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::FAITH, -1);
+                chg_virtue(creature, Virtue::FAITH, -1);
             }
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::HONOUR, -1);
+                chg_virtue(creature, Virtue::HONOUR, -1);
             }
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::TEMPERANCE, -1);
+                chg_virtue(creature, Virtue::TEMPERANCE, -1);
             }
             break;
         case RealmType::CRUSADE:
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::FAITH, 1);
+                chg_virtue(creature, Virtue::FAITH, 1);
             }
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::JUSTICE, 1);
+                chg_virtue(creature, Virtue::JUSTICE, 1);
             }
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::SACRIFICE, 1);
+                chg_virtue(creature, Virtue::SACRIFICE, 1);
             }
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::HONOUR, 1);
+                chg_virtue(creature, Virtue::HONOUR, 1);
             }
             break;
         case RealmType::NATURE:
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::NATURE, 1);
+                chg_virtue(creature, Virtue::NATURE, 1);
             }
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::HARMONY, 1);
+                chg_virtue(creature, Virtue::HARMONY, 1);
             }
             break;
         case RealmType::HEX:
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::JUSTICE, -1);
+                chg_virtue(creature, Virtue::JUSTICE, -1);
             }
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::FAITH, -1);
+                chg_virtue(creature, Virtue::FAITH, -1);
             }
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::HONOUR, -1);
+                chg_virtue(creature, Virtue::HONOUR, -1);
             }
             if (randint1(100 + creature.level) < need_mana) {
-                chg_virtue(creature,Virtue::COMPASSION, -1);
+                chg_virtue(creature, Virtue::COMPASSION, -1);
             }
             break;
         default:
@@ -1286,25 +1286,25 @@ bool do_cmd_cast(CreatureEntity &creature)
         (void)BadStatusSetter(creature).mod_paralysis(randnum1<short>(5 * oops + 1));
         switch (use_realm) {
         case RealmType::LIFE:
-            chg_virtue(creature,Virtue::VITALITY, -10);
+            chg_virtue(creature, Virtue::VITALITY, -10);
             break;
         case RealmType::DEATH:
-            chg_virtue(creature,Virtue::UNLIFE, -10);
+            chg_virtue(creature, Virtue::UNLIFE, -10);
             break;
         case RealmType::DAEMON:
-            chg_virtue(creature,Virtue::JUSTICE, 10);
+            chg_virtue(creature, Virtue::JUSTICE, 10);
             break;
         case RealmType::NATURE:
-            chg_virtue(creature,Virtue::NATURE, -10);
+            chg_virtue(creature, Virtue::NATURE, -10);
             break;
         case RealmType::CRUSADE:
-            chg_virtue(creature,Virtue::JUSTICE, -10);
+            chg_virtue(creature, Virtue::JUSTICE, -10);
             break;
         case RealmType::HEX:
-            chg_virtue(creature,Virtue::COMPASSION, 10);
+            chg_virtue(creature, Virtue::COMPASSION, 10);
             break;
         default:
-            chg_virtue(creature,Virtue::KNOWLEDGE, -10);
+            chg_virtue(creature, Virtue::KNOWLEDGE, -10);
             break;
         }
 

@@ -5,8 +5,8 @@
 #include "store/store-owners.h"
 #include "store/store-util.h"
 #include "store/store.h"
-#include "system/item-entity.h"
 #include "system/creature-entity.h"
+#include "system/item-entity.h"
 #include "util/enum-converter.h"
 
 /*!

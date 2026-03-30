@@ -104,7 +104,7 @@ concptr describe_use(CreatureEntity &creature, int i)
         p = player.heavy_wield[0]
                 ? "運搬中の"
                 : ((has_two_handed_weapons(player) && can_attack_with_main_hand(player)) ? "両手に装備している"
-                                                                                                   : (left_hander ? "左手に装備している" : "右手に装備している"));
+                                                                                         : (left_hander ? "左手に装備している" : "右手に装備している"));
         break;
 #else
     case INVEN_MAIN_HAND:
@@ -117,7 +117,7 @@ concptr describe_use(CreatureEntity &creature, int i)
         p = player.heavy_wield[1]
                 ? "運搬中の"
                 : ((has_two_handed_weapons(player) && can_attack_with_sub_hand(player)) ? "両手に装備している"
-                                                                                                  : (left_hander ? "右手に装備している" : "左手に装備している"));
+                                                                                        : (left_hander ? "右手に装備している" : "左手に装備している"));
         break;
 #else
     case INVEN_SUB_HAND:
@@ -127,7 +127,7 @@ concptr describe_use(CreatureEntity &creature, int i)
 
     case INVEN_BOW:
         p = (adj_str_hold[player.stat_index[A_STR]] < player.inventory[i]->weight / 10) ? _("持つだけで精一杯の", "just holding")
-                                                                                                  : _("射撃用に装備している", "shooting missiles with");
+                                                                                        : _("射撃用に装備している", "shooting missiles with");
         break;
     case INVEN_MAIN_RING:
         p = (left_hander ? _("左手の指にはめている", "wearing on your left hand") : _("右手の指にはめている", "wearing on your right hand"));

@@ -17,7 +17,6 @@
 #include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "util/enum-converter.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/terrain/terrain-definition.h"
@@ -26,6 +25,7 @@
 #include "term/term-color-types.h"
 #include "term/z-form.h"
 #include "util/angband-files.h"
+#include "util/enum-converter.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 #include <tl/optional.hpp>

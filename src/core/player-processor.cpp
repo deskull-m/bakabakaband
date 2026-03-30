@@ -47,12 +47,12 @@
 #include "spell-realm/spells-song.h"
 #include "status/action-setter.h"
 #include "system/angband-system.h"
-#include "system/player-type-definition.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
+#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "timed-effect/timed-effects.h"
@@ -384,7 +384,7 @@ void process_player(CreatureEntity &creature)
             if (CreatureClass(creature).equals(PlayerClassType::IMITATOR)) {
                 auto mane_data = CreatureClass(creature).get_specific_data<mane_data_type>();
                 if (static_cast<int>(mane_data->mane_list.size()) > (creature.level > 44 ? 3 : creature.level > 29 ? 2
-                                                                                                                    : 1)) {
+                                                                                                                   : 1)) {
                     mane_data->mane_list.pop_front();
                 }
 

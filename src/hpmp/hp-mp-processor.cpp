@@ -262,7 +262,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         sound(SoundKind::TERRAIN_DAMAGE);
     }
 
-    if (get_player_flags(creature,TR_SELF_FIRE) && !has_immune_fire(creature)) {
+    if (get_player_flags(creature, TR_SELF_FIRE) && !has_immune_fire(creature)) {
         int damage;
         damage = creature.level;
         if (race.tr_flags().has(TR_VUL_FIRE)) {
@@ -277,10 +277,10 @@ void process_player_hp_mp(CreatureEntity &creature)
 
         damage = std::max(damage, 1);
         msg_print(_("熱い！", "It's hot!"));
-        take_hit(creature,DAMAGE_NOESCAPE, damage, _("炎のオーラ", "Fire aura"));
+        take_hit(creature, DAMAGE_NOESCAPE, damage, _("炎のオーラ", "Fire aura"));
     }
 
-    if (get_player_flags(creature,TR_SELF_ELEC) && !has_immune_elec(creature)) {
+    if (get_player_flags(creature, TR_SELF_ELEC) && !has_immune_elec(creature)) {
         int damage;
         damage = creature.level;
         if (race.tr_flags().has(TR_VUL_ELEC)) {
@@ -295,10 +295,10 @@ void process_player_hp_mp(CreatureEntity &creature)
 
         damage = std::max(damage, 1);
         msg_print(_("痛い！", "It hurts!"));
-        take_hit(creature,DAMAGE_NOESCAPE, damage, _("電気のオーラ", "Elec aura"));
+        take_hit(creature, DAMAGE_NOESCAPE, damage, _("電気のオーラ", "Elec aura"));
     }
 
-    if (get_player_flags(creature,TR_SELF_COLD) && !has_immune_cold(creature)) {
+    if (get_player_flags(creature, TR_SELF_COLD) && !has_immune_cold(creature)) {
         int damage;
         damage = creature.level;
         if (race.tr_flags().has(TR_VUL_COLD)) {
@@ -313,7 +313,7 @@ void process_player_hp_mp(CreatureEntity &creature)
 
         damage = std::max(damage, 1);
         msg_print(_("冷たい！", "It's cold!"));
-        take_hit(creature,DAMAGE_NOESCAPE, damage, _("冷気のオーラ", "Cold aura"));
+        take_hit(creature, DAMAGE_NOESCAPE, damage, _("冷気のオーラ", "Cold aura"));
     }
 
     if (creature.riding) {
@@ -333,7 +333,7 @@ void process_player_hp_mp(CreatureEntity &creature)
 
             damage = std::max(damage, 1);
             msg_print(_("熱い！", "It's hot!"));
-            take_hit(creature,DAMAGE_NOESCAPE, damage, _("炎のオーラ", "Fire aura"));
+            take_hit(creature, DAMAGE_NOESCAPE, damage, _("炎のオーラ", "Fire aura"));
         }
 
         if (auras.has(MonsterAuraType::ELEC) && !has_immune_elec(creature)) {
@@ -350,7 +350,7 @@ void process_player_hp_mp(CreatureEntity &creature)
 
             damage = std::max(damage, 1);
             msg_print(_("痛い！", "It hurts!"));
-            take_hit(creature,DAMAGE_NOESCAPE, damage, _("電気のオーラ", "Elec aura"));
+            take_hit(creature, DAMAGE_NOESCAPE, damage, _("電気のオーラ", "Elec aura"));
         }
 
         if (auras.has(MonsterAuraType::COLD) && !has_immune_cold(creature)) {
@@ -367,7 +367,7 @@ void process_player_hp_mp(CreatureEntity &creature)
 
             damage = std::max(damage, 1);
             msg_print(_("冷たい！", "It's cold!"));
-            take_hit(creature,DAMAGE_NOESCAPE, damage, _("冷気のオーラ", "Cold aura"));
+            take_hit(creature, DAMAGE_NOESCAPE, damage, _("冷気のオーラ", "Cold aura"));
         }
     }
 
@@ -395,7 +395,7 @@ void process_player_hp_mp(CreatureEntity &creature)
                 dam_desc = _("硬い岩", "solid rock");
             }
 
-            take_hit(creature,DAMAGE_NOESCAPE, 1 + (creature.level / 5), dam_desc);
+            take_hit(creature, DAMAGE_NOESCAPE, 1 + (creature.level / 5), dam_desc);
         }
     }
 
