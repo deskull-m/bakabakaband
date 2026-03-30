@@ -19,8 +19,8 @@
  */
 PLAYER_LEVEL get_pseudo_monstetr_level(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    PLAYER_LEVEL monster_level = player_ptr->level + 40;
+    auto &player = static_cast<PlayerType &>(creature);
+    PLAYER_LEVEL monster_level = player.level + 40;
     return (monster_level * monster_level - 1550) / 130;
 }
 

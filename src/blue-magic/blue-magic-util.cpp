@@ -11,10 +11,10 @@
 bmc_type *initialize_blue_magic_type(
     CreatureEntity &creature, bmc_type *bmc_ptr, MonsterAbilityType spell, const bool success, get_pseudo_monstetr_level_pf get_pseudo_monstetr_level)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     bmc_ptr->spell = spell;
     bmc_ptr->plev = (*get_pseudo_monstetr_level)(creature);
-    bmc_ptr->summon_lev = player_ptr->level * 2 / 3 + randint1(player_ptr->level / 2);
+    bmc_ptr->summon_lev = player.level * 2 / 3 + randint1(player.level / 2);
     bmc_ptr->pet = success; // read-only.
     bmc_ptr->no_trump = false;
     bmc_ptr->p_mode = bmc_ptr->pet ? PM_FORCE_PET : PM_NO_PET;
