@@ -2770,10 +2770,10 @@ void wreck_the_pattern(CreatureEntity &creature)
  */
 void check_experience(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return;
     }
+    auto &player = static_cast<PlayerType &>(creature);
     if (creature.exp < 0) {
         creature.exp = 0;
     }
@@ -2803,9 +2803,9 @@ void check_experience(CreatureEntity &creature)
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::EXP);
-    handle_stuff(*player_ptr);
+    handle_stuff(player);
 
-    CreatureRace pr(player_ptr);
+    CreatureRace pr(&player);
     bool android = pr.equals(PlayerRaceType::ANDROID);
     PLAYER_LEVEL old_lev = creature.level;
     static constexpr auto flags_srf = {
@@ -2814,7 +2814,7 @@ void check_experience(CreatureEntity &creature)
         StatusRecalculatingFlag::MP,
         StatusRecalculatingFlag::SPELLS,
     };
-    while ((creature.level > 1) && (creature.exp < ((android ? player_exp_a : player_exp)[creature.level - 2] * player_ptr->expfact / 100L))) {
+    while ((creature.level > 1) && (creature.exp < ((android ? player_exp_a : player_exp)[creature.level - 2] * player.expfact / 100L))) {
         creature.level--;
         rfu.set_flags(flags_srf);
         static constexpr auto flags_mwrf = {
@@ -2823,18 +2823,18 @@ void check_experience(CreatureEntity &creature)
         };
         rfu.set_flags(flags_mwrf);
         rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
-        handle_stuff(*player_ptr);
+        handle_stuff(player);
     }
 
     bool level_reward = false;
     bool level_mutation = false;
     bool level_inc_stat = false;
-    while ((creature.level < PY_MAX_LEVEL) && (creature.exp >= ((android ? player_exp_a : player_exp)[creature.level - 1] * player_ptr->expfact / 100L))) {
+    while ((creature.level < PY_MAX_LEVEL) && (creature.exp >= ((android ? player_exp_a : player_exp)[creature.level - 1] * player.expfact / 100L))) {
         creature.level++;
-        if (creature.level > player_ptr->max_plv) {
-            player_ptr->max_plv = creature.level;
+        if (creature.level > player.max_plv) {
+            player.max_plv = creature.level;
 
-            if (CreatureClass(*player_ptr).equals(PlayerClassType::CHAOS_WARRIOR) || creature.muta.has(PlayerMutationType::CHAOS_GIFT)) {
+            if (CreatureClass(player).equals(PlayerClassType::CHAOS_WARRIOR) || creature.muta.has(PlayerMutationType::CHAOS_GIFT)) {
                 level_reward = true;
             }
             if (pr.equals(PlayerRaceType::BEASTMAN)) {
@@ -2862,23 +2862,23 @@ void check_experience(CreatureEntity &creature)
             SubWindowRedrawingFlag::INVENTORY,
         };
         rfu.set_flags(flags_swrf_levelup);
-        player_ptr->level_up_message = true;
-        handle_stuff(*player_ptr);
+        player.level_up_message = true;
+        handle_stuff(player);
 
-        player_ptr->level_up_message = false;
+        player.level_up_message = false;
         if (level_inc_stat) {
-            if (!(player_ptr->max_plv % 10)) {
+            if (!(player.max_plv % 10)) {
                 int choice;
                 screen_save();
                 while (true) {
                     int n;
 
-                    prt(format(_("        a) 腕力 (現在値 %s)", "        a) Str (cur %s)"), cnv_stat(player_ptr->stat_max[0]).data()), 2, 14);
-                    prt(format(_("        b) 知能 (現在値 %s)", "        b) Int (cur %s)"), cnv_stat(player_ptr->stat_max[1]).data()), 3, 14);
-                    prt(format(_("        c) 賢さ (現在値 %s)", "        c) Wis (cur %s)"), cnv_stat(player_ptr->stat_max[2]).data()), 4, 14);
-                    prt(format(_("        d) 器用 (現在値 %s)", "        d) Dex (cur %s)"), cnv_stat(player_ptr->stat_max[3]).data()), 5, 14);
-                    prt(format(_("        e) 耐久 (現在値 %s)", "        e) Con (cur %s)"), cnv_stat(player_ptr->stat_max[4]).data()), 6, 14);
-                    prt(format(_("        f) 魅力 (現在値 %s)", "        f) Chr (cur %s)"), cnv_stat(player_ptr->stat_max[5]).data()), 7, 14);
+                    prt(format(_("        a) 腕力 (現在値 %s)", "        a) Str (cur %s)"), cnv_stat(player.stat_max[0]).data()), 2, 14);
+                    prt(format(_("        b) 知能 (現在値 %s)", "        b) Int (cur %s)"), cnv_stat(player.stat_max[1]).data()), 3, 14);
+                    prt(format(_("        c) 賢さ (現在値 %s)", "        c) Wis (cur %s)"), cnv_stat(player.stat_max[2]).data()), 4, 14);
+                    prt(format(_("        d) 器用 (現在値 %s)", "        d) Dex (cur %s)"), cnv_stat(player.stat_max[3]).data()), 5, 14);
+                    prt(format(_("        e) 耐久 (現在値 %s)", "        e) Con (cur %s)"), cnv_stat(player.stat_max[4]).data()), 6, 14);
+                    prt(format(_("        f) 魅力 (現在値 %s)", "        f) Chr (cur %s)"), cnv_stat(player.stat_max[5]).data()), 7, 14);
 
                     prt("", 8, 14);
                     prt(_("        どの能力値を上げますか？", "        Which stat do you want to raise?"), 1, 14);
@@ -2898,25 +2898,25 @@ void check_experience(CreatureEntity &creature)
                         break;
                     }
                 }
-                do_inc_stat(*player_ptr, choice - 'a');
+                do_inc_stat(player, choice - 'a');
                 screen_load();
-            } else if (!(player_ptr->max_plv % 2)) {
-                do_inc_stat(*player_ptr, randint0(6));
+            } else if (!(player.max_plv % 2)) {
+                do_inc_stat(player, randint0(6));
             }
         }
 
         if (level_mutation) {
             msg_print(_("あなたは変わった気がする...", "You feel different..."));
-            (void)gain_mutation(*player_ptr, 0);
+            (void)gain_mutation(player, 0);
             level_mutation = false;
         }
 
         /*
-         * 報酬でレベルが上ると再帰的に check_experience(static_cast<CreatureEntity &>(*player_ptr)) が
+         * 報酬でレベルが上ると再帰的に check_experience(static_cast<CreatureEntity &>(player)) が
          * 呼ばれるので順番を最後にする。
          */
         if (level_reward) {
-            patron_list[player_ptr->patron].gain_level_reward(*player_ptr, 0);
+            patron_list[player.patron].gain_level_reward(player, 0);
             level_reward = false;
         }
 
@@ -2931,11 +2931,11 @@ void check_experience(CreatureEntity &creature)
             SubWindowRedrawingFlag::SPELL,
         };
         rfu.set_flags(flags_swrf);
-        handle_stuff(*player_ptr);
+        handle_stuff(player);
     }
 
     if (old_lev != creature.level) {
-        autopick_load_pref(*player_ptr, false);
+        autopick_load_pref(player, false);
     }
 }
 
