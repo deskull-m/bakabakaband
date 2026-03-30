@@ -3123,10 +3123,7 @@ bool is_fast(CreatureEntity &creature)
 {
     return creature.effects()->acceleration().is_fast() || music_singing(creature, MUSIC_SPEED) || music_singing(creature, MUSIC_SHERO);
 }
-bool is_invuln(CreatureEntity &creature)
-{
-    return creature.invuln || music_singing(creature, MUSIC_INVULN);
-}
+
 
 bool is_hero(CreatureEntity &creature)
 {

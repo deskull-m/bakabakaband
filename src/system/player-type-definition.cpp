@@ -208,3 +208,20 @@ bool PlayerType::is_invulnerable() const
     const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
     return bard && *bard && (*bard)->singing_song == MUSIC_INVULN;
 }
+
+bool PlayerType::is_blind() const
+{
+    return this->effects()->blindness().is_blind();
+}
+
+bool PlayerType::is_paralyzed() const
+{
+    return this->effects()->paralysis().is_paralyzed();
+}
+
+bool PlayerType::is_fast() const
+{
+    const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
+    const auto singing_speed = bard && *bard && ((*bard)->singing_song == MUSIC_SPEED || (*bard)->singing_song == MUSIC_SHERO);
+    return this->effects()->acceleration().is_fast() || singing_speed;
+}

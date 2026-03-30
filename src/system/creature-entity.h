@@ -290,6 +290,33 @@ public:
     virtual bool is_invulnerable() const;
 
     /*!
+     * @brief クリーチャーが盲目かどうかを判定
+     * @return 盲目ならtrue、デフォルトはfalse
+     */
+    virtual bool is_blind() const
+    {
+        return false;
+    }
+
+    /*!
+     * @brief クリーチャーが麻痺しているかどうかを判定
+     * @return 麻痺していればtrue、デフォルトはfalse
+     */
+    virtual bool is_paralyzed() const
+    {
+        return false;
+    }
+
+    /*!
+     * @brief クリーチャーが加速しているかどうかを判定
+     * @return 加速中ならtrue、デフォルトはfalse
+     */
+    virtual bool is_fast() const
+    {
+        return false;
+    }
+
+    /*!
      * @brief 体力ランク (0-100) を計算する
      * @return 体力ランク
      */

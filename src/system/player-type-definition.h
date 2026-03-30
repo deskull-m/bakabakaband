@@ -69,6 +69,9 @@ public:
     bool is_stunned() const override;
     bool is_fearful() const override;
     bool is_invulnerable() const override;
+    bool is_blind() const override;
+    bool is_paralyzed() const override;
+    bool is_fast() const override;
 };
 
 extern PlayerType *p_ptr;
