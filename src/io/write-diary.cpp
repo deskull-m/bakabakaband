@@ -153,14 +153,14 @@ static void write_diary_pet(FILE *fff, int num, std::string_view note)
  */
 int exe_write_diary_quest(CreatureEntity &creature, DiaryKind dk, QuestId quest_id)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     static auto disable_diary = false;
     const auto &[day, hour, min] = AngbandWorld::get_instance().extract_date_time(InnerGameData::get_instance().get_start_race());
     if (disable_diary) {
         return -1;
     }
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *player.current_floor_ptr;
     const auto old_quest = floor.quest_number;
     const auto &quests = QuestList::get_instance();
     const auto &quest = quests.get_quest(quest_id);

@@ -8,7 +8,6 @@
 
 class MonsterEntity;
 class ItemEntity;
-class PlayerType;
 class QuestType;
 class QuestCompletionChecker {
 public:
@@ -18,7 +17,7 @@ public:
     void complete();
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
     const MonsterEntity *m_ptr;
     QuestId quest_idx;
     QuestType *q_ptr = nullptr;

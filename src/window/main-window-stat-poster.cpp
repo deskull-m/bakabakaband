@@ -21,7 +21,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
@@ -151,7 +150,6 @@ void print_hunger(CreatureEntity &creature)
  */
 void print_state(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     TERM_COLOR attr = TERM_WHITE;
     std::string text;
     if (command_rep) {
@@ -171,11 +169,11 @@ void print_state(CreatureEntity &creature)
         break;
     }
     case ACTION_REST:
-        if (player_ptr->resting > 0) {
-            text = format("%4d", player_ptr->resting);
-        } else if (player_ptr->resting == COMMAND_ARG_REST_FULL_HEALING) {
+        if (creature.resting > 0) {
+            text = format("%4d", creature.resting);
+        } else if (creature.resting == COMMAND_ARG_REST_FULL_HEALING) {
             text = "****";
-        } else if (player_ptr->resting == COMMAND_ARG_REST_UNTIL_DONE) {
+        } else if (creature.resting == COMMAND_ARG_REST_UNTIL_DONE) {
             text = "&&&&";
         } else {
             text = "    ";
@@ -312,11 +310,10 @@ void print_speed(CreatureEntity &creature)
  */
 void print_study(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &[wid, hgt] = term_get_size();
     const auto col_study = wid + COL_STUDY;
     const auto row_study = hgt + ROW_STUDY;
-    if (player_ptr->new_spells) {
+    if (creature.new_spells) {
         put_str(_("学習", "Stud"), row_study, col_study);
     } else {
         put_str("    ", row_study, col_study);
@@ -355,8 +352,7 @@ void print_imitation(CreatureEntity &creature)
  */
 static void add_hex_status_flags(CreatureEntity &creature, BIT_FLAGS *bar_flags)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (!PlayerRealm(*player_ptr).is_realm_hex()) {
+    if (!PlayerRealm(creature).is_realm_hex()) {
         return;
     }
 
@@ -443,7 +439,6 @@ static void add_hex_status_flags(CreatureEntity &creature, BIT_FLAGS *bar_flags)
  */
 void print_status(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &[wid, hgt] = term_get_size();
     const auto row_statbar = hgt + ROW_STATBAR;
     const auto max_col_statbar = wid + MAX_COL_STATBAR;
@@ -581,11 +576,11 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_RESPOIS);
     }
 
-    if (player_ptr->word_recall) {
+    if (creature.word_recall) {
         ADD_BAR_FLAG(BAR_RECALL);
     }
 
-    if (player_ptr->alter_reality) {
+    if (creature.alter_reality) {
         ADD_BAR_FLAG(BAR_ALTER);
     }
 

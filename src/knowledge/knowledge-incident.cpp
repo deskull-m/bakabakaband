@@ -30,7 +30,7 @@
 
 void do_cmd_knowledge_incident(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     FILE *fff = NULL;
     GAME_TEXT file_name[FILE_NAME_SIZE];
     if (!open_temporary_file(&fff, file_name)) {
@@ -242,7 +242,7 @@ void do_cmd_knowledge_incident(CreatureEntity &creature)
                     item.pval = pval;
                     item.mark_as_known();
 
-                    auto item_name = describe_flavor(*player_ptr, item, 0);
+                    auto item_name = describe_flavor(player, item, 0);
                     fprintf(fff, _("        %s を %d 回\n", "        %s %d times\n"),
                         item_name.data(), entry.second);
                 }

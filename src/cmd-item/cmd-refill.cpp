@@ -27,19 +27,19 @@
  */
 static void do_cmd_refill_lamp(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     constexpr auto q = _("どの油つぼから注ぎますか? ", "Refill with which flask? ");
     constexpr auto s = _("油つぼがない。", "You have no flasks of oil.");
     short i_idx;
-    const auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::can_refill_lantern));
+    const auto *o_ptr = choose_object(player, &i_idx, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::can_refill_lantern));
     if (!o_ptr) {
         return;
     }
 
     const auto flags = o_ptr->get_flags();
 
-    PlayerEnergy(*player_ptr).set_player_turn_energy(50);
-    auto *j_ptr = player_ptr->inventory[INVEN_LITE].get();
+    PlayerEnergy(player).set_player_turn_energy(50);
+    auto *j_ptr = player.inventory[INVEN_LITE].get();
     const auto flags2 = j_ptr->get_flags();
     j_ptr->fuel += o_ptr->fuel;
     msg_print(_("ランプに油を注いだ。", "You fuel your lamp."));
@@ -54,7 +54,7 @@ static void do_cmd_refill_lamp(CreatureEntity &creature)
         msg_print(_("ランプの油は一杯だ。", "Your lamp is full."));
     }
 
-    vary_item(*player_ptr, i_idx, -1);
+    vary_item(player, i_idx, -1);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::TORCH);
 }
 
@@ -64,19 +64,19 @@ static void do_cmd_refill_lamp(CreatureEntity &creature)
  */
 static void do_cmd_refill_torch(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     constexpr auto q = _("どの松明で明かりを強めますか? ", "Refuel with which torch? ");
     constexpr auto s = _("他に松明がない。", "You have no extra torches.");
     short i_idx;
-    const auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::can_refill_torch));
+    const auto *o_ptr = choose_object(player, &i_idx, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::can_refill_torch));
     if (!o_ptr) {
         return;
     }
 
     const auto flags = o_ptr->get_flags();
 
-    PlayerEnergy(*player_ptr).set_player_turn_energy(50);
-    auto *j_ptr = player_ptr->inventory[INVEN_LITE].get();
+    PlayerEnergy(player).set_player_turn_energy(50);
+    auto *j_ptr = player.inventory[INVEN_LITE].get();
     const auto flags2 = j_ptr->get_flags();
     j_ptr->fuel += o_ptr->fuel + 5;
     msg_print(_("松明を結合した。", "You combine the torches."));
@@ -93,7 +93,7 @@ static void do_cmd_refill_torch(CreatureEntity &creature)
         msg_print(_("松明はいっそう明るく輝いた。", "Your torch glows more brightly."));
     }
 
-    vary_item(*player_ptr, i_idx, -1);
+    vary_item(player, i_idx, -1);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::TORCH);
 }
 
@@ -103,9 +103,9 @@ static void do_cmd_refill_torch(CreatureEntity &creature)
  */
 void do_cmd_refill(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
-    const auto *o_ptr = player_ptr->inventory[INVEN_LITE].get();
+    auto &player = static_cast<PlayerType &>(creature);
+    CreatureClass(player).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    const auto *o_ptr = player.inventory[INVEN_LITE].get();
     const auto &bi_key = o_ptr->bi_key;
     if (bi_key.tval() != ItemKindType::LITE) {
         msg_print(_("光源を装備していない。", "You are not wielding a light."));

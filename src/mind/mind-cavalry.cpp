@@ -26,8 +26,7 @@
  */
 bool rodeo(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (player_ptr->riding) {
+    if (creature.riding) {
         msg_print(_("今は乗馬中だ。", "You ARE riding."));
         return false;
     }
@@ -36,7 +35,7 @@ bool rodeo(CreatureEntity &creature)
         return true;
     }
 
-    auto &monster = creature.current_floor_ptr->m_list[player_ptr->riding];
+    auto &monster = creature.current_floor_ptr->m_list[creature.riding];
     const auto &monrace = monster.get_monrace();
     const auto m_name = monster_desc(creature, monster, 0);
     msg_format(_("%sに乗った。", "You ride on %s."), m_name.data());
@@ -53,9 +52,9 @@ bool rodeo(CreatureEntity &creature)
     if (rlev > 60) {
         rlev = 60 + (rlev - 60) / 2;
     }
-    if ((randint1(player_ptr->skill_exp[PlayerSkillKindType::RIDING] / 120 + player_ptr->level * 2 / 3) > rlev) && one_in_(2) &&
-        !player_ptr->current_floor_ptr->inside_arena && !AngbandSystem::get_instance().is_phase_out() && monrace.misc_flags.has_not(MonsterMiscType::GUARDIAN) && monrace.misc_flags.has_not(MonsterMiscType::QUESTOR) &&
-        (rlev < player_ptr->level * 3 / 2 + randint0(player_ptr->level / 5))) {
+    if ((randint1(creature.skill_exp[PlayerSkillKindType::RIDING] / 120 + creature.level * 2 / 3) > rlev) && one_in_(2) &&
+        !creature.current_floor_ptr->inside_arena && !AngbandSystem::get_instance().is_phase_out() && monrace.misc_flags.has_not(MonsterMiscType::GUARDIAN) && monrace.misc_flags.has_not(MonsterMiscType::QUESTOR) &&
+        (rlev < creature.level * 3 / 2 + randint0(creature.level / 5))) {
         msg_format(_("%sを手なずけた。", "You tame %s."), m_name.data());
         set_pet(creature, monster);
     } else {
@@ -63,7 +62,7 @@ bool rodeo(CreatureEntity &creature)
         process_fall_off_horse(creature, 1, true);
 
         /* 落馬処理に失敗してもとにかく乗馬解除 */
-        player_ptr->ride_monster(0);
+        static_cast<PlayerType &>(creature).ride_monster(0);
     }
 
     return true;

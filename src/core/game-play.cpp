@@ -100,8 +100,7 @@
 
 static void restore_windows(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    player_ptr->hack_mutation = false;
+    creature.hack_mutation = false;
     AngbandWorld::get_instance().character_icky_depth = 1;
     term_activate(angband_terms[0]);
     angband_terms[0]->resize_hook = resize_map;
@@ -116,13 +115,12 @@ static void restore_windows(CreatureEntity &creature)
 
 static void send_waiting_record(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &system = AngbandSystem::get_instance();
     if (!system.is_awaiting_report_status()) {
         return;
     }
 
-    if (!input_check_strict(*player_ptr, _("待機していたスコア登録を今行ないますか？", "Do you register score now? "), UserCheck::NO_HISTORY)) {
+    if (!input_check_strict(creature, _("待機していたスコア登録を今行ないますか？", "Do you register score now? "), UserCheck::NO_HISTORY)) {
         quit("");
     }
 
@@ -133,8 +131,8 @@ static void send_waiting_record(CreatureEntity &creature)
         StatusRecalculatingFlag::SPELLS,
     };
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
-    update_creature(*player_ptr);
-    player_ptr->is_dead_ = true;
+    update_creature(creature);
+    creature.is_dead_ = true;
     auto &world = AngbandWorld::get_instance();
     world.play_time.pause();
     signals_ignore_tstp();
@@ -145,14 +143,14 @@ static void send_waiting_record(CreatureEntity &creature)
     /* 町名消失バグ対策(#38205)のためここで世界マップ情報を読み出す */
     const auto &area = WildernessGrids::get_instance().get_area();
     parse_fixed_map(creature, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
-    bool success = send_world_score(*player_ptr, true);
-    if (!success && !input_check_strict(*player_ptr, _("スコア登録を諦めますか？", "Do you give up score registration? "), UserCheck::NO_HISTORY)) {
+    bool success = send_world_score(creature, true);
+    if (!success && !input_check_strict(creature, _("スコア登録を諦めますか？", "Do you give up score registration? "), UserCheck::NO_HISTORY)) {
         prt(_("引き続き待機します。", "standing by for future registration..."), 0, 0);
         (void)inkey();
     } else {
         system.set_awaiting_report_score(false);
-        top_twenty(*player_ptr);
-        if (!save_player(*player_ptr, SaveType::CLOSE_GAME)) {
+        top_twenty(creature);
+        if (!save_player(creature, SaveType::CLOSE_GAME)) {
             msg_print(_("セーブ失敗！", "death save failed!"));
         }
     }
@@ -165,7 +163,6 @@ static void send_waiting_record(CreatureEntity &creature)
 
 static void init_random_seed(CreatureEntity &creature, bool new_game)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &world = AngbandWorld::get_instance();
     auto init_random_seed = false;
     if (!world.character_loaded) {
@@ -178,7 +175,7 @@ static void init_random_seed(CreatureEntity &creature, bool new_game)
     }
 
     if (!new_game) {
-        process_player_name(*player_ptr);
+        process_player_name(creature);
     }
 
     if (init_random_seed) {
@@ -188,10 +185,9 @@ static void init_random_seed(CreatureEntity &creature, bool new_game)
 
 static void init_world_floor_info(CreatureEntity &creature, std::optional<QuestId> initial_quest_id = std::nullopt)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     AngbandWorld::get_instance().character_dungeon = false;
     wc_ptr->collapse_degree = 0;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     floor.reset_dungeon_index();
     floor.dun_level = 0;
     floor.quest_number = QuestId::NONE;
@@ -201,12 +197,12 @@ static void init_world_floor_info(CreatureEntity &creature, std::optional<QuestI
     auto &system = AngbandSystem::get_instance();
     system.set_seed_flavor(randint0(0x10000000));
     system.set_seed_town(randint0(0x10000000));
-    player_birth(*player_ptr, initial_quest_id);
-    counts_write(*player_ptr, 2, 0);
-    player_ptr->count = 0;
+    player_birth(creature, initial_quest_id);
+    counts_write(creature, 2, 0);
+    creature.count = 0;
     load = false;
-    determine_bounty_uniques(*player_ptr);
-    determine_daily_bounty(*player_ptr);
+    determine_bounty_uniques(creature);
+    determine_daily_bounty(creature);
     wipe_o_list(floor);
 }
 
@@ -218,21 +214,21 @@ static void init_world_floor_info(CreatureEntity &creature, std::optional<QuestI
  */
 static void restore_world_floor_info(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     write_level = false;
     constexpr auto mes = _("                            ----ゲーム再開----", "                            --- Restarted Game ---");
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     exe_write_diary(floor, DiaryKind::GAMESTART, 1, mes);
 
-    if (player_ptr->riding != -1) {
+    if (creature.riding != -1) {
         return;
     }
 
-    player_ptr->ride_monster(0);
+    auto &player = static_cast<PlayerType &>(creature);
+    player.ride_monster(0);
     for (short i = floor.m_max; i > 0; i--) {
         const auto &monster = floor.m_list[i];
-        if (player_ptr->is_located_at({ monster.y, monster.x })) {
-            player_ptr->ride_monster(i);
+        if (creature.is_located_at({ monster.y, monster.x })) {
+            player.ride_monster(i);
             break;
         }
     }
@@ -240,30 +236,27 @@ static void restore_world_floor_info(CreatureEntity &creature)
 
 static void reset_world_info(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &world = AngbandWorld::get_instance();
     world.creating_savefile = false;
-    player_ptr->teleport_town = false;
-    player_ptr->sutemi = false;
+    creature.teleport_town = false;
+    creature.sutemi = false;
     world.timewalk_m_idx = 0;
-    player_ptr->now_damaged = false;
+    creature.now_damaged = false;
     now_message = 0;
     record_item_name.clear();
 }
 
 static void generate_wilderness(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &area = WildernessGrids::get_instance().get_area();
     parse_fixed_map(creature, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
     init_flags = INIT_ONLY_BUILDINGS;
     parse_fixed_map(creature, TOWN_DEFINITION_LIST, 0, 0, MAX_HGT, MAX_WID);
-    select_floor_music(*player_ptr);
+    select_floor_music(creature);
 }
 
 static void change_floor_if_error(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!AngbandWorld::get_instance().character_dungeon) {
         change_floor(creature);
         return;
@@ -274,13 +267,13 @@ static void change_floor_if_error(CreatureEntity &creature)
         return;
     }
 
-    if (!player_ptr->y || !player_ptr->x) {
+    if (!creature.y || !creature.x) {
         msg_print(_("プレイヤーの位置がおかしい。フロアを再生成します。", "What a strange player location, regenerate the dungeon floor."));
         change_floor(creature);
     }
 
-    if (!player_ptr->y || !player_ptr->x) {
-        player_ptr->y = player_ptr->x = 10;
+    if (!creature.y || !creature.x) {
+        creature.y = creature.x = 10;
     }
 
     system.set_panic_save(false);
@@ -288,17 +281,16 @@ static void change_floor_if_error(CreatureEntity &creature)
 
 static void generate_world(CreatureEntity &creature, bool new_game)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    reset_world_info(*player_ptr);
-    const auto &floor = *player_ptr->current_floor_ptr;
+    reset_world_info(creature);
+    const auto &floor = *creature.current_floor_ptr;
     panel_row_min = floor.height;
     panel_col_min = floor.width;
 
     initialize_items_flavor();
     prt(_("お待ち下さい...", "Please wait..."), 0, 0);
     term_fresh();
-    generate_wilderness(*player_ptr);
-    change_floor_if_error(*player_ptr);
+    generate_wilderness(creature);
+    change_floor_if_error(creature);
     auto &world = AngbandWorld::get_instance();
     world.character_generated = true;
     world.character_icky_depth = 0;
@@ -306,16 +298,15 @@ static void generate_world(CreatureEntity &creature, bool new_game)
         return;
     }
 
-    const auto mes = format(_("%%sに降り立った。", "arrived in %%s."), map_name(*player_ptr).data());
+    const auto mes = format(_("%%sに降り立った。", "arrived in %%s."), map_name(creature).data());
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, mes);
 }
 
 static void init_io(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     term_xtra(TERM_XTRA_REACT, 0);
     RedrawingFlagsUpdater::get_instance().fill_up_sub_flags();
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     if (arg_force_original) {
         rogue_like_commands = false;
     }
@@ -327,16 +318,15 @@ static void init_io(CreatureEntity &creature)
 
 static void init_riding_pet(CreatureEntity &creature, bool new_game)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    CreatureClass pc(*player_ptr);
+    CreatureClass pc(creature);
     if (!new_game || !pc.is_tamer()) {
         return;
     }
 
     const auto pet_id = pc.equals(PlayerClassType::CAVALRY) ? MonraceId::HORSE : MonraceId::YASE_HORSE;
     const auto &monrace = MonraceList::get_instance().get_monrace(pet_id);
-    const auto m_idx = place_specific_monster(*player_ptr, player_ptr->y, player_ptr->x - 1, pet_id, (PM_FORCE_PET | PM_NO_KAGE));
-    auto &monster = player_ptr->current_floor_ptr->m_list[*m_idx];
+    const auto m_idx = place_specific_monster(creature, creature.y, creature.x - 1, pet_id, (PM_FORCE_PET | PM_NO_KAGE));
+    auto &monster = creature.current_floor_ptr->m_list[*m_idx];
     monster.speed = monrace.speed;
     monster.maxhp = monrace.hit_dice.floored_expected_value();
     monster.max_maxhp = monster.maxhp;
@@ -347,20 +337,19 @@ static void init_riding_pet(CreatureEntity &creature, bool new_game)
 
 static void decide_arena_death(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (!player_ptr->playing || !player_ptr->is_dead()) {
+    if (!creature.playing || !creature.is_dead()) {
         return;
     }
 
     auto &world = AngbandWorld::get_instance();
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     if (!floor.inside_arena) {
 
         while (true) {
             char i;
 
             if (!input_check(_("復活せずに何もかも諦めますか? ", "Do you give up everything without resurrection?? "))) {
-                cheat_death(*player_ptr, cheat_live);
+                cheat_death(creature, cheat_live);
                 return;
             }
 
@@ -383,46 +372,45 @@ static void decide_arena_death(CreatureEntity &creature)
     } else {
         entries.set_defeated_entry();
     }
-    player_ptr->playing = false;
-    player_ptr->is_dead_ = true;
-    player_ptr->leaving = true;
+    creature.playing = false;
+    creature.is_dead_ = true;
+    creature.leaving = true;
 
     world.set_arena(true);
-    reset_tim_flags(*player_ptr);
+    reset_tim_flags(creature);
     FloorChangeModesStore::get_instace()->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::RANDOM_CONNECT });
-    leave_floor(*player_ptr);
+    leave_floor(creature);
 }
 
 static void process_game_turn(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto load_game = true;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     auto &world = AngbandWorld::get_instance();
     world.play_time.unpause();
     while (true) {
-        process_dungeon(*player_ptr, load_game);
+        process_dungeon(creature, load_game);
         world.character_xtra = true;
-        handle_stuff(*player_ptr);
+        handle_stuff(creature);
         world.character_xtra = false;
         Target::clear_last_target();
-        health_track(*player_ptr, 0);
+        health_track(creature, 0);
         floor.forget_lite();
         floor.forget_view();
         floor.forget_mon_lite();
-        if (!player_ptr->playing && !player_ptr->is_dead()) {
+        if (!creature.playing && !creature.is_dead()) {
             break;
         }
 
         wipe_o_list(floor);
-        if (!player_ptr->is_dead()) {
-            wipe_monsters_list(*player_ptr);
+        if (!creature.is_dead()) {
+            wipe_monsters_list(creature);
         }
 
         msg_erase();
         load_game = false;
-        decide_arena_death(*player_ptr);
-        if (player_ptr->is_dead() || wc_ptr->is_blown_away()) {
+        decide_arena_death(creature);
+        if (creature.is_dead() || wc_ptr->is_blown_away()) {
             break;
         }
         change_floor(creature);
@@ -441,30 +429,29 @@ static void process_game_turn(CreatureEntity &creature)
  */
 void play_game(CreatureEntity &creature, bool new_game, bool browsing_movie, std::optional<QuestId> initial_quest_id)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (browsing_movie) {
-        reset_visuals(*player_ptr);
+        reset_visuals(creature);
         browse_movie();
         return;
     }
 
-    restore_windows(*player_ptr);
+    restore_windows(creature);
     if (!load_savedata(creature, &new_game)) {
         quit(_("セーブファイルが壊れています", "broken savefile"));
     }
 
     extract_option_vars();
-    send_waiting_record(*player_ptr);
+    send_waiting_record(creature);
     AngbandWorld::get_instance().creating_savefile = new_game;
-    init_random_seed(*player_ptr, new_game);
+    init_random_seed(creature, new_game);
     if (new_game) {
-        init_world_floor_info(*player_ptr, initial_quest_id);
+        init_world_floor_info(creature, initial_quest_id);
     } else {
-        restore_world_floor_info(*player_ptr);
+        restore_world_floor_info(creature);
     }
 
     // クエスト開始時は、マップサイズを事前に取得する
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     if (new_game && floor.is_in_quest()) {
         init_flags = INIT_GET_SIZE;
         parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
@@ -475,28 +462,28 @@ void play_game(CreatureEntity &creature, bool new_game, bool browsing_movie, std
         }
     }
 
-    generate_world(*player_ptr, new_game);
-    player_ptr->playing = true;
-    reset_visuals(*player_ptr);
-    load_all_pref_files(*player_ptr);
+    generate_world(creature, new_game);
+    creature.playing = true;
+    reset_visuals(creature);
+    load_all_pref_files(creature);
     if (new_game) {
-        player_outfit(*player_ptr);
+        player_outfit(creature);
     }
 
-    init_io(*player_ptr);
-    if (player_ptr->hp < 0 && !cheat_immortal) {
-        player_ptr->is_dead_ = true;
+    init_io(creature);
+    if (creature.hp < 0 && !cheat_immortal) {
+        creature.is_dead_ = true;
     }
 
-    if (CreatureRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
-        calc_android_exp(*player_ptr);
+    if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
+        calc_android_exp(creature);
     }
 
-    init_riding_pet(*player_ptr, new_game);
-    (void)combine_and_reorder_home(*player_ptr, StoreSaleType::HOME);
-    (void)combine_and_reorder_home(*player_ptr, StoreSaleType::MUSEUM);
-    select_floor_music(*player_ptr);
-    process_game_turn(*player_ptr);
-    close_game(*player_ptr);
+    init_riding_pet(creature, new_game);
+    (void)combine_and_reorder_home(creature, StoreSaleType::HOME);
+    (void)combine_and_reorder_home(creature, StoreSaleType::MUSEUM);
+    select_floor_music(creature);
+    process_game_turn(creature);
+    close_game(creature);
     quit("");
 }

@@ -14,7 +14,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/point-2d.h"
 #include "view/display-messages.h"
@@ -147,14 +146,13 @@ static void update_monster_dark(
  */
 void update_mon_lite(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     // 座標たちを記録する配列。
     std::vector<Pos2D> points;
 
     void (*add_mon_lite)(FloorType &, std::vector<Pos2D> &, const Pos2D &p_pos, const Pos2D &pos, const monster_lite_type &);
     auto &floor = *creature.current_floor_ptr;
     const auto &dungeon = floor.get_dungeon_definition();
-    const auto dis_lim = (dungeon.flags.has(DungeonFeatureType::DARKNESS) && !player_ptr->see_nocto) ? (MAX_PLAYER_SIGHT / 2 + 1) : (MAX_PLAYER_SIGHT + 3);
+    const auto dis_lim = (dungeon.flags.has(DungeonFeatureType::DARKNESS) && !creature.see_nocto) ? (MAX_PLAYER_SIGHT / 2 + 1) : (MAX_PLAYER_SIGHT + 3);
     floor.reset_mon_lite();
     const auto &world = AngbandWorld::get_instance();
     const auto p_pos = creature.get_position();
@@ -300,23 +298,23 @@ void update_mon_lite(CreatureEntity &creature)
     points.insert(points.end(), points_mon_lite.begin(), points_mon_lite.end());
     floor.set_mon_lite(points, end_temp);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::DELAY_VISIBILITY);
-    player_ptr->monlite = (floor.get_grid(p_pos).info & CAVE_MNLT) != 0;
-    const auto ninja_data = CreatureClass(*player_ptr).get_specific_data<ninja_data_type>();
+    creature.monlite = (floor.get_grid(p_pos).info & CAVE_MNLT) != 0;
+    const auto ninja_data = CreatureClass(creature).get_specific_data<ninja_data_type>();
     if (!ninja_data || !ninja_data->s_stealth) {
-        player_ptr->old_monlite = player_ptr->monlite;
+        creature.old_monlite = creature.monlite;
         return;
     }
 
-    if (player_ptr->old_monlite == player_ptr->monlite) {
-        player_ptr->old_monlite = player_ptr->monlite;
+    if (creature.old_monlite == creature.monlite) {
+        creature.old_monlite = creature.monlite;
         return;
     }
 
-    if (player_ptr->monlite) {
+    if (creature.monlite) {
         msg_print(_("影の覆いが薄れた気がする。", "Your mantle of shadow becomes thin."));
     } else {
         msg_print(_("影の覆いが濃くなった！", "Your mantle of shadow is restored to its original darkness."));
     }
 
-    player_ptr->old_monlite = player_ptr->monlite;
+    creature.old_monlite = creature.monlite;
 }

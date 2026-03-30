@@ -41,7 +41,7 @@
 namespace {
 auto collect_known_fixed_artifacts(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     const auto &artifacts = ArtifactList::get_instance();
     const auto comparer = [&artifacts](auto id1, auto id2) { return artifacts.order(id1, id2); };
     std::set<FixedArtifactId, decltype(comparer)> fa_ids(comparer);
@@ -67,7 +67,7 @@ auto collect_known_fixed_artifacts(CreatureEntity &creature)
     }
 
     for (auto i = 0; i < INVEN_TOTAL; i++) {
-        const auto &item = *player_ptr->inventory[i];
+        const auto &item = *player.inventory[i];
         if (!item.is_valid()) {
             continue;
         }
@@ -93,7 +93,7 @@ auto collect_known_fixed_artifacts(CreatureEntity &creature)
  */
 void do_cmd_knowledge_artifacts(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
     if (!open_temporary_file(&fff, file_name)) {
@@ -108,7 +108,7 @@ void do_cmd_knowledge_artifacts(CreatureEntity &creature)
         ItemEntity item(artifact.bi_key);
         item.fa_id = fa_id;
         item.ident |= IDENT_STORE;
-        const auto item_name = describe_flavor(*player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+        const auto item_name = describe_flavor(player, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
         fprintf(fff, template_basename, item_name.data());
     }
 

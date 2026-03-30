@@ -30,7 +30,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -154,12 +153,11 @@ bool QuestList::order_completed(QuestId id1, QuestId id2) const
  */
 void determine_random_questor(CreatureEntity &creature, QuestType &quest)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    get_mon_num_prep_enum(*player_ptr, MonraceHook::QUEST);
+    get_mon_num_prep_enum(creature, MonraceHook::QUEST);
     const auto &monraces = MonraceList::get_instance();
     MonraceId r_idx;
     while (true) {
-        r_idx = get_mon_num(*player_ptr, 0, quest.level + 5 + randint1(quest.level / 10), PM_ARENA);
+        r_idx = get_mon_num(creature, 0, quest.level + 5 + randint1(quest.level / 10), PM_ARENA);
         if (monraces.can_unify_separate(r_idx)) {
             continue;
         }
@@ -195,29 +193,28 @@ void record_quest_final_status(QuestType *q_ptr, PLAYER_LEVEL lev, QuestStatusTy
  */
 void complete_quest(CreatureEntity &creature, QuestId quest_id)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &quests = QuestList::get_instance();
     auto &quest = quests.get_quest(quest_id);
     switch (quest.type) {
     case QuestKindType::RANDOM:
         if (record_rand_quest) {
-            exe_write_diary_quest(*player_ptr, DiaryKind::RAND_QUEST_C, quest_id);
+            exe_write_diary_quest(creature, DiaryKind::RAND_QUEST_C, quest_id);
         }
         break;
     default:
         if (record_fix_quest) {
-            exe_write_diary_quest(*player_ptr, DiaryKind::FIX_QUEST_C, quest_id);
+            exe_write_diary_quest(creature, DiaryKind::FIX_QUEST_C, quest_id);
         }
         break;
     }
 
-    record_quest_final_status(&quest, player_ptr->level, QuestStatusType::COMPLETED);
+    record_quest_final_status(&quest, creature.level, QuestStatusType::COMPLETED);
     if (quest.flags & QUEST_FLAG_SILENT) {
         return;
     }
 
     // 威信値アップ
-    player_ptr->prestige += 10 + (quest.level / 2);
+    creature.prestige += 10 + (quest.level / 2);
 
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_QUEST_CLEAR);
     msg_print(_("クエストを達成した！", "You just completed your quest!"));
@@ -232,7 +229,6 @@ void complete_quest(CreatureEntity &creature, QuestId quest_id)
  */
 void check_find_art_quest_completion(CreatureEntity &creature, ItemEntity *o_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &quests = QuestList::get_instance();
     /* Check if completed a quest */
     for (const auto &[quest_id, quest] : quests) {
@@ -240,7 +236,7 @@ void check_find_art_quest_completion(CreatureEntity &creature, ItemEntity *o_ptr
         found_artifact &= (quest.status == QuestStatusType::TAKEN);
         found_artifact &= (o_ptr->is_specific_artifact(quest.reward_fa_id));
         if (found_artifact) {
-            complete_quest(*player_ptr, quest_id);
+            complete_quest(creature, quest_id);
         }
     }
 }
@@ -287,8 +283,7 @@ void quest_discovery(QuestId quest_id)
  */
 void leave_quest_check(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    leaving_quest = player_ptr->current_floor_ptr->quest_number;
+    leaving_quest = creature.current_floor_ptr->quest_number;
     if (!inside_quest(leaving_quest)) {
         return;
     }
@@ -300,13 +295,13 @@ void leave_quest_check(CreatureEntity &creature)
         return;
     }
 
-    record_quest_final_status(&quest, player_ptr->level, QuestStatusType::FAILED);
+    record_quest_final_status(&quest, creature.level, QuestStatusType::FAILED);
 
     /* Additional settings */
     switch (quest.type) {
     case QuestKindType::TOWER:
         quests.get_quest(QuestId::TOWER1).status = QuestStatusType::FAILED;
-        quests.get_quest(QuestId::TOWER1).complev = player_ptr->level;
+        quests.get_quest(QuestId::TOWER1).complev = creature.level;
         break;
     case QuestKindType::FIND_ARTIFACT:
         quest.get_reward().gen_flags.reset(ItemGenerationTraitType::QUESTITEM);
@@ -322,13 +317,13 @@ void leave_quest_check(CreatureEntity &creature)
     /* Record finishing a quest */
     if (quest.type == QuestKindType::RANDOM) {
         if (record_rand_quest) {
-            exe_write_diary_quest(*player_ptr, DiaryKind::RAND_QUEST_F, leaving_quest);
+            exe_write_diary_quest(creature, DiaryKind::RAND_QUEST_F, leaving_quest);
         }
         return;
     }
 
     if (record_fix_quest) {
-        exe_write_diary_quest(*player_ptr, DiaryKind::FIX_QUEST_F, leaving_quest);
+        exe_write_diary_quest(creature, DiaryKind::FIX_QUEST_F, leaving_quest);
     }
 }
 
@@ -337,9 +332,8 @@ void leave_quest_check(CreatureEntity &creature)
  */
 void leave_tower_check(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &quests = QuestList::get_instance();
-    leaving_quest = player_ptr->current_floor_ptr->quest_number;
+    leaving_quest = creature.current_floor_ptr->quest_number;
 
     auto &tower1 = quests.get_quest(QuestId::TOWER1);
     auto is_leaving_from_tower = inside_quest(leaving_quest);
@@ -352,7 +346,7 @@ void leave_tower_check(CreatureEntity &creature)
         return;
     }
     tower1.status = QuestStatusType::FAILED;
-    tower1.complev = player_ptr->level;
+    tower1.complev = creature.level;
     auto &world = AngbandWorld::get_instance();
     world.play_time.update();
     tower1.comptime = world.play_time.elapsed_sec();
@@ -363,13 +357,12 @@ void leave_tower_check(CreatureEntity &creature)
  */
 void exe_enter_quest(CreatureEntity &creature, QuestId quest_id)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &quests = QuestList::get_instance();
     if (quests.get_quest(quest_id).type != QuestKindType::RANDOM) {
-        player_ptr->current_floor_ptr->dun_level = 1;
+        creature.current_floor_ptr->dun_level = 1;
     }
-    player_ptr->current_floor_ptr->quest_number = quest_id;
-    player_ptr->leaving = true;
+    creature.current_floor_ptr->quest_number = quest_id;
+    creature.leaving = true;
 }
 
 /*!
@@ -378,14 +371,13 @@ void exe_enter_quest(CreatureEntity &creature, QuestId quest_id)
  */
 void do_cmd_quest(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
 
-    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
-    const auto &floor = *player_ptr->current_floor_ptr;
-    if (!floor.has_terrain_characteristics(player_ptr->get_position(), TerrainCharacteristics::QUEST_ENTER)) {
+    PlayerEnergy(creature).set_player_turn_energy(100);
+    const auto &floor = *creature.current_floor_ptr;
+    if (!floor.has_terrain_characteristics(creature.get_position(), TerrainCharacteristics::QUEST_ENTER)) {
         msg_print(_("ここにはクエストの入口はない。", "You see no quest level here."));
         return;
     }
@@ -394,17 +386,17 @@ void do_cmd_quest(CreatureEntity &creature)
     if (!input_check(_("クエストに入りますか？", "Do you enter? "))) {
         return;
     }
-    if (is_echizen(*player_ptr)) {
+    if (is_echizen(creature)) {
         msg_print(_("『とにかく入ってみようぜぇ。』", "\"Let's go in anyway.\""));
-    } else if (is_chargeman(*player_ptr)) {
+    } else if (is_chargeman(creature)) {
         msg_print(_("『全滅してやるぞ！』", "\"I'll annihilate THEM!\""));
     }
 
-    player_ptr->oldpy = 0;
-    player_ptr->oldpx = 0;
-    leave_quest_check(*player_ptr);
+    creature.oldpy = 0;
+    creature.oldpx = 0;
+    leave_quest_check(creature);
 
-    exe_enter_quest(*player_ptr, i2enum<QuestId>(floor.get_grid(player_ptr->get_position()).special));
+    exe_enter_quest(creature, i2enum<QuestId>(floor.get_grid(creature.get_position()).special));
 }
 
 bool inside_quest(QuestId id)

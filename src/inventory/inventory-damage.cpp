@@ -28,7 +28,7 @@
  */
 void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, int perc)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     int j, amt;
     if (check_multishadow(creature) || creature.current_floor_ptr->inside_arena) {
         return;
@@ -36,7 +36,7 @@ void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, in
 
     /* Scan through the slots backwards */
     for (short i = 0; i < INVEN_PACK; i++) {
-        auto &item = *player_ptr->inventory[i];
+        auto &item = *player.inventory[i];
         if (!item.is_valid()) {
             continue;
         }
@@ -63,7 +63,7 @@ void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, in
             continue;
         }
 
-        const auto item_name = describe_flavor(*player_ptr, item, OD_OMIT_PREFIX);
+        const auto item_name = describe_flavor(player, item, OD_OMIT_PREFIX);
 
         msg_format(_("%s(%c)が%s壊れてしまった！", "%sour %s (%c) %s destroyed!"),
 #ifdef JP
@@ -74,15 +74,15 @@ void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, in
 #endif
 
 #ifdef JP
-        if (is_echizen(*player_ptr)) {
+        if (is_echizen(player)) {
             msg_print("やりやがったな！");
-        } else if (is_chargeman(*player_ptr)) {
+        } else if (is_chargeman(player)) {
             if (randint0(2) == 0) {
                 msg_print(_("ジュラル星人め！", ""));
             } else {
                 msg_print(_("弱い者いじめは止めるんだ！", ""));
             }
-        } else if (is_tough(*player_ptr)) {
+        } else if (is_tough(player)) {
             msg_print(_("う わ あ あ あ あ あ あ あ あ", ""));
         }
 
@@ -90,7 +90,7 @@ void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, in
 
         /* Potions smash open */
         if (item.is_potion()) {
-            (void)potion_smash_effect(*player_ptr, 0, creature.y, creature.x, item.bi_id);
+            (void)potion_smash_effect(player, 0, creature.y, creature.x, item.bi_id);
         }
 
         /* Reduce the charges of rods/wands */

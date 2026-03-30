@@ -155,7 +155,7 @@ static std::vector<MonraceId> collect_monsters(short grp_cur, monster_lore_mode 
  */
 void do_cmd_knowledge_pets(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
     if (!open_temporary_file(&fff, file_name)) {
@@ -174,7 +174,7 @@ void do_cmd_knowledge_pets(CreatureEntity &creature)
         fprintf(fff, "%s (%s)\n", pet_name.data(), monster.build_looking_description(false).data());
     }
 
-    int show_upkeep = calculate_upkeep(*player_ptr);
+    int show_upkeep = calculate_upkeep(player);
 
     fprintf(fff, "----------------------------------------------\n");
 #ifdef JP

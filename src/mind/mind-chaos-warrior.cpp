@@ -5,14 +5,13 @@
 #include "sv-definition/sv-weapon-types.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include <span>
 
 void acquire_chaos_weapon(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     constexpr static auto weapons = {
         SV_DAGGER,
         SV_DAGGER,
@@ -66,12 +65,12 @@ void acquire_chaos_weapon(CreatureEntity &creature)
         SV_BLADE_OF_CHAOS, // LV50
     };
 
-    const auto candidates = std::span(weapons).first(player_ptr->level);
+    const auto candidates = std::span(weapons).first(creature.level);
     const auto sval = rand_choice(candidates);
 
     ItemEntity item({ ItemKindType::SWORD, sval });
-    item.to_h = 3 + randint1(player_ptr->current_floor_ptr->dun_level) % 10;
-    item.to_d = 3 + randint1(player_ptr->current_floor_ptr->dun_level) % 10;
+    item.to_h = 3 + randint1(creature.current_floor_ptr->dun_level) % 10;
+    item.to_d = 3 + randint1(creature.current_floor_ptr->dun_level) % 10;
     one_resistance(&item);
     item.ego_idx = EgoType::CHAOTIC;
     (void)drop_near(creature, item, creature.get_position());

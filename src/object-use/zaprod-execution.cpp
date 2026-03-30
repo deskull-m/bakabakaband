@@ -34,7 +34,7 @@
  * @param item 使うオブジェクトの所持品ID
  */
 ObjectZapRodEntity::ObjectZapRodEntity(CreatureEntity &creature)
-    : player_ptr(static_cast<PlayerType *>(&creature))
+    : creature_ptr(&creature)
 {
 }
 
@@ -43,8 +43,9 @@ ObjectZapRodEntity::ObjectZapRodEntity(CreatureEntity &creature)
  */
 void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
 {
+    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
     auto use_charge = true;
-    auto *o_ptr = ref_item(*this->player_ptr, i_idx);
+    auto *o_ptr = ref_item(player, i_idx);
     if ((i_idx < 0) && (o_ptr->number > 1)) {
         msg_print(_("まずはロッドを拾わなければ。", "You must first pick up the rods."));
         return;
@@ -52,20 +53,20 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
 
     auto dir = Direction::none();
     if (o_ptr->is_aiming_rod() || !o_ptr->is_aware()) {
-        dir = get_aim_dir(*this->player_ptr);
+        dir = get_aim_dir(player);
         if (!dir) {
             return;
         }
     }
 
-    PlayerEnergy(*this->player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(player).set_player_turn_energy(100);
     if (!this->check_can_zap()) {
         return;
     }
 
     const auto item_level = o_ptr->get_baseitem_level();
-    auto chance = this->player_ptr->skill_dev;
-    if (this->player_ptr->effects()->confusion().is_confused()) {
+    auto chance = player.skill_dev;
+    if (player.effects()->confusion().is_confused()) {
         chance = chance / 2;
     }
 
@@ -85,7 +86,7 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
     }
 
     bool success;
-    if (CreatureClass(*this->player_ptr).equals(PlayerClassType::BERSERKER)) {
+    if (CreatureClass(player).equals(PlayerClassType::BERSERKER)) {
         success = false;
     } else if (chance > fail) {
         success = randint0(chance * 2) >= fail;
@@ -121,7 +122,7 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
     }
 
     sound(SoundKind::ZAP);
-    auto ident = rod_effect(*this->player_ptr, *o_ptr->bi_key.sval(), dir, &use_charge, false);
+    auto ident = rod_effect(player, *o_ptr->bi_key.sval(), dir, &use_charge, false);
     if (use_charge) {
         o_ptr->timeout += base_pval;
     }
@@ -133,15 +134,15 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
     };
     rfu.set_flags(flags_srf);
     if (!(o_ptr->is_aware())) {
-        chg_virtue(*this->player_ptr, Virtue::PATIENCE, -1);
-        chg_virtue(*this->player_ptr, Virtue::CHANCE, 1);
-        chg_virtue(*this->player_ptr, Virtue::KNOWLEDGE, -1);
+        chg_virtue(player, Virtue::PATIENCE, -1);
+        chg_virtue(player, Virtue::CHANCE, 1);
+        chg_virtue(player, Virtue::KNOWLEDGE, -1);
     }
 
     o_ptr->mark_as_tried();
     if ((ident != 0) && !o_ptr->is_aware()) {
-        object_aware(*this->player_ptr, *o_ptr);
-        gain_exp(*this->player_ptr, (item_level + (this->player_ptr->level >> 1)) / this->player_ptr->level);
+        object_aware(player, *o_ptr);
+        gain_exp(player, (item_level + (player.level >> 1)) / player.level);
     }
 
     static constexpr auto flags_swrf = {
@@ -156,9 +157,10 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
 
 bool ObjectZapRodEntity::check_can_zap()
 {
-    if (cmd_limit_time_walk(*this->player_ptr)) {
+    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    if (cmd_limit_time_walk(player)) {
         return false;
     }
 
-    return ItemUseChecker(*this->player_ptr).check_stun(_("朦朧としていてロッドを振れなかった！", "You are too stunned to zap it!"));
+    return ItemUseChecker(player).check_stun(_("朦朧としていてロッドを振れなかった！", "You are too stunned to zap it!"));
 }

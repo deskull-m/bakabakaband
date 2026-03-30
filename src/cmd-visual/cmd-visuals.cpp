@@ -15,16 +15,17 @@
 #include "main/sound-of-music.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
 #include "util/angband-files.h"
+#include "util/enum-converter.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 #include <tl/optional.hpp>
@@ -81,7 +82,6 @@ static void print_visuals_menu(concptr choice_msg)
  */
 void do_cmd_visuals(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     FILE *auto_dump_stream;
     bool need_redraw = false;
     concptr empty_symbol = "<< ? >>";
@@ -90,7 +90,7 @@ void do_cmd_visuals(CreatureEntity &creature)
     }
 
     screen_save();
-    const auto initial_filename = format("%s.prf", player_ptr->base_name.data());
+    const auto initial_filename = format("%s.prf", creature.base_name.data());
     while (true) {
         term_clear();
         print_visuals_menu(nullptr);

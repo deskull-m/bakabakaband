@@ -450,8 +450,7 @@ void autopick_entry_from_object(CreatureEntity &creature, autopick_type *entry, 
         }
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (o_ptr->is_spell_book() && !check_book_realm(*player_ptr, bi_key)) {
+    if (o_ptr->is_spell_book() && !check_book_realm(creature, bi_key)) {
         entry->add(FLG_UNREADABLE);
         if (tval != ItemKindType::ARCANE_BOOK) {
             name = false;
@@ -461,7 +460,7 @@ void autopick_entry_from_object(CreatureEntity &creature, autopick_type *entry, 
     CreatureClass pc(creature);
     const auto is_realm_independent_class = pc.equals(PlayerClassType::SORCERER) || pc.equals(PlayerClassType::RED_MAGE);
 
-    PlayerRealm pr(*player_ptr);
+    PlayerRealm pr(creature);
     if (pr.realm1().get_book() == tval && !is_realm_independent_class) {
         entry->add(FLG_REALM1);
         name = false;
@@ -524,7 +523,7 @@ void autopick_entry_from_object(CreatureEntity &creature, autopick_type *entry, 
         return;
     }
 
-    const auto item_name = describe_flavor(*player_ptr, *o_ptr, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(creature, *o_ptr, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL | OD_NAME_ONLY));
 
     /*
      * If necessary, add a '^' which indicates the
@@ -740,8 +739,7 @@ bool entry_from_choosed_object(CreatureEntity &creature, autopick_type *entry)
 {
     constexpr auto q = _("どのアイテムを登録しますか? ", "Enter which item? ");
     constexpr auto s = _("アイテムを持っていない。", "You have nothing to enter.");
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    auto *o_ptr = choose_object(*player_ptr, nullptr, q, s, USE_INVEN | USE_FLOOR | USE_EQUIP);
+    auto *o_ptr = choose_object(creature, nullptr, q, s, USE_INVEN | USE_FLOOR | USE_EQUIP);
     if (!o_ptr) {
         return false;
     }

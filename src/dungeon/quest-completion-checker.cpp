@@ -10,7 +10,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "view/display-messages.h"
@@ -18,7 +17,7 @@
 #include <range/v3/algorithm.hpp>
 
 QuestCompletionChecker::QuestCompletionChecker(CreatureEntity &creature, const MonsterEntity &monster)
-    : player_ptr(static_cast<PlayerType *>(&creature))
+    : creature_ptr(&creature)
     , m_ptr(&monster)
     , quest_idx(QuestId::NONE)
 {
@@ -53,8 +52,7 @@ void QuestCompletionChecker::complete()
 
 static bool check_quest_completion(CreatureEntity &creature, const QuestType &quest, const MonsterEntity &monster)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     if (quest.status != QuestStatusType::TAKEN) {
         return false;
     }
@@ -88,13 +86,13 @@ static bool check_quest_completion(CreatureEntity &creature, const QuestType &qu
 
 void QuestCompletionChecker::set_quest_idx()
 {
-    const auto &floor = *this->player_ptr->current_floor_ptr;
+    const auto &floor = *this->creature_ptr->current_floor_ptr;
     const auto &quests = QuestList::get_instance();
     this->quest_idx = floor.quest_number;
     if (inside_quest(this->quest_idx)) {
         return;
     }
-    auto q = std::find_if(quests.rbegin(), quests.rend(), [this](auto q) { return check_quest_completion(*this->player_ptr, q.second, *this->m_ptr); });
+    auto q = std::find_if(quests.rbegin(), quests.rend(), [this](auto q) { return check_quest_completion(*this->creature_ptr, q.second, *this->m_ptr); });
 
     if (q != quests.rend()) {
         this->quest_idx = q->first;
@@ -130,7 +128,7 @@ void QuestCompletionChecker::complete_kill_number()
 {
     this->q_ptr->cur_num++;
     if (this->q_ptr->cur_num >= this->q_ptr->num_mon) {
-        complete_quest(*this->player_ptr, this->quest_idx);
+        complete_quest(*this->creature_ptr, this->quest_idx);
         this->q_ptr->cur_num = 0;
     }
 }
@@ -144,7 +142,7 @@ void QuestCompletionChecker::complete_kill_all()
     if (any_bits(this->q_ptr->flags, QUEST_FLAG_SILENT)) {
         this->q_ptr->status = QuestStatusType::FINISHED;
     } else {
-        complete_quest(*this->player_ptr, this->quest_idx);
+        complete_quest(*this->creature_ptr, this->quest_idx);
     }
 }
 
@@ -159,11 +157,11 @@ std::tuple<bool, bool> QuestCompletionChecker::complete_random()
         return std::make_tuple(false, false);
     }
 
-    complete_quest(*this->player_ptr, this->quest_idx);
+    complete_quest(*this->creature_ptr, this->quest_idx);
     auto create_stairs = false;
     if (none_bits(this->q_ptr->flags, QUEST_FLAG_PRESET)) {
         create_stairs = true;
-        this->player_ptr->current_floor_ptr->quest_number = QuestId::NONE;
+        this->creature_ptr->current_floor_ptr->quest_number = QuestId::NONE;
     }
 
     if (this->quest_idx == QuestId::MELKO) {
@@ -183,7 +181,7 @@ void QuestCompletionChecker::complete_kill_any_level()
 {
     this->q_ptr->cur_num++;
     if (this->q_ptr->cur_num >= this->q_ptr->max_num) {
-        complete_quest(*this->player_ptr, this->quest_idx);
+        complete_quest(*this->creature_ptr, this->quest_idx);
         this->q_ptr->cur_num = 0;
     }
 }
@@ -204,7 +202,7 @@ void QuestCompletionChecker::complete_tower()
     is_tower_completed &= quests.get_quest(QuestId::TOWER2).status == QuestStatusType::STAGE_COMPLETED;
     is_tower_completed &= quests.get_quest(QuestId::TOWER3).status == QuestStatusType::STAGE_COMPLETED;
     if (is_tower_completed) {
-        complete_quest(*this->player_ptr, QuestId::TOWER1);
+        complete_quest(*this->creature_ptr, QuestId::TOWER1);
     }
 }
 
@@ -214,7 +212,7 @@ void QuestCompletionChecker::complete_tower()
  */
 int QuestCompletionChecker::count_all_hostile_monsters()
 {
-    const auto &floor = *this->player_ptr->current_floor_ptr;
+    const auto &floor = *this->creature_ptr->current_floor_ptr;
     const auto hostile_monster_exists = [&floor](const Pos2D &pos) {
         const auto &grid = floor.get_grid(pos);
         return grid.has_monster() && floor.m_list[grid.m_idx].is_hostile();
@@ -230,7 +228,7 @@ Pos2D QuestCompletionChecker::make_stairs(const bool create_stairs)
         return m_pos;
     }
 
-    auto &floor = *this->player_ptr->current_floor_ptr;
+    auto &floor = *this->creature_ptr->current_floor_ptr;
     const auto *grid_ptr = &floor.get_grid(m_pos);
     while (floor.has_terrain_characteristics(m_pos, TerrainCharacteristics::PERMANENT) || !grid_ptr->o_idx_list.empty() || grid_ptr->is_object()) {
         m_pos = scatter(floor, m_pos, 1, PROJECT_NONE);
@@ -238,22 +236,22 @@ Pos2D QuestCompletionChecker::make_stairs(const bool create_stairs)
     }
 
     msg_print(_("魔法の階段が現れた...", "A magical staircase appears..."));
-    set_terrain_id_to_grid(*this->player_ptr, m_pos, TerrainTag::DOWN_STAIR);
+    set_terrain_id_to_grid(*this->creature_ptr, m_pos, TerrainTag::DOWN_STAIR);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
     return m_pos;
 }
 
 void QuestCompletionChecker::make_reward(const Pos2D pos)
 {
-    const auto drop_num = this->player_ptr->current_floor_ptr->dun_level / 15 + 1;
+    const auto drop_num = this->creature_ptr->current_floor_ptr->dun_level / 15 + 1;
     const auto &monrace = this->m_ptr->get_monrace();
     for (auto i = 0; i < drop_num; i++) {
-        while (auto item = make_object(*this->player_ptr, AM_GOOD | AM_GREAT, nullptr, monrace.level)) {
+        while (auto item = make_object(*this->creature_ptr, AM_GOOD | AM_GREAT, nullptr, monrace.level)) {
             if (!this->check_quality(*item)) {
                 continue;
             }
 
-            (void)drop_near(*this->player_ptr, *item, pos);
+            (void)drop_near(*this->creature_ptr, *item, pos);
             break;
         }
     }

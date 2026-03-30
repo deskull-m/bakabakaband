@@ -28,27 +28,27 @@
  */
 void starve_player(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     if (AngbandSystem::get_instance().is_phase_out()) {
         return;
     }
 
-    if (player_ptr->food >= PY_FOOD_MAX) {
-        (void)set_food(creature, player_ptr->food - 100);
+    if (player.food >= PY_FOOD_MAX) {
+        (void)set_food(creature, player.food - 100);
     } else if (AngbandWorld::get_instance().game_turn % (TURNS_PER_TICK * 5) == 0) {
         int digestion = speed_to_energy(creature.get_speed());
-        if (player_ptr->regenerate) {
+        if (player.regenerate) {
             digestion += 20;
         }
         CreatureClass pc(creature);
         if (!pc.monk_stance_is(MonkStanceType::NONE) || !pc.samurai_stance_is(SamuraiStanceType::NONE)) {
             digestion += 20;
         }
-        if (player_ptr->cursed.has(CurseTraitType::FAST_DIGEST)) {
+        if (player.cursed.has(CurseTraitType::FAST_DIGEST)) {
             digestion += 30;
         }
 
-        if (player_ptr->slow_digest) {
+        if (player.slow_digest) {
             digestion -= 5;
         }
 
@@ -63,21 +63,21 @@ void starve_player(CreatureEntity &creature)
             digestion *= 100;
         }
 
-        (void)set_food(creature, player_ptr->food - digestion);
+        (void)set_food(creature, player.food - digestion);
     }
 
-    if ((player_ptr->food >= PY_FOOD_FAINT)) {
+    if ((player.food >= PY_FOOD_FAINT)) {
         return;
     }
 
-    if (!is_sushi_eater(creature) && !player_ptr->effects()->paralysis().is_paralyzed() && one_in_(10)) {
+    if (!is_sushi_eater(creature) && !player.effects()->paralysis().is_paralyzed() && one_in_(10)) {
         msg_print(_("あまりにも空腹で気絶してしまった。", "You faint from the lack of food."));
         disturb(creature, true, true);
         (void)BadStatusSetter(creature).mod_paralysis(1 + randint0(5));
     }
 
-    if (player_ptr->food < PY_FOOD_STARVE) {
-        int dam = (PY_FOOD_STARVE - player_ptr->food) / 10;
+    if (player.food < PY_FOOD_STARVE) {
+        int dam = (PY_FOOD_STARVE - player.food) / 10;
         if (!is_invuln(creature)) {
             take_hit(creature, DAMAGE_LOSELIFE, dam, _("空腹", "starvation"));
         }
@@ -112,25 +112,25 @@ void starve_player(CreatureEntity &creature)
  */
 bool set_food(CreatureEntity &creature, TIME_EFFECT v)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return false;
     }
+    auto &player = static_cast<PlayerType &>(creature);
 
     int old_aux, new_aux;
 
     bool notice = false;
     v = (v > 20000) ? 20000 : (v < 0) ? 0
                                       : v;
-    if (player_ptr->food < PY_FOOD_FAINT) {
+    if (player.food < PY_FOOD_FAINT) {
         old_aux = 0;
-    } else if (player_ptr->food < PY_FOOD_WEAK) {
+    } else if (player.food < PY_FOOD_WEAK) {
         old_aux = 1;
-    } else if (player_ptr->food < PY_FOOD_ALERT) {
+    } else if (player.food < PY_FOOD_ALERT) {
         old_aux = 2;
-    } else if (player_ptr->food < PY_FOOD_FULL) {
+    } else if (player.food < PY_FOOD_FULL) {
         old_aux = 3;
-    } else if (player_ptr->food < PY_FOOD_MAX) {
+    } else if (player.food < PY_FOOD_MAX) {
         old_aux = 4;
     } else {
         old_aux = 5;
@@ -213,13 +213,13 @@ bool set_food(CreatureEntity &creature, TIME_EFFECT v)
         }
 
         if (AngbandWorld::get_instance().is_wild_mode() && (new_aux < 2)) {
-            change_wild_mode(*player_ptr, false);
+            change_wild_mode(player, false);
         }
 
         notice = true;
     }
 
-    player_ptr->food = v;
+    player.food = v;
     if (!notice) {
         return false;
     }
@@ -231,7 +231,7 @@ bool set_food(CreatureEntity &creature, TIME_EFFECT v)
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     rfu.set_flag(MainWindowRedrawingFlag::HUNGER);
-    handle_stuff(*player_ptr);
+    handle_stuff(player);
 
     return true;
 }

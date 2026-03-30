@@ -18,7 +18,6 @@
 #include "status/buff-setter.h"
 #include "status/element-resistance.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
@@ -84,11 +83,10 @@ void reset_tim_flags(CreatureEntity &creature)
     creature.oppose_cold = 0; /* Timed -- oppose cold */
     creature.oppose_pois = 0; /* Timed -- oppose poison */
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    player_ptr->word_recall = 0;
-    player_ptr->alter_reality = 0;
-    player_ptr->sutemi = false;
-    player_ptr->counter = false;
+    creature.word_recall = 0;
+    creature.alter_reality = 0;
+    creature.sutemi = false;
+    creature.counter = false;
     creature.ele_attack = 0;
     creature.ele_immune = 0;
     creature.special_attack = 0L;
@@ -98,7 +96,7 @@ void reset_tim_flags(CreatureEntity &creature)
         creature.set_energy_need(creature.get_energy_need() + ENERGY_NEED());
     }
 
-    player_ptr->timewalk = false;
+    creature.timewalk = false;
 
     if (creature.riding) {
         (void)set_monster_fast(*creature.current_floor_ptr, creature.riding, 0);
@@ -579,9 +577,8 @@ bool set_tsuyoshi(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         if (creature.tsuyoshi) {
             msg_print(_("肉体が急速にしぼんでいった。", "Your body has quickly shriveled."));
 
-            auto *player_ptr = static_cast<PlayerType *>(&creature);
-            (void)dec_stat(*player_ptr, A_CON, 20, true);
-            (void)dec_stat(*player_ptr, A_STR, 20, true);
+            (void)dec_stat(creature, A_CON, 20, true);
+            (void)dec_stat(creature, A_STR, 20, true);
 
             notice = true;
             chg_virtue(creature, Virtue::VITALITY, -3);

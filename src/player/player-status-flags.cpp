@@ -1075,12 +1075,12 @@ bool has_can_swim(CreatureEntity &creature)
         return false;
     }
 
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return false;
     }
+    auto &player = static_cast<PlayerType &>(creature);
 
-    const auto &monster = player_ptr->current_floor_ptr->m_list[player_ptr->riding];
+    const auto &monster = player.current_floor_ptr->m_list[player.riding];
     const auto &monrace = monster.get_monrace();
     return monrace.feature_flags.has_any_of({ MonsterFeatureType::CAN_SWIM, MonsterFeatureType::AQUATIC });
 }
@@ -1868,12 +1868,12 @@ bool is_wielding_icky_weapon(CreatureEntity &creature, int i)
  */
 bool is_wielding_icky_riding_weapon(CreatureEntity &creature, int i)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return false;
     }
+    auto &player = static_cast<PlayerType &>(creature);
 
-    const auto *o_ptr = player_ptr->inventory[INVEN_MAIN_HAND + i].get();
+    const auto *o_ptr = player.inventory[INVEN_MAIN_HAND + i].get();
     const auto flags = o_ptr->get_flags();
     const auto tval = o_ptr->bi_key.tval();
     const auto has_no_weapon = (tval == ItemKindType::NONE) || (tval == ItemKindType::SHIELD);

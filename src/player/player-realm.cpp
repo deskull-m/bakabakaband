@@ -5,7 +5,7 @@
 #include "player-info/class-info.h"
 #include "realm/realm-types.h"
 #include "system/angband-exceptions.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/spell-info-list.h"
 #include "util/enum-converter.h"
 
@@ -77,10 +77,10 @@ const std::map<PlayerClassType, RealmChoices> realm2_choices = {
 }
 
 PlayerRealm::PlayerRealm(CreatureEntity &creature)
-    : realm1_(static_cast<PlayerType *>(&creature)->realm1)
-    , realm2_(static_cast<PlayerType *>(&creature)->realm2)
+    : realm1_(creature.realm1)
+    , realm2_(creature.realm2)
 {
-    this->player_ptr = static_cast<PlayerType *>(&creature);
+    this->creature_ptr = &creature;
 }
 
 const LocalizedString &PlayerRealm::get_name(RealmType realm)
@@ -240,8 +240,8 @@ void PlayerRealm::set(RealmType realm1, RealmType realm2)
 
 void PlayerRealm::set_(RealmType realm1, RealmType realm2)
 {
-    this->player_ptr->realm1 = realm1;
-    this->player_ptr->realm2 = realm2;
+    this->creature_ptr->realm1 = realm1;
+    this->creature_ptr->realm2 = realm2;
     this->realm1_ = Realm(realm1);
     this->realm2_ = Realm(realm2);
 }

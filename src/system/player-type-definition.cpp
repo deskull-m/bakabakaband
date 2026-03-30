@@ -91,50 +91,6 @@ bool PlayerType::is_fully_healthy() const
     return is_fully_healthy;
 }
 
-/*
- * @brief ランダムに1つアビリティスコアを減少させる
- * @return アビリティスコア減少メッセージ
- * @todo stat_curにのみ依存するのでアビリティスコアを表すクラスへ移設する
- */
-std::string PlayerType::decrease_ability_random()
-{
-    constexpr std::array<std::pair<int, std::string_view>, 6> candidates = { {
-        { A_STR, _("強く", "strong") },
-        { A_INT, _("聡明で", "bright") },
-        { A_WIS, _("賢明で", "wise") },
-        { A_DEX, _("器用で", "agile") },
-        { A_CON, _("健康で", "hale") },
-        { A_CHR, _("美しく", "beautiful") },
-    } };
-
-    const auto &[k, act] = rand_choice(candidates);
-    this->stat_cur[k] = (this->stat_cur[k] * 3) / 4;
-    if (this->stat_cur[k] < 30) {
-        this->stat_cur[k] = 30;
-    }
-
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-    return format(_("あなたは以前ほど%sなくなってしまった...。", "You're not as %s as you used to be..."), act.data());
-}
-
-/*
- * @brief 全てのアビリティスコアを減少させる
- * @return アビリティスコア減少メッセージ
- * @todo stat_curにのみ依存するのでアビリティスコアを表すクラスへ移設する
- */
-std::string PlayerType::decrease_ability_all()
-{
-    for (auto i = 0; i < A_MAX; i++) {
-        this->stat_cur[i] = (this->stat_cur[i] * 7) / 8;
-        if (this->stat_cur[i] < 30) {
-            this->stat_cur[i] = 30;
-        }
-    }
-
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-    return _("あなたは以前ほど力強くなくなってしまった...。", "You're not as powerful as you used to be...");
-}
-
 bool PlayerType::is_located_at_running_destination() const
 {
     return (this->y == this->run_py) && (this->x == this->run_px);
@@ -170,25 +126,6 @@ void PlayerType::set_position(const Pos2D &pos)
 bool PlayerType::in_saved_floor() const
 {
     return this->floor_id != 0;
-}
-
-/*!
- * @brief プレイヤーの体力ランクを計算する
- *
- * プレイヤーの体力ランク（最大レベル時のHPの期待値に対する実際のHPの値の割合）を計算する。
- *
- * @return 体力ランク[%]
- */
-int PlayerType::calc_life_rating() const
-{
-    const auto actual_hp = this->player_hp[PY_MAX_LEVEL - 1];
-
-    // ダイスによる上昇回数は52回（初期3回+LV50までの49回）なので
-    // 期待値計算のため2で割っても端数は出ない
-    constexpr auto roll_num = 3 + PY_MAX_LEVEL - 1;
-    const auto expected_hp = this->hit_dice.maxroll() + this->hit_dice.floored_expected_value_multiplied_by(roll_num);
-
-    return actual_hp * 100 / expected_hp;
 }
 
 bool PlayerType::try_resist_eldritch_horror() const

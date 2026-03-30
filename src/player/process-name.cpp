@@ -28,12 +28,12 @@
  */
 void process_player_name(CreatureEntity &creature, bool is_new_savefile)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     const auto &world = AngbandWorld::get_instance();
-    const std::string old_player_base = world.character_generated ? player_ptr->base_name : "";
+    const std::string old_player_base = world.character_generated ? player.base_name : "";
 
-    const auto name_c_str = player_ptr->name.c_str();
-    for (size_t i = 0; i < player_ptr->name.length(); i++) {
+    const auto name_c_str = player.name.c_str();
+    for (size_t i = 0; i < player.name.length(); i++) {
 #ifdef JP
         if (iskanji(name_c_str[i])) {
             i++;
@@ -48,8 +48,8 @@ void process_player_name(CreatureEntity &creature, bool is_new_savefile)
         }
     }
 
-    player_ptr->base_name.clear();
-    for (size_t i = 0; i < player_ptr->name.length(); i++) {
+    player.base_name.clear();
+    for (size_t i = 0; i < player.name.length(); i++) {
 #ifdef JP
         unsigned char c = name_c_str[i];
 #else
@@ -58,35 +58,35 @@ void process_player_name(CreatureEntity &creature, bool is_new_savefile)
 
 #ifdef JP
         if (iskanji(c)) {
-            if (player_ptr->base_name.length() + 2 >= 40 || i + 1 >= player_ptr->name.length()) {
+            if (player.base_name.length() + 2 >= 40 || i + 1 >= player.name.length()) {
                 break;
             }
 
-            player_ptr->base_name += c;
+            player.base_name += c;
             i++;
-            player_ptr->base_name += name_c_str[i];
+            player.base_name += name_c_str[i];
         }
 #ifdef SJIS
         else if (iskana(c))
-            player_ptr->base_name += c;
+            player.base_name += c;
 #endif
         else
 #endif
             if (!strncmp(PATH_SEP, name_c_str + i, strlen(PATH_SEP))) {
-            player_ptr->base_name += '_';
+            player.base_name += '_';
             i += strlen(PATH_SEP);
         }
 #if defined(WINDOWS)
         else if (angband_strchr("\"*,/:;<>?\\|", c))
-            player_ptr->base_name += '_';
+            player.base_name += '_';
 #endif
         else if (isprint(c)) {
-            player_ptr->base_name += c;
+            player.base_name += c;
         }
     }
 
-    if (player_ptr->base_name.empty()) {
-        player_ptr->base_name = "PLAYER";
+    if (player.base_name.empty()) {
+        player.base_name = "PLAYER";
     }
 
     auto is_modified = false;
@@ -95,9 +95,9 @@ void process_player_name(CreatureEntity &creature, bool is_new_savefile)
 
 #ifdef SAVEFILE_USE_UID
         ss << UnixUserIds::get_instance().get_user_id();
-        ss << '.' << player_ptr->base_name;
+        ss << '.' << player.base_name;
 #else
-        ss << player_ptr->base_name;
+        ss << player.base_name;
 #endif
         savefile = path_build(ANGBAND_DIR_SAVE, ss.str());
         is_modified = true;
@@ -113,7 +113,7 @@ void process_player_name(CreatureEntity &creature, bool is_new_savefile)
 #endif
     }
 
-    if (world.character_generated && old_player_base != player_ptr->base_name) {
+    if (world.character_generated && old_player_base != player.base_name) {
         autopick_load_pref(creature, false);
     }
 }
@@ -127,21 +127,21 @@ void process_player_name(CreatureEntity &creature, bool is_new_savefile)
  */
 void get_name(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     const auto finalizer = util::make_finalizer([&creature]() {
         display_player_misc_info(creature);
     });
 
-    std::string initial_name = player_ptr->name;
+    std::string initial_name = player.name;
     const auto max_name_size = 40;
     constexpr auto prompt = _("キャラクターの名前を入力して下さい: ", "Enter a name for your character: ");
     const auto name = input_string(prompt, max_name_size, initial_name);
     if (name && !name->empty()) {
-        player_ptr->name = *name;
+        player.name = *name;
         return;
     }
 
     if (initial_name.empty()) {
-        player_ptr->name = "PLAYER";
+        player.name = "PLAYER";
     }
 }

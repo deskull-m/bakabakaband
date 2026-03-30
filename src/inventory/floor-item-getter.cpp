@@ -140,7 +140,7 @@ static std::pair<tl::optional<short>, char> check_floor_item_tag_inventory(Creat
  */
 static std::pair<tl::optional<short>, char> check_floor_item_tag(CreatureEntity &creature, FloorItemSelection &fis, char prev_tag, const ItemTester &item_tester)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     const auto code = repeat_pull();
     if (!code) {
         return { tl::nullopt, prev_tag };
@@ -151,8 +151,8 @@ static std::pair<tl::optional<short>, char> check_floor_item_tag(CreatureEntity 
         return { *code, prev_tag };
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto p_pos = player_ptr->get_position();
+    const auto &floor = *player.current_floor_ptr;
+    const auto p_pos = player.get_position();
     const auto &[floor_item_indice, tag_floor] = check_floor_item_tag_aux(floor, p_pos, fis, *code, prev_tag, item_tester);
     if (floor_item_indice) {
         return { *floor_item_indice, tag_floor };
@@ -168,7 +168,7 @@ static std::pair<tl::optional<short>, char> check_floor_item_tag(CreatureEntity 
  */
 static void test_inventory_floor(CreatureEntity &creature, FloorItemSelection *fis_ptr, const ItemTester &item_tester)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     if (!fis_ptr->inven) {
         fis_ptr->i2 = -1;
         return;
@@ -179,7 +179,7 @@ static void test_inventory_floor(CreatureEntity &creature, FloorItemSelection *f
     }
 
     for (int i = 0; i < INVEN_PACK; i++) {
-        if (item_tester.okay(player_ptr->inventory[i].get()) || (fis_ptr->mode & USE_FULL)) {
+        if (item_tester.okay(player.inventory[i].get()) || (fis_ptr->mode & USE_FULL)) {
             fis_ptr->max_inven++;
         }
     }
@@ -192,7 +192,7 @@ static void test_inventory_floor(CreatureEntity &creature, FloorItemSelection *f
  */
 static void test_equipment_floor(CreatureEntity &creature, FloorItemSelection *fis_ptr, const ItemTester &item_tester)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     if (!fis_ptr->equip) {
         fis_ptr->e2 = -1;
         return;
@@ -203,8 +203,8 @@ static void test_equipment_floor(CreatureEntity &creature, FloorItemSelection *f
     }
 
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        if (player_ptr->select_ring_slot ? is_ring_slot(i)
-                                         : item_tester.okay(player_ptr->inventory[i].get()) || (fis_ptr->mode & USE_FULL)) {
+        if (player.select_ring_slot ? is_ring_slot(i)
+                                    : item_tester.okay(player.inventory[i].get()) || (fis_ptr->mode & USE_FULL)) {
             fis_ptr->max_equip++;
         }
     }
@@ -221,7 +221,7 @@ static void test_equipment_floor(CreatureEntity &creature, FloorItemSelection *f
  */
 tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pmt, std::string_view str, BIT_FLAGS mode, const ItemTester &item_tester)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     FloorItemSelection fis(mode);
     static char prev_tag = '\0';
     const auto &[i_idx, tag] = check_floor_item_tag(creature, fis, prev_tag, item_tester);
@@ -271,8 +271,8 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
     }
 
     if (fis.floor) {
-        const auto &floor = *player_ptr->current_floor_ptr;
-        fis.floor_item_index = scan_floor_items(floor, player_ptr->get_position(), { ScanFloorMode::ITEM_TESTER, ScanFloorMode::ONLY_MARKED }, item_tester);
+        const auto &floor = *player.current_floor_ptr;
+        fis.floor_item_index = scan_floor_items(floor, player.get_position(), { ScanFloorMode::ITEM_TESTER, ScanFloorMode::ONLY_MARKED }, item_tester);
     }
 
     if ((mode & USE_INVEN) && (fis.i1 <= fis.i2)) {
@@ -365,7 +365,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
             fis.n1 = I2A(j - fis.floor_top); // TODO: 常に'0'になる。どんな意図でこのようなコードになっているのか不明.
             fis.n2 = I2A(fis.k - fis.floor_top);
             if (command_see) {
-                get_item_label = show_floor_items(*player_ptr, fis.menu_line, player_ptr->y, player_ptr->x, &fis.min_width, item_tester);
+                get_item_label = show_floor_items(player, fis.menu_line, player.y, player.x, &fis.min_width, item_tester);
             }
         }
 
@@ -663,7 +663,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
         case '\n':
         case '\r':
         case '+': {
-            auto &grid = player_ptr->current_floor_ptr->grid_array[player_ptr->y][player_ptr->x];
+            auto &grid = player.current_floor_ptr->grid_array[player.y][player.x];
             if (command_wrk != (USE_FLOOR)) {
                 break;
             }
@@ -674,13 +674,13 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
 
             const auto next_o_idx = fis.floor_item_index[1];
             while (grid.o_idx_list.front() != next_o_idx) {
-                grid.o_idx_list.rotate(*player_ptr->current_floor_ptr);
+                grid.o_idx_list.rotate(*player.current_floor_ptr);
             }
 
             rfu.set_flag(SubWindowRedrawingFlag::FLOOR_ITEMS);
-            window_stuff(*player_ptr);
-            const auto &floor = *player_ptr->current_floor_ptr;
-            fis.floor_item_index = scan_floor_items(floor, player_ptr->get_position(), { ScanFloorMode::ITEM_TESTER, ScanFloorMode::ONLY_MARKED }, item_tester);
+            window_stuff(player);
+            const auto &floor = *player.current_floor_ptr;
+            fis.floor_item_index = scan_floor_items(floor, player.get_position(), { ScanFloorMode::ITEM_TESTER, ScanFloorMode::ONLY_MARKED }, item_tester);
             if (command_see) {
                 screen_load();
                 screen_save();
@@ -776,7 +776,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
                     break;
                 }
             } else {
-                const auto floor_item_idx = get_tag_floor(*player_ptr->current_floor_ptr, fis.which, fis.floor_item_index);
+                const auto floor_item_idx = get_tag_floor(*player.current_floor_ptr, fis.which, fis.floor_item_index);
                 if (floor_item_idx) {
                     fis.k = -fis.floor_item_index[*floor_item_idx];
                 } else {
@@ -823,7 +823,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
                     fis.cur_tag = fis.which;
                 }
             } else {
-                const auto floor_item_idx = get_tag_floor(*player_ptr->current_floor_ptr, fis.which, fis.floor_item_index);
+                const auto floor_item_idx = get_tag_floor(*player.current_floor_ptr, fis.which, fis.floor_item_index);
                 if (floor_item_idx) {
                     fis.k = -fis.floor_item_index[*floor_item_idx];
                     fis.cur_tag = fis.which;
@@ -841,7 +841,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
                     } else if (which == ')') {
                         fis.k = fis.i2;
                     } else {
-                        fis.k = label_to_inventory(*player_ptr, which);
+                        fis.k = label_to_inventory(player, which);
                     }
                 } else if (command_wrk == (USE_EQUIP)) {
                     if (which == '(') {
@@ -849,7 +849,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
                     } else if (which == ')') {
                         fis.k = fis.e2;
                     } else {
-                        fis.k = label_to_equipment(*player_ptr, which);
+                        fis.k = label_to_equipment(player, which);
                     }
                 } else if (command_wrk == USE_FLOOR) {
                     if (which == '(') {

@@ -67,20 +67,19 @@ bool can_save = false;
 
 static void process_fishing(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     term_xtra(TERM_XTRA_DELAY, 10);
     if (one_in_(1000)) {
         bool success = false;
-        get_mon_num_prep_enum(*player_ptr, MonraceHook::FISHING);
-        const auto &floor = *player_ptr->current_floor_ptr;
+        get_mon_num_prep_enum(creature, MonraceHook::FISHING);
+        const auto &floor = *creature.current_floor_ptr;
         const auto wild_level = WildernessGrids::get_instance().get_player_grid().get_level();
         const auto level = floor.is_underground() ? floor.dun_level : wild_level;
-        const auto r_idx = get_mon_num(*player_ptr, 0, level, PM_NONE);
+        const auto r_idx = get_mon_num(creature, 0, level, PM_NONE);
         msg_erase();
         if (MonraceList::is_valid(r_idx) && one_in_(2)) {
-            const auto pos = player_ptr->get_neighbor(player_ptr->fishing_dir);
-            if (auto m_idx = place_specific_monster(*player_ptr, pos.y, pos.x, r_idx, PM_NO_KAGE)) {
-                const auto m_name = monster_desc(*player_ptr, floor.m_list[*m_idx], 0);
+            const auto pos = creature.get_neighbor(creature.fishing_dir);
+            if (auto m_idx = place_specific_monster(creature, pos.y, pos.x, r_idx, PM_NO_KAGE)) {
+                const auto m_name = monster_desc(creature, floor.m_list[*m_idx], 0);
                 msg_print(_(format("%sが釣れた！", m_name.data()), "You have a good catch!"));
                 success = true;
             }
@@ -90,14 +89,13 @@ static void process_fishing(CreatureEntity &creature)
             msg_print(_("餌だけ食われてしまった！くっそ～！", "Damn!  The fish stole your bait!"));
         }
 
-        disturb(*player_ptr, false, true);
+        disturb(creature, false, true);
     }
 }
 
 bool continuous_action_running(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    return player_ptr->running || Travel::get_instance().is_ongoing() || command_rep || (player_ptr->action == ACTION_REST) || (player_ptr->action == ACTION_FISH);
+    return creature.running || Travel::get_instance().is_ongoing() || command_rep || (creature.action == ACTION_REST) || (creature.action == ACTION_FISH);
 }
 
 /*!
@@ -109,41 +107,40 @@ bool continuous_action_running(CreatureEntity &creature)
  */
 void process_player(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (player_ptr->hack_mutation) {
+    if (creature.hack_mutation) {
         msg_print(_("何か変わった気がする！", "You feel different!"));
-        (void)gain_mutation(*player_ptr, 0);
-        player_ptr->hack_mutation = false;
+        (void)gain_mutation(creature, 0);
+        creature.hack_mutation = false;
     }
 
-    if (player_ptr->invoking_midnight_curse) {
+    if (creature.invoking_midnight_curse) {
         int count = 0;
-        mark_monsters_present(*player_ptr);
-        activate_ty_curse(*player_ptr, false, &count);
-        player_ptr->invoking_midnight_curse = false;
+        mark_monsters_present(creature);
+        activate_ty_curse(creature, false, &count);
+        creature.invoking_midnight_curse = false;
     }
 
     const auto &system = AngbandSystem::get_instance();
     if (system.is_phase_out()) {
-        for (MONSTER_IDX m_idx = 1; m_idx < player_ptr->current_floor_ptr->m_max; m_idx++) {
-            auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+        for (MONSTER_IDX m_idx = 1; m_idx < creature.current_floor_ptr->m_max; m_idx++) {
+            auto &monster = creature.current_floor_ptr->m_list[m_idx];
             if (!monster.is_valid()) {
                 continue;
             }
 
             monster.mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(*player_ptr, m_idx, false);
+            update_monster(creature, m_idx, false);
         }
 
         WorldTurnProcessor(creature).print_time();
         WorldTurnProcessor(creature).print_world_collapse();
         WorldTurnProcessor(creature).print_cheat_position();
 
-    } else if (!(load && player_ptr->energy_need <= 0)) {
-        player_ptr->energy_need -= speed_to_energy(static_cast<CreatureEntity &>(*player_ptr).get_speed());
+    } else if (!(load && creature.energy_need <= 0)) {
+        creature.energy_need -= speed_to_energy(creature.get_speed());
     }
 
-    if (player_ptr->energy_need > 0) {
+    if (creature.energy_need > 0) {
         return;
     }
     if (!command_rep) {
@@ -156,19 +153,19 @@ void process_player(CreatureEntity &creature)
         stop_term_fresh();
     }
 
-    if (player_ptr->resting < 0) {
-        if (player_ptr->resting == COMMAND_ARG_REST_FULL_HEALING) {
-            if ((player_ptr->hp == player_ptr->maxhp) && (player_ptr->csp >= player_ptr->msp)) {
+    if (creature.resting < 0) {
+        if (creature.resting == COMMAND_ARG_REST_FULL_HEALING) {
+            if ((creature.hp == creature.maxhp) && (creature.csp >= creature.msp)) {
                 set_action(creature, ACTION_NONE);
             }
-        } else if (player_ptr->resting == COMMAND_ARG_REST_UNTIL_DONE) {
-            if (player_ptr->is_fully_healthy()) {
+        } else if (creature.resting == COMMAND_ARG_REST_UNTIL_DONE) {
+            if (static_cast<PlayerType &>(creature).is_fully_healthy()) {
                 set_action(creature, ACTION_NONE);
             }
         }
     }
 
-    if (player_ptr->action == ACTION_FISH) {
+    if (creature.action == ACTION_FISH) {
         process_fishing(creature);
     }
 
@@ -177,103 +174,103 @@ void process_player(CreatureEntity &creature)
             inkey_scan = true;
             if (inkey()) {
                 flush();
-                disturb(*player_ptr, false, true);
+                disturb(creature, false, true);
                 msg_print(_("中断しました。", "Canceled."));
             }
         }
     }
 
-    const auto effects = player_ptr->effects();
-    if (player_ptr->riding && !effects->confusion().is_confused() && !effects->blindness().is_blind()) {
-        const auto &monster = player_ptr->current_floor_ptr->m_list[player_ptr->riding];
+    const auto effects = creature.effects();
+    if (creature.riding && !effects->confusion().is_confused() && !effects->blindness().is_blind()) {
+        const auto &monster = creature.current_floor_ptr->m_list[creature.riding];
         const auto &monrace = monster.get_monrace();
         if (monster.is_asleep()) {
-            const auto m_name = monster_desc(*player_ptr, monster, 0);
-            (void)set_monster_csleep(*player_ptr->current_floor_ptr, player_ptr->riding, 0);
+            const auto m_name = monster_desc(creature, monster, 0);
+            (void)set_monster_csleep(*creature.current_floor_ptr, creature.riding, 0);
             msg_format(_("%s^を起こした。", "You have woken %s up."), m_name.data());
         }
 
         if (monster.is_stunned()) {
-            if (set_monster_stunned(*player_ptr->current_floor_ptr, player_ptr->riding,
-                    (randint0(monrace.level) < player_ptr->skill_exp[PlayerSkillKindType::RIDING]) ? 0 : (monster.get_remaining_stun() - 1))) {
-                const auto m_name = monster_desc(*player_ptr, monster, 0);
+            if (set_monster_stunned(*creature.current_floor_ptr, creature.riding,
+                    (randint0(monrace.level) < creature.skill_exp[PlayerSkillKindType::RIDING]) ? 0 : (monster.get_remaining_stun() - 1))) {
+                const auto m_name = monster_desc(creature, monster, 0);
                 msg_format(_("%s^を朦朧状態から立ち直らせた。", "%s^ is no longer stunned."), m_name.data());
             }
         }
 
         if (monster.is_confused()) {
-            if (set_monster_confused(*player_ptr->current_floor_ptr, player_ptr->riding,
-                    (randint0(monrace.level) < player_ptr->skill_exp[PlayerSkillKindType::RIDING]) ? 0 : (monster.get_remaining_confusion() - 1))) {
-                const auto m_name = monster_desc(*player_ptr, monster, 0);
+            if (set_monster_confused(*creature.current_floor_ptr, creature.riding,
+                    (randint0(monrace.level) < creature.skill_exp[PlayerSkillKindType::RIDING]) ? 0 : (monster.get_remaining_confusion() - 1))) {
+                const auto m_name = monster_desc(creature, monster, 0);
                 msg_format(_("%s^を混乱状態から立ち直らせた。", "%s^ is no longer confused."), m_name.data());
             }
         }
 
         if (monster.is_fearful()) {
-            if (set_monster_monfear(*player_ptr->current_floor_ptr, player_ptr->riding,
-                    (randint0(monrace.level) < player_ptr->skill_exp[PlayerSkillKindType::RIDING]) ? 0 : (monster.get_remaining_fear() - 1))) {
-                const auto m_name = monster_desc(*player_ptr, monster, 0);
+            if (set_monster_monfear(*creature.current_floor_ptr, creature.riding,
+                    (randint0(monrace.level) < creature.skill_exp[PlayerSkillKindType::RIDING]) ? 0 : (monster.get_remaining_fear() - 1))) {
+                const auto m_name = monster_desc(creature, monster, 0);
                 msg_format(_("%s^を恐怖から立ち直らせた。", "%s^ is no longer fearful."), m_name.data());
             }
         }
 
-        handle_stuff(*player_ptr);
+        handle_stuff(creature);
     }
 
     load = false;
-    if (player_ptr->lightspeed) {
-        set_lightspeed(*player_ptr, player_ptr->lightspeed - 1, true);
+    if (creature.lightspeed) {
+        set_lightspeed(creature, creature.lightspeed - 1, true);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (CreatureClass(*player_ptr).equals(PlayerClassType::FORCETRAINER) && get_current_ki(*player_ptr)) {
-        if (get_current_ki(*player_ptr) < 40) {
-            set_current_ki(*player_ptr, true, 0);
+    if (CreatureClass(creature).equals(PlayerClassType::FORCETRAINER) && get_current_ki(creature)) {
+        if (get_current_ki(creature) < 40) {
+            set_current_ki(creature, true, 0);
         } else {
-            set_current_ki(*player_ptr, false, -40);
+            set_current_ki(creature, false, -40);
         }
         rfu.set_flag(StatusRecalculatingFlag::BONUS);
     }
 
-    if (player_ptr->action == ACTION_LEARN) {
+    if (creature.action == ACTION_LEARN) {
         int32_t cost = 0L;
-        uint32_t cost_frac = (player_ptr->msp + 30L) * 256L;
+        uint32_t cost_frac = (creature.msp + 30L) * 256L;
         s64b_lshift(&cost, &cost_frac, 16);
-        if (s64b_cmp(player_ptr->csp, player_ptr->csp_frac, cost, cost_frac) < 0) {
-            player_ptr->csp = 0;
-            player_ptr->csp_frac = 0;
+        if (s64b_cmp(creature.csp, creature.csp_frac, cost, cost_frac) < 0) {
+            creature.csp = 0;
+            creature.csp_frac = 0;
             set_action(creature, ACTION_NONE);
         } else {
-            s64b_sub(&(player_ptr->csp), &(player_ptr->csp_frac), cost, cost_frac);
+            s64b_sub(&(creature.csp), &(creature.csp_frac), cost, cost_frac);
         }
 
         rfu.set_flag(MainWindowRedrawingFlag::MP);
     }
 
-    if (CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::MUSOU)) {
-        if (player_ptr->csp < 3) {
+    if (CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU)) {
+        if (creature.csp < 3) {
             set_action(creature, ACTION_NONE);
         } else {
-            player_ptr->csp -= 2;
+            creature.csp -= 2;
             rfu.set_flag(MainWindowRedrawingFlag::MP);
         }
     }
 
     /*** Handle actual user input ***/
-    while (player_ptr->energy_need <= 0) {
+    while (creature.energy_need <= 0) {
         rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
-        player_ptr->sutemi = false;
-        player_ptr->counter = false;
-        player_ptr->now_damaged = false;
+        creature.sutemi = false;
+        creature.counter = false;
+        creature.now_damaged = false;
 
-        update_monsters(*player_ptr, false);
-        handle_stuff(*player_ptr);
-        move_cursor_relative(player_ptr->y, player_ptr->x);
+        update_monsters(creature, false);
+        handle_stuff(creature);
+        move_cursor_relative(creature.y, creature.x);
         if (fresh_before) {
             term_fresh_force();
         }
 
-        pack_overflow(*player_ptr);
+        pack_overflow(creature);
         if (!command_new) {
             command_see = false;
         }
@@ -283,15 +280,15 @@ void process_player(CreatureEntity &creature)
         const auto is_knocked_out = effects->stun().is_knocked_out();
         const auto is_paralyzed = effects->paralysis().is_paralyzed();
         if (system.is_phase_out()) {
-            move_cursor_relative(player_ptr->y, player_ptr->x);
+            move_cursor_relative(creature.y, creature.x);
             command_cmd = SPECIAL_KEY_BUILDING;
-            process_command(*player_ptr);
+            process_command(creature);
         } else if ((is_paralyzed || is_knocked_out) && !cheat_immortal) {
             energy.set_player_turn_energy(100);
-        } else if (player_ptr->action == ACTION_REST) {
-            if (player_ptr->resting > 0) {
-                player_ptr->resting--;
-                if (!player_ptr->resting) {
+        } else if (creature.action == ACTION_REST) {
+            if (creature.resting > 0) {
+                creature.resting--;
+                if (!creature.resting) {
                     set_action(creature, ACTION_NONE);
                 }
 
@@ -299,51 +296,51 @@ void process_player(CreatureEntity &creature)
             }
 
             energy.set_player_turn_energy(100);
-        } else if (player_ptr->action == ACTION_FISH) {
+        } else if (creature.action == ACTION_FISH) {
             energy.set_player_turn_energy(100);
-        } else if (player_ptr->running) {
-            run_step(*player_ptr, Direction::none());
+        } else if (creature.running) {
+            run_step(creature, Direction::none());
         } else if (auto &travel = Travel::get_instance(); travel.is_ongoing()) {
-            travel.step(*player_ptr);
+            travel.step(creature);
         } else if (command_rep) {
             command_rep--;
             rfu.set_flag(MainWindowRedrawingFlag::ACTION);
-            handle_stuff(*player_ptr);
+            handle_stuff(creature);
             msg_flag = false;
             prt("", 0, 0);
-            mark_monsters_present(*player_ptr);
-            process_command(*player_ptr);
+            mark_monsters_present(creature);
+            process_command(creature);
         } else {
-            move_cursor_relative(player_ptr->y, player_ptr->x);
+            move_cursor_relative(creature.y, creature.x);
 
             static constexpr auto flags = {
                 SubWindowRedrawingFlag::SIGHT_MONSTERS,
                 SubWindowRedrawingFlag::PETS,
             };
             rfu.set_flags(flags);
-            window_stuff(*player_ptr);
+            window_stuff(creature);
 
             can_save = true;
-            InputKeyRequestor(*player_ptr, false).request_command();
+            InputKeyRequestor(creature, false).request_command();
             can_save = false;
-            mark_monsters_present(*player_ptr);
-            process_command(*player_ptr);
+            mark_monsters_present(creature);
+            process_command(creature);
         }
 
-        pack_overflow(*player_ptr);
-        if (player_ptr->energy_use) {
-            if (player_ptr->timewalk || player_ptr->energy_use > 400) {
-                player_ptr->energy_need += player_ptr->energy_use * TURNS_PER_TICK / 10;
+        pack_overflow(creature);
+        if (creature.energy_use) {
+            if (creature.timewalk || creature.energy_use > 400) {
+                creature.energy_need += creature.energy_use * TURNS_PER_TICK / 10;
             } else {
-                player_ptr->energy_need += (int16_t)((int32_t)player_ptr->energy_use * ENERGY_NEED() / 100L);
+                creature.energy_need += (int16_t)((int32_t)creature.energy_use * ENERGY_NEED() / 100L);
             }
 
             if (effects->hallucination().is_hallucinated()) {
                 rfu.set_flag(MainWindowRedrawingFlag::MAP);
             }
 
-            for (MONSTER_IDX m_idx = 1; m_idx < player_ptr->current_floor_ptr->m_max; m_idx++) {
-                auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+            for (MONSTER_IDX m_idx = 1; m_idx < creature.current_floor_ptr->m_max; m_idx++) {
+                auto &monster = creature.current_floor_ptr->m_list[m_idx];
                 if (!monster.is_valid()) {
                     continue;
                 }
@@ -352,7 +349,7 @@ void process_player(CreatureEntity &creature)
 
                 // モンスターのシンボル/カラーの更新
                 if (monster.ml && monrace.visual_flags.has_any_of({ MonsterVisualType::MULTI_COLOR, MonsterVisualType::SHAPECHANGER })) {
-                    lite_spot(*player_ptr, monster.get_position());
+                    lite_spot(creature, monster.get_position());
                 }
 
                 // 出現して即魔法を使わないようにするフラグを落とす処理
@@ -362,7 +359,7 @@ void process_player(CreatureEntity &creature)
 
                 if (monster.mflag.has(MonsterTemporaryFlagType::SANITY_BLAST)) {
                     monster.mflag.reset(MonsterTemporaryFlagType::SANITY_BLAST);
-                    sanity_blast(*player_ptr, m_idx);
+                    sanity_blast(creature, m_idx);
                 }
 
                 // 感知中のモンスターのフラグを落とす処理
@@ -373,21 +370,21 @@ void process_player(CreatureEntity &creature)
                     } else {
                         monster.mflag2.reset(MonsterConstantFlagType::MARK);
                         monster.ml = false;
-                        update_monster(*player_ptr, m_idx, false);
+                        update_monster(creature, m_idx, false);
                         HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
                         if (monster.is_riding()) {
                             rfu.set_flag(MainWindowRedrawingFlag::UHEALTH);
                         }
 
-                        lite_spot(*player_ptr, monster.get_position());
+                        lite_spot(creature, monster.get_position());
                     }
                 }
             }
 
-            if (CreatureClass(*player_ptr).equals(PlayerClassType::IMITATOR)) {
-                auto mane_data = CreatureClass(*player_ptr).get_specific_data<mane_data_type>();
-                if (static_cast<int>(mane_data->mane_list.size()) > (player_ptr->level > 44 ? 3 : player_ptr->level > 29 ? 2
-                                                                                                                         : 1)) {
+            if (CreatureClass(creature).equals(PlayerClassType::IMITATOR)) {
+                auto mane_data = CreatureClass(creature).get_specific_data<mane_data_type>();
+                if (static_cast<int>(mane_data->mane_list.size()) > (creature.level > 44 ? 3 : creature.level > 29 ? 2
+                                                                                                                   : 1)) {
                     mane_data->mane_list.pop_front();
                 }
 
@@ -395,13 +392,13 @@ void process_player(CreatureEntity &creature)
                 rfu.set_flag(MainWindowRedrawingFlag::IMITATION);
             }
 
-            if (player_ptr->action == ACTION_LEARN) {
-                auto mane_data = CreatureClass(*player_ptr).get_specific_data<bluemage_data_type>();
+            if (creature.action == ACTION_LEARN) {
+                auto mane_data = CreatureClass(creature).get_specific_data<bluemage_data_type>();
                 mane_data->new_magic_learned = false;
                 rfu.set_flag(MainWindowRedrawingFlag::ACTION);
             }
 
-            if (player_ptr->timewalk && (player_ptr->energy_need > -1000)) {
+            if (creature.timewalk && (creature.energy_need > -1000)) {
                 rfu.set_flag(MainWindowRedrawingFlag::MAP);
                 rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
                 static constexpr auto flags_swrf = {
@@ -411,29 +408,29 @@ void process_player(CreatureEntity &creature)
                 rfu.set_flags(flags_swrf);
                 msg_print(_("「時は動きだす…」", "You feel time flowing around you once more."));
                 msg_erase();
-                player_ptr->timewalk = false;
-                player_ptr->energy_need = ENERGY_NEED();
+                creature.timewalk = false;
+                creature.energy_need = ENERGY_NEED();
 
-                handle_stuff(*player_ptr);
+                handle_stuff(creature);
             }
         }
 
-        if (!player_ptr->playing || player_ptr->is_dead()) {
-            player_ptr->timewalk = false;
+        if (!creature.playing || creature.is_dead()) {
+            creature.timewalk = false;
             break;
         }
 
-        auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
-        if (player_ptr->energy_use && sniper_data && sniper_data->reset_concent) {
-            reset_concentration(*player_ptr, true);
+        auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
+        if (creature.energy_use && sniper_data && sniper_data->reset_concent) {
+            reset_concentration(creature, true);
         }
 
-        if (player_ptr->leaving) {
+        if (creature.leaving) {
             break;
         }
     }
 
-    update_smell(*player_ptr->current_floor_ptr, player_ptr->get_position());
+    update_smell(*creature.current_floor_ptr, creature.get_position());
 }
 
 /*!
@@ -441,29 +438,28 @@ void process_player(CreatureEntity &creature)
  */
 void process_upkeep_with_speed(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (!load && player_ptr->enchant_energy_need > 0 && !player_ptr->leaving) {
-        player_ptr->enchant_energy_need -= speed_to_energy(static_cast<CreatureEntity &>(*player_ptr).get_speed());
+    if (!load && creature.enchant_energy_need > 0 && !creature.leaving) {
+        creature.enchant_energy_need -= speed_to_energy(creature.get_speed());
     }
 
-    if (player_ptr->enchant_energy_need > 0) {
+    if (creature.enchant_energy_need > 0) {
         return;
     }
 
-    while (player_ptr->enchant_energy_need <= 0) {
+    while (creature.enchant_energy_need <= 0) {
         if (!load) {
-            check_music(*player_ptr);
+            check_music(creature);
         }
 
         if (!load) {
-            check_emission(*player_ptr);
+            check_emission(creature);
         }
 
         if (!load) {
-            check_demigod(*player_ptr);
+            check_demigod(creature);
         }
 
-        SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
+        SpellHex spell_hex(creature);
         if (!load) {
             spell_hex.decrease_mana();
         }
@@ -472,6 +468,6 @@ void process_upkeep_with_speed(CreatureEntity &creature)
             spell_hex.continue_revenge();
         }
 
-        player_ptr->enchant_energy_need += ENERGY_NEED();
+        creature.enchant_energy_need += ENERGY_NEED();
     }
 }

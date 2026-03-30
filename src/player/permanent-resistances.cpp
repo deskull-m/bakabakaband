@@ -22,38 +22,38 @@
  */
 static void add_mutation_flags(CreatureEntity &creature, TrFlags &flags)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (player_ptr->muta.none()) {
+    auto &player = static_cast<PlayerType &>(creature);
+    if (player.muta.none()) {
         return;
     }
 
-    if (player_ptr->muta.has(PlayerMutationType::FLESH_ROT)) {
+    if (player.muta.has(PlayerMutationType::FLESH_ROT)) {
         flags.reset(TR_REGEN);
     }
-    if (player_ptr->muta.has_any_of({ PlayerMutationType::XTRA_FAT, PlayerMutationType::XTRA_LEGS, PlayerMutationType::SHORT_LEG, PlayerMutationType::WEAK_LOWER_BODY })) {
+    if (player.muta.has_any_of({ PlayerMutationType::XTRA_FAT, PlayerMutationType::XTRA_LEGS, PlayerMutationType::SHORT_LEG, PlayerMutationType::WEAK_LOWER_BODY })) {
         flags.set(TR_SPEED);
     }
-    if (player_ptr->muta.has(PlayerMutationType::ELEC_TOUC)) {
+    if (player.muta.has(PlayerMutationType::ELEC_TOUC)) {
         flags.set(TR_SH_ELEC);
     }
-    if (player_ptr->muta.has(PlayerMutationType::FIRE_BODY)) {
+    if (player.muta.has(PlayerMutationType::FIRE_BODY)) {
         flags.set(TR_SH_FIRE);
         flags.set(TR_LITE_1);
     }
 
-    if (player_ptr->muta.has(PlayerMutationType::WINGS)) {
+    if (player.muta.has(PlayerMutationType::WINGS)) {
         flags.set(TR_LEVITATION);
     }
-    if (player_ptr->muta.has(PlayerMutationType::FEARLESS)) {
+    if (player.muta.has(PlayerMutationType::FEARLESS)) {
         flags.set(TR_RES_FEAR);
     }
-    if (player_ptr->muta.has(PlayerMutationType::REGEN)) {
+    if (player.muta.has(PlayerMutationType::REGEN)) {
         flags.set(TR_REGEN);
     }
-    if (player_ptr->muta.has(PlayerMutationType::ESP)) {
+    if (player.muta.has(PlayerMutationType::ESP)) {
         flags.set(TR_TELEPATHY);
     }
-    if (player_ptr->muta.has(PlayerMutationType::MOTION)) {
+    if (player.muta.has(PlayerMutationType::MOTION)) {
         flags.set(TR_FREE_ACT);
     }
 }
@@ -66,16 +66,16 @@ static void add_mutation_flags(CreatureEntity &creature, TrFlags &flags)
  */
 static void add_personality_flags(CreatureEntity &creature, TrFlags &flags)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (player_ptr->ppersonality == PERSONALITY_SEXY) {
+    auto &player = static_cast<PlayerType &>(creature);
+    if (player.ppersonality == PERSONALITY_SEXY) {
         flags.set(TR_AGGRAVATE);
     }
 
-    if (player_ptr->ppersonality == PERSONALITY_CHARGEMAN) {
+    if (player.ppersonality == PERSONALITY_CHARGEMAN) {
         flags.set(TR_RES_CONF);
     }
 
-    if (player_ptr->ppersonality != PERSONALITY_MUNCHKIN) {
+    if (player.ppersonality != PERSONALITY_MUNCHKIN) {
         return;
     }
 
@@ -85,7 +85,7 @@ static void add_personality_flags(CreatureEntity &creature, TrFlags &flags)
     if (!CreatureClass(creature).equals(PlayerClassType::NINJA)) {
         flags.set(TR_LITE_1);
     }
-    if (player_ptr->level > 9) {
+    if (player.level > 9) {
         flags.set(TR_SPEED);
     }
 }
@@ -119,12 +119,12 @@ void riding_flags(CreatureEntity &creature, TrFlags &flags, TrFlags &negative_fl
         return;
     }
 
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return;
     }
+    auto &player = static_cast<PlayerType &>(creature);
 
-    if (any_bits(has_levitation(*player_ptr), FLAG_CAUSE_RIDING)) {
+    if (any_bits(has_levitation(player), FLAG_CAUSE_RIDING)) {
         flags.set(TR_LEVITATION);
     } else {
         negative_flags.set(TR_LEVITATION);

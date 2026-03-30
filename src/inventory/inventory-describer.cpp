@@ -16,37 +16,37 @@
  */
 concptr mention_use(CreatureEntity &creature, int i)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     concptr p;
 
     /* Examine the location */
     switch (i) {
 #ifdef JP
     case INVEN_MAIN_HAND:
-        p = player_ptr->heavy_wield[0]
+        p = player.heavy_wield[0]
                 ? "運搬中"
-                : ((has_two_handed_weapons(*player_ptr) && can_attack_with_main_hand(*player_ptr)) ? " 両手" : (left_hander ? " 左手" : " 右手"));
+                : ((has_two_handed_weapons(player) && can_attack_with_main_hand(player)) ? " 両手" : (left_hander ? " 左手" : " 右手"));
         break;
 #else
     case INVEN_MAIN_HAND:
-        p = player_ptr->heavy_wield[0] ? "Just lifting" : (can_attack_with_main_hand(*player_ptr) ? "Wielding" : "On arm");
+        p = player.heavy_wield[0] ? "Just lifting" : (can_attack_with_main_hand(player) ? "Wielding" : "On arm");
         break;
 #endif
 
 #ifdef JP
     case INVEN_SUB_HAND:
-        p = player_ptr->heavy_wield[1]
+        p = player.heavy_wield[1]
                 ? "運搬中"
-                : ((has_two_handed_weapons(*player_ptr) && can_attack_with_sub_hand(*player_ptr)) ? " 両手" : (left_hander ? " 右手" : " 左手"));
+                : ((has_two_handed_weapons(player) && can_attack_with_sub_hand(player)) ? " 両手" : (left_hander ? " 右手" : " 左手"));
         break;
 #else
     case INVEN_SUB_HAND:
-        p = player_ptr->heavy_wield[1] ? "Just lifting" : (can_attack_with_sub_hand(*player_ptr) ? "Wielding" : "On arm");
+        p = player.heavy_wield[1] ? "Just lifting" : (can_attack_with_sub_hand(player) ? "Wielding" : "On arm");
         break;
 #endif
 
     case INVEN_BOW:
-        p = (adj_str_hold[player_ptr->stat_index[A_STR]] < player_ptr->inventory[i]->weight / 10) ? _("運搬中", "Just holding") : _("射撃用", "Shooting");
+        p = (adj_str_hold[player.stat_index[A_STR]] < player.inventory[i]->weight / 10) ? _("運搬中", "Just holding") : _("射撃用", "Shooting");
         break;
     case INVEN_MAIN_RING:
         p = (left_hander ? _("左手指", "On left hand") : _("右手指", "On right hand"));
@@ -96,38 +96,38 @@ concptr mention_use(CreatureEntity &creature, int i)
  */
 concptr describe_use(CreatureEntity &creature, int i)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     concptr p;
     switch (i) {
 #ifdef JP
     case INVEN_MAIN_HAND:
-        p = player_ptr->heavy_wield[0]
+        p = player.heavy_wield[0]
                 ? "運搬中の"
-                : ((has_two_handed_weapons(*player_ptr) && can_attack_with_main_hand(*player_ptr)) ? "両手に装備している"
-                                                                                                   : (left_hander ? "左手に装備している" : "右手に装備している"));
+                : ((has_two_handed_weapons(player) && can_attack_with_main_hand(player)) ? "両手に装備している"
+                                                                                         : (left_hander ? "左手に装備している" : "右手に装備している"));
         break;
 #else
     case INVEN_MAIN_HAND:
-        p = player_ptr->heavy_wield[0] ? "just lifting" : (can_attack_with_main_hand(*player_ptr) ? "attacking monsters with" : "wearing on your arm");
+        p = player.heavy_wield[0] ? "just lifting" : (can_attack_with_main_hand(player) ? "attacking monsters with" : "wearing on your arm");
         break;
 #endif
 
 #ifdef JP
     case INVEN_SUB_HAND:
-        p = player_ptr->heavy_wield[1]
+        p = player.heavy_wield[1]
                 ? "運搬中の"
-                : ((has_two_handed_weapons(*player_ptr) && can_attack_with_sub_hand(*player_ptr)) ? "両手に装備している"
-                                                                                                  : (left_hander ? "右手に装備している" : "左手に装備している"));
+                : ((has_two_handed_weapons(player) && can_attack_with_sub_hand(player)) ? "両手に装備している"
+                                                                                        : (left_hander ? "右手に装備している" : "左手に装備している"));
         break;
 #else
     case INVEN_SUB_HAND:
-        p = player_ptr->heavy_wield[1] ? "just lifting" : (can_attack_with_sub_hand(*player_ptr) ? "attacking monsters with" : "wearing on your arm");
+        p = player.heavy_wield[1] ? "just lifting" : (can_attack_with_sub_hand(player) ? "attacking monsters with" : "wearing on your arm");
         break;
 #endif
 
     case INVEN_BOW:
-        p = (adj_str_hold[player_ptr->stat_index[A_STR]] < player_ptr->inventory[i]->weight / 10) ? _("持つだけで精一杯の", "just holding")
-                                                                                                  : _("射撃用に装備している", "shooting missiles with");
+        p = (adj_str_hold[player.stat_index[A_STR]] < player.inventory[i]->weight / 10) ? _("持つだけで精一杯の", "just holding")
+                                                                                        : _("射撃用に装備している", "shooting missiles with");
         break;
     case INVEN_MAIN_RING:
         p = (left_hander ? _("左手の指にはめている", "wearing on your left hand") : _("右手の指にはめている", "wearing on your right hand"));

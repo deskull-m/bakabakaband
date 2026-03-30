@@ -23,7 +23,6 @@
 #include "spell/summon-types.h"
 #include "status/sight-setter.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "target/target-checker.h"
 #include "target/target-getter.h"
 #include "target/target-setter.h"
@@ -43,7 +42,6 @@ tl::optional<std::string> do_trump_spell(CreatureEntity &creature, SPELL_IDX spe
     bool cast = mode == SpellProcessType::CAST;
     bool fail = mode == SpellProcessType::FAIL;
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     PLAYER_LEVEL plev = creature.level;
 
     switch (spell) {
@@ -109,7 +107,7 @@ tl::optional<std::string> do_trump_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (cast) {
-            set_tim_esp(*player_ptr, dice.roll() + base, false);
+            set_tim_esp(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -218,7 +216,7 @@ tl::optional<std::string> do_trump_spell(CreatureEntity &creature, SPELL_IDX spe
                 return tl::nullopt;
             }
 
-            speed_monster(*player_ptr, dir, plev);
+            speed_monster(creature, dir, plev);
         }
     } break;
 
@@ -344,7 +342,7 @@ tl::optional<std::string> do_trump_spell(CreatureEntity &creature, SPELL_IDX spe
 
     case 21: {
         if (cast) {
-            brand_weapon(*player_ptr, 5);
+            brand_weapon(creature, 5);
         }
     } break;
 
@@ -379,7 +377,7 @@ tl::optional<std::string> do_trump_spell(CreatureEntity &creature, SPELL_IDX spe
 
     case 25: {
         if (cast) {
-            if (!identify_fully(*player_ptr, false)) {
+            if (!identify_fully(creature, false)) {
                 return tl::nullopt;
             }
         }
@@ -406,7 +404,7 @@ tl::optional<std::string> do_trump_spell(CreatureEntity &creature, SPELL_IDX spe
                 return tl::nullopt;
             }
 
-            heal_monster(*player_ptr, dir, heal);
+            heal_monster(creature, dir, heal);
         }
     } break;
 

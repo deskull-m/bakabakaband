@@ -14,8 +14,6 @@ class Grid;
 class MonsterEntity;
 class ItemEntity;
 class CreatureEntity;
-class PlayerType;
-
 class ObjectThrowHitMonster {
 public:
     ObjectThrowHitMonster(CreatureEntity &creature, POSITION y, POSITION x);
@@ -55,7 +53,7 @@ public:
     bool has_hit_monster() const;
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
     OBJECT_IDX shuriken;
     int mult;
     int msec;

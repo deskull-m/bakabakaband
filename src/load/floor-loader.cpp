@@ -25,7 +25,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "util/angband-files.h"
 #include "util/finalizer.h"
 
@@ -47,10 +46,9 @@
  */
 errr rd_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     clear_cave(creature);
-    player_ptr->x = player_ptr->y = 0;
+    creature.x = creature.y = 0;
 
     if (!sf_ptr) {
         floor.dun_level = rd_s16b();
@@ -90,8 +88,8 @@ errr rd_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
     floor.base_level = rd_s16b();
     floor.num_repro = rd_s16b();
 
-    player_ptr->y = rd_u16b();
-    player_ptr->x = rd_u16b();
+    creature.y = rd_u16b();
+    creature.x = rd_u16b();
 
     floor.height = rd_s16b();
     floor.width = rd_s16b();
@@ -184,7 +182,7 @@ errr rd_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
 
         auto &monster = floor.m_list[m_idx];
         monster_loader->rd_monster(monster);
-        monster.current_floor_ptr = player_ptr->current_floor_ptr;
+        monster.current_floor_ptr = creature.current_floor_ptr;
         auto &grid = floor.get_grid(monster.get_position());
         grid.m_idx = m_idx;
         monster.get_real_monrace().increment_current_numbers();

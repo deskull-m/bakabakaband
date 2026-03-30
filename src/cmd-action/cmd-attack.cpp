@@ -69,7 +69,6 @@
  */
 static void natural_attack(CreatureEntity &creature, MONSTER_IDX m_idx, PlayerMutationType attack, bool *fear, bool *mdeath)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     WEIGHT n_weight = 0;
     auto &monster = creature.current_floor_ptr->m_list[m_idx];
     const auto &monrace = monster.get_monrace();
@@ -128,11 +127,11 @@ static void natural_attack(CreatureEntity &creature, MONSTER_IDX m_idx, PlayerMu
         k = 0;
     }
 
-    k = mon_damage_mod(*player_ptr, monster, k, false);
-    msg_format_wizard(*player_ptr, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"), k, monster.hp - k,
+    k = mon_damage_mod(creature, monster, k, false);
+    msg_format_wizard(creature, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"), k, monster.hp - k,
         monster.maxhp, monster.max_maxhp);
     if (k > 0) {
-        anger_monster(*player_ptr, monster);
+        anger_monster(creature, monster);
     }
 
     switch (attack) {
@@ -145,13 +144,13 @@ static void natural_attack(CreatureEntity &creature, MONSTER_IDX m_idx, PlayerMu
     case PlayerMutationType::TRUNK:
     case PlayerMutationType::TENTACLES:
     default: {
-        MonsterDamageProcessor mdp(*player_ptr, m_idx, k, fear, AttributeType::ATTACK);
+        MonsterDamageProcessor mdp(creature, m_idx, k, fear, AttributeType::ATTACK);
         *mdeath = mdp.mon_take_hit("");
         break;
     }
     }
 
-    touch_zap_player(monster, *player_ptr);
+    touch_zap_player(monster, creature);
 }
 
 /*!
@@ -163,7 +162,6 @@ static void natural_attack(CreatureEntity &creature, MONSTER_IDX m_idx, PlayerMu
  */
 static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear, bool *mdeath)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &monster = creature.current_floor_ptr->m_list[m_idx];
     const auto &monrace = monster.get_monrace();
 
@@ -218,16 +216,16 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
         k = 0;
     }
 
-    k = mon_damage_mod(*player_ptr, monster, k, false);
-    msg_format_wizard(*player_ptr, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"), k, monster.hp - k,
+    k = mon_damage_mod(creature, monster, k, false);
+    msg_format_wizard(creature, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"), k, monster.hp - k,
         monster.maxhp, monster.max_maxhp);
 
     if (k > 0) {
-        anger_monster(*player_ptr, monster);
+        anger_monster(creature, monster);
     }
 
     // 頭突きによるダメージ処理
-    MonsterDamageProcessor mdp(*player_ptr, m_idx, k, fear, AttributeType::ATTACK);
+    MonsterDamageProcessor mdp(creature, m_idx, k, fear, AttributeType::ATTACK);
     *mdeath = mdp.mon_take_hit(_("は頭突きで倒れた。", " falls from your headbutt."));
 
     // 頭突き後の反動処理
@@ -236,7 +234,7 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
         take_hit(creature, DAMAGE_NOESCAPE, randint1(3), _("頭突きの反動", "headbutt recoil"));
     }
 
-    touch_zap_player(monster, *player_ptr);
+    touch_zap_player(monster, creature);
 }
 
 /*!
@@ -248,7 +246,6 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
  */
 static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear, bool *mdeath)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &monster = creature.current_floor_ptr->m_list[m_idx];
     const auto &monrace = monster.get_monrace();
 
@@ -313,12 +310,12 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
         k = 0;
     }
 
-    k = mon_damage_mod(*player_ptr, monster, k, false);
-    msg_format_wizard(*player_ptr, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"), k, monster.hp - k,
+    k = mon_damage_mod(creature, monster, k, false);
+    msg_format_wizard(creature, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"), k, monster.hp - k,
         monster.maxhp, monster.max_maxhp);
 
     if (k > 0) {
-        anger_monster(*player_ptr, monster);
+        anger_monster(creature, monster);
     }
 
     // 体当たりによる特殊効果（ノックバック可能性）
@@ -328,7 +325,7 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     }
 
     // 体当たりによるダメージ処理
-    MonsterDamageProcessor mdp(*player_ptr, m_idx, k, fear, AttributeType::ATTACK);
+    MonsterDamageProcessor mdp(creature, m_idx, k, fear, AttributeType::ATTACK);
     *mdeath = mdp.mon_take_hit(_("は体当たりで倒れた。", " falls from your body slam."));
 
     // 体当たり後の自己ダメージ（反動）
@@ -338,7 +335,7 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
         take_hit(creature, DAMAGE_NOESCAPE, self_damage, _("体当たりの反動", "body slam recoil"));
     }
 
-    touch_zap_player(monster, *player_ptr);
+    touch_zap_player(monster, creature);
 }
 
 /*!
@@ -353,7 +350,6 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
  */
 bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_options mode)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     const auto &grid = floor.grid_array[y][x];
     const auto &monster = floor.m_list[grid.m_idx];
@@ -369,7 +365,7 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
 
     disturb(creature, false, true);
 
-    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
 
     if (!can_attack_with_main_hand(creature) && !can_attack_with_sub_hand(creature) && creature.muta.has_none_of(mutation_attack_methods)) {
         sound(SoundKind::ATTACK_FAILED);
@@ -448,17 +444,17 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
 
     if (can_attack_with_main_hand(creature) && can_attack_with_sub_hand(creature)) {
         if (((creature.skill_exp[PlayerSkillKindType::TWO_WEAPON] - 1000) / 200) < monrace.level) {
-            PlayerSkill(*player_ptr).gain_two_weapon_skill_exp();
+            PlayerSkill(creature).gain_two_weapon_skill_exp();
         }
     }
 
     if (creature.riding) {
-        PlayerSkill(*player_ptr).gain_riding_skill_exp_on_melee_attack(monrace);
+        PlayerSkill(creature).gain_riding_skill_exp_on_melee_attack(monrace);
     }
 
     creature.plus_incident_tree("ATTACK_ACT_COUNT", 1);
 
-    player_ptr->riding_t_m_idx = grid.m_idx;
+    creature.riding_t_m_idx = grid.m_idx;
     bool fear = false;
     bool mdeath = false;
     if (can_attack_with_main_hand(creature)) {
@@ -505,8 +501,7 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
  */
 bool do_cmd_headbutt(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto dir = get_direction(*player_ptr);
+    const auto dir = get_direction(creature);
     if (!dir) {
         return false;
     }
@@ -526,7 +521,7 @@ bool do_cmd_headbutt(CreatureEntity &creature)
     const auto m_name = monster_desc(creature, monster, 0);
 
     // エネルギー消費
-    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
 
     // 混乱状態では方向がずれる可能性
     const auto effects = creature.effects();
@@ -595,8 +590,7 @@ bool do_cmd_headbutt(CreatureEntity &creature)
  */
 void do_cmd_body_slam(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto dir = get_direction(*player_ptr);
+    const auto dir = get_direction(creature);
     if (!dir) {
         return;
     }
@@ -615,7 +609,7 @@ void do_cmd_body_slam(CreatureEntity &creature)
 
     auto m_name = monster_desc(creature, monster, 0);
 
-    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
 
     // 混乱状態では方向がずれる可能性
     const auto effects = creature.effects();
@@ -669,7 +663,6 @@ void do_cmd_body_slam(CreatureEntity &creature)
  */
 static void enema_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear, bool *mdeath)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &monster = creature.current_floor_ptr->m_list[m_idx];
     const auto &monrace = monster.get_monrace();
 
@@ -717,19 +710,19 @@ static void enema_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear
         (void)drop_near(creature, item, creature.get_position());
     }
 
-    k = mon_damage_mod(*player_ptr, monster, k, false);
-    msg_format_wizard(*player_ptr, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"), k, monster.hp - k,
+    k = mon_damage_mod(creature, monster, k, false);
+    msg_format_wizard(creature, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"), k, monster.hp - k,
         monster.maxhp, monster.max_maxhp);
 
     if (k > 0) {
-        anger_monster(*player_ptr, monster);
+        anger_monster(creature, monster);
     }
 
     // 浣腸によるダメージ処理
-    MonsterDamageProcessor mdp(*player_ptr, m_idx, k, fear, AttributeType::ATTACK);
+    MonsterDamageProcessor mdp(creature, m_idx, k, fear, AttributeType::ATTACK);
     *mdeath = mdp.mon_take_hit(_("は浣腸で逝った。", " falls from your enema."));
 
-    touch_zap_player(monster, *player_ptr);
+    touch_zap_player(monster, creature);
 }
 
 /*!
@@ -738,8 +731,7 @@ static void enema_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear
  */
 void do_cmd_enema(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto dir = get_direction(*player_ptr);
+    const auto dir = get_direction(creature);
     if (!dir) {
         return;
     }
@@ -758,7 +750,7 @@ void do_cmd_enema(CreatureEntity &creature)
 
     auto m_name = monster_desc(creature, monster, 0);
 
-    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
 
     // 混乱状態では方向がずれる可能性
     const auto effects = creature.effects();

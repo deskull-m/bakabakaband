@@ -3,7 +3,7 @@
 #include "core/disturbance.h"
 #include "core/stuff-handler.h"
 #include "game-option/disturbance-options.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 
@@ -16,32 +16,31 @@
  */
 bool set_resist_magic(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->resist_magic && !do_dec) {
-            if (player_ptr->resist_magic > v) {
+        if (creature.resist_magic && !do_dec) {
+            if (creature.resist_magic > v) {
                 return false;
             }
-        } else if (!player_ptr->resist_magic) {
+        } else if (!creature.resist_magic) {
             msg_print(_("魔法への耐性がついた。", "You have been protected from magic!"));
             notice = true;
         }
     } else {
-        if (player_ptr->resist_magic) {
+        if (creature.resist_magic) {
             msg_print(_("魔法に弱くなった。", "You are no longer protected from magic."));
             notice = true;
         }
     }
 
-    player_ptr->resist_magic = v;
+    creature.resist_magic = v;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {

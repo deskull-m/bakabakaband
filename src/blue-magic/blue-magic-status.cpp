@@ -17,9 +17,9 @@ bool cast_blue_scare(CreatureEntity &creature, bmc_type *bmc_ptr)
         return false;
     }
 
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     msg_print(_("恐ろしげな幻覚を作り出した。", "You cast a fearful illusion."));
-    fear_monster(*player_ptr, dir, bmc_ptr->plev + 10);
+    fear_monster(player, dir, bmc_ptr->plev + 10);
     return true;
 }
 
@@ -30,8 +30,8 @@ bool cast_blue_blind(CreatureEntity &creature, bmc_type *bmc_ptr)
         return false;
     }
 
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    confuse_monster(*player_ptr, dir, bmc_ptr->plev * 2);
+    auto &player = static_cast<PlayerType &>(creature);
+    confuse_monster(player, dir, bmc_ptr->plev * 2);
     return true;
 }
 
@@ -42,9 +42,9 @@ bool cast_blue_confusion(CreatureEntity &creature, bmc_type *bmc_ptr)
         return false;
     }
 
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     msg_print(_("誘惑的な幻覚をつくり出した。", "You cast a mesmerizing illusion."));
-    confuse_monster(*player_ptr, dir, bmc_ptr->plev * 2);
+    confuse_monster(player, dir, bmc_ptr->plev * 2);
     return true;
 }
 
@@ -55,8 +55,8 @@ bool cast_blue_slow(CreatureEntity &creature, bmc_type *bmc_ptr)
         return false;
     }
 
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    slow_monster(*player_ptr, dir, bmc_ptr->plev);
+    auto &player = static_cast<PlayerType &>(creature);
+    slow_monster(player, dir, bmc_ptr->plev);
     return true;
 }
 
@@ -67,7 +67,7 @@ bool cast_blue_sleep(CreatureEntity &creature, bmc_type *bmc_ptr)
         return false;
     }
 
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    sleep_monster(*player_ptr, dir, bmc_ptr->plev);
+    auto &player = static_cast<PlayerType &>(creature);
+    sleep_monster(player, dir, bmc_ptr->plev);
     return true;
 }

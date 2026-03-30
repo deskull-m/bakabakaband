@@ -213,7 +213,7 @@ static void add_history_to_json(nlohmann::json &j, PlayerType *player_ptr)
  */
 std::string dump_player_status_json(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto *player_ptr = &static_cast<PlayerType &>(creature);
     nlohmann::json j;
 
     // バージョン情報

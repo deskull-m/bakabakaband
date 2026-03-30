@@ -110,7 +110,7 @@ static bool target_set_accept(CreatureEntity &creature, const Pos2D &pos)
  */
 std::vector<Pos2D> target_set_prepare(CreatureEntity &creature, target_type mode)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     POSITION min_hgt, max_hgt, min_wid, max_wid;
     const auto &floor = *creature.current_floor_ptr;
     const auto is_killable = any_bits(mode, TARGET_KILL);
@@ -160,7 +160,7 @@ std::vector<Pos2D> target_set_prepare(CreatureEntity &creature, target_type mode
         });
     }
 
-    if (player_ptr->riding == 0 || !target_pet || (std::ssize(pos_list) <= 1) || !is_killable) {
+    if (player.riding == 0 || !target_pet || (std::ssize(pos_list) <= 1) || !is_killable) {
         return pos_list;
     }
 

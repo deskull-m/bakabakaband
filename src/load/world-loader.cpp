@@ -6,6 +6,7 @@
 #include "market/bounty.h"
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/dungeon/dungeon-record.h"
@@ -13,7 +14,6 @@
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/inner-game-data.h"
-#include "system/player-type-definition.h"
 #include "world/world.h"
 
 static void rd_hengband_dungeons()
@@ -43,10 +43,9 @@ static void rd_hengband_dungeons()
 
 void rd_dungeons(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     rd_hengband_dungeons();
-    if (player_ptr->max_plv < player_ptr->level) {
-        player_ptr->max_plv = player_ptr->level;
+    if (creature.max_plv < creature.level) {
+        creature.max_plv = creature.level;
     }
 }
 
@@ -56,9 +55,8 @@ void rd_dungeons(CreatureEntity &creature)
  */
 void rd_alter_reality(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    player_ptr->recall_dungeon = i2enum<DungeonId>(rd_s16b());
-    player_ptr->alter_reality = rd_s16b();
+    creature.recall_dungeon = i2enum<DungeonId>(rd_s16b());
+    creature.alter_reality = rd_s16b();
 }
 
 void set_gambling_monsters()
@@ -78,18 +76,16 @@ void set_gambling_monsters()
  */
 void rd_autopick(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    player_ptr->autopick_autoregister = rd_bool();
+    creature.autopick_autoregister = rd_bool();
 }
 
 static void rd_world_info(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &igd = InnerGameData::get_instance();
     igd.init_turn_limit();
     auto &world = AngbandWorld::get_instance();
     world.dungeon_turn_limit = TURNS_PER_TICK * TOWN_DAWN * (MAX_DAYS - 1) + TURNS_PER_TICK * TOWN_DAWN * 3 / 4;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     floor.generated_turn = rd_s32b();
     auto &df = DungeonFeeling::get_instance();
     df.set_feeling(rd_s32b());
@@ -103,7 +99,6 @@ static void rd_world_info(CreatureEntity &creature)
 
 void rd_global_configurations(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &system = AngbandSystem::get_instance();
     system.set_seed_flavor(rd_u32b());
     system.set_seed_town(rd_u32b());
@@ -112,7 +107,7 @@ void rd_global_configurations(CreatureEntity &creature)
     world.total_winner = rd_u16b();
     world.noscore = rd_u16b();
 
-    player_ptr->is_dead_ = rd_bool();
+    creature.is_dead_ = rd_bool();
 
     DungeonFeeling::get_instance().set_feeling(rd_byte());
     rd_world_info(creature);

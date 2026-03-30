@@ -64,7 +64,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
@@ -473,7 +472,6 @@ static tl::optional<int> select_debugging_floor(const FloorType &floor, DungeonI
  */
 void wiz_jump_to_dungeon(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &floor = *creature.current_floor_ptr;
     const auto dungeon_id = select_debugging_dungeon();
     if (!dungeon_id) {
@@ -482,7 +480,7 @@ void wiz_jump_to_dungeon(CreatureEntity &creature)
 
     if (dungeon_id == DungeonId::WILDERNESS) {
         if (floor.is_underground() && input_check("Jump to the ground? ")) {
-            jump_floor(*player_ptr, DungeonId::WILDERNESS, 0);
+            jump_floor(creature, DungeonId::WILDERNESS, 0);
         }
         return;
     }
@@ -497,7 +495,7 @@ void wiz_jump_to_dungeon(CreatureEntity &creature)
         do_cmd_save_game(creature, true);
     }
 
-    jump_floor(*player_ptr, *dungeon_id, *level);
+    jump_floor(creature, *dungeon_id, *level);
 }
 
 /*!
@@ -767,7 +765,6 @@ void wiz_zap_floor_monsters(CreatureEntity &creature)
 /* @brief 死を欺く仕様(馬鹿馬鹿蛮怒独自実装) */
 void cheat_death(CreatureEntity &creature, bool no_penalty)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!no_penalty) {
 
         switch (randint0(4)) {
@@ -852,5 +849,5 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
     creature.leaving = true;
     constexpr auto note = _("                            しかし、生き返った。", "                            but revived.");
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, note);
-    leave_floor(*player_ptr);
+    leave_floor(creature);
 }

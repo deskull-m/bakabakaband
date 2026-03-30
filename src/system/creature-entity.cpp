@@ -1,7 +1,11 @@
 #include "system/creature-entity.h"
 #include "floor/geometry.h"
 #include "inventory/inventory-slot-types.h"
+#include "player-ability/player-ability-types.h"
 #include "system/item-entity.h"
+#include "system/redrawing-flags-updater.h"
+#include "term/z-form.h"
+#include "term/z-rand.h"
 #include "timed-effect/timed-effects.h"
 #include <range/v3/algorithm.hpp>
 
@@ -84,4 +88,50 @@ void CreatureEntity::plus_incident_tree(const std::string &incident_id, int num)
         this->incident_tree[incident_id] = 0;
     }
     this->incident_tree[incident_id] += num;
+}
+
+std::string CreatureEntity::decrease_ability_random()
+{
+    constexpr std::array<std::pair<int, std::string_view>, 6> candidates = { {
+        { A_STR, _("強く", "strong") },
+        { A_INT, _("聡明で", "bright") },
+        { A_WIS, _("賢明で", "wise") },
+        { A_DEX, _("器用で", "agile") },
+        { A_CON, _("健康で", "hale") },
+        { A_CHR, _("美しく", "beautiful") },
+    } };
+
+    const auto &[k, act] = rand_choice(candidates);
+    this->stat_cur[k] = (this->stat_cur[k] * 3) / 4;
+    if (this->stat_cur[k] < 30) {
+        this->stat_cur[k] = 30;
+    }
+
+    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    return format(_("あなたは以前ほど%sなくなってしまった...。", "You're not as %s as you used to be..."), act.data());
+}
+
+std::string CreatureEntity::decrease_ability_all()
+{
+    for (auto i = 0; i < A_MAX; i++) {
+        this->stat_cur[i] = (this->stat_cur[i] * 7) / 8;
+        if (this->stat_cur[i] < 30) {
+            this->stat_cur[i] = 30;
+        }
+    }
+
+    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    return _("あなたは以前ほど力強くなくなってしまった...。", "You're not as powerful as you used to be...");
+}
+
+int CreatureEntity::calc_life_rating() const
+{
+    const auto actual_hp = this->player_hp[PY_MAX_LEVEL - 1];
+
+    // ダイスによる上昇回数は52回（初期3回+LV50までの49回）なので
+    // 期待値計算のため2で割っても端数は出ない
+    constexpr auto roll_num = 3 + PY_MAX_LEVEL - 1;
+    const auto expected_hp = this->hit_dice.maxroll() + this->hit_dice.floored_expected_value_multiplied_by(roll_num);
+
+    return actual_hp * 100 / expected_hp;
 }

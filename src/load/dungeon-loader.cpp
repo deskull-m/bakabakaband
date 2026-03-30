@@ -9,7 +9,6 @@
 #include "save/floor-writer.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-range.h"
 #include "world/world.h"
@@ -24,10 +23,9 @@
  */
 static errr rd_dungeon(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     init_saved_floors(false);
     errr err = 0;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
 
     (void)rd_byte(); // @todo 1byteズレた場所を特定。要修正。
     max_floor_id = rd_s16b();
@@ -125,8 +123,7 @@ static errr rd_dungeon(CreatureEntity &creature)
 
 errr restore_dungeon(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         auto &quests = QuestList::get_instance();
         for (const auto quest_id : RANDOM_QUEST_ID_RANGE) {
             quests.get_quest(quest_id).get_bounty().misc_flags.reset(MonsterMiscType::QUESTOR);

@@ -33,7 +33,7 @@ constexpr int MAX_KEEP = 4;
 
 SpellHex::SpellHex(CreatureEntity &player)
     : player(player)
-    , spell_hex_data(CreatureClass(*dynamic_cast<PlayerType *>(&player)).get_specific_data<spell_hex_data_type>())
+    , spell_hex_data(CreatureClass(player).get_specific_data<spell_hex_data_type>())
 {
     if (!this->spell_hex_data) {
         return;
@@ -368,25 +368,25 @@ void SpellHex::interrupt_spelling()
  */
 void SpellHex::eyes_on_eyes(MONSTER_IDX m_idx, int dam)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&this->player);
+    auto &player = static_cast<PlayerType &>(this->player);
     const auto is_eyeeye_finished = (this->player.tim_eyeeye == 0) && !this->is_spelling_specific(HEX_EYE_FOR_EYE);
     if (is_eyeeye_finished || (dam == 0) || this->player.is_dead()) {
         return;
     }
 
     const auto &monster = this->player.current_floor_ptr->m_list[m_idx];
-    const auto m_name = monster_desc(*player_ptr, monster, 0);
+    const auto m_name = monster_desc(player, monster, 0);
 #ifdef JP
     msg_format("攻撃が%s自身を傷つけた！", m_name.data());
 #else
-    const auto m_name_self = monster_desc(*player_ptr, monster, MD_PRON_VISIBLE | MD_POSSESSIVE | MD_OBJECTIVE);
+    const auto m_name_self = monster_desc(player, monster, MD_PRON_VISIBLE | MD_POSSESSIVE | MD_OBJECTIVE);
     msg_format("The attack of %s has wounded %s!", m_name.data(), m_name_self.data());
 #endif
     const auto y = monster.y;
     const auto x = monster.x;
-    project(*player_ptr, 0, 0, y, x, dam, AttributeType::MISSILE, PROJECT_KILL);
+    project(player, 0, 0, y, x, dam, AttributeType::MISSILE, PROJECT_KILL);
     if (this->player.tim_eyeeye) {
-        set_tim_eyeeye(*player_ptr, this->player.tim_eyeeye - 5, true);
+        set_tim_eyeeye(player, this->player.tim_eyeeye - 5, true);
     }
 }
 

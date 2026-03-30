@@ -4,8 +4,8 @@
 #include "load/load-util.h"
 #include "load/old/item-loader-savefile50.h"
 #include "object/object-mark-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief プレイヤーの所持品情報を読み込む / Read the player inventory
@@ -21,9 +21,8 @@
  */
 static errr rd_inventory(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    player_ptr->inven_cnt = 0;
-    player_ptr->equip_cnt = 0;
+    creature.inven_cnt = 0;
+    creature.equip_cnt = 0;
 
     int slot = 0;
     auto item_loader = ItemLoaderFactory::create_loader();
@@ -42,20 +41,20 @@ static errr rd_inventory(CreatureEntity &creature)
 
         if (n >= INVEN_MAIN_HAND) {
             item.marked.set(OmType::TOUCHED);
-            *player_ptr->inventory[n] = std::move(item);
-            player_ptr->equip_cnt++;
+            *creature.inventory[n] = std::move(item);
+            creature.equip_cnt++;
             continue;
         }
 
-        if (player_ptr->inven_cnt == INVEN_PACK) {
+        if (creature.inven_cnt == INVEN_PACK) {
             load_note(_("持ち物の中のアイテムが多すぎる！", "Too many items in the inventory"));
             return 54;
         }
 
         n = slot++;
         item.marked.set(OmType::TOUCHED);
-        *player_ptr->inventory[n] = std::move(item);
-        player_ptr->inven_cnt++;
+        *creature.inventory[n] = std::move(item);
+        creature.inven_cnt++;
     }
 
     return 0;
@@ -63,10 +62,9 @@ static errr rd_inventory(CreatureEntity &creature)
 
 errr load_inventory(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     for (auto i = 0; i < 64; i++) {
         if (const auto spell_id = rd_byte(); spell_id < 64) {
-            player_ptr->spell_order_learned.push_back(spell_id);
+            creature.spell_order_learned.push_back(spell_id);
         }
     }
 

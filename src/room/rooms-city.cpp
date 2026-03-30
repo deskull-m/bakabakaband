@@ -9,7 +9,6 @@
 #include "system/floor/town-list.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "wizard/wizard-messages.h"
@@ -221,8 +220,7 @@ bool build_type16(CreatureEntity &creature, DungeonData *dd_ptr)
         return false;
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto center = find_space(*player_ptr, dd_ptr, town_hgt + 10, town_wid + 10);
+    const auto center = find_space(creature, dd_ptr, town_hgt + 10, town_wid + 10);
     if (!center) {
         return false;
     }
@@ -234,6 +232,6 @@ bool build_type16(CreatureEntity &creature, DungeonData *dd_ptr)
     const auto bottom_right = pos + vec_bottom_right;
     generate_room_floor(creature, { top_left, bottom_right }, false);
     build_stores(creature, pos, *underground_buildings);
-    msg_print_wizard(*player_ptr, CHEAT_DUNGEON, _("地下街を生成しました", "Underground arcade was generated."));
+    msg_print_wizard(creature, CHEAT_DUNGEON, _("地下街を生成しました", "Underground arcade was generated."));
     return true;
 }

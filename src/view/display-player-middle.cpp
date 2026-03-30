@@ -41,9 +41,8 @@
  */
 static void display_player_melee_bonus(CreatureEntity &creature, int hand, int hand_entry)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    HIT_PROB show_tohit = player_ptr->dis_to_h[hand];
-    int show_todam = player_ptr->dis_to_d[hand];
+    HIT_PROB show_tohit = creature.dis_to_h[hand];
+    int show_todam = creature.dis_to_d[hand];
     auto *o_ptr = creature.inventory[INVEN_MAIN_HAND + hand].get();
 
     if (o_ptr->is_known()) {
@@ -53,12 +52,12 @@ static void display_player_melee_bonus(CreatureEntity &creature, int hand, int h
         show_todam += o_ptr->to_d;
     }
 
-    show_tohit += player_ptr->skill_thn / BTH_PLUS_ADJ;
+    show_tohit += creature.skill_thn / BTH_PLUS_ADJ;
 
     const auto buf = format("(%+d,%+d)", (int)show_tohit, (int)show_todam);
-    if (!has_melee_weapon(*player_ptr, INVEN_MAIN_HAND) && !has_melee_weapon(*player_ptr, INVEN_SUB_HAND)) {
+    if (!has_melee_weapon(creature, INVEN_MAIN_HAND) && !has_melee_weapon(creature, INVEN_SUB_HAND)) {
         display_player_one_line(ENTRY_BARE_HAND, buf, TERM_L_BLUE);
-    } else if (has_two_handed_weapons(*player_ptr)) {
+    } else if (has_two_handed_weapons(creature)) {
         display_player_one_line(ENTRY_TWO_HANDS, buf, TERM_L_BLUE);
     } else {
         display_player_one_line(hand_entry, buf, TERM_L_BLUE);
@@ -71,14 +70,13 @@ static void display_player_melee_bonus(CreatureEntity &creature, int hand, int h
  */
 static void display_sub_hand(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (can_attack_with_sub_hand(*player_ptr)) {
+    if (can_attack_with_sub_hand(creature)) {
         display_player_melee_bonus(creature, 1, left_hander ? ENTRY_RIGHT_HAND2 : ENTRY_LEFT_HAND2);
         return;
     }
 
-    CreatureClass pc(*player_ptr);
-    if (!pc.equals(PlayerClassType::MONK) || ((empty_hands(*player_ptr, true) & EMPTY_HAND_MAIN) == 0)) {
+    CreatureClass pc(creature);
+    if (!pc.equals(PlayerClassType::MONK) || ((empty_hands(creature, true) & EMPTY_HAND_MAIN) == 0)) {
         return;
     }
 
@@ -100,9 +98,8 @@ static void display_sub_hand(CreatureEntity &creature)
  */
 static void display_bow_hit_damage(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &item = *creature.inventory[INVEN_BOW];
-    auto show_tohit = player_ptr->dis_to_h_b;
+    auto show_tohit = creature.dis_to_h_b;
     auto show_todam = 0;
     if (item.is_known()) {
         show_tohit += item.to_h;
@@ -111,7 +108,7 @@ static void display_bow_hit_damage(CreatureEntity &creature)
 
     const auto tval = item.bi_key.tval();
     const auto median_skill_exp = PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER) / 2;
-    const auto &weapon_exps = player_ptr->weapon_exp[tval];
+    const auto &weapon_exps = creature.weapon_exp[tval];
     constexpr auto bow_magnification = 200;
     constexpr auto xbow_magnification = 400;
     if (tval == ItemKindType::NONE) {
@@ -126,7 +123,7 @@ static void display_bow_hit_damage(CreatureEntity &creature)
         }
     }
 
-    show_tohit += player_ptr->skill_thb / BTH_PLUS_ADJ;
+    show_tohit += creature.skill_thb / BTH_PLUS_ADJ;
     display_player_one_line(ENTRY_SHOOT_HIT_DAM, format("(%+d,%+d)", show_tohit, show_todam), TERM_L_BLUE);
 }
 
@@ -136,15 +133,14 @@ static void display_bow_hit_damage(CreatureEntity &creature)
  */
 static void display_shoot_magnification(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     int tmul = 0;
     if (creature.inventory[INVEN_BOW]->is_valid()) {
         tmul = creature.inventory[INVEN_BOW]->get_arrow_magnification();
-        if (player_ptr->xtra_might) {
+        if (creature.xtra_might) {
             tmul++;
         }
 
-        tmul = tmul * (100 + (int)(adj_str_td[player_ptr->stat_index[A_STR]]) - 128);
+        tmul = tmul * (100 + (int)(adj_str_td[creature.stat_index[A_STR]]) - 128);
     }
 
     display_player_one_line(ENTRY_SHOOT_POWER, format("x%d.%02d", tmul / 100, tmul % 100), TERM_L_BLUE);
@@ -157,22 +153,21 @@ static void display_shoot_magnification(CreatureEntity &creature)
  */
 static TERM_COLOR decide_speed_color(CreatureEntity &creature, const int base_speed)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     TERM_COLOR attr;
     if (base_speed > 0) {
-        if (!player_ptr->riding) {
+        if (!creature.riding) {
             attr = TERM_L_GREEN;
         } else {
             attr = TERM_GREEN;
         }
     } else if (base_speed == 0) {
-        if (!player_ptr->riding) {
+        if (!creature.riding) {
             attr = TERM_L_BLUE;
         } else {
             attr = TERM_GREEN;
         }
     } else {
-        if (!player_ptr->riding) {
+        if (!creature.riding) {
             attr = TERM_L_UMBER;
         } else {
             attr = TERM_RED;
@@ -192,10 +187,9 @@ static int calc_temporary_speed(CreatureEntity &creature)
     if (!creature.is_player()) {
         return 0;
     }
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     int tmp_speed = 0;
-    if (!player_ptr->riding) {
-        if (is_fast(*player_ptr)) {
+    if (!creature.riding) {
+        if (is_fast(creature)) {
             tmp_speed += 10;
         }
 
@@ -203,11 +197,11 @@ static int calc_temporary_speed(CreatureEntity &creature)
             tmp_speed -= 10;
         }
 
-        if (player_ptr->lightspeed) {
+        if (creature.lightspeed) {
             tmp_speed = 99;
         }
     } else {
-        const auto &m_ref = creature.current_floor_ptr->m_list[player_ptr->riding];
+        const auto &m_ref = creature.current_floor_ptr->m_list[creature.riding];
         if (m_ref.is_accelerated()) {
             tmp_speed += 10;
         }
@@ -229,11 +223,10 @@ static int calc_temporary_speed(CreatureEntity &creature)
  */
 static void display_player_speed(CreatureEntity &creature, TERM_COLOR attr, int base_speed, int tmp_speed)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     char buf[160];
     if (tmp_speed) {
-        if (!player_ptr->riding) {
-            if (player_ptr->lightspeed) {
+        if (!creature.riding) {
+            if (creature.lightspeed) {
                 sprintf(buf, _("光速化 (+99)", "Lightspeed (+99)"));
             } else {
                 sprintf(buf, "(%+d%+d)", base_speed - tmp_speed, tmp_speed);
@@ -248,7 +241,7 @@ static void display_player_speed(CreatureEntity &creature, TERM_COLOR attr, int 
             attr = TERM_VIOLET;
         }
     } else {
-        if (!player_ptr->riding) {
+        if (!creature.riding) {
             sprintf(buf, "(%+d)", base_speed);
         } else {
             sprintf(buf, _("乗馬中 (%+d)", "Riding (%+d)"), base_speed);
@@ -265,17 +258,16 @@ static void display_player_speed(CreatureEntity &creature, TERM_COLOR attr, int 
  */
 static void display_player_exp(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    CreatureRace pr(player_ptr);
+    CreatureRace pr(&creature);
     int e = pr.equals(PlayerRaceType::ANDROID) ? ENTRY_EXP_ANDR : ENTRY_CUR_EXP;
-    if (player_ptr->exp >= player_ptr->max_exp) {
-        display_player_one_line(e, format("%ld", player_ptr->exp), TERM_L_GREEN);
+    if (creature.exp >= creature.max_exp) {
+        display_player_one_line(e, format("%ld", creature.exp), TERM_L_GREEN);
     } else {
-        display_player_one_line(e, format("%ld", player_ptr->exp), TERM_YELLOW);
+        display_player_one_line(e, format("%ld", creature.exp), TERM_YELLOW);
     }
 
     if (!pr.equals(PlayerRaceType::ANDROID)) {
-        display_player_one_line(ENTRY_MAX_EXP, format("%ld", player_ptr->max_exp), TERM_L_GREEN);
+        display_player_one_line(ENTRY_MAX_EXP, format("%ld", creature.max_exp), TERM_L_GREEN);
     }
 
     e = pr.equals(PlayerRaceType::ANDROID) ? ENTRY_EXP_TO_ADV_ANDR : ENTRY_EXP_TO_ADV;
@@ -283,9 +275,9 @@ static void display_player_exp(CreatureEntity &creature)
     if (creature.level >= PY_MAX_LEVEL) {
         display_player_one_line(e, "*****", TERM_L_GREEN);
     } else if (pr.equals(PlayerRaceType::ANDROID)) {
-        display_player_one_line(e, format("%ld", (int32_t)(player_exp_a[creature.level - 1] * player_ptr->expfact / 100L)), TERM_L_GREEN);
+        display_player_one_line(e, format("%ld", (int32_t)(player_exp_a[creature.level - 1] * creature.expfact / 100L)), TERM_L_GREEN);
     } else {
-        display_player_one_line(e, format("%ld", (int32_t)(player_exp[creature.level - 1] * player_ptr->expfact / 100L)), TERM_L_GREEN);
+        display_player_one_line(e, format("%ld", (int32_t)(player_exp[creature.level - 1] * creature.expfact / 100L)), TERM_L_GREEN);
     }
 }
 
@@ -327,9 +319,8 @@ static void display_playtime_in_game(CreatureEntity &creature)
  */
 void display_player_middle(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (creature.is_player()) {
-        if (can_attack_with_main_hand(*player_ptr)) {
+        if (can_attack_with_main_hand(creature)) {
             display_player_melee_bonus(creature, 0, left_hander ? ENTRY_LEFT_HAND1 : ENTRY_RIGHT_HAND1);
         }
 
@@ -337,10 +328,10 @@ void display_player_middle(CreatureEntity &creature)
         display_bow_hit_damage(creature);
         display_shoot_magnification(creature);
     }
-    display_player_one_line(ENTRY_BASE_AC, format("[%d,%+d]", player_ptr->dis_ac, player_ptr->dis_to_a), TERM_L_BLUE);
+    display_player_one_line(ENTRY_BASE_AC, format("[%d,%+d]", creature.dis_ac, creature.dis_to_a), TERM_L_BLUE);
 
     int base_speed = creature.get_speed() - 110;
-    if (player_ptr->action == ACTION_SEARCH) {
+    if (creature.action == ACTION_SEARCH) {
         base_speed += 10;
     }
 
@@ -348,7 +339,7 @@ void display_player_middle(CreatureEntity &creature)
     int tmp_speed = calc_temporary_speed(creature);
     display_player_speed(creature, attr, base_speed, tmp_speed);
     display_player_exp(creature);
-    display_player_one_line(ENTRY_GOLD, format("%ld", player_ptr->au), TERM_L_GREEN);
+    display_player_one_line(ENTRY_GOLD, format("%ld", creature.au), TERM_L_GREEN);
     display_playtime_in_game(creature);
     display_player_one_line(ENTRY_PLAY_TIME, AngbandWorld::get_instance().format_real_playtime(), TERM_L_GREEN);
 }

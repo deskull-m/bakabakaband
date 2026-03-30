@@ -34,7 +34,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "target/projection-path-calculator.h"
 
 /*!
@@ -192,7 +191,6 @@ Pos2D get_project_point(const FloorType &floor, const Pos2D &p_pos, const Pos2D 
  */
 bool dispel_check_monster(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &t_ref = creature.current_floor_ptr->m_list[t_idx];
     if (t_ref.is_invulnerable()) {
         return true;
@@ -202,7 +200,7 @@ bool dispel_check_monster(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_I
         return true;
     }
 
-    if ((t_idx == player_ptr->riding) && dispel_check(creature, m_idx)) {
+    if ((t_idx == creature.riding) && dispel_check(creature, m_idx)) {
         return true;
     }
 
@@ -217,139 +215,138 @@ bool dispel_check_monster(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_I
  */
 bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (is_invuln(*player_ptr)) {
+    if (is_invuln(creature)) {
         return true;
     }
 
-    if (player_ptr->wraith_form) {
+    if (creature.wraith_form) {
         return true;
     }
 
-    if (player_ptr->shield) {
+    if (creature.shield) {
         return true;
     }
 
-    if (player_ptr->magicdef) {
+    if (creature.magicdef) {
         return true;
     }
 
-    if (player_ptr->multishadow) {
+    if (creature.multishadow) {
         return true;
     }
 
-    if (player_ptr->dustrobe) {
+    if (creature.dustrobe) {
         return true;
     }
 
-    CreatureClass pc(*player_ptr);
-    if (player_ptr->berserk && !pc.equals(PlayerClassType::BERSERKER)) {
+    CreatureClass pc(creature);
+    if (creature.berserk && !pc.equals(PlayerClassType::BERSERKER)) {
         return true;
     }
 
-    if (player_ptr->mimic_form == MimicKindType::DEMON_LORD) {
+    if (creature.mimic_form == MimicKindType::DEMON_LORD) {
         return true;
     }
 
-    if (player_ptr->mimic_form == MimicKindType::DEMIGOD) {
+    if (creature.mimic_form == MimicKindType::DEMIGOD) {
         return true;
     }
 
-    const auto &floor_ref = *player_ptr->current_floor_ptr;
+    const auto &floor_ref = *creature.current_floor_ptr;
     const auto &monster = floor_ref.m_list[m_idx];
     const auto &monrace = monster.get_monrace();
     if (monrace.ability_flags.has(MonsterAbilityType::BR_ACID)) {
-        if (!has_immune_acid(*player_ptr) && (player_ptr->oppose_acid || music_singing(*player_ptr, MUSIC_RESIST))) {
+        if (!has_immune_acid(creature) && (creature.oppose_acid || music_singing(creature, MUSIC_RESIST))) {
             return true;
         }
 
-        if (player_ptr->special_defense & DEFENSE_ACID) {
+        if (creature.special_defense & DEFENSE_ACID) {
             return true;
         }
     }
 
     if (monrace.ability_flags.has(MonsterAbilityType::BR_FIRE)) {
-        if (!(CreatureRace(player_ptr).equals(PlayerRaceType::BALROG) && player_ptr->level > 44)) {
-            if (!has_immune_fire(*player_ptr) && (player_ptr->oppose_fire || music_singing(*player_ptr, MUSIC_RESIST))) {
+        if (!(CreatureRace(&creature).equals(PlayerRaceType::BALROG) && creature.level > 44)) {
+            if (!has_immune_fire(creature) && (creature.oppose_fire || music_singing(creature, MUSIC_RESIST))) {
                 return true;
             }
 
-            if (player_ptr->special_defense & DEFENSE_FIRE) {
+            if (creature.special_defense & DEFENSE_FIRE) {
                 return true;
             }
         }
     }
 
     if (monrace.ability_flags.has(MonsterAbilityType::BR_ELEC)) {
-        if (!has_immune_elec(*player_ptr) && (player_ptr->oppose_elec || music_singing(*player_ptr, MUSIC_RESIST))) {
+        if (!has_immune_elec(creature) && (creature.oppose_elec || music_singing(creature, MUSIC_RESIST))) {
             return true;
         }
 
-        if (player_ptr->special_defense & DEFENSE_ELEC) {
+        if (creature.special_defense & DEFENSE_ELEC) {
             return true;
         }
     }
 
     if (monrace.ability_flags.has(MonsterAbilityType::BR_COLD)) {
-        if (!has_immune_cold(*player_ptr) && (player_ptr->oppose_cold || music_singing(*player_ptr, MUSIC_RESIST))) {
+        if (!has_immune_cold(creature) && (creature.oppose_cold || music_singing(creature, MUSIC_RESIST))) {
             return true;
         }
 
-        if (player_ptr->special_defense & DEFENSE_COLD) {
-            return true;
-        }
-    }
-
-    if (monrace.ability_flags.has_any_of({ MonsterAbilityType::BR_POIS, MonsterAbilityType::BR_NUKE }) && !(pc.equals(PlayerClassType::NINJA) && (player_ptr->level > 44))) {
-        if (player_ptr->oppose_pois || music_singing(*player_ptr, MUSIC_RESIST)) {
-            return true;
-        }
-
-        if (player_ptr->special_defense & DEFENSE_POIS) {
+        if (creature.special_defense & DEFENSE_COLD) {
             return true;
         }
     }
 
-    if (player_ptr->ult_res) {
+    if (monrace.ability_flags.has_any_of({ MonsterAbilityType::BR_POIS, MonsterAbilityType::BR_NUKE }) && !(pc.equals(PlayerClassType::NINJA) && (creature.level > 44))) {
+        if (creature.oppose_pois || music_singing(creature, MUSIC_RESIST)) {
+            return true;
+        }
+
+        if (creature.special_defense & DEFENSE_POIS) {
+            return true;
+        }
+    }
+
+    if (creature.ult_res) {
         return true;
     }
 
-    if (player_ptr->tsuyoshi) {
+    if (creature.tsuyoshi) {
         return true;
     }
 
-    if ((player_ptr->special_attack & ATTACK_ACID) && monrace.resistance_flags.has_none_of(RFR_EFF_IM_ACID_MASK)) {
+    if ((creature.special_attack & ATTACK_ACID) && monrace.resistance_flags.has_none_of(RFR_EFF_IM_ACID_MASK)) {
         return true;
     }
 
-    if ((player_ptr->special_attack & ATTACK_FIRE) && monrace.resistance_flags.has_none_of(RFR_EFF_IM_FIRE_MASK)) {
+    if ((creature.special_attack & ATTACK_FIRE) && monrace.resistance_flags.has_none_of(RFR_EFF_IM_FIRE_MASK)) {
         return true;
     }
 
-    if ((player_ptr->special_attack & ATTACK_ELEC) && monrace.resistance_flags.has_none_of(RFR_EFF_IM_ELEC_MASK)) {
+    if ((creature.special_attack & ATTACK_ELEC) && monrace.resistance_flags.has_none_of(RFR_EFF_IM_ELEC_MASK)) {
         return true;
     }
 
-    if ((player_ptr->special_attack & ATTACK_COLD) && monrace.resistance_flags.has_none_of(RFR_EFF_IM_COLD_MASK)) {
+    if ((creature.special_attack & ATTACK_COLD) && monrace.resistance_flags.has_none_of(RFR_EFF_IM_COLD_MASK)) {
         return true;
     }
 
-    if ((player_ptr->special_attack & ATTACK_POIS) && monrace.resistance_flags.has_none_of(RFR_EFF_IM_POISON_MASK)) {
+    if ((creature.special_attack & ATTACK_POIS) && monrace.resistance_flags.has_none_of(RFR_EFF_IM_POISON_MASK)) {
         return true;
     }
 
-    if ((creature.get_speed() < 145) && is_fast(*player_ptr)) {
+    if ((creature.get_speed() < 145) && is_fast(creature)) {
         return true;
     }
 
     constexpr auto threshold = 25;
     const auto threshold_speed = STANDARD_SPEED + threshold;
-    if (player_ptr->lightspeed && (monster.speed <= threshold_speed)) {
+    if (creature.lightspeed && (monster.speed <= threshold_speed)) {
         return true;
     }
 
-    const auto &m_ref = player_ptr->current_floor_ptr->m_list[player_ptr->riding];
-    if (player_ptr->riding && (player_ptr->current_floor_ptr->m_list[player_ptr->riding].speed < 135) && m_ref.is_accelerated()) {
+    const auto &m_ref = creature.current_floor_ptr->m_list[creature.riding];
+    if (creature.riding && (creature.current_floor_ptr->m_list[creature.riding].speed < 135) && m_ref.is_accelerated()) {
         return true;
     }
 

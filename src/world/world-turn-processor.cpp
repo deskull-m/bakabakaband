@@ -37,7 +37,6 @@
 #include "system/grid-type-definition.h"
 #include "system/inner-game-data.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/screen-processor.h"
@@ -148,11 +147,10 @@ void WorldTurnProcessor::print_cheat_position()
     c_put_str(TERM_WHITE, "             ", ROW_NOW_POS, COL_NOW_POS);
     c_put_str(TERM_WHITE, "             ", ROW_OLD_POS, COL_OLD_POS);
     if (cheat_sight) {
-        auto *player_ptr = static_cast<PlayerType *>(&this->creature);
         c_put_str(TERM_WHITE,
             format("nX:%03d nY:%03d", this->creature.x, this->creature.y), ROW_NOW_POS, COL_NOW_POS);
         c_put_str(TERM_WHITE,
-            format("oX:%03d oY:%03d", player_ptr->oldpx, player_ptr->oldpy), ROW_OLD_POS, COL_OLD_POS);
+            format("oX:%03d oY:%03d", this->creature.oldpx, this->creature.oldpy), ROW_OLD_POS, COL_OLD_POS);
     }
 }
 
@@ -169,14 +167,12 @@ void WorldTurnProcessor::process_downward()
     FloorChangeModesStore::get_instace()->set({ FloorChangeMode::FIRST_FLOOR, FloorChangeMode::RANDOM_PLACE });
     floor.inside_arena = false;
     AngbandWorld::get_instance().set_wild_mode(false);
-    auto *player_ptr = static_cast<PlayerType *>(&this->creature);
-    player_ptr->leaving = true;
+    this->creature.leaving = true;
 }
 
 void WorldTurnProcessor::process_monster_arena()
 {
-    auto *player_ptr = static_cast<PlayerType *>(&this->creature);
-    if (!AngbandSystem::get_instance().is_phase_out() || player_ptr->leaving) {
+    if (!AngbandSystem::get_instance().is_phase_out() || this->creature.leaving) {
         return;
     }
 
@@ -194,7 +190,7 @@ void WorldTurnProcessor::process_monster_arena()
     if (m_idxs.empty()) {
         msg_print(_("相打ちに終わりました。", "Nothing survived."));
         msg_erase();
-        player_ptr->energy_need = 0;
+        this->creature.energy_need = 0;
         auto &melee_arena = MeleeArena::get_instance();
         melee_arena.update_gladiators(this->creature);
         return;
@@ -237,11 +233,10 @@ void WorldTurnProcessor::process_monster_arena_draw()
         return;
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&this->creature);
     msg_print(_("申し訳ありませんが、この勝負は引き分けとさせていただきます。", "Sorry, but this battle ended in a draw."));
-    player_ptr->au += MeleeArena::get_instance().get_payback(true);
+    this->creature.au += MeleeArena::get_instance().get_payback(true);
     msg_erase();
-    player_ptr->energy_need = 0;
+    this->creature.energy_need = 0;
     auto &melee_arena = MeleeArena::get_instance();
     melee_arena.update_gladiators(this->creature);
 }
@@ -301,8 +296,7 @@ void WorldTurnProcessor::process_world_monsters()
         regenerate_captured_monsters(this->creature);
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&this->creature);
-    if (player_ptr->leaving) {
+    if (this->creature.leaving) {
         return;
     }
 
@@ -360,15 +354,14 @@ void WorldTurnProcessor::ring_nightmare_bell(int prev_min)
         return;
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&this->creature);
     disturb(this->creature, true, true);
     msg_print(_("遠くで鐘が何回も鳴り、死んだような静けさの中へ消えていった。", "A distant bell tolls many times, fading into an deathly silence."));
     if (AngbandWorld::get_instance().is_wild_mode()) {
-        player_ptr->oldpy = randint1(MAX_HGT - 2);
-        player_ptr->oldpx = randint1(MAX_WID - 2);
+        this->creature.oldpy = randint1(MAX_HGT - 2);
+        this->creature.oldpx = randint1(MAX_WID - 2);
         change_wild_mode(this->creature, true);
         PlayerEnergy(this->creature).set_player_turn_energy(100);
     }
 
-    player_ptr->invoking_midnight_curse = true;
+    this->creature.invoking_midnight_curse = true;
 }

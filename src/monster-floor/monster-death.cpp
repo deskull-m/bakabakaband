@@ -44,7 +44,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/services/baseitem-monrace-service.h"
 #include "system/system-variables.h"
@@ -337,8 +336,7 @@ static void drop_items_golds(CreatureEntity &creature, MonsterDeath *md_ptr, int
     }
 
     floor.object_level = floor.base_level;
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    auto visible = md_ptr->m_ptr->ml && !player_ptr->effects()->hallucination().is_hallucinated();
+    auto visible = md_ptr->m_ptr->ml && !creature.effects()->hallucination().is_hallucinated();
     visible |= (md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE));
     if (visible && (dump_item || dump_gold)) {
         md_ptr->m_ptr->make_lore_treasure(dump_item, dump_gold);
@@ -351,14 +349,13 @@ static void drop_items_golds(CreatureEntity &creature, MonsterDeath *md_ptr, int
  */
 static void on_defeat_last_boss(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &world = AngbandWorld::get_instance();
     world.total_winner = true;
-    world.add_winner_class(player_ptr->pclass);
+    world.add_winner_class(creature.pclass);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TITLE);
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_FINAL_QUEST_CLEAR);
     exe_write_diary(*creature.current_floor_ptr, DiaryKind::DESCRIPTION, 0, _("見事に馬鹿馬鹿蛮怒の勝利者となった！", "finally became *WINNER* of Bakabakaband!"));
-    patron_list[player_ptr->patron].admire(*player_ptr);
+    patron_list[creature.patron].admire(creature);
     msg_print(_("*** おめでとう ***", "*** CONGRATULATIONS ***"));
     msg_print(_("あなたはゲームをコンプリートしました。", "You have won the game!"));
     msg_print(_("準備が整ったら引退(自殺コマンド)しても結構です。", "You may retire (commit suicide) when you are ready."));
@@ -424,17 +421,16 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
         md.r_ptr = &md.m_ptr->get_monrace();
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     // ジョークオプション：モンスターの墓石を立てる
     if (monster_tombstones) {
         screen_save();
-        print_monster_tomb(*player_ptr, *md.m_ptr);
+        print_monster_tomb(creature, *md.m_ptr);
         msg_print(_("-続けるには何かキーを押してください-", "-Press any key to continue-"));
         screen_load();
         do_cmd_redraw(creature);
     }
 
-    QuestCompletionChecker(*player_ptr, *md.m_ptr).complete();
+    QuestCompletionChecker(creature, *md.m_ptr).complete();
     on_defeat_arena_monster(creature, &md);
     if (md.m_ptr->is_riding() && process_fall_off_horse(creature, -1, false)) {
         msg_print(_("地面に落とされた。", "You have fallen from the pet you were riding."));

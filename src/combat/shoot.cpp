@@ -494,8 +494,6 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
 {
     POSITION y, x, prev_y, prev_x;
     ItemEntity *o_ptr;
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-
     AttributeFlags attribute_flags{};
     attribute_flags.set(AttributeType::PLAYER_SHOOT);
 
@@ -545,7 +543,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
         }
     }
 
-    PlayerEnergy(*player_ptr).set_player_turn_energy(j_ptr->get_bow_energy());
+    PlayerEnergy(creature).set_player_turn_energy(j_ptr->get_bow_energy());
     auto tmul = j_ptr->get_arrow_magnification();
 
     /* Get extra "power" from "extra might" */
@@ -573,7 +571,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
     /* Get a direction (or cancel) */
     const auto dir = get_aim_dir(creature);
     if (!dir) {
-        PlayerEnergy(*player_ptr).reset_player_turn();
+        PlayerEnergy(creature).reset_player_turn();
 
         if (snipe_type == SP_AWAY) {
             snipe_type = SP_NONE;
@@ -600,7 +598,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
 
     /* Don't shoot at my feet */
     if (pos_target == p_pos) {
-        PlayerEnergy(*player_ptr).reset_player_turn();
+        PlayerEnergy(creature).reset_player_turn();
 
         /* project_length is already reset to 0 */
 
@@ -608,7 +606,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
     }
 
     /* Take a (partial) turn */
-    PlayerEnergy(*player_ptr).div_player_turn_energy(thits);
+    PlayerEnergy(creature).div_player_turn_energy(thits);
     creature.is_fired = true;
 
     creature.plus_incident_tree("SHOOT", 1);
@@ -977,10 +975,10 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
             monster.hold_o_idx_list.add(floor, item_idx);
         } else if (floor.has_terrain_characteristics(pos_impact, TerrainCharacteristics::PROJECTION)) {
             /* Drop (or break) near that location */
-            drop_ammo_near(*player_ptr, fire_item, pos_impact, j);
+            drop_ammo_near(creature, fire_item, pos_impact, j);
         } else {
             /* Drop (or break) near that location */
-            drop_ammo_near(*player_ptr, fire_item, { prev_y, prev_x }, j);
+            drop_ammo_near(creature, fire_item, { prev_y, prev_x }, j);
         }
 
         /* Sniper - Repeat shooting when double shots */

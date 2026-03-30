@@ -17,17 +17,17 @@
  */
 bool is_owner(CreatureEntity &creature, const building_type &bldg)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     constexpr auto building_owner = 2;
-    if (bldg.member_class[enum2i(player_ptr->pclass)] == building_owner) {
+    if (bldg.member_class[enum2i(player.pclass)] == building_owner) {
         return true;
     }
 
-    if (bldg.member_race[enum2i(player_ptr->prace)] == building_owner) {
+    if (bldg.member_race[enum2i(player.prace)] == building_owner) {
         return true;
     }
 
-    PlayerRealm pr(*player_ptr);
+    PlayerRealm pr(player);
     const auto realm1 = pr.realm1().to_enum();
     const auto realm2 = pr.realm2().to_enum();
     if ((PlayerRealm::is_magic(realm1) && (bldg.member_realm[enum2i(realm1)] == building_owner)) || (PlayerRealm::is_magic(realm2) && (bldg.member_realm[enum2i(realm2)] == building_owner))) {
@@ -49,16 +49,16 @@ bool is_owner(CreatureEntity &creature, const building_type &bldg)
  */
 bool is_member(CreatureEntity &creature, const building_type &bldg)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (static_cast<bool>(bldg.member_class[enum2i(player_ptr->pclass)])) {
+    auto &player = static_cast<PlayerType &>(creature);
+    if (static_cast<bool>(bldg.member_class[enum2i(player.pclass)])) {
         return true;
     }
 
-    if (static_cast<bool>(bldg.member_race[enum2i(player_ptr->prace)])) {
+    if (static_cast<bool>(bldg.member_race[enum2i(player.prace)])) {
         return true;
     }
 
-    PlayerRealm pr(*player_ptr);
+    PlayerRealm pr(player);
     const auto realm1 = pr.realm1().to_enum();
     const auto realm2 = pr.realm2().to_enum();
     if ((PlayerRealm::is_magic(realm1) && bldg.member_realm[enum2i(realm1)]) || (PlayerRealm::is_magic(realm2) && bldg.member_realm[enum2i(realm2)])) {

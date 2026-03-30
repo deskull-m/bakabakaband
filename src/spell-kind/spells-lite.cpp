@@ -15,7 +15,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
 #include "timed-effect/timed-effects.h"
@@ -44,7 +43,6 @@
 /*!< @todo 並び順の都合で連番を付ける。まとめても良いならまとめてしまう予定 */
 static void cave_temp_room_lite(CreatureEntity &creature, const std::vector<Pos2D> &positions)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     for (const auto &pos : positions) {
         auto &grid = floor.get_grid(pos);
@@ -54,7 +52,7 @@ static void cave_temp_room_lite(CreatureEntity &creature, const std::vector<Pos2
             auto chance = 25;
             const auto &monster = floor.m_list[grid.m_idx];
             const auto &monrace = monster.get_monrace();
-            update_monster(*player_ptr, grid.m_idx, false);
+            update_monster(creature, grid.m_idx, false);
             if (monrace.behavior_flags.has(MonsterBehaviorType::STUPID)) {
                 chance = 10;
             }
@@ -85,7 +83,6 @@ static void cave_temp_room_lite(CreatureEntity &creature, const std::vector<Pos2
 /*!< @todo 並び順の都合で連番を付ける。まとめても良いならまとめてしまう予定 */
 static void cave_temp_room_unlite(CreatureEntity &creature, const std::vector<Pos2D> &positions)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     const auto &world = AngbandWorld::get_instance();
     for (const auto &pos : positions) {
@@ -120,7 +117,7 @@ static void cave_temp_room_unlite(CreatureEntity &creature, const std::vector<Po
             if (!view_torch_grids) {
                 grid.info &= ~(CAVE_MARK);
             }
-            note_spot(*player_ptr, pos);
+            note_spot(creature, pos);
         }
 
         if (grid.has_monster()) {
@@ -251,9 +248,8 @@ void lite_room(CreatureEntity &creature, const Pos2D &pos_start)
     }
 
     cave_temp_room_lite(creature, positions);
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (floor.grid_array[player_ptr->y][player_ptr->x].info & CAVE_GLOW) {
-        set_superstealth(*player_ptr, false);
+    if (floor.grid_array[creature.y][creature.x].info & CAVE_GLOW) {
+        set_superstealth(creature, false);
     }
 }
 
@@ -299,8 +295,7 @@ void unlite_room(CreatureEntity &creature, const Pos2D &pos_start)
  */
 bool starlight(CreatureEntity &creature, bool magic)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (!player_ptr->effects()->blindness().is_blind() && !magic) {
+    if (!creature.effects()->blindness().is_blind() && !magic) {
         msg_print(_("杖の先が明るく輝いた...", "The end of the staff glows brightly..."));
     }
 
@@ -336,13 +331,12 @@ bool starlight(CreatureEntity &creature, bool magic)
  */
 bool lite_area(CreatureEntity &creature, int dam, int rad)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (creature.current_floor_ptr->get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         msg_print(_("ダンジョンが光を吸収した。", "The darkness of this dungeon absorbs your light."));
         return false;
     }
 
-    if (!player_ptr->effects()->blindness().is_blind()) {
+    if (!creature.effects()->blindness().is_blind()) {
         msg_print(_("白い光が辺りを覆った。", "You are surrounded by a white light."));
     }
 
@@ -363,8 +357,7 @@ bool lite_area(CreatureEntity &creature, int dam, int rad)
  */
 bool unlite_area(CreatureEntity &creature, int dam, int rad)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (!player_ptr->effects()->blindness().is_blind()) {
+    if (!creature.effects()->blindness().is_blind()) {
         msg_print(_("暗闇が辺りを覆った。", "Darkness surrounds you."));
     }
 

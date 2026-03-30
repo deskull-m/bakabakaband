@@ -42,16 +42,14 @@
  */
 void player_wipe_without_name(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-
-    const std::string backup_name = player_ptr->name;
+    const std::string backup_name = creature.name;
     auto &world = AngbandWorld::get_instance();
-    *player_ptr = {};
+    static_cast<PlayerType &>(creature) = {};
 
     // TODO: キャラ作成からゲーム開始までに  current_floor_ptr を参照しなければならない処理は今後整理して外す。
-    player_ptr->current_floor_ptr = &FloorList::get_instance().get_floor(0);
+    creature.current_floor_ptr = &FloorList::get_instance().get_floor(0);
     for (int i = 0; i < 4; i++) {
-        player_ptr->history[i][0] = '\0';
+        creature.history[i][0] = '\0';
     }
 
     auto &quests = QuestList::get_instance();
@@ -66,10 +64,10 @@ void player_wipe_without_name(CreatureEntity &creature)
         quest.comptime = 0;
     }
 
-    player_ptr->inven_cnt = 0;
-    player_ptr->equip_cnt = 0;
+    creature.inven_cnt = 0;
+    creature.equip_cnt = 0;
     for (int i = 0; i < INVEN_TOTAL; i++) {
-        player_ptr->inventory[i]->wipe();
+        creature.inventory[i]->wipe();
     }
 
     ArtifactList::get_instance().reset_generated_flags();
@@ -90,16 +88,16 @@ void player_wipe_without_name(CreatureEntity &creature)
         monrace.r_akills = 0;
     }
 
-    player_ptr->food = PY_FOOD_FULL - 1;
+    creature.food = PY_FOOD_FULL - 1;
 
     PlayerSpellStatus pss(creature);
     pss.realm1().initialize();
     pss.realm2().initialize();
 
-    player_ptr->learned_spells = 0;
-    player_ptr->add_spells = 0;
-    player_ptr->knowledge = 0;
-    player_ptr->mutant_regenerate_mod = 100;
+    creature.learned_spells = 0;
+    creature.add_spells = 0;
+    creature.knowledge = 0;
+    creature.mutant_regenerate_mod = 100;
 
     cheat_peek = false;
     cheat_hear = false;
@@ -113,36 +111,36 @@ void player_wipe_without_name(CreatureEntity &creature)
     cheat_immortal = false;
 
     world.total_winner = false;
-    player_ptr->timewalk = false;
+    creature.timewalk = false;
     auto &system = AngbandSystem::get_instance();
     system.set_panic_save(false);
 
     world.noscore = 0;
     world.wizard = false;
     system.set_awaiting_report_score(false);
-    player_ptr->pet_follow_distance = PET_FOLLOW_DIST;
-    player_ptr->pet_extra_flags = (PF_TELEPORT | PF_ATTACK_SPELL | PF_SUMMON_SPELL);
+    creature.pet_follow_distance = PET_FOLLOW_DIST;
+    creature.pet_extra_flags = (PF_TELEPORT | PF_ATTACK_SPELL | PF_SUMMON_SPELL);
     DungeonRecords::get_instance().reset_all();
-    player_ptr->visit = 1;
+    creature.visit = 1;
     world.set_wild_mode(false);
     WildernessGrids::get_instance().initialize_position();
 
-    player_ptr->max_plv = player_ptr->level = 1;
+    creature.max_plv = creature.level = 1;
     ArenaEntryList::get_instance().reset_entry();
     world.set_arena(true);
     world.knows_daily_bounty = false;
     auto &melee_arena = MeleeArena::get_instance();
     melee_arena.update_gladiators(creature);
 
-    player_ptr->virtues.clear();
+    creature.virtues.clear();
 
     if (vanilla_town || ironman_downward) {
-        player_ptr->recall_dungeon = DungeonId::ANGBAND;
+        creature.recall_dungeon = DungeonId::ANGBAND;
     } else {
-        player_ptr->recall_dungeon = DungeonId::GALGALS;
+        creature.recall_dungeon = DungeonId::GALGALS;
     }
 
-    player_ptr->name = backup_name;
+    creature.name = backup_name;
 }
 
 /*!
@@ -151,10 +149,8 @@ void player_wipe_without_name(CreatureEntity &creature)
  */
 void init_dungeon_quests(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-
     init_flags = INIT_ASSIGN;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     auto &quests = QuestList::get_instance();
     floor.quest_number = QuestId::RANDOM_QUEST1;
     parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
@@ -162,7 +158,7 @@ void init_dungeon_quests(CreatureEntity &creature)
     for (auto quest_id : RANDOM_QUEST_ID_RANGE) {
         auto &quest = quests.get_quest(quest_id);
         quest.status = QuestStatusType::TAKEN;
-        determine_random_questor(*player_ptr, quest);
+        determine_random_questor(creature, quest);
         auto &monrace = quest.get_bounty();
         monrace.misc_flags.set(MonsterMiscType::QUESTOR);
         quest.max_num = 1;
@@ -184,10 +180,8 @@ void init_dungeon_quests(CreatureEntity &creature)
  */
 void init_turn(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-
     auto &world = AngbandWorld::get_instance();
-    if (CreatureRace(player_ptr).life() == PlayerRaceLifeType::UNDEAD) {
+    if (CreatureRace(&creature).life() == PlayerRaceLifeType::UNDEAD) {
         world.game_turn = (TURNS_PER_TICK * 3 * TOWN_DAWN) / 4 + 1;
     } else {
         world.game_turn = 1;

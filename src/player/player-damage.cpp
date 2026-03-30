@@ -91,7 +91,7 @@ using dam_func = int (*)(CreatureEntity &creature, int dam, std::string_view kb_
  */
 static bool acid_minus_ac(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     constexpr static auto candidates = {
         INVEN_MAIN_HAND,
         INVEN_SUB_HAND,
@@ -103,12 +103,12 @@ static bool acid_minus_ac(CreatureEntity &creature)
     };
 
     const auto slot = rand_choice(candidates);
-    auto &item = *player_ptr->inventory[slot];
+    auto &item = *player.inventory[slot];
     if (!item.is_valid() || !item.is_protector()) {
         return false;
     }
 
-    const auto item_name = describe_flavor(*player_ptr, item, OD_OMIT_PREFIX | OD_NAME_ONLY);
+    const auto item_name = describe_flavor(player, item, OD_OMIT_PREFIX | OD_NAME_ONLY);
     const auto item_flags = item.get_flags();
     if (item.ac + item.to_a <= 0) {
         msg_format(_("%sは既にボロボロだ！", "Your %s is already fully corroded!"), item_name.data());
@@ -704,15 +704,15 @@ void touch_zap_player(const MonsterEntity &monster, CreatureEntity &creature)
  */
 void player_defecate(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     auto &baseitems = BaseitemList::get_instance();
     ItemEntity item;
     disturb(creature, false, true);
     msg_print(_("ブッチッパ！", "BRUUUUP! Oops."));
     msg_erase();
     item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
-    (void)drop_near(creature, item, player_ptr->get_position());
+    (void)drop_near(creature, item, player.get_position());
 
     // 脱糞した数をインシデントに記録
-    player_ptr->plus_incident_tree("DEFECATE", 1);
+    player.plus_incident_tree("DEFECATE", 1);
 }

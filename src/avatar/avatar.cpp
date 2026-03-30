@@ -174,10 +174,10 @@ void initialize_virtues(CreatureEntity &creature)
 {
     creature.virtues.clear();
 
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return;
     }
+    auto &player = static_cast<PlayerType &>(creature);
 
     auto add_virtue = [&](Virtue v) {
         if (v != Virtue::NONE && creature.virtues.find(v) == creature.virtues.end()) {
@@ -186,7 +186,7 @@ void initialize_virtues(CreatureEntity &creature)
     };
 
     /* Get pre-defined types based on class */
-    switch (player_ptr->pclass) {
+    switch (player.pclass) {
     case PlayerClassType::WARRIOR:
     case PlayerClassType::SAMURAI:
         add_virtue(Virtue::VALOUR);
@@ -293,7 +293,7 @@ void initialize_virtues(CreatureEntity &creature)
     };
 
     /* Get one virtue based on race */
-    switch (player_ptr->prace) {
+    switch (player.prace) {
     case PlayerRaceType::HUMAN:
     case PlayerRaceType::HALF_ELF:
     case PlayerRaceType::DUNADAN:

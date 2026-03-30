@@ -192,7 +192,7 @@ static bool cast_blue_make_trap(CreatureEntity &creature)
 
 static bool switch_cast_blue_magic(CreatureEntity &creature, bmc_type *bmc_ptr)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     switch (bmc_ptr->spell) {
     case MonsterAbilityType::SHRIEK:
         msg_print(_("かん高い金切り声をあげた。", "You make a high pitched shriek."));
@@ -293,7 +293,7 @@ static bool switch_cast_blue_magic(CreatureEntity &creature, bmc_type *bmc_ptr)
         return cast_blue_hand_doom(creature, bmc_ptr);
     case MonsterAbilityType::HEAL: {
         msg_print(_("自分の傷に念を集中した。", "You concentrate on your wounds!"));
-        (void)hp_player(*player_ptr, bmc_ptr->plev * 4);
+        (void)hp_player(player, bmc_ptr->plev * 4);
         BadStatusSetter bss(creature);
         (void)bss.set_stun(0);
         (void)bss.set_cut(0);

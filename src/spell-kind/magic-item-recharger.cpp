@@ -24,7 +24,6 @@
 #include "system/angband-exceptions.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 /*!
@@ -50,12 +49,11 @@
  */
 bool recharge(CreatureEntity &creature, int power)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     constexpr auto q = _("どのアイテムに魔力を充填しますか? ", "Recharge which item? ");
     constexpr auto s = _("魔力を充填すべきアイテムがない。", "You have nothing to recharge.");
 
     short i_idx;
-    auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::can_recharge));
+    auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::can_recharge));
     if (o_ptr == nullptr) {
         return false;
     }
@@ -121,7 +119,7 @@ bool recharge(CreatureEntity &creature, int power)
     }
 
     if (o_ptr->is_fixed_artifact()) {
-        const auto item_name = describe_flavor(*player_ptr, *o_ptr, OD_NAME_ONLY);
+        const auto item_name = describe_flavor(creature, *o_ptr, OD_NAME_ONLY);
         msg_format(_("魔力が逆流した！%sは完全に魔力を失った。", "The recharging backfires - %s is completely drained!"), item_name.data());
         if ((tval == ItemKindType::ROD) && (o_ptr->timeout < 10000)) {
             o_ptr->timeout = (o_ptr->timeout + 100) * 2;
@@ -131,7 +129,7 @@ bool recharge(CreatureEntity &creature, int power)
         return update_player();
     }
 
-    const auto item_name = describe_flavor(*player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     auto fail_type = 1;
     if (CreatureClass(creature).is_wizard()) {
         /* 10% chance to blow up one rod, otherwise draining. */

@@ -26,7 +26,6 @@
 #include "player-info/class-info.h"
 #include "player-info/race-info.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
 #include "util/string-processor.h"
@@ -528,9 +527,8 @@ ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, in
         if (!can_insert_line(tb, 2)) {
             break;
         }
-        auto *player_ptr = static_cast<PlayerType *>(&creature);
         const auto expression = format("?:[AND [EQU $RACE %s] [EQU $CLASS %s] [GEQ $LEVEL %02d]]",
-            player_ptr->race->title.en_string().data(), (*player_ptr->pclass_ref).title.en_string().data(),
+            creature.race->title.en_string().data(), (*creature.pclass_ref).title.en_string().data(),
             creature.level);
         tb->cx = 0;
         insert_return_code(tb);

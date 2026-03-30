@@ -7,7 +7,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/grid-selector.h"
 #include "util/bit-flags-calculator.h"
@@ -15,13 +14,12 @@
 
 static tl::optional<Pos2D> decide_travel_goal(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &pos_current_goal = Travel::get_instance().get_goal();
-    if (pos_current_goal && pos_current_goal != player_ptr->get_position() && input_check(_("トラベルを継続しますか？", "Do you continue to travel? "))) {
+    if (pos_current_goal && pos_current_goal != creature.get_position() && input_check(_("トラベルを継続しますか？", "Do you continue to travel? "))) {
         return *pos_current_goal;
     }
 
-    return point_target(*player_ptr);
+    return point_target(creature);
 }
 
 /*!
@@ -29,21 +27,20 @@ static tl::optional<Pos2D> decide_travel_goal(CreatureEntity &creature)
  */
 void do_cmd_travel(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto pos = decide_travel_goal(creature);
     if (!pos) {
         return;
     }
 
-    if (player_ptr->is_located_at(*pos)) {
+    if (creature.is_located_at(*pos)) {
         msg_print(_("すでにそこにいます！", "You are already there!!"));
         return;
     }
 
-    if (!Travel::can_travel_to(*player_ptr->current_floor_ptr, *pos)) {
+    if (!Travel::can_travel_to(*creature.current_floor_ptr, *pos)) {
         msg_print(_("そこには行くことができません！", "You cannot travel there!"));
         return;
     }
 
-    Travel::get_instance().set_goal(*player_ptr, *pos);
+    Travel::get_instance().set_goal(creature, *pos);
 }

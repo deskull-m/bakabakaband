@@ -57,14 +57,14 @@
  */
 void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return;
     }
 
+    auto &player = static_cast<PlayerType &>(creature);
     std::string m_name;
     auto see_m = true;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *player.current_floor_ptr;
     auto &monster = floor.m_list[m_idx];
     if (m_idx <= 0) {
         m_name = _("あなた", "you");
@@ -80,7 +80,7 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
         return;
     }
 
-    if ((m_idx <= 0) && player_ptr->anti_tele) {
+    if ((m_idx <= 0) && player.anti_tele) {
         msg_print(_("不思議な力がテレポートを防いだ！", "A mysterious force prevents you from teleporting!"));
         return;
     }
@@ -114,9 +114,9 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
 #endif
         if (m_idx <= 0) {
             if (!floor.is_underground()) {
-                floor.set_dungeon_index(ironman_downward ? DungeonId::ANGBAND : player_ptr->recall_dungeon);
-                player_ptr->oldpy = player_ptr->y;
-                player_ptr->oldpx = player_ptr->x;
+                floor.set_dungeon_index(ironman_downward ? DungeonId::ANGBAND : player.recall_dungeon);
+                player.oldpy = player.y;
+                player.oldpx = player.x;
             }
 
             if (record_stair) {
@@ -124,7 +124,7 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
             }
 
             if (autosave_l) {
-                do_cmd_save_game(*player_ptr, true);
+                do_cmd_save_game(player, true);
             }
 
             fcms->set(FloorChangeMode::RANDOM_PLACE);
@@ -152,13 +152,13 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
             }
 
             if (autosave_l) {
-                do_cmd_save_game(*player_ptr, true);
+                do_cmd_save_game(player, true);
             }
 
             fcms->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::UP, FloorChangeMode::RANDOM_PLACE, FloorChangeMode::RANDOM_CONNECT });
-            leave_quest_check(*player_ptr);
+            leave_quest_check(player);
             floor.quest_number = QuestId::NONE;
-            player_ptr->leaving = true;
+            player.leaving = true;
         }
     } else if (go_up) {
 #ifdef JP
@@ -177,11 +177,11 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
             }
 
             if (autosave_l) {
-                do_cmd_save_game(*player_ptr, true);
+                do_cmd_save_game(player, true);
             }
 
             fcms->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::UP, FloorChangeMode::RANDOM_PLACE, FloorChangeMode::RANDOM_CONNECT });
-            player_ptr->leaving = true;
+            player.leaving = true;
         }
     } else {
 #ifdef JP
@@ -199,11 +199,11 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
                 exe_write_diary(floor, DiaryKind::TELEPORT_LEVEL, 1);
             }
             if (autosave_l) {
-                do_cmd_save_game(*player_ptr, true);
+                do_cmd_save_game(player, true);
             }
 
             fcms->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::DOWN, FloorChangeMode::RANDOM_PLACE, FloorChangeMode::RANDOM_CONNECT });
-            player_ptr->leaving = true;
+            player.leaving = true;
         }
     }
 
@@ -212,13 +212,13 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
         return;
     }
 
-    QuestCompletionChecker(*player_ptr, monster).complete();
+    QuestCompletionChecker(player, monster).complete();
     if (record_named_pet && monster.is_named_pet()) {
-        const auto m2_name = monster_desc(*player_ptr, monster, MD_INDEF_VISIBLE);
+        const auto m2_name = monster_desc(player, monster, MD_INDEF_VISIBLE);
         exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_TELE_LEVEL, m2_name);
     }
 
-    delete_monster_idx(*player_ptr, m_idx);
+    delete_monster_idx(player, m_idx);
     if (see_m) {
         sound(SoundKind::TPLEVEL);
     }
@@ -227,35 +227,34 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
 bool teleport_level_other(CreatureEntity &creature)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
 
     const auto pos = target_set(creature, TARGET_KILL).get_position();
     if (!pos) {
         return false;
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *player.current_floor_ptr;
     const auto &grid = floor.get_grid(*pos);
     const auto target_m_idx = grid.m_idx;
     if ((target_m_idx == 0) || !grid.has_los()) {
         return true;
     }
 
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = player.get_position();
     if (!projectable(floor, p_pos, *pos)) {
         return true;
     }
 
     const auto &monster = floor.m_list[target_m_idx];
     const auto &monrace = monster.get_monrace();
-    const auto m_name = monster_desc(*player_ptr, monster, 0);
+    const auto m_name = monster_desc(player, monster, 0);
     msg_format(_("%s^の足を指さした。", "You gesture at %s^'s feet."), m_name.data());
 
     auto has_immune = monrace.resistance_flags.has_any_of(RFR_EFF_RESIST_NEXUS_MASK) || monrace.resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT);
-    if (has_immune || (monrace.misc_flags.has(MonsterMiscType::QUESTOR)) || (monrace.level + randint1(50) > player_ptr->level + randint1(60))) {
+    if (has_immune || (monrace.misc_flags.has(MonsterMiscType::QUESTOR)) || (monrace.level + randint1(50) > player.level + randint1(60))) {
         msg_print(_("しかし効果がなかった！", format("%s^ is unaffected!", m_name.data())));
     } else {
-        teleport_level(*player_ptr, target_m_idx);
+        teleport_level(player, target_m_idx);
     }
 
     return true;
@@ -268,17 +267,17 @@ bool teleport_level_other(CreatureEntity &creature)
  */
 bool tele_town(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return false;
     }
 
-    if (player_ptr->current_floor_ptr->is_underground()) {
+    auto &player = static_cast<PlayerType &>(creature);
+    if (player.current_floor_ptr->is_underground()) {
         msg_print(_("この魔法は地上でしか使えない！", "This spell can only be used on the surface!"));
         return false;
     }
 
-    if (player_ptr->current_floor_ptr->inside_arena || AngbandSystem::get_instance().is_phase_out()) {
+    if (player.current_floor_ptr->inside_arena || AngbandSystem::get_instance().is_phase_out()) {
         msg_print(_("この魔法は外でしか使えない！", "This spell can only be used outside!"));
         return false;
     }
@@ -289,7 +288,7 @@ bool tele_town(CreatureEntity &creature)
     auto num = 0;
     const int towns_size = towns_info.size();
     for (auto i = 1; i < towns_size; i++) {
-        if ((i == VALID_TOWNS) || (i == SECRET_TOWN) || (i == player_ptr->town_num) || !(player_ptr->visit & (1UL << (i - 1)))) {
+        if ((i == VALID_TOWNS) || (i == SECRET_TOWN) || (i == player.town_num) || !(player.visit & (1UL << (i - 1)))) {
             continue;
         }
 
@@ -320,7 +319,7 @@ bool tele_town(CreatureEntity &creature)
         }
 
         const auto town_num = key - 'a' + 1;
-        if ((town_num == player_ptr->town_num) || (town_num == VALID_TOWNS) || (town_num == SECRET_TOWN) || !(player_ptr->visit & (1UL << (key - 'a')))) {
+        if ((town_num == player.town_num) || (town_num == VALID_TOWNS) || (town_num == SECRET_TOWN) || !(player.visit & (1UL << (key - 'a')))) {
             continue;
         }
 
@@ -334,8 +333,8 @@ bool tele_town(CreatureEntity &creature)
         }
     }
 
-    player_ptr->leaving = true;
-    player_ptr->teleport_town = true;
+    player.leaving = true;
+    player.teleport_town = true;
     screen_load();
     return true;
 }
@@ -346,25 +345,25 @@ bool tele_town(CreatureEntity &creature)
  */
 void reserve_alter_reality(CreatureEntity &creature, TIME_EFFECT turns)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return;
     }
 
-    if (player_ptr->current_floor_ptr->inside_arena || ironman_downward) {
+    auto &player = static_cast<PlayerType &>(creature);
+    if (player.current_floor_ptr->inside_arena || ironman_downward) {
         msg_print(_("何も起こらなかった。", "Nothing happens."));
         return;
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (player_ptr->alter_reality || turns == 0) {
-        player_ptr->alter_reality = 0;
+    if (player.alter_reality || turns == 0) {
+        player.alter_reality = 0;
         msg_print(_("景色が元に戻った...", "The view around you returns to normal..."));
         rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
         return;
     }
 
-    player_ptr->alter_reality = turns;
+    player.alter_reality = turns;
     msg_print(_("回りの景色が変わり始めた...", "The view around you begins to change..."));
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
 }
@@ -430,12 +429,12 @@ static tl::optional<DungeonId> choose_dungeon(std::string_view note, int row, in
  */
 bool recall_player(CreatureEntity &creature, TIME_EFFECT turns)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return true;
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    const auto &floor = *player.current_floor_ptr;
     if (floor.inside_arena || ironman_downward) {
         msg_print(_("何も起こらなかった。", "Nothing happens."));
         return true;
@@ -445,7 +444,7 @@ bool recall_player(CreatureEntity &creature, TIME_EFFECT turns)
     auto is_special_floor = floor.is_underground();
     is_special_floor &= dungeon_record.get_max_level() > floor.dun_level;
     is_special_floor &= !floor.is_in_quest();
-    is_special_floor &= !player_ptr->word_recall;
+    is_special_floor &= !player.word_recall;
     if (is_special_floor) {
         if (input_check(_("ここは最深到達階より浅い階です。この階に戻って来ますか？ ", "Reset recall depth? "))) {
             dungeon_record.set_max_level(floor.dun_level);
@@ -456,8 +455,8 @@ bool recall_player(CreatureEntity &creature, TIME_EFFECT turns)
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (player_ptr->word_recall || turns == 0) {
-        player_ptr->word_recall = 0;
+    if (player.word_recall || turns == 0) {
+        player.word_recall = 0;
         msg_print(_("張りつめた大気が流れ去った...", "A tension leaves the air around you..."));
         rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
         return true;
@@ -475,10 +474,10 @@ bool recall_player(CreatureEntity &creature, TIME_EFFECT turns)
             return false;
         }
 
-        player_ptr->recall_dungeon = *select_dungeon;
+        player.recall_dungeon = *select_dungeon;
     }
 
-    player_ptr->word_recall = turns;
+    player.word_recall = turns;
     msg_print(_("回りの大気が張りつめてきた...", "The air about you becomes charged..."));
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     return true;
@@ -486,11 +485,11 @@ bool recall_player(CreatureEntity &creature, TIME_EFFECT turns)
 
 bool free_level_recall(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return false;
     }
 
+    auto &player = static_cast<PlayerType &>(creature);
     const auto select_dungeon = choose_dungeon(_("にテレポート", "teleport"), 4, 0);
     if (!select_dungeon) {
         return false;
@@ -511,14 +510,14 @@ bool free_level_recall(CreatureEntity &creature)
         return false;
     }
 
-    player_ptr->word_recall = 1;
-    player_ptr->recall_dungeon = *select_dungeon;
+    player.word_recall = 1;
+    player.recall_dungeon = *select_dungeon;
     const auto dun_level = (amt > dungeon.maxdepth) ? dungeon.maxdepth : (amt < dungeon.mindepth) ? dungeon.mindepth
                                                                                                   : amt;
-    auto &dungeon_record = DungeonRecords::get_instance().get_record(player_ptr->recall_dungeon);
+    auto &dungeon_record = DungeonRecords::get_instance().get_record(player.recall_dungeon);
     dungeon_record.set_max_level(dun_level);
     if (record_maxdepth) {
-        exe_write_diary(*player_ptr->current_floor_ptr, DiaryKind::TRUMP, enum2i(*select_dungeon), _("トランプタワーで", "at Trump Tower"));
+        exe_write_diary(*player.current_floor_ptr, DiaryKind::TRUMP, enum2i(*select_dungeon), _("トランプタワーで", "at Trump Tower"));
     }
 
     msg_print(_("回りの大気が張りつめてきた...", "The air about you becomes charged..."));
@@ -533,11 +532,11 @@ bool free_level_recall(CreatureEntity &creature)
  */
 bool reset_recall(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return false;
     }
 
+    auto &player = static_cast<PlayerType &>(creature);
     const auto select_dungeon = choose_dungeon(_("をセット", "reset"), 2, 14);
     if (ironman_downward) {
         msg_print(_("何も起こらなかった。", "Nothing happens."));
@@ -561,7 +560,7 @@ bool reset_recall(CreatureEntity &creature)
     dungeon_record.set_max_level(*reset_level);
     if (record_maxdepth) {
         constexpr auto note = _("フロア・リセットで", "using a scroll of reset recall");
-        exe_write_diary(*player_ptr->current_floor_ptr, DiaryKind::TRUMP, enum2i(*select_dungeon), note);
+        exe_write_diary(*player.current_floor_ptr, DiaryKind::TRUMP, enum2i(*select_dungeon), note);
     }
 #ifdef JP
     msg_format("%sの帰還レベルを %d 階にセット。", dungeon.name.data(), *reset_level);

@@ -14,7 +14,6 @@
 #include "player/process-name.h"
 #include "player/race-info-table.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/enum-converter.h"
@@ -30,8 +29,6 @@ birther previous_char;
  */
 bool ask_quick_start(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-
     if (!previous_char.quick_ok) {
         return false;
     }
@@ -49,7 +46,7 @@ bool ask_quick_start(CreatureEntity &creature)
         } else if (c == 'S') {
             return false;
         } else if (c == '?') {
-            show_help(*player_ptr, _("jbirth.txt#QuickStart", "birth.txt#QuickStart"));
+            show_help(creature, _("jbirth.txt#QuickStart", "birth.txt#QuickStart"));
         } else if ((c == 'y') || (c == 'Y')) {
             break;
         } else {
@@ -57,28 +54,28 @@ bool ask_quick_start(CreatureEntity &creature)
         }
     }
 
-    load_prev_data(*player_ptr, false);
-    init_turn(*player_ptr);
-    init_dungeon_quests(*player_ptr);
+    load_prev_data(creature, false);
+    init_turn(creature);
+    init_dungeon_quests(creature);
 
-    sp_ptr = &sex_info[player_ptr->psex];
-    player_ptr->race = &race_info[enum2i(player_ptr->prace)];
-    cp_ptr = &class_info.at(player_ptr->pclass);
-    player_ptr->pclass_ref = &class_info.at(player_ptr->pclass);
-    auto short_pclass = enum2i(player_ptr->pclass);
+    sp_ptr = &sex_info[creature.psex];
+    creature.race = &race_info[enum2i(creature.prace)];
+    cp_ptr = &class_info.at(creature.pclass);
+    creature.pclass_ref = &class_info.at(creature.pclass);
+    auto short_pclass = enum2i(creature.pclass);
     mp_ptr = &class_magics_info[short_pclass];
-    player_ptr->personality = &personality_info[player_ptr->ppersonality];
+    creature.personality = &personality_info[creature.ppersonality];
 
-    get_extra(*player_ptr, false);
+    get_extra(creature, false);
     static constexpr auto flags = {
         StatusRecalculatingFlag::BONUS,
         StatusRecalculatingFlag::HP,
     };
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
-    update_creature(*player_ptr);
-    player_ptr->hp = player_ptr->maxhp;
-    player_ptr->csp = player_ptr->msp;
-    process_player_name(*player_ptr);
+    update_creature(creature);
+    creature.hp = creature.maxhp;
+    creature.csp = creature.msp;
+    process_player_name(creature);
     return true;
 }
 /*!
@@ -88,42 +85,40 @@ bool ask_quick_start(CreatureEntity &creature)
  */
 void save_prev_data(CreatureEntity &creature, birther *birther_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    birther_ptr->psex = creature.psex;
+    birther_ptr->prace = creature.prace;
+    birther_ptr->pclass = creature.pclass;
+    birther_ptr->ppersonality = creature.ppersonality;
 
-    birther_ptr->psex = player_ptr->psex;
-    birther_ptr->prace = player_ptr->prace;
-    birther_ptr->pclass = player_ptr->pclass;
-    birther_ptr->ppersonality = player_ptr->ppersonality;
-
-    if (CreatureClass(*player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
-        birther_ptr->realm1 = static_cast<int16_t>(player_ptr->element_realm);
+    if (CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST)) {
+        birther_ptr->realm1 = static_cast<int16_t>(creature.element_realm);
         birther_ptr->realm2 = 0;
     } else {
-        PlayerRealm pr(*player_ptr);
+        PlayerRealm pr(creature);
         birther_ptr->realm1 = static_cast<int16_t>(pr.realm1().to_enum());
         birther_ptr->realm2 = static_cast<int16_t>(pr.realm2().to_enum());
     }
 
-    birther_ptr->age = player_ptr->age;
-    birther_ptr->ht = player_ptr->ht;
-    birther_ptr->wt = player_ptr->wt;
-    birther_ptr->prestige = player_ptr->prestige;
-    birther_ptr->au = player_ptr->au;
+    birther_ptr->age = creature.age;
+    birther_ptr->ht = creature.ht;
+    birther_ptr->wt = creature.wt;
+    birther_ptr->prestige = creature.prestige;
+    birther_ptr->au = creature.au;
 
     for (int i = 0; i < A_MAX; i++) {
-        birther_ptr->stat_max[i] = player_ptr->stat_max[i];
-        birther_ptr->stat_max_max[i] = player_ptr->stat_max_max[i];
+        birther_ptr->stat_max[i] = creature.stat_max[i];
+        birther_ptr->stat_max_max[i] = creature.stat_max_max[i];
     }
 
     for (int i = 0; i < PY_MAX_LEVEL; i++) {
-        birther_ptr->player_hp[i] = player_ptr->player_hp[i];
+        birther_ptr->player_hp[i] = creature.player_hp[i];
     }
 
-    birther_ptr->patron = player_ptr->patron;
-    birther_ptr->virtues = player_ptr->virtues;
+    birther_ptr->patron = creature.patron;
+    birther_ptr->virtues = creature.virtues;
 
     for (int i = 0; i < 4; i++) {
-        strcpy(birther_ptr->history[i], player_ptr->history[i]);
+        strcpy(birther_ptr->history[i], creature.history[i]);
     }
 }
 
@@ -134,22 +129,20 @@ void save_prev_data(CreatureEntity &creature, birther *birther_ptr)
  */
 void load_prev_data(CreatureEntity &creature, bool swap)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-
     birther temp;
     if (swap) {
-        save_prev_data(*player_ptr, &temp);
+        save_prev_data(creature, &temp);
     }
 
-    player_ptr->psex = previous_char.psex;
-    player_ptr->prace = previous_char.prace;
-    player_ptr->pclass = previous_char.pclass;
-    player_ptr->ppersonality = previous_char.ppersonality;
+    creature.psex = previous_char.psex;
+    creature.prace = previous_char.prace;
+    creature.pclass = previous_char.pclass;
+    creature.ppersonality = previous_char.ppersonality;
 
-    PlayerRealm pr(*player_ptr);
+    PlayerRealm pr(creature);
     pr.reset();
-    if (CreatureClass(*player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
-        player_ptr->element_realm = i2enum<ElementRealmType>(previous_char.realm1);
+    if (CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST)) {
+        creature.element_realm = i2enum<ElementRealmType>(previous_char.realm1);
     } else {
         const auto realm1 = i2enum<RealmType>(previous_char.realm1);
         const auto realm2 = i2enum<RealmType>(previous_char.realm2);
@@ -158,30 +151,30 @@ void load_prev_data(CreatureEntity &creature, bool swap)
         }
     }
 
-    player_ptr->age = previous_char.age;
-    player_ptr->ht = previous_char.ht;
-    player_ptr->wt = previous_char.wt;
-    player_ptr->prestige = previous_char.prestige;
-    player_ptr->au = previous_char.au;
+    creature.age = previous_char.age;
+    creature.ht = previous_char.ht;
+    creature.wt = previous_char.wt;
+    creature.prestige = previous_char.prestige;
+    creature.au = previous_char.au;
 
     for (int i = 0; i < A_MAX; i++) {
-        player_ptr->stat_cur[i] = player_ptr->stat_max[i] = previous_char.stat_max[i];
-        player_ptr->stat_max_max[i] = previous_char.stat_max_max[i];
+        creature.stat_cur[i] = creature.stat_max[i] = previous_char.stat_max[i];
+        creature.stat_max_max[i] = previous_char.stat_max_max[i];
     }
 
     for (int i = 0; i < PY_MAX_LEVEL; i++) {
-        player_ptr->player_hp[i] = previous_char.player_hp[i];
+        creature.player_hp[i] = previous_char.player_hp[i];
     }
 
-    player_ptr->maxhp = player_ptr->player_hp[0];
-    player_ptr->hp = player_ptr->player_hp[0];
-    player_ptr->patron = previous_char.patron;
-    player_ptr->virtues = previous_char.virtues;
+    creature.maxhp = creature.player_hp[0];
+    creature.hp = creature.player_hp[0];
+    creature.patron = previous_char.patron;
+    creature.virtues = previous_char.virtues;
 
-    CreatureClass(*player_ptr).init_specific_data();
+    CreatureClass(creature).init_specific_data();
 
     for (int i = 0; i < 4; i++) {
-        strcpy(player_ptr->history[i], previous_char.history[i]);
+        strcpy(creature.history[i], previous_char.history[i]);
     }
 
     if (swap) {

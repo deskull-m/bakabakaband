@@ -16,7 +16,6 @@
 #include "sv-definition/sv-bow-types.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -28,13 +27,12 @@
  */
 void do_cmd_fire(CreatureEntity &creature, SPELL_IDX snipe_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
 
-    player_ptr->is_fired = false;
-    auto *item_ptr = player_ptr->inventory[INVEN_BOW].get();
+    creature.is_fired = false;
+    auto *item_ptr = creature.inventory[INVEN_BOW].get();
     const auto tval = item_ptr->bi_key.tval();
     if (tval == ItemKindType::NONE) {
         msg_print(_("射撃用の武器を持っていない。", "You have nothing to fire with."));
@@ -55,30 +53,30 @@ void do_cmd_fire(CreatureEntity &creature, SPELL_IDX snipe_type)
         return;
     }
 
-    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
     constexpr auto q = _("どれを撃ちますか? ", "Fire which item? ");
     constexpr auto s = _("発射されるアイテムがありません。", "You have nothing to fire.");
     short i_idx;
-    const auto *ammo_ptr = choose_object(*player_ptr, &i_idx, q, s, USE_INVEN | USE_FLOOR, TvalItemTester(player_ptr->tval_ammo));
+    const auto *ammo_ptr = choose_object(creature, &i_idx, q, s, USE_INVEN | USE_FLOOR, TvalItemTester(creature.tval_ammo));
     if (!ammo_ptr) {
         flush();
         return;
     }
 
-    exe_fire(*player_ptr, i_idx, item_ptr, snipe_type);
-    if (!player_ptr->is_fired || !CreatureClass(*player_ptr).equals(PlayerClassType::SNIPER)) {
+    exe_fire(creature, i_idx, item_ptr, snipe_type);
+    if (!creature.is_fired || !CreatureClass(creature).equals(PlayerClassType::SNIPER)) {
         return;
     }
 
     if (snipe_type == SP_AWAY) {
-        auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
-        teleport_player(*player_ptr, 10 + (sniper_data->concent * 2), TELEPORT_SPONTANEOUS);
+        auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
+        teleport_player(creature, 10 + (sniper_data->concent * 2), TELEPORT_SPONTANEOUS);
     }
 
-    auto effects = player_ptr->effects();
+    auto effects = creature.effects();
     if (snipe_type == SP_FINAL) {
         msg_print(_("射撃の反動が体を襲った。", "The weapon's recoil stuns you. "));
-        BadStatusSetter bss(*player_ptr);
+        BadStatusSetter bss(creature);
         (void)bss.mod_deceleration(randint0(7) + 7, false);
         (void)bss.mod_stun(randnum1<short>(25));
     }

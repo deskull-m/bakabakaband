@@ -70,8 +70,8 @@ MonsterAttackPlayer::MonsterAttackPlayer(CreatureEntity &creature, short m_idx)
     , m_ptr(&creature.current_floor_ptr->m_list[m_idx])
     , method(RaceBlowMethodType::NONE)
     , effect(RaceBlowEffectType::NONE)
-    , do_silly_attack(one_in_(2) && static_cast<PlayerType *>(&creature)->effects()->hallucination().is_hallucinated())
-    , player_ptr(static_cast<PlayerType *>(&creature))
+    , do_silly_attack(one_in_(2) && creature.effects()->hallucination().is_hallucinated())
+    , creature_ptr(&creature)
 {
 }
 
@@ -80,23 +80,24 @@ MonsterAttackPlayer::MonsterAttackPlayer(CreatureEntity &creature, short m_idx)
  */
 void MonsterAttackPlayer::make_attack_normal()
 {
+    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
     if (!this->check_no_blow()) {
         return;
     }
 
     const auto &monrace = this->m_ptr->get_monrace();
     this->rlev = ((monrace.level >= 1) ? monrace.level : 1);
-    angband_strcpy(this->m_name, monster_desc(*this->player_ptr, *this->m_ptr, 0), sizeof(this->m_name));
-    angband_strcpy(this->ddesc, monster_desc(*this->player_ptr, *this->m_ptr, MD_WRONGDOER_NAME), sizeof(this->ddesc));
-    if (CreatureClass(*this->player_ptr).samurai_stance_is(SamuraiStanceType::IAI)) {
+    angband_strcpy(this->m_name, monster_desc(player, *this->m_ptr, 0), sizeof(this->m_name));
+    angband_strcpy(this->ddesc, monster_desc(player, *this->m_ptr, MD_WRONGDOER_NAME), sizeof(this->ddesc));
+    if (CreatureClass(player).samurai_stance_is(SamuraiStanceType::IAI)) {
         msg_format(_("相手が襲いかかる前に素早く武器を振るった。", "You took sen, drew and cut in one motion before %s moved."), this->m_name);
-        if (do_cmd_attack(*this->player_ptr, this->m_ptr->y, this->m_ptr->x, HISSATSU_IAI)) {
+        if (do_cmd_attack(player, this->m_ptr->y, this->m_ptr->x, HISSATSU_IAI)) {
             return;
         }
     }
 
-    auto can_activate_kawarimi = randint0(55) < (this->player_ptr->level * 3 / 5 + 20);
-    if (can_activate_kawarimi && kawarimi(*this->player_ptr, true)) {
+    auto can_activate_kawarimi = randint0(55) < (player.level * 3 / 5 + 20);
+    if (can_activate_kawarimi && kawarimi(player, true)) {
         return;
     }
 
@@ -125,12 +126,13 @@ int MonsterAttackPlayer::stat_value(const int raw)
 
 bool MonsterAttackPlayer::check_no_blow()
 {
+    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
     const auto &monrace = this->m_ptr->get_monrace();
     if (monrace.behavior_flags.has(MonsterBehaviorType::NEVER_BLOW)) {
         return false;
     }
 
-    if (this->player_ptr->current_floor_ptr->get_dungeon_definition().flags.has(DungeonFeatureType::NO_MELEE)) {
+    if (player.current_floor_ptr->get_dungeon_definition().flags.has(DungeonFeatureType::NO_MELEE)) {
         return false;
     }
 
@@ -143,6 +145,7 @@ bool MonsterAttackPlayer::check_no_blow()
  */
 bool MonsterAttackPlayer::process_monster_blows()
 {
+    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
     const auto &monrace = this->m_ptr->get_monrace();
     const auto blow_count = static_cast<int>(monrace.blows.size());
     for (auto ap_cnt = 0; ap_cnt < blow_count; ap_cnt++) {
@@ -166,13 +169,13 @@ bool MonsterAttackPlayer::process_monster_blows()
         }
 
         // フレーバーの打撃は必中扱い。それ以外は通常の命中判定を行う。
-        this->ac = this->player_ptr->ac + this->player_ptr->to_a;
+        this->ac = player.ac + player.to_a;
         bool hit;
         if (this->effect == RaceBlowEffectType::FLAVOR) {
             hit = true;
         } else {
             const int power = mbe_info[enum2i(this->effect)].power;
-            hit = check_hit_from_monster_to_player(*this->player_ptr, power, this->rlev, this->m_ptr->get_remaining_stun());
+            hit = check_hit_from_monster_to_player(player, power, this->rlev, this->m_ptr->get_remaining_stun());
         }
 
         if (hit) {
@@ -187,23 +190,23 @@ bool MonsterAttackPlayer::process_monster_blows()
             }
 
             // モンスターの打撃を受けた回数を記録
-            this->player_ptr->plus_incident_tree("HIT_BY_MONSTER", 1);
+            player.plus_incident_tree("HIT_BY_MONSTER", 1);
 
             // 打撃手段ごとの記録
             const std::string method_tag = get_blow_method_tag(this->method);
             const std::string method_key = "HIT_BY_MONSTER/METHOD/" + method_tag;
-            this->player_ptr->plus_incident_tree(method_key, 1);
+            player.plus_incident_tree(method_key, 1);
 
             // 打撃効果ごとの記録
             const std::string effect_tag = get_blow_effect_tag(this->effect);
             const std::string effect_key = "HIT_BY_MONSTER/EFFECT/" + effect_tag;
-            this->player_ptr->plus_incident_tree(effect_key, 1);
+            player.plus_incident_tree(effect_key, 1);
 
             // 撃退失敗時は落馬処理、変わり身のテレポート処理を行う。
-            check_fall_off_horse(*this->player_ptr, this);
+            check_fall_off_horse(player, this);
 
             // 変わり身のテレポートが成功したら攻撃を打ち切り、プレイヤーが離脱した旨を返す。
-            if (kawarimi(*this->player_ptr, false)) {
+            if (kawarimi(player, false)) {
                 return true;
             }
         } else {
@@ -223,6 +226,7 @@ bool MonsterAttackPlayer::process_monster_blows()
  */
 bool MonsterAttackPlayer::check_monster_continuous_attack()
 {
+    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
     if (!this->m_ptr->is_valid() || (this->method == RaceBlowMethodType::NONE)) {
         return false;
     }
@@ -233,8 +237,8 @@ bool MonsterAttackPlayer::check_monster_continuous_attack()
         this->damage_dice.num /= 10;
     }
 
-    const auto is_neighbor = Grid::calc_distance(this->player_ptr->get_position(), this->m_ptr->get_position()) <= 1;
-    return this->player_ptr->playing && !this->player_ptr->is_dead() && is_neighbor && !this->player_ptr->leaving;
+    const auto is_neighbor = Grid::calc_distance(player.get_position(), this->m_ptr->get_position()) <= 1;
+    return player.playing && !player.is_dead() && is_neighbor && !player.leaving;
 }
 
 /*!
@@ -246,7 +250,8 @@ bool MonsterAttackPlayer::check_monster_continuous_attack()
  */
 bool MonsterAttackPlayer::process_monster_attack_hit()
 {
-    disturb(*this->player_ptr, true, true);
+    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    disturb(player, true, true);
     if (this->effect_protecion_from_evil()) {
         return false;
     }
@@ -261,13 +266,13 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
         this->damage = 0;
     }
 
-    switch_monster_blow_to_player(*this->player_ptr, this);
+    switch_monster_blow_to_player(player, this);
     this->select_cut_stun();
     this->calc_player_cut();
     this->process_player_stun();
     this->monster_explode();
     this->process_sadist_reaction();
-    process_aura_counterattack(*this->player_ptr, this);
+    process_aura_counterattack(player, this);
     return true;
 }
 
@@ -277,15 +282,16 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
  */
 bool MonsterAttackPlayer::effect_protecion_from_evil()
 {
+    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
     auto &monrace = this->m_ptr->get_monrace();
-    auto is_protected = this->player_ptr->effects()->protection().is_protected();
+    auto is_protected = player.effects()->protection().is_protected();
     is_protected &= monrace.kind_flags.has(MonsterKindType::EVIL);
-    is_protected &= (randint0(100) + this->player_ptr->level - this->rlev) > 50;
+    is_protected &= (randint0(100) + player.level - this->rlev) > 50;
     if (!is_protected) {
         return false;
     }
 
-    if (is_original_ap_and_seen(*this->player_ptr, *this->m_ptr)) {
+    if (is_original_ap_and_seen(player, *this->m_ptr)) {
         monrace.r_kind_flags.set(MonsterKindType::EVIL);
     }
 
@@ -346,13 +352,14 @@ void MonsterAttackPlayer::select_cut_stun()
 
 void MonsterAttackPlayer::calc_player_cut()
 {
+    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
     if (this->do_cut == 0) {
         return;
     }
 
     auto cut_plus = PlayerCut::get_accumulation(this->damage_dice.maxroll(), this->damage);
     if (cut_plus > 0) {
-        (void)BadStatusSetter(*this->player_ptr).mod_cut(cut_plus);
+        (void)BadStatusSetter(player).mod_cut(cut_plus);
     }
 }
 
@@ -367,6 +374,7 @@ void MonsterAttackPlayer::calc_player_cut()
  */
 void MonsterAttackPlayer::process_player_stun()
 {
+    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
     if (this->do_stun == 0) {
         return;
     }
@@ -385,9 +393,9 @@ void MonsterAttackPlayer::process_player_stun()
         accumulation_rank++;
     }
 
-    auto str = this->stat_value(this->player_ptr->stat_cur[A_STR]);
-    auto dex = this->stat_value(this->player_ptr->stat_cur[A_DEX]);
-    auto con = this->stat_value(this->player_ptr->stat_cur[A_CON]);
+    auto str = this->stat_value(player.stat_cur[A_STR]);
+    auto dex = this->stat_value(player.stat_cur[A_DEX]);
+    auto con = this->stat_value(player.stat_cur[A_CON]);
     auto is_powerful_body = str + dex + con > 80;
     if (is_powerful_body) {
         accumulation_rank--;
@@ -395,18 +403,19 @@ void MonsterAttackPlayer::process_player_stun()
 
     auto stun_plus = PlayerStun::get_accumulation(accumulation_rank);
     if (stun_plus > 0) {
-        (void)BadStatusSetter(*this->player_ptr).mod_stun(stun_plus);
+        (void)BadStatusSetter(player).mod_stun(stun_plus);
     }
 }
 
 void MonsterAttackPlayer::monster_explode()
 {
+    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
     if (!this->explode) {
         return;
     }
 
     sound(SoundKind::EXPLODE);
-    MonsterDamageProcessor mdp(*this->player_ptr, this->m_idx, this->m_ptr->hp + 1, &this->fear, AttributeType::NONE);
+    MonsterDamageProcessor mdp(player, this->m_idx, this->m_ptr->hp + 1, &this->fear, AttributeType::NONE);
     if (mdp.mon_take_hit("")) {
         this->blinked = false;
         this->alive = false;
@@ -445,13 +454,14 @@ void MonsterAttackPlayer::process_monster_attack_evasion()
 
 void MonsterAttackPlayer::describe_attack_evasion()
 {
+    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
     if (!this->m_ptr->ml) {
         return;
     }
 
-    disturb(*this->player_ptr, true, true);
+    disturb(player, true, true);
 #ifdef JP
-    auto is_suiken = any_bits(this->player_ptr->special_attack, ATTACK_SUIKEN);
+    auto is_suiken = any_bits(player.special_attack, ATTACK_SUIKEN);
     if (this->abbreviate) {
         msg_format("%sかわした。", is_suiken ? "奇妙な動きで" : "");
     } else {
@@ -466,14 +476,15 @@ void MonsterAttackPlayer::describe_attack_evasion()
 
 void MonsterAttackPlayer::gain_armor_exp()
 {
-    const auto o_ptr_mh = this->player_ptr->inventory[INVEN_MAIN_HAND].get();
-    const auto o_ptr_sh = this->player_ptr->inventory[INVEN_SUB_HAND].get();
+    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    const auto o_ptr_mh = player.inventory[INVEN_MAIN_HAND].get();
+    const auto o_ptr_sh = player.inventory[INVEN_SUB_HAND].get();
     if (!o_ptr_mh->is_protector() && !o_ptr_sh->is_protector()) {
         return;
     }
 
-    auto cur = this->player_ptr->skill_exp[PlayerSkillKindType::SHIELD];
-    auto max = class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::SHIELD];
+    auto cur = player.skill_exp[PlayerSkillKindType::SHIELD];
+    auto max = class_skills_info[enum2i(player.pclass)].s_max[PlayerSkillKindType::SHIELD];
     if (cur >= max) {
         return;
     }
@@ -486,25 +497,26 @@ void MonsterAttackPlayer::gain_armor_exp()
         increment += 1 + addition;
     }
 
-    this->player_ptr->skill_exp[PlayerSkillKindType::SHIELD] = std::min<short>(max, cur + increment);
+    player.skill_exp[PlayerSkillKindType::SHIELD] = std::min<short>(max, cur + increment);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
 
 void MonsterAttackPlayer::gain_evasion_exp()
 {
+    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
     // 装備重量が軽い（300ポンド以下）時のみ回避技能の経験値を獲得
     auto equipment_weight = 0;
-    equipment_weight += this->player_ptr->inventory[INVEN_BODY]->weight;
-    equipment_weight += this->player_ptr->inventory[INVEN_HEAD]->weight;
-    equipment_weight += this->player_ptr->inventory[INVEN_OUTER]->weight;
-    equipment_weight += this->player_ptr->inventory[INVEN_ARMS]->weight;
-    equipment_weight += this->player_ptr->inventory[INVEN_FEET]->weight;
+    equipment_weight += player.inventory[INVEN_BODY]->weight;
+    equipment_weight += player.inventory[INVEN_HEAD]->weight;
+    equipment_weight += player.inventory[INVEN_OUTER]->weight;
+    equipment_weight += player.inventory[INVEN_ARMS]->weight;
+    equipment_weight += player.inventory[INVEN_FEET]->weight;
 
     if (equipment_weight > 300) {
         return;
     }
 
-    PlayerSkill(*this->player_ptr).gain_evasion_skill_exp();
+    PlayerSkill(player).gain_evasion_skill_exp();
 }
 
 /*!
@@ -516,7 +528,8 @@ void MonsterAttackPlayer::gain_evasion_exp()
  */
 void MonsterAttackPlayer::increase_blow_type_seen(const int ap_cnt)
 {
-    if (!is_original_ap_and_seen(*this->player_ptr, *this->m_ptr) || this->do_silly_attack) {
+    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    if (!is_original_ap_and_seen(player, *this->m_ptr) || this->do_silly_attack) {
         return;
     }
 
@@ -536,27 +549,29 @@ void MonsterAttackPlayer::increase_blow_type_seen(const int ap_cnt)
 
 void MonsterAttackPlayer::postprocess_monster_blows()
 {
-    SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*this->player_ptr));
+    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    SpellHex spell_hex(*this->creature_ptr);
     spell_hex.store_vengeful_damage(this->get_damage);
     spell_hex.eyes_on_eyes(this->m_idx, this->get_damage);
-    musou_counterattack(*this->player_ptr, this);
+    musou_counterattack(player, this);
     this->process_thief_teleport(spell_hex);
     auto &monrace = this->m_ptr->get_monrace();
-    if (this->player_ptr->is_dead() && (monrace.r_deaths < MAX_SHORT) && !this->player_ptr->current_floor_ptr->inside_arena) {
+    if (player.is_dead() && (monrace.r_deaths < MAX_SHORT) && !player.current_floor_ptr->inside_arena) {
         monrace.r_deaths++;
     }
 
-    if (this->m_ptr->ml && this->fear && this->alive && !this->player_ptr->is_dead()) {
+    if (this->m_ptr->ml && this->fear && this->alive && !player.is_dead()) {
         sound(SoundKind::FLEE);
         msg_format(_("%s^は恐怖で逃げ出した！", "%s^ flees in terror!"), this->m_name);
     }
 
-    CreatureClass(*this->player_ptr).break_samurai_stance({ SamuraiStanceType::IAI });
+    CreatureClass(player).break_samurai_stance({ SamuraiStanceType::IAI });
 }
 
 void MonsterAttackPlayer::process_thief_teleport(const SpellHex &spell_hex)
 {
-    if (!this->blinked || !this->alive || this->player_ptr->is_dead()) {
+    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    if (!this->blinked || !this->alive || player.is_dead()) {
         return;
     }
 
@@ -564,7 +579,7 @@ void MonsterAttackPlayer::process_thief_teleport(const SpellHex &spell_hex)
         msg_print(_("泥棒は笑って逃げ...ようとしたがバリアに防がれた。", "The thief flees laughing...? But a magic barrier obstructs it."));
     } else {
         msg_print(_("泥棒は笑って逃げた！", "The thief flees laughing!"));
-        teleport_away(*this->player_ptr, this->m_idx, MAX_PLAYER_SIGHT * 2 + 5, TELEPORT_SPONTANEOUS);
+        teleport_away(player, this->m_idx, MAX_PLAYER_SIGHT * 2 + 5, TELEPORT_SPONTANEOUS);
     }
 }
 
@@ -574,6 +589,7 @@ void MonsterAttackPlayer::process_thief_teleport(const SpellHex &spell_hex)
  */
 void MonsterAttackPlayer::process_sadist_reaction()
 {
+    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
     const auto &monrace = this->m_ptr->get_monrace();
 
     if (!monrace.misc_flags.has(MonsterMiscType::SADIST)) {
@@ -582,7 +598,7 @@ void MonsterAttackPlayer::process_sadist_reaction()
 
     // プレイヤーにダメージを与えた場合の興奮状態
     if (this->damage > 0 && one_in_(4)) {
-        (void)set_monster_monfear(*this->player_ptr->current_floor_ptr, this->m_idx, 0);
+        (void)set_monster_monfear(*player.current_floor_ptr, this->m_idx, 0);
 
         // 一時的な攻撃力上昇（怒り状態付与）
         this->m_ptr->mflag2.set(MonsterConstantFlagType::ANGER);

@@ -9,7 +9,6 @@
 #include "racial/racial-android.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 
@@ -23,7 +22,6 @@
  */
 bool apply_disenchant(CreatureEntity &creature, BIT_FLAGS mode)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     constexpr static auto candidates = {
         INVEN_MAIN_HAND,
         INVEN_SUB_HAND,
@@ -49,7 +47,7 @@ bool apply_disenchant(CreatureEntity &creature, BIT_FLAGS mode)
         return false;
     }
 
-    const auto item_name = describe_flavor(*player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(creature, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     if (item.is_fixed_or_random_artifact() && evaluate_percent(71)) {
 #ifdef JP
         msg_format("%s(%c)は劣化を跳ね返した！", item_name.data(), index_to_label(t));

@@ -5,18 +5,15 @@
 #include "load/old/load-v1-5-0.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 
 void set_exp_frac_old(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    player_ptr->exp_frac = rd_u16b();
+    creature.exp_frac = rd_u16b();
 }
 
 void remove_water_cave(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     if (floor.quest_number != i2enum<QuestId>(OLD_QUEST_WATER_CAVE)) {
         return;
     }

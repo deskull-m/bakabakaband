@@ -33,7 +33,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
@@ -116,10 +115,9 @@ static bool bash_normal_door(CreatureEntity &creature, turn_flags *turn_flags_pt
     const auto &terrain = grid.get_terrain();
     turn_flags_ptr->do_move = false;
     using Tc = TerrainCharacteristics;
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto can_bash = monrace.behavior_flags.has_not(MonsterBehaviorType::OPEN_DOOR);
     can_bash |= terrain.flags.has_not(Tc::OPEN);
-    can_bash |= monster.is_pet() && ((player_ptr->pet_extra_flags & PF_OPEN_DOORS) == 0);
+    can_bash |= monster.is_pet() && ((creature.pet_extra_flags & PF_OPEN_DOORS) == 0);
     if (can_bash) {
         return true;
     }
@@ -151,11 +149,10 @@ static bool bash_normal_door(CreatureEntity &creature, turn_flags *turn_flags_pt
 static void bash_glass_door(CreatureEntity &creature, turn_flags *turn_flags_ptr, const MonsterEntity &monster, const TerrainType &terrain, bool may_bash)
 {
     const auto &monrace = monster.get_monrace();
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto can_bash = may_bash;
     can_bash &= monrace.behavior_flags.has(MonsterBehaviorType::BASH_DOOR);
     can_bash &= terrain.flags.has(TerrainCharacteristics::BASH);
-    can_bash &= !monster.is_pet() || any_bits(player_ptr->pet_extra_flags, PF_OPEN_DOORS);
+    can_bash &= !monster.is_pet() || any_bits(creature.pet_extra_flags, PF_OPEN_DOORS);
     if (!can_bash) {
         return;
     }
@@ -402,8 +399,7 @@ bool process_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_p
         auto &grid = floor.get_grid(pos_neighbor);
         auto &monster = floor.m_list[m_idx];
         auto &monrace = monster.get_monrace();
-        auto *player_ptr = static_cast<PlayerType *>(&creature);
-        auto can_cross = monster_can_cross_terrain(player_ptr, grid.feat, monrace, turn_flags_ptr->is_riding_mon ? CEM_RIDING : 0);
+        auto can_cross = monster_can_cross_terrain(&creature, grid.feat, monrace, turn_flags_ptr->is_riding_mon ? CEM_RIDING : 0);
         if (!process_wall(creature, turn_flags_ptr, monster, pos_neighbor, can_cross)) {
             if (!process_door(creature, turn_flags_ptr, monster, pos_neighbor)) {
                 return false;
@@ -422,8 +418,8 @@ bool process_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_p
         }
 
         if (turn_flags_ptr->is_riding_mon) {
-            const auto &monster_riding = floor.m_list[player_ptr->riding];
-            if (!player_ptr->riding_ryoute && !monster_riding.is_fearful()) {
+            const auto &monster_riding = floor.m_list[creature.riding];
+            if (!creature.riding_ryoute && !monster_riding.is_fearful()) {
                 turn_flags_ptr->do_move = false;
             }
         }
@@ -433,7 +429,7 @@ bool process_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_p
         }
 
         if (turn_flags_ptr->must_alter_to_move && monrace.feature_flags.has(MonsterFeatureType::AQUATIC)) {
-            if (!monster_can_cross_terrain(player_ptr, grid.feat, monrace, turn_flags_ptr->is_riding_mon ? CEM_RIDING : 0)) {
+            if (!monster_can_cross_terrain(&creature, grid.feat, monrace, turn_flags_ptr->is_riding_mon ? CEM_RIDING : 0)) {
                 turn_flags_ptr->do_move = false;
             }
         }
@@ -474,7 +470,7 @@ bool process_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_p
             monster.energy_need += ENERGY_NEED() / 2;
         }
 
-        if (!update_riding_monster(static_cast<CreatureEntity &>(*player_ptr), turn_flags_ptr, m_idx, pos.y, pos.x, pos_neighbor.y, pos_neighbor.x)) {
+        if (!update_riding_monster(creature, turn_flags_ptr, m_idx, pos.y, pos.x, pos_neighbor.y, pos_neighbor.x)) {
             break;
         }
 
@@ -493,7 +489,7 @@ bool process_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_p
 
         auto is_takable_or_killable = !grid.o_idx_list.empty();
         is_takable_or_killable &= monrace.behavior_flags.has_any_of({ MonsterBehaviorType::TAKE_ITEM, MonsterBehaviorType::KILL_ITEM });
-        auto is_pickup_items = (player_ptr->pet_extra_flags & PF_PICKUP_ITEMS) != 0;
+        auto is_pickup_items = (creature.pet_extra_flags & PF_PICKUP_ITEMS) != 0;
         is_pickup_items &= monrace.behavior_flags.has(MonsterBehaviorType::TAKE_ITEM);
         is_takable_or_killable &= !monster.is_pet() || is_pickup_items;
         if (!is_takable_or_killable) {
@@ -572,8 +568,7 @@ void process_sound(CreatureEntity &creature, MONSTER_IDX m_idx)
     const auto &monster = floor.m_list[m_idx];
     const auto &monrace = monster.get_monrace();
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (monster.ml || player_ptr->skill_srh < randint1(100)) {
+    if (monster.ml || creature.skill_srh < randint1(100)) {
         return;
     }
     const auto m_name = std::string(_("それ", "It"));
@@ -627,8 +622,7 @@ void process_speak(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION oy, POS
         return;
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto m_name = monster.ml ? monster_desc(*player_ptr, monster, 0) : std::string(_("それ", "It"));
+    const auto m_name = monster.ml ? monster_desc(creature, monster, 0) : std::string(_("それ", "It"));
     const auto message_type = get_speak_type(monster);
     if (!message_type) {
         return;

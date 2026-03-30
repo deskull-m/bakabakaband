@@ -21,7 +21,7 @@
 #include "spell/spells-status.h"
 #include "spell/spells-summon.h"
 #include "status/shape-changer.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
 #include "util/dice.h"
@@ -36,11 +36,10 @@
  */
 tl::optional<std::string> do_chaos_spell(CreatureEntity &creature, SPELL_IDX spell, SpellProcessType mode)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     bool info = mode == SpellProcessType::INFO;
     bool cast = mode == SpellProcessType::CAST;
 
-    PLAYER_LEVEL plev = player_ptr->level;
+    PLAYER_LEVEL plev = creature.level;
 
     switch (spell) {
     case 0: {
@@ -87,9 +86,9 @@ tl::optional<std::string> do_chaos_spell(CreatureEntity &creature, SPELL_IDX spe
 
     case 3: {
         if (cast) {
-            if (!(player_ptr->special_attack & ATTACK_CONFUSE)) {
+            if (!(creature.special_attack & ATTACK_CONFUSE)) {
                 msg_print(_("あなたの手は光り始めた。", "Your hands start glowing."));
-                player_ptr->special_attack |= ATTACK_CONFUSE;
+                creature.special_attack |= ATTACK_CONFUSE;
                 RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
             }
         }
@@ -100,7 +99,7 @@ tl::optional<std::string> do_chaos_spell(CreatureEntity &creature, SPELL_IDX spe
         POSITION rad = (plev < 30) ? 2 : 3;
         int base;
 
-        if (CreatureClass(*player_ptr).is_wizard()) {
+        if (CreatureClass(creature).is_wizard()) {
             base = plev + plev / 2;
         } else {
             base = plev + plev / 4;
@@ -215,7 +214,7 @@ tl::optional<std::string> do_chaos_spell(CreatureEntity &creature, SPELL_IDX spe
 
         if (cast) {
             msg_print(_("ドーン！部屋が揺れた！", "BOOM! Shake the room!"));
-            project(creature, 0, rad, player_ptr->y, player_ptr->x, dam, AttributeType::SOUND, PROJECT_KILL | PROJECT_ITEM);
+            project(creature, 0, rad, creature.y, creature.x, dam, AttributeType::SOUND, PROJECT_KILL | PROJECT_ITEM);
         }
     } break;
 
@@ -276,7 +275,7 @@ tl::optional<std::string> do_chaos_spell(CreatureEntity &creature, SPELL_IDX spe
         const Dice dice(1, 4);
 
         if (cast) {
-            destroy_area(creature, player_ptr->y, player_ptr->x, base + dice.roll(), false);
+            destroy_area(creature, creature.y, creature.x, base + dice.roll(), false);
         }
     } break;
 
@@ -483,7 +482,7 @@ tl::optional<std::string> do_chaos_spell(CreatureEntity &creature, SPELL_IDX spe
     } break;
 
     case 30: {
-        int dam = player_ptr->hp;
+        int dam = creature.hp;
         POSITION rad = 2;
 
         if (info) {

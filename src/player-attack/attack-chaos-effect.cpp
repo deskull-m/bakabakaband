@@ -231,13 +231,13 @@ static void attack_teleport_away(CreatureEntity &creature, player_attack_type *p
  */
 static void attack_polymorph(CreatureEntity &creature, player_attack_type *pa_ptr, POSITION y, POSITION x)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     const auto &monrace = *pa_ptr->r_ptr;
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE) || monrace.misc_flags.has(MonsterMiscType::QUESTOR) || monrace.resistance_flags.has_any_of(RFR_EFF_RESIST_CHAOS_MASK)) {
         return;
     }
 
-    if (polymorph_monster(*player_ptr, y, x)) {
+    if (polymorph_monster(player, y, x)) {
         msg_format(_("%s^は変化した！", "%s^ changes!"), pa_ptr->m_name);
         *(pa_ptr->fear) = false;
         pa_ptr->weak = false;
@@ -256,7 +256,7 @@ static void attack_polymorph(CreatureEntity &creature, player_attack_type *pa_pt
  */
 static void attack_golden_hammer(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     auto &floor = *creature.current_floor_ptr;
     auto &monster = floor.m_list[pa_ptr->m_idx];
     if (monster.hold_o_idx_list.empty()) {
@@ -264,12 +264,12 @@ static void attack_golden_hammer(CreatureEntity &creature, player_attack_type *p
     }
 
     auto &item = *floor.o_list[monster.hold_o_idx_list.front()];
-    const auto item_name = describe_flavor(*player_ptr, item, OD_NAME_ONLY);
+    const auto item_name = describe_flavor(player, item, OD_NAME_ONLY);
     item.held_m_idx = 0;
     item.marked.clear().set(OmType::TOUCHED);
     monster.hold_o_idx_list.pop_front();
     msg_format(_("%sを奪った。", "You snatched %s."), item_name.data());
-    store_item_to_inventory(*player_ptr, &item);
+    store_item_to_inventory(player, &item);
 }
 
 /*!

@@ -30,8 +30,8 @@
 #include "perception/object-perception.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -397,8 +397,7 @@ static void generate_unnatural_random_artifact(
     CreatureEntity &creature, ItemEntity *o_ptr, const bool a_scroll, const int power_level, const int max_powers, const int total_flags)
 {
     o_ptr->randart_name = name_unnatural_random_artifact(creature, o_ptr, a_scroll, power_level);
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    msg_format_wizard(*player_ptr, CHEAT_OBJECT,
+    msg_format_wizard(creature, CHEAT_OBJECT,
         _("パワー %d で 価値 %d のランダムアーティファクト生成 バイアスは「%s」", "Random artifact generated - Power:%d Value:%d Bias:%s."), max_powers,
         total_flags, ARTIFACT_BIAS_NAMES.at(o_ptr->artifact_bias).data());
     static constexpr auto flags = {

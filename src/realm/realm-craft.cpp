@@ -19,7 +19,6 @@
 #include "status/element-resistance.h"
 #include "status/sight-setter.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 /*!
@@ -30,11 +29,10 @@
  */
 tl::optional<std::string> do_craft_spell(CreatureEntity &creature, SPELL_IDX spell, SpellProcessType mode)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     bool info = mode == SpellProcessType::INFO;
     bool cast = mode == SpellProcessType::CAST;
 
-    PLAYER_LEVEL plev = player_ptr->level;
+    PLAYER_LEVEL plev = creature.level;
 
     switch (spell) {
     case 0: {

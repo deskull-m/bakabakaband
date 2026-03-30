@@ -34,7 +34,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -56,7 +55,6 @@
  */
 static bool display_player_info(CreatureEntity &creature, int mode)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (mode == 2) {
         display_player_misc_info(creature);
         display_player_stat_info(creature);
@@ -76,7 +74,7 @@ static bool display_player_info(CreatureEntity &creature, int mode)
 
     if (mode == 5) {
         TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, tl::nullopt);
-        do_cmd_knowledge_mutations(*player_ptr);
+        do_cmd_knowledge_mutations(creature);
         return true;
     }
 
@@ -105,14 +103,13 @@ static void display_player_basic_info(CreatureEntity &creature)
  */
 static void display_magic_realms(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    PlayerRealm pr(*player_ptr);
-    if (!pr.realm1().is_available() && player_ptr->element_realm == ElementRealmType::NONE) {
+    PlayerRealm pr(creature);
+    if (!pr.realm1().is_available() && creature.element_realm == ElementRealmType::NONE) {
         return;
     }
 
     if (CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST)) {
-        display_player_one_line(ENTRY_REALM, get_element_title(player_ptr->element_realm), TERM_L_BLUE);
+        display_player_one_line(ENTRY_REALM, get_element_title(creature.element_realm), TERM_L_BLUE);
         return;
     }
 
@@ -291,7 +288,6 @@ static std::string decide_current_floor(CreatureEntity &creature)
  */
 tl::optional<int> display_player(CreatureEntity *creature_ptr, const int tmp_mode)
 {
-    auto *player_ptr = static_cast<PlayerType *>(creature_ptr);
     auto has_any_mutation = (creature_ptr->muta.any() || has_good_luck(*creature_ptr) || has_pervert_attraction(*creature_ptr)) && display_mutations;
     auto mode = has_any_mutation ? tmp_mode % 6 : tmp_mode % 5;
     {
@@ -342,7 +338,7 @@ tl::optional<int> display_player(CreatureEntity *creature_ptr, const int tmp_mod
 
     put_str(_("(キャラクターの生い立ち)", "(Character Background)"), 11, 25);
     for (auto i = 0; i < 4; i++) {
-        put_str(player_ptr->history[i], i + 12, 10);
+        put_str(creature_ptr->history[i], i + 12, 10);
     }
 
     auto statmsg = decide_current_floor(*creature_ptr);

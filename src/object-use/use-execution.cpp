@@ -35,7 +35,7 @@
  * @param i_idx 使うオブジェクトの所持品ID
  */
 ObjectUseEntity::ObjectUseEntity(CreatureEntity &creature, INVENTORY_IDX i_idx)
-    : player_ptr(static_cast<PlayerType *>(&creature))
+    : creature_ptr(&creature)
     , i_idx(i_idx)
 {
 }
@@ -45,14 +45,15 @@ ObjectUseEntity::ObjectUseEntity(CreatureEntity &creature, INVENTORY_IDX i_idx)
  */
 void ObjectUseEntity::execute()
 {
+    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
     auto use_charge = true;
-    auto *o_ptr = ref_item(*this->player_ptr, this->i_idx);
+    auto *o_ptr = ref_item(player, this->i_idx);
     if ((this->i_idx < 0) && (o_ptr->number > 1)) {
         msg_print(_("まずは杖を拾わなければ。", "You must first pick up the staffs."));
         return;
     }
 
-    PlayerEnergy(*this->player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(player).set_player_turn_energy(100);
     if (!this->check_can_use()) {
         return;
     }
@@ -62,8 +63,8 @@ void ObjectUseEntity::execute()
         item_level = 50 + (item_level - 50) / 2;
     }
 
-    auto chance = this->player_ptr->skill_dev;
-    if (this->player_ptr->effects()->confusion().is_confused()) {
+    auto chance = player.skill_dev;
+    if (player.effects()->confusion().is_confused()) {
         chance = chance / 2;
     }
 
@@ -72,7 +73,7 @@ void ObjectUseEntity::execute()
         chance = USE_DEVICE;
     }
 
-    if ((chance < USE_DEVICE) || (randint1(chance) < USE_DEVICE) || CreatureClass(*this->player_ptr).equals(PlayerClassType::BERSERKER)) {
+    if ((chance < USE_DEVICE) || (randint1(chance) < USE_DEVICE) || CreatureClass(player).equals(PlayerClassType::BERSERKER)) {
         if (flush_failure) {
             flush();
         }
@@ -100,11 +101,11 @@ void ObjectUseEntity::execute()
     }
 
     sound(SoundKind::ZAP);
-    auto ident = staff_effect(*this->player_ptr, *o_ptr->bi_key.sval(), &use_charge, false, false, o_ptr->is_aware());
+    auto ident = staff_effect(player, *o_ptr->bi_key.sval(), &use_charge, false, false, o_ptr->is_aware());
     if (!(o_ptr->is_aware())) {
-        chg_virtue(*this->player_ptr, Virtue::PATIENCE, -1);
-        chg_virtue(*this->player_ptr, Virtue::CHANCE, 1);
-        chg_virtue(*this->player_ptr, Virtue::KNOWLEDGE, -1);
+        chg_virtue(player, Virtue::PATIENCE, -1);
+        chg_virtue(player, Virtue::CHANCE, 1);
+        chg_virtue(player, Virtue::KNOWLEDGE, -1);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -117,8 +118,8 @@ void ObjectUseEntity::execute()
     rfu.reset_flags(flags_srf);
     o_ptr->mark_as_tried();
     if (ident && !o_ptr->is_aware()) {
-        object_aware(*this->player_ptr, *o_ptr);
-        gain_exp(*this->player_ptr, (item_level + (this->player_ptr->level >> 1)) / this->player_ptr->level);
+        object_aware(player, *o_ptr);
+        gain_exp(player, (item_level + (player.level >> 1)) / player.level);
     }
 
     static constexpr auto flags_swrf = {
@@ -140,22 +141,23 @@ void ObjectUseEntity::execute()
         used_item.number = 1;
         o_ptr->pval++;
         o_ptr->number--;
-        this->i_idx = store_item_to_inventory(*this->player_ptr, &used_item);
+        this->i_idx = store_item_to_inventory(player, &used_item);
         msg_print(_("杖をまとめなおした。", "You unstack your staff."));
     }
 
     if (this->i_idx >= 0) {
-        inven_item_charges(*this->player_ptr->inventory[this->i_idx]);
+        inven_item_charges(*player.inventory[this->i_idx]);
     } else {
-        floor_item_charges(*this->player_ptr->current_floor_ptr, 0 - this->i_idx);
+        floor_item_charges(*player.current_floor_ptr, 0 - this->i_idx);
     }
 }
 
 bool ObjectUseEntity::check_can_use()
 {
-    if (cmd_limit_time_walk(*this->player_ptr)) {
+    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    if (cmd_limit_time_walk(player)) {
         return false;
     }
 
-    return ItemUseChecker(*this->player_ptr).check_stun(_("朦朧としていて杖を振れなかった！", "You are too stunned to use it!"));
+    return ItemUseChecker(player).check_stun(_("朦朧としていて杖を振れなかった！", "You are too stunned to use it!"));
 }

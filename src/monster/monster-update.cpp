@@ -73,32 +73,32 @@ struct um_type {
  */
 bool update_riding_monster(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx, POSITION oy, POSITION ox, POSITION ny, POSITION nx)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return false;
     }
+    auto &player = static_cast<PlayerType &>(creature);
 
-    auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
-    auto &grid = player_ptr->current_floor_ptr->grid_array[ny][nx];
-    MonsterEntity *y_ptr = &player_ptr->current_floor_ptr->m_list[grid.m_idx];
+    auto &monster = player.current_floor_ptr->m_list[m_idx];
+    auto &grid = player.current_floor_ptr->grid_array[ny][nx];
+    MonsterEntity *y_ptr = &player.current_floor_ptr->m_list[grid.m_idx];
     if (turn_flags_ptr->is_riding_mon) {
-        return move_player_effect(*player_ptr, ny, nx, MPE_DONT_PICKUP);
+        return move_player_effect(player, ny, nx, MPE_DONT_PICKUP);
     }
 
-    player_ptr->current_floor_ptr->grid_array[oy][ox].m_idx = grid.m_idx;
+    player.current_floor_ptr->grid_array[oy][ox].m_idx = grid.m_idx;
     if (grid.has_monster()) {
         y_ptr->y = oy;
         y_ptr->x = ox;
-        update_monster(*player_ptr, grid.m_idx, true);
+        update_monster(player, grid.m_idx, true);
     }
 
     grid.m_idx = m_idx;
     monster.y = ny;
     monster.x = nx;
-    update_monster(*player_ptr, m_idx, true);
+    update_monster(player, m_idx, true);
 
-    lite_spot(*player_ptr, { oy, ox });
-    lite_spot(*player_ptr, { ny, nx });
+    lite_spot(player, { oy, ox });
+    lite_spot(player, { ny, nx });
     return true;
 }
 

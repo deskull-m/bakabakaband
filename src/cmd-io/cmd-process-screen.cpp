@@ -13,7 +13,6 @@
 #include "io/files-util.h"
 #include "io/input-key-acceptor.h"
 #include "system/angband-exceptions.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
@@ -353,8 +352,7 @@ static bool update_use_graphics(CreatureEntity &creature)
     }
 
     use_graphics = false;
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    reset_visuals(*player_ptr);
+    reset_visuals(creature);
     static constexpr auto flags = {
         MainWindowRedrawingFlag::WIPE,
         MainWindowRedrawingFlag::BASIC,
@@ -373,7 +371,6 @@ static bool update_use_graphics(CreatureEntity &creature)
  */
 void do_cmd_save_screen(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     prt(_("記念撮影しますか？ [(y)es/(h)tml/(n)o] ", "Save screen dump? [(y)es/(h)tml/(n)o] "), 0, 0);
     bool html_dump;
     if (!ask_html_dump(&html_dump)) {
@@ -395,7 +392,7 @@ void do_cmd_save_screen(CreatureEntity &creature)
     }
 
     use_graphics = true;
-    reset_visuals(*player_ptr);
+    reset_visuals(creature);
     static constexpr auto flags = {
         MainWindowRedrawingFlag::WIPE,
         MainWindowRedrawingFlag::BASIC,

@@ -16,7 +16,6 @@
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "target/projection-path-calculator.h"
 
 /*!
@@ -33,12 +32,11 @@ static bool decide_pet_approch_direction(CreatureEntity &creature, const Monster
         return false;
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (player_ptr->pet_follow_distance < 0) {
-        if (monster_to.cdis <= (0 - player_ptr->pet_follow_distance)) {
+    if (creature.pet_follow_distance < 0) {
+        if (monster_to.cdis <= (0 - creature.pet_follow_distance)) {
             return true;
         }
-    } else if ((monster_from.cdis < monster_to.cdis) && (monster_to.cdis > player_ptr->pet_follow_distance)) {
+    } else if ((monster_from.cdis < monster_to.cdis) && (monster_to.cdis > creature.pet_follow_distance)) {
         return true;
     }
 
@@ -113,14 +111,13 @@ static tl::optional<MonsterMovementDirectionList> get_enemy_dir(CreatureEntity &
     const auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     POSITION x = 0, y = 0;
-    if (player_ptr->riding_t_m_idx && creature.is_located_at({ monster.y, monster.x })) {
-        y = floor.m_list[player_ptr->riding_t_m_idx].y;
-        x = floor.m_list[player_ptr->riding_t_m_idx].x;
-    } else if (monster.is_pet() && player_ptr->pet_t_m_idx) {
-        y = floor.m_list[player_ptr->pet_t_m_idx].y;
-        x = floor.m_list[player_ptr->pet_t_m_idx].x;
+    if (creature.riding_t_m_idx && creature.is_located_at({ monster.y, monster.x })) {
+        y = floor.m_list[creature.riding_t_m_idx].y;
+        x = floor.m_list[creature.riding_t_m_idx].x;
+    } else if (monster.is_pet() && creature.pet_t_m_idx) {
+        y = floor.m_list[creature.pet_t_m_idx].y;
+        x = floor.m_list[creature.pet_t_m_idx].x;
     } else {
         int start;
         int plus = 1;
@@ -199,8 +196,7 @@ static tl::optional<MonsterMovementDirectionList> decide_pet_movement_direction(
         return mmdl;
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    auto &pet_follow_distance = player_ptr->pet_follow_distance;
+    auto &pet_follow_distance = creature.pet_follow_distance;
     const auto avoid = ((pet_follow_distance < 0) && (monster.cdis <= (0 - pet_follow_distance)));
     const auto lonely = (!avoid && (monster.cdis > pet_follow_distance));
     const auto distant = (monster.cdis > PET_SEEK_DIST);
@@ -213,7 +209,7 @@ static tl::optional<MonsterMovementDirectionList> decide_pet_movement_direction(
         pet_follow_distance = PET_SEEK_DIST;
     }
 
-    MonsterSweepGrid msd(player_ptr, m_idx);
+    MonsterSweepGrid msd(&creature, m_idx);
     const auto mmdl = msd.get_movable_grid();
     pet_follow_distance = distance_orig;
     return mmdl;
@@ -252,7 +248,6 @@ tl::optional<MonsterMovementDirectionList> decide_monster_movement_direction(Cre
         return mmdl ? mmdl : MonsterMovementDirectionList::random_move(m_idx);
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    MonsterSweepGrid msd(player_ptr, m_idx);
+    MonsterSweepGrid msd(&creature, m_idx);
     return msd.get_movable_grid();
 }

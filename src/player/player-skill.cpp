@@ -8,7 +8,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 
@@ -44,7 +43,7 @@ using GainAmountList = std::array<int, enum2i(PlayerSkillRank::MASTER)>;
 
 void gain_attack_skill_exp(CreatureEntity &creature, short &exp, const GainAmountList &gain_amount_list)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     auto gain_amount = 0;
     auto calc_gain_amount = [&gain_amount_list, exp](PlayerSkillRank rank, int next_rank_exp) {
         return std::min(gain_amount_list[enum2i(rank)], next_rank_exp - exp);
@@ -54,9 +53,9 @@ void gain_attack_skill_exp(CreatureEntity &creature, short &exp, const GainAmoun
         gain_amount = calc_gain_amount(PlayerSkillRank::UNSKILLED, WEAPON_EXP_BEGINNER);
     } else if (exp < WEAPON_EXP_SKILLED) {
         gain_amount = calc_gain_amount(PlayerSkillRank::BEGINNER, WEAPON_EXP_SKILLED);
-    } else if ((exp < WEAPON_EXP_EXPERT) && (player_ptr->level > 19)) {
+    } else if ((exp < WEAPON_EXP_EXPERT) && (player.level > 19)) {
         gain_amount = calc_gain_amount(PlayerSkillRank::SKILLED, WEAPON_EXP_EXPERT);
-    } else if ((exp < WEAPON_EXP_MASTER) && (player_ptr->level > 34)) {
+    } else if ((exp < WEAPON_EXP_MASTER) && (player.level > 34)) {
         gain_amount = calc_gain_amount(PlayerSkillRank::EXPERT, WEAPON_EXP_MASTER);
     }
 
@@ -66,9 +65,9 @@ void gain_attack_skill_exp(CreatureEntity &creature, short &exp, const GainAmoun
 
 void gain_spell_skill_exp_aux(CreatureEntity &creature, short &exp, const GainAmountList &gain_amount_list, int spell_level)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto dlev = player_ptr->current_floor_ptr->dun_level;
-    const auto plev = player_ptr->level;
+    auto &player = static_cast<PlayerType &>(creature);
+    const auto dlev = player.current_floor_ptr->dun_level;
+    const auto plev = player.level;
 
     auto gain_amount = 0;
     auto calc_gain_amount = [&gain_amount_list, exp](PlayerSkillRank rank, int next_rank_exp) {
@@ -99,7 +98,7 @@ void gain_spell_skill_exp_aux(CreatureEntity &creature, short &exp, const GainAm
 
 PlayerSkill::PlayerSkill(CreatureEntity &creature)
 {
-    this->player_ptr = static_cast<PlayerType *>(&creature);
+    this->creature_ptr = &creature;
 }
 
 SUB_EXP PlayerSkill::weapon_exp_at(PlayerSkillRank rank)
@@ -253,10 +252,10 @@ void PlayerSkill::gain_melee_weapon_exp(const ItemEntity *o_ptr)
     const GainAmountList gain_amount_list{ { 80, 10, 1, (one_in_(2) ? 1 : 0) } };
     constexpr GainAmountList others_gain_amount_list{ { 8, 1, 0, 0 } };
     const auto tval = o_ptr->bi_key.tval();
-    for (auto sval = 0U; sval < this->player_ptr->weapon_exp[tval].size(); ++sval) {
-        auto &now_exp = this->player_ptr->weapon_exp[tval][sval];
-        if (now_exp < this->player_ptr->weapon_exp_max[tval][sval]) {
-            gain_attack_skill_exp(*this->player_ptr, now_exp,
+    for (auto sval = 0U; sval < this->creature_ptr->weapon_exp[tval].size(); ++sval) {
+        auto &now_exp = this->creature_ptr->weapon_exp[tval][sval];
+        if (now_exp < this->creature_ptr->weapon_exp_max[tval][sval]) {
+            gain_attack_skill_exp(*this->creature_ptr, now_exp,
                 (static_cast<int>(sval) == o_ptr->bi_key.sval()) ? gain_amount_list : others_gain_amount_list);
         }
     }
@@ -267,10 +266,10 @@ void PlayerSkill::gain_range_weapon_exp(const ItemEntity *o_ptr)
     constexpr GainAmountList gain_amount_list{ { 80, 25, 10, 2 } };
     constexpr GainAmountList others_gain_amount_list{ { 8, 2, 0, 0 } };
     const auto tval = o_ptr->bi_key.tval();
-    for (auto sval = 0U; sval < this->player_ptr->weapon_exp[tval].size(); ++sval) {
-        auto &now_exp = this->player_ptr->weapon_exp[tval][sval];
-        if (now_exp < this->player_ptr->weapon_exp_max[tval][sval]) {
-            gain_attack_skill_exp(*this->player_ptr, now_exp,
+    for (auto sval = 0U; sval < this->creature_ptr->weapon_exp[tval].size(); ++sval) {
+        auto &now_exp = this->creature_ptr->weapon_exp[tval][sval];
+        if (now_exp < this->creature_ptr->weapon_exp_max[tval][sval]) {
+            gain_attack_skill_exp(*this->creature_ptr, now_exp,
                 (static_cast<int>(sval) == o_ptr->bi_key.sval()) ? gain_amount_list : others_gain_amount_list);
         }
     }
@@ -278,69 +277,69 @@ void PlayerSkill::gain_range_weapon_exp(const ItemEntity *o_ptr)
 
 void PlayerSkill::gain_martial_arts_skill_exp()
 {
-    if (this->player_ptr->skill_exp[PlayerSkillKindType::MARTIAL_ARTS] < class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::MARTIAL_ARTS]) {
+    if (this->creature_ptr->skill_exp[PlayerSkillKindType::MARTIAL_ARTS] < class_skills_info[enum2i(this->creature_ptr->pclass)].s_max[PlayerSkillKindType::MARTIAL_ARTS]) {
         const GainAmountList gain_amount_list{ 40, 5, 1, (one_in_(3) ? 1 : 0) };
-        gain_attack_skill_exp(*this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::MARTIAL_ARTS], gain_amount_list);
+        gain_attack_skill_exp(*this->creature_ptr, this->creature_ptr->skill_exp[PlayerSkillKindType::MARTIAL_ARTS], gain_amount_list);
     }
 }
 
 void PlayerSkill::gain_two_weapon_skill_exp()
 {
-    if (this->player_ptr->skill_exp[PlayerSkillKindType::TWO_WEAPON] < class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::TWO_WEAPON]) {
+    if (this->creature_ptr->skill_exp[PlayerSkillKindType::TWO_WEAPON] < class_skills_info[enum2i(this->creature_ptr->pclass)].s_max[PlayerSkillKindType::TWO_WEAPON]) {
         const GainAmountList gain_amount_list{ 80, 4, 1, (one_in_(3) ? 1 : 0) };
-        gain_attack_skill_exp(*this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::TWO_WEAPON], gain_amount_list);
+        gain_attack_skill_exp(*this->creature_ptr, this->creature_ptr->skill_exp[PlayerSkillKindType::TWO_WEAPON], gain_amount_list);
     }
 }
 
 void PlayerSkill::gain_riding_skill_exp_on_gross_eating()
 {
-    if (this->player_ptr->skill_exp[PlayerSkillKindType::GROSS_EATING] < class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::GROSS_EATING]) {
+    if (this->creature_ptr->skill_exp[PlayerSkillKindType::GROSS_EATING] < class_skills_info[enum2i(this->creature_ptr->pclass)].s_max[PlayerSkillKindType::GROSS_EATING]) {
         const GainAmountList gain_amount_list{ 40, 5, 1, (one_in_(3) ? 1 : 0) };
-        gain_attack_skill_exp(*this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::GROSS_EATING], gain_amount_list);
+        gain_attack_skill_exp(*this->creature_ptr, this->creature_ptr->skill_exp[PlayerSkillKindType::GROSS_EATING], gain_amount_list);
     }
 }
 
 void PlayerSkill::gain_scatology_skill_exp()
 {
-    if (this->player_ptr->skill_exp[PlayerSkillKindType::SCATOLOGY] < class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::SCATOLOGY]) {
+    if (this->creature_ptr->skill_exp[PlayerSkillKindType::SCATOLOGY] < class_skills_info[enum2i(this->creature_ptr->pclass)].s_max[PlayerSkillKindType::SCATOLOGY]) {
         const GainAmountList gain_amount_list{ 30, 3, 1, (one_in_(4) ? 1 : 0) };
-        gain_attack_skill_exp(*this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::SCATOLOGY], gain_amount_list);
+        gain_attack_skill_exp(*this->creature_ptr, this->creature_ptr->skill_exp[PlayerSkillKindType::SCATOLOGY], gain_amount_list);
     }
 }
 
 void PlayerSkill::gain_armor_skill_exp()
 {
-    if (this->player_ptr->skill_exp[PlayerSkillKindType::ARMOR] < class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::ARMOR]) {
+    if (this->creature_ptr->skill_exp[PlayerSkillKindType::ARMOR] < class_skills_info[enum2i(this->creature_ptr->pclass)].s_max[PlayerSkillKindType::ARMOR]) {
         const GainAmountList gain_amount_list{ 50, 5, 1, (one_in_(3) ? 1 : 0) };
-        gain_attack_skill_exp(*this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::ARMOR], gain_amount_list);
+        gain_attack_skill_exp(*this->creature_ptr, this->creature_ptr->skill_exp[PlayerSkillKindType::ARMOR], gain_amount_list);
     }
 }
 
 void PlayerSkill::gain_evasion_skill_exp()
 {
-    if (this->player_ptr->skill_exp[PlayerSkillKindType::EVASION] < class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::EVASION]) {
+    if (this->creature_ptr->skill_exp[PlayerSkillKindType::EVASION] < class_skills_info[enum2i(this->creature_ptr->pclass)].s_max[PlayerSkillKindType::EVASION]) {
         const GainAmountList gain_amount_list{ 40, 4, 1, (one_in_(4) ? 1 : 0) };
-        gain_attack_skill_exp(*this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::EVASION], gain_amount_list);
+        gain_attack_skill_exp(*this->creature_ptr, this->creature_ptr->skill_exp[PlayerSkillKindType::EVASION], gain_amount_list);
     }
 }
 
 void PlayerSkill::gain_asshole_skill_exp()
 {
-    if (this->player_ptr->skill_exp[PlayerSkillKindType::ASSHOLE] < class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::ASSHOLE]) {
+    if (this->creature_ptr->skill_exp[PlayerSkillKindType::ASSHOLE] < class_skills_info[enum2i(this->creature_ptr->pclass)].s_max[PlayerSkillKindType::ASSHOLE]) {
         const GainAmountList gain_amount_list{ 50, 5, 2, (one_in_(3) ? 1 : 0) };
-        gain_attack_skill_exp(*this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::ASSHOLE], gain_amount_list);
+        gain_attack_skill_exp(*this->creature_ptr, this->creature_ptr->skill_exp[PlayerSkillKindType::ASSHOLE], gain_amount_list);
     }
 }
 
 void PlayerSkill::gain_riding_skill_exp_on_melee_attack(const MonraceDefinition &monrace)
 {
-    auto now_exp = this->player_ptr->skill_exp[PlayerSkillKindType::RIDING];
-    auto max_exp = class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::RIDING];
+    auto now_exp = this->creature_ptr->skill_exp[PlayerSkillKindType::RIDING];
+    auto max_exp = class_skills_info[enum2i(this->creature_ptr->pclass)].s_max[PlayerSkillKindType::RIDING];
     if (now_exp >= max_exp) {
         return;
     }
 
-    auto riding_level = this->player_ptr->current_floor_ptr->m_list[this->player_ptr->riding].get_monrace().level;
+    auto riding_level = this->creature_ptr->current_floor_ptr->m_list[this->creature_ptr->riding].get_monrace().level;
     int inc = 0;
 
     if ((now_exp / 200 - 5) < monrace.level) {
@@ -355,36 +354,36 @@ void PlayerSkill::gain_riding_skill_exp_on_melee_attack(const MonraceDefinition 
         }
     }
 
-    this->player_ptr->skill_exp[PlayerSkillKindType::RIDING] = std::min<SUB_EXP>(max_exp, now_exp + inc);
+    this->creature_ptr->skill_exp[PlayerSkillKindType::RIDING] = std::min<SUB_EXP>(max_exp, now_exp + inc);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
 
 void PlayerSkill::gain_riding_skill_exp_on_range_attack()
 {
-    auto now_exp = this->player_ptr->skill_exp[PlayerSkillKindType::RIDING];
-    auto max_exp = class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::RIDING];
+    auto now_exp = this->creature_ptr->skill_exp[PlayerSkillKindType::RIDING];
+    auto max_exp = class_skills_info[enum2i(this->creature_ptr->pclass)].s_max[PlayerSkillKindType::RIDING];
     if (now_exp >= max_exp) {
         return;
     }
 
-    const auto &floor = *this->player_ptr->current_floor_ptr;
-    const auto &monster = floor.m_list[this->player_ptr->riding];
+    const auto &floor = *this->creature_ptr->current_floor_ptr;
+    const auto &monster = floor.m_list[this->creature_ptr->riding];
     const auto &monrace = monster.get_monrace();
-    if (((this->player_ptr->skill_exp[PlayerSkillKindType::RIDING] - (RIDING_EXP_BEGINNER * 2)) / 200 < monrace.level) && one_in_(2)) {
-        this->player_ptr->skill_exp[PlayerSkillKindType::RIDING] += 1;
+    if (((this->creature_ptr->skill_exp[PlayerSkillKindType::RIDING] - (RIDING_EXP_BEGINNER * 2)) / 200 < monrace.level) && one_in_(2)) {
+        this->creature_ptr->skill_exp[PlayerSkillKindType::RIDING] += 1;
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     }
 }
 
 void PlayerSkill::gain_riding_skill_exp_on_fall_off_check(int dam)
 {
-    auto now_exp = this->player_ptr->skill_exp[PlayerSkillKindType::RIDING];
-    auto max_exp = class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::RIDING];
+    auto now_exp = this->creature_ptr->skill_exp[PlayerSkillKindType::RIDING];
+    auto max_exp = class_skills_info[enum2i(this->creature_ptr->pclass)].s_max[PlayerSkillKindType::RIDING];
     if (now_exp >= max_exp || max_exp <= 1000) {
         return;
     }
 
-    auto riding_level = this->player_ptr->current_floor_ptr->m_list[this->player_ptr->riding].get_monrace().level;
+    auto riding_level = this->creature_ptr->current_floor_ptr->m_list[this->creature_ptr->riding].get_monrace().level;
 
     if ((dam / 2 + riding_level) <= (now_exp / 30 + 10)) {
         return;
@@ -397,13 +396,13 @@ void PlayerSkill::gain_riding_skill_exp_on_fall_off_check(int dam)
         inc += 1;
     }
 
-    this->player_ptr->skill_exp[PlayerSkillKindType::RIDING] = std::min<SUB_EXP>(max_exp, now_exp + inc);
+    this->creature_ptr->skill_exp[PlayerSkillKindType::RIDING] = std::min<SUB_EXP>(max_exp, now_exp + inc);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
 
 void PlayerSkill::gain_spell_skill_exp(RealmType realm, int spell_idx)
 {
-    PlayerRealm pr(*this->player_ptr);
+    PlayerRealm pr(*this->creature_ptr);
     auto is_valid_realm = PlayerRealm::is_magic(realm) ||
                           (realm == RealmType::MUSIC) || (realm == RealmType::HEX);
     is_valid_realm &= pr.realm1().equals(realm) || pr.realm2().equals(realm);
@@ -419,7 +418,7 @@ void PlayerSkill::gain_spell_skill_exp(RealmType realm, int spell_idx)
     const auto is_first_realm = pr.realm1().equals(realm);
     const auto &spell = PlayerRealm::get_spell_info(realm, spell_idx);
 
-    gain_spell_skill_exp_aux(*this->player_ptr, this->player_ptr->spell_exp[spell_idx + (is_first_realm ? 0 : 32)],
+    gain_spell_skill_exp_aux(*this->creature_ptr, this->creature_ptr->spell_exp[spell_idx + (is_first_realm ? 0 : 32)],
         (is_first_realm ? gain_amount_list_first : gain_amount_list_second), spell.slevel);
 }
 
@@ -434,16 +433,16 @@ void PlayerSkill::gain_continuous_spell_skill_exp(RealmType realm, int spell_idx
 
     const GainAmountList gain_amount_list{ 5, (one_in_(2) ? 1 : 0), (one_in_(5) ? 1 : 0), (one_in_(5) ? 1 : 0) };
 
-    gain_spell_skill_exp_aux(*this->player_ptr, this->player_ptr->spell_exp[spell_idx], gain_amount_list, spell.slevel);
+    gain_spell_skill_exp_aux(*this->creature_ptr, this->creature_ptr->spell_exp[spell_idx], gain_amount_list, spell.slevel);
 }
 
 PlayerSkillRank PlayerSkill::gain_spell_skill_exp_over_learning(int spell_idx)
 {
-    if ((spell_idx < 0) || (static_cast<int>(std::size(this->player_ptr->spell_exp)) <= spell_idx)) {
+    if ((spell_idx < 0) || (static_cast<int>(std::size(this->creature_ptr->spell_exp)) <= spell_idx)) {
         return PlayerSkillRank::UNSKILLED;
     }
 
-    auto &exp = this->player_ptr->spell_exp[spell_idx];
+    auto &exp = this->creature_ptr->spell_exp[spell_idx];
 
     if (exp >= SPELL_EXP_EXPERT) {
         exp = SPELL_EXP_MASTER;
@@ -472,16 +471,16 @@ PlayerSkillRank PlayerSkill::gain_spell_skill_exp_over_learning(int spell_idx)
  */
 EXP PlayerSkill::exp_of_spell(RealmType realm, int spell_idx) const
 {
-    CreatureClass pc(*this->player_ptr);
-    PlayerRealm pr(*this->player_ptr);
+    CreatureClass pc(*this->creature_ptr);
+    PlayerRealm pr(*this->creature_ptr);
     if (pc.equals(PlayerClassType::SORCERER)) {
         return SPELL_EXP_MASTER;
     } else if (pc.equals(PlayerClassType::RED_MAGE)) {
         return SPELL_EXP_SKILLED;
     } else if (pr.realm1().equals(realm)) {
-        return this->player_ptr->spell_exp[spell_idx];
+        return this->creature_ptr->spell_exp[spell_idx];
     } else if (pr.realm2().equals(realm)) {
-        return this->player_ptr->spell_exp[spell_idx + 32];
+        return this->creature_ptr->spell_exp[spell_idx + 32];
     } else {
         return 0;
     }
@@ -495,17 +494,17 @@ EXP PlayerSkill::exp_of_spell(RealmType realm, int spell_idx) const
  */
 void PlayerSkill::apply_special_weapon_skill_max_values()
 {
-    this->player_ptr->weapon_exp_max = class_skills_info[enum2i(this->player_ptr->pclass)].w_max;
-    if (CreatureClass(*this->player_ptr).equals(PlayerClassType::SORCERER)) {
+    this->creature_ptr->weapon_exp_max = class_skills_info[enum2i(this->creature_ptr->pclass)].w_max;
+    if (CreatureClass(*this->creature_ptr).equals(PlayerClassType::SORCERER)) {
         return;
     }
 
-    auto &w_exp_max = this->player_ptr->weapon_exp_max;
-    if (this->player_ptr->ppersonality == PERSONALITY_SEXY) {
+    auto &w_exp_max = this->creature_ptr->weapon_exp_max;
+    if (this->creature_ptr->ppersonality == PERSONALITY_SEXY) {
         w_exp_max[ItemKindType::HAFTED][SV_WHIP] = PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER);
     }
 
-    if (CreatureRace(player_ptr).equals(PlayerRaceType::MERFOLK)) {
+    if (CreatureRace(this->creature_ptr).equals(PlayerRaceType::MERFOLK)) {
         w_exp_max[ItemKindType::POLEARM][SV_TRIDENT] = PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER);
         w_exp_max[ItemKindType::POLEARM][SV_TRIFURCATE_SPEAR] = PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER);
     }
@@ -517,8 +516,8 @@ void PlayerSkill::apply_special_weapon_skill_max_values()
 void PlayerSkill::limit_weapon_skills_by_max_value()
 {
     for (auto tval : TV_WEAPON_RANGE) {
-        auto &exp_table = this->player_ptr->weapon_exp[tval];
-        const auto &max_exp_table = this->player_ptr->weapon_exp_max[tval];
+        auto &exp_table = this->creature_ptr->weapon_exp[tval];
+        const auto &max_exp_table = this->creature_ptr->weapon_exp_max[tval];
         for (auto i = 0U; i < exp_table.size(); ++i) {
             exp_table[i] = std::min(exp_table[i], max_exp_table[i]);
         }

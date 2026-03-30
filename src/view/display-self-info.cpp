@@ -5,7 +5,7 @@
 #include "player-info/race-info.h"
 #include "player-info/self-info-util.h"
 #include "player/player-status-table.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
@@ -15,19 +15,17 @@
 
 void display_life_rating(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    player_ptr->knowledge |= KNOW_STAT | KNOW_HPRATE;
-    auto info = format(_("現在の体力ランク : %d/100", "Your current Life Rating is %d/100."), player_ptr->calc_life_rating());
+    creature.knowledge |= KNOW_STAT | KNOW_HPRATE;
+    auto info = format(_("現在の体力ランク : %d/100", "Your current Life Rating is %d/100."), creature.calc_life_rating());
     self_ptr->info_list.push_back(std::move(info));
     self_ptr->info_list.emplace_back("");
 }
 
 void display_max_base_status(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     self_ptr->info_list.emplace_back(_("能力の最大値", "Limits of maximum stats"));
     for (int v_nr = 0; v_nr < A_MAX; v_nr++) {
-        auto stat = format("%s %4.1f", stat_names[v_nr], player_ptr->stat_max_max[v_nr] / 10.0);
+        auto stat = format("%s %4.1f", stat_names[v_nr], creature.stat_max_max[v_nr] / 10.0);
         self_ptr->info_list.push_back(std::move(stat));
     }
 }

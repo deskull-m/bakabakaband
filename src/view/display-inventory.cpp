@@ -12,11 +12,11 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
+#include "util/enum-converter.h"
 #include "util/string-processor.h"
 
 /*!
@@ -29,7 +29,6 @@
  */
 COMMAND_CODE show_inventory(CreatureEntity &creature, int target_item, BIT_FLAGS mode, const ItemTester &item_tester)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     COMMAND_CODE i;
     int k, l, z = 0;
     COMMAND_CODE out_index[23]{};
@@ -40,7 +39,7 @@ COMMAND_CODE show_inventory(CreatureEntity &creature, int target_item, BIT_FLAGS
     const auto &[wid, hgt] = term_get_size();
     auto len = wid - col - 1;
     for (i = 0; i < INVEN_PACK; i++) {
-        const auto &item = *player_ptr->inventory[i];
+        const auto &item = *creature.inventory[i];
         if (!item.is_valid()) {
             continue;
         }
@@ -50,7 +49,7 @@ COMMAND_CODE show_inventory(CreatureEntity &creature, int target_item, BIT_FLAGS
 
     const auto inven_label = prepare_label_string(creature, USE_INVEN, item_tester);
     for (k = 0, i = 0; i < z; i++) {
-        auto &item = *player_ptr->inventory[i];
+        auto &item = *creature.inventory[i];
         if (!item_tester.okay(&item) && !(mode & USE_FULL)) {
             continue;
         }
@@ -61,7 +60,7 @@ COMMAND_CODE show_inventory(CreatureEntity &creature, int target_item, BIT_FLAGS
             out_color[k] = TERM_L_DARK;
         }
 
-        out_desc[k] = describe_flavor(*player_ptr, item, 0);
+        out_desc[k] = describe_flavor(creature, item, 0);
         l = out_desc[k].length() + 5;
         if (show_weights) {
             l += 9;
@@ -86,7 +85,7 @@ COMMAND_CODE show_inventory(CreatureEntity &creature, int target_item, BIT_FLAGS
     int j;
     for (j = 0; j < k; j++) {
         i = out_index[j];
-        const auto &item = *player_ptr->inventory[i];
+        const auto &item = *creature.inventory[i];
         prt("", j + 1, col ? col - 2 : col);
         std::string head;
         if (use_menu && target_item) {
@@ -135,7 +134,6 @@ COMMAND_CODE show_inventory(CreatureEntity &creature, int target_item, BIT_FLAGS
  */
 void display_inventory(CreatureEntity &creature, const ItemTester &item_tester)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     int i, z = 0;
     TERM_COLOR attr = TERM_WHITE;
     if (creature.inventory.empty()) {
@@ -144,7 +142,7 @@ void display_inventory(CreatureEntity &creature, const ItemTester &item_tester)
 
     const auto &[wid, hgt] = term_get_size();
     for (i = 0; i < INVEN_PACK; i++) {
-        auto o_ptr = player_ptr->inventory[i].get();
+        auto o_ptr = creature.inventory[i].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
@@ -156,7 +154,7 @@ void display_inventory(CreatureEntity &creature, const ItemTester &item_tester)
             break;
         }
 
-        auto &item = *player_ptr->inventory[i];
+        auto &item = *creature.inventory[i];
         auto do_disp = item_tester.okay(&item);
         std::string label = "   ";
         if (do_disp) {
@@ -167,7 +165,7 @@ void display_inventory(CreatureEntity &creature, const ItemTester &item_tester)
         int cur_col = 3;
         term_erase(cur_col, i);
         term_putstr(0, i, cur_col, TERM_WHITE, label);
-        const auto item_name = describe_flavor(*player_ptr, item, 0);
+        const auto item_name = describe_flavor(creature, item, 0);
         attr = tval_to_attr[enum2i(item.bi_key.tval()) % 128];
         if (item.timeout) {
             attr = TERM_L_DARK;

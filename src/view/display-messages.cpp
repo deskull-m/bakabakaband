@@ -170,11 +170,10 @@ bool is_msg_window_flowed(void)
  */
 static void msg_flush(CreatureEntity &creature, int x)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     byte a = TERM_L_BLUE;
     bool show_more = (num_more >= 0);
 
-    if (auto_more && !player_ptr->now_damaged) {
+    if (auto_more && !creature.now_damaged) {
         show_more = is_msg_window_flowed();
     }
 
@@ -182,8 +181,8 @@ static void msg_flush(CreatureEntity &creature, int x)
         show_more = false;
     }
 
-    player_ptr->now_damaged = false;
-    if (!player_ptr->playing || show_more) {
+    creature.now_damaged = false;
+    if (!creature.playing || show_more) {
         term_putstr(x, 0, -1, a, _("-続く-", "-more-"));
         while (true) {
             int cmd = inkey();

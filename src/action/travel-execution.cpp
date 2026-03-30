@@ -139,16 +139,18 @@ Direction decide_travel_step_dir(CreatureEntity &creature, const Direction &prev
     const auto p_pos = creature.get_position();
     auto &floor = *creature.current_floor_ptr;
     const auto &p_grid = floor.get_grid(p_pos);
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (player_ptr && (disturb_trap_detect || alert_trap_detect) && player_ptr->dtrap && none_bits(p_grid.info, CAVE_IN_DETECT)) {
-        player_ptr->dtrap = false;
-        if (none_bits(p_grid.info, CAVE_UNSAFE)) {
-            if (alert_trap_detect) {
-                msg_print(_("* 注意:この先はトラップの感知範囲外です！ *", "*Leaving trap detect region!*"));
-            }
+    if (creature.is_player()) {
+        auto &player = static_cast<PlayerType &>(creature);
+        if ((disturb_trap_detect || alert_trap_detect) && player.dtrap && none_bits(p_grid.info, CAVE_IN_DETECT)) {
+            player.dtrap = false;
+            if (none_bits(p_grid.info, CAVE_UNSAFE)) {
+                if (alert_trap_detect) {
+                    msg_print(_("* 注意:この先はトラップの感知範囲外です！ *", "*Leaving trap detect region!*"));
+                }
 
-            if (disturb_trap_detect) {
-                return Direction::none();
+                if (disturb_trap_detect) {
+                    return Direction::none();
+                }
             }
         }
     }
@@ -278,8 +280,8 @@ void Travel::step(CreatureEntity &creature)
         return;
     }
 
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
+    auto &player = static_cast<PlayerType &>(creature);
+    PlayerEnergy(player).set_player_turn_energy(100);
     exe_movement(creature, this->dir, always_pickup, false);
 
     if (creature.get_position() == this->get_goal()) {

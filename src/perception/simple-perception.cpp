@@ -36,8 +36,8 @@
  */
 static void sense_inventory_aux(CreatureEntity &creature, INVENTORY_IDX slot, bool heavy)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    auto &item = *player_ptr->inventory[slot];
+    auto &player = static_cast<PlayerType &>(creature);
+    auto &item = *player.inventory[slot];
     if (any_bits(item.ident, IDENT_SENSE) || item.is_known()) {
         return;
     }
@@ -47,7 +47,7 @@ static void sense_inventory_aux(CreatureEntity &creature, INVENTORY_IDX slot, bo
         return;
     }
 
-    if ((player_ptr->muta.has(PlayerMutationType::BAD_LUCK)) && !randint0(13)) {
+    if ((player.muta.has(PlayerMutationType::BAD_LUCK)) && !randint0(13)) {
         switch (feel) {
         case FEEL_TERRIBLE: {
             feel = FEEL_SPECIAL;
@@ -147,15 +147,15 @@ static void sense_inventory_aux(CreatureEntity &creature, INVENTORY_IDX slot, bo
  */
 void sense_inventory1(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    PLAYER_LEVEL plev = player_ptr->level;
+    auto &player = static_cast<PlayerType &>(creature);
+    PLAYER_LEVEL plev = player.level;
     bool heavy = false;
     ItemEntity *o_ptr;
-    if (player_ptr->effects()->confusion().is_confused()) {
+    if (player.effects()->confusion().is_confused()) {
         return;
     }
 
-    switch (player_ptr->pclass) {
+    switch (player.pclass) {
     case PlayerClassType::WARRIOR:
     case PlayerClassType::ARCHER:
     case PlayerClassType::SAMURAI:
@@ -283,7 +283,7 @@ void sense_inventory1(CreatureEntity &creature)
     }
 
     for (INVENTORY_IDX i = 0; i < INVEN_TOTAL; i++) {
-        o_ptr = player_ptr->inventory[i].get();
+        o_ptr = player.inventory[i].get();
 
         if (!o_ptr->is_valid()) {
             continue;
@@ -336,15 +336,15 @@ void sense_inventory1(CreatureEntity &creature)
  */
 void sense_inventory2(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    PLAYER_LEVEL plev = player_ptr->level;
+    auto &player = static_cast<PlayerType &>(creature);
+    PLAYER_LEVEL plev = player.level;
     ItemEntity *o_ptr;
 
-    if (player_ptr->effects()->confusion().is_confused()) {
+    if (player.effects()->confusion().is_confused()) {
         return;
     }
 
-    switch (player_ptr->pclass) {
+    switch (player.pclass) {
     case PlayerClassType::WARRIOR:
     case PlayerClassType::ARCHER:
     case PlayerClassType::SAMURAI:
@@ -413,7 +413,7 @@ void sense_inventory2(CreatureEntity &creature)
 
     for (INVENTORY_IDX i = 0; i < INVEN_TOTAL; i++) {
         bool okay = false;
-        o_ptr = player_ptr->inventory[i].get();
+        o_ptr = player.inventory[i].get();
         if (!o_ptr->is_valid()) {
             continue;
         }

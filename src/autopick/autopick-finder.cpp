@@ -18,7 +18,6 @@
 #include "object/item-use-flags.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "util/int-char-converter.h"
@@ -39,8 +38,7 @@ int find_autopick_list(CreatureEntity &creature, const ItemEntity *o_ptr)
         return -1;
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto item_name = str_tolower(describe_flavor(*player_ptr, *o_ptr, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL)));
+    const auto item_name = str_tolower(describe_flavor(creature, *o_ptr, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL)));
     for (auto i = 0U; i < autopick_list.size(); i++) {
         const auto &entry = autopick_list[i];
         if (is_autopick_match(creature, o_ptr, entry, item_name)) {
@@ -58,14 +56,13 @@ bool get_object_for_search(CreatureEntity &creature, AutopickSearch &as)
 {
     constexpr auto q = _("どのアイテムを検索しますか? ", "Enter which item? ");
     constexpr auto s = _("アイテムを持っていない。", "You have nothing to enter.");
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    auto *o_ptr = choose_object(*player_ptr, nullptr, q, s, USE_INVEN | USE_FLOOR | USE_EQUIP);
+    auto *o_ptr = choose_object(creature, nullptr, q, s, USE_INVEN | USE_FLOOR | USE_EQUIP);
     if (!o_ptr) {
         return false;
     }
 
     as.item_ptr = o_ptr;
-    const auto item_name = describe_flavor(*player_ptr, *as.item_ptr, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL));
+    const auto item_name = describe_flavor(creature, *as.item_ptr, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL));
     as.search_str = format("<%s>", item_name.data());
     return true;
 }
@@ -79,9 +76,8 @@ bool get_destroyed_object_for_search(CreatureEntity &creature, AutopickSearch &a
         return false;
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     as.item_ptr = &autopick_last_destroyed_object;
-    const auto item_name = describe_flavor(*player_ptr, *as.item_ptr, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL));
+    const auto item_name = describe_flavor(creature, *as.item_ptr, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL));
     as.search_str = format("<%s>", item_name.data());
     return true;
 }
@@ -249,8 +245,7 @@ void search_for_object(CreatureEntity &creature, text_body_type *tb, const ItemE
     autopick_type an_entry;
     int bypassed_cy = -1;
     int i = tb->cy;
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto item_name = str_tolower(describe_flavor(*player_ptr, *o_ptr, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL)));
+    const auto item_name = str_tolower(describe_flavor(creature, *o_ptr, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL)));
 
     while (true) {
         if (forward) {

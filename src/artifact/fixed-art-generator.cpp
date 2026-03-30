@@ -38,12 +38,11 @@ static bool invest_terror_mask(CreatureEntity &creature, ItemEntity *o_ptr)
         return false;
     }
 
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return false;
     }
-
-    switch (player_ptr->pclass) {
+    auto &player = static_cast<PlayerType &>(creature);
+    switch (player.pclass) {
     case PlayerClassType::WARRIOR:
     case PlayerClassType::ARCHER:
     case PlayerClassType::CAVALRY:
@@ -65,8 +64,11 @@ static bool invest_terror_mask(CreatureEntity &creature, ItemEntity *o_ptr)
  */
 static void milim_swimsuit(CreatureEntity &creature, ItemEntity *o_ptr)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!o_ptr->is_specific_artifact(FixedArtifactId::MILIM) || !player_ptr || (player_ptr->ppersonality != PERSONALITY_SEXY)) {
+    if (!o_ptr->is_specific_artifact(FixedArtifactId::MILIM) || !creature.is_player()) {
+        return;
+    }
+    auto &player = static_cast<PlayerType &>(creature);
+    if (player.ppersonality != PERSONALITY_SEXY) {
         return;
     }
 
@@ -92,7 +94,6 @@ static void milim_swimsuit(CreatureEntity &creature, ItemEntity *o_ptr)
 static void invest_special_artifact_abilities(CreatureEntity &creature, ItemEntity *o_ptr)
 {
     const auto pc = CreatureClass(creature);
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     switch (o_ptr->fa_id) {
     case FixedArtifactId::MURAMASA:
         if (!pc.equals(PlayerClassType::SAMURAI)) {
@@ -114,8 +115,11 @@ static void invest_special_artifact_abilities(CreatureEntity &creature, ItemEnti
         get_bloody_moon_flags(o_ptr);
         return;
     case FixedArtifactId::HEAVENLY_MAIDEN:
-        if (player_ptr && player_ptr->psex != SEX_FEMALE) {
-            o_ptr->art_flags.set(TR_AGGRAVATE);
+        if (creature.is_player()) {
+            auto &player = static_cast<PlayerType &>(creature);
+            if (player.psex != SEX_FEMALE) {
+                o_ptr->art_flags.set(TR_AGGRAVATE);
+            }
         }
         return;
     case FixedArtifactId::MILIM:

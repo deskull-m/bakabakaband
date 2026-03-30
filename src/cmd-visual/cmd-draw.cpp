@@ -17,7 +17,6 @@
 #include "racial/racial-android.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
@@ -116,8 +115,7 @@ static tl::optional<int> input_status_command(CreatureEntity &creature, int page
         process_player_name(creature);
         return page;
     case 'f': {
-        auto *player_ptr = static_cast<PlayerType *>(&creature);
-        const auto initial_filename = format("%s.txt", player_ptr->base_name.data());
+        const auto initial_filename = format("%s.txt", creature.base_name.data());
         const auto input_filename = input_string(_("ファイル名: ", "File name: "), 80, initial_filename);
         if (!input_filename.has_value()) {
             return page;
@@ -132,8 +130,7 @@ static tl::optional<int> input_status_command(CreatureEntity &creature, int page
         return page;
     }
     case 'g': {
-        auto *player_ptr = static_cast<PlayerType *>(&creature);
-        const auto initial_filename = format("%s.json", player_ptr->base_name.data());
+        const auto initial_filename = format("%s.json", creature.base_name.data());
         const auto input_filename = input_string(_("JSON ファイル名: ", "JSON File name: "), 80, initial_filename);
         if (!input_filename.has_value()) {
             return page;

@@ -58,9 +58,9 @@ void print_title(CreatureEntity &creature)
  */
 void print_level(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     const auto tmp = format("%5d", creature.level);
-    if (creature.level >= player_ptr->max_plv) {
+    if (creature.level >= player.max_plv) {
         put_str(_("レベル ", "LEVEL "), ROW_LEVEL, 0);
         c_put_str(TERM_L_GREEN, tmp, ROW_LEVEL, COL_LEVEL + 7);
     } else {
@@ -74,7 +74,7 @@ void print_level(CreatureEntity &creature)
  */
 void print_exp(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     std::string out_val;
 
     CreatureRace pr(&creature);
@@ -84,7 +84,7 @@ void print_exp(CreatureEntity &creature)
         if (creature.level >= PY_MAX_LEVEL) {
             (void)sprintf(out_val.data(), "********");
         } else {
-            out_val = format("%8d", player_exp[creature.level - 1] * player_ptr->expfact / 100 - creature.exp);
+            out_val = format("%8d", player_exp[creature.level - 1] * player.expfact / 100 - creature.exp);
         }
     }
 

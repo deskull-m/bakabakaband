@@ -9,9 +9,9 @@
 #include "player/player-move.h"
 #include "spell-kind/earthquake.h"
 #include "spell-kind/spells-detection.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "view/display-messages.h"
 
@@ -24,13 +24,12 @@
  */
 bool cast_berserk_spell(CreatureEntity &creature, MindBerserkerType spell)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     switch (spell) {
     case MindBerserkerType::DETECT_MANACE:
         detect_monsters_mind(creature, DETECT_RAD_DEFAULT);
         return true;
     case MindBerserkerType::CHARGE: {
-        if (player_ptr->riding) {
+        if (creature.riding) {
             msg_print(_("乗馬中には無理だ。", "You cannot do it when riding."));
             return false;
         }

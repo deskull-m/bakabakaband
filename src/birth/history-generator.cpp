@@ -10,12 +10,12 @@
 
 static int get_history_chart(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return 0;
     }
+    auto &player = static_cast<PlayerType &>(creature);
 
-    switch (player_ptr->prace) {
+    switch (player.prace) {
     case PlayerRaceType::AMBERITE:
         return 67;
     case PlayerRaceType::HUMAN:
@@ -100,10 +100,10 @@ static int get_history_chart(CreatureEntity &creature)
  */
 static std::string decide_social_class(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return "";
     }
+    auto &player = static_cast<PlayerType &>(creature);
 
     auto social_class = randnum1<short>(4);
     auto chart = get_history_chart(creature);
@@ -126,7 +126,7 @@ static std::string decide_social_class(CreatureEntity &creature)
         social_class = 1;
     }
 
-    player_ptr->prestige = social_class;
+    player.prestige = social_class;
     return ss.str();
 }
 
@@ -136,21 +136,21 @@ static std::string decide_social_class(CreatureEntity &creature)
  */
 void get_history(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return;
     }
+    auto &player = static_cast<PlayerType &>(creature);
 
     constexpr auto lines = 4;
     for (int i = 0; i < lines; i++) {
-        player_ptr->history[i][0] = '\0';
+        player.history[i][0] = '\0';
     }
 
     auto social_class = decide_social_class(creature);
-    constexpr auto max_line_len = sizeof(player_ptr->history[0]);
+    constexpr auto max_line_len = sizeof(player.history[0]);
     const auto history_lines = shape_buffer(social_class.data(), max_line_len);
     const auto max_lines = std::min<int>(lines, history_lines.size());
     for (auto i = 0; i < max_lines; ++i) {
-        angband_strcpy(player_ptr->history[i], history_lines[i], max_line_len);
+        angband_strcpy(player.history[i], history_lines[i], max_line_len);
     }
 }

@@ -64,7 +64,7 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
 {
     PLAYER_LEVEL lvl = creature.level;
     auto &floor = *creature.current_floor_ptr;
-    auto *player_ptr = &dynamic_cast<PlayerType &>(creature);
+    auto &player = static_cast<PlayerType &>(creature);
     switch (power) {
     case PlayerMutationType::SPIT_ACID: {
         const auto dir = get_aim_dir(creature);
@@ -164,7 +164,7 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
         return true;
     case PlayerMutationType::DET_CURSE:
         for (int i = 0; i < INVEN_TOTAL; i++) {
-            auto *o_ptr = player_ptr->inventory[i].get();
+            auto *o_ptr = player.inventory[i].get();
             if (!o_ptr->is_valid() || !o_ptr->is_cursed()) {
                 continue;
             }
@@ -311,7 +311,7 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
     case PlayerMutationType::LAUNCHER:
         return ThrowCommand(creature).do_cmd_throw(2 + lvl / 40, false, -1);
     default:
-        PlayerEnergy(*player_ptr).reset_player_turn();
+        PlayerEnergy(player).reset_player_turn();
         msg_format(_("能力 %s は実装されていません。", "Power %s not implemented. Oops."), power);
         return true;
     }

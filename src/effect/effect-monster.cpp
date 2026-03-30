@@ -45,7 +45,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "tracking/lore-tracker.h"
@@ -291,9 +290,8 @@ static bool heal_leaper(CreatureEntity &creature, EffectMonster *em_ptr)
  */
 static bool deal_effect_damage_from_player(CreatureEntity &creature, EffectMonster *em_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     bool fear = false;
-    MonsterDamageProcessor mdp(*player_ptr, em_ptr->g_ptr->m_idx, em_ptr->dam, &fear, em_ptr->attribute);
+    MonsterDamageProcessor mdp(creature, em_ptr->g_ptr->m_idx, em_ptr->dam, &fear, em_ptr->attribute);
     if (mdp.mon_take_hit(em_ptr->note_dies)) {
         return true;
     }

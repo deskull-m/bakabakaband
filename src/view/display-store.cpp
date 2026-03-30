@@ -9,7 +9,6 @@
 #include "store/store-owners.h"
 #include "store/store.h" //!< @todo 相互依存している、こっちは残す？.
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/gameterm.h"
@@ -60,8 +59,7 @@ void display_entry(CreatureEntity &creature, int pos, StoreSaleType store_num)
             maxwid -= 10;
         }
 
-        auto *player_ptr = static_cast<PlayerType *>(&creature);
-        const auto item_name = describe_flavor(*player_ptr, item, 0, maxwid);
+        const auto item_name = describe_flavor(creature, item, 0, maxwid);
         c_put_str(tval_to_attr[enum2i(item.bi_key.tval())], item_name, i + 6, cur_col);
 
         if (show_weights) {
@@ -77,8 +75,7 @@ void display_entry(CreatureEntity &creature, int pos, StoreSaleType store_num)
         maxwid -= 7;
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto item_name = describe_flavor(*player_ptr, item, 0, maxwid);
+    const auto item_name = describe_flavor(creature, item, 0, maxwid);
     c_put_str(tval_to_attr[enum2i(item.bi_key.tval())], item_name, i + 6, cur_col);
 
     if (show_weights) {
@@ -86,7 +83,7 @@ void display_entry(CreatureEntity &creature, int pos, StoreSaleType store_num)
         put_str(format("%3d.%1d", _(lb_to_kg_integer(wgt), wgt / 10), _(lb_to_kg_fraction(wgt), wgt % 10)), i + 6, _(60, 61));
     }
 
-    const auto price = price_item(*player_ptr, &item, ot_ptr->inflate, false, store_num);
+    const auto price = price_item(creature, &item, ot_ptr->inflate, false, store_num);
     put_str(format("%9d  ", price), i + 6, 68);
 }
 

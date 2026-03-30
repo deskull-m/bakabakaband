@@ -13,12 +13,12 @@
 #include "player/player-status-flags.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
 #include "util/bit-flags-calculator.h"
+#include "util/enum-converter.h"
 #include "util/string-processor.h"
 #include "view/display-symbol.h"
 #include <array>
@@ -32,7 +32,6 @@
  */
 COMMAND_CODE show_equipment(CreatureEntity &creature, int target_item, BIT_FLAGS mode, const ItemTester &item_tester)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     COMMAND_CODE i;
     int j, k, l;
     COMMAND_CODE out_index[23]{};
@@ -43,8 +42,8 @@ COMMAND_CODE show_equipment(CreatureEntity &creature, int target_item, BIT_FLAGS
     const auto &[wid, hgt] = term_get_size();
     auto len = wid - col - 1;
     for (k = 0, i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        const auto &item = *player_ptr->inventory[i];
-        auto only_slot = !(player_ptr->select_ring_slot ? is_ring_slot(i) : (item_tester.okay(&item) || any_bits(mode, USE_FULL)));
+        const auto &item = *creature.inventory[i];
+        auto only_slot = !(creature.select_ring_slot ? is_ring_slot(i) : (item_tester.okay(&item) || any_bits(mode, USE_FULL)));
         auto is_any_hand = (i == INVEN_MAIN_HAND) && can_attack_with_sub_hand(creature);
         is_any_hand |= (i == INVEN_SUB_HAND) && can_attack_with_main_hand(creature);
         auto is_two_handed = is_any_hand && has_two_handed_weapons(creature);
@@ -91,7 +90,7 @@ COMMAND_CODE show_equipment(CreatureEntity &creature, int target_item, BIT_FLAGS
     const auto equip_label = prepare_label_string(creature, USE_EQUIP, item_tester);
     for (j = 0; j < k; j++) {
         i = out_index[j];
-        const auto &item = *player_ptr->inventory[i];
+        const auto &item = *creature.inventory[i];
         prt("", j + 1, col ? col - 2 : col);
         std::string head;
         if (use_menu && target_item) {

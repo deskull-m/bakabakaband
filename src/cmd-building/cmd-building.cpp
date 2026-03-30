@@ -63,7 +63,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "term/gameterm.h"
@@ -79,9 +78,8 @@
  */
 static void town_history(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     screen_save();
-    FileDisplayer(player_ptr->name).display(true, _("jbldg.txt", "bldg.txt"), 0, 0);
+    FileDisplayer(creature.name).display(true, _("jbldg.txt", "bldg.txt"), 0, 0);
     screen_load();
 }
 
@@ -94,7 +92,6 @@ static void town_history(CreatureEntity &creature)
  */
 static bool bldg_process_command(CreatureEntity &creature, const building_type &bldg, int i)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &world = AngbandWorld::get_instance();
     msg_flag = false;
     msg_erase();
@@ -106,7 +103,7 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
     }
 
     const auto building_action = bldg.actions[i];
-    if ((building_action != BACT_RECHARGE) && (((bldg.member_costs[i] > player_ptr->au) && can_be_owner) || ((bldg.other_costs[i] > player_ptr->au) && !can_be_owner))) {
+    if ((building_action != BACT_RECHARGE) && (((bldg.member_costs[i] > creature.au) && can_be_owner) || ((bldg.other_costs[i] > creature.au) && !can_be_owner))) {
         msg_print(_("お金が足りません！", "You do not have the gold!"));
         return false;
     }
@@ -117,7 +114,7 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
         return false;
     case BACT_RESEARCH_ITEM:
         if (identify_fully(creature, false)) {
-            player_ptr->au -= building_cost;
+            creature.au -= building_cost;
         }
 
         return false;
@@ -151,18 +148,18 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
     case BACT_RUMORS:
     case BACT_FOOD:
         if (inn_comm(creature, building_action)) {
-            player_ptr->au -= building_cost;
+            creature.au -= building_cost;
         }
 
         return false;
     case BACT_RESEARCH_MONSTER:
         if (research_mon(creature)) {
-            player_ptr->au -= building_cost;
+            creature.au -= building_cost;
         }
 
         return false;
     case BACT_COMPARE_WEAPONS:
-        player_ptr->au -= compare_weapons(creature, building_cost);
+        creature.au -= compare_weapons(creature, building_cost);
         return false;
     case BACT_ENCHANT_WEAPON:
         enchant_item(creature, building_cost, 1, 1, 0, FuncItemTester(&ItemEntity::allow_enchant_melee_weapon));
@@ -183,11 +180,11 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
 
         identify_pack(creature);
         msg_print(_(" 持ち物全てが鑑定されました。", "Your possessions have been identified."));
-        player_ptr->au -= building_cost;
+        creature.au -= building_cost;
         return false;
     case BACT_IDENT_ONE:
         if (ident_spell(creature, false)) {
-            player_ptr->au -= building_cost;
+            creature.au -= building_cost;
         }
 
         return false;
@@ -196,13 +193,13 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
         return false;
     case BACT_HEALING:
         if (cure_critical_wounds(creature, 200)) {
-            player_ptr->au -= building_cost;
+            creature.au -= building_cost;
         }
 
         return false;
     case BACT_RESTORE:
         if (restore_all_status(creature)) {
-            player_ptr->au -= building_cost;
+            creature.au -= building_cost;
         }
 
         return false;
@@ -214,21 +211,21 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
         return false;
     case BACT_RECALL:
         if (recall_player(creature, 1)) {
-            player_ptr->au -= building_cost;
+            creature.au -= building_cost;
         }
 
         return false;
     case BACT_TELEPORT_LEVEL:
         clear_bldg(4, 20);
         if (free_level_recall(creature)) {
-            player_ptr->au -= building_cost;
+            creature.au -= building_cost;
         }
 
         screen_load();
         return false;
     case BACT_LOSE_MUTATION: {
-        auto muta = player_ptr->muta;
-        if (player_ptr->ppersonality == PERSONALITY_LUCKY) {
+        auto muta = creature.muta;
+        if (creature.ppersonality == PERSONALITY_LUCKY) {
             // ラッキーマンの白オーラは突然変異治療の対象外
             muta.reset(PlayerMutationType::GOOD_LUCK);
         }
@@ -238,7 +235,7 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
                 ;
             }
 
-            player_ptr->au -= building_cost;
+            creature.au -= building_cost;
             return false;
         }
 
@@ -281,28 +278,28 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
         set_virtue(creature, Virtue::VALOUR, 0);
         set_virtue(creature, Virtue::INDIVIDUALISM, 0);
         initialize_virtues(creature);
-        player_ptr->au -= building_cost;
+        creature.au -= building_cost;
         return false;
     case BACT_TELE_TOWN:
         if (!tele_town(creature)) {
             return false;
         }
 
-        player_ptr->au -= building_cost;
+        creature.au -= building_cost;
         return true;
     case BACT_EVAL_AC:
-        if (eval_ac(player_ptr->dis_ac + player_ptr->dis_to_a)) {
-            player_ptr->au -= building_cost;
+        if (eval_ac(creature.dis_ac + creature.dis_to_a)) {
+            creature.au -= building_cost;
         }
 
         return false;
     case BACT_BROKEN_WEAPON:
-        player_ptr->au -= repair_broken_weapon(creature, building_cost);
+        creature.au -= repair_broken_weapon(creature, building_cost);
         return false;
 
     case BACT_TRANS_SEX:
         if (trans_sex(creature)) {
-            player_ptr->au -= building_cost;
+            creature.au -= building_cost;
         }
         return false;
 
@@ -365,15 +362,14 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
  */
 void do_cmd_building(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
 
     PlayerEnergy energy(creature);
     energy.set_player_turn_energy(100);
-    const auto p_pos = player_ptr->get_position();
-    auto &floor = *player_ptr->current_floor_ptr;
+    const auto p_pos = creature.get_position();
+    auto &floor = *creature.current_floor_ptr;
     if (!floor.has_terrain_characteristics(p_pos, TerrainCharacteristics::BLDG)) {
         msg_print(_("ここには建物はない。", "You see no building here."));
         return;
@@ -397,7 +393,7 @@ void do_cmd_building(CreatureEntity &creature)
         } else {
             fcms->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::NO_RETURN });
             floor.inside_arena = false;
-            player_ptr->leaving = true;
+            creature.leaving = true;
             command_new = SPECIAL_KEY_BUILDING;
             energy.reset_player_turn();
         }
@@ -410,15 +406,15 @@ void do_cmd_building(CreatureEntity &creature)
     auto &system = AngbandSystem::get_instance();
     if (system.is_phase_out()) {
         fcms->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::NO_RETURN });
-        player_ptr->leaving = true;
+        creature.leaving = true;
         system.set_phase_out(false);
         command_new = SPECIAL_KEY_BUILDING;
         energy.reset_player_turn();
         return;
     }
 
-    player_ptr->oldpy = player_ptr->y;
-    player_ptr->oldpx = player_ptr->x;
+    creature.oldpy = creature.y;
+    creature.oldpx = creature.x;
     floor.forget_lite();
     floor.forget_view();
     world.character_icky_depth++;
@@ -431,7 +427,7 @@ void do_cmd_building(CreatureEntity &creature)
     while (true) {
         display_building_service(creature, bldg);
         prt("", 1, 0);
-        building_prt_gold(player_ptr->au);
+        building_prt_gold(creature.au);
         const auto command = inkey();
         if (command == ESCAPE) {
             floor.inside_arena = false;
@@ -461,7 +457,7 @@ void do_cmd_building(CreatureEntity &creature)
     msg_erase();
 
     if (reinit_wilderness) {
-        player_ptr->leaving = true;
+        creature.leaving = true;
     }
 
     world.character_icky_depth--;

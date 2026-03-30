@@ -3,7 +3,7 @@
 #include "player-info/mimic-info-table.h"
 #include "player/player-personality.h"
 #include "player/player-sex.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "view/display-player-stat-info.h"
@@ -17,10 +17,9 @@
  */
 void display_player_name(CreatureEntity &creature, bool name_only)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     std::stringstream ss;
-    if (!name_only && player_ptr->personality != nullptr) {
-        ss << (*player_ptr->personality).title << _((*player_ptr->personality).no == 1 ? "の" : "", " ");
+    if (!name_only && creature.personality != nullptr) {
+        ss << (*creature.personality).title << _((*creature.personality).no == 1 ? "の" : "", " ");
     }
     ss << creature.name;
     const auto display_name = ss.str();

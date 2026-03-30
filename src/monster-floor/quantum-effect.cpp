@@ -13,7 +13,6 @@
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 /*!
@@ -31,8 +30,7 @@ static void vanish_nonunique(CreatureEntity &creature, MONSTER_IDX m_idx, bool s
     }
 
     monster_death(creature, m_idx, false, AttributeType::QUANTUM_VANISH);
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    delete_monster_idx(*player_ptr, m_idx);
+    delete_monster_idx(creature, m_idx);
     if (monster.is_pet() && !(monster.ml)) {
         msg_print(_("少しの間悲しい気分になった。", "You feel sad for a moment."));
     }

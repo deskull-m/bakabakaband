@@ -17,7 +17,6 @@
 #include "store/rumor.h"
 #include "system/creature-entity.h"
 #include "system/inner-game-data.h"
-#include "system/player-type-definition.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 #include "world/world-collapsion.h"
@@ -92,11 +91,10 @@ static bool has_a_nightmare(CreatureEntity &creature)
         return false;
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     msg_print(_("眠りに就くと恐ろしい光景が心をよぎった。", "Horrible visions flit through your mind as you sleep."));
 
     while (true) {
-        sanity_blast(*player_ptr);
+        sanity_blast(creature);
         if (!one_in_(3)) {
             break;
         }
@@ -227,8 +225,7 @@ bool inn_comm(CreatureEntity &creature, int cmd)
     case BACT_REST:
         return stay_inn(creature);
     case BACT_RUMORS: {
-        auto *player_ptr = static_cast<PlayerType *>(&creature);
-        display_rumor(*player_ptr, true);
+        display_rumor(creature, true);
         return true;
     }
     default:

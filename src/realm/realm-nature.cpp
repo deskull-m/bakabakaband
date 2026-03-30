@@ -38,7 +38,6 @@
 #include "sv-definition/sv-food-types.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "util/dice.h"
 #include "view/display-messages.h"
@@ -52,7 +51,6 @@
  */
 tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX spell, SpellProcessType mode)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     bool info = mode == SpellProcessType::INFO;
     bool cast = mode == SpellProcessType::CAST;
 
@@ -122,7 +120,7 @@ tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX sp
         }
 
         if (cast) {
-            lite_area(*player_ptr, dice.roll(), rad);
+            lite_area(creature, dice.roll(), rad);
 
             CreatureRace race(&creature);
             if (race.life() == PlayerRaceLifeType::UNDEAD && race.tr_flags().has(TR_VUL_LITE) && !has_resist_lite(creature)) {
@@ -173,7 +171,7 @@ tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX sp
 
         if (cast) {
             BadStatusSetter bss(creature);
-            hp_player(*player_ptr, dice.roll());
+            hp_player(creature, dice.roll());
             (void)bss.set_cut(0);
             (void)bss.set_poison(0);
         }
@@ -259,7 +257,7 @@ tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX sp
                 return tl::nullopt;
             }
             msg_print(_("太陽光線が現れた。", "A line of sunlight appears."));
-            lite_line(*player_ptr, dir, dice.roll());
+            lite_line(creature, dir, dice.roll());
         }
     } break;
 
@@ -288,13 +286,13 @@ tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX sp
             return info_heal(heal);
         }
         if (cast) {
-            (void)cure_critical_wounds(*player_ptr, heal);
+            (void)cure_critical_wounds(creature, heal);
         }
     } break;
 
     case 16: {
         if (cast) {
-            stair_creation(*player_ptr);
+            stair_creation(creature);
         }
     } break;
 
@@ -346,7 +344,7 @@ tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX sp
 
     case 21: {
         if (cast) {
-            if (!identify_fully(*player_ptr, false)) {
+            if (!identify_fully(creature, false)) {
                 return tl::nullopt;
             }
         }
@@ -461,7 +459,7 @@ tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX sp
 
     case 30: {
         if (cast) {
-            brand_weapon(*player_ptr, randint0(2));
+            brand_weapon(creature, randint0(2));
         }
     } break;
 

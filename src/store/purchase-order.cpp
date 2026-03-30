@@ -22,7 +22,7 @@
 #include "store/say-comments.h"
 #include "store/store-owners.h"
 #include "store/store.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/screen-processor.h"
@@ -46,12 +46,11 @@
  */
 static tl::optional<PRICE> prompt_to_buy(CreatureEntity &creature, ItemEntity *o_ptr, StoreSaleType store_num)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto price_ask = price_item(creature, o_ptr, ot_ptr->inflate, false, store_num);
 
     price_ask *= o_ptr->number;
     const auto s = fmt::format(_("買値 ${} で買いますか？", "Do you buy for ${}? "), price_ask);
-    if (input_check_strict(*player_ptr, s, UserCheck::DEFAULT_Y)) {
+    if (input_check_strict(creature, s, UserCheck::DEFAULT_Y)) {
         return price_ask;
     }
 
@@ -90,12 +89,11 @@ static tl::optional<short> show_store_select_item(const int i, StoreSaleType sto
  */
 static void take_item_from_home(CreatureEntity &creature, ItemEntity &item_home, ItemEntity &item_inventory, short i_idx)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto amt = item_inventory.number;
     distribute_charges(&item_home, &item_inventory, amt);
 
     const auto item_new = store_item_to_inventory(creature, &item_inventory);
-    const auto item_name = describe_flavor(creature, *player_ptr->inventory[item_new], 0);
+    const auto item_name = describe_flavor(creature, *creature.inventory[item_new], 0);
     handle_stuff(creature);
     msg_format(_("%s(%c)を取った。", "You have %s (%c)."), item_name.data(), index_to_label(item_new));
 
@@ -126,10 +124,9 @@ static void take_item_from_home(CreatureEntity &creature, ItemEntity &item_home,
 
 static void switch_store_stock(CreatureEntity &creature, const int i, const COMMAND_CODE item, StoreSaleType store_num)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (st_ptr->stock_num == 0) {
         msg_print(_("店主は新たな在庫を取り出した。", "The shopkeeper brings out some new stock."));
-        store_maintenance(creature, player_ptr->town_num, store_num, 10);
+        store_maintenance(creature, creature.town_num, store_num, 10);
 
         store_top = 0;
         display_store_inventory(creature, store_num);
@@ -155,7 +152,6 @@ static void switch_store_stock(CreatureEntity &creature, const int i, const COMM
  */
 void store_purchase(CreatureEntity &creature, StoreSaleType store_num)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (store_num == StoreSaleType::MUSEUM) {
         msg_print(_("博物館から取り出すことはできません。", "Items cannot be taken out of the Museum."));
         return;
@@ -249,7 +245,7 @@ void store_purchase(CreatureEntity &creature, StoreSaleType store_num)
         return;
     }
 
-    if (player_ptr->au < res.value()) {
+    if (creature.au < res.value()) {
         msg_print(_("お金が足りません。", "You do not have enough gold."));
         return;
     }
@@ -263,10 +259,10 @@ void store_purchase(CreatureEntity &creature, StoreSaleType store_num)
     }
 
     sound(SoundKind::BUY);
-    player_ptr->au -= res.value();
-    store_prt_gold(player_ptr->au);
+    creature.au -= res.value();
+    store_prt_gold(creature.au);
     object_aware(creature, item);
-    player_ptr->plus_incident_tree("STORE_BUY", 1);
+    creature.plus_incident_tree("STORE_BUY", 1);
 
     msg_print(_("{}を ${}で購入しました。", "You bought {} for {} gold."), purchased_item_name, res.value());
     record_item_name = purchased_item_name;
@@ -291,7 +287,7 @@ void store_purchase(CreatureEntity &creature, StoreSaleType store_num)
     item_new = store_item_to_inventory(creature, &item);
     handle_stuff(creature);
 
-    const auto got_item_name = describe_flavor(creature, *player_ptr->inventory[item_new], 0);
+    const auto got_item_name = describe_flavor(creature, *creature.inventory[item_new], 0);
     msg_format(_("%s(%c)を手に入れた。", "You have %s (%c)."), got_item_name.data(), index_to_label(item_new));
 
     if (item_store.is_wand_rod()) {
