@@ -7,7 +7,7 @@
 #include "player/player-realm.h"
 #include "system/baseitem/baseitem-key.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 
@@ -59,7 +59,7 @@ bool item_tester_hook_use(CreatureEntity &creature, const ItemEntity *o_ptr)
         }
 
         for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-            if ((player_ptr->inventory[i].get() == o_ptr) && o_ptr->get_flags().has(TR_ACTIVATE)) {
+            if ((creature.inventory[i].get() == o_ptr) && o_ptr->get_flags().has(TR_ACTIVATE)) {
                 return true;
             }
         }
@@ -75,16 +75,15 @@ bool item_tester_hook_use(CreatureEntity &creature, const ItemEntity *o_ptr)
  */
 bool item_tester_learn_spell(CreatureEntity &creature, const ItemEntity *o_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!o_ptr->is_spell_book()) {
         return false;
     }
 
-    PlayerRealm pr(*player_ptr);
-    auto choices = PlayerRealm::get_realm2_choices(player_ptr->pclass);
-    CreatureClass pc(*player_ptr);
+    PlayerRealm pr(creature);
+    auto choices = PlayerRealm::get_realm2_choices(creature.pclass);
+    CreatureClass pc(creature);
     if (pc.equals(PlayerClassType::PRIEST)) {
-        if (PlayerRealm(*player_ptr).realm1().is_good_attribute()) {
+        if (PlayerRealm(creature).realm1().is_good_attribute()) {
             choices.reset({ RealmType::DEATH, RealmType::DAEMON });
         } else {
             choices.reset({ RealmType::LIFE, RealmType::CRUSADE });

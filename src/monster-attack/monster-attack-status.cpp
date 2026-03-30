@@ -8,6 +8,7 @@
 #include "mind/mind-mirror-master.h"
 #include "monster-attack/monster-attack-player.h"
 #include "player-base/player-race.h"
+#include "player-info/race-types.h"
 #include "player/player-sex.h"
 #include "player/player-status-flags.h"
 #include "status/bad-status-setter.h"
