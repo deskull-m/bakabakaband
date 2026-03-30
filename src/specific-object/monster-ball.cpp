@@ -96,14 +96,14 @@ static void restore_monster_nickname(MonsterEntity &monster, ItemEntity &item)
 
 static bool release_monster(CreatureEntity &creature, ItemEntity &item, const Direction &dir)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     const auto &monrace = item.get_monrace();
     const auto pos = creature.get_neighbor(dir);
     if (!monster_can_enter(&creature, pos.y, pos.x, monrace, 0)) {
         return false;
     }
 
-    const auto m_idx = place_specific_monster(*player_ptr, pos.y, pos.x, monrace.idx, PM_FORCE_PET | PM_NO_KAGE);
+    const auto m_idx = place_specific_monster(player, pos.y, pos.x, monrace.idx, PM_FORCE_PET | PM_NO_KAGE);
     if (!m_idx) {
         return false;
     }
@@ -133,7 +133,7 @@ static bool release_monster(CreatureEntity &creature, ItemEntity &item, const Di
 
 bool exe_monster_capture(CreatureEntity &creature, ItemEntity &item)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
     if (item.bi_key.tval() != ItemKindType::CAPTURE) {
         return false;
     }
@@ -147,7 +147,7 @@ bool exe_monster_capture(CreatureEntity &creature, ItemEntity &item)
         return true;
     }
 
-    const auto dir = get_direction(*player_ptr);
+    const auto dir = get_direction(player);
     if (!dir) {
         return true;
     }

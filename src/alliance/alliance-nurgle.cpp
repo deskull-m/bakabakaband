@@ -135,13 +135,13 @@ int AllianceNurgle::calcImpressionPoint(const CreatureEntity &creature) const
  */
 void AllianceNurgle::panishment(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!creature.is_player()) {
+        return;
+    }
+    auto &player = static_cast<PlayerType &>(creature);
 
     // 印象に応じて段階的な制裁
     if (this->calcImpressionPoint(creature) <= -50) {
-        if (!player_ptr) {
-            return;
-        }
         // 軽微な制裁：軽い病気
         msg_print("あなたの体に軽い不調を感じる...");
         msg_print("「ナーグルの小さな贈り物だ」");
@@ -155,9 +155,6 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
     }
 
     if (this->calcImpressionPoint(creature) <= -100) {
-        if (!player_ptr) {
-            return;
-        }
         // 中程度の制裁：疫病の使者
         msg_print("腐敗の悪臭が漂ってきた...");
         msg_print("「ナーグルの慈悲深い疫病を受けるがよい」");
@@ -194,8 +191,8 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
 
         if (one_in_(2)) {
             msg_print("あなたの体が腐敗し始めた...");
-            project(*player_ptr, 0, 3, player_ptr->y, player_ptr->x,
-                player_ptr->level * 2, AttributeType::POIS,
+            project(player, 0, 3, player.y, player.x,
+                player.level * 2, AttributeType::POIS,
                 PROJECT_KILL | PROJECT_ITEM);
         }
 
@@ -230,8 +227,8 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
         (void)BadStatusSetter(creature).set_stun(randint1(100) + 50);
 
         // 大ダメージ（腐敗エリア放撃）
-        project(*player_ptr, 0, 5, player_ptr->y, player_ptr->x,
-            player_ptr->level * 4, AttributeType::POIS,
+        project(player, 0, 5, player.y, player.x,
+            player.level * 4, AttributeType::POIS,
             PROJECT_KILL | PROJECT_ITEM | PROJECT_GRID);
 
         if (one_in_(2)) {

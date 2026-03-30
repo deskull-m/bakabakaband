@@ -18,12 +18,12 @@ int AllianceTurbanKids::calcImpressionPoint([[maybe_unused]] const CreatureEntit
  */
 void AllianceTurbanKids::panishment(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return;
     }
+    auto &player = static_cast<PlayerType &>(creature);
     if (one_in_(19)) {
-        summon_specific(*player_ptr, player_ptr->y, player_ptr->x, 100, SUMMON_TURBAN_KID, PM_AMBUSH);
+        summon_specific(player, player.y, player.x, 100, SUMMON_TURBAN_KID, PM_AMBUSH);
     }
     return;
 }

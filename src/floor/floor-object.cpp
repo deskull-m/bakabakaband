@@ -50,8 +50,7 @@
  */
 static void object_mention(CreatureEntity &creature, ItemEntity &item)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return;
     }
 
@@ -345,7 +344,6 @@ ObjectIndexList &get_o_idx_list_contains(FloorType &floor, OBJECT_IDX o_idx)
  */
 short drop_near(CreatureEntity &subject, ItemEntity &drop_item, const Pos2D &pos, bool show_drop_message)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&subject);
     const auto &world = AngbandWorld::get_instance();
 
     Pos2D pos_drop = pos; //!< @details 実際に落ちる座標.
@@ -470,9 +468,10 @@ short drop_near(CreatureEntity &subject, ItemEntity &drop_item, const Pos2D &pos
         grid.o_idx_list.add(floor, item_idx);
     }
 
-    if (drop_item.is_fixed_artifact() && world.character_dungeon && player_ptr) {
+    if (drop_item.is_fixed_artifact() && world.character_dungeon && subject.is_player()) {
+        auto &player = static_cast<PlayerType &>(subject);
         auto &artifact = drop_item.get_fixed_artifact();
-        artifact.floor_id = player_ptr->floor_id;
+        artifact.floor_id = player.floor_id;
     }
 
     note_spot(subject, pos_drop);
