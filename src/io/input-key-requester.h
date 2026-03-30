@@ -19,7 +19,6 @@ extern int16_t command_new;
 
 enum class KeymapMode;
 class CreatureEntity;
-class PlayerType;
 class SpecialMenuContent;
 class InputKeyRequestor {
 public:
@@ -27,7 +26,7 @@ public:
     void request_command();
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
     bool shopping;
     KeymapMode mode;
     int base_y;
