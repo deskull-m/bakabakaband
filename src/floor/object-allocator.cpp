@@ -137,7 +137,6 @@ bool alloc_stairs(CreatureEntity &creature, FEAT_IDX feat, int num, int walls)
  */
 void alloc_object(CreatureEntity &creature, dap_type set, dungeon_allocation_type typ, int num)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto dummy = 0;
     auto &floor = *creature.current_floor_ptr;
     num = num * floor.height * floor.width / (MAX_HGT * MAX_WID) + 1;
@@ -165,7 +164,7 @@ void alloc_object(CreatureEntity &creature, dap_type set, dungeon_allocation_typ
         }
 
         if (dummy >= SAFE_MAX_ATTEMPTS) {
-            msg_print_wizard(*player_ptr, CHEAT_DUNGEON, _("アイテムの配置に失敗しました。", "Failed to place object."));
+            msg_print_wizard(creature, CHEAT_DUNGEON, _("アイテムの配置に失敗しました。", "Failed to place object."));
             return;
         }
 
@@ -179,13 +178,13 @@ void alloc_object(CreatureEntity &creature, dap_type set, dungeon_allocation_typ
             floor.get_grid(pos).info &= ~(CAVE_FLOOR);
             break;
         case ALLOC_TYP_GOLD:
-            place_gold(*player_ptr, pos);
+            place_gold(creature, pos);
             break;
         case ALLOC_TYP_OBJECT:
-            place_object(*player_ptr, pos, 0);
+            place_object(creature, pos, 0);
             break;
         case ALLOC_TYP_SUSHI:
-            place_object(*player_ptr, pos, AM_IGNORE_LEVEL, kind_is_sushi);
+            place_object(creature, pos, AM_IGNORE_LEVEL, kind_is_sushi);
             break;
         case ALLOC_TYP_SPECIFIC_ITEMS:
             // This case is handled by alloc_specific_floor_items function
@@ -202,7 +201,6 @@ void alloc_object(CreatureEntity &creature, dap_type set, dungeon_allocation_typ
  */
 void alloc_specific_floor_items(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     const auto &dungeon = floor.get_generated_dungeon_definition();
 
@@ -251,7 +249,7 @@ void alloc_specific_floor_items(CreatureEntity &creature)
         }
 
         if (dummy >= SAFE_MAX_ATTEMPTS) {
-            msg_print_wizard(*player_ptr, CHEAT_DUNGEON,
+            msg_print_wizard(creature, CHEAT_DUNGEON,
                 _("特定階層アイテムの配置に失敗しました。", "Failed to place specific floor item."));
         }
     }

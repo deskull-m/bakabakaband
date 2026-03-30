@@ -28,7 +28,6 @@
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -489,10 +488,10 @@ static void effect_player_time_addition(CreatureEntity &creature)
     case 7:
     case 8:
     case 9:
-        msg_print(static_cast<PlayerType *>(&creature)->decrease_ability_random());
+        msg_print(creature.decrease_ability_random());
         break;
     case 10:
-        msg_print(static_cast<PlayerType *>(&creature)->decrease_ability_all());
+        msg_print(creature.decrease_ability_all());
         break;
     }
 }

@@ -20,7 +20,6 @@
 #include "status/element-resistance.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -144,15 +143,14 @@ static void death_scythe_reflection_critial_hit(player_attack_type *pa_ptr)
  */
 void process_death_scythe_reflection(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     sound(SoundKind::HIT);
     msg_format(_("ミス！ %sにかわされた。", "You miss %s."), pa_ptr->m_name);
     msg_print(_("振り回した大鎌が自分自身に返ってきた！", "Your scythe returns to you!"));
 
     auto *o_ptr = creature.inventory[INVEN_MAIN_HAND + pa_ptr->hand].get();
     const auto death_scythe_flags = o_ptr->get_flags();
-    const auto num = o_ptr->damage_dice.num + player_ptr->damage_dice_bonus[pa_ptr->hand].num;
-    const auto sides = o_ptr->damage_dice.sides + player_ptr->damage_dice_bonus[pa_ptr->hand].sides;
+    const auto num = o_ptr->damage_dice.num + creature.damage_dice_bonus[pa_ptr->hand].num;
+    const auto sides = o_ptr->damage_dice.sides + creature.damage_dice_bonus[pa_ptr->hand].sides;
     pa_ptr->attack_damage = Dice::roll(num, sides);
     int magnification = calc_death_scythe_reflection_magnification(creature);
     compensate_death_scythe_reflection_magnification(creature, &magnification, death_scythe_flags);

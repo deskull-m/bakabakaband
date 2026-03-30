@@ -172,7 +172,7 @@ void process_command(CreatureEntity &creature)
     COMMAND_CODE old_now_message = now_message;
     repeat_check();
     now_message = 0;
-    auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
+    auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
     if (sniper_data && sniper_data->concent > 0) {
         sniper_data->reset_concent = true;
     }

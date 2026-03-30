@@ -172,15 +172,9 @@ MonsterSpellResult spell_RF5_DRAIN_MANA(CreatureEntity &creature, POSITION y, PO
 MonsterSpellResult spell_RF5_MIND_BLAST(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     const auto &monster = creature.current_floor_ptr->m_list[m_idx];
-<<<<<<< HEAD
-    bool seen = (!creature.effects()->blindness().is_blind() && monster.ml);
+    bool seen = (!creature.is_blind() && monster.ml);
     const auto m_name = monster_name(creature, m_idx);
     const auto t_name = monster_name(creature, t_idx);
-=======
-    bool seen = (!creature.is_blind() && monster.ml);
-    const auto m_name = monster_name(*player_ptr, m_idx);
-    const auto t_name = monster_name(*player_ptr, t_idx);
->>>>>>> 887061075f (refactor: is_blind/is_paralyzed/is_fast の呼び出しを CreatureEntity 仮想メソッドに統一)
 
     if (target_type == MONSTER_TO_PLAYER) {
         disturb(creature, true, true);
@@ -216,15 +210,9 @@ MonsterSpellResult spell_RF5_MIND_BLAST(CreatureEntity &creature, POSITION y, PO
 MonsterSpellResult spell_RF5_BRAIN_SMASH(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     const auto &monster = creature.current_floor_ptr->m_list[m_idx];
-<<<<<<< HEAD
-    bool seen = (!creature.effects()->blindness().is_blind() && monster.ml);
+    bool seen = (!creature.is_blind() && monster.ml);
     const auto m_name = monster_name(creature, m_idx);
     const auto t_name = monster_name(creature, t_idx);
-=======
-    bool seen = (!creature.is_blind() && monster.ml);
-    const auto m_name = monster_name(*player_ptr, m_idx);
-    const auto t_name = monster_name(*player_ptr, t_idx);
->>>>>>> 887061075f (refactor: is_blind/is_paralyzed/is_fast の呼び出しを CreatureEntity 仮想メソッドに統一)
 
     if (target_type == MONSTER_TO_PLAYER) {
         disturb(creature, true, true);
@@ -503,11 +491,7 @@ MonsterSpellResult spell_RF6_HASTE(CreatureEntity &creature, MONSTER_IDX m_idx, 
         _("%s^が自分の体に念を送った。", format("%%s^ concentrates on %s body.", m_poss.data())),
         _("%s^が自分の体に念を送った。", format("%%s^ concentrates on %s body.", m_poss.data())));
 
-<<<<<<< HEAD
-    monspell_message_base(creature, m_idx, t_idx, msg, creature.effects()->blindness().is_blind(), target_type);
-=======
-    monspell_message_base(*player_ptr, m_idx, t_idx, msg, creature.is_blind(), target_type);
->>>>>>> 887061075f (refactor: is_blind/is_paralyzed/is_fast の呼び出しを CreatureEntity 仮想メソッドに統一)
+    monspell_message_base(creature, m_idx, t_idx, msg, creature.is_blind(), target_type);
 
     if (set_monster_fast(*creature.current_floor_ptr, m_idx, monster.get_remaining_acceleration() + 100)) {
         if (target_type == MONSTER_TO_PLAYER || (target_type == MONSTER_TO_MONSTER && see_m)) {

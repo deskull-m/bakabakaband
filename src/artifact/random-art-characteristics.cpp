@@ -12,7 +12,6 @@
 #include "player-base/player-class.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "wizard/wizard-messages.h"
 #include <sstream>
@@ -200,9 +199,8 @@ static int calc_arm_avgdamage(CreatureEntity &creature, ItemEntity *o_ptr)
     }
 
     dam += o_ptr->to_d;
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     constexpr auto fmt = _("\u7d20:%d> \u5bfe\u90aa:%d> \u7406\u529b:%d> \u5207:%d> \u6700\u7d42:%d", "Normal:%d> Evil:%d> Force:%d> Vorpal:%d> Total:%d");
-    msg_format_wizard(*player_ptr, CHEAT_OBJECT, fmt, base, s_evil, forced, vorpal, dam);
+    msg_format_wizard(creature, CHEAT_OBJECT, fmt, base, s_evil, forced, vorpal, dam);
     return dam;
 }
 

@@ -18,14 +18,13 @@
  */
 void rd_extra(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    player_ptr->ride_monster(rd_s16b());
-    player_ptr->floor_id = rd_s16b();
+    static_cast<PlayerType &>(creature).ride_monster(rd_s16b());
+    creature.floor_id = rd_s16b();
     rd_dummy_monsters();
 
     auto &world = AngbandWorld::get_instance();
     world.play_time = ElapsedTime(rd_u32b());
 
-    player_ptr->visit = rd_u32b();
-    player_ptr->count = rd_u32b();
+    creature.visit = rd_u32b();
+    creature.count = rd_u32b();
 }

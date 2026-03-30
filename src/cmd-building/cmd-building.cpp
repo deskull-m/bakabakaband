@@ -79,9 +79,8 @@
  */
 static void town_history(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     screen_save();
-    FileDisplayer(player_ptr->name).display(true, _("jbldg.txt", "bldg.txt"), 0, 0);
+    FileDisplayer(creature.name).display(true, _("jbldg.txt", "bldg.txt"), 0, 0);
     screen_load();
 }
 
@@ -94,7 +93,6 @@ static void town_history(CreatureEntity &creature)
  */
 static bool bldg_process_command(CreatureEntity &creature, const building_type &bldg, int i)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &world = AngbandWorld::get_instance();
     msg_flag = false;
     msg_erase();
@@ -106,7 +104,7 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
     }
 
     const auto building_action = bldg.actions[i];
-    if ((building_action != BACT_RECHARGE) && (((bldg.member_costs[i] > player_ptr->au) && can_be_owner) || ((bldg.other_costs[i] > player_ptr->au) && !can_be_owner))) {
+    if ((building_action != BACT_RECHARGE) && (((bldg.member_costs[i] > creature.au) && can_be_owner) || ((bldg.other_costs[i] > creature.au) && !can_be_owner))) {
         msg_print(_("お金が足りません！", "You do not have the gold!"));
         return false;
     }

@@ -23,7 +23,6 @@
 #include "status/element-resistance.h"
 #include "status/sight-setter.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "util/dice.h"
 #include "view/display-messages.h"
@@ -37,7 +36,6 @@
  */
 tl::optional<std::string> do_arcane_spell(CreatureEntity &creature, SPELL_IDX spell, SpellProcessType mode)
 {
-    auto player_ptr = static_cast<PlayerType *>(&creature);
     bool info = mode == SpellProcessType::INFO;
     bool cast = mode == SpellProcessType::CAST;
 
@@ -446,7 +444,7 @@ tl::optional<std::string> do_arcane_spell(CreatureEntity &creature, SPELL_IDX sp
 
             wiz_lite(creature, false);
 
-            if (!player_ptr->telepathy) {
+            if (!creature.telepathy) {
                 set_tim_esp(creature, dice.roll() + base, false);
             }
         }

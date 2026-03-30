@@ -13,7 +13,6 @@
 #include "sv-definition/sv-weapon-types.h"
 #include "system/creature-entity.h"
 #include "system/inner-game-data.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include <array>
 
@@ -124,17 +123,15 @@ void get_money_for_creature(CreatureEntity *creature_ptr)
  */
 uint16_t get_expfact(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    uint16_t expfact = creature.race->r_exp;
 
-    uint16_t expfact = player_ptr->race->r_exp;
-
-    CreatureRace pr(player_ptr);
+    CreatureRace pr(&creature);
     if (!pr.equals(PlayerRaceType::ANDROID)) {
-        expfact += (*player_ptr->pclass_ref).c_exp;
+        expfact += (*creature.pclass_ref).c_exp;
     }
 
     auto is_race_gaining_additional_speed = pr.equals(PlayerRaceType::KLACKON) || pr.equals(PlayerRaceType::SPRITE);
-    auto is_class_gaining_additional_speed = CreatureClass(*player_ptr).has_additional_speed();
+    auto is_class_gaining_additional_speed = CreatureClass(creature).has_additional_speed();
     if (is_race_gaining_additional_speed && is_class_gaining_additional_speed) {
         expfact -= 15;
     }
@@ -147,51 +144,49 @@ uint16_t get_expfact(CreatureEntity &creature)
  */
 void get_extra(CreatureEntity &creature, bool roll_hitdie)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-
-    player_ptr->expfact = get_expfact(*player_ptr);
+    creature.expfact = get_expfact(creature);
 
     /* Reset record of race/realm changes */
-    InnerGameData::get_instance().set_start_race(player_ptr->prace);
-    player_ptr->old_race1 = 0L;
-    player_ptr->old_race2 = 0L;
-    player_ptr->old_realm = 0;
+    InnerGameData::get_instance().set_start_race(creature.prace);
+    creature.old_race1 = 0L;
+    creature.old_race2 = 0L;
+    creature.old_realm = 0;
 
-    CreatureClass pc(*player_ptr);
+    CreatureClass pc(creature);
     auto is_sorcerer = pc.equals(PlayerClassType::SORCERER);
     for (int i = 0; i < 64; i++) {
         if (is_sorcerer) {
-            player_ptr->spell_exp[i] = PlayerSkill::spell_exp_at(PlayerSkillRank::MASTER);
+            creature.spell_exp[i] = PlayerSkill::spell_exp_at(PlayerSkillRank::MASTER);
         } else if (pc.equals(PlayerClassType::RED_MAGE)) {
-            player_ptr->spell_exp[i] = PlayerSkill::spell_exp_at(PlayerSkillRank::SKILLED);
+            creature.spell_exp[i] = PlayerSkill::spell_exp_at(PlayerSkillRank::SKILLED);
         } else {
-            player_ptr->spell_exp[i] = PlayerSkill::spell_exp_at(PlayerSkillRank::UNSKILLED);
+            creature.spell_exp[i] = PlayerSkill::spell_exp_at(PlayerSkillRank::UNSKILLED);
         }
     }
 
-    auto pclass = enum2i(player_ptr->pclass);
-    player_ptr->weapon_exp = class_skills_info[pclass].w_start;
-    player_ptr->weapon_exp_max = class_skills_info[pclass].w_max;
+    auto pclass = enum2i(creature.pclass);
+    creature.weapon_exp = class_skills_info[pclass].w_start;
+    creature.weapon_exp_max = class_skills_info[pclass].w_max;
 
-    if (player_ptr->ppersonality == PERSONALITY_SEXY) {
-        auto &whip_exp = player_ptr->weapon_exp[ItemKindType::HAFTED][SV_WHIP];
+    if (creature.ppersonality == PERSONALITY_SEXY) {
+        auto &whip_exp = creature.weapon_exp[ItemKindType::HAFTED][SV_WHIP];
         whip_exp = std::max(whip_exp, PlayerSkill::weapon_exp_at(PlayerSkillRank::BEGINNER));
     }
 
     for (auto i : PLAYER_SKILL_KIND_TYPE_RANGE) {
-        player_ptr->skill_exp[i] = class_skills_info[pclass].s_start[i];
+        creature.skill_exp[i] = class_skills_info[pclass].s_start[i];
     }
 
     // 武術スタイルの初期設定
-    player_ptr->martial_arts_style = MartialArtsStyleType::TRADITIONAL;
+    creature.martial_arts_style = MartialArtsStyleType::TRADITIONAL;
 
-    const auto r_mhp = is_sorcerer ? player_ptr->race->r_mhp / 2 : player_ptr->race->r_mhp;
-    player_ptr->hit_dice = Dice(1, r_mhp + (*player_ptr->pclass_ref).c_mhp + (*player_ptr->personality).a_mhp);
+    const auto r_mhp = is_sorcerer ? creature.race->r_mhp / 2 : creature.race->r_mhp;
+    creature.hit_dice = Dice(1, r_mhp + (*creature.pclass_ref).c_mhp + (*creature.personality).a_mhp);
     if (roll_hitdie) {
-        roll_hitdice(*player_ptr, SPOP_NO_UPDATE);
+        roll_hitdice(creature, SPOP_NO_UPDATE);
     }
 
-    player_ptr->maxhp = player_ptr->player_hp[0];
+    creature.maxhp = creature.player_hp[0];
 }
 
 /*!
@@ -201,8 +196,6 @@ void get_extra(CreatureEntity &creature, bool roll_hitdie)
  */
 void get_max_stats(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-
     int dice[6]{};
     while (true) {
         auto j = 0;
@@ -219,15 +212,15 @@ void get_max_stats(CreatureEntity &creature)
     for (auto i = 0; i < A_MAX; i++) {
         // 新形式: 180 + 60 + dice[i] * 10 = 240 + 10~70 = 250~310 (25.0~31.0)
         short max_max = 180 + 60 + dice[i] * 10;
-        player_ptr->stat_max_max[i] = max_max;
-        if (player_ptr->stat_max[i] > max_max) {
-            player_ptr->stat_max[i] = max_max;
+        creature.stat_max_max[i] = max_max;
+        if (creature.stat_max[i] > max_max) {
+            creature.stat_max[i] = max_max;
         }
-        if (player_ptr->stat_cur[i] > max_max) {
-            player_ptr->stat_cur[i] = max_max;
+        if (creature.stat_cur[i] > max_max) {
+            creature.stat_cur[i] = max_max;
         }
     }
 
-    player_ptr->knowledge &= ~(KNOW_STAT);
+    creature.knowledge &= ~(KNOW_STAT);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
 }

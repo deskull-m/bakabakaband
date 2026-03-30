@@ -59,7 +59,6 @@ std::filesystem::path savefile_base;
  */
 void file_character(CreatureEntity &creature, std::string_view filename)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto path = path_build(ANGBAND_DIR_USER, filename);
     auto fd = fd_open(path, O_RDONLY);
     if (fd >= 0) {
@@ -67,7 +66,7 @@ void file_character(CreatureEntity &creature, std::string_view filename)
         std::stringstream ss;
         ss << _("現存するファイル ", "Replace existing file ") << path_str << _(" に上書きしますか? ", "? ");
         (void)fd_close(fd);
-        if (input_check_strict(*player_ptr, ss.str(), UserCheck::NO_HISTORY)) {
+        if (input_check_strict(creature, ss.str(), UserCheck::NO_HISTORY)) {
             fd = -1;
         } else {
             return;
@@ -87,7 +86,7 @@ void file_character(CreatureEntity &creature, std::string_view filename)
     }
 
     screen_save();
-    make_character_dump(*player_ptr, fff);
+    make_character_dump(creature, fff);
     screen_load();
 
     if (ferror(fff)) {

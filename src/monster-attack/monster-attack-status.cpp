@@ -17,7 +17,7 @@
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
+#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
 void process_blind_attack(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
@@ -182,10 +182,10 @@ void process_monster_attack_time(CreatureEntity &creature)
     case 7:
     case 8:
     case 9:
-        msg_print(static_cast<PlayerType *>(&creature)->decrease_ability_random());
+        msg_print(creature.decrease_ability_random());
         break;
     case 10:
-        msg_print(static_cast<PlayerType *>(&creature)->decrease_ability_all());
+        msg_print(creature.decrease_ability_all());
         break;
     }
 }
