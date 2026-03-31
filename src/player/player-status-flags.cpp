@@ -1622,7 +1622,7 @@ BIT_FLAGS has_resist_fear(CreatureEntity &creature)
         result |= FLAG_CAUSE_MUTATION;
     }
 
-    if (is_hero(player) || is_shero(player) || player.ult_res || player.tim_res_fear) {
+    if (player.is_hero() || player.is_shero() || player.ult_res || player.tim_res_fear) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 

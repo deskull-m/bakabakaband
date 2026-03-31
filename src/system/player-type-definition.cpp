@@ -4,6 +4,9 @@
 #include "market/arena-entry.h"
 #include "monster/monster-util.h"
 #include "player-info/bard-data-type.h"
+#include "player-info/class-types.h"
+#include "player-info/spell-hex-data-type.h"
+#include "realm/realm-hex-numbers.h"
 #include "realm/realm-song-numbers.h"
 #include "system/angband-exceptions.h"
 #include "system/floor/floor-info.h"
@@ -224,4 +227,34 @@ bool PlayerType::is_fast() const
     const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
     const auto singing_speed = bard && *bard && ((*bard)->singing_song == MUSIC_SPEED || (*bard)->singing_song == MUSIC_SHERO);
     return this->effects()->acceleration().is_fast() || singing_speed;
+}
+
+bool PlayerType::is_blessed() const
+{
+    if (this->blessed > 0) {
+        return true;
+    }
+
+    const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
+    if (bard && *bard && (*bard)->singing_song == MUSIC_BLESS) {
+        return true;
+    }
+
+    const auto *hex = std::get_if<std::shared_ptr<spell_hex_data_type>>(&this->class_specific_data);
+    return hex && *hex && (*hex)->casting_spells.has(i2enum<spell_hex_type>(HEX_BLESS));
+}
+
+bool PlayerType::is_hero() const
+{
+    if (this->hero > 0) {
+        return true;
+    }
+
+    const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
+    return bard && *bard && ((*bard)->singing_song == MUSIC_HERO || (*bard)->singing_song == MUSIC_SHERO);
+}
+
+bool PlayerType::is_shero() const
+{
+    return this->berserk > 0 || this->pclass == PlayerClassType::BERSERKER;
 }

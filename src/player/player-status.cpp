@@ -3075,11 +3075,6 @@ uint32_t calc_score(CreatureEntity &creature)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 祝福状態ならばTRUE
  */
-bool is_blessed(CreatureEntity &creature)
-{
-    return creature.blessed || music_singing(creature, MUSIC_BLESS) || SpellHex(creature).is_spelling_specific(HEX_BLESS);
-}
-
 bool is_tim_esp(CreatureEntity &creature)
 {
     auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
@@ -3117,16 +3112,6 @@ void stop_mouth(CreatureEntity &creature)
     if (SpellHex(creature).is_spelling_any()) {
         (void)SpellHex(creature).stop_all_spells();
     }
-}
-
-bool is_hero(CreatureEntity &creature)
-{
-    return creature.hero || music_singing(creature, MUSIC_HERO) || music_singing(creature, MUSIC_SHERO);
-}
-
-bool is_shero(CreatureEntity &creature)
-{
-    return creature.berserk || CreatureClass(creature).equals(PlayerClassType::BERSERKER);
 }
 
 bool is_echizen(CreatureEntity &creature)

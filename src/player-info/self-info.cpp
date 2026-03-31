@@ -25,7 +25,6 @@
 #include "player-info/weapon-effect-info.h"
 #include "player/attack-defense-types.h"
 #include "player/player-status-flags.h"
-#include "player/player-status.h"
 #include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
@@ -355,7 +354,7 @@ void report_magics(CreatureEntity &subject)
             _("あなたはヒーロー気分だ", "You feel heroic"));
     }
 
-    if (is_shero(player)) {
+    if (player.is_shero()) {
         info.emplace_back(report_magics_aux(player.berserk),
             _("あなたは戦闘狂だ", "You are in a battle rage"));
     }

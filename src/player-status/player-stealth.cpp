@@ -122,7 +122,7 @@ int16_t PlayerStealth::time_effect_bonus()
         }
     }
 
-    if (is_shero(this->creature)) {
+    if (this->creature.is_shero()) {
         bonus -= 7;
     }
 
