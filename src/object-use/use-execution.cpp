@@ -24,7 +24,6 @@
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "view/object-describer.h"
@@ -64,7 +63,7 @@ void ObjectUseEntity::execute()
     }
 
     auto chance = player.skill_dev;
-    if (player.effects()->confusion().is_confused()) {
+    if (player.is_confused()) {
         chance = chance / 2;
     }
 

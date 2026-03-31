@@ -24,7 +24,6 @@
 #include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
@@ -66,7 +65,7 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
 
     const auto item_level = o_ptr->get_baseitem_level();
     auto chance = player.skill_dev;
-    if (player.effects()->confusion().is_confused()) {
+    if (player.is_confused()) {
         chance = chance / 2;
     }
 

@@ -46,7 +46,7 @@ bool cmd_limit_cast(CreatureEntity &creature)
 
 bool cmd_limit_confused(const CreatureEntity &creature)
 {
-    if (creature.effects()->confusion().is_confused()) {
+    if (creature.is_confused()) {
         msg_print(_("混乱していてできない！", "You are too confused!"));
         return true;
     }
@@ -66,7 +66,7 @@ bool cmd_limit_image(const CreatureEntity &creature)
 
 bool cmd_limit_stun(const CreatureEntity &creature)
 {
-    if (creature.effects()->stun().is_stunned()) {
+    if (creature.is_stunned()) {
         msg_print(_("頭が朦朧としていて集中できない！", "You are too stunned!"));
         return true;
     }
