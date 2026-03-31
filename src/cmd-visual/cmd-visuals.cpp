@@ -17,7 +17,6 @@
 #include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "util/enum-converter.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/terrain/terrain-definition.h"

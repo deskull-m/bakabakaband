@@ -4,8 +4,8 @@
 #include "market/arena-entry.h"
 #include "monster/monster-util.h"
 #include "player-info/bard-data-type.h"
-#include "player-info/sniper-data-type.h"
 #include "player-info/class-types.h"
+#include "player-info/sniper-data-type.h"
 #include "player-info/spell-hex-data-type.h"
 #include "realm/realm-hex-numbers.h"
 #include "realm/realm-song-numbers.h"
@@ -188,7 +188,6 @@ short PlayerType::get_timed_effect(CreatureTimedEffect effect) const
     }
 }
 
-
 bool PlayerType::is_confused() const
 {
     return this->effects()->confusion().is_confused();
@@ -285,4 +284,3 @@ bool PlayerType::is_time_limit_stealth() const
     const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
     return this->tim_stealth > 0 || (bard && *bard && (*bard)->singing_song == MUSIC_STEALTH);
 }
-

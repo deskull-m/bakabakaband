@@ -13,7 +13,6 @@
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"
-#include "system/creature-entity.h"
 #include "system/inner-game-data.h"
 #include "world/world.h"
 
