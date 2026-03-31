@@ -181,3 +181,23 @@ short PlayerType::get_timed_effect(CreatureTimedEffect effect) const
         return 0;
     }
 }
+
+bool PlayerType::is_confused() const
+{
+    return this->effects()->confusion().is_confused();
+}
+
+bool PlayerType::is_stunned() const
+{
+    return this->effects()->stun().is_stunned();
+}
+
+bool PlayerType::is_fearful() const
+{
+    return this->effects()->fear().is_fearful();
+}
+
+bool PlayerType::is_invulnerable() const
+{
+    return this->invuln > 0;
+}
