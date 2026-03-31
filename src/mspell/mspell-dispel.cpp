@@ -12,7 +12,6 @@
 #include "mspell/mspell-util.h"
 #include "player-info/race-info.h"
 #include "player/attack-defense-types.h"
-#include "player/player-status.h"
 #include "realm/realm-song-numbers.h"
 #include "spell-realm/spells-craft.h"
 #include "spell-realm/spells-crusade.h"
@@ -153,15 +152,15 @@ MonsterSpellResult spell_RF4_DISPEL(MONSTER_IDX m_idx, CreatureEntity &creature,
             dispel_monster_status(creature, player.riding);
         }
 
-        if (is_echizen(creature)) {
+        if (creature.is_echizen()) {
             msg_print(_("やりやがったな！", ""));
-        } else if (is_chargeman(creature)) {
+        } else if (creature.is_chargeman()) {
             if (randint0(2) == 0) {
                 msg_print(_("ジュラル星人め！", ""));
             } else {
                 msg_print(_("弱い者いじめは止めるんだ！", ""));
             }
-        } else if (is_tough(creature)) {
+        } else if (creature.is_tough()) {
             msg_print(_("う わ あ あ あ あ あ あ あ あ", ""));
         }
 

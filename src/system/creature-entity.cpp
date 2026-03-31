@@ -9,6 +9,16 @@
 #include "timed-effect/timed-effects.h"
 #include <range/v3/algorithm.hpp>
 
+bool CreatureEntity::is_time_limit_esp() const
+{
+    return this->tim_esp > 0;
+}
+
+bool CreatureEntity::is_time_limit_stealth() const
+{
+    return this->tim_stealth > 0;
+}
+
 /*!
  * @brief 指定した固定アーティファクトを装備しているかどうか調べる
  *

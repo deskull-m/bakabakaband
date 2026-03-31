@@ -25,7 +25,6 @@
 #include "player-base/player-class.h"
 #include "player/player-personality-types.h"
 #include "player/player-status-flags.h"
-#include "player/player-status.h"
 #include "spell-kind/spells-lite.h"
 #include "spell-kind/spells-neighbor.h"
 #include "spell-kind/spells-sight.h"
@@ -259,15 +258,15 @@ MonsterSpellResult spell_RF6_TELE_AWAY(CreatureEntity &creature, MONSTER_IDX m_i
     simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
 
     if (target_type == MONSTER_TO_PLAYER) {
-        if (is_echizen(player_ptr)) {
+        if (player_ptr.is_echizen()) {
             msg_print(_("くっそ～", ""));
-        } else if (is_chargeman(player_ptr)) {
+        } else if (player_ptr.is_chargeman()) {
             if (randint0(2) == 0) {
                 msg_print(_("ジュラル星人め！", ""));
             } else {
                 msg_print(_("弱い者いじめは止めるんだ！", ""));
             }
-        } else if (is_tough(player_ptr)) {
+        } else if (player_ptr.is_tough()) {
             msg_print(_("う わ あ あ あ あ あ あ あ あ", ""));
         }
 

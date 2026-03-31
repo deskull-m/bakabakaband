@@ -4,6 +4,7 @@
 #include "market/arena-entry.h"
 #include "monster/monster-util.h"
 #include "player-info/bard-data-type.h"
+#include "player-info/sniper-data-type.h"
 #include "player-info/class-types.h"
 #include "player-info/spell-hex-data-type.h"
 #include "realm/realm-hex-numbers.h"
@@ -257,4 +258,24 @@ bool PlayerType::is_hero() const
 bool PlayerType::is_shero() const
 {
     return this->berserk > 0 || this->pclass == PlayerClassType::BERSERKER;
+}
+
+bool PlayerType::is_echizen() const
+{
+    return this->ppersonality == PERSONALITY_COMBAT || this->is_wielding(FixedArtifactId::CRIMSON);
+}
+
+bool PlayerType::is_time_limit_esp() const
+{
+    const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
+    const auto singing_mind = bard && *bard && (*bard)->singing_song == MUSIC_MIND;
+    const auto *sniper_specific = std::get_if<std::shared_ptr<SniperData>>(&this->class_specific_data);
+    const auto sniper_concent = sniper_specific && *sniper_specific ? (*sniper_specific)->concent : 0;
+    return this->tim_esp > 0 || singing_mind || (sniper_concent >= CONCENT_TELE_THRESHOLD);
+}
+
+bool PlayerType::is_time_limit_stealth() const
+{
+    const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
+    return this->tim_stealth > 0 || (bard && *bard && (*bard)->singing_song == MUSIC_STEALTH);
 }

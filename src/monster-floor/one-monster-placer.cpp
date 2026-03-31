@@ -53,7 +53,7 @@
  */
 static MonraceId initial_r_appearance(CreatureEntity &creature, MonraceId r_idx, BIT_FLAGS generate_mode)
 {
-    if (is_chargeman(creature) && any_bits(generate_mode, PM_JURAL) && none_bits(generate_mode, PM_MULTIPLY | PM_KAGE)) {
+    if (creature.is_chargeman() && any_bits(generate_mode, PM_JURAL) && none_bits(generate_mode, PM_MULTIPLY | PM_KAGE)) {
         return MonraceId::ALIEN_JURAL;
     }
 
