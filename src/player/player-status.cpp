@@ -2749,7 +2749,7 @@ void wreck_the_pattern(CreatureEntity &creature)
 
     msg_print(_("パターンを血で汚してしまった！", "You bleed on the Pattern!"));
     msg_print(_("何か恐ろしい事が起こった！", "Something terrible happens!"));
-    if (!is_invuln(creature)) {
+    if (!creature.is_invulnerable()) {
         take_hit(creature, DAMAGE_NOESCAPE, Dice::roll(10, 8), _("パターン損壊", "corrupting the Pattern"));
     }
 

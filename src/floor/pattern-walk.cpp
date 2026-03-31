@@ -13,7 +13,6 @@
 #include "player-status/player-energy.h"
 #include "player/player-damage.h"
 #include "player/player-move.h"
-#include "player/player-status.h"
 #include "spell-kind/spells-teleport.h"
 #include "spell/spells-status.h"
 #include "status/bad-status-setter.h"
@@ -146,7 +145,7 @@ bool pattern_effect(CreatureEntity &creature)
         break;
 
     case PATTERN_TILE_WRECKED:
-        if (!is_invuln(*player_ptr)) {
+        if (!player_ptr->is_invulnerable()) {
             take_hit(*player_ptr, DAMAGE_NOESCAPE, 200, _("壊れた「パターン」を歩いたダメージ", "walking the corrupted Pattern"));
         }
         break;
@@ -154,7 +153,7 @@ bool pattern_effect(CreatureEntity &creature)
     default:
         if (CreatureRace(player_ptr).equals(PlayerRaceType::AMBERITE) && !one_in_(2)) {
             return true;
-        } else if (!is_invuln(*player_ptr)) {
+        } else if (!player_ptr->is_invulnerable()) {
             take_hit(*player_ptr, DAMAGE_NOESCAPE, Dice::roll(1, 3), _("「パターン」を歩いたダメージ", "walking the Pattern"));
         }
         break;

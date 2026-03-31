@@ -78,7 +78,7 @@ void starve_player(CreatureEntity &creature)
 
     if (player.food < PY_FOOD_STARVE) {
         int dam = (PY_FOOD_STARVE - player.food) / 10;
-        if (!is_invuln(creature)) {
+        if (!creature.is_invulnerable()) {
             take_hit(creature, DAMAGE_LOSELIFE, dam, _("空腹", "starvation"));
         }
     }

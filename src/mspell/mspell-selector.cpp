@@ -10,7 +10,6 @@
 #include "monster/monster-status.h"
 #include "mspell/mspell-attack-util.h"
 #include "mspell/mspell-judgement.h"
-#include "player/player-status.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -439,7 +438,7 @@ MonsterAbilityType choose_attack_spell(CreatureEntity &creature, msa_type *msa_p
         return rand_choice(raise);
     }
 
-    if (is_invuln(creature)) {
+    if (creature.is_invulnerable()) {
         if (!psy_spe.empty() && one_in_(2)) {
             return rand_choice(psy_spe);
         } else if (!attack.empty() && evaluate_percent(40)) {
