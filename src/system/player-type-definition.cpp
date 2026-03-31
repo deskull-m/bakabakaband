@@ -188,6 +188,7 @@ short PlayerType::get_timed_effect(CreatureTimedEffect effect) const
     }
 }
 
+
 bool PlayerType::is_confused() const
 {
     return this->effects()->confusion().is_confused();
