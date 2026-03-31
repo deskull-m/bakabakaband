@@ -32,7 +32,6 @@ MonsterEntity::MonsterEntity()
     this->r_idx = MonraceId::PLAYER; // デフォルトはプレイヤー（無効な状態）
     this->ap_r_idx = MonraceId::PLAYER;
     this->patron = 0; // パトロンなし
-    this->current_floor_ptr = nullptr;
 }
 
 /*!
@@ -902,11 +901,6 @@ int MonsterEntity::get_current_hp() const
 int MonsterEntity::get_max_hp() const
 {
     return this->maxhp;
-}
-
-FloorType *MonsterEntity::get_floor() const
-{
-    return this->current_floor_ptr;
 }
 
 int MonsterEntity::get_level() const

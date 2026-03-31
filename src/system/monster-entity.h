@@ -36,8 +36,6 @@ public:
     MonsterEntity(const MonsterEntity &) = default;
     MonsterEntity &operator=(const MonsterEntity &) = default;
 
-    FloorType *current_floor_ptr{}; /*!< 所在フロアID（現状はFloorType構造体によるオブジェクトは1つしかないためソースコード設計上の意義以外はない）*/
-
 /* Sub-alignment flags for neutral monsters */
 #define SUB_ALIGN_NEUTRAL 0x0000 /*!< モンスターのサブアライメント:中立 */
 #define SUB_ALIGN_EVIL 0x0001 /*!< モンスターのサブアライメント:善 */
@@ -137,7 +135,6 @@ public:
 
     bool is_valid() const override;
     bool is_dead() const override;
-    FloorType *get_floor() const override;
 
     int get_level() const override;
     bool is_player() const override;
