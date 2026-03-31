@@ -386,9 +386,9 @@ void do_cmd_quest(CreatureEntity &creature)
     if (!input_check(_("クエストに入りますか？", "Do you enter? "))) {
         return;
     }
-    if (is_echizen(creature)) {
+    if (creature.is_echizen()) {
         msg_print(_("『とにかく入ってみようぜぇ。』", "\"Let's go in anyway.\""));
-    } else if (is_chargeman(creature)) {
+    } else if (creature.is_chargeman()) {
         msg_print(_("『全滅してやるぞ！』", "\"I'll annihilate THEM!\""));
     }
 

@@ -74,15 +74,15 @@ void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, in
 #endif
 
 #ifdef JP
-        if (is_echizen(player)) {
+        if (player.is_echizen()) {
             msg_print("やりやがったな！");
-        } else if (is_chargeman(player)) {
+        } else if (player.is_chargeman()) {
             if (randint0(2) == 0) {
                 msg_print(_("ジュラル星人め！", ""));
             } else {
                 msg_print(_("弱い者いじめは止めるんだ！", ""));
             }
-        } else if (is_tough(player)) {
+        } else if (player.is_tough()) {
             msg_print(_("う わ あ あ あ あ あ あ あ あ", ""));
         }
 

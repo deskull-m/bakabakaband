@@ -126,7 +126,7 @@ int16_t PlayerStealth::time_effect_bonus()
         bonus -= 7;
     }
 
-    if (is_time_limit_stealth(this->creature)) {
+    if (this->creature.is_time_limit_stealth()) {
         bonus += 999;
     }
 

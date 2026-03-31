@@ -23,7 +23,6 @@
 #include "object-enchant/item-apply-magic.h"
 #include "object-enchant/item-magic-applier.h"
 #include "object/object-kind-hook.h"
-#include "player/player-status.h"
 #include "spell/summon-types.h"
 #include "sv-definition/sv-food-types.h"
 #include "sv-definition/sv-other-types.h"
@@ -597,7 +596,7 @@ void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, Attrib
         return;
     }
 
-    if (is_sushi_eater(creature)) {
+    if (creature.is_sushi_eater()) {
         drop_sushi(creature, md_ptr);
     }
 

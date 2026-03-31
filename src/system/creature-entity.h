@@ -343,6 +343,29 @@ public:
         return false;
     }
 
+    virtual bool is_echizen() const
+    {
+        return false;
+    }
+
+    bool is_tough() const
+    {
+        return this->ppersonality == PERSONALITY_TOUGH;
+    }
+
+    bool is_chargeman() const
+    {
+        return this->ppersonality == PERSONALITY_CHARGEMAN;
+    }
+
+    bool is_sushi_eater() const
+    {
+        return this->ppersonality == PERSONALITY_SUSHI_EATER;
+    }
+
+    virtual bool is_time_limit_esp() const;
+    virtual bool is_time_limit_stealth() const;
+
     /*!
      * @brief 体力ランク (0-100) を計算する
      * @return 体力ランク

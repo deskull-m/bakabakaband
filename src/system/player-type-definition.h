@@ -75,6 +75,9 @@ public:
     bool is_blessed() const override;
     bool is_hero() const override;
     bool is_shero() const override;
+    bool is_echizen() const override;
+    bool is_time_limit_esp() const override;
+    bool is_time_limit_stealth() const override;
 };
 
 extern PlayerType *p_ptr;

@@ -708,7 +708,7 @@ BIT_FLAGS has_esp_telepathy(CreatureEntity &creature)
     BIT_FLAGS result = common_cause_flags(creature, TR_TELEPATHY);
 
     auto &player = static_cast<PlayerType &>(creature);
-    if (is_time_limit_esp(player) || player.ult_res) {
+    if (player.is_time_limit_esp() || player.ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
