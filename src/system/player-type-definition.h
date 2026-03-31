@@ -63,6 +63,8 @@ public:
 
     bool is_player() const override;
 
+    int get_ac() const override;
+
     short get_timed_effect(CreatureTimedEffect effect) const override;
 
     bool is_confused() const override;
