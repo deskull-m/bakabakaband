@@ -285,3 +285,4 @@ bool PlayerType::is_time_limit_stealth() const
     const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
     return this->tim_stealth > 0 || (bard && *bard && (*bard)->singing_song == MUSIC_STEALTH);
 }
+
