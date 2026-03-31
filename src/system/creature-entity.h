@@ -317,6 +317,33 @@ public:
     }
 
     /*!
+     * @brief クリーチャーが祝福状態かどうかを判定
+     * @return 祝福されていればtrue、デフォルトはfalse
+     */
+    virtual bool is_blessed() const
+    {
+        return false;
+    }
+
+    /*!
+     * @brief クリーチャーが士気高揚状態かどうかを判定
+     * @return 士気高揚ならtrue、デフォルトはfalse
+     */
+    virtual bool is_hero() const
+    {
+        return false;
+    }
+
+    /*!
+     * @brief クリーチャーが狂戦士状態かどうかを判定
+     * @return 狂戦士ならtrue、デフォルトはfalse
+     */
+    virtual bool is_shero() const
+    {
+        return false;
+    }
+
+    /*!
      * @brief 体力ランク (0-100) を計算する
      * @return 体力ランク
      */

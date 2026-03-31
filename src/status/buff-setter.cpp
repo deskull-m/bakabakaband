@@ -11,7 +11,6 @@
 #include "player-info/class-info.h"
 #include "player-info/race-info.h"
 #include "player/attack-defense-types.h"
-#include "player/player-status.h"
 #include "realm/realm-song-numbers.h"
 #include "spell-realm/spells-song.h"
 #include "status/base-status.h"
@@ -284,7 +283,7 @@ bool set_blessed(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
             if (creature.blessed > v) {
                 return false;
             }
-        } else if (!is_blessed(creature)) {
+        } else if (!creature.is_blessed()) {
             msg_print(_("高潔な気分になった！", "You feel righteous!"));
             notice = true;
         }
@@ -332,7 +331,7 @@ bool set_hero(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
             if (creature.hero > v) {
                 return false;
             }
-        } else if (!is_hero(creature)) {
+        } else if (!creature.is_hero()) {
             msg_print(_("ヒーローになった気がする！", "You feel like a hero!"));
             notice = true;
         }

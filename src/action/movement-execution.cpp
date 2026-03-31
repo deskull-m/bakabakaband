@@ -160,7 +160,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
         can_cast &= !is_hallucinated;
         can_cast &= monster.ml;
         can_cast &= !is_stunned;
-        can_cast &= player.muta.has_not(PlayerMutationType::BERS_RAGE) || !is_shero(player);
+        can_cast &= player.muta.has_not(PlayerMutationType::BERS_RAGE) || !player.is_shero();
         if (!monster.is_hostile() && can_cast && pattern_seq(player, pos) && (p_can_enter || p_can_kill_walls)) {
             (void)set_monster_csleep(*player.current_floor_ptr, grid.m_idx, 0);
             m_name = monster_desc(player, monster, 0);

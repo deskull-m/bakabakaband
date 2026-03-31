@@ -39,7 +39,6 @@
 #include "player/player-damage.h"
 #include "player/player-skill.h"
 #include "player/player-status-flags.h"
-#include "player/player-status.h"
 #include "player/special-defense-types.h"
 #include "status/action-setter.h"
 #include "status/bad-status-setter.h"
@@ -174,7 +173,7 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     int bonus = creature.to_h_m + (creature.level * 6 / 5);
 
     // 狂戦士状態の場合は命中とダメージにボーナス
-    if (is_shero(creature)) {
+    if (creature.is_shero()) {
         bonus += 10;
         dice = Dice(4, 8); // より強力なダメージ
     }
@@ -207,7 +206,7 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     k += creature.to_d_m;
 
     // 狂戦士状態の場合は追加ダメージ
-    if (is_shero(creature)) {
+    if (creature.is_shero()) {
         k += randint1(10);
         msg_print(_("狂戦士の怒りが頭突きの威力を高めた！", "Your berserker rage enhances the headbutt!"));
     }
@@ -261,11 +260,11 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     int bonus = creature.to_h_m + (creature.level * 6 / 5) + body_weight_bonus;
 
     // 狂戦士状態や英雄状態での強化
-    if (is_shero(creature)) {
+    if (creature.is_shero()) {
         bonus += 15;
         dice = Dice(3, 10); // より強力なダメージ
         atk_desc = _("猛烈な体当たり", "devastating body slam");
-    } else if (is_hero(creature)) {
+    } else if (creature.is_hero()) {
         bonus += 8;
         dice = Dice(2, 10);
         atk_desc = _("勇猛な体当たり", "heroic body slam");
@@ -298,10 +297,10 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     k += creature.to_d_m + body_weight_bonus;
 
     // 状態による追加ダメージ
-    if (is_shero(creature)) {
+    if (creature.is_shero()) {
         k += randint1(15);
         msg_print(_("狂戦士の怒りが体当たりの威力を倍増させた！", "Your berserker rage doubles the body slam power!"));
-    } else if (is_hero(creature)) {
+    } else if (creature.is_hero()) {
         k += randint1(8);
         msg_print(_("英雄の勇気が体当たりを強化した！", "Your heroic courage enhances the body slam!"));
     }
@@ -400,7 +399,7 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
         return false;
     }
 
-    if (!monster.is_hostile() && !(is_stunned || is_confused || is_hallucinated || is_shero(creature) || !monster.ml)) {
+    if (!monster.is_hostile() && !(is_stunned || is_confused || is_hallucinated || creature.is_shero() || !monster.ml)) {
         if (creature.is_wielding(FixedArtifactId::STORMBRINGER)) {
             msg_format(_("黒い刃は強欲に%sを攻撃した！", "Your black blade greedily attacks %s!"), m_name.data());
             chg_virtue(creature, Virtue::INDIVIDUALISM, 1);
@@ -548,7 +547,7 @@ bool do_cmd_headbutt(CreatureEntity &creature)
     // 敵対的でないモンスターへの確認
     const auto is_stunned = effects->stun().is_stunned();
     const auto is_hallucinated = effects->hallucination().is_hallucinated();
-    if (!monster.is_hostile() && !(is_stunned || is_confused || is_hallucinated || is_shero(creature) || !monster.ml)) {
+    if (!monster.is_hostile() && !(is_stunned || is_confused || is_hallucinated || creature.is_shero() || !monster.ml)) {
         if (!CreatureClass(creature).equals(PlayerClassType::BERSERKER)) {
             if (!input_check(_("本当に頭突きしますか？", "Really headbutt it? "))) {
                 msg_format(_("%sへの頭突きを止めた。", "You stop to avoid headbutting %s."), m_name.data());

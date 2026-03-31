@@ -511,15 +511,15 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_REFLECTION);
     }
 
-    if (is_hero(creature)) {
+    if (creature.is_hero()) {
         ADD_BAR_FLAG(BAR_HEROISM);
     }
 
-    if (is_shero(creature)) {
+    if (creature.is_shero()) {
         ADD_BAR_FLAG(BAR_BERSERK);
     }
 
-    if (is_blessed(creature)) {
+    if (creature.is_blessed()) {
         ADD_BAR_FLAG(BAR_BLESSED);
     }
 

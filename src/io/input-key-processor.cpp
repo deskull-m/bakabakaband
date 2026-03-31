@@ -466,7 +466,7 @@ void process_command(CreatureEntity &creature)
             break;
         }
 
-        if (is_shero(player) && !pc.equals(PlayerClassType::BERSERKER)) {
+        if (player.is_shero() && !pc.equals(PlayerClassType::BERSERKER)) {
             msg_format(_("狂戦士化していて頭が回らない！", "You cannot think directly!"));
             PlayerEnergy(player).reset_player_turn();
             break;

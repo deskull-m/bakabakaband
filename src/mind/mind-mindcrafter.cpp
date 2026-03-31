@@ -19,7 +19,6 @@
 #include "object/object-mark-types.h"
 #include "perception/object-perception.h"
 #include "perception/simple-perception.h"
-#include "player/player-status.h"
 #include "spell-kind/spells-detection.h"
 #include "spell-kind/spells-fetcher.h"
 #include "spell-kind/spells-floor.h"
