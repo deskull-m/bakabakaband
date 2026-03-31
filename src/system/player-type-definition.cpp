@@ -230,6 +230,11 @@ bool PlayerType::is_fast() const
     return this->effects()->acceleration().is_fast() || singing_speed;
 }
 
+bool PlayerType::is_decelerated() const
+{
+    return this->effects()->deceleration().is_slow();
+}
+
 bool PlayerType::is_blessed() const
 {
     if (this->blessed > 0) {

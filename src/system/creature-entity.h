@@ -309,12 +309,15 @@ public:
 
     /*!
      * @brief クリーチャーが加速しているかどうかを判定
-     * @return 加速中ならtrue、デフォルトはfalse
+     * @return 加速中ならtrue
      */
-    virtual bool is_fast() const
-    {
-        return false;
-    }
+    virtual bool is_fast() const;
+
+    /*!
+     * @brief クリーチャーが減速しているかどうかを判定
+     * @return 減速中ならtrue
+     */
+    virtual bool is_decelerated() const;
 
     /*!
      * @brief クリーチャーが祝福状態かどうかを判定
