@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(head -3 grep -rn \"void inven_item_increase\\\\b\\\\|void inven_item_optimize\\\\b\" /c/Users/nabra/Documents/bakabakaband/src --include=\"*.h\")",
+      "Bash(head -3 grep -rn \"class PlayerSpellStatus\\\\b\\\\|PlayerSpellStatus\\(\" /c/Users/nabra/Documents/bakabakaband/src --include=\"*.h\")",
+      "Bash(head -3 grep -rn \"no_lite\\\\b\\\\|get_rep_dir\\\\b\\\\|exe_open\\\\b\\\\|exe_close\\\\b\\\\|class Chest\\\\b\" /c/Users/nabra/Documents/bakabakaband/src --include=\"*.h\")",
+      "Bash(head -5 grep -rn \"print_spells\\\\b\\\\|do_cmd_mind\\\\b\\\\|player_has_no_spellbooks\\\\b\\\\|choose_object\\\\b\\\\|do_cmd_attack\\\\b\" /c/Users/nabra/Documents/bakabakaband/src --include=\"*.h\")",
+      "Bash(head -10 grep -rn \"spell_exp\\\\b\\\\|old_realm\\\\b\" /c/Users/nabra/Documents/bakabakaband/src/system/creature-entity.h)",
+      "Bash(powershell -Command \"& ''C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/MSBuild.exe'' ''bakabakaband.sln'' /p:Configuration=Debug /p:Platform=Win32 /t:Build /m /nologo /v:minimal 2>&1 | Select-String -Pattern ''error|warning.*cmd-spell|warning.*cmd-open'' | head -30\")",
+      "Bash(powershell -Command \"& ''''C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/MSBuild.exe'''' ''''bakabakaband.sln'''' /p:Configuration=Debug /p:Platform=Win32 /t:Build /m /nologo /v:minimal\")",
+      "Bash(ls c:/Users/nabra/Documents/bakabakaband/*.sln)",
+      "Bash(ls c:/Users/nabra/Documents/bakabakaband/*.vcxproj)",
+      "Bash(python:*)",
+      "Bash(where python:*)",
+      "Bash(where python3:*)",
+      "Bash(where py:*)",
+      "Bash(/c/Users/nabra/AppData/Local/Python/bin/python.exe:*)",
+      "Bash(cmake --build build --config Debug -- /p:BuildProjectReferences=false /t:player/player-status.cpp.obj)",
+      "Bash(where cmake:*)",
+      "Read(//c/Program Files \\(x86\\)/CMake/bin/**)",
+      "Bash(grep -rn calc_life_rating c:/Users/nabra/Documents/bakabakaband/src/ --include=*.cpp)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Read(//c/Users/nabra/Documents/bakabakaband/**)",
+      "Bash(done)",
+      "Bash(echo \"=== $f.cpp all includes ===\")",
+      "Read(//c/Users/nabra/Documents/bakabakaband/src/realm/**)",
+      "Bash(powershell.exe -Command \"& ''C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\MSBuild\\\\Current\\\\Bin\\\\MSBuild.exe'' ''c:\\\\Users\\\\nabra\\\\Documents\\\\bakabakaband\\\\VisualStudio\\\\Bakabakaband.sln'' /p:Configuration=Debug /p:Platform=Win32 /t:Build /m /v:minimal 2>&1 | Select-String -Pattern ''error C|Build succeeded|Build FAILED'' | Select-Object -First 20\")",
+      "Bash(powershell.exe -Command \":*)",
+      "Bash(head -5 grep -rn \"^int rand_choice\\\\|rand_choice\" \"c:/Users/nabra/Documents/bakabakaband/src/term/z-rand.h\")",
+      "Bash(head -3 grep -rn \"^std::string format\\\\|^format\" \"c:/Users/nabra/Documents/bakabakaband/src\")",
+      "Bash(for id:*)",
+      "Bash(f=\"C:/Users/nabra/AppData/Local/Temp/claude/c--Users-nabra-Documents-bakabakaband/5bebd064-7c0d-47f5-8df0-b3d30520615f/tasks/$id.output\")",
+      "Bash(echo \"=== $id ===\")",
+      "Bash(cmake --build build --config Debug)",
+      "Bash(make -C /mnt/c/Users/nabra/Documents/bakabakaband)",
+      "Bash(make -C /mnt/c/Users/nabra/Documents/bakabakaband -j4)",
+      "Bash(make)",
+      "Bash(g++ --version)",
+      "Read(//mnt/c/Users/nabra/Documents/**)"
+    ]
+  }
+}

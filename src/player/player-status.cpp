@@ -3072,6 +3072,40 @@ uint32_t calc_score(CreatureEntity &creature)
 }
 
 /*!
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @return 祝福状態ならばTRUE
+ */
+bool is_blessed(CreatureEntity &creature)
+{
+    return creature.blessed || music_singing(creature, MUSIC_BLESS) || SpellHex(creature).is_spelling_specific(HEX_BLESS);
+}
+
+bool is_tim_esp(CreatureEntity &creature)
+{
+    auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
+    auto sniper_concent = sniper_data ? sniper_data->concent : 0;
+    return creature.tim_esp || music_singing(creature, MUSIC_MIND) || (sniper_concent >= CONCENT_TELE_THRESHOLD);
+}
+
+bool is_tim_stealth(CreatureEntity &creature)
+{
+    return creature.tim_stealth || music_singing(creature, MUSIC_STEALTH);
+}
+
+bool is_time_limit_esp(CreatureEntity &creature)
+{
+    auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
+    auto sniper_concent = sniper_data ? sniper_data->concent : 0;
+    return creature.tim_esp || music_singing(creature, MUSIC_MIND) || (sniper_concent >= CONCENT_TELE_THRESHOLD);
+}
+
+bool is_time_limit_stealth(CreatureEntity &creature)
+{
+    return creature.tim_stealth || music_singing(creature, MUSIC_STEALTH);
+}
+
+/*!
+
  * @brief 口を使う継続的な処理を中断する
  * @param player_ptr プレイヤーへの参照ポインタ
  */
@@ -3085,6 +3119,46 @@ void stop_mouth(CreatureEntity &creature)
         (void)SpellHex(creature).stop_all_spells();
     }
 }
+
+bool is_fast(CreatureEntity &creature)
+{
+    return creature.effects()->acceleration().is_fast() || music_singing(creature, MUSIC_SPEED) || music_singing(creature, MUSIC_SHERO);
+}
+bool is_invuln(CreatureEntity &creature)
+{
+    return creature.invuln || music_singing(creature, MUSIC_INVULN);
+}
+
+bool is_hero(CreatureEntity &creature)
+{
+    return creature.hero || music_singing(creature, MUSIC_HERO) || music_singing(creature, MUSIC_SHERO);
+}
+
+bool is_shero(CreatureEntity &creature)
+{
+    return creature.berserk || CreatureClass(creature).equals(PlayerClassType::BERSERKER);
+}
+
+bool is_echizen(CreatureEntity &creature)
+{
+    return (creature.ppersonality == PERSONALITY_COMBAT) || creature.is_wielding(FixedArtifactId::CRIMSON);
+}
+
+bool is_tough(CreatureEntity &creature)
+{
+    return (creature.ppersonality == PERSONALITY_TOUGH);
+}
+
+bool is_chargeman(CreatureEntity &creature)
+{
+    return creature.ppersonality == PERSONALITY_CHARGEMAN;
+}
+
+bool is_sushi_eater(CreatureEntity &creature)
+{
+    return (creature.ppersonality == PERSONALITY_SUSHI_EATER);
+}
+
 
 int calc_weapon_weight_limit(CreatureEntity &creature)
 {
