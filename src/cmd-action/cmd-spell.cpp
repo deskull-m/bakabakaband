@@ -915,7 +915,7 @@ bool do_cmd_cast(CreatureEntity &creature)
         return false;
     }
 
-    if (creature.effects()->blindness().is_blind() || no_lite(creature)) {
+    if (creature.is_blind() || no_lite(creature)) {
         if (pc.equals(PlayerClassType::FORCETRAINER)) {
             confirm_use_force(creature, false);
         } else {

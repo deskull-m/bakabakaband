@@ -10,7 +10,6 @@
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
@@ -52,7 +51,7 @@ void notice_lite_change(CreatureEntity &creature, ItemEntity *o_ptr)
         rfu.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
     }
 
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         if (o_ptr->fuel == 0) {
             o_ptr->fuel++;
         }

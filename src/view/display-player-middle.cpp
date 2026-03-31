@@ -189,7 +189,7 @@ static int calc_temporary_speed(CreatureEntity &creature)
     }
     int tmp_speed = 0;
     if (!creature.riding) {
-        if (is_fast(creature)) {
+        if (creature.is_fast()) {
             tmp_speed += 10;
         }
 

@@ -267,7 +267,7 @@ void SpellsMirrorMaster::project_seeker_ray(int target_x, int target_y, int dam)
         for (auto path_g_itr = path_g.begin(); path_g_itr != path_g.end(); path_g_itr++) {
             const auto &pos_dst = *path_g_itr;
             const auto &pos_src = *(path_g_itr == path_g.begin() ? path_g.begin() : path_g_itr - 1);
-            if (delay_factor > 0 && !this->creature_ptr->effects()->blindness().is_blind()) {
+            if (delay_factor > 0 && !this->creature_ptr->is_blind()) {
                 if (panel_contains(pos_dst) && floor.has_los_at(pos_dst)) {
                     print_bolt_pict(*this->creature_ptr, pos_src, pos_dst, typ);
                     move_cursor_relative(pos_dst.y, pos_dst.x);

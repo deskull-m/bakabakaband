@@ -30,7 +30,6 @@
 #include "system/enums/monrace/monrace-id.h"
 #include "system/item-entity.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
@@ -38,7 +37,7 @@
 void effect_player_elements(
     CreatureEntity &creature, EffectPlayerType *ep_ptr, std::string_view attack_message, int (*damage_func)(CreatureEntity &, int, std::string_view, bool))
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(attack_message);
     }
 
@@ -48,7 +47,7 @@ void effect_player_elements(
 void effect_player_poison(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
     bool double_resist = is_oppose_pois(creature);
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("毒で攻撃された！", "You are hit by poison!"));
     }
 
@@ -68,7 +67,7 @@ void effect_player_poison(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 void effect_player_nuke(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
     bool double_resist = is_oppose_pois(creature);
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("放射能で攻撃された！", "You are hit by radiation!"));
     }
 
@@ -96,7 +95,7 @@ void effect_player_nuke(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_missile(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("何かで攻撃された！", "You are hit by something!"));
     }
 
@@ -105,7 +104,7 @@ void effect_player_missile(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_holy_fire(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("何かで攻撃された！", "You are hit by something!"));
     }
 
@@ -116,7 +115,7 @@ void effect_player_holy_fire(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_hell_fire(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("何かで攻撃された！", "You are hit by something!"));
     }
 
@@ -127,7 +126,7 @@ void effect_player_hell_fire(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_arrow(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         sound(SoundKind::SHOOT_HIT);
         msg_print(_("何か鋭いもので攻撃された！", "You are hit by something sharp!"));
         ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
@@ -150,7 +149,7 @@ void effect_player_arrow(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_plasma(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("何かとても熱いもので攻撃された！", "You are hit by something *HOT*!"));
     }
 
@@ -176,7 +175,7 @@ void effect_player_plasma(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_nether(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("地獄の力で攻撃された！", "You are hit by nether forces!"));
     }
 
@@ -208,7 +207,7 @@ void effect_player_nether(CreatureEntity &creature, EffectPlayerType *ep_ptr)
  */
 void effect_player_water(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("何か湿ったもので攻撃された！", "You are hit by something wet!"));
     }
 
@@ -240,7 +239,7 @@ void effect_player_water(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_chaos(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("無秩序の波動で攻撃された！", "You are hit by a wave of anarchy!"));
     }
 
@@ -276,7 +275,7 @@ void effect_player_chaos(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_shards(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("何か鋭いもので攻撃された！", "You are hit by something sharp!"));
     }
 
@@ -295,7 +294,7 @@ void effect_player_shards(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_sound(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("轟音で攻撃された！", "You are hit by a loud noise!"));
     }
 
@@ -315,7 +314,7 @@ void effect_player_sound(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_confusion(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("何か混乱するもので攻撃された！", "You are hit by something puzzling!"));
     }
 
@@ -330,7 +329,7 @@ void effect_player_confusion(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_disenchant(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("何かさえないもので攻撃された！", "You are hit by something static!"));
     }
 
@@ -345,7 +344,7 @@ void effect_player_disenchant(CreatureEntity &creature, EffectPlayerType *ep_ptr
 
 void effect_player_nexus(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("何か奇妙なもので攻撃された！", "You are hit by something strange!"));
     }
 
@@ -360,7 +359,7 @@ void effect_player_nexus(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_force(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("運動エネルギーで攻撃された！", "You are hit by kinetic force!"));
     }
     if (!has_resist_sound(creature) && !check_multishadow(creature)) {
@@ -372,7 +371,7 @@ void effect_player_force(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_rocket(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("爆発があった！", "There is an explosion!"));
     }
 
@@ -395,7 +394,7 @@ void effect_player_rocket(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_inertial(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("何か遅いもので攻撃された！", "You are hit by something slow!"));
     }
 
@@ -408,7 +407,7 @@ void effect_player_inertial(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_lite(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    const auto is_blind = creature.effects()->blindness().is_blind();
+    const auto is_blind = creature.is_blind();
     if (is_blind) {
         msg_print(_("何かで攻撃された！", "You are hit by something!"));
     }
@@ -451,7 +450,7 @@ void effect_player_lite(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_dark(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    const auto is_blind = creature.effects()->blindness().is_blind();
+    const auto is_blind = creature.is_blind();
     if (is_blind) {
         msg_print(_("何かで攻撃された！", "You are hit by something!"));
     }
@@ -505,7 +504,7 @@ static void effect_player_time_addition(CreatureEntity &creature)
  */
 void effect_player_time(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("過去からの衝撃に攻撃された！", "You are hit by a blast from the past!"));
     }
 
@@ -526,7 +525,7 @@ void effect_player_time(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_gravity(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("何か重いもので攻撃された！", "You are hit by something heavy!"));
     }
 
@@ -555,7 +554,7 @@ void effect_player_gravity(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_disintegration(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("純粋なエネルギーで攻撃された！", "You are hit by pure energy!"));
     }
 
@@ -564,7 +563,7 @@ void effect_player_disintegration(CreatureEntity &creature, EffectPlayerType *ep
 
 void effect_player_death_ray(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("何か非常に冷たいもので攻撃された！", "You are hit by something extremely cold!"));
     }
 
@@ -574,7 +573,7 @@ void effect_player_death_ray(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_mana(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("魔法のオーラで攻撃された！", "You are hit by an aura of magic!"));
     }
 
@@ -583,7 +582,7 @@ void effect_player_mana(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_psy_spear(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("エネルギーの塊で攻撃された！", "You are hit by an energy!"));
     }
 
@@ -592,7 +591,7 @@ void effect_player_psy_spear(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_meteor(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("何かが空からあなたの頭上に落ちてきた！", "Something falls from the sky on you!"));
     }
 
@@ -607,7 +606,7 @@ void effect_player_meteor(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_icee(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("何か鋭く冷たいもので攻撃された！", "You are hit by something sharp and cold!"));
     }
 
@@ -652,7 +651,7 @@ void effect_player_hand_doom(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_void(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    auto effect_mes = creature.effects()->blindness().is_blind() ? _("何かに身体が引っ張りこまれる！", "Something absorbs you!")
+    auto effect_mes = creature.is_blind() ? _("何かに身体が引っ張りこまれる！", "Something absorbs you!")
                                                                  : _("周辺の空間が歪んだ。", "Sight warps around you.");
     msg_print(effect_mes);
     if (!check_multishadow(creature) && !creature.levitation && !creature.anti_tele) {
@@ -668,7 +667,7 @@ void effect_player_void(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_abyss(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    const auto is_blind = creature.effects()->blindness().is_blind();
+    const auto is_blind = creature.is_blind();
     const auto effect_mes = is_blind ? _("身体が沈み込む気がする！", "You feel you are sinking into something!")
                                      : _("深淵があなたを誘い込んでいる！", "You are falling into the abyss!");
     msg_print(effect_mes);
@@ -703,7 +702,7 @@ void effect_player_abyss(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_spider_string(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("何かネバネバしたもので攻撃された！", "You are hit by something sticky!"));
     } else {
         msg_print(_("蜘蛛糸に絡まれた！", "You are entangled in spider webs!"));

@@ -70,7 +70,7 @@ void starve_player(CreatureEntity &creature)
         return;
     }
 
-    if (!is_sushi_eater(creature) && !player.effects()->paralysis().is_paralyzed() && one_in_(10)) {
+    if (!is_sushi_eater(creature) && !player.is_paralyzed() && one_in_(10)) {
         msg_print(_("あまりにも空腹で気絶してしまった。", "You faint from the lack of food."));
         disturb(creature, true, true);
         (void)BadStatusSetter(creature).mod_paralysis(1 + randint0(5));

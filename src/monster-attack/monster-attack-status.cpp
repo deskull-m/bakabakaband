@@ -89,7 +89,7 @@ void process_paralyze_attack(CreatureEntity &creature, MonsterAttackPlayer *mona
         return;
     }
 
-    const auto is_paralyzed = creature.effects()->paralysis().is_paralyzed();
+    const auto is_paralyzed = creature.is_paralyzed();
     if (!is_paralyzed && BadStatusSetter(creature).set_paralysis(3 + randint1(monap_ptr->rlev))) {
         monap_ptr->obvious = true;
     }

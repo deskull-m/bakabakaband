@@ -3119,12 +3119,6 @@ void stop_mouth(CreatureEntity &creature)
     }
 }
 
-bool is_fast(CreatureEntity &creature)
-{
-    return creature.effects()->acceleration().is_fast() || music_singing(creature, MUSIC_SPEED) || music_singing(creature, MUSIC_SHERO);
-}
-
-
 bool is_hero(CreatureEntity &creature)
 {
     return creature.hero || music_singing(creature, MUSIC_HERO) || music_singing(creature, MUSIC_SHERO);

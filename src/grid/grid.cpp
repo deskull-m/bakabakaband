@@ -37,7 +37,6 @@
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/gameterm.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-map.h"
 #include "view/display-messages.h"
 #include "window/main-window-util.h"
@@ -365,7 +364,7 @@ void note_spot(CreatureEntity &creature, const Pos2D &pos)
     auto &grid = floor.get_grid(pos);
 
     /* Blind players see nothing */
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         return;
     }
 

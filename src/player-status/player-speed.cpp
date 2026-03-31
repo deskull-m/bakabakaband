@@ -189,7 +189,7 @@ int16_t PlayerSpeed::equipments_bonus()
 int16_t PlayerSpeed::time_effect_bonus()
 {
     int16_t bonus = 0;
-    if (is_fast(this->creature)) {
+    if (this->creature.is_fast()) {
         bonus += 10;
     }
 

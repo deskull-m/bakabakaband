@@ -132,7 +132,7 @@ bool set_acceleration(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
             if (acceleration.current() > v) {
                 return false;
             }
-        } else if (!is_fast(creature) && !creature.lightspeed) {
+        } else if (!creature.is_fast() && !creature.lightspeed) {
             msg_print(_("素早く動けるようになった！", "You feel yourself moving much faster!"));
             notice = true;
             chg_virtue(creature, Virtue::PATIENCE, -1);
