@@ -5,9 +5,9 @@
 #include "sv-definition/sv-weapon-types.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
-#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
+#include "system/creature-entity.h"
 #include <span>
 
 void acquire_chaos_weapon(CreatureEntity &creature)

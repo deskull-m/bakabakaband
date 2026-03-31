@@ -12,13 +12,11 @@
 #include "player-info/monk-data-type.h"
 #include "player-info/samurai-data-type.h"
 #include "player/player-damage.h"
-#include "player/player-status.h"
 #include "player/special-defense-types.h"
 #include "status/bad-status-setter.h"
 #include "system/angband-system.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
@@ -70,7 +68,7 @@ void starve_player(CreatureEntity &creature)
         return;
     }
 
-    if (!creature.is_sushi_eater() && !player.is_paralyzed() && one_in_(10)) {
+    if (!creature.is_sushi_eater() && !creature.is_paralyzed() && one_in_(10)) {
         msg_print(_("あまりにも空腹で気絶してしまった。", "You faint from the lack of food."));
         disturb(creature, true, true);
         (void)BadStatusSetter(creature).mod_paralysis(1 + randint0(5));
@@ -112,25 +110,25 @@ void starve_player(CreatureEntity &creature)
  */
 bool set_food(CreatureEntity &creature, TIME_EFFECT v)
 {
-    if (!creature.is_player()) {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
         return false;
     }
-    auto &player = static_cast<PlayerType &>(creature);
 
     int old_aux, new_aux;
 
     bool notice = false;
     v = (v > 20000) ? 20000 : (v < 0) ? 0
                                       : v;
-    if (player.food < PY_FOOD_FAINT) {
+    if (player_ptr->food < PY_FOOD_FAINT) {
         old_aux = 0;
-    } else if (player.food < PY_FOOD_WEAK) {
+    } else if (player_ptr->food < PY_FOOD_WEAK) {
         old_aux = 1;
-    } else if (player.food < PY_FOOD_ALERT) {
+    } else if (player_ptr->food < PY_FOOD_ALERT) {
         old_aux = 2;
-    } else if (player.food < PY_FOOD_FULL) {
+    } else if (player_ptr->food < PY_FOOD_FULL) {
         old_aux = 3;
-    } else if (player.food < PY_FOOD_MAX) {
+    } else if (player_ptr->food < PY_FOOD_MAX) {
         old_aux = 4;
     } else {
         old_aux = 5;
@@ -213,13 +211,13 @@ bool set_food(CreatureEntity &creature, TIME_EFFECT v)
         }
 
         if (AngbandWorld::get_instance().is_wild_mode() && (new_aux < 2)) {
-            change_wild_mode(player, false);
+            change_wild_mode(*player_ptr, false);
         }
 
         notice = true;
     }
 
-    player.food = v;
+    player_ptr->food = v;
     if (!notice) {
         return false;
     }
@@ -231,7 +229,7 @@ bool set_food(CreatureEntity &creature, TIME_EFFECT v)
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     rfu.set_flag(MainWindowRedrawingFlag::HUNGER);
-    handle_stuff(player);
+    handle_stuff(*player_ptr);
 
     return true;
 }
