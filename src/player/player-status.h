@@ -31,7 +31,6 @@ bool is_blessed(CreatureEntity &creature);
 bool is_time_limit_esp(CreatureEntity &creature);
 bool is_time_limit_stealth(CreatureEntity &creature);
 bool is_fast(CreatureEntity &creature);
-bool is_invuln(CreatureEntity &creature);
 bool is_hero(CreatureEntity &creature);
 bool is_shero(CreatureEntity &creature);
 bool is_echizen(CreatureEntity &creature);
