@@ -545,7 +545,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (stop) {
-            if (!creature.effects()->acceleration().is_fast()) {
+            if (!creature.is_fast()) {
                 msg_print(_("動きの素早さがなくなったようだ。", "You feel yourself slow down."));
             }
         }
@@ -746,7 +746,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
                 RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::HP);
             }
 
-            if (!creature.effects()->acceleration().is_fast()) {
+            if (!creature.is_fast()) {
                 msg_print(_("動きの素早さがなくなったようだ。", "You feel yourself slow down."));
             }
         }

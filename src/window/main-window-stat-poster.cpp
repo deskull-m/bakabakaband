@@ -259,7 +259,7 @@ void print_speed(CreatureEntity &creature)
     bool is_player_fast = creature.is_fast();
     char buf[32] = "";
     TERM_COLOR attr = TERM_WHITE;
-    const auto is_slow = creature.effects()->deceleration().is_slow();
+    const auto is_slow = creature.is_decelerated();
     if (speed > 0) {
         if (creature.riding) {
             const auto &monster = floor.m_list[creature.riding];
