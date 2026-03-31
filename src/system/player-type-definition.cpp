@@ -242,7 +242,7 @@ bool PlayerType::is_blessed() const
     }
 
     const auto *hex = std::get_if<std::shared_ptr<spell_hex_data_type>>(&this->class_specific_data);
-    return hex && *hex && (*hex)->casting_spells.has(i2enum<spell_hex_type>(HEX_BLESS));
+    return hex && *hex && (*hex)->casting_spells.has(HEX_BLESS);
 }
 
 bool PlayerType::is_hero() const
