@@ -259,6 +259,12 @@ public:
     virtual bool is_player() const = 0;
 
     /*!
+     * @brief クリーチャーの実効ACを取得
+     * @return 実効AC値（プレイヤーは ac + to_a、モンスターは総合AC）
+     */
+    virtual int get_ac() const = 0;
+
+    /*!
      * @brief クリーチャーの時限効果の残りターン数を取得
      * @param effect 取得する時限効果の種別
      * @return 残りターン数（0なら効果なし）

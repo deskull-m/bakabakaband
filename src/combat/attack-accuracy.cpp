@@ -79,7 +79,7 @@ bool check_hit_from_monster_to_player(CreatureEntity &creature, int power, DEPTH
     }
     int i = (power + (level * 3));
 
-    int ac = creature.ac + creature.to_a;
+    int ac = creature.get_ac();
     if (creature.special_attack & ATTACK_SUIKEN) {
         ac += (creature.level * 2);
     }

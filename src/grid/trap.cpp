@@ -172,7 +172,7 @@ static int check_hit_from_monster_to_player(CreatureEntity &creature, int power)
     }
 
     /* Total armor */
-    ac = creature.ac + creature.to_a;
+    ac = creature.get_ac();
 
     /* Power competes against Armor */
     if (randint1(power) > ((ac * 3) / 4)) {
