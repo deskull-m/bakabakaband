@@ -146,7 +146,7 @@ bool pattern_effect(CreatureEntity &creature)
         break;
 
     case PATTERN_TILE_WRECKED:
-        if (!is_invuln(*player_ptr)) {
+        if (!player_ptr->is_invulnerable()) {
             take_hit(*player_ptr, DAMAGE_NOESCAPE, 200, _("壊れた「パターン」を歩いたダメージ", "walking the corrupted Pattern"));
         }
         break;
@@ -154,7 +154,7 @@ bool pattern_effect(CreatureEntity &creature)
     default:
         if (CreatureRace(player_ptr).equals(PlayerRaceType::AMBERITE) && !one_in_(2)) {
             return true;
-        } else if (!is_invuln(*player_ptr)) {
+        } else if (!player_ptr->is_invulnerable()) {
             take_hit(*player_ptr, DAMAGE_NOESCAPE, Dice::roll(1, 3), _("「パターン」を歩いたダメージ", "walking the Pattern"));
         }
         break;
@@ -188,8 +188,8 @@ bool pattern_seq(CreatureEntity &creature, const Pos2D &pos)
     int pattern_type_new = is_pattern_tile_new ? terrain_new.subtype : NOT_PATTERN_TILE;
     if (pattern_type_new == PATTERN_TILE_START) {
         const auto effects = player_ptr->effects();
-        const auto is_stunned = effects->stun().is_stunned();
-        const auto is_confused = effects->confusion().is_confused();
+        const auto is_stunned = player_ptr->is_stunned();
+        const auto is_confused = player_ptr->is_confused();
         const auto is_hallucinated = effects->hallucination().is_hallucinated();
         if (is_pattern_tile_cur || is_confused || is_stunned || is_hallucinated) {
             return true;

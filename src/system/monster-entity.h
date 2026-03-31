@@ -92,7 +92,7 @@ public:
     short get_remaining_invulnerability() const;
     bool is_asleep() const;
     bool is_accelerated() const;
-    bool is_decelerated() const;
+    bool is_decelerated() const override;
     bool is_stunned() const override;
     bool is_confused() const override;
     bool is_fearful() const override;

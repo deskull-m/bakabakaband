@@ -215,7 +215,7 @@ bool dispel_check_monster(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_I
  */
 bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    if (is_invuln(creature)) {
+    if (creature.is_invulnerable()) {
         return true;
     }
 
@@ -335,7 +335,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
         return true;
     }
 
-    if ((creature.get_speed() < 145) && is_fast(creature)) {
+    if ((creature.get_speed() < 145) && creature.is_fast()) {
         return true;
     }
 

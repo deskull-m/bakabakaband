@@ -575,8 +575,7 @@ void ObjectThrowEntity::process_boomerang_throw()
 
 void ObjectThrowEntity::display_boomerang_throw()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
-    const auto is_blind = player.effects()->blindness().is_blind();
+    const auto is_blind = this->creature_ptr->is_blind();
     if ((this->back_chance > 37) && !is_blind && (this->i_idx >= 0)) {
         msg_format(_("%sが手元に返ってきた。", "%s comes back to you."), this->o2_name.data());
         this->come_back = true;
@@ -585,6 +584,6 @@ void ObjectThrowEntity::display_boomerang_throw()
 
     auto back_message = this->i_idx >= 0 ? _("%sを受け損ねた！", "%s comes back, but you can't catch!") : _("%sが返ってきた。", "%s comes back.");
     msg_format(back_message, this->o2_name.data());
-    this->y = player.y;
-    this->x = player.x;
+    this->y = this->creature_ptr->y;
+    this->x = this->creature_ptr->x;
 }

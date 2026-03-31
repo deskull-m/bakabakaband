@@ -236,9 +236,9 @@ static bool run_test(CreatureEntity &creature)
                     notice = false;
                 } else if (find_ignore_stairs && terrain.flags.has(TerrainCharacteristics::STAIRS)) {
                     notice = false;
-                } else if (terrain.flags.has(TerrainCharacteristics::LAVA) && (has_immune_fire(creature) || is_invuln(creature))) {
+                } else if (terrain.flags.has(TerrainCharacteristics::LAVA) && (has_immune_fire(creature) || creature.is_invulnerable())) {
                     notice = false;
-                } else if (terrain.flags.has(TerrainCharacteristics::VOID) && is_invuln(creature)) {
+                } else if (terrain.flags.has(TerrainCharacteristics::VOID) && creature.is_invulnerable()) {
                     notice = false;
                 } else if (terrain.flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP }) && (creature.levitation || creature.can_swim || (calc_inventory_weight(creature) <= calc_weight_limit(creature)))) {
                     notice = false;

@@ -12,13 +12,11 @@
 #include "player-info/monk-data-type.h"
 #include "player-info/samurai-data-type.h"
 #include "player/player-damage.h"
-#include "player/player-status.h"
 #include "player/special-defense-types.h"
 #include "status/bad-status-setter.h"
 #include "system/angband-system.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
@@ -59,7 +57,7 @@ void starve_player(CreatureEntity &creature)
             digestion = 100;
         }
 
-        if (is_sushi_eater(creature)) {
+        if (creature.is_sushi_eater()) {
             digestion *= 100;
         }
 
@@ -70,7 +68,7 @@ void starve_player(CreatureEntity &creature)
         return;
     }
 
-    if (!is_sushi_eater(creature) && !player.effects()->paralysis().is_paralyzed() && one_in_(10)) {
+    if (!creature.is_sushi_eater() && !creature.is_paralyzed() && one_in_(10)) {
         msg_print(_("あまりにも空腹で気絶してしまった。", "You faint from the lack of food."));
         disturb(creature, true, true);
         (void)BadStatusSetter(creature).mod_paralysis(1 + randint0(5));
@@ -78,7 +76,7 @@ void starve_player(CreatureEntity &creature)
 
     if (player.food < PY_FOOD_STARVE) {
         int dam = (PY_FOOD_STARVE - player.food) / 10;
-        if (!is_invuln(creature)) {
+        if (!creature.is_invulnerable()) {
             take_hit(creature, DAMAGE_LOSELIFE, dam, _("空腹", "starvation"));
         }
     }
@@ -190,7 +188,7 @@ bool set_food(CreatureEntity &creature, TIME_EFFECT v)
         switch (new_aux) {
         case 0:
             sound(SoundKind::FAINT);
-            if (is_sushi_eater(creature)) {
+            if (creature.is_sushi_eater()) {
                 msg_print(_("そろそろ寿司を食べないと死ぬぜ！", "'I'm gonna die if I don't eat sushi soon!'"));
             } else {
                 msg_print(_("あまりにも空腹で気を失ってしまった！", "You are getting faint from hunger!"));

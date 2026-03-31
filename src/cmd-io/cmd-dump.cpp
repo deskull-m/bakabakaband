@@ -25,7 +25,6 @@
 #include "mutation/mutation-flag-types.h"
 #include "player/player-personality-types.h"
 #include "player/player-status-flags.h"
-#include "player/player-status.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
@@ -291,7 +290,7 @@ void do_cmd_feeling(CreatureEntity &creature)
     std::string_view feeling_text;
     if (has_good_luck(creature)) {
         feeling_text = df.get_feeling_lucky();
-    } else if (is_echizen(creature)) {
+    } else if (creature.is_echizen()) {
         feeling_text = df.get_feeling_combat();
     } else {
         feeling_text = df.get_feeling_normal();

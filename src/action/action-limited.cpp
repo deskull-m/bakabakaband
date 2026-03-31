@@ -10,8 +10,6 @@
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
 #include "player-base/player-class.h"
-#include "player/player-status.h"
-#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "term/screen-processor.h"
@@ -36,7 +34,7 @@ bool cmd_limit_cast(CreatureEntity &creature)
         return true;
     }
 
-    if (is_shero(creature) && !CreatureClass(creature).equals(PlayerClassType::BERSERKER)) {
+    if (creature.is_shero() && !CreatureClass(creature).equals(PlayerClassType::BERSERKER)) {
         msg_format(_("狂戦士化していて頭が回らない！", "You cannot think directly!"));
         return true;
     }
@@ -46,7 +44,7 @@ bool cmd_limit_cast(CreatureEntity &creature)
 
 bool cmd_limit_confused(const CreatureEntity &creature)
 {
-    if (creature.effects()->confusion().is_confused()) {
+    if (creature.is_confused()) {
         msg_print(_("混乱していてできない！", "You are too confused!"));
         return true;
     }
@@ -66,7 +64,7 @@ bool cmd_limit_image(const CreatureEntity &creature)
 
 bool cmd_limit_stun(const CreatureEntity &creature)
 {
-    if (creature.effects()->stun().is_stunned()) {
+    if (creature.is_stunned()) {
         msg_print(_("頭が朦朧としていて集中できない！", "You are too stunned!"));
         return true;
     }
@@ -87,7 +85,7 @@ bool cmd_limit_arena(const CreatureEntity &creature)
 
 bool cmd_limit_blind(CreatureEntity &creature)
 {
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("目が見えない。", "You can't see anything."));
         return true;
     }

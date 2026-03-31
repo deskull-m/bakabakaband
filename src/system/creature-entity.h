@@ -290,6 +290,86 @@ public:
     virtual bool is_invulnerable() const;
 
     /*!
+     * @brief クリーチャーが盲目かどうかを判定
+     * @return 盲目ならtrue、デフォルトはfalse
+     */
+    virtual bool is_blind() const
+    {
+        return false;
+    }
+
+    /*!
+     * @brief クリーチャーが麻痺しているかどうかを判定
+     * @return 麻痺していればtrue、デフォルトはfalse
+     */
+    virtual bool is_paralyzed() const
+    {
+        return false;
+    }
+
+    /*!
+     * @brief クリーチャーが加速しているかどうかを判定
+     * @return 加速中ならtrue
+     */
+    virtual bool is_fast() const;
+
+    /*!
+     * @brief クリーチャーが減速しているかどうかを判定
+     * @return 減速中ならtrue
+     */
+    virtual bool is_decelerated() const;
+
+    /*!
+     * @brief クリーチャーが祝福状態かどうかを判定
+     * @return 祝福されていればtrue、デフォルトはfalse
+     */
+    virtual bool is_blessed() const
+    {
+        return false;
+    }
+
+    /*!
+     * @brief クリーチャーが士気高揚状態かどうかを判定
+     * @return 士気高揚ならtrue、デフォルトはfalse
+     */
+    virtual bool is_hero() const
+    {
+        return false;
+    }
+
+    /*!
+     * @brief クリーチャーが狂戦士状態かどうかを判定
+     * @return 狂戦士ならtrue、デフォルトはfalse
+     */
+    virtual bool is_shero() const
+    {
+        return false;
+    }
+
+    virtual bool is_echizen() const
+    {
+        return false;
+    }
+
+    bool is_tough() const
+    {
+        return this->ppersonality == PERSONALITY_TOUGH;
+    }
+
+    bool is_chargeman() const
+    {
+        return this->ppersonality == PERSONALITY_CHARGEMAN;
+    }
+
+    bool is_sushi_eater() const
+    {
+        return this->ppersonality == PERSONALITY_SUSHI_EATER;
+    }
+
+    virtual bool is_time_limit_esp() const;
+    virtual bool is_time_limit_stealth() const;
+
+    /*!
      * @brief 体力ランク (0-100) を計算する
      * @return 体力ランク
      */

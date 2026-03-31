@@ -91,7 +91,7 @@ int mon_damage_mod(CreatureEntity &creature, const MonsterEntity &monster, int d
     }
 
     if (is_psy_spear) {
-        if (!creature.effects()->blindness().is_blind() && is_seen(creature, monster)) {
+        if (!creature.is_blind() && is_seen(creature, monster)) {
             msg_print(_("バリアを切り裂いた！", "The barrier is penetrated!"));
         }
 

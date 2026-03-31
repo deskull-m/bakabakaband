@@ -256,10 +256,10 @@ void print_speed(CreatureEntity &creature)
 
     const auto speed = creature.get_speed() - STANDARD_SPEED;
     const auto &floor = *creature.current_floor_ptr;
-    bool is_player_fast = is_fast(creature);
+    bool is_player_fast = creature.is_fast();
     char buf[32] = "";
     TERM_COLOR attr = TERM_WHITE;
-    const auto is_slow = creature.effects()->deceleration().is_slow();
+    const auto is_slow = creature.is_decelerated();
     if (speed > 0) {
         if (creature.riding) {
             const auto &monster = floor.m_list[creature.riding];
@@ -453,7 +453,7 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_HALLUCINATION);
     }
 
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         ADD_BAR_FLAG(BAR_BLINDNESS);
     }
 
@@ -479,7 +479,7 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_NIGHTSIGHT);
     }
 
-    if (is_time_limit_esp(creature)) {
+    if (creature.is_time_limit_esp()) {
         ADD_BAR_FLAG(BAR_TELEPATHY);
     }
 
@@ -495,7 +495,7 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_PROTEVIL);
     }
 
-    if (is_invuln(creature)) {
+    if (creature.is_invulnerable()) {
         ADD_BAR_FLAG(BAR_INVULN);
     }
 
@@ -511,15 +511,15 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_REFLECTION);
     }
 
-    if (is_hero(creature)) {
+    if (creature.is_hero()) {
         ADD_BAR_FLAG(BAR_HEROISM);
     }
 
-    if (is_shero(creature)) {
+    if (creature.is_shero()) {
         ADD_BAR_FLAG(BAR_BERSERK);
     }
 
-    if (is_blessed(creature)) {
+    if (creature.is_blessed()) {
         ADD_BAR_FLAG(BAR_BLESSED);
     }
 
@@ -648,7 +648,7 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_SHFIRE);
     }
 
-    if (is_time_limit_stealth(creature)) {
+    if (creature.is_time_limit_stealth()) {
         ADD_BAR_FLAG(BAR_STEALTH);
     }
 

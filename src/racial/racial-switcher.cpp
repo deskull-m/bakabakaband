@@ -227,7 +227,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
             return false;
         }
 
-        if (!player.effects()->paralysis().is_paralyzed() && !cmd_limit_cast(creature)) {
+        if (!player.is_paralyzed() && !cmd_limit_cast(creature)) {
             handle_stuff(player);
             command_dir = Direction::none();
             (void)do_cmd_cast(player);

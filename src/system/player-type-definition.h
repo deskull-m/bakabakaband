@@ -64,6 +64,21 @@ public:
     bool is_player() const override;
 
     short get_timed_effect(CreatureTimedEffect effect) const override;
+
+    bool is_confused() const override;
+    bool is_stunned() const override;
+    bool is_fearful() const override;
+    bool is_invulnerable() const override;
+    bool is_blind() const override;
+    bool is_paralyzed() const override;
+    bool is_fast() const override;
+    bool is_decelerated() const override;
+    bool is_blessed() const override;
+    bool is_hero() const override;
+    bool is_shero() const override;
+    bool is_echizen() const override;
+    bool is_time_limit_esp() const override;
+    bool is_time_limit_stealth() const override;
 };
 
 extern PlayerType *p_ptr;

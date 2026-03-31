@@ -15,7 +15,6 @@
 #include "target/target-checker.h"
 #include "target/target-setter.h"
 #include "target/target-types.h"
-#include "timed-effect/timed-effects.h"
 #include "util/finalizer.h"
 #include "view/display-messages.h"
 #include <string>
@@ -89,7 +88,7 @@ Direction get_aim_dir(CreatureEntity &subject, bool enable_repeat)
     }
 
     command_dir = dir;
-    if (player.effects()->confusion().is_confused()) {
+    if (player.is_confused()) {
         dir = rand_choice(Direction::directions_8());
     }
 
@@ -134,7 +133,7 @@ Direction get_direction(CreatureEntity &creature)
     const auto finalizer = util::make_finalizer([] {
         repeat_push(static_cast<short>(command_dir.dir()));
     });
-    const auto is_confused = creature.effects()->confusion().is_confused();
+    const auto is_confused = creature.is_confused();
     if (is_confused && evaluate_percent(75)) {
         dir = rand_choice(Direction::directions_8());
     }
@@ -200,7 +199,7 @@ Direction get_rep_dir(CreatureEntity &creature, bool under)
     }
 
     command_dir = dir;
-    auto is_confused = creature.effects()->confusion().is_confused();
+    auto is_confused = creature.is_confused();
     if (is_confused) {
         if (evaluate_percent(75)) {
             dir = rand_choice(Direction::directions_8());

@@ -1,7 +1,6 @@
 #include "player-info/body-improvement-info.h"
 #include "player-info/self-info-util.h"
 #include "player/player-status-flags.h"
-#include "player/player-status.h"
 #include "spell-realm/spells-crusade.h"
 #include "system/creature-entity.h"
 #include "system/player-type-definition.h"
@@ -11,15 +10,15 @@
 void set_body_improvement_info_1(CreatureEntity &creature, self_info_type *self_ptr)
 {
     const auto effects = creature.effects();
-    if (is_blessed(creature)) {
+    if (creature.is_blessed()) {
         self_ptr->info_list.emplace_back(_("あなたは高潔さを感じている。", "You feel rightous."));
     }
 
-    if (is_hero(creature)) {
+    if (creature.is_hero()) {
         self_ptr->info_list.emplace_back(_("あなたはヒーロー気分だ。", "You feel heroic."));
     }
 
-    if (is_shero(creature)) {
+    if (creature.is_shero()) {
         self_ptr->info_list.emplace_back(_("あなたは戦闘狂だ。", "You are in a battle rage."));
     }
 
@@ -31,7 +30,7 @@ void set_body_improvement_info_1(CreatureEntity &creature, self_info_type *self_
         self_ptr->info_list.emplace_back(_("あなたは神秘のシールドで守られている。", "You are protected by a mystic shield."));
     }
 
-    if (is_invuln(creature)) {
+    if (creature.is_invulnerable()) {
         self_ptr->info_list.emplace_back(_("あなたは現在傷つかない。", "You are temporarily invulnerable."));
     }
 

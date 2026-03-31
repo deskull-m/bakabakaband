@@ -183,7 +183,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
             SubWindowRedrawingFlag::DUNGEON,
         };
         rfu.set_flags(flags_swrf);
-        if ((!creature.effects()->blindness().is_blind() && !no_lite(creature)) || !floor.has_trap_at(pos_new)) {
+        if ((!creature.is_blind() && !no_lite(creature)) || !floor.has_trap_at(pos_new)) {
             grid_new.info &= ~(CAVE_UNSAFE);
         }
 

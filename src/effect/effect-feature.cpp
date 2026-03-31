@@ -19,7 +19,6 @@
 #include "system/grid-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -200,7 +199,7 @@ bool affect_feature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, P
             }
         }
 
-        if (creature.effects()->blindness().is_blind() || !grid.has_los()) {
+        if (creature.is_blind() || !grid.has_los()) {
             break;
         }
 
@@ -219,7 +218,7 @@ bool affect_feature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, P
             cave_alter_feat(creature, y, x, TerrainCharacteristics::TUNNEL);
         }
 
-        if (creature.effects()->blindness().is_blind() || !grid.has_los()) {
+        if (creature.is_blind() || !grid.has_los()) {
             break;
         }
 

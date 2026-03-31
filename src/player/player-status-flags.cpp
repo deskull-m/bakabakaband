@@ -42,7 +42,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 
@@ -709,7 +708,7 @@ BIT_FLAGS has_esp_telepathy(CreatureEntity &creature)
     BIT_FLAGS result = common_cause_flags(creature, TR_TELEPATHY);
 
     auto &player = static_cast<PlayerType &>(creature);
-    if (is_time_limit_esp(player) || player.ult_res) {
+    if (player.is_time_limit_esp() || player.ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -743,7 +742,7 @@ BIT_FLAGS has_no_ac(CreatureEntity &creature)
 BIT_FLAGS has_invuln_arrow(CreatureEntity &creature)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    if (player.effects()->blindness().is_blind()) {
+    if (player.is_blind()) {
         return 0;
     }
 
@@ -1623,7 +1622,7 @@ BIT_FLAGS has_resist_fear(CreatureEntity &creature)
         result |= FLAG_CAUSE_MUTATION;
     }
 
-    if (is_hero(player) || is_shero(player) || player.ult_res || player.tim_res_fear) {
+    if (player.is_hero() || player.is_shero() || player.ult_res || player.tim_res_fear) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 

@@ -25,7 +25,6 @@
 #include "player-base/player-class.h"
 #include "player/player-personality-types.h"
 #include "player/player-status-flags.h"
-#include "player/player-status.h"
 #include "spell-kind/spells-lite.h"
 #include "spell-kind/spells-neighbor.h"
 #include "spell-kind/spells-sight.h"
@@ -38,7 +37,6 @@
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
@@ -260,15 +258,15 @@ MonsterSpellResult spell_RF6_TELE_AWAY(CreatureEntity &creature, MONSTER_IDX m_i
     simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
 
     if (target_type == MONSTER_TO_PLAYER) {
-        if (is_echizen(player_ptr)) {
+        if (player_ptr.is_echizen()) {
             msg_print(_("くっそ～", ""));
-        } else if (is_chargeman(player_ptr)) {
+        } else if (player_ptr.is_chargeman()) {
             if (randint0(2) == 0) {
                 msg_print(_("ジュラル星人め！", ""));
             } else {
                 msg_print(_("弱い者いじめは止めるんだ！", ""));
             }
-        } else if (is_tough(player_ptr)) {
+        } else if (player_ptr.is_tough()) {
             msg_print(_("う わ あ あ あ あ あ あ あ あ", ""));
         }
 
@@ -469,7 +467,7 @@ MonsterSpellResult spell_RF6_TRAPS(CreatureEntity &creature, POSITION y, POSITIO
     const auto m_name = monster_name(player_ptr, m_idx);
     disturb(player_ptr, true, true);
 
-    if (player_ptr.effects()->blindness().is_blind()) {
+    if (player_ptr.is_blind()) {
         msg_format(_("%s^が何かをつぶやいて邪悪に微笑んだ。", "%s^ mumbles, and then cackles evilly."), m_name.data());
     } else {
         msg_format(_("%s^が呪文を唱えて邪悪に微笑んだ。", "%s^ casts a spell and cackles evilly."), m_name.data());
