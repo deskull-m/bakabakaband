@@ -356,7 +356,7 @@ void MonsterDamageProcessor::show_kill_message(std::string_view note, std::strin
 
     if (!monster.ml) {
         auto mes = this->creature.is_echizen() ? _("せっかくだから%sを殺した。", "Because it's time, you have killed %s.")
-                                              : _("%sを殺した。", "You have killed %s.");
+                                               : _("%sを殺した。", "You have killed %s.");
         msg_format(mes, m_name.data());
         return;
     }
@@ -370,7 +370,7 @@ void MonsterDamageProcessor::show_kill_message(std::string_view note, std::strin
         }
 
         auto mes = this->creature.is_echizen() ? _("せっかくだから%sを葬り去った。", "Because it's time, you have slain %s.")
-                                              : _("%sを葬り去った。", "You have slain %s.");
+                                               : _("%sを葬り去った。", "You have slain %s.");
         msg_format(mes, m_name.data());
         return;
     }
@@ -381,7 +381,7 @@ void MonsterDamageProcessor::show_kill_message(std::string_view note, std::strin
     }
 
     auto mes = this->creature.is_echizen() ? _("せっかくだから%sを倒した。", "Because it's time, you have destroyed %s.")
-                                          : _("%sを倒した。", "You have destroyed %s.");
+                                           : _("%sを倒した。", "You have destroyed %s.");
     msg_format(mes, m_name.data());
 }
 

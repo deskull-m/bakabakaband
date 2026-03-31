@@ -27,7 +27,6 @@ std::string cnv_stat(int val);
 int16_t modify_stat_value(int value, int amount);
 uint32_t calc_score(CreatureEntity &creature);
 
-
 void stop_mouth(CreatureEntity &creature);
 
 bool set_quick_and_tiny(CreatureEntity &creature);

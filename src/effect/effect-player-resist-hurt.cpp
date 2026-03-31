@@ -651,7 +651,7 @@ void effect_player_hand_doom(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 void effect_player_void(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
     auto effect_mes = creature.is_blind() ? _("何かに身体が引っ張りこまれる！", "Something absorbs you!")
-                                                                 : _("周辺の空間が歪んだ。", "Sight warps around you.");
+                                          : _("周辺の空間が歪んだ。", "Sight warps around you.");
     msg_print(effect_mes);
     if (!check_multishadow(creature) && !creature.levitation && !creature.anti_tele) {
         (void)BadStatusSetter(creature).mod_deceleration(randint0(4) + 4, false);

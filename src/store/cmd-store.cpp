@@ -1,6 +1,5 @@
 #include "store/cmd-store.h"
 #include "cmd-io/macro-util.h"
-#include "system/creature-entity.h"
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
 #include "flavor/flavor-describer.h"

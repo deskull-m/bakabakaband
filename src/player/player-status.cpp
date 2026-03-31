@@ -3159,7 +3159,6 @@ bool is_sushi_eater(CreatureEntity &creature)
     return (creature.ppersonality == PERSONALITY_SUSHI_EATER);
 }
 
-
 int calc_weapon_weight_limit(CreatureEntity &creature)
 {
     auto weight = adj_str_hold[creature.stat_index[A_STR]];
