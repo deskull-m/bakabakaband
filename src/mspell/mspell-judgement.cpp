@@ -335,7 +335,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
         return true;
     }
 
-    if ((creature.get_speed() < 145) && is_fast(creature)) {
+    if ((creature.get_speed() < 145) && creature.is_fast()) {
         return true;
     }
 

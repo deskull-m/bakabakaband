@@ -576,7 +576,7 @@ void ObjectThrowEntity::process_boomerang_throw()
 void ObjectThrowEntity::display_boomerang_throw()
 {
     auto &player = static_cast<PlayerType &>(*this->creature_ptr);
-    const auto is_blind = player.effects()->blindness().is_blind();
+    const auto is_blind = player.is_blind();
     if ((this->back_chance > 37) && !is_blind && (this->i_idx >= 0)) {
         msg_format(_("%sが手元に返ってきた。", "%s comes back to you."), this->o2_name.data());
         this->come_back = true;

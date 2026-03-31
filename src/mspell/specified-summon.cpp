@@ -19,7 +19,6 @@
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
 /*!
@@ -188,7 +187,7 @@ MONSTER_NUMBER summon_NAZGUL(CreatureEntity &creature, POSITION y, POSITION x, M
     auto pos_scat = pos_initial;
     const auto m_name = monster_name(player_ptr, m_idx);
 
-    if (player_ptr.effects()->blindness().is_blind()) {
+    if (player_ptr.is_blind()) {
         msg_format(_("%s^が何かをつぶやいた。", "%s^ mumbles."), m_name.data());
     } else {
         msg_format(_("%s^が魔法で幽鬼戦隊を召喚した！", "%s^ magically summons rangers of Nazgul!"), m_name.data());

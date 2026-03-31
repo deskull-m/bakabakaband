@@ -122,7 +122,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
     Pos2D pos_path = pos_source;
     auto visual = false;
     auto see_s_msg = true;
-    const auto is_blind = player.effects()->blindness().is_blind();
+    const auto is_blind = player.is_blind();
     for (const auto &pos : path_g) {
         if (flag & PROJECT_DISI) {
             if (floor.can_block_disintegration_at(pos) && (rad > 0)) {

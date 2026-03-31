@@ -10,7 +10,6 @@
 #include "mspell/mspell-result.h"
 #include "mspell/mspell-util.h"
 #include "system/floor/floor-info.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
 static bool message_curse(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, std::string_view msg1, std::string_view msg2, std::string_view msg3, int target_type)
@@ -20,7 +19,7 @@ static bool message_curse(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_I
 
     if (target_type == MONSTER_TO_PLAYER) {
         disturb(creature, true, true);
-        if (creature.effects()->blindness().is_blind()) {
+        if (creature.is_blind()) {
             msg_format(msg1.data(), m_name.data());
         } else {
             msg_format(msg2.data(), m_name.data());

@@ -42,7 +42,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 
@@ -743,7 +742,7 @@ BIT_FLAGS has_no_ac(CreatureEntity &creature)
 BIT_FLAGS has_invuln_arrow(CreatureEntity &creature)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    if (player.effects()->blindness().is_blind()) {
+    if (player.is_blind()) {
         return 0;
     }
 

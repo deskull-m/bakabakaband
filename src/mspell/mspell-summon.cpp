@@ -23,7 +23,6 @@
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
@@ -122,7 +121,7 @@ static void decide_summon_kin_caster(
 
     summon_disturb(creature, target_type, known, see_either);
 
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         if (mon_to_player) {
             msg_format(_("%s^が何かをつぶやいた。", "%s^ mumbles."), m_name);
         }
@@ -238,7 +237,7 @@ MonsterSpellResult spell_RF6_S_KIN(CreatureEntity &creature, POSITION y, POSITIO
         count += summon_Alliance(creature, y, x, rlev, m_idx);
     }
 
-    if (creature.effects()->blindness().is_blind() && count && (target_type == MONSTER_TO_PLAYER)) {
+    if (creature.is_blind() && count && (target_type == MONSTER_TO_PLAYER)) {
         msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
     }
 
@@ -286,7 +285,7 @@ MonsterSpellResult spell_RF6_S_CYBER(CreatureEntity &creature, POSITION y, POSIT
         count += summon_cyber(creature, y, x, m_idx);
     }
 
-    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("重厚な足音が近くで聞こえる。", "You hear heavy steps nearby."));
     }
 
@@ -337,7 +336,7 @@ MonsterSpellResult spell_RF6_S_MONSTER(CreatureEntity &creature, POSITION y, POS
         }
     }
 
-    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 
@@ -388,7 +387,7 @@ MonsterSpellResult spell_RF6_S_MONSTERS(CreatureEntity &creature, POSITION y, PO
         }
     }
 
-    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
     }
 
@@ -433,7 +432,7 @@ MonsterSpellResult spell_RF6_S_ANT(CreatureEntity &creature, POSITION y, POSITIO
         count += summon_specific(creature, y, x, rlev, SUMMON_ANT, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
     }
 
@@ -478,7 +477,7 @@ MonsterSpellResult spell_RF6_S_SPIDER(CreatureEntity &creature, POSITION y, POSI
         count += summon_specific(creature, y, x, rlev, SUMMON_SPIDER, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
     }
 
@@ -523,7 +522,7 @@ MonsterSpellResult spell_RF6_S_HOUND(CreatureEntity &creature, POSITION y, POSIT
         count += summon_specific(creature, y, x, rlev, SUMMON_HOUND, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
     }
 
@@ -568,7 +567,7 @@ MonsterSpellResult spell_RF6_S_HYDRA(CreatureEntity &creature, POSITION y, POSIT
         count += summon_specific(creature, y, x, rlev, SUMMON_HYDRA, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
     }
 
@@ -613,7 +612,7 @@ MonsterSpellResult spell_RF6_S_FAIRY(CreatureEntity &creature, POSITION y, POSIT
         count += summon_specific(creature, y, x, rlev, SUMMON_FAIRY, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
     }
 
@@ -658,7 +657,7 @@ MonsterSpellResult spell_RF6_S_APE(CreatureEntity &creature, POSITION y, POSITIO
         count += summon_specific(creature, y, x, rlev, SUMMON_APE, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
     }
 
@@ -703,7 +702,7 @@ MonsterSpellResult spell_RF6_S_BIRD(CreatureEntity &creature, POSITION y, POSITI
         count += summon_specific(creature, y, x, rlev, SUMMON_BIRD, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
     }
 
@@ -754,7 +753,7 @@ MonsterSpellResult spell_RF6_S_ANGEL(CreatureEntity &creature, POSITION y, POSIT
         count += summon_specific(creature, y, x, rlev, SUMMON_ANGEL, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    const auto is_blind = creature.effects()->blindness().is_blind();
+    const auto is_blind = creature.is_blind();
     if (count < 2) {
         if (is_blind && count) {
             msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
@@ -806,7 +805,7 @@ MonsterSpellResult spell_RF6_S_DEMON(CreatureEntity &creature, POSITION y, POSIT
         count += summon_specific(creature, y, x, rlev, SUMMON_DEMON, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (creature.effects()->blindness().is_blind() && count) {
+    if (creature.is_blind() && count) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 
@@ -851,7 +850,7 @@ MonsterSpellResult spell_RF6_S_UNDEAD(CreatureEntity &creature, POSITION y, POSI
         count += summon_specific(creature, y, x, rlev, SUMMON_UNDEAD, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (creature.effects()->blindness().is_blind() && count) {
+    if (creature.is_blind() && count) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 
@@ -900,7 +899,7 @@ MonsterSpellResult spell_RF6_S_DRAGON(CreatureEntity &creature, POSITION y, POSI
         count += summon_specific(creature, y, x, rlev, SUMMON_DRAGON, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
     }
 
-    if (creature.effects()->blindness().is_blind() && count) {
+    if (creature.is_blind() && count) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 
@@ -958,7 +957,7 @@ MonsterSpellResult spell_RF6_S_HI_UNDEAD(CreatureEntity &creature, POSITION y, P
         }
     }
 
-    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("間近で何か多くのものが這い回る音が聞こえる。", "You hear many creepy things appear nearby."));
     }
 
@@ -1010,7 +1009,7 @@ MonsterSpellResult spell_RF6_S_HI_DRAGON(CreatureEntity &creature, POSITION y, P
         }
     }
 
-    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("多くの力強いものが間近に現れた音が聞こえる。", "You hear many powerful things appear nearby."));
     }
 
@@ -1056,7 +1055,7 @@ MonsterSpellResult spell_RF6_S_AMBERITES(CreatureEntity &creature, POSITION y, P
         count += summon_specific(creature, y, x, rlev, SUMMON_AMBERITES, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
     }
 
-    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("何者かが次元を超えて現れた気配がした。", "You feel shadow shifting by immortal beings."));
     }
 
@@ -1102,7 +1101,7 @@ MonsterSpellResult spell_RF6_S_CHOASIANS(CreatureEntity &creature, POSITION y, P
         count += summon_specific(creature, y, x, rlev, SUMMON_CHOASIANS, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
     }
 
-    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("混沌のざわめきが響いた。", "You feel chaotic entities materializing nearby."));
     }
 
@@ -1165,7 +1164,7 @@ MonsterSpellResult spell_RF6_S_UNIQUE(CreatureEntity &creature, POSITION y, POSI
         count += summon_specific(creature, y, x, rlev, non_unique_type, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
     }
 
-    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.is_blind() && count && mon_to_player) {
         msg_format(_("多くの%sが間近に現れた音が聞こえる。", "You hear many %s appear nearby."),
             uniques_are_summoned ? _("力強いもの", "powerful things") : _("もの", "things"));
     }
@@ -1212,7 +1211,7 @@ MonsterSpellResult spell_RF6_S_DEAD_UNIQUE(CreatureEntity &creature, POSITION y,
         count += summon_specific(creature, y, x, rlev, SUMMON_DEAD_UNIQUE, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | PM_ALLOW_UNIQUE | PM_CLONE), m_idx) ? 1 : 0;
     }
 
-    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.is_blind() && count && mon_to_player) {
         msg_format(_("多くの力強いものが間近に蘇った音が聞こえる。", "You hear many powerful things animate nearby."));
     }
 
@@ -1472,7 +1471,7 @@ MonsterSpellResult spell_RF6_S_HOMO(CreatureEntity &creature, POSITION y, POSITI
         }
     }
 
-    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 
@@ -1516,7 +1515,7 @@ MonsterSpellResult spell_RF6_S_WALL(CreatureEntity &creature, POSITION y, POSITI
         count += summon_specific(creature, y, x, rlev, SUMMON_WALL, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (creature.effects()->blindness().is_blind() && count) {
+    if (creature.is_blind() && count) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 
@@ -1561,7 +1560,7 @@ MonsterSpellResult spell_RF6_S_INSECT(CreatureEntity &creature, POSITION y, POSI
         count += summon_specific(creature, y, x, rlev, SUMMON_INSECT, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (creature.effects()->blindness().is_blind() && count) {
+    if (creature.is_blind() && count) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 
@@ -1605,7 +1604,7 @@ MonsterSpellResult spell_RF6_S_ELDRAZI(CreatureEntity &creature, POSITION y, POS
         count += summon_specific(creature, y, x, rlev, SUMMON_ELDRAZI, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (creature.effects()->blindness().is_blind() && count) {
+    if (creature.is_blind() && count) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 

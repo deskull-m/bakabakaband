@@ -138,7 +138,7 @@ DisplaySymbolPair map_info(CreatureEntity &creature, const Pos2D &pos)
     const auto &terrains = TerrainList::get_instance();
     const auto &world = AngbandWorld::get_instance();
     const auto is_wild_mode = world.is_wild_mode();
-    const auto is_blind = creature.effects()->blindness().is_blind();
+    const auto is_blind = creature.is_blind();
     const auto has_nocto = creature.see_nocto != 0;
     const auto is_darkened = !has_nocto && grid.is_darkened();
     const auto tag_unsafe = (view_unsafe_grids && (grid.info & CAVE_UNSAFE)) ? TerrainTag::UNDETECTED : TerrainTag::NONE;

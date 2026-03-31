@@ -256,7 +256,7 @@ void print_speed(CreatureEntity &creature)
 
     const auto speed = creature.get_speed() - STANDARD_SPEED;
     const auto &floor = *creature.current_floor_ptr;
-    bool is_player_fast = is_fast(creature);
+    bool is_player_fast = creature.is_fast();
     char buf[32] = "";
     TERM_COLOR attr = TERM_WHITE;
     const auto is_slow = creature.effects()->deceleration().is_slow();
@@ -453,7 +453,7 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_HALLUCINATION);
     }
 
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         ADD_BAR_FLAG(BAR_BLINDNESS);
     }
 

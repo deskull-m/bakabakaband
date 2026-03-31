@@ -482,7 +482,7 @@ static void decide_sight_invisible_monster(CreatureEntity &creature, um_type *um
         update_specific_race_telepathy(creature, um_ptr);
     }
 
-    if (!creature.current_floor_ptr->has_los_at({ um_ptr->fy, um_ptr->fx }) || creature.effects()->blindness().is_blind()) {
+    if (!creature.current_floor_ptr->has_los_at({ um_ptr->fy, um_ptr->fx }) || creature.is_blind()) {
         return;
     }
 

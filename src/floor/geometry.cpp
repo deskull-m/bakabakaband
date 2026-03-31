@@ -6,7 +6,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monster-entity.h"
 #include "target/projection-path-calculator.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 
 /*!
@@ -47,7 +46,7 @@
 bool player_can_see_bold(CreatureEntity &creature, POSITION y, POSITION x)
 {
     /* Blind players see nothing */
-    if (creature.effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         return false;
     }
 

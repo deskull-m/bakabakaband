@@ -6,7 +6,6 @@
 #include "system/floor/floor-info.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
 mspell_cast_msg_blind::mspell_cast_msg_blind(concptr blind, concptr to_player, concptr to_mons)
@@ -112,7 +111,7 @@ bool monspell_message(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t
 {
     auto &player = static_cast<PlayerType &>(creature);
     mspell_cast_msg mcm(msgs.blind, msgs.blind, msgs.to_player, msgs.to_mons);
-    const auto is_blind = player.effects()->blindness().is_blind();
+    const auto is_blind = player.is_blind();
     return monspell_message_base(creature, m_idx, t_idx, mcm, is_blind, target_type);
 }
 
@@ -128,6 +127,6 @@ void simple_monspell_message(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTE
 {
     auto &player = static_cast<PlayerType &>(creature);
     mspell_cast_msg mcm(msgs.to_player, msgs.to_mons, msgs.to_player, msgs.to_mons);
-    const auto is_blind = player.effects()->blindness().is_blind();
+    const auto is_blind = player.is_blind();
     monspell_message_base(creature, m_idx, t_idx, mcm, is_blind, target_type);
 }

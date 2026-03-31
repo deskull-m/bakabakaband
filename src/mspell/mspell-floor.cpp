@@ -38,7 +38,6 @@
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
@@ -469,7 +468,7 @@ MonsterSpellResult spell_RF6_TRAPS(CreatureEntity &creature, POSITION y, POSITIO
     const auto m_name = monster_name(player_ptr, m_idx);
     disturb(player_ptr, true, true);
 
-    if (player_ptr.effects()->blindness().is_blind()) {
+    if (player_ptr.is_blind()) {
         msg_format(_("%s^が何かをつぶやいて邪悪に微笑んだ。", "%s^ mumbles, and then cackles evilly."), m_name.data());
     } else {
         msg_format(_("%s^が呪文を唱えて邪悪に微笑んだ。", "%s^ casts a spell and cackles evilly."), m_name.data());
