@@ -31,6 +31,7 @@
 #include "player/attack-defense-types.h"
 #include "player/player-status-flags.h"
 #include "player/player-status.h"
+#include "timed-effect/timed-effects.h"
 #include "realm/realm-song-numbers.h"
 #include "spell-kind/spells-floor.h"
 #include "spell-realm/spells-song.h"

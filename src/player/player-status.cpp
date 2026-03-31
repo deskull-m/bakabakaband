@@ -441,10 +441,10 @@ static void update_max_hitpoints(CreatureEntity &creature)
     if (mhp < creature.level + 1) {
         mhp = creature.level + 1;
     }
-    if (is_hero(creature)) {
+    if (creature.is_hero()) {
         mhp += 10;
     }
-    if (is_shero(creature)) {
+    if (creature.is_shero()) {
         mhp += 30;
     }
     if (creature.tsuyoshi) {
@@ -1085,7 +1085,7 @@ static ACTION_SKILL_POWER calc_device_ability(CreatureEntity &creature)
 
     pow += adj_int_dev[creature.stat_index[A_INT]];
 
-    if (is_shero(creature)) {
+    if (creature.is_shero()) {
         pow -= 20;
     }
     return pow;
@@ -1149,7 +1149,7 @@ static ACTION_SKILL_POWER calc_saving_throw(CreatureEntity &creature)
         pow -= 20;
     }
 
-    if (is_shero(creature)) {
+    if (creature.is_shero()) {
         pow -= 30;
     }
 
@@ -1215,7 +1215,7 @@ static ACTION_SKILL_POWER calc_search(CreatureEntity &creature)
         pow += 15;
     }
 
-    if (is_shero(creature)) {
+    if (creature.is_shero()) {
         pow -= 15;
     }
 
@@ -1260,7 +1260,7 @@ static ACTION_SKILL_POWER calc_search_freq(CreatureEntity &creature)
         }
     }
 
-    if (is_shero(creature)) {
+    if (creature.is_shero()) {
         pow -= 15;
     }
 
@@ -1342,7 +1342,7 @@ static ACTION_SKILL_POWER calc_to_hit_throw(CreatureEntity &creature)
     pow = tmp_race_ptr->r_thb + player_class.c_thb + player_personality.a_thb;
     pow += ((player_class.x_thb * creature.level / 10) + (player_personality.a_thb * creature.level / 50));
 
-    if (is_shero(creature)) {
+    if (creature.is_shero()) {
         pow -= 20;
     }
 
@@ -1374,7 +1374,7 @@ static ACTION_SKILL_POWER calc_skill_dig(CreatureEntity &creature)
         pow += creature.level * 10;
     }
 
-    if (is_shero(creature)) {
+    if (creature.is_shero()) {
         pow += 30;
     }
 
@@ -1402,7 +1402,7 @@ static ACTION_SKILL_POWER calc_skill_dig(CreatureEntity &creature)
         }
     }
 
-    if (is_shero(creature)) {
+    if (creature.is_shero()) {
         pow += 30;
     }
 
@@ -1829,11 +1829,11 @@ static ARMOUR_CLASS calc_to_ac(CreatureEntity &creature, bool is_real_value)
         ac += 50;
     }
 
-    if (is_blessed(creature)) {
+    if (creature.is_blessed()) {
         ac += 5;
     }
 
-    if (is_shero(creature)) {
+    if (creature.is_shero()) {
         ac -= 10;
     }
 
@@ -2059,7 +2059,7 @@ static short calc_to_damage(CreatureEntity &creature, INVENTORY_IDX slot, bool i
     auto damage = 0;
     damage += ((int)(adj_str_td[creature.stat_index[A_STR]]) - 128);
 
-    if (is_shero(creature)) {
+    if (creature.is_shero()) {
         damage += 3 + (creature.level / 5);
     }
 
@@ -2208,15 +2208,15 @@ static short calc_to_hit(CreatureEntity &creature, INVENTORY_IDX slot, bool is_r
     hit += ((int)(adj_str_th[creature.stat_index[A_STR]]) - 128);
 
     /* Temporary bonuses */
-    if (is_blessed(creature)) {
+    if (creature.is_blessed()) {
         hit += 10;
     }
 
-    if (is_hero(creature)) {
+    if (creature.is_hero()) {
         hit += 12;
     }
 
-    if (is_shero(creature)) {
+    if (creature.is_shero()) {
         hit += 12;
     }
 
@@ -2456,15 +2456,15 @@ static int16_t calc_to_hit_bow(CreatureEntity &creature, bool is_real_value)
     }
 
     pow -= creature.effects()->stun().get_damage_penalty();
-    if (is_blessed(creature)) {
+    if (creature.is_blessed()) {
         pow += 10;
     }
 
-    if (is_hero(creature)) {
+    if (creature.is_hero()) {
         pow += 12;
     }
 
-    if (is_shero(creature)) {
+    if (creature.is_shero()) {
         pow -= 12;
     }
 
@@ -2534,7 +2534,7 @@ static int16_t calc_to_damage_misc(CreatureEntity &creature)
         to_dam += (int16_t)bonus_to_d;
     }
 
-    if (is_shero(creature)) {
+    if (creature.is_shero()) {
         to_dam += 3 + (creature.level / 5);
     }
 
@@ -2564,15 +2564,15 @@ static int16_t calc_to_hit_misc(CreatureEntity &creature)
         to_hit += (int16_t)bonus_to_h;
     }
 
-    if (is_blessed(creature)) {
+    if (creature.is_blessed()) {
         to_hit += 10;
     }
 
-    if (is_hero(creature)) {
+    if (creature.is_hero()) {
         to_hit += 12;
     }
 
-    if (is_shero(creature)) {
+    if (creature.is_shero()) {
         to_hit += 12;
     }
 
