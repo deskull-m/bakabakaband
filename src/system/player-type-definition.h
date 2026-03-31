@@ -72,6 +72,7 @@ public:
     bool is_blind() const override;
     bool is_paralyzed() const override;
     bool is_fast() const override;
+    bool is_decelerated() const override;
     bool is_blessed() const override;
     bool is_hero() const override;
     bool is_shero() const override;

@@ -87,6 +87,16 @@ bool CreatureEntity::is_invulnerable() const
     return this->get_timed_effect(CreatureTimedEffect::INVULNERABILITY) > 0;
 }
 
+bool CreatureEntity::is_fast() const
+{
+    return this->get_timed_effect(CreatureTimedEffect::ACCELERATION) > 0;
+}
+
+bool CreatureEntity::is_decelerated() const
+{
+    return this->get_timed_effect(CreatureTimedEffect::DECELERATION) > 0;
+}
+
 /*!
  * @brief ツリー構造インシデント数加算
  * @param incident_id 階層構造のインシデントID（例: "root/attack/critical"）
