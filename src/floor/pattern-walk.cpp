@@ -12,6 +12,7 @@
 #include "player-base/player-race.h"
 #include "player-status/player-energy.h"
 #include "player/player-damage.h"
+#include "player/player-status.h"
 #include "player/player-move.h"
 #include "spell-kind/spells-teleport.h"
 #include "spell/spells-status.h"
