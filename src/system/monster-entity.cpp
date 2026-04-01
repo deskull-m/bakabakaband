@@ -916,3 +916,16 @@ bool MonsterEntity::is_player() const
 {
     return false;
 }
+
+void MonsterEntity::on_take_hit(int damage)
+{
+    this->dealt_damage += damage;
+    if (this->dealt_damage > this->max_maxhp * 100) {
+        this->dealt_damage = this->max_maxhp * 100;
+    }
+}
+
+void MonsterEntity::on_death([[maybe_unused]] std::string_view cause)
+{
+    // モンスター死亡時の経験値・徳処理は MonsterDamageProcessor::process_dead_exp_virtue() で行う
+}

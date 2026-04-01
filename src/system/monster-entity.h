@@ -10,6 +10,7 @@
 #include "util/point-2d.h"
 #include <map>
 #include <string>
+#include <string_view>
 #include <vector>
 
 /*!
@@ -115,6 +116,8 @@ public:
     bool can_ring_boss_call_nazgul() const;
     std::string build_looking_description(bool needs_attitude) const;
     int get_ac() const override;
+    void on_take_hit(int damage) override;
+    void on_death(std::string_view cause) override;
 
     void set_individual_speed(bool force_fixed_speed);
     void set_position(const Pos2D &pos);

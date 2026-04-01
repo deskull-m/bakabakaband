@@ -19,6 +19,7 @@
 #include <array>
 #include <map>
 #include <string>
+#include <string_view>
 
 // Forward declarations
 struct player_race_info;
@@ -64,6 +65,9 @@ public:
     bool is_player() const override;
 
     int get_ac() const override;
+
+    void on_take_hit(int damage) override;
+    void on_death(std::string_view cause) override;
 
     short get_timed_effect(CreatureTimedEffect effect) const override;
 
