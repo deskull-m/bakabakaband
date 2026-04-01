@@ -18,6 +18,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 class Direction;
@@ -263,6 +264,18 @@ public:
      * @return 実効AC値（プレイヤーは ac + to_a、モンスターは総合AC）
      */
     virtual int get_ac() const = 0;
+
+    /*!
+     * @brief ダメージを受けた際のフック（dealt_damage等の蓄積処理）
+     * @param damage 受けたダメージ量
+     */
+    virtual void on_take_hit(int damage) {}
+
+    /*!
+     * @brief 死亡した際のフック（死亡処理・記録等）
+     * @param cause 死亡原因の文字列
+     */
+    virtual void on_death(std::string_view cause) {}
 
     /*!
      * @brief クリーチャーの時限効果の残りターン数を取得
