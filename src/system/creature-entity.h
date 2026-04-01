@@ -269,13 +269,13 @@ public:
      * @brief ダメージを受けた際のフック（dealt_damage等の蓄積処理）
      * @param damage 受けたダメージ量
      */
-    virtual void on_take_hit(int damage) {}
+    virtual void on_take_hit([[maybe_unused]] int damage) {}
 
     /*!
      * @brief 死亡した際のフック（死亡処理・記録等）
      * @param cause 死亡原因の文字列
      */
-    virtual void on_death(std::string_view cause) {}
+    virtual void on_death([[maybe_unused]] std::string_view cause) {}
 
     /*!
      * @brief クリーチャーの時限効果の残りターン数を取得
