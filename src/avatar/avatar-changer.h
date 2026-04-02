@@ -3,6 +3,7 @@
 #include "system/angband.h"
 
 class CreatureEntity;
+class MonsterEntity;
 class AvatarChanger {
 public:
     AvatarChanger(CreatureEntity &creature, const CreatureEntity &target);
