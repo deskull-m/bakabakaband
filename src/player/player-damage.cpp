@@ -687,8 +687,9 @@ void PlayerType::on_death(std::string_view cause)
  * @param dam_func ダメージ処理を行う関数の参照ポインタ
  * @param message オーラダメージを受けた際のメッセージ
  */
-static void process_aura_damage(const MonsterEntity &monster, CreatureEntity &creature, bool immune, MonsterAuraType aura_flag, dam_func dam_func, concptr message)
+static void process_aura_damage(const CreatureEntity &source, CreatureEntity &creature, bool immune, MonsterAuraType aura_flag, dam_func dam_func, concptr message)
 {
+    const auto &monster = static_cast<const MonsterEntity &>(source);
     auto &monrace = monster.get_monrace();
     if (monrace.aura_flags.has_not(aura_flag) || immune) {
         return;
@@ -697,7 +698,7 @@ static void process_aura_damage(const MonsterEntity &monster, CreatureEntity &cr
     int aura_damage = Dice::roll(1 + (monrace.level / 26), 1 + (monrace.level / 17));
     msg_print(message);
     (*dam_func)(creature, aura_damage, monster_desc(creature, monster, MD_WRONGDOER_NAME).data(), true);
-    if (is_original_ap_and_seen(creature, monster)) {
+    if (is_original_ap_and_seen(creature, source)) {
         monrace.r_aura_flags.set(aura_flag);
     }
 
@@ -706,17 +707,17 @@ static void process_aura_damage(const MonsterEntity &monster, CreatureEntity &cr
 
 /*!
  * @brief 敵オーラによるプレイヤーのダメージ処理
- * @param m_ptr オーラを持つモンスターの構造体参照ポインタ
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param source オーラを持つモンスターへの参照
+ * @param creature ダメージを受けるクリーチャーへの参照
  */
-void touch_zap_player(const MonsterEntity &monster, CreatureEntity &creature)
+void touch_zap_player(const CreatureEntity &source, CreatureEntity &creature)
 {
     constexpr auto fire_mes = _("突然とても熱くなった！", "You are suddenly very hot!");
     constexpr auto cold_mes = _("突然とても寒くなった！", "You are suddenly very cold!");
     constexpr auto elec_mes = _("電撃をくらった！", "You get zapped!");
-    process_aura_damage(monster, creature, has_immune_fire(creature) != 0, MonsterAuraType::FIRE, fire_dam, fire_mes);
-    process_aura_damage(monster, creature, has_immune_cold(creature) != 0, MonsterAuraType::COLD, cold_dam, cold_mes);
-    process_aura_damage(monster, creature, has_immune_elec(creature) != 0, MonsterAuraType::ELEC, elec_dam, elec_mes);
+    process_aura_damage(source, creature, has_immune_fire(creature) != 0, MonsterAuraType::FIRE, fire_dam, fire_mes);
+    process_aura_damage(source, creature, has_immune_cold(creature) != 0, MonsterAuraType::COLD, cold_dam, cold_mes);
+    process_aura_damage(source, creature, has_immune_elec(creature) != 0, MonsterAuraType::ELEC, elec_dam, elec_mes);
 }
 
 /*!
