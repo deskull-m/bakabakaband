@@ -304,6 +304,14 @@ public:
     virtual short get_timed_effect(CreatureTimedEffect effect) const = 0;
 
     /*!
+     * @brief クリーチャーの時限効果の残りターン数を直接設定する（セーブ/ロード・内部操作用）
+     * @param effect 設定する時限効果の種別
+     * @param value 設定するターン数
+     * @note メッセージや副作用は発生しない。ゲームロジックからの呼び出しには専用セッターを使うこと。
+     */
+    virtual void set_timed_effect(CreatureTimedEffect effect, short value) = 0;
+
+    /*!
      * @brief クリーチャーが朦朧状態かどうかを判定
      * @return 朦朧状態ならtrue
      */

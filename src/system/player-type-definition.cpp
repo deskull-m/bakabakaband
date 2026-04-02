@@ -193,6 +193,36 @@ short PlayerType::get_timed_effect(CreatureTimedEffect effect) const
     }
 }
 
+void PlayerType::set_timed_effect(CreatureTimedEffect effect, short value)
+{
+    auto &eff = *this->effects();
+    switch (effect) {
+    case CreatureTimedEffect::STUN:
+        eff.stun().set(value);
+        break;
+    case CreatureTimedEffect::CONFUSION:
+        eff.confusion().set(value);
+        break;
+    case CreatureTimedEffect::FEAR:
+        eff.fear().set(value);
+        break;
+    case CreatureTimedEffect::INVULNERABILITY:
+        this->invuln = value;
+        break;
+    case CreatureTimedEffect::ACCELERATION:
+        eff.acceleration().set(value);
+        break;
+    case CreatureTimedEffect::DECELERATION:
+        eff.deceleration().set(value);
+        break;
+    case CreatureTimedEffect::SLEEP_OR_PARALYSIS:
+        eff.paralysis().set(value);
+        break;
+    default:
+        break;
+    }
+}
+
 bool PlayerType::is_confused() const
 {
     return this->effects()->confusion().is_confused();
