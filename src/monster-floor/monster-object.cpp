@@ -214,15 +214,20 @@ void update_object_by_monster_movement(CreatureEntity &creature, turn_flags *tur
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param m_ptr モンスター参照ポインタ
  */
-void monster_drop_carried_objects(CreatureEntity &creature, MonsterEntity &monster)
+void monster_drop_carried_objects(CreatureEntity &creature, CreatureEntity &target)
 {
-    for (auto it = monster.get_monster_profile().hold_o_idx_list.begin(); it != monster.get_monster_profile().hold_o_idx_list.end();) {
+    if (!target.has_monster_profile()) {
+        return;
+    }
+
+    auto &profile = target.get_monster_profile();
+    for (auto it = profile.hold_o_idx_list.begin(); it != profile.hold_o_idx_list.end();) {
         const auto this_o_idx = *it++;
         auto drop_item = creature.current_floor_ptr->o_list[this_o_idx]->clone();
         drop_item.held_m_idx = 0;
         delete_object_idx(creature, this_o_idx);
-        (void)drop_near(creature, drop_item, monster.get_position());
+        (void)drop_near(creature, drop_item, target.get_position());
     }
 
-    monster.get_monster_profile().hold_o_idx_list.clear();
+    profile.hold_o_idx_list.clear();
 }
