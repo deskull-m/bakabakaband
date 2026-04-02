@@ -70,6 +70,7 @@ public:
     void on_death(std::string_view cause) override;
 
     short get_timed_effect(CreatureTimedEffect effect) const override;
+    void set_timed_effect(CreatureTimedEffect effect, short value) override;
 
     bool is_confused() const override;
     bool is_stunned() const override;

@@ -63,6 +63,7 @@ public:
     bool is_fearful() const override;
     bool is_invulnerable() const override;
     short get_timed_effect(CreatureTimedEffect effect) const override;
+    void set_timed_effect(CreatureTimedEffect effect, short value) override;
     byte get_temporary_speed() const;
     int get_speed() const override;
     bool has_living_flag(bool is_apperance = false) const;

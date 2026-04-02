@@ -311,6 +311,35 @@ short MonsterEntity::get_timed_effect(CreatureTimedEffect effect) const
     }
 }
 
+void MonsterEntity::set_timed_effect(CreatureTimedEffect effect, short value)
+{
+    switch (effect) {
+    case CreatureTimedEffect::STUN:
+        this->get_monster_profile().mtimed[MonsterTimedEffect::STUN] = value;
+        break;
+    case CreatureTimedEffect::CONFUSION:
+        this->get_monster_profile().mtimed[MonsterTimedEffect::CONFUSION] = value;
+        break;
+    case CreatureTimedEffect::FEAR:
+        this->get_monster_profile().mtimed[MonsterTimedEffect::FEAR] = value;
+        break;
+    case CreatureTimedEffect::INVULNERABILITY:
+        this->get_monster_profile().mtimed[MonsterTimedEffect::INVULNERABILITY] = value;
+        break;
+    case CreatureTimedEffect::ACCELERATION:
+        this->get_monster_profile().mtimed[MonsterTimedEffect::FAST] = value;
+        break;
+    case CreatureTimedEffect::DECELERATION:
+        this->get_monster_profile().mtimed[MonsterTimedEffect::SLOW] = value;
+        break;
+    case CreatureTimedEffect::SLEEP_OR_PARALYSIS:
+        this->get_monster_profile().mtimed[MonsterTimedEffect::SLEEP] = value;
+        break;
+    default:
+        break;
+    }
+}
+
 /*
  * @brief 悪夢モード、一時加速、一時減速に基づくモンスターの現在速度を返す
  */
