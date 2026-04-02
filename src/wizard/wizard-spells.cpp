@@ -39,7 +39,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/grid-selector.h"
 #include "target/target-checker.h"
@@ -58,7 +57,7 @@ namespace {
 const std::vector<debug_spell_command> debug_spell_commands_list = {
     // { 2, "vanish dungeon", { .spell2 = { vanish_dungeon } } },
     // { 2, "unique detection", { .spell2 = { activate_unique_detection } } },
-    // { 3, "true healing", { .spell3 = { true_healing } } },
+    { 3, "true healing", { .spell3 = { true_healing } } },
     // TODO:    { 2, "drop weapons", { .spell2 = { drop_weapons } } },
     { 2, "alchemy", { .spell2 = { alchemy } } },
     { 4, "ty curse", { .spell4 = { activate_ty_curse } } },
@@ -153,9 +152,6 @@ void wiz_summon_specific_monster_common(CreatureEntity &creature, MonraceId monr
  */
 void wiz_debug_spell(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
-
     const auto spell = input_string("SPELL: ", 50);
     if (!spell.has_value()) {
         return;
@@ -176,7 +172,7 @@ void wiz_debug_spell(CreatureEntity &creature)
                 return;
             }
 
-            (d.command_function.spell3.spell_function)(player_ptr, *power);
+            (d.command_function.spell3.spell_function)(creature, *power);
             return;
         }
         case 4: {
@@ -185,7 +181,7 @@ void wiz_debug_spell(CreatureEntity &creature)
             return;
         }
         case 5:
-            (d.command_function.spell5.spell_function)(player_ptr);
+            (d.command_function.spell5.spell_function)(creature);
             return;
         case 6:
             (d.command_function.spell6.spell_function)(creature);

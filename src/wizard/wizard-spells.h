@@ -7,10 +7,9 @@ enum class MonraceId : int16_t;
 
 class CreatureEntity;
 class FloorType;
-class PlayerType;
 typedef union spell_functions {
     struct debug_spell_type1 {
-        bool (*spell_function)(PlayerType *, FloorType *);
+        bool (*spell_function)(CreatureEntity &, FloorType *);
     } spell1;
 
     struct debug_spell_type2 {
@@ -18,7 +17,7 @@ typedef union spell_functions {
     } spell2;
 
     struct debug_spell_type3 {
-        bool (*spell_function)(PlayerType *, int);
+        bool (*spell_function)(CreatureEntity &, int);
     } spell3;
 
     struct debug_spell_type4 { // 実質 ty curse
@@ -26,7 +25,7 @@ typedef union spell_functions {
     } spell4;
 
     struct debug_spell_type5 {
-        void (*spell_function)(PlayerType *);
+        void (*spell_function)(CreatureEntity &);
     } spell5;
 
     struct debug_spell_type6 {
