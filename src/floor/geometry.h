@@ -328,5 +328,4 @@ class CreatureEntity;
 Pos2D mmove2(const Pos2D &pos_orig, const Pos2D &pos1, const Pos2D &pos2);
 bool player_can_see_bold(CreatureEntity &creature, POSITION y, POSITION x);
 
-class MonsterEntity;
-bool is_seen(CreatureEntity &creature, const MonsterEntity &monster);
+bool is_seen(CreatureEntity &creature, const CreatureEntity &target);

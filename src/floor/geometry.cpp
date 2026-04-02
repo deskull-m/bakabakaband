@@ -4,7 +4,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/monster-entity.h"
 #include "target/projection-path-calculator.h"
 #include "util/bit-flags-calculator.h"
 
@@ -134,12 +133,13 @@ Pos2D mmove2(const Pos2D &pos_orig, const Pos2D &pos1, const Pos2D &pos2)
  * @return 個々のモンスターがプレイヤーが見えたらTRUE
  * @todo is_seen() の関数マクロをバラそうとしたがインクルード関係のコンパイルエラーで失敗
  */
-bool is_seen(CreatureEntity &creature, const MonsterEntity &monster)
+bool is_seen(CreatureEntity &creature, const CreatureEntity &target)
 {
     auto is_inside_view = !ignore_unview;
     is_inside_view |= AngbandSystem::get_instance().is_phase_out();
     const auto p_pos = creature.get_position();
-    const auto m_pos = monster.get_position();
-    is_inside_view |= player_can_see_bold(creature, m_pos.y, m_pos.x) && projectable(*creature.current_floor_ptr, p_pos, m_pos);
-    return monster.get_monster_profile().ml && is_inside_view;
+    const auto t_pos = target.get_position();
+    is_inside_view |= player_can_see_bold(creature, t_pos.y, t_pos.x) && projectable(*creature.current_floor_ptr, p_pos, t_pos);
+    const auto ml = target.has_monster_profile() ? target.get_monster_profile().ml : false;
+    return ml && is_inside_view;
 }
