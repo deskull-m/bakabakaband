@@ -144,7 +144,7 @@ bool MonsterDamageProcessor::genocide_patron()
     return this->m_idx == 0;
 }
 
-bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, const MonsterEntity &exp_mon)
+bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, const CreatureEntity &exp_target)
 {
     auto &player = static_cast<PlayerType &>(this->creature);
     auto &monster = player.current_floor_ptr->m_list[this->m_idx];
@@ -172,7 +172,7 @@ bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, cons
     this->show_bounty_message(m_name);
     monster_death(creature, this->m_idx, true, this->attribute_flags);
     delete_monster_idx(player, this->m_idx);
-    this->get_exp_from_mon(exp_mon, exp_mon.max_maxhp * 2);
+    this->get_exp_from_mon(exp_target, exp_target.max_maxhp * 2);
     *this->fear = false;
     return true;
 }
@@ -422,11 +422,12 @@ void MonsterDamageProcessor::show_bounty_message(std::string_view m_name)
  * experience point of a monster later.
  * </pre>
  */
-void MonsterDamageProcessor::get_exp_from_mon(const MonsterEntity &monster, int exp_dam)
+void MonsterDamageProcessor::get_exp_from_mon(const CreatureEntity &target, int exp_dam)
 {
     auto &player = static_cast<PlayerType &>(this->creature);
+    const auto &monster = static_cast<const MonsterEntity &>(target);
     const auto &monrace = monster.get_monrace();
-    if (!monster.is_valid() || monster.is_pet() || AngbandSystem::get_instance().is_phase_out()) {
+    if (!target.is_valid() || target.is_pet() || AngbandSystem::get_instance().is_phase_out()) {
         return;
     }
 
@@ -435,7 +436,7 @@ void MonsterDamageProcessor::get_exp_from_mon(const MonsterEntity &monster, int 
      * - Varying speed effects
      * - Get a fraction in proportion of damage point
      */
-    auto new_exp = monrace.level * speed_to_energy(monster.speed) * exp_dam;
+    auto new_exp = monrace.level * speed_to_energy(target.speed) * exp_dam;
     auto new_exp_frac = 0U;
     auto div_h = 0;
     auto div_l = (uint)((player.max_plv + 2) * speed_to_energy(monrace.speed));
@@ -457,7 +458,7 @@ void MonsterDamageProcessor::get_exp_from_mon(const MonsterEntity &monster, int 
     s64b_div(&new_exp, &new_exp_frac, div_h, div_l);
 
     /* Special penalty for mutiply-monster */
-    if (monrace.misc_flags.has(MonsterMiscType::MULTIPLY) || (monster.r_idx == MonraceId::DAWN)) {
+    if (monrace.misc_flags.has(MonsterMiscType::MULTIPLY) || (target.r_idx == MonraceId::DAWN)) {
         int monnum_penarty = monrace.r_akills / 400;
         if (monnum_penarty > 8) {
             monnum_penarty = 8;
@@ -470,8 +471,8 @@ void MonsterDamageProcessor::get_exp_from_mon(const MonsterEntity &monster, int 
     }
 
     /* Special penalty for rest_and_shoot exp scum */
-    if ((monster.dealt_damage > monster.max_maxhp) && (monster.hp >= 0)) {
-        int over_damage = monster.dealt_damage / monster.max_maxhp;
+    if ((target.dealt_damage > target.max_maxhp) && (target.hp >= 0)) {
+        int over_damage = target.dealt_damage / target.max_maxhp;
         if (over_damage > 32) {
             over_damage = 32;
         }
