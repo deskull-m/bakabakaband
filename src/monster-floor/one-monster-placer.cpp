@@ -258,25 +258,25 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     // モンスターの能力値をランダムに初期化
     get_stats(m_ptr);
 
-    m_ptr->alliance_idx = monrace.alliance_idx;
+    m_ptr->get_monster_profile().alliance_idx = monrace.alliance_idx;
 
-    m_ptr->mflag.clear();
-    m_ptr->mflag2.clear();
+    m_ptr->get_monster_profile().mflag.clear();
+    m_ptr->get_monster_profile().mflag2.clear();
     m_ptr->current_floor_ptr = player.current_floor_ptr;
 
     if (monrace.misc_flags.has(MonsterMiscType::CHAMELEON)) {
         m_ptr->r_idx = r_idx;
         choose_chameleon_polymorph(player, g_ptr->m_idx, g_ptr->get_terrain_id(), summoner_m_idx);
-        m_ptr->mflag2.set(MonsterConstantFlagType::CHAMELEON);
+        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::CHAMELEON);
     } else if (any_bits(mode, PM_CHAMELEON_FINAL_SUMMON)) {
         m_ptr->r_idx = r_idx;
         m_ptr->ap_r_idx = r_idx;
-        m_ptr->mflag2.set(MonsterConstantFlagType::CHAMELEON);
+        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::CHAMELEON);
     } else {
         m_ptr->r_idx = r_idx;
         if (any_bits(mode, PM_KAGE) && none_bits(mode, PM_FORCE_PET)) {
             m_ptr->ap_r_idx = MonraceId::KAGE;
-            m_ptr->mflag2.set(MonsterConstantFlagType::KAGE);
+            m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::KAGE);
         } else {
             m_ptr->ap_r_idx = initial_r_appearance(const_cast<CreatureEntity &>(player), r_idx, mode);
         }
@@ -286,14 +286,14 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     const auto is_summoned = summoner_m_idx.has_value();
     const MonsterEntity &summoner = floor.m_list[summoner_m_idx.value_or(0)];
 
-    auto same_appearance_as_parent = m_ptr->mflag2.has_not(MonsterConstantFlagType::CHAMELEON);
+    auto same_appearance_as_parent = m_ptr->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON);
     same_appearance_as_parent &= any_bits(mode, PM_MULTIPLY);
     same_appearance_as_parent &= is_summoned && !summoner.is_original_ap();
 
     if (same_appearance_as_parent) {
         m_ptr->ap_r_idx = summoner.ap_r_idx;
-        if (summoner.mflag2.has(MonsterConstantFlagType::KAGE)) {
-            m_ptr->mflag2.set(MonsterConstantFlagType::KAGE);
+        if (summoner.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE)) {
+            m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::KAGE);
         }
     }
 
@@ -301,73 +301,73 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     struct tm *t = localtime(&now);
     if (t->tm_mon == 11 && t->tm_mday >= 24 && t->tm_mday <= 25 && one_in_(6)) {
         if (none_bits(mode, PM_MULTIPLY | PM_KAGE) && m_ptr->r_idx != MonraceId::SANTA) {
-            m_ptr->mflag2.set(MonsterConstantFlagType::SANTA);
+            m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::SANTA);
         }
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && one_in_(100)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::HUGE);
+        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::HUGE);
     } else if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
-               m_ptr->mflag2.has_not(MonsterConstantFlagType::HUGE) && one_in_(15)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::LARGE);
+               m_ptr->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::HUGE) && one_in_(15)) {
+        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::LARGE);
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
-        m_ptr->mflag2.has_not(MonsterConstantFlagType::LARGE) &&
-        m_ptr->mflag2.has_not(MonsterConstantFlagType::HUGE) && one_in_(18)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::SMALL);
+        m_ptr->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::LARGE) &&
+        m_ptr->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::HUGE) && one_in_(18)) {
+        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::SMALL);
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
         monrace.kind_flags.has_not(MonsterKindType::NONLIVING) && one_in_(20)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::FAT);
+        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::FAT);
     } else if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
                monrace.kind_flags.has_not(MonsterKindType::NONLIVING) &&
-               m_ptr->mflag2.has_not(MonsterConstantFlagType::FAT) && one_in_(25)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::GAUNT);
+               m_ptr->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::FAT) && one_in_(25)) {
+        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::GAUNT);
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
         monrace.kind_flags.has(MonsterKindType::HUMAN) && one_in_(80)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::NAKED);
+        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::NAKED);
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
         monrace.kind_flags.has_not(MonsterKindType::NONLIVING) &&
         monrace.kind_flags.has_not(MonsterKindType::UNDEAD) && one_in_(50)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::ZOMBIFIED);
+        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::ZOMBIFIED);
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
         monrace.misc_flags.has(MonsterMiscType::NO_WAIFUZATION) && one_in_(20)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::WAIFUIZED);
+        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::WAIFUIZED);
     }
 
     // 違法改造フラグの付与
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
         (monrace.kind_flags.has(MonsterKindType::GOLEM) || monrace.kind_flags.has(MonsterKindType::ROBOT)) &&
         one_in_(40)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::ILLEGAL_MODIFIED);
+        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::ILLEGAL_MODIFIED);
     }
 
     // 軽量化フラグの付与
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
         monrace.kind_flags.has(MonsterKindType::GOLEM) &&
         one_in_(15)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::LIGHTWEIGHT);
+        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::LIGHTWEIGHT);
     }
 
-    if (m_ptr->mflag2.has_not(MonsterConstantFlagType::CHAMELEON) && is_summoned && new_monrace.kind_flags.has_none_of(alignment_mask)) {
-        m_ptr->sub_align = summoner.sub_align;
-    } else if (m_ptr->mflag2.has(MonsterConstantFlagType::CHAMELEON) && new_monrace.kind_flags.has(MonsterKindType::UNIQUE) && !is_summoned) {
-        m_ptr->sub_align = SUB_ALIGN_NEUTRAL;
+    if (m_ptr->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON) && is_summoned && new_monrace.kind_flags.has_none_of(alignment_mask)) {
+        m_ptr->get_monster_profile().sub_align = summoner.get_monster_profile().sub_align;
+    } else if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::CHAMELEON) && new_monrace.kind_flags.has(MonsterKindType::UNIQUE) && !is_summoned) {
+        m_ptr->get_monster_profile().sub_align = SUB_ALIGN_NEUTRAL;
     } else {
-        m_ptr->sub_align = SUB_ALIGN_NEUTRAL;
+        m_ptr->get_monster_profile().sub_align = SUB_ALIGN_NEUTRAL;
         if (new_monrace.kind_flags.has(MonsterKindType::EVIL)) {
-            set_bits(m_ptr->sub_align, SUB_ALIGN_EVIL);
+            set_bits(m_ptr->get_monster_profile().sub_align, SUB_ALIGN_EVIL);
         }
         if (new_monrace.kind_flags.has(MonsterKindType::GOOD)) {
-            set_bits(m_ptr->sub_align, SUB_ALIGN_GOOD);
+            set_bits(m_ptr->get_monster_profile().sub_align, SUB_ALIGN_GOOD);
         }
     }
 
@@ -376,7 +376,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     m_ptr->current_floor_ptr = &floor;
 
     for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
-        m_ptr->mtimed[mte] = 0;
+        m_ptr->get_monster_profile().mtimed[mte] = 0;
     }
 
     m_ptr->reset_target();
@@ -384,25 +384,25 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     m_ptr->exp = 0;
 
     if (is_summoned) {
-        m_ptr->parent_m_idx = *summoner_m_idx;
+        m_ptr->get_monster_profile().parent_m_idx = *summoner_m_idx;
         if (summoner.get_monrace().kind_flags.has(MonsterKindType::QUYLTHLUG)) {
-            m_ptr->mflag2.set(MonsterConstantFlagType::QUYLTHLUG_BORN);
+            m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::QUYLTHLUG_BORN);
         }
     } else {
-        m_ptr->parent_m_idx = 0;
+        m_ptr->get_monster_profile().parent_m_idx = 0;
     }
 
     // 変身情報のコピー
-    m_ptr->transform_r_idx = new_monrace.transform_r_idx;
-    m_ptr->transform_hp_threshold = new_monrace.transform_hp_threshold;
-    m_ptr->has_transformed = false;
+    m_ptr->get_monster_profile().transform_r_idx = new_monrace.transform_r_idx;
+    m_ptr->get_monster_profile().transform_hp_threshold = new_monrace.transform_hp_threshold;
+    m_ptr->get_monster_profile().has_transformed = false;
 
     if (any_bits(mode, PM_CLONE)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::CLONED);
+        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::CLONED);
     }
 
     if (any_bits(mode, PM_NO_PET)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
+        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::NOPET);
     }
 
     // モンスターのフラグに基づいて対応するプレイヤー種族IDと職業IDを初期化
@@ -415,7 +415,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     // 所持金を初期化（能力値に基づいて計算）
     get_money_for_creature(m_ptr);
 
-    m_ptr->ml = false;
+    m_ptr->get_monster_profile().ml = false;
     if (any_bits(mode, PM_FORCE_PET)) {
         set_pet(player, *m_ptr);
     } else {
@@ -424,15 +424,15 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         should_be_friendly |= any_bits(mode, PM_FORCE_FRIENDLY);
         auto force_hostile = monster_has_hostile_to_player(player, 0, -1, new_monrace);
         force_hostile |= floor.inside_arena;
-        if (m_ptr->alliance_idx != AllianceType::NONE) {
-            should_be_friendly |= alliance_list.at(m_ptr->alliance_idx)->isFriendly(player);
+        if (m_ptr->get_monster_profile().alliance_idx != AllianceType::NONE) {
+            should_be_friendly |= alliance_list.at(m_ptr->get_monster_profile().alliance_idx)->isFriendly(player);
         }
         if (should_be_friendly && !force_hostile) {
             m_ptr->set_friendly();
         }
     }
 
-    m_ptr->mtimed[MonsterTimedEffect::SLEEP] = 0;
+    m_ptr->get_monster_profile().mtimed[MonsterTimedEffect::SLEEP] = 0;
     if (any_bits(mode, PM_ALLOW_SLEEP) && new_monrace.sleep && !ironman_nightmare) {
         int val = new_monrace.sleep;
         (void)set_monster_csleep(floor, g_ptr->m_idx, (val * 2) + randint1(val * 10));
@@ -444,36 +444,36 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         m_ptr->max_maxhp = new_monrace.hit_dice.roll();
     }
 
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::HUGE)) {
+    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::HUGE)) {
         m_ptr->max_maxhp *= (randint1(8) + 15) / 8;
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
-    } else if (m_ptr->mflag2.has(MonsterConstantFlagType::LARGE)) {
+    } else if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::LARGE)) {
         m_ptr->max_maxhp *= (randint1(5) + 10) / 8;
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
     }
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::SMALL)) {
+    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::SMALL)) {
         m_ptr->max_maxhp *= (randint1(2) + 4) / 8;
         m_ptr->max_maxhp = std::max(1, m_ptr->max_maxhp);
     }
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::FAT)) {
+    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::FAT)) {
         m_ptr->max_maxhp *= (randint1(3) + 8) / 8;
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
     }
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::GAUNT)) {
+    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::GAUNT)) {
         m_ptr->max_maxhp *= (randint1(3) + 4) / 8;
         m_ptr->max_maxhp = std::max(1, m_ptr->max_maxhp);
     }
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::ZOMBIFIED)) {
+    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::ZOMBIFIED)) {
         m_ptr->max_maxhp *= (randint1(3) + 5) / 8;
         m_ptr->max_maxhp = std::max(1, m_ptr->max_maxhp);
         // ゾンビ化したモンスターにUNDEADフラグを付与
         m_ptr->get_monrace().kind_flags.set(MonsterKindType::UNDEAD);
     }
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
+    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
         m_ptr->max_maxhp *= (randint1(3) + 10) / 8; // 1.5倍～1.75倍のHPボーナス
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
     }
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::LIGHTWEIGHT)) {
+    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::LIGHTWEIGHT)) {
         m_ptr->max_maxhp *= (randint1(2) + 5) / 8; // 0.625倍～0.75倍のHP減少
         m_ptr->max_maxhp = std::max(1, m_ptr->max_maxhp);
     }
@@ -502,30 +502,30 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     m_ptr->dealt_damage = 0;
     if (monrace.suicide_dice_num && monrace.suicide_dice_side) {
-        m_ptr->death_count = Dice::roll(monrace.suicide_dice_num, monrace.suicide_dice_side);
+        m_ptr->get_monster_profile().death_count = Dice::roll(monrace.suicide_dice_num, monrace.suicide_dice_side);
     }
 
     m_ptr->set_individual_speed(floor.inside_arena);
 
     // Initialize AC from monster race
     m_ptr->ac = new_monrace.ac;
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
+    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
         m_ptr->ac += randint1(10) + 5; // +6～+15のACボーナス
     }
 
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::HUGE)) {
+    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::HUGE)) {
         m_ptr->speed -= randint1(2) + 2;
     }
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::GAUNT)) {
+    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::GAUNT)) {
         m_ptr->speed -= randint1(3);
     }
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::SMALL)) {
+    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::SMALL)) {
         m_ptr->speed += randint1(2) + 1;
     }
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
+    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
         m_ptr->speed += randint1(5) + 3; // +3～+7の加速ボーナス
     }
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::LIGHTWEIGHT)) {
+    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::LIGHTWEIGHT)) {
         m_ptr->speed += randint1(3) + 2; // +2～+4の加速ボーナス
     }
 
@@ -540,7 +540,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     }
 
     if (!ironman_nightmare) {
-        m_ptr->mflag.set(MonsterTemporaryFlagType::PREVENT_MAGIC);
+        m_ptr->get_monster_profile().mflag.set(MonsterTemporaryFlagType::PREVENT_MAGIC);
     }
 
     auto is_awake_lightning_monster = new_monrace.brightness_flags.has_any_of(self_ld_mask);

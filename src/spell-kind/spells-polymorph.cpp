@@ -86,7 +86,7 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
     if (floor.inside_arena || AngbandSystem::get_instance().is_phase_out()) {
         return false;
     }
-    if (monster.is_riding() || monster.mflag2.has(MonsterConstantFlagType::KAGE)) {
+    if (monster.is_riding() || monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE)) {
         return false;
     }
 
@@ -96,7 +96,7 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
         return false;
     }
 
-    bool preserve_hold_objects = !back_m.hold_o_idx_list.empty();
+    bool preserve_hold_objects = !back_m.get_monster_profile().hold_o_idx_list.empty();
 
     BIT_FLAGS mode = 0L;
     if (monster.is_friendly()) {
@@ -105,19 +105,19 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
     if (monster.is_pet()) {
         mode |= PM_FORCE_PET;
     }
-    if (monster.mflag2.has(MonsterConstantFlagType::NOPET)) {
+    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::NOPET)) {
         mode |= PM_NO_PET;
     }
 
-    monster.hold_o_idx_list.clear();
+    monster.get_monster_profile().hold_o_idx_list.clear();
     delete_monster_idx(creature, grid.m_idx);
     bool polymorphed = false;
     auto m_idx = place_specific_monster(creature, y, x, new_r_idx, mode);
     if (m_idx) {
         auto &monster_polymorphed = floor.m_list[*m_idx];
         monster_polymorphed.name = back_m.name;
-        monster_polymorphed.parent_m_idx = back_m.parent_m_idx;
-        monster_polymorphed.hold_o_idx_list = back_m.hold_o_idx_list;
+        monster_polymorphed.get_monster_profile().parent_m_idx = back_m.get_monster_profile().parent_m_idx;
+        monster_polymorphed.get_monster_profile().hold_o_idx_list = back_m.get_monster_profile().hold_o_idx_list;
         polymorphed = true;
     } else {
         m_idx = place_specific_monster(creature, y, x, old_r_idx, (mode | PM_NO_KAGE | PM_IGNORE_TERRAIN));
@@ -130,12 +130,12 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
     }
 
     if (preserve_hold_objects) {
-        for (const auto this_o_idx : back_m.hold_o_idx_list) {
+        for (const auto this_o_idx : back_m.get_monster_profile().hold_o_idx_list) {
             auto *o_ptr = floor.o_list[this_o_idx].get();
             o_ptr->held_m_idx = *m_idx;
         }
     } else {
-        delete_items(creature, back_m.hold_o_idx_list);
+        delete_items(creature, back_m.get_monster_profile().hold_o_idx_list);
     }
 
     if (targeted) {

@@ -148,7 +148,7 @@ static void preserve_pet(CreatureEntity &creature)
     record_pet_diary(creature);
     for (MONSTER_IDX i = player_ptr->current_floor_ptr->m_max - 1; i >= 1; i--) {
         const auto &monster = player_ptr->current_floor_ptr->m_list[i];
-        const auto parent_r_idx = player_ptr->current_floor_ptr->m_list[monster.parent_m_idx].r_idx;
+        const auto parent_r_idx = player_ptr->current_floor_ptr->m_list[monster.get_monster_profile().parent_m_idx].r_idx;
         if (!monster.has_parent() || MonraceList::is_valid(parent_r_idx)) {
             continue;
         }

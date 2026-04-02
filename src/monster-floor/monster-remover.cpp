@@ -73,14 +73,14 @@ void delete_monster_idx(CreatureEntity &creature, short m_idx)
     }
 
     floor.get_grid(m_pos).m_idx = 0;
-    delete_items(creature, monster.hold_o_idx_list);
+    delete_items(creature, monster.get_monster_profile().hold_o_idx_list);
 
     // 召喚元のモンスターが消滅した時は、召喚されたモンスターのparent_m_idxが
     // 召喚されたモンスター自身のm_idxを指すようにする
     for (MONSTER_IDX child_m_idx = 1; child_m_idx < floor.m_max; child_m_idx++) {
         auto &child_monster = floor.m_list[child_m_idx];
-        if (child_monster.is_valid() && child_monster.parent_m_idx == m_idx) {
-            child_monster.parent_m_idx = child_m_idx;
+        if (child_monster.is_valid() && child_monster.get_monster_profile().parent_m_idx == m_idx) {
+            child_monster.get_monster_profile().parent_m_idx = child_m_idx;
         }
     }
 

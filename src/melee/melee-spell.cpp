@@ -61,7 +61,7 @@ static void process_special_melee_spell(CreatureEntity &creature, melee_spell_ty
 {
     auto &player = static_cast<PlayerType &>(creature);
     CreatureClass pc(player);
-    bool is_special_magic = ms_ptr->m_ptr->ml;
+    bool is_special_magic = ms_ptr->m_ptr->get_monster_profile().ml;
     is_special_magic &= ms_ptr->maneable;
     is_special_magic &= AngbandWorld::get_instance().timewalk_m_idx == 0;
     is_special_magic &= !player.is_blind();

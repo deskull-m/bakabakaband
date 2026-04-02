@@ -455,7 +455,7 @@ void MonsterAttackPlayer::process_monster_attack_evasion()
 void MonsterAttackPlayer::describe_attack_evasion()
 {
     auto &player = static_cast<PlayerType &>(*this->creature_ptr);
-    if (!this->m_ptr->ml) {
+    if (!this->m_ptr->get_monster_profile().ml) {
         return;
     }
 
@@ -560,7 +560,7 @@ void MonsterAttackPlayer::postprocess_monster_blows()
         monrace.r_deaths++;
     }
 
-    if (this->m_ptr->ml && this->fear && this->alive && !player.is_dead()) {
+    if (this->m_ptr->get_monster_profile().ml && this->fear && this->alive && !player.is_dead()) {
         sound(SoundKind::FLEE);
         msg_format(_("%s^は恐怖で逃げ出した！", "%s^ flees in terror!"), this->m_name);
     }
@@ -601,9 +601,9 @@ void MonsterAttackPlayer::process_sadist_reaction()
         (void)set_monster_monfear(*player.current_floor_ptr, this->m_idx, 0);
 
         // 一時的な攻撃力上昇（怒り状態付与）
-        this->m_ptr->mflag2.set(MonsterConstantFlagType::ANGER);
+        this->m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::ANGER);
 
-        if (this->m_ptr->ml) {
+        if (this->m_ptr->get_monster_profile().ml) {
             msg_format(_("%s^は他者の苦痛に興奮している！", "%s^ gets excited by others' pain!"), this->m_name);
         }
     }

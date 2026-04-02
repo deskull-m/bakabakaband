@@ -56,11 +56,11 @@ tl::optional<std::array<NestMonsterInfo, NUM_NEST_MON_TYPE>> pick_nest_monraces(
 
         const auto &monrace = monraces.get_monrace(*monrace_id);
         if (monrace.kind_flags.has(MonsterKindType::EVIL)) {
-            align.sub_align |= SUB_ALIGN_EVIL;
+            align.get_monster_profile().sub_align |= SUB_ALIGN_EVIL;
         }
 
         if (monrace.kind_flags.has(MonsterKindType::GOOD)) {
-            align.sub_align |= SUB_ALIGN_GOOD;
+            align.get_monster_profile().sub_align |= SUB_ALIGN_GOOD;
         }
 
         nest_mon_info.monrace_id = *monrace_id;
@@ -210,7 +210,7 @@ bool build_type5(CreatureEntity &creature, DungeonData *dd_ptr)
     nest.prepare_filter(creature);
     get_mon_num_prep_enum(creature, nest.monrace_hook);
     MonsterEntity align;
-    align.sub_align = SUB_ALIGN_NEUTRAL;
+    align.get_monster_profile().sub_align = SUB_ALIGN_NEUTRAL;
 
     auto nest_mon_info_list = pick_nest_monraces(creature, align);
     if (!nest_mon_info_list) {

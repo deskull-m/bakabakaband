@@ -231,7 +231,7 @@ bool monster_has_hostile_to_other_monster(const MonsterEntity &monster_other, co
 
 bool is_original_ap_and_seen(CreatureEntity &subject, const MonsterEntity &monster)
 {
-    return monster.ml && !subject.effects()->hallucination().is_hallucinated() && monster.is_original_ap();
+    return monster.get_monster_profile().ml && !subject.effects()->hallucination().is_hallucinated() && monster.is_original_ap();
 }
 
 /*!

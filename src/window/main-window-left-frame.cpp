@@ -392,7 +392,7 @@ void print_health(CreatureEntity &creature, bool riding)
 
     const auto &monster = creature.current_floor_ptr->m_list[monster_idx.value()];
 
-    if ((!monster.ml) || (creature.effects()->hallucination().is_hallucinated()) || monster.is_dead()) {
+    if ((!monster.get_monster_profile().ml) || (creature.effects()->hallucination().is_hallucinated()) || monster.is_dead()) {
         term_putstr(col, row, max_width, TERM_WHITE, "[----------]");
         return;
     }

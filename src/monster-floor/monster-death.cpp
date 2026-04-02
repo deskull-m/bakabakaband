@@ -290,7 +290,7 @@ static int decide_drop_numbers(CreatureEntity &creature, MonsterDeath *md_ptr, c
         drop_numbers += Dice::roll(4, 2);
     }
 
-    if (md_ptr->m_ptr->mflag2.has(MonsterConstantFlagType::SANTA)) {
+    if (md_ptr->m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::SANTA)) {
         drop_numbers += Dice::roll(3, 3);
     }
 
@@ -336,7 +336,7 @@ static void drop_items_golds(CreatureEntity &creature, MonsterDeath *md_ptr, int
     }
 
     floor.object_level = floor.base_level;
-    auto visible = md_ptr->m_ptr->ml && !creature.effects()->hallucination().is_hallucinated();
+    auto visible = md_ptr->m_ptr->get_monster_profile().ml && !creature.effects()->hallucination().is_hallucinated();
     visible |= (md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE));
     if (visible && (dump_item || dump_gold)) {
         md_ptr->m_ptr->make_lore_treasure(dump_item, dump_gold);
@@ -404,7 +404,7 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
     }
 
     // プレイヤーしかユニークを倒せないのでここで時間を記録
-    if (md.r_ptr->kind_flags.has(MonsterKindType::UNIQUE) && md.m_ptr->mflag2.has_not(MonsterConstantFlagType::CLONED)) {
+    if (md.r_ptr->kind_flags.has(MonsterKindType::UNIQUE) && md.m_ptr->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CLONED)) {
         world.play_time.update();
         md.r_ptr->defeat_time = world.play_time.elapsed_sec();
         md.r_ptr->defeat_level = creature.level;
@@ -416,7 +416,7 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
 
     write_pet_death(creature, &md);
     on_dead_explosion(creature, &md);
-    if (md.m_ptr->mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
+    if (md.m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
         md.m_ptr->reset_chameleon_polymorph();
         md.r_ptr = &md.m_ptr->get_monrace();
     }

@@ -329,7 +329,7 @@ ObjectIndexList &get_o_idx_list_contains(FloorType &floor, OBJECT_IDX o_idx)
     auto *o_ptr = floor.o_list[o_idx].get();
 
     if (o_ptr->is_held_by_monster()) {
-        return floor.m_list[o_ptr->held_m_idx].hold_o_idx_list;
+        return floor.m_list[o_ptr->held_m_idx].get_monster_profile().hold_o_idx_list;
     } else {
         return floor.grid_array[o_ptr->iy][o_ptr->ix].o_idx_list;
     }

@@ -65,7 +65,7 @@ void effect_player_drain_mana(CreatureEntity &creature, EffectPlayerType *ep_ptr
         rfu.set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 
-    if (ep_ptr->m_ptr->ml) {
+    if (ep_ptr->m_ptr->get_monster_profile().ml) {
         msg_format(_("%s^は気分が良さそうだ。", "%s^ appears healthier."), ep_ptr->m_name.data());
     }
 

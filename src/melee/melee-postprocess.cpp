@@ -76,7 +76,7 @@ mam_pp_type::mam_pp_type(CreatureEntity &creature, MONSTER_IDX m_idx, int dam, b
 
 static void prepare_redraw(mam_pp_type *mam_pp_ptr)
 {
-    if (!mam_pp_ptr->m_ptr->ml) {
+    if (!mam_pp_ptr->m_ptr->get_monster_profile().ml) {
         return;
     }
 

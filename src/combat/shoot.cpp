@@ -742,7 +742,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
                 auto &monrace = monster.get_monrace();
 
                 /* Check the visibility */
-                auto visible = monster.ml;
+                auto visible = monster.get_monster_profile().ml;
 
                 /* Note the collision */
                 hit_body = true;
@@ -765,7 +765,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
                 }
 
                 /* Did we hit it (penalize range) */
-                if (test_hit_fire(creature, chance - cur_dis, monster, monster.ml, item_name.data())) {
+                if (test_hit_fire(creature, chance - cur_dis, monster, monster.get_monster_profile().ml, item_name.data())) {
                     bool fear = false;
                     auto tdam = tdam_base; //!< @note 実際に与えるダメージ
                     auto base_dam = tdam; //!< @note 補正前の与えるダメージ(無傷、全ての耐性など)
@@ -786,7 +786,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
 
                         msg_format(_("%sが%sに命中した。", "The %s hits %s."), item_name.data(), m_name.data());
 
-                        if (monster.ml) {
+                        if (monster.get_monster_profile().ml) {
                             if (!creature.effects()->hallucination().is_hallucinated()) {
                                 tracker.set_trackee(monster.ap_r_idx);
                             }
@@ -874,7 +874,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
                             anger_monster(creature, monster);
                         }
 
-                        if (fear && monster.ml) {
+                        if (fear && monster.get_monster_profile().ml) {
                             sound(SoundKind::FLEE);
                             msg_format(_("%s^は恐怖して逃げ出した！", "%s^ flees in terror!"), m_name.data());
                         }
@@ -972,7 +972,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
 
             /* Carry object */
             auto &monster = floor.m_list[m_idx];
-            monster.hold_o_idx_list.add(floor, item_idx);
+            monster.get_monster_profile().hold_o_idx_list.add(floor, item_idx);
         } else if (floor.has_terrain_characteristics(pos_impact, TerrainCharacteristics::PROJECTION)) {
             /* Drop (or break) near that location */
             drop_ammo_near(creature, fire_item, pos_impact, j);

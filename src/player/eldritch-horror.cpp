@@ -83,7 +83,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
             return;
         }
 
-        if (!monster.ml) {
+        if (!monster.get_monster_profile().ml) {
             return;
         }
 

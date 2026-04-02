@@ -97,11 +97,11 @@ tl::optional<std::array<MonraceId, NUM_PIT_MONRACES>> pick_pit_monraces(Creature
 
         const auto &monrace = monraces.get_monrace(*monrace_id);
         if (monrace.kind_flags.has(MonsterKindType::EVIL)) {
-            align.sub_align |= SUB_ALIGN_EVIL;
+            align.get_monster_profile().sub_align |= SUB_ALIGN_EVIL;
         }
 
         if (monrace.kind_flags.has(MonsterKindType::GOOD)) {
-            align.sub_align |= SUB_ALIGN_GOOD;
+            align.get_monster_profile().sub_align |= SUB_ALIGN_GOOD;
         }
 
         what = *monrace_id;
@@ -218,7 +218,7 @@ bool build_type6(CreatureEntity &creature, DungeonData *dd_ptr)
     pit.prepare_filter(creature);
     get_mon_num_prep_enum(creature, pit.monrace_hook);
     MonsterEntity align;
-    align.sub_align = SUB_ALIGN_NEUTRAL;
+    align.get_monster_profile().sub_align = SUB_ALIGN_NEUTRAL;
 
     auto whats = pick_pit_monraces(creature, align, 11);
     if (!whats) {
@@ -359,7 +359,7 @@ bool build_type13(CreatureEntity &creature, DungeonData *dd_ptr)
     pit.prepare_filter(creature);
     get_mon_num_prep_enum(creature, pit.monrace_hook, MonraceHookTerrain::TRAPPED_PIT);
     MonsterEntity align;
-    align.sub_align = SUB_ALIGN_NEUTRAL;
+    align.get_monster_profile().sub_align = SUB_ALIGN_NEUTRAL;
     auto whats = pick_pit_monraces(creature, align);
     if (!whats) {
         return false;

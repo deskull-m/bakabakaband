@@ -62,7 +62,7 @@ static void cave_temp_room_lite(CreatureEntity &creature, const std::vector<Pos2
 
             if (monster.is_asleep() && evaluate_percent(chance)) {
                 (void)set_monster_csleep(*creature.current_floor_ptr, grid.m_idx, 0);
-                if (monster.ml) {
+                if (monster.get_monster_profile().ml) {
                     const auto m_name = monster_desc(creature, monster, 0);
                     msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
                 }

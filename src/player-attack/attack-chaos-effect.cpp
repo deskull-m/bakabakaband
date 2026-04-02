@@ -105,7 +105,7 @@ static void attack_stun(CreatureEntity &creature, player_attack_type *pa_ptr, bo
 static void attack_scare(CreatureEntity &creature, player_attack_type *pa_ptr, bool can_resist = true)
 {
     auto &monrace = *pa_ptr->r_ptr;
-    if (monrace.resistance_flags.has(MonsterResistanceType::NO_FEAR) || pa_ptr->m_ptr->mflag2.has(MonsterConstantFlagType::FRENZY)) {
+    if (monrace.resistance_flags.has(MonsterResistanceType::NO_FEAR) || pa_ptr->m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::FRENZY)) {
         if (is_original_ap_and_seen(creature, *pa_ptr->m_ptr)) {
             monrace.resistance_flags.set(MonsterResistanceType::NO_FEAR);
         }
@@ -132,13 +132,13 @@ static void attack_dispel(CreatureEntity &creature, player_attack_type *pa_ptr)
     }
 
     auto dd = 2;
-    if (pa_ptr->m_ptr->mtimed[MonsterTimedEffect::SLOW]) {
+    if (pa_ptr->m_ptr->get_monster_profile().mtimed[MonsterTimedEffect::SLOW]) {
         dd += 1;
     }
-    if (pa_ptr->m_ptr->mtimed[MonsterTimedEffect::FAST]) {
+    if (pa_ptr->m_ptr->get_monster_profile().mtimed[MonsterTimedEffect::FAST]) {
         dd += 2;
     }
-    if (pa_ptr->m_ptr->mtimed[MonsterTimedEffect::INVULNERABILITY]) {
+    if (pa_ptr->m_ptr->get_monster_profile().mtimed[MonsterTimedEffect::INVULNERABILITY]) {
         dd += 3;
     }
 
@@ -259,15 +259,15 @@ static void attack_golden_hammer(CreatureEntity &creature, player_attack_type *p
     auto &player = static_cast<PlayerType &>(creature);
     auto &floor = *creature.current_floor_ptr;
     auto &monster = floor.m_list[pa_ptr->m_idx];
-    if (monster.hold_o_idx_list.empty()) {
+    if (monster.get_monster_profile().hold_o_idx_list.empty()) {
         return;
     }
 
-    auto &item = *floor.o_list[monster.hold_o_idx_list.front()];
+    auto &item = *floor.o_list[monster.get_monster_profile().hold_o_idx_list.front()];
     const auto item_name = describe_flavor(player, item, OD_NAME_ONLY);
     item.held_m_idx = 0;
     item.marked.clear().set(OmType::TOUCHED);
-    monster.hold_o_idx_list.pop_front();
+    monster.get_monster_profile().hold_o_idx_list.pop_front();
     msg_format(_("%sを奪った。", "You snatched %s."), item_name.data());
     store_item_to_inventory(player, &item);
 }

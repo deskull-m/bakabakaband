@@ -129,13 +129,13 @@ static MonraceDefinition &set_pet_params(CreatureEntity &creature, const int cur
     monster.y = cy;
     monster.x = cx;
     monster.current_floor_ptr = player_ptr->current_floor_ptr;
-    monster.ml = true;
-    monster.mtimed[MonsterTimedEffect::SLEEP] = 0;
-    monster.hold_o_idx_list.clear();
+    monster.get_monster_profile().ml = true;
+    monster.get_monster_profile().mtimed[MonsterTimedEffect::SLEEP] = 0;
+    monster.get_monster_profile().hold_o_idx_list.clear();
     monster.reset_target();
     auto &r_ref = monster.get_real_monrace();
     if (!ironman_nightmare) {
-        monster.mflag.set(MonsterTemporaryFlagType::PREVENT_MAGIC);
+        monster.get_monster_profile().mflag.set(MonsterTemporaryFlagType::PREVENT_MAGIC);
     }
 
     return r_ref;

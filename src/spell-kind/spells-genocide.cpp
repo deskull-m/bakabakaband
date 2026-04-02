@@ -61,7 +61,7 @@ bool genocide_aux(CreatureEntity &creature, MONSTER_IDX m_idx, int power, bool p
         resist = true;
     } else if (player_cast && (monrace.level > randint0(power))) {
         resist = true;
-    } else if (player_cast && monster.mflag2.has(MonsterConstantFlagType::NOGENO)) {
+    } else if (player_cast && monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::NOGENO)) {
         resist = true;
     } else {
         if (record_named_pet && monster.is_named_pet()) {
@@ -82,7 +82,7 @@ bool genocide_aux(CreatureEntity &creature, MONSTER_IDX m_idx, int power, bool p
 
         if (monster.is_asleep()) {
             (void)set_monster_csleep(*creature.current_floor_ptr, m_idx, 0);
-            if (monster.ml) {
+            if (monster.get_monster_profile().ml) {
                 msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
             }
         }
@@ -96,7 +96,7 @@ bool genocide_aux(CreatureEntity &creature, MONSTER_IDX m_idx, int power, bool p
         }
 
         if (one_in_(13)) {
-            monster.mflag2.set(MonsterConstantFlagType::NOGENO);
+            monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::NOGENO);
         }
     }
 

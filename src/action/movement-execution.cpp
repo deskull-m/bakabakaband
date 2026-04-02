@@ -151,20 +151,20 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
     std::string m_name;
     bool can_move = true;
     bool do_past = false;
-    if (grid.has_monster() && (monster.ml || p_can_enter || p_can_kill_walls)) {
+    if (grid.has_monster() && (monster.get_monster_profile().ml || p_can_enter || p_can_kill_walls)) {
         const auto &monrace = monster.get_monrace();
         const auto effects = player.effects();
         const auto is_stunned = effects->stun().is_stunned();
         auto can_cast = !effects->confusion().is_confused();
         const auto is_hallucinated = effects->hallucination().is_hallucinated();
         can_cast &= !is_hallucinated;
-        can_cast &= monster.ml;
+        can_cast &= monster.get_monster_profile().ml;
         can_cast &= !is_stunned;
         can_cast &= player.muta.has_not(PlayerMutationType::BERS_RAGE) || !player.is_shero();
         if (!monster.is_hostile() && can_cast && pattern_seq(player, pos) && (p_can_enter || p_can_kill_walls)) {
             (void)set_monster_csleep(*player.current_floor_ptr, grid.m_idx, 0);
             m_name = monster_desc(player, monster, 0);
-            if (monster.ml) {
+            if (monster.get_monster_profile().ml) {
                 if (!is_hallucinated) {
                     LoreTracker::get_instance().set_trackee(monster.ap_r_idx);
                 }

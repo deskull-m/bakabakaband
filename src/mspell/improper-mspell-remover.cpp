@@ -43,10 +43,10 @@ void remove_bad_spells(MONSTER_IDX m_idx, CreatureEntity &creature, EnumClassFla
     if (smart_learn) {
         /* 時々学習情報を忘れる */
         if (one_in_(100)) {
-            monster.smart.clear();
+            monster.get_monster_profile().smart.clear();
         }
 
-        msr_ptr->smart_flags = monster.smart;
+        msr_ptr->smart_flags = monster.get_monster_profile().smart;
     }
 
     add_cheat_remove_flags(creature, msr_ptr);

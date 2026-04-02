@@ -34,17 +34,17 @@ static void effect_monster_charm_resist(CreatureEntity &creature, EffectMonster 
         em_ptr->obvious = false;
 
         if (one_in_(4)) {
-            em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
+            em_ptr->m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::NOPET);
         }
     } else if (has_aggravate(creature)) {
         em_ptr->note = _("はあなたに敵意を抱いている！", " hates you too much!");
         if (one_in_(4)) {
-            em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
+            em_ptr->m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::NOPET);
         }
     } else if (has_aggravate_nasty(creature) && em_ptr->r_ptr->kind_flags.has(MonsterKindType::NASTY)) {
         em_ptr->note = _("はあなたを玩具だと思い込んでいる！", " thinks you are a toy!");
         if (one_in_(4)) {
-            em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
+            em_ptr->m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::NOPET);
         }
     } else {
         em_ptr->note = _("は突然友好的になったようだ！", " suddenly seems friendly!");
@@ -98,17 +98,17 @@ ProcessResult effect_monster_control_undead(CreatureEntity &creature, EffectMons
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
         em_ptr->obvious = false;
         if (one_in_(4)) {
-            em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
+            em_ptr->m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::NOPET);
         }
     } else if (has_aggravate(creature)) {
         em_ptr->note = _("はあなたに敵意を抱いている！", " hates you too much!");
         if (one_in_(4)) {
-            em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
+            em_ptr->m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::NOPET);
         }
     } else if (has_aggravate_nasty(creature) && em_ptr->r_ptr->kind_flags.has(MonsterKindType::NASTY)) {
         em_ptr->note = _("はあなたを玩具だと思い込んでいる！", " thinks you are a toy!");
         if (one_in_(4)) {
-            em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
+            em_ptr->m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::NOPET);
         }
     } else {
         em_ptr->note = _("は既にあなたの奴隷だ！", " is in your thrall!");
@@ -139,17 +139,17 @@ ProcessResult effect_monster_control_demon(CreatureEntity &creature, EffectMonst
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
         em_ptr->obvious = false;
         if (one_in_(4)) {
-            em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
+            em_ptr->m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::NOPET);
         }
     } else if (has_aggravate(creature)) {
         em_ptr->note = _("はあなたに敵意を抱いている！", " hates you too much!");
         if (one_in_(4)) {
-            em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
+            em_ptr->m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::NOPET);
         }
     } else if (has_aggravate_nasty(creature) && em_ptr->r_ptr->kind_flags.has(MonsterKindType::NASTY)) {
         em_ptr->note = _("はあなたを玩具だと思い込んでいる！", " thinks you are a toy!");
         if (one_in_(4)) {
-            em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
+            em_ptr->m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::NOPET);
         }
     } else {
         em_ptr->note = _("は既にあなたの奴隷だ！", " is in your thrall!");
@@ -180,17 +180,17 @@ ProcessResult effect_monster_control_animal(CreatureEntity &creature, EffectMons
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
         em_ptr->obvious = false;
         if (one_in_(4)) {
-            em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
+            em_ptr->m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::NOPET);
         }
     } else if (has_aggravate(creature)) {
         em_ptr->note = _("はあなたに敵意を抱いている！", " hates you too much!");
         if (one_in_(4)) {
-            em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
+            em_ptr->m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::NOPET);
         }
     } else if (has_aggravate_nasty(creature) && em_ptr->r_ptr->kind_flags.has(MonsterKindType::NASTY)) {
         em_ptr->note = _("はあなたを玩具だと思い込んでいる！", " thinks you are a toy!");
         if (one_in_(4)) {
-            em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
+            em_ptr->m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::NOPET);
         }
     } else {
         em_ptr->note = _("はなついた。", " is tamed!");
@@ -226,17 +226,17 @@ ProcessResult effect_monster_charm_living(CreatureEntity &creature, EffectMonste
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
         em_ptr->obvious = false;
         if (one_in_(4)) {
-            em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
+            em_ptr->m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::NOPET);
         }
     } else if (has_aggravate(creature)) {
         em_ptr->note = _("はあなたに敵意を抱いている！", " hates you too much!");
         if (one_in_(4)) {
-            em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
+            em_ptr->m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::NOPET);
         }
     } else if (has_aggravate_nasty(creature) && em_ptr->r_ptr->kind_flags.has(MonsterKindType::NASTY)) {
         em_ptr->note = _("はあなたを玩具だと思い込んでいる！", " thinks you are a toy!");
         if (one_in_(4)) {
-            em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
+            em_ptr->m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::NOPET);
         }
     } else {
         em_ptr->note = _("を支配した。", " is tamed!");
@@ -364,14 +364,14 @@ static bool effect_monster_crusade_domination(CreatureEntity &creature, EffectMo
 
     bool failed = em_ptr->r_ptr->misc_flags.has(MonsterMiscType::QUESTOR);
     failed |= em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE);
-    failed |= em_ptr->m_ptr->mflag2.has(MonsterConstantFlagType::NOPET);
+    failed |= em_ptr->m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::NOPET);
     failed |= has_aggravate(creature);
     failed |= has_aggravate_nasty(creature) && em_ptr->r_ptr->kind_flags.has(MonsterKindType::NASTY);
     failed |= (em_ptr->r_ptr->level + 10) > randint1(em_ptr->dam);
 
     if (failed) {
         if (one_in_(4)) {
-            em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
+            em_ptr->m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::NOPET);
         }
 
         return false;
@@ -435,7 +435,7 @@ static int calcutate_capturable_hp(CreatureEntity &creature, const MonsterEntity
  */
 static void effect_monster_captured(CreatureEntity &creature, EffectMonster *em_ptr, tl::optional<CapturedMonsterType *> tmp_cap_mon_ptr)
 {
-    if (em_ptr->m_ptr->mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
+    if (em_ptr->m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
         em_ptr->m_ptr->reset_chameleon_polymorph();
     }
 
@@ -446,7 +446,7 @@ static void effect_monster_captured(CreatureEntity &creature, EffectMonster *em_
     cap_mon_ptr->current_hp = static_cast<short>(em_ptr->m_ptr->hp);
     cap_mon_ptr->max_hp = static_cast<short>(em_ptr->m_ptr->max_maxhp);
     cap_mon_ptr->name = em_ptr->m_ptr->name;
-    cap_mon_ptr->mflag2 = em_ptr->m_ptr->mflag2;
+    cap_mon_ptr->mflag2 = em_ptr->m_ptr->get_monster_profile().mflag2;
     if (em_ptr->m_ptr->is_riding() && process_fall_off_horse(creature, -1, false)) {
         msg_print(_("地面に落とされた。", format("You have fallen from %s.", em_ptr->m_name)));
     }

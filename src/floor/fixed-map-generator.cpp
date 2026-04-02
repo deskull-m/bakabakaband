@@ -135,7 +135,7 @@ static void parse_qtw_D(CreatureEntity &creature, qtwg_type *qtwg_ptr, char *s)
 
             const auto m_idx = place_specific_monster(*player_ptr, *qtwg_ptr->y, *qtwg_ptr->x, monrace_id, (PM_ALLOW_SLEEP | PM_NO_KAGE));
             if (clone && m_idx) {
-                floor.m_list[*m_idx].mflag2.set(MonsterConstantFlagType::CLONED);
+                floor.m_list[*m_idx].get_monster_profile().mflag2.set(MonsterConstantFlagType::CLONED);
                 monrace.cur_num = old_cur_num;
                 monrace.mob_num = old_mob_num;
                 monrace.max_num = old_max_num;

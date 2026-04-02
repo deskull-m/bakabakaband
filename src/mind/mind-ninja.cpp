@@ -169,9 +169,9 @@ bool rush_attack(CreatureEntity &creature, bool *mdeath)
         const auto &monster = floor.m_list[grid_new.m_idx];
         if (tm_idx != grid_new.m_idx) {
 #ifdef JP
-            msg_format("%s%sが立ちふさがっている！", tm_idx > 0 ? "別の" : "", monster.ml ? "モンスター" : "何か");
+            msg_format("%s%sが立ちふさがっている！", tm_idx > 0 ? "別の" : "", monster.get_monster_profile().ml ? "モンスター" : "何か");
 #else
-            msg_format("There is %s in the way!", monster.ml ? (tm_idx > 0 ? "another monster" : "a monster") : "someone");
+            msg_format("There is %s in the way!", monster.get_monster_profile().ml ? (tm_idx > 0 ? "another monster" : "a monster") : "someone");
 #endif
         } else if (!creature.is_located_at(p_pos_new)) {
             const auto m_name = monster_desc(creature, monster, 0);
@@ -225,13 +225,13 @@ void process_surprise_attack(CreatureEntity &creature, player_attack_type *pa_pt
     }
 
     auto ninja_data = CreatureClass(creature).get_specific_data<ninja_data_type>();
-    if (pa_ptr->m_ptr->is_asleep() && pa_ptr->m_ptr->ml) {
+    if (pa_ptr->m_ptr->is_asleep() && pa_ptr->m_ptr->get_monster_profile().ml) {
         /* Can't backstab creatures that we can't see, right? */
         pa_ptr->backstab = true;
     } else if ((ninja_data && ninja_data->s_stealth) && (randint0(tmp) > (monrace.level + 20)) &&
-               pa_ptr->m_ptr->ml && !monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
+               pa_ptr->m_ptr->get_monster_profile().ml && !monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
         pa_ptr->surprise_attack = true;
-    } else if (pa_ptr->m_ptr->is_fearful() && pa_ptr->m_ptr->ml) {
+    } else if (pa_ptr->m_ptr->is_fearful() && pa_ptr->m_ptr->get_monster_profile().ml) {
         pa_ptr->stab_fleeing = true;
     }
 }

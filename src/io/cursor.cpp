@@ -53,7 +53,7 @@ void print_path(CreatureEntity &creature, POSITION y, POSITION x)
         const auto &grid = floor.get_grid(pos_path);
         if (panel_contains(pos_path)) {
             DisplaySymbolPair symbol_pair({ default_color, '\0' }, { default_color, '*' });
-            if (grid.has_monster() && floor.m_list[grid.m_idx].ml) {
+            if (grid.has_monster() && floor.m_list[grid.m_idx].get_monster_profile().ml) {
                 symbol_pair = map_info(creature, pos_path);
                 auto &symbol_foreground = symbol_pair.symbol_foreground;
                 if (!symbol_foreground.is_ascii_graphics()) {

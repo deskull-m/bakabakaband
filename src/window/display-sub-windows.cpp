@@ -148,7 +148,7 @@ static void print_monster_line(TERM_LEN x, TERM_LEN y, const MonsterEntity &mons
     term_addstr(-1, TERM_WHITE, " ");
     term_add_bigch(monrace.symbol_config);
 
-    if (monrace.r_tkills && monster.mflag2.has_not(MonsterConstantFlagType::KAGE)) {
+    if (monrace.r_tkills && monster.get_monster_profile().mflag2.has_not(MonsterConstantFlagType::KAGE)) {
         buf = format(" %2d", monrace.level);
     } else {
         buf = "???";
@@ -223,7 +223,7 @@ static void print_pet_list_oneline(CreatureEntity &creature, const MonsterEntity
     const auto &monrace = monster.get_appearance_monrace();
     const auto name = monster_desc(creature, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE | MD_NO_OWNER);
     const auto &[bar_color, bar_len] = monster.get_hp_bar_data();
-    const auto is_visible = monster.ml && !creature.effects()->hallucination().is_hallucinated();
+    const auto is_visible = monster.get_monster_profile().ml && !creature.effects()->hallucination().is_hallucinated();
 
     term_erase(0, y);
     if (is_visible) {
@@ -540,7 +540,7 @@ static bool is_seeing_monster_on(const FloorType &floor, const Grid &grid)
     }
 
     const auto &monster = floor.m_list[grid.m_idx];
-    return monster.is_valid() && monster.ml;
+    return monster.is_valid() && monster.get_monster_profile().ml;
 }
 
 /*!
