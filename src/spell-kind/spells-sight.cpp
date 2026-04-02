@@ -370,17 +370,18 @@ bool deathray_monsters(CreatureEntity &creature)
  * @param r_ptr モンスター種族への参照ポインタ
  * @return 調査結果 善悪アライメント、最大HP、残りHP、AC、速度、ステータス
  */
-std::string probed_monster_info(CreatureEntity &creature, MonsterEntity &monster, const MonraceDefinition &monrace)
+std::string probed_monster_info(CreatureEntity &creature, CreatureEntity &target, const MonraceDefinition &monrace)
 {
-    if (!monster.is_original_ap()) {
-        if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE)) {
-            monster.get_monster_profile().mflag2.reset(MonsterConstantFlagType::KAGE);
+    if (!target.is_original_ap()) {
+        if (target.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE)) {
+            target.get_monster_profile().mflag2.reset(MonsterConstantFlagType::KAGE);
         }
 
-        monster.ap_r_idx = monster.r_idx;
-        lite_spot(creature, monster.get_position());
+        target.ap_r_idx = target.r_idx;
+        lite_spot(creature, target.get_position());
     }
 
+    auto &monster = static_cast<MonsterEntity &>(target);
     const auto m_name = monster_desc(creature, monster, MD_IGNORE_HALLU | MD_INDEF_HIDDEN);
 
     concptr align;
@@ -390,11 +391,11 @@ std::string probed_monster_info(CreatureEntity &creature, MonsterEntity &monster
         align = _("邪悪", "evil");
     } else if (monrace.kind_flags.has(MonsterKindType::GOOD)) {
         align = _("善良", "good");
-    } else if ((monster.get_monster_profile().sub_align & (SUB_ALIGN_EVIL | SUB_ALIGN_GOOD)) == (SUB_ALIGN_EVIL | SUB_ALIGN_GOOD)) {
+    } else if ((target.get_monster_profile().sub_align & (SUB_ALIGN_EVIL | SUB_ALIGN_GOOD)) == (SUB_ALIGN_EVIL | SUB_ALIGN_GOOD)) {
         align = _("中立(善悪)", "neutral(good&evil)");
-    } else if (monster.get_monster_profile().sub_align & SUB_ALIGN_EVIL) {
+    } else if (target.get_monster_profile().sub_align & SUB_ALIGN_EVIL) {
         align = _("中立(邪悪)", "neutral(evil)");
-    } else if (monster.get_monster_profile().sub_align & SUB_ALIGN_GOOD) {
+    } else if (target.get_monster_profile().sub_align & SUB_ALIGN_GOOD) {
         align = _("中立(善良)", "neutral(good)");
     } else {
         align = _("中立", "neutral");
@@ -402,10 +403,10 @@ std::string probed_monster_info(CreatureEntity &creature, MonsterEntity &monster
 
     const auto speed = monster.get_temporary_speed() - STANDARD_SPEED;
     constexpr auto mes = _("%s ... 属性:%s HP:%d/%d AC:%d 速度:%s%d 経験:", "%s ... align:%s HP:%d/%d AC:%d speed:%s%d exp:");
-    auto result = format(mes, m_name.data(), align, (int)monster.hp, (int)monster.maxhp, monster.get_ac(), (speed > 0) ? "+" : "", speed);
+    auto result = format(mes, m_name.data(), align, (int)target.hp, (int)target.maxhp, target.get_ac(), (speed > 0) ? "+" : "", speed);
 
     if (monrace.get_next().is_valid()) {
-        result.append(format("%d/%d ", monster.exp, monrace.next_exp));
+        result.append(format("%d/%d ", target.exp, monrace.next_exp));
     } else {
         result.append("xxx ");
     }
@@ -413,16 +414,16 @@ std::string probed_monster_info(CreatureEntity &creature, MonsterEntity &monster
     if (monster.is_asleep()) {
         result.append(_("睡眠 ", "sleeping "));
     }
-    if (monster.is_stunned()) {
+    if (target.is_stunned()) {
         result.append(_("朦朧 ", "stunned "));
     }
-    if (monster.is_fearful()) {
+    if (target.is_fearful()) {
         result.append(_("恐怖 ", "scared "));
     }
-    if (monster.is_confused()) {
+    if (target.is_confused()) {
         result.append(_("混乱 ", "confused "));
     }
-    if (monster.is_invulnerable()) {
+    if (target.is_invulnerable()) {
         result.append(_("無敵 ", "invulnerable "));
     }
     return result;

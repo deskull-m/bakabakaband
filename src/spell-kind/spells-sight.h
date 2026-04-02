@@ -6,7 +6,6 @@
 
 class CreatureEntity;
 class MonraceDefinition;
-class MonsterEntity;
 class PlayerType;
 bool project_all_los(CreatureEntity &creature, AttributeType typ, int dam);
 bool speed_monsters(CreatureEntity &creature);
@@ -32,5 +31,5 @@ bool banish_monsters(CreatureEntity &creature, int dist);
 bool turn_evil(CreatureEntity &creature, int dam);
 bool turn_monsters(CreatureEntity &creature, int dam);
 bool deathray_monsters(CreatureEntity &creature);
-std::string probed_monster_info(CreatureEntity &creature, MonsterEntity &monster, const MonraceDefinition &monrace);
+std::string probed_monster_info(CreatureEntity &creature, CreatureEntity &target, const MonraceDefinition &monrace);
 bool probing(CreatureEntity &creature);
