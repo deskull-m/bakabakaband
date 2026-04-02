@@ -67,7 +67,6 @@ public:
 };
 
 class FloorType;
-class MonsterEntity;
 tl::optional<NestKind> pick_nest_type(const FloorType &floor, const std::map<NestKind, nest_pit_type> &np_types);
 tl::optional<PitKind> pick_pit_type(const FloorType &floor, const std::map<PitKind, nest_pit_type> &np_types);
-tl::optional<MonraceId> select_pit_nest_monrace_id(CreatureEntity &creature, MonsterEntity &align, int boost);
+tl::optional<MonraceId> select_pit_nest_monrace_id(CreatureEntity &creature, CreatureEntity &align, int boost);

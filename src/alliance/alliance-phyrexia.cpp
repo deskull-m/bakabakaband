@@ -16,7 +16,7 @@ int AlliancePhyrexia::calcImpressionPoint([[maybe_unused]] const CreatureEntity 
  * @param monrace モンスター種族情報の参照
  * @return 同アライアンスでなければtrue
  */
-bool AlliancePhyrexia::is_hostile_to([[maybe_unused]] const MonsterEntity &monster_other, const MonraceDefinition &monrace) const
+bool AlliancePhyrexia::is_hostile_to([[maybe_unused]] const CreatureEntity &creature_other, const MonraceDefinition &monrace) const
 {
     // 同アライアンス以外は全て敵
     return monrace.alliance_idx != AllianceType::PHYREXIA;

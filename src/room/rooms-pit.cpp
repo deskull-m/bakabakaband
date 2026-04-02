@@ -85,7 +85,7 @@ const std::vector<TrappedMonster> place_table_trapped_pit = {
 };
 // clang-format on
 
-tl::optional<std::array<MonraceId, NUM_PIT_MONRACES>> pick_pit_monraces(CreatureEntity &creature, MonsterEntity &align, int boost = 0)
+tl::optional<std::array<MonraceId, NUM_PIT_MONRACES>> pick_pit_monraces(CreatureEntity &creature, CreatureEntity &align, int boost = 0)
 {
     std::array<MonraceId, NUM_PIT_MONRACES> whats{};
     const auto &monraces = MonraceList::get_instance();
