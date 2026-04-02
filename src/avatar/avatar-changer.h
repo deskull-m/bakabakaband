@@ -3,10 +3,9 @@
 #include "system/angband.h"
 
 class CreatureEntity;
-class MonsterEntity;
 class AvatarChanger {
 public:
-    AvatarChanger(CreatureEntity &creature, const MonsterEntity &monster);
+    AvatarChanger(CreatureEntity &creature, const CreatureEntity &target);
     virtual ~AvatarChanger() = default;
     void change_virtue();
 
