@@ -22,7 +22,7 @@ void MonsterEntityWriter::write_to_savedata() const
     const auto flags = this->write_monster_flags();
 
     wr_s16b(enum2i(this->monster.r_idx));
-    wr_s32b(enum2i(this->monster.alliance_idx));
+    wr_s32b(enum2i(this->monster.get_monster_profile().alliance_idx));
 
     wr_byte((byte)this->monster.y);
     wr_byte((byte)this->monster.x);
@@ -36,11 +36,11 @@ void MonsterEntityWriter::write_to_savedata() const
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::SUB_ALIGN)) {
-        wr_byte(this->monster.sub_align);
+        wr_byte(this->monster.get_monster_profile().sub_align);
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::SLEEP)) {
-        wr_s16b(this->monster.mtimed.at(MonsterTimedEffect::SLEEP));
+        wr_s16b(this->monster.get_monster_profile().mtimed.at(MonsterTimedEffect::SLEEP));
     }
 
     wr_byte((byte)this->monster.speed);
@@ -56,7 +56,7 @@ uint32_t MonsterEntityWriter::write_monster_flags() const
         set_bits(flags, SaveDataMonsterFlagType::AP_R_IDX);
     }
 
-    if (this->monster.sub_align) {
+    if (this->monster.get_monster_profile().sub_align) {
         set_bits(flags, SaveDataMonsterFlagType::SUB_ALIGN);
     }
 
@@ -96,7 +96,7 @@ uint32_t MonsterEntityWriter::write_monster_flags() const
         set_bits(flags, SaveDataMonsterFlagType::INVULNER);
     }
 
-    if (this->monster.smart.any()) {
+    if (this->monster.get_monster_profile().smart.any()) {
         set_bits(flags, SaveDataMonsterFlagType::SMART);
     }
 
@@ -104,7 +104,7 @@ uint32_t MonsterEntityWriter::write_monster_flags() const
         set_bits(flags, SaveDataMonsterFlagType::EXP);
     }
 
-    if (this->monster.mflag2.any()) {
+    if (this->monster.get_monster_profile().mflag2.any()) {
         set_bits(flags, SaveDataMonsterFlagType::MFLAG2);
     }
 
@@ -132,7 +132,7 @@ uint32_t MonsterEntityWriter::write_monster_flags() const
         set_bits(flags, SaveDataMonsterFlagType::CLASS);
     }
 
-    if (MonraceList::is_valid(this->monster.transform_r_idx) || this->monster.has_transformed) {
+    if (MonraceList::is_valid(this->monster.get_monster_profile().transform_r_idx) || this->monster.get_monster_profile().has_transformed) {
         set_bits(flags, SaveDataMonsterFlagType::TRANSFORM);
     }
 
@@ -156,27 +156,27 @@ void MonsterEntityWriter::write_monster_info(uint32_t flags) const
 {
     byte tmp8u;
     if (any_bits(flags, SaveDataMonsterFlagType::FAST)) {
-        tmp8u = (byte)this->monster.mtimed.at(MonsterTimedEffect::FAST);
+        tmp8u = (byte)this->monster.get_monster_profile().mtimed.at(MonsterTimedEffect::FAST);
         wr_byte(tmp8u);
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::SLOW)) {
-        tmp8u = (byte)this->monster.mtimed.at(MonsterTimedEffect::SLOW);
+        tmp8u = (byte)this->monster.get_monster_profile().mtimed.at(MonsterTimedEffect::SLOW);
         wr_byte(tmp8u);
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::STUNNED)) {
-        tmp8u = (byte)this->monster.mtimed.at(MonsterTimedEffect::STUN);
+        tmp8u = (byte)this->monster.get_monster_profile().mtimed.at(MonsterTimedEffect::STUN);
         wr_byte(tmp8u);
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::CONFUSED)) {
-        tmp8u = (byte)this->monster.mtimed.at(MonsterTimedEffect::CONFUSION);
+        tmp8u = (byte)this->monster.get_monster_profile().mtimed.at(MonsterTimedEffect::CONFUSION);
         wr_byte(tmp8u);
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::MONFEAR)) {
-        tmp8u = (byte)this->monster.mtimed.at(MonsterTimedEffect::FEAR);
+        tmp8u = (byte)this->monster.get_monster_profile().mtimed.at(MonsterTimedEffect::FEAR);
         wr_byte(tmp8u);
     }
 
@@ -189,12 +189,12 @@ void MonsterEntityWriter::write_monster_info(uint32_t flags) const
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::INVULNER)) {
-        tmp8u = (byte)this->monster.mtimed.at(MonsterTimedEffect::INVULNERABILITY);
+        tmp8u = (byte)this->monster.get_monster_profile().mtimed.at(MonsterTimedEffect::INVULNERABILITY);
         wr_byte(tmp8u);
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::SMART)) {
-        wr_FlagGroup(this->monster.smart, wr_byte);
+        wr_FlagGroup(this->monster.get_monster_profile().smart, wr_byte);
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::EXP)) {
@@ -202,7 +202,7 @@ void MonsterEntityWriter::write_monster_info(uint32_t flags) const
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::MFLAG2)) {
-        wr_FlagGroup(this->monster.mflag2, wr_byte);
+        wr_FlagGroup(this->monster.get_monster_profile().mflag2, wr_byte);
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::NICKNAME)) {
@@ -210,7 +210,7 @@ void MonsterEntityWriter::write_monster_info(uint32_t flags) const
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::PARENT)) {
-        wr_s16b(this->monster.parent_m_idx);
+        wr_s16b(this->monster.get_monster_profile().parent_m_idx);
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::GOLD)) {
@@ -231,9 +231,9 @@ void MonsterEntityWriter::write_monster_info(uint32_t flags) const
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::TRANSFORM)) {
-        wr_s16b(enum2i(this->monster.transform_r_idx));
-        wr_byte(this->monster.transform_hp_threshold);
-        wr_byte(this->monster.has_transformed ? 1 : 0);
+        wr_s16b(enum2i(this->monster.get_monster_profile().transform_r_idx));
+        wr_byte(this->monster.get_monster_profile().transform_hp_threshold);
+        wr_byte(this->monster.get_monster_profile().has_transformed ? 1 : 0);
     }
 
     // インベントリの保存（PlayerTypeと同じ形式）

@@ -530,7 +530,7 @@ void musou_counterattack(CreatureEntity &creature, MonsterAttackPlayer *monap_pt
 {
     auto &player = static_cast<PlayerType &>(creature);
     const auto is_musou = CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU);
-    if ((!player.counter && !is_musou) || !monap_ptr->alive || player.is_dead() || !monap_ptr->m_ptr->ml || (player.csp <= 7)) {
+    if ((!player.counter && !is_musou) || !monap_ptr->alive || player.is_dead() || !monap_ptr->m_ptr->get_monster_profile().ml || (player.csp <= 7)) {
         return;
     }
 

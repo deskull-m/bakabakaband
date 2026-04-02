@@ -112,7 +112,7 @@ static std::string evaluate_monster_exp(CreatureEntity &creature, const MonsterE
         return "**";
     }
 
-    if (!monrace.r_tkills || monster.mflag2.has(MonsterConstantFlagType::KAGE)) {
+    if (!monrace.r_tkills || monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE)) {
         if (!AngbandWorld::get_instance().wizard) {
             return "??";
         }
@@ -255,7 +255,7 @@ static void describe_monster_person(GridExamination *ge_ptr)
 
 static short describe_monster_item(CreatureEntity &creature, GridExamination *ge_ptr)
 {
-    for (const auto this_o_idx : ge_ptr->m_ptr->hold_o_idx_list) {
+    for (const auto this_o_idx : ge_ptr->m_ptr->get_monster_profile().hold_o_idx_list) {
         const auto &item = *creature.current_floor_ptr->o_list[this_o_idx];
         const auto item_name = describe_flavor(creature, item, 0);
 #ifdef JP
@@ -287,7 +287,7 @@ static bool within_char_util(const short input)
 
 static short describe_grid(CreatureEntity &creature, GridExamination *ge_ptr)
 {
-    if (!ge_ptr->g_ptr->has_monster() || !creature.current_floor_ptr->m_list[ge_ptr->g_ptr->m_idx].ml) {
+    if (!ge_ptr->g_ptr->has_monster() || !creature.current_floor_ptr->m_list[ge_ptr->g_ptr->m_idx].get_monster_profile().ml) {
         return CONTINUOUS_DESCRIPTION;
     }
 

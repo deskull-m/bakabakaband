@@ -104,7 +104,7 @@ void do_cmd_pet_dismiss(CreatureEntity &creature)
             handle_stuff(creature);
             constexpr auto mes = _("%sを放しますか？ [Yes/No/Unnamed (%d体)]", "Dismiss %s? [Yes/No/Unnamed (%d remain)]");
             msg_format(mes, friend_name.data(), num_pet_index - i);
-            if (monster.ml) {
+            if (monster.get_monster_profile().ml) {
                 move_cursor_relative(monster.y, monster.x);
             }
 
@@ -229,7 +229,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
 
         const auto &monster = player.current_floor_ptr->m_list[grid.m_idx];
 
-        if (!grid.has_monster() || !monster.ml) {
+        if (!grid.has_monster() || !monster.get_monster_profile().ml) {
             msg_print(_("その場所にはモンスターはいません。", "There is no monster here."));
             return false;
         }
@@ -695,7 +695,7 @@ void do_cmd_pet(CreatureEntity &creature)
             creature.pet_t_m_idx = 0;
         } else {
             const auto &grid = creature.current_floor_ptr->get_grid(*pos);
-            if (grid.has_monster() && (creature.current_floor_ptr->m_list[grid.m_idx].ml)) {
+            if (grid.has_monster() && (creature.current_floor_ptr->m_list[grid.m_idx].get_monster_profile().ml)) {
                 creature.pet_t_m_idx = creature.current_floor_ptr->get_grid(*pos).m_idx;
                 creature.pet_follow_distance = PET_DESTROY_DIST;
             } else {

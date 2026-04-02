@@ -43,7 +43,7 @@ bool target_able(CreatureEntity &creature, MONSTER_IDX m_idx)
         return false;
     }
 
-    if (!monster.ml) {
+    if (!monster.get_monster_profile().ml) {
         return false;
     }
 
@@ -80,7 +80,7 @@ static bool target_set_accept(CreatureEntity &creature, const Pos2D &pos)
     const auto &grid = floor.get_grid(pos);
     if (grid.has_monster()) {
         auto &monster = floor.m_list[grid.m_idx];
-        if (monster.ml) {
+        if (monster.get_monster_profile().ml) {
             return true;
         }
     }
@@ -181,12 +181,12 @@ void target_sensing_monsters_prepare(CreatureEntity &creature, std::vector<MONST
 
     for (MONSTER_IDX i = 1; i < creature.current_floor_ptr->m_max; i++) {
         const auto &monster = creature.current_floor_ptr->m_list[i];
-        if (!monster.is_valid() || !monster.ml || monster.is_pet()) {
+        if (!monster.is_valid() || !monster.get_monster_profile().ml || monster.is_pet()) {
             continue;
         }
 
         // 感知魔法/スキルやESPで感知していない擬態モンスターはモンスター一覧に表示しない
-        if (monster.is_mimicry() && monster.mflag2.has_none_of({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW }) && monster.mflag.has_not(MonsterTemporaryFlagType::ESP)) {
+        if (monster.is_mimicry() && monster.get_monster_profile().mflag2.has_none_of({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW }) && monster.get_monster_profile().mflag.has_not(MonsterTemporaryFlagType::ESP)) {
             continue;
         }
 
@@ -205,8 +205,8 @@ void target_sensing_monsters_prepare(CreatureEntity &creature, std::vector<MONST
         }
 
         /* Shadowers first (あやしい影) */
-        if (monster1.mflag2.has(MonsterConstantFlagType::KAGE) != monster2.mflag2.has(MonsterConstantFlagType::KAGE)) {
-            return monster1.mflag2.has(MonsterConstantFlagType::KAGE);
+        if (monster1.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE) != monster2.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE)) {
+            return monster1.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE);
         }
 
         /* Unknown monsters first */

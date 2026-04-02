@@ -119,7 +119,7 @@ static void move_item_to_monster(CreatureEntity &creature, MonsterAttackPlayer *
 
     item.marked.clear().set(OmType::TOUCHED);
     item.held_m_idx = monap_ptr->m_idx;
-    monap_ptr->m_ptr->hold_o_idx_list.add(*creature.current_floor_ptr, o_idx);
+    monap_ptr->m_ptr->get_monster_profile().hold_o_idx_list.add(*creature.current_floor_ptr, o_idx);
 }
 
 /*!
@@ -296,7 +296,7 @@ void process_drain_life(MonsterAttackPlayer *monap_ptr, const bool resist_drain)
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 
-    if (monap_ptr->m_ptr->ml && did_heal) {
+    if (monap_ptr->m_ptr->get_monster_profile().ml && did_heal) {
         msg_format(_("%sは体力を回復したようだ。", "%s^ appears healthier."), monap_ptr->m_name);
     }
 }

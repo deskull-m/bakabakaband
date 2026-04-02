@@ -44,7 +44,7 @@ static coordinate_candidate sweep_safe_coordinate(CreatureEntity &creature, MONS
             continue;
         }
 
-        if (monster.mflag2.has_not(MonsterConstantFlagType::NOFLOW)) {
+        if (monster.get_monster_profile().mflag2.has_not(MonsterConstantFlagType::NOFLOW)) {
             const auto dist = grid.get_distance(monrace.get_grid_flow_type());
             if (dist == 0) {
                 continue;

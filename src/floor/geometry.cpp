@@ -141,5 +141,5 @@ bool is_seen(CreatureEntity &creature, const MonsterEntity &monster)
     const auto p_pos = creature.get_position();
     const auto m_pos = monster.get_position();
     is_inside_view |= player_can_see_bold(creature, m_pos.y, m_pos.x) && projectable(*creature.current_floor_ptr, p_pos, m_pos);
-    return monster.ml && is_inside_view;
+    return monster.get_monster_profile().ml && is_inside_view;
 }

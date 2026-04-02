@@ -215,7 +215,7 @@ static bool run_test(CreatureEntity &creature)
         const auto &grid = floor.get_grid(pos);
         if (grid.has_monster()) {
             const auto &monster = floor.m_list[grid.m_idx];
-            if (monster.ml) {
+            if (monster.get_monster_profile().ml) {
                 return true;
             }
         }

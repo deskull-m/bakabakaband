@@ -400,7 +400,7 @@ static errr set_mon_flags(const nlohmann::json &flag_data, MonraceDefinition &mo
                 if (s_tokens.size() == 2 && s_tokens[0] == "ALLIANCE") {
                     for (auto a : alliance_list) {
                         if (a.second->tag == s_tokens[1]) {
-                            r_ptr->alliance_idx = static_cast<AllianceType>(a.second->id);
+                            r_ptr->get_monster_profile().alliance_idx = static_cast<AllianceType>(a.second->id);
                         }
                     }
                     continue;

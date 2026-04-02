@@ -291,7 +291,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
                     }
 
                     if (is_seen(player, monster)) {
-                        const auto m_name = monster.ml ? monster_desc(static_cast<PlayerType &>(player), monster, 0) : std::string(_("それ", "It"));
+                        const auto m_name = monster.get_monster_profile().ml ? monster_desc(static_cast<PlayerType &>(player), monster, 0) : std::string(_("それ", "It"));
                         sound(SoundKind::REFLECT);
                         const auto reflect_message = monrace.get_message(m_name, MonsterMessageType::MESSAGE_REFLECT);
                         if (reflect_message) {
@@ -384,7 +384,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
             const auto &grid = floor.get_grid(pos_project);
             if (grid.has_monster()) {
                 auto &monster = floor.m_list[grid.m_idx];
-                if (monster.ml) {
+                if (monster.get_monster_profile().ml) {
                     if (!player.effects()->hallucination().is_hallucinated()) {
                         tracker.set_trackee(monster.ap_r_idx);
                     }

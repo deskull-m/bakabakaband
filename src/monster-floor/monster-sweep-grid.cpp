@@ -120,7 +120,7 @@ public:
         const auto &monster = floor.m_list[m_idx];
         const auto &monrace = monster.get_monrace();
         const auto m_pos = monster.get_position();
-        const auto no_flow = monster.mflag2.has(MonsterConstantFlagType::NOFLOW) && (floor.get_grid(m_pos).get_cost(monrace.get_grid_flow_type()) > 2);
+        const auto no_flow = monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::NOFLOW) && (floor.get_grid(m_pos).get_cost(monrace.get_grid_flow_type()) > 2);
 
         // 単に反対側に逃げる(あまり賢くない方法)場合の移動先
         const auto pos_run_away_simple = m_pos + (m_pos - pos_move);
@@ -470,7 +470,7 @@ public:
         const auto gf = monrace.get_grid_flow_type();
         const auto dist_to_player = m_grid.get_distance(gf); // 経由グリッド数換算(Grid::dists)による距離
         const auto distance_to_player = Grid::calc_distance(m_pos, p_pos); // Grid::calc_distance()による直線距離
-        const auto no_flow = monster.mflag2.has(MonsterConstantFlagType::NOFLOW) && (m_grid.get_cost(gf) > 2);
+        const auto no_flow = monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::NOFLOW) && (m_grid.get_cost(gf) > 2);
         const auto can_pass_wall = monrace.feature_flags.has(MonsterFeatureType::PASS_WALL) && (!monster.is_riding() || has_pass_wall(*creature_ptr));
         const auto can_kill_wall = monrace.feature_flags.has(MonsterFeatureType::KILL_WALL) && !monster.is_riding();
         const auto is_visible_from_player = m_grid.has_los() && projectable(floor, p_pos, m_pos);

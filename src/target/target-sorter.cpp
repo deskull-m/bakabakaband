@@ -39,8 +39,8 @@ bool TargetSorter::compare_importance(const FloorType &floor, const Pos2D &pos_a
         return false;
     }
 
-    const auto can_see_grid1 = grid1.has_monster() && monster_a.ml;
-    const auto can_see_grid2 = grid2.has_monster() && monster_b.ml;
+    const auto can_see_grid1 = grid1.has_monster() && monster_a.get_monster_profile().ml;
+    const auto can_see_grid2 = grid2.has_monster() && monster_b.get_monster_profile().ml;
     if (can_see_grid1 && !can_see_grid2) {
         return true;
     }
@@ -60,11 +60,11 @@ bool TargetSorter::compare_importance(const FloorType &floor, const Pos2D &pos_a
             return false;
         }
 
-        if (monster_a.mflag2.has(MonsterConstantFlagType::KAGE) && monster_b.mflag2.has_not(MonsterConstantFlagType::KAGE)) {
+        if (monster_a.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE) && monster_b.get_monster_profile().mflag2.has_not(MonsterConstantFlagType::KAGE)) {
             return true;
         }
 
-        if (monster_a.mflag2.has_not(MonsterConstantFlagType::KAGE) && monster_b.mflag2.has(MonsterConstantFlagType::KAGE)) {
+        if (monster_a.get_monster_profile().mflag2.has_not(MonsterConstantFlagType::KAGE) && monster_b.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE)) {
             return false;
         }
 

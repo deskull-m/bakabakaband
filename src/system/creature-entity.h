@@ -10,6 +10,7 @@
 #include "player/player-skill.h"
 #include "system/angband.h"
 #include "system/creature-timed-effect-types.h"
+#include "system/monster-profile.h"
 #include "system/system-variables.h"
 #include "util/dice.h"
 #include "util/flag-group.h"
@@ -20,6 +21,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <tl/optional.hpp>
 
 class Direction;
 class FloorType;
@@ -420,6 +422,26 @@ public:
      */
     bool is_wielding(FixedArtifactId fa_id) const;
 
+    /*!
+     * @brief モンスター固有データを取得する（非const版）
+     * @return モンスター固有データへの参照
+     * @pre has_monster_profile() == true
+     */
+    MonsterProfile &get_monster_profile() { return this->monster_profile.value(); }
+
+    /*!
+     * @brief モンスター固有データを取得する（const版）
+     * @return モンスター固有データへのconst参照
+     * @pre has_monster_profile() == true
+     */
+    const MonsterProfile &get_monster_profile() const { return this->monster_profile.value(); }
+
+    /*!
+     * @brief モンスター固有データを持っているかどうかを返す
+     * @return モンスター固有データがあればtrue
+     */
+    bool has_monster_profile() const { return this->monster_profile.has_value(); }
+
     // モンスター種族ID（プレイヤーの場合は0）
     MonraceId r_idx{}; /*!< モンスターの実種族ID (これが0の時は死亡扱いになる) / Monster race index 0 = dead. */
     MonraceId ap_r_idx{}; /*!< モンスターの外見種族ID（あやしい影、たぬき、ジュラル星人誤認などにより変化する）Monster race appearance index */
@@ -449,6 +471,8 @@ public:
     POSITION run_px{}; /*!< 走行中の目標X座標 / Target X position while running */
 
     Pos2D target{}; /*!< 攻撃目標座標 (0,0 は未設定) / Attack target position ({0,0} means none) */
+
+    tl::optional<MonsterProfile> monster_profile{}; /*!< モンスター固有データ (モンスターの場合のみ有効) */
 
     bool ambush_flag{}; /*!< 待ち伏せフラグ / Ambush flag */
 

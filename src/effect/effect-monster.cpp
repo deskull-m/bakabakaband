@@ -73,7 +73,7 @@ static ProcessResult is_affective(EffectMonster *em_ptr)
     if (em_ptr->m_ptr->hp < 0) {
         return ProcessResult::PROCESS_FALSE;
     }
-    if (em_ptr->m_ptr->mflag.has_not(MonsterTemporaryFlagType::PRESENT_AT_TURN_START)) {
+    if (em_ptr->m_ptr->get_monster_profile().mflag.has_not(MonsterTemporaryFlagType::PRESENT_AT_TURN_START)) {
         return ProcessResult::PROCESS_FALSE;
     }
     if (em_ptr->is_monster() || !em_ptr->m_ptr->is_riding()) {
@@ -180,7 +180,7 @@ static ProcessResult exe_affect_monster_by_effect(CreatureEntity &creature, Effe
  */
 static void effect_damage_killed_pet(CreatureEntity &creature, EffectMonster *em_ptr)
 {
-    bool sad = em_ptr->m_ptr->is_pet() && !(em_ptr->m_ptr->ml);
+    bool sad = em_ptr->m_ptr->is_pet() && !(em_ptr->m_ptr->get_monster_profile().ml);
     if (em_ptr->known && !em_ptr->note.empty()) {
         angband_strcpy(em_ptr->m_name, monster_desc(creature, *em_ptr->m_ptr, MD_TRUE_NAME), sizeof(em_ptr->m_name));
         if (em_ptr->see_s_msg) {
@@ -471,7 +471,7 @@ static void effect_damage_piles_confusion(CreatureEntity &creature, EffectMonste
 static void effect_damage_piles_fear(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->do_fear == 0 || em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_FEAR) ||
-        em_ptr->m_ptr->mflag2.has(MonsterConstantFlagType::FRENZY)) {
+        em_ptr->m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::FRENZY)) {
         return;
     }
 

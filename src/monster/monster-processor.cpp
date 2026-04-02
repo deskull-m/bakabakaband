@@ -146,7 +146,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
     turn_flags_ptr->see_m = is_seen(player, monster);
 
     decide_drop_from_monster(creature, m_idx, turn_flags_ptr->is_riding_mon);
-    if (monster.mflag2.has(MonsterConstantFlagType::CHAMELEON) && one_in_(13) && !monster.is_asleep()) {
+    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CHAMELEON) && one_in_(13) && !monster.is_asleep()) {
         const auto &floor = *creature.current_floor_ptr;
         const auto old_m_name = monster_desc(creature, monster, 0);
         const auto &monrace = monster.get_monrace();
@@ -198,7 +198,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
     mark_monsters_present(player);
 
     turn_flags_ptr->aware = process_stealth(creature, m_idx);
-    if (monrace.behavior_flags.has(MonsterBehaviorType::FRIENDLY_STANDBY) && monster.mflag2.has(MonsterConstantFlagType::FRIENDLY)) {
+    if (monrace.behavior_flags.has(MonsterBehaviorType::FRIENDLY_STANDBY) && monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::FRIENDLY)) {
         return;
     }
 
@@ -254,7 +254,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
     process_speak(creature, m_idx, oy, ox, turn_flags_ptr->aware);
 
     // 狂乱状態のモンスターは魔法を使わず、プレイヤーに隣接していれば攻撃のみを行う
-    if (monster.mflag2.has(MonsterConstantFlagType::FRENZY)) {
+    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::FRENZY)) {
         const auto dy = std::abs(monster.y - creature.y);
         const auto dx = std::abs(monster.x - creature.x);
         if (dy <= 1 && dx <= 1 && turn_flags_ptr->aware) {
@@ -282,7 +282,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
      *  Try to flow by smell.
      */
     if (player.no_flowed && count > 2 && monster.get_target_position().y) {
-        monster.mflag2.reset(MonsterConstantFlagType::NOFLOW);
+        monster.get_monster_profile().mflag2.reset(MonsterConstantFlagType::NOFLOW);
     }
 
     if (!turn_flags_ptr->do_turn && !turn_flags_ptr->do_move && !monster.is_fearful() && !turn_flags_ptr->is_riding_mon && turn_flags_ptr->aware) {
@@ -301,7 +301,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
         return;
     }
 
-    if (monster.ml) {
+    if (monster.get_monster_profile().ml) {
         chg_virtue(creature, Virtue::COMPASSION, -1);
     }
 }
@@ -382,12 +382,12 @@ bool vanish_summoned_children(CreatureEntity &creature, MONSTER_IDX m_idx, bool 
     }
 
     // parent_m_idxが自分自身を指している場合は召喚主は消滅している
-    if (monster.parent_m_idx != m_idx && floor.m_list[monster.parent_m_idx].is_valid()) {
+    if (monster.get_monster_profile().parent_m_idx != m_idx && floor.m_list[monster.get_monster_profile().parent_m_idx].is_valid()) {
         return false;
     }
 
     const auto m_name = monster_desc(creature, monster, 0);
-    if (monster.mflag2.has(MonsterConstantFlagType::QUYLTHLUG_BORN)) {
+    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::QUYLTHLUG_BORN)) {
         if (see_m) {
             msg_format(_("%sは崩壊して朽ち果てた。", "%s^ crumbles into dust."), m_name.data());
         }
@@ -395,7 +395,7 @@ bool vanish_summoned_children(CreatureEntity &creature, MONSTER_IDX m_idx, bool 
         if (see_m) {
             msg_format(_("%sは主を失い消え去った。", "%s^ disappears without a master."), m_name.data());
         }
-    } else if (monster.mflag2.has(MonsterConstantFlagType::PET)) {
+    } else if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::PET)) {
         if (see_m) {
             msg_format(_("%sは消え去った。", "%s^ disappears."), m_name.data());
         }
@@ -436,7 +436,7 @@ bool awake_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
     }
 
     (void)set_monster_csleep(*creature.current_floor_ptr, m_idx, 0);
-    if (monster.ml) {
+    if (monster.get_monster_profile().ml) {
         const auto m_name = monster_desc(creature, monster, 0);
         msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
     }
@@ -532,7 +532,7 @@ void process_special(CreatureEntity &creature, MONSTER_IDX m_idx)
     can_do_special &= randint1(100) <= monrace.freq_spell;
 
     // 違法改造モンスターの自滅処理
-    if (monster.mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED) && one_in_(50)) {
+    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED) && one_in_(50)) {
         const auto m_name = monster_desc(creature, monster, 0);
         const auto pos = monster.get_position();
         msg_format(_("%sが突然機能停止し、爆発した！", "%s suddenly malfunctions and explodes!"), m_name.data());
@@ -556,7 +556,7 @@ void process_special(CreatureEntity &creature, MONSTER_IDX m_idx)
 
     for (int k = 0; k < A_MAX; k++) {
         if (auto summoned_m_idx = summon_specific(creature, monster.y, monster.x, rlev, SUMMON_MOLD, (PM_ALLOW_GROUP | p_mode), m_idx)) {
-            if (creature.current_floor_ptr->m_list[*summoned_m_idx].ml) {
+            if (creature.current_floor_ptr->m_list[*summoned_m_idx].get_monster_profile().ml) {
                 count++;
             }
         }
@@ -606,10 +606,10 @@ bool decide_monster_multiplication(CreatureEntity &creature, MONSTER_IDX m_idx, 
     constexpr auto chance_reproduction = 8;
     if ((k < 4) && (!k || !randint0(k * chance_reproduction))) {
         if (auto multiplied_m_idx = multiply_monster(player, m_idx, monrace.idx, false, (monster.is_pet() ? PM_FORCE_PET : 0))) {
-            if (creature.current_floor_ptr->m_list[*multiplied_m_idx].ml && is_original_ap_and_seen(creature, monster)) {
+            if (creature.current_floor_ptr->m_list[*multiplied_m_idx].get_monster_profile().ml && is_original_ap_and_seen(creature, monster)) {
                 monrace.r_misc_flags.set(MonsterMiscType::MULTIPLY);
             }
-            if (floor.m_list[*multiplied_m_idx].ml && is_original_ap_and_seen(creature, monster)) {
+            if (floor.m_list[*multiplied_m_idx].get_monster_profile().ml && is_original_ap_and_seen(creature, monster)) {
                 monrace.r_misc_flags.set(MonsterMiscType::MULTIPLY);
             }
             return true;
@@ -727,7 +727,7 @@ bool process_monster_spawn_monster(CreatureEntity &creature, MONSTER_IDX m_idx, 
         if (randint1(deno) <= num) {
             if (multiply_monster(player, m_idx, idx, false, (m_ptr->is_pet() ? PM_FORCE_PET : 0))) {
                 auto &monster = creature.current_floor_ptr->m_list[m_idx];
-                if (monster.ml && is_original_ap_and_seen(creature, *m_ptr)) {
+                if (monster.get_monster_profile().ml && is_original_ap_and_seen(creature, *m_ptr)) {
                     r_ptr->misc_flags.set(MonsterMiscType::MULTIPLY);
                 }
                 return true;
@@ -753,7 +753,7 @@ bool cast_spell(CreatureEntity &creature, MONSTER_IDX m_idx, bool aware)
     const auto &monrace = monster_from.get_monrace();
 
     // 狂乱状態のモンスターは魔法を使わない
-    if (monster_from.mflag2.has(MonsterConstantFlagType::FRENZY)) {
+    if (monster_from.get_monster_profile().mflag2.has(MonsterConstantFlagType::FRENZY)) {
         return false;
     }
 
@@ -802,23 +802,23 @@ bool process_monster_fear(CreatureEntity &creature, turn_flags *turn_flags_ptr, 
     const auto &monrace = m_ptr->get_monrace();
 
     if (monrace.resistance_flags.has_not(MonsterResistanceType::NO_DEFECATE) &&
-        m_ptr->mflag2.has_not(MonsterConstantFlagType::DEFECATED) &&
+        m_ptr->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::DEFECATED) &&
         m_ptr->is_fearful() && one_in_(20)) {
         msg_format(_("%s^は恐怖のあまり脱糞した！", "%s^ was defecated because of fear!"), m_name.data());
         ItemEntity item;
         item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
         (void)drop_near(creature, item, m_ptr->get_position());
-        m_ptr->mflag2.set(MonsterConstantFlagType::DEFECATED);
+        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::DEFECATED);
     }
 
     if (monrace.resistance_flags.has_not(MonsterResistanceType::NO_VOMIT) &&
-        m_ptr->mflag2.has_not(MonsterConstantFlagType::VOMITED) &&
+        m_ptr->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::VOMITED) &&
         m_ptr->is_fearful() && one_in_(20)) {
         msg_format(_("%s^は恐怖のあまり嘔吐した！", "%s^ vomited in fear!"), m_name.data());
         ItemEntity item;
         item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_VOMITTING }));
         (void)drop_near(creature, item, m_ptr->get_position());
-        m_ptr->mflag2.set(MonsterConstantFlagType::VOMITED);
+        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::VOMITED);
     }
 
     const auto &monster = creature.current_floor_ptr->m_list[m_idx];
@@ -925,9 +925,9 @@ void sweep_monster_process(CreatureEntity &creature)
         monster.energy_need += ENERGY_NEED();
         auto m_name = monster_desc(creature, monster, 0);
 
-        if (monster.death_count > 0) {
-            monster.death_count--;
-            if (monster.death_count == 0) {
+        if (monster.get_monster_profile().death_count > 0) {
+            monster.get_monster_profile().death_count--;
+            if (monster.get_monster_profile().death_count == 0) {
                 bool fear;
                 monster.max_maxhp = monster.maxhp = monster.hp = -1;
                 MonsterDamageProcessor mdp(player, m_idx, 0, &fear, AttributeType::ATTACK);
@@ -950,7 +950,7 @@ void sweep_monster_process(CreatureEntity &creature)
                 pow *= 3;
             }
             if (r_ptr.level < randint0(pow)) {
-                if (monster.ml) {
+                if (monster.get_monster_profile().ml) {
                     msg_format(_("%sは%sに絡めとられて動けなかった！", "%s wes entangled in the %s and could not move!"), m_name.data(), f_ptr.name.data());
                 }
                 if (r_ptr.kind_flags.has(MonsterKindType::HENTAI)) {
@@ -983,7 +983,7 @@ void sweep_monster_process(CreatureEntity &creature)
         process_monster(creature, m_idx);
         monster.reset_target();
         if (player.no_flowed && one_in_(3)) {
-            monster.mflag2.set(MonsterConstantFlagType::NOFLOW);
+            monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::NOFLOW);
         }
 
         if (!player.playing || player.is_dead() || player.leaving) {
@@ -1003,7 +1003,7 @@ bool decide_process_continue(CreatureEntity &creature, MonsterEntity &monster)
     const auto &monrace = monster.get_monrace();
     auto &player = static_cast<PlayerType &>(creature);
     if (!player.no_flowed) {
-        monster.mflag2.reset(MonsterConstantFlagType::NOFLOW);
+        monster.get_monster_profile().mflag2.reset(MonsterConstantFlagType::NOFLOW);
     }
 
     const auto cdis = Grid::calc_distance(creature.get_position(), monster.get_position());

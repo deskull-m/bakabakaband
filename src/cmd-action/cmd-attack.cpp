@@ -110,7 +110,7 @@ static void natural_attack(CreatureEntity &creature, MONSTER_IDX m_idx, PlayerMu
 
     creature.plus_incident_tree("ATTACK_EXE_COUNT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
-    is_hit &= test_hit_norm(creature, chance, monster.get_ac(), monster.ml);
+    is_hit &= test_hit_norm(creature, chance, monster.get_ac(), monster.get_monster_profile().ml);
     if (!is_hit) {
         sound(SoundKind::MISS);
         msg_format(_("ミス！ %sにかわされた。", "You miss %s."), m_name.data());
@@ -183,7 +183,7 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     creature.plus_incident_tree("ATTACK_EXE_COUNT", 1);
     creature.plus_incident_tree("HEADBUTT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
-    is_hit &= test_hit_norm(creature, chance, monster.get_ac(), monster.ml);
+    is_hit &= test_hit_norm(creature, chance, monster.get_ac(), monster.get_monster_profile().ml);
 
     if (!is_hit) {
         sound(SoundKind::MISS);
@@ -274,7 +274,7 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
 
     creature.plus_incident_tree("ATTACK_EXE_COUNT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
-    is_hit &= test_hit_norm(creature, chance, monster.get_ac(), monster.ml);
+    is_hit &= test_hit_norm(creature, chance, monster.get_ac(), monster.get_monster_profile().ml);
 
     if (!is_hit) {
         sound(SoundKind::MISS);
@@ -375,7 +375,7 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
     const auto m_name = monster_desc(creature, monster, 0);
     const auto effects = creature.effects();
     const auto is_hallucinated = effects->hallucination().is_hallucinated();
-    if (monster.ml) {
+    if (monster.get_monster_profile().ml) {
         if (!is_hallucinated) {
             LoreTracker::get_instance().set_trackee(monster.ap_r_idx);
         }
@@ -385,7 +385,7 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
 
     const auto is_confused = effects->confusion().is_confused();
     const auto is_stunned = effects->stun().is_stunned();
-    if (monster.is_female() && !(is_stunned || is_confused || is_hallucinated || !monster.ml)) {
+    if (monster.is_female() && !(is_stunned || is_confused || is_hallucinated || !monster.get_monster_profile().ml)) {
         if (creature.is_wielding(FixedArtifactId::ZANTETSU)) {
             sound(SoundKind::ATTACK_FAILED);
             msg_print(_("拙者、おなごは斬れぬ！", "I can not attack women!"));
@@ -399,7 +399,7 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
         return false;
     }
 
-    if (!monster.is_hostile() && !(is_stunned || is_confused || is_hallucinated || creature.is_shero() || !monster.ml)) {
+    if (!monster.is_hostile() && !(is_stunned || is_confused || is_hallucinated || creature.is_shero() || !monster.get_monster_profile().ml)) {
         if (creature.is_wielding(FixedArtifactId::STORMBRINGER)) {
             msg_format(_("黒い刃は強欲に%sを攻撃した！", "Your black blade greedily attacks %s!"), m_name.data());
             chg_virtue(creature, Virtue::INDIVIDUALISM, 1);
@@ -420,7 +420,7 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
     }
 
     if (effects->fear().is_fearful()) {
-        if (monster.ml) {
+        if (monster.get_monster_profile().ml) {
             sound(SoundKind::ATTACK_FAILED);
             msg_format(_("恐くて%sを攻撃できない！", "You are too fearful to attack %s!"), m_name.data());
         } else {
@@ -471,11 +471,11 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
         }
     }
 
-    if (fear && monster.ml && !mdeath) {
+    if (fear && monster.get_monster_profile().ml && !mdeath) {
         // 1/20の確率で恐怖せず狂乱状態になる
         if (one_in_(20)) {
             auto &current_monster = floor.m_list[grid.m_idx];
-            current_monster.mflag2.set(MonsterConstantFlagType::FRENZY);
+            current_monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::FRENZY);
             (void)set_monster_monfear(*creature.current_floor_ptr, grid.m_idx, 0);
             sound(SoundKind::FLEE);
             msg_format(_("%s^は恐怖を怒りに変えて狂乱状態になった！", "%s^ turns fear into rage and goes berserk!"), m_name.data());
@@ -547,7 +547,7 @@ bool do_cmd_headbutt(CreatureEntity &creature)
     // 敵対的でないモンスターへの確認
     const auto is_stunned = effects->stun().is_stunned();
     const auto is_hallucinated = effects->hallucination().is_hallucinated();
-    if (!monster.is_hostile() && !(is_stunned || is_confused || is_hallucinated || creature.is_shero() || !monster.ml)) {
+    if (!monster.is_hostile() && !(is_stunned || is_confused || is_hallucinated || creature.is_shero() || !monster.get_monster_profile().ml)) {
         if (!CreatureClass(creature).equals(PlayerClassType::BERSERKER)) {
             if (!input_check(_("本当に頭突きしますか？", "Really headbutt it? "))) {
                 msg_format(_("%sへの頭突きを止めた。", "You stop to avoid headbutting %s."), m_name.data());
@@ -566,11 +566,11 @@ bool do_cmd_headbutt(CreatureEntity &creature)
     msg_format(_("%sに向かって勢いよく頭突きした！", "You charge forward with a powerful headbutt at %s!"), m_name.data());
     headbutt_attack(creature, grid.m_idx, &fear, &mdeath);
 
-    if (fear && monster.ml && !mdeath) {
+    if (fear && monster.get_monster_profile().ml && !mdeath) {
         // 1/20の確率で恐怖せず狂乱状態になる
         if (one_in_(20)) {
             auto &current_monster = floor.m_list[grid.m_idx];
-            current_monster.mflag2.set(MonsterConstantFlagType::FRENZY);
+            current_monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::FRENZY);
             (void)set_monster_monfear(*creature.current_floor_ptr, grid.m_idx, 0);
             sound(SoundKind::FLEE);
             msg_format(_("%s^は恐怖を怒りに変えて狂乱状態になった！", "%s^ turns fear into rage and goes berserk!"), m_name.data());
@@ -638,11 +638,11 @@ void do_cmd_body_slam(CreatureEntity &creature)
     msg_format(_("%sに向かって全力で体当たりを仕掛けた！", "You charge at %s with a full body slam!"), m_name.data());
     bodyslam_attack(creature, m_idx, &fear, &mdeath);
 
-    if (fear && monster.ml && !mdeath) {
+    if (fear && monster.get_monster_profile().ml && !mdeath) {
         // 1/20の確率で恐怖せず狂乱状態になる
         if (one_in_(20)) {
             auto &current_monster = floor.m_list[m_idx];
-            current_monster.mflag2.set(MonsterConstantFlagType::FRENZY);
+            current_monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::FRENZY);
             (void)set_monster_monfear(*creature.current_floor_ptr, m_idx, 0);
             sound(SoundKind::FLEE);
             msg_format(_("%s^は恐怖を怒りに変えて狂乱状態になった！", "%s^ turns fear into rage and goes berserk!"), m_name.data());
@@ -678,7 +678,7 @@ static void enema_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear
 
     creature.plus_incident_tree("ATTACK_EXE_COUNT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
-    is_hit &= test_hit_norm(creature, chance, monster.get_ac(), monster.ml);
+    is_hit &= test_hit_norm(creature, chance, monster.get_ac(), monster.get_monster_profile().ml);
 
     if (!is_hit) {
         sound(SoundKind::MISS);
@@ -779,11 +779,11 @@ void do_cmd_enema(CreatureEntity &creature)
     msg_format(_("%sに向かって全力で浣腸を仕掛けた！", "You charge at %s with a full enema!"), m_name.data());
     enema_attack(creature, m_idx, &fear, &mdeath);
 
-    if (fear && monster.ml && !mdeath) {
+    if (fear && monster.get_monster_profile().ml && !mdeath) {
         // 1/20の確率で恐怖せず狂乱状態になる
         if (one_in_(20)) {
             auto &current_monster = floor.m_list[m_idx];
-            current_monster.mflag2.set(MonsterConstantFlagType::FRENZY);
+            current_monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::FRENZY);
             (void)set_monster_monfear(*creature.current_floor_ptr, m_idx, 0);
             sound(SoundKind::FLEE);
             msg_format(_("%s^は恐怖を怒りに変えて狂乱状態になった！", "%s^ turns fear into rage and goes berserk!"), m_name.data());

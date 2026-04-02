@@ -291,7 +291,7 @@ static void generate_gambling_arena(CreatureEntity &creature)
             continue;
         }
 
-        monster.mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
+        monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
         update_monster(*player_ptr, i, false);
     }
 }

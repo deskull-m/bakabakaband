@@ -171,7 +171,7 @@ static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_
         }
 
         /* Notice the "waking up" */
-        if (monster.ml) {
+        if (monster.get_monster_profile().ml) {
             const auto m_name = monster_desc(creature, monster, 0);
             msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
         }
@@ -311,19 +311,19 @@ void dispel_monster_status(CreatureEntity &creature, MONSTER_IDX m_idx)
     const auto &monster = floor.m_list[m_idx];
     const auto m_name = monster_desc(creature, monster, 0);
     if (set_monster_invulner(floor, m_idx, 0, true)) {
-        if (monster.ml) {
+        if (monster.get_monster_profile().ml) {
             msg_format(_("%sはもう無敵ではない。", "%s^ is no longer invulnerable."), m_name.data());
         }
     }
 
     if (set_monster_fast(floor, m_idx, 0)) {
-        if (monster.ml) {
+        if (monster.get_monster_profile().ml) {
             msg_format(_("%sはもう加速されていない。", "%s^ is no longer fast."), m_name.data());
         }
     }
 
     if (set_monster_slow(floor, m_idx, 0)) {
-        if (monster.ml) {
+        if (monster.get_monster_profile().ml) {
             msg_format(_("%sはもう減速されていない。", "%s^ is no longer slow."), m_name.data());
         }
     }
@@ -364,7 +364,7 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
     }
 
     monster.exp += new_exp;
-    if (monster.mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
+    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
         return;
     }
 
@@ -379,7 +379,7 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
 
     const auto old_hp = monster.hp;
     const auto old_maxhp = monster.max_maxhp;
-    const auto old_sub_align = monster.sub_align;
+    const auto old_sub_align = monster.get_monster_profile().sub_align;
 
     /* Hack -- Reduce the racial counter of previous monster */
     monster.get_real_monrace().decrement_current_numbers();
@@ -409,20 +409,20 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
 
     /* Sub-alignment of a monster */
     if (!monster.is_pet() && new_monrace.kind_flags.has_none_of(alignment_mask)) {
-        monster.sub_align = old_sub_align;
+        monster.get_monster_profile().sub_align = old_sub_align;
     } else {
-        monster.sub_align = SUB_ALIGN_NEUTRAL;
+        monster.get_monster_profile().sub_align = SUB_ALIGN_NEUTRAL;
         if (new_monrace.kind_flags.has(MonsterKindType::EVIL)) {
-            monster.sub_align |= SUB_ALIGN_EVIL;
+            monster.get_monster_profile().sub_align |= SUB_ALIGN_EVIL;
         }
 
         if (new_monrace.kind_flags.has(MonsterKindType::GOOD)) {
-            monster.sub_align |= SUB_ALIGN_GOOD;
+            monster.get_monster_profile().sub_align |= SUB_ALIGN_GOOD;
         }
     }
 
     monster.exp = 0;
-    if (monster.is_pet() || monster.ml) {
+    if (monster.is_pet() || monster.get_monster_profile().ml) {
         const auto is_hallucinated = creature.effects()->hallucination().is_hallucinated();
         if (!ignore_unview || player_can_see_bold(creature, monster.y, monster.x)) {
             if (is_hallucinated) {
@@ -442,7 +442,7 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
         }
 
         /* Now you feel very close to this pet. */
-        monster.parent_m_idx = 0;
+        monster.get_monster_profile().parent_m_idx = 0;
     }
 
     update_monster(creature, m_idx, false);

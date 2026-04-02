@@ -128,7 +128,7 @@ void process_player(CreatureEntity &creature)
                 continue;
             }
 
-            monster.mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
+            monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
             update_monster(creature, m_idx, false);
         }
 
@@ -348,28 +348,28 @@ void process_player(CreatureEntity &creature)
                 const auto &monrace = monster.get_appearance_monrace();
 
                 // モンスターのシンボル/カラーの更新
-                if (monster.ml && monrace.visual_flags.has_any_of({ MonsterVisualType::MULTI_COLOR, MonsterVisualType::SHAPECHANGER })) {
+                if (monster.get_monster_profile().ml && monrace.visual_flags.has_any_of({ MonsterVisualType::MULTI_COLOR, MonsterVisualType::SHAPECHANGER })) {
                     lite_spot(creature, monster.get_position());
                 }
 
                 // 出現して即魔法を使わないようにするフラグを落とす処理
-                if (monster.mflag.has(MonsterTemporaryFlagType::PREVENT_MAGIC)) {
-                    monster.mflag.reset(MonsterTemporaryFlagType::PREVENT_MAGIC);
+                if (monster.get_monster_profile().mflag.has(MonsterTemporaryFlagType::PREVENT_MAGIC)) {
+                    monster.get_monster_profile().mflag.reset(MonsterTemporaryFlagType::PREVENT_MAGIC);
                 }
 
-                if (monster.mflag.has(MonsterTemporaryFlagType::SANITY_BLAST)) {
-                    monster.mflag.reset(MonsterTemporaryFlagType::SANITY_BLAST);
+                if (monster.get_monster_profile().mflag.has(MonsterTemporaryFlagType::SANITY_BLAST)) {
+                    monster.get_monster_profile().mflag.reset(MonsterTemporaryFlagType::SANITY_BLAST);
                     sanity_blast(creature, m_idx);
                 }
 
                 // 感知中のモンスターのフラグを落とす処理
                 // 感知したターンはMFLAG2_SHOWを落とし、次のターンに感知中フラグのMFLAG2_MARKを落とす
-                if (monster.mflag2.has(MonsterConstantFlagType::MARK)) {
-                    if (monster.mflag2.has(MonsterConstantFlagType::SHOW)) {
-                        monster.mflag2.reset(MonsterConstantFlagType::SHOW);
+                if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::MARK)) {
+                    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::SHOW)) {
+                        monster.get_monster_profile().mflag2.reset(MonsterConstantFlagType::SHOW);
                     } else {
-                        monster.mflag2.reset(MonsterConstantFlagType::MARK);
-                        monster.ml = false;
+                        monster.get_monster_profile().mflag2.reset(MonsterConstantFlagType::MARK);
+                        monster.get_monster_profile().ml = false;
                         update_monster(creature, m_idx, false);
                         HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
                         if (monster.is_riding()) {

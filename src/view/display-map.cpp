@@ -257,7 +257,7 @@ DisplaySymbolPair map_info(CreatureEntity &creature, const Pos2D &pos)
     }
 
     const auto &monster = floor.m_list[grid.m_idx];
-    if (!monster.ml) {
+    if (!monster.get_monster_profile().ml) {
         symbol_pair.symbol_foreground = set_term_color(creature, pos, symbol_pair.symbol_foreground);
         return symbol_pair;
     }

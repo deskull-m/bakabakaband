@@ -163,7 +163,7 @@ bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, cons
     ac.change_virtue();
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE) && record_destroy_uniq) {
         std::stringstream ss;
-        ss << monrace.name << (monster.mflag2.has(MonsterConstantFlagType::CLONED) ? _("(クローン)", "(Clone)") : "");
+        ss << monrace.name << (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CLONED) ? _("(クローン)", "(Clone)") : "");
         exe_write_diary(*player.current_floor_ptr, DiaryKind::UNIQUE, 0, ss.str());
     }
 
@@ -194,7 +194,7 @@ void MonsterDamageProcessor::death_special_flag_monster()
         }
     }
 
-    if (monster.mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
+    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
         auto &real_monrace = monster.get_real_monrace();
         monrace_id = monster.get_real_monrace_id();
         if (real_monrace.r_sights < MAX_SHORT) {
@@ -202,7 +202,7 @@ void MonsterDamageProcessor::death_special_flag_monster()
         }
     }
 
-    if (monster.mflag2.has(MonsterConstantFlagType::CLONED)) {
+    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CLONED)) {
         return;
     }
 
@@ -243,12 +243,12 @@ void MonsterDamageProcessor::increase_kill_numbers()
     }
 
     const auto is_hallucinated = player.effects()->hallucination().is_hallucinated();
-    if (((monster.ml == 0) || is_hallucinated) && monrace.kind_flags.has_not(MonsterKindType::UNIQUE)) {
+    if (((monster.get_monster_profile().ml == 0) || is_hallucinated) && monrace.kind_flags.has_not(MonsterKindType::UNIQUE)) {
         return;
     }
 
     auto &monraces = MonraceList::get_instance();
-    if (monster.mflag2.has(MonsterConstantFlagType::KAGE)) {
+    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE)) {
         auto &shadower = monraces.get_monrace(MonraceId::KAGE);
         shadower.increment_pkills();
         shadower.increment_tkills();
@@ -351,7 +351,7 @@ void MonsterDamageProcessor::show_kill_message(std::string_view note, std::strin
         return;
     }
 
-    if (!monster.ml) {
+    if (!monster.get_monster_profile().ml) {
         auto mes = this->creature.is_echizen() ? _("せっかくだから%sを殺した。", "Because it's time, you have killed %s.")
                                                : _("%sを殺した。", "You have killed %s.");
         msg_format(mes, m_name.data());
@@ -397,11 +397,11 @@ void MonsterDamageProcessor::show_bounty_message(std::string_view m_name)
     auto &floor = *player.current_floor_ptr;
     auto &monster = floor.m_list[this->m_idx];
     const auto &monrace = monster.get_real_monrace();
-    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) || monster.mflag2.has(MonsterConstantFlagType::CLONED) || vanilla_town) {
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) || monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CLONED) || vanilla_town) {
         return;
     }
 
-    if (monster.mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
+    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
         return;
     }
 
@@ -510,7 +510,7 @@ void MonsterDamageProcessor::add_monster_fear()
 
     const auto &monrace = monster.get_monrace();
     if (monster.is_fearful() || monrace.resistance_flags.has(MonsterResistanceType::NO_FEAR) ||
-        monster.mflag2.has(MonsterConstantFlagType::FRENZY)) {
+        monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::FRENZY)) {
         return;
     }
 
@@ -548,7 +548,7 @@ void MonsterDamageProcessor::process_masochist_reaction()
             auto heal_amount = randint1(this->dam / 4 + 1);
             monster.hp = std::min(monster.hp + heal_amount, monster.maxhp);
 
-            if (monster.ml) {
+            if (monster.get_monster_profile().ml) {
                 msg_format(_("%s^は苦痛に悦んでいる！", "%s^ seems to enjoy the pain!"), monster.get_monrace().name.data());
             }
         }
@@ -577,7 +577,7 @@ void MonsterDamageProcessor::process_sadist_reaction()
         // 一時的な加速効果付与（興奮状態）
         (void)set_monster_fast(*player.current_floor_ptr, this->m_idx, monster.get_remaining_acceleration() + 100);
 
-        if (monster.ml) {
+        if (monster.get_monster_profile().ml) {
             msg_format(_("%s^は他者の苦痛に興奮している！", "%s^ gets excited by others' pain!"), monster.get_monrace().name.data());
         }
     }
@@ -593,28 +593,28 @@ bool MonsterDamageProcessor::check_and_process_hp_transform()
     auto &monster = player.current_floor_ptr->m_list[this->m_idx];
 
     // 変身条件のチェック
-    if (monster.has_transformed) {
+    if (monster.get_monster_profile().has_transformed) {
         return false; // 既に変身済み
     }
 
-    if (!MonraceList::is_valid(monster.transform_r_idx) || monster.transform_hp_threshold == 0) {
+    if (!MonraceList::is_valid(monster.get_monster_profile().transform_r_idx) || monster.get_monster_profile().transform_hp_threshold == 0) {
         return false; // 変身設定がない
     }
 
     // HP閾値チェック（最大HPの%で判定）
     const auto hp_percent = (100 * monster.hp) / monster.maxhp;
-    if (hp_percent > monster.transform_hp_threshold) {
+    if (hp_percent > monster.get_monster_profile().transform_hp_threshold) {
         return false; // まだ変身しない
     }
 
     // 変身先の種族情報を取得
-    const auto new_r_idx = monster.transform_r_idx;
+    const auto new_r_idx = monster.get_monster_profile().transform_r_idx;
     auto &new_monrace = MonraceList::get_instance().get_monrace(new_r_idx);
 
     // 変身前の情報を保存
     const auto old_hp = monster.hp;
     const auto old_maxhp = monster.max_maxhp;
-    const auto old_sub_align = monster.sub_align;
+    const auto old_sub_align = monster.get_monster_profile().sub_align;
     const auto old_name = monster_desc(player, monster, MD_INDEF_VISIBLE);
 
     // 種族カウンターの更新
@@ -638,17 +638,17 @@ bool MonsterDamageProcessor::check_and_process_hp_transform()
     monster.hp = old_hp * monster.maxhp / old_maxhp;
 
     // 変身フラグを設定
-    monster.has_transformed = true;
+    monster.get_monster_profile().has_transformed = true;
 
     // 変身先の変身情報をコピー
-    monster.transform_r_idx = new_monrace.transform_r_idx;
-    monster.transform_hp_threshold = new_monrace.transform_hp_threshold;
+    monster.get_monster_profile().transform_r_idx = new_monrace.transform_r_idx;
+    monster.get_monster_profile().transform_hp_threshold = new_monrace.transform_hp_threshold;
 
     // アライメントを維持
-    monster.sub_align = old_sub_align;
+    monster.get_monster_profile().sub_align = old_sub_align;
 
     // メッセージ表示
-    if (monster.ml) {
+    if (monster.get_monster_profile().ml) {
         const auto new_name = monster_desc(player, monster, MD_INDEF_VISIBLE);
         msg_format(_("％sは％sに変身した！", "％s^ transforms into ％s!"),
             old_name.data(), new_name.data());

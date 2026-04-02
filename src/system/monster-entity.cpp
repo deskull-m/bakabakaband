@@ -24,8 +24,9 @@
 
 MonsterEntity::MonsterEntity()
 {
+    this->monster_profile.emplace();
     for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
-        this->mtimed[mte] = 0;
+        this->get_monster_profile().mtimed[mte] = 0;
     }
 
     // CreatureEntityの基本メンバーを初期化
@@ -60,6 +61,10 @@ bool MonsterEntity::check_sub_alignments(const byte sub_align1, const byte sub_a
 void MonsterEntity::wipe()
 {
     *this = {};
+    this->monster_profile.emplace();
+    for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
+        this->get_monster_profile().mtimed[mte] = 0;
+    }
 }
 
 MonsterEntity MonsterEntity::clone() const
@@ -69,12 +74,12 @@ MonsterEntity MonsterEntity::clone() const
 
 bool MonsterEntity::is_friendly() const
 {
-    return this->mflag2.has(MonsterConstantFlagType::FRIENDLY);
+    return this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FRIENDLY);
 }
 
 bool MonsterEntity::is_pet() const
 {
-    return this->mflag2.has(MonsterConstantFlagType::PET);
+    return this->get_monster_profile().mflag2.has(MonsterConstantFlagType::PET);
 }
 
 bool MonsterEntity::is_hostile() const
@@ -103,10 +108,10 @@ bool MonsterEntity::is_hostile_to_melee(const MonsterEntity &other) const
         }
     }
 
-    if (this->alliance_idx != other.alliance_idx) {
+    if (this->get_monster_profile().alliance_idx != other.get_monster_profile().alliance_idx) {
         return true;
-    } else if (this->is_hostile_align(other.sub_align)) {
-        if (this->mflag2.has_not(MonsterConstantFlagType::CHAMELEON) || other.mflag2.has_not(MonsterConstantFlagType::CHAMELEON)) {
+    } else if (this->is_hostile_align(other.get_monster_profile().sub_align)) {
+        if (this->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON) || other.get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON)) {
             return true;
         }
     }
@@ -121,7 +126,7 @@ bool MonsterEntity::is_hostile_to_melee(const MonsterEntity &other) const
  */
 bool MonsterEntity::is_hostile_align(const byte other_sub_align) const
 {
-    return MonsterEntity::check_sub_alignments(this->sub_align, other_sub_align);
+    return MonsterEntity::check_sub_alignments(this->get_monster_profile().sub_align, other_sub_align);
 }
 
 bool MonsterEntity::is_named_pet() const
@@ -177,13 +182,13 @@ bool MonsterEntity::is_male() const
 bool MonsterEntity::is_female() const
 {
     const auto &monrace = this->get_monrace();
-    return monrace.is_female() || this->mflag2.has(MonsterConstantFlagType::WAIFUIZED);
+    return monrace.is_female() || this->get_monster_profile().mflag2.has(MonsterConstantFlagType::WAIFUIZED);
 }
 
 MonraceId MonsterEntity::get_real_monrace_id() const
 {
     const auto &monrace = this->get_monrace();
-    if (this->mflag2.has_not(MonsterConstantFlagType::CHAMELEON)) {
+    if (this->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON)) {
         return this->r_idx;
     }
 
@@ -211,7 +216,7 @@ MonraceDefinition &MonsterEntity::get_monrace() const
 
 short MonsterEntity::get_remaining_sleep() const
 {
-    return this->mtimed.at(MonsterTimedEffect::SLEEP);
+    return this->get_monster_profile().mtimed.at(MonsterTimedEffect::SLEEP);
 }
 
 bool MonsterEntity::is_dead() const
@@ -226,7 +231,7 @@ bool MonsterEntity::is_asleep() const
 
 short MonsterEntity::get_remaining_acceleration() const
 {
-    return this->mtimed.at(MonsterTimedEffect::FAST);
+    return this->get_monster_profile().mtimed.at(MonsterTimedEffect::FAST);
 }
 
 bool MonsterEntity::is_accelerated() const
@@ -241,12 +246,12 @@ bool MonsterEntity::is_decelerated() const
 
 short MonsterEntity::get_remaining_deceleration() const
 {
-    return this->mtimed.at(MonsterTimedEffect::SLOW);
+    return this->get_monster_profile().mtimed.at(MonsterTimedEffect::SLOW);
 }
 
 short MonsterEntity::get_remaining_stun() const
 {
-    return this->mtimed.at(MonsterTimedEffect::STUN);
+    return this->get_monster_profile().mtimed.at(MonsterTimedEffect::STUN);
 }
 
 bool MonsterEntity::is_stunned() const
@@ -256,7 +261,7 @@ bool MonsterEntity::is_stunned() const
 
 short MonsterEntity::get_remaining_confusion() const
 {
-    return this->mtimed.at(MonsterTimedEffect::CONFUSION);
+    return this->get_monster_profile().mtimed.at(MonsterTimedEffect::CONFUSION);
 }
 
 bool MonsterEntity::is_confused() const
@@ -266,7 +271,7 @@ bool MonsterEntity::is_confused() const
 
 short MonsterEntity::get_remaining_fear() const
 {
-    return this->mtimed.at(MonsterTimedEffect::FEAR);
+    return this->get_monster_profile().mtimed.at(MonsterTimedEffect::FEAR);
 }
 
 bool MonsterEntity::is_fearful() const
@@ -276,7 +281,7 @@ bool MonsterEntity::is_fearful() const
 
 short MonsterEntity::get_remaining_invulnerability() const
 {
-    return this->mtimed.at(MonsterTimedEffect::INVULNERABILITY);
+    return this->get_monster_profile().mtimed.at(MonsterTimedEffect::INVULNERABILITY);
 }
 
 bool MonsterEntity::is_invulnerable() const
@@ -288,19 +293,19 @@ short MonsterEntity::get_timed_effect(CreatureTimedEffect effect) const
 {
     switch (effect) {
     case CreatureTimedEffect::STUN:
-        return this->mtimed.at(MonsterTimedEffect::STUN);
+        return this->get_monster_profile().mtimed.at(MonsterTimedEffect::STUN);
     case CreatureTimedEffect::CONFUSION:
-        return this->mtimed.at(MonsterTimedEffect::CONFUSION);
+        return this->get_monster_profile().mtimed.at(MonsterTimedEffect::CONFUSION);
     case CreatureTimedEffect::FEAR:
-        return this->mtimed.at(MonsterTimedEffect::FEAR);
+        return this->get_monster_profile().mtimed.at(MonsterTimedEffect::FEAR);
     case CreatureTimedEffect::INVULNERABILITY:
-        return this->mtimed.at(MonsterTimedEffect::INVULNERABILITY);
+        return this->get_monster_profile().mtimed.at(MonsterTimedEffect::INVULNERABILITY);
     case CreatureTimedEffect::ACCELERATION:
-        return this->mtimed.at(MonsterTimedEffect::FAST);
+        return this->get_monster_profile().mtimed.at(MonsterTimedEffect::FAST);
     case CreatureTimedEffect::DECELERATION:
-        return this->mtimed.at(MonsterTimedEffect::SLOW);
+        return this->get_monster_profile().mtimed.at(MonsterTimedEffect::SLOW);
     case CreatureTimedEffect::SLEEP_OR_PARALYSIS:
-        return this->mtimed.at(MonsterTimedEffect::SLEEP);
+        return this->get_monster_profile().mtimed.at(MonsterTimedEffect::SLEEP);
     default:
         return 0;
     }
@@ -324,11 +329,11 @@ byte MonsterEntity::get_temporary_speed() const
         speed -= 10;
     }
 
-    if (this->mflag2.has(MonsterConstantFlagType::FAT)) {
+    if (this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FAT)) {
         speed -= 5;
     }
 
-    if (this->mflag2.has(MonsterConstantFlagType::FRENZY)) {
+    if (this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FRENZY)) {
         speed += 10;
     }
 
@@ -396,7 +401,7 @@ bool MonsterEntity::is_explodable() const
  */
 bool MonsterEntity::has_parent() const
 {
-    return this->parent_m_idx > 0;
+    return this->get_monster_profile().parent_m_idx > 0;
 }
 
 /*!
@@ -416,7 +421,7 @@ std::string MonsterEntity::get_died_message() const
 tl::optional<std::string> MonsterEntity::get_pain_message(std::string_view monster_name, int damage) const
 {
     auto &monrace = this->get_monrace();
-    return MonsterPainDescriber(monrace.idx, monrace.symbol_definition.character, monster_name).describe(this->hp, damage, this->ml);
+    return MonsterPainDescriber(monrace.idx, monrace.symbol_definition.character, monster_name).describe(this->hp, damage, this->get_monster_profile().ml);
 }
 
 /*!
@@ -529,12 +534,12 @@ void MonsterEntity::set_hostile()
         return;
     }
 
-    this->mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
+    this->get_monster_profile().mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
 
-    if (this->alliance_idx != AllianceType::NONE) {
+    if (this->get_monster_profile().alliance_idx != AllianceType::NONE) {
         for (auto &monster : this->current_floor_ptr->m_list) {
-            if (monster.alliance_idx == this->alliance_idx) {
-                monster.mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
+            if (monster.get_monster_profile().alliance_idx == this->get_monster_profile().alliance_idx) {
+                monster.get_monster_profile().mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
             }
         }
     }
@@ -599,7 +604,7 @@ tl::optional<bool> MonsterEntity::order_pet_hp(const MonsterEntity &other) const
  */
 void MonsterEntity::set_friendly()
 {
-    this->mflag2.set(MonsterConstantFlagType::FRIENDLY);
+    this->get_monster_profile().mflag2.set(MonsterConstantFlagType::FRIENDLY);
 }
 
 /*!
@@ -609,101 +614,101 @@ void MonsterEntity::set_friendly()
  */
 void MonsterEntity::initialize_equivalent_player_races()
 {
-    this->equivalent_player_races.clear();
+    this->get_monster_profile().equivalent_player_races.clear();
     const auto &monrace = this->get_monrace();
 
     // モンスターのフラグとプレイヤー種族の対応関係をチェック
     if (monrace.kind_flags.has(MonsterKindType::HUMAN)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::HUMAN);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::HUMAN);
     }
     if (monrace.kind_flags.has(MonsterKindType::ELF)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::ELF);
-        this->equivalent_player_races.push_back(PlayerRaceType::HALF_ELF);
-        this->equivalent_player_races.push_back(PlayerRaceType::HIGH_ELF);
-        this->equivalent_player_races.push_back(PlayerRaceType::DARK_ELF);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::ELF);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::HALF_ELF);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::HIGH_ELF);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::DARK_ELF);
     }
     if (monrace.kind_flags.has(MonsterKindType::DWARF)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::DWARF);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::DWARF);
     }
     if (monrace.kind_flags.has(MonsterKindType::HOBBIT)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::HOBBIT);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::HOBBIT);
     }
     if (monrace.kind_flags.has(MonsterKindType::GNOME)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::GNOME);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::GNOME);
     }
     if (monrace.kind_flags.has(MonsterKindType::ORC)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::HALF_ORC);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::HALF_ORC);
     }
     if (monrace.kind_flags.has(MonsterKindType::TROLL)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::HALF_TROLL);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::HALF_TROLL);
     }
     if (monrace.kind_flags.has(MonsterKindType::GIANT)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::HALF_GIANT);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::HALF_GIANT);
     }
     if (monrace.kind_flags.has(MonsterKindType::OGRE)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::HALF_OGRE);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::HALF_OGRE);
     }
     if (monrace.kind_flags.has(MonsterKindType::AMBERITE)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::AMBERITE);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::AMBERITE);
     }
     if (monrace.kind_flags.has(MonsterKindType::YEEK)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::YEEK);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::YEEK);
     }
     if (monrace.kind_flags.has(MonsterKindType::KOBOLD)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::KOBOLD);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::KOBOLD);
     }
     if (monrace.kind_flags.has(MonsterKindType::NIBELUNG)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::NIBELUNG);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::NIBELUNG);
     }
     if (monrace.kind_flags.has(MonsterKindType::DRAGON)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::DRACONIAN);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::DRACONIAN);
     }
     if (monrace.kind_flags.has(MonsterKindType::MINDFLAYER)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::MIND_FLAYER);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::MIND_FLAYER);
     }
     if (monrace.kind_flags.has(MonsterKindType::DEMON)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::IMP);
-        this->equivalent_player_races.push_back(PlayerRaceType::BALROG);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::IMP);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::BALROG);
     }
     if (monrace.kind_flags.has(MonsterKindType::GOLEM)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::GOLEM);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::GOLEM);
     }
     if (monrace.kind_flags.has(MonsterKindType::SKELETON)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::SKELETON);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::SKELETON);
     }
     if (monrace.kind_flags.has(MonsterKindType::ZOMBIE)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::ZOMBIE);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::ZOMBIE);
     }
     if (monrace.kind_flags.has(MonsterKindType::VAMPIRE)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::VAMPIRE);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::VAMPIRE);
     }
     if (monrace.kind_flags.has(MonsterKindType::UNDEAD)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::SPECTRE);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::SPECTRE);
     }
     if (monrace.kind_flags.has(MonsterKindType::FAIRY)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::SPRITE);
-        this->equivalent_player_races.push_back(PlayerRaceType::S_FAIRY);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::SPRITE);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::S_FAIRY);
     }
     if (monrace.kind_flags.has(MonsterKindType::BEAST)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::BEASTMAN);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::BEASTMAN);
     }
     if (monrace.kind_flags.has(MonsterKindType::TREEFOLK)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::ENT);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::ENT);
     }
     if (monrace.kind_flags.has(MonsterKindType::ANGEL)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::ARCHON);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::ARCHON);
     }
     if (monrace.kind_flags.has(MonsterKindType::ROBOT)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::ANDROID);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::ANDROID);
     }
     if (monrace.kind_flags.has(MonsterKindType::MERFOLK)) {
-        this->equivalent_player_races.push_back(PlayerRaceType::MERFOLK);
+        this->get_monster_profile().equivalent_player_races.push_back(PlayerRaceType::MERFOLK);
     }
 
     // equivalent_player_racesの最初の種族をraceポインタに設定
-    if (!this->equivalent_player_races.empty()) {
-        this->race = &race_info[enum2i(this->equivalent_player_races[0])];
-        this->prace = this->equivalent_player_races[0];
+    if (!this->get_monster_profile().equivalent_player_races.empty()) {
+        this->race = &race_info[enum2i(this->get_monster_profile().equivalent_player_races[0])];
+        this->prace = this->get_monster_profile().equivalent_player_races[0];
     } else {
         this->race = nullptr;
         this->prace = PlayerRaceType::HUMAN; // デフォルト
@@ -717,54 +722,54 @@ void MonsterEntity::initialize_equivalent_player_races()
  */
 void MonsterEntity::initialize_equivalent_player_classes()
 {
-    this->equivalent_player_classes.clear();
+    this->get_monster_profile().equivalent_player_classes.clear();
     const auto &monrace = this->get_monrace();
 
     // モンスターのフラグとプレイヤー職業の対応関係をチェック
     if (monrace.kind_flags.has(MonsterKindType::WARRIOR)) {
-        this->equivalent_player_classes.push_back(PlayerClassType::WARRIOR);
+        this->get_monster_profile().equivalent_player_classes.push_back(PlayerClassType::WARRIOR);
     }
     if (monrace.kind_flags.has(MonsterKindType::MAGE)) {
-        this->equivalent_player_classes.push_back(PlayerClassType::MAGE);
+        this->get_monster_profile().equivalent_player_classes.push_back(PlayerClassType::MAGE);
     }
     if (monrace.kind_flags.has(MonsterKindType::PRIEST)) {
-        this->equivalent_player_classes.push_back(PlayerClassType::PRIEST);
+        this->get_monster_profile().equivalent_player_classes.push_back(PlayerClassType::PRIEST);
     }
     if (monrace.kind_flags.has(MonsterKindType::ROGUE)) {
-        this->equivalent_player_classes.push_back(PlayerClassType::ROGUE);
+        this->get_monster_profile().equivalent_player_classes.push_back(PlayerClassType::ROGUE);
     }
     if (monrace.kind_flags.has(MonsterKindType::RANGER)) {
-        this->equivalent_player_classes.push_back(PlayerClassType::RANGER);
+        this->get_monster_profile().equivalent_player_classes.push_back(PlayerClassType::RANGER);
     }
     if (monrace.kind_flags.has(MonsterKindType::PALADIN)) {
-        this->equivalent_player_classes.push_back(PlayerClassType::PALADIN);
+        this->get_monster_profile().equivalent_player_classes.push_back(PlayerClassType::PALADIN);
     }
     if (monrace.kind_flags.has(MonsterKindType::SAMURAI)) {
-        this->equivalent_player_classes.push_back(PlayerClassType::SAMURAI);
+        this->get_monster_profile().equivalent_player_classes.push_back(PlayerClassType::SAMURAI);
     }
     if (monrace.kind_flags.has(MonsterKindType::NINJA)) {
-        this->equivalent_player_classes.push_back(PlayerClassType::NINJA);
+        this->get_monster_profile().equivalent_player_classes.push_back(PlayerClassType::NINJA);
     }
     if (monrace.kind_flags.has(MonsterKindType::MINDCRAFTER)) {
-        this->equivalent_player_classes.push_back(PlayerClassType::MINDCRAFTER);
+        this->get_monster_profile().equivalent_player_classes.push_back(PlayerClassType::MINDCRAFTER);
     }
     if (monrace.kind_flags.has(MonsterKindType::ARCHER)) {
-        this->equivalent_player_classes.push_back(PlayerClassType::ARCHER);
+        this->get_monster_profile().equivalent_player_classes.push_back(PlayerClassType::ARCHER);
     }
     if (monrace.kind_flags.has(MonsterKindType::BARD)) {
-        this->equivalent_player_classes.push_back(PlayerClassType::BARD);
+        this->get_monster_profile().equivalent_player_classes.push_back(PlayerClassType::BARD);
     }
     if (monrace.kind_flags.has(MonsterKindType::SMITH)) {
-        this->equivalent_player_classes.push_back(PlayerClassType::SMITH);
+        this->get_monster_profile().equivalent_player_classes.push_back(PlayerClassType::SMITH);
     }
     if (monrace.kind_flags.has(MonsterKindType::KARATEKA)) {
-        this->equivalent_player_classes.push_back(PlayerClassType::MONK);
+        this->get_monster_profile().equivalent_player_classes.push_back(PlayerClassType::MONK);
     }
 
     // equivalent_player_classesの最初の職業をpclass_refポインタに設定
-    if (!this->equivalent_player_classes.empty()) {
-        this->pclass_ref = &class_info.at(this->equivalent_player_classes[0]);
-        this->pclass = this->equivalent_player_classes[0];
+    if (!this->get_monster_profile().equivalent_player_classes.empty()) {
+        this->pclass_ref = &class_info.at(this->get_monster_profile().equivalent_player_classes[0]);
+        this->pclass = this->get_monster_profile().equivalent_player_classes[0];
     } else {
         this->pclass_ref = nullptr;
         this->pclass = PlayerClassType::WARRIOR; // デフォルト
@@ -773,7 +778,7 @@ void MonsterEntity::initialize_equivalent_player_classes()
 
 bool MonsterEntity::is_riding() const
 {
-    return this->mflag2.has(MonsterConstantFlagType::RIDING);
+    return this->get_monster_profile().mflag2.has(MonsterConstantFlagType::RIDING);
 }
 
 Pos2D MonsterEntity::get_position() const
@@ -795,14 +800,14 @@ std::string MonsterEntity::build_looking_description(bool needs_attitude) const
 {
     const auto description = this->build_damage_description();
     const auto attitude = needs_attitude ? this->build_attitude_description() : "";
-    const std::string clone(this->mflag2.has(MonsterConstantFlagType::CLONED) ? ", clone" : "");
+    const std::string clone(this->get_monster_profile().mflag2.has(MonsterConstantFlagType::CLONED) ? ", clone" : "");
     const auto &apparent_monrace = this->get_appearance_monrace();
 
     // ペットの場合はアライアンス表示を省略
-    const bool show_alliance = !this->is_pet() && this->alliance_idx != AllianceType::NONE;
-    const std::string alliance_part = show_alliance ? format("(%s)", alliance_list.at(this->alliance_idx)->name.data()) : "";
+    const bool show_alliance = !this->is_pet() && this->get_monster_profile().alliance_idx != AllianceType::NONE;
+    const std::string alliance_part = show_alliance ? format("(%s)", alliance_list.at(this->get_monster_profile().alliance_idx)->name.data()) : "";
 
-    if ((apparent_monrace.r_tkills > 0) && this->mflag2.has_not(MonsterConstantFlagType::KAGE)) {
+    if ((apparent_monrace.r_tkills > 0) && this->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::KAGE)) {
         constexpr auto fmt = _("レベル%d, %s%s%s%s", "Level %d, %s%s%s%s");
         return format(fmt, apparent_monrace.level, description.data(), attitude.data(), clone.data(), alliance_part.data());
     }
@@ -815,7 +820,7 @@ std::string MonsterEntity::build_damage_description() const
 {
     const auto is_living = this->has_living_flag(true);
     const auto damage_ratio = this->maxhp > 0 ? 100L * this->hp / this->maxhp : 0;
-    if (!this->ml) {
+    if (!this->get_monster_profile().ml) {
         return _("損傷具合不明", "damage unknown");
     }
 
@@ -853,7 +858,7 @@ std::string MonsterEntity::build_attitude_description() const
 
 int MonsterEntity::get_ac() const
 {
-    if (this->mflag2.has(MonsterConstantFlagType::NAKED)) {
+    if (this->get_monster_profile().mflag2.has(MonsterConstantFlagType::NAKED)) {
         return 0;
     }
     return this->ac;

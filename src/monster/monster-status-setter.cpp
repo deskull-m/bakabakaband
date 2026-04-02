@@ -34,10 +34,10 @@
 void set_pet(CreatureEntity &creature, MonsterEntity &monster)
 {
     QuestCompletionChecker(creature, monster).complete();
-    monster.mflag2.set(MonsterConstantFlagType::PET);
-    monster.alliance_idx = AllianceType::NONE;
+    monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::PET);
+    monster.get_monster_profile().alliance_idx = AllianceType::NONE;
     if (monster.get_monrace().kind_flags.has_none_of(alignment_mask)) {
-        monster.sub_align = SUB_ALIGN_NEUTRAL;
+        monster.get_monster_profile().sub_align = SUB_ALIGN_NEUTRAL;
     }
 }
 
@@ -86,13 +86,13 @@ bool set_monster_csleep(FloorType &floor, MONSTER_IDX m_idx, int v)
         }
     }
 
-    monster.mtimed[MonsterTimedEffect::SLEEP] = (int16_t)v;
+    monster.get_monster_profile().mtimed[MonsterTimedEffect::SLEEP] = (int16_t)v;
     if (!notice) {
         return false;
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (monster.ml) {
+    if (monster.get_monster_profile().ml) {
         HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
         if (monster.is_riding()) {
             rfu.set_flag(MainWindowRedrawingFlag::UHEALTH);
@@ -131,7 +131,7 @@ bool set_monster_fast(FloorType &floor, MONSTER_IDX m_idx, int v)
         }
     }
 
-    monster.mtimed[MonsterTimedEffect::FAST] = (int16_t)v;
+    monster.get_monster_profile().mtimed[MonsterTimedEffect::FAST] = (int16_t)v;
     if (!notice) {
         return false;
     }
@@ -168,7 +168,7 @@ bool set_monster_slow(FloorType &floor, MONSTER_IDX m_idx, int v)
         }
     }
 
-    monster.mtimed[MonsterTimedEffect::SLOW] = (int16_t)v;
+    monster.get_monster_profile().mtimed[MonsterTimedEffect::SLOW] = (int16_t)v;
     if (!notice) {
         return false;
     }
@@ -205,7 +205,7 @@ bool set_monster_stunned(FloorType &floor, MONSTER_IDX m_idx, int v)
         }
     }
 
-    monster.mtimed[MonsterTimedEffect::STUN] = (int16_t)v;
+    monster.get_monster_profile().mtimed[MonsterTimedEffect::STUN] = (int16_t)v;
     return notice;
 }
 
@@ -234,7 +234,7 @@ bool set_monster_confused(FloorType &floor, MONSTER_IDX m_idx, int v)
         }
     }
 
-    monster.mtimed[MonsterTimedEffect::CONFUSION] = (int16_t)v;
+    monster.get_monster_profile().mtimed[MonsterTimedEffect::CONFUSION] = (int16_t)v;
     return notice;
 }
 
@@ -251,7 +251,7 @@ bool set_monster_monfear(FloorType &floor, MONSTER_IDX m_idx, int v)
     bool notice = false;
 
     // 狂乱状態のモンスターは恐怖しない
-    if (monster.mflag2.has(MonsterConstantFlagType::FRENZY) && v > 0) {
+    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::FRENZY) && v > 0) {
         return false;
     }
 
@@ -269,13 +269,13 @@ bool set_monster_monfear(FloorType &floor, MONSTER_IDX m_idx, int v)
         }
     }
 
-    monster.mtimed[MonsterTimedEffect::FEAR] = (int16_t)v;
+    monster.get_monster_profile().mtimed[MonsterTimedEffect::FEAR] = (int16_t)v;
 
     if (!notice) {
         return false;
     }
 
-    if (monster.ml) {
+    if (monster.get_monster_profile().ml) {
         HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
         if (monster.is_riding()) {
             RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
@@ -314,12 +314,12 @@ bool set_monster_invulner(FloorType &floor, MONSTER_IDX m_idx, int v, bool energ
         }
     }
 
-    monster.mtimed[MonsterTimedEffect::INVULNERABILITY] = (int16_t)v;
+    monster.get_monster_profile().mtimed[MonsterTimedEffect::INVULNERABILITY] = (int16_t)v;
     if (!notice) {
         return false;
     }
 
-    if (monster.ml) {
+    if (monster.get_monster_profile().ml) {
         HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
         if (monster.is_riding()) {
             RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);

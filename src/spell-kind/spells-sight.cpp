@@ -58,18 +58,18 @@ bool project_all_los(CreatureEntity &creature, AttributeType typ, int dam)
             continue;
         }
 
-        monster.mflag.set(MonsterTemporaryFlagType::LOS);
+        monster.get_monster_profile().mflag.set(MonsterTemporaryFlagType::LOS);
     }
 
     BIT_FLAGS flg = PROJECT_JUMP | PROJECT_KILL | PROJECT_HIDE;
     auto obvious = false;
     for (short i = 1; i < floor.m_max; i++) {
         auto &monster = floor.m_list[i];
-        if (monster.mflag.has_not(MonsterTemporaryFlagType::LOS)) {
+        if (monster.get_monster_profile().mflag.has_not(MonsterTemporaryFlagType::LOS)) {
             continue;
         }
 
-        monster.mflag.reset(MonsterTemporaryFlagType::LOS);
+        monster.get_monster_profile().mflag.reset(MonsterTemporaryFlagType::LOS);
         const auto m_pos = monster.get_position();
         if (project(creature, 0, 0, m_pos.y, m_pos.x, dam, typ, flg).notice) {
             obvious = true;
@@ -232,12 +232,12 @@ void aggravate_monsters(CreatureEntity &creature, MONSTER_IDX src_idx)
             }
 
             if (!monster.is_pet()) {
-                monster.mflag2.set(MonsterConstantFlagType::NOPET);
+                monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::NOPET);
             }
         }
 
         if (floor.has_los_at({ monster.y, monster.x }) && !monster.is_pet()) {
-            monster.mflag2.set(MonsterConstantFlagType::ANGER);
+            monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::ANGER);
             (void)set_monster_fast(floor, i, monster.get_remaining_acceleration() + 100);
             speed = true;
         }
@@ -373,8 +373,8 @@ bool deathray_monsters(CreatureEntity &creature)
 std::string probed_monster_info(CreatureEntity &creature, MonsterEntity &monster, const MonraceDefinition &monrace)
 {
     if (!monster.is_original_ap()) {
-        if (monster.mflag2.has(MonsterConstantFlagType::KAGE)) {
-            monster.mflag2.reset(MonsterConstantFlagType::KAGE);
+        if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE)) {
+            monster.get_monster_profile().mflag2.reset(MonsterConstantFlagType::KAGE);
         }
 
         monster.ap_r_idx = monster.r_idx;
@@ -390,11 +390,11 @@ std::string probed_monster_info(CreatureEntity &creature, MonsterEntity &monster
         align = _("邪悪", "evil");
     } else if (monrace.kind_flags.has(MonsterKindType::GOOD)) {
         align = _("善良", "good");
-    } else if ((monster.sub_align & (SUB_ALIGN_EVIL | SUB_ALIGN_GOOD)) == (SUB_ALIGN_EVIL | SUB_ALIGN_GOOD)) {
+    } else if ((monster.get_monster_profile().sub_align & (SUB_ALIGN_EVIL | SUB_ALIGN_GOOD)) == (SUB_ALIGN_EVIL | SUB_ALIGN_GOOD)) {
         align = _("中立(善悪)", "neutral(good&evil)");
-    } else if (monster.sub_align & SUB_ALIGN_EVIL) {
+    } else if (monster.get_monster_profile().sub_align & SUB_ALIGN_EVIL) {
         align = _("中立(邪悪)", "neutral(evil)");
-    } else if (monster.sub_align & SUB_ALIGN_GOOD) {
+    } else if (monster.get_monster_profile().sub_align & SUB_ALIGN_GOOD) {
         align = _("中立(善良)", "neutral(good)");
     } else {
         align = _("中立", "neutral");
@@ -452,7 +452,7 @@ bool probing(CreatureEntity &creature)
         if (!floor.has_los_at({ monster.y, monster.x })) {
             continue;
         }
-        if (!monster.ml) {
+        if (!monster.get_monster_profile().ml) {
             continue;
         }
 

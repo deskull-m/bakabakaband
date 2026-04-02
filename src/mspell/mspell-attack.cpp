@@ -263,7 +263,7 @@ static bool check_thrown_mspell(CreatureEntity &creature, msa_type *msa_ptr)
 
 static void check_mspell_imitation(CreatureEntity &creature, msa_type *msa_ptr)
 {
-    const auto seen = (!creature.is_blind() && msa_ptr->m_ptr->ml);
+    const auto seen = (!creature.is_blind() && msa_ptr->m_ptr->get_monster_profile().ml);
     const auto can_imitate = creature.current_floor_ptr->has_los_at({ msa_ptr->m_ptr->y, msa_ptr->m_ptr->x });
     CreatureClass pc(creature);
     if (!seen || !can_imitate || (AngbandWorld::get_instance().timewalk_m_idx != 0) || !pc.equals(PlayerClassType::IMITATOR)) {
@@ -315,7 +315,7 @@ bool make_attack_spell(CreatureEntity &creature, MONSTER_IDX m_idx)
     }
 
     const auto &m_ref = *msa_ptr->m_ptr;
-    auto should_prevent = m_ref.mflag.has(MonsterTemporaryFlagType::PREVENT_MAGIC);
+    auto should_prevent = m_ref.get_monster_profile().mflag.has(MonsterTemporaryFlagType::PREVENT_MAGIC);
     should_prevent |= !m_ref.is_hostile();
     should_prevent |= (Grid::calc_distance(creature.get_position(), m_ref.get_position()) > AngbandSystem::get_instance().get_max_range()) && !m_ref.get_target_position().y;
     if (should_prevent) {

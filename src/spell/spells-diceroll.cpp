@@ -42,7 +42,7 @@ bool common_saving_throw_charm(CreatureEntity &creature, int pow, const MonsterE
         return true;
     }
 
-    if (monrace.misc_flags.has(MonsterMiscType::QUESTOR) || monster.mflag2.has(MonsterConstantFlagType::NOPET)) {
+    if (monrace.misc_flags.has(MonsterMiscType::QUESTOR) || monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::NOPET)) {
         return true;
     }
 
@@ -75,7 +75,7 @@ bool common_saving_throw_control(CreatureEntity &creature, int pow, const Monste
         return true;
     }
 
-    if (monrace.misc_flags.has(MonsterMiscType::QUESTOR) || monster.mflag2.has(MonsterConstantFlagType::NOPET)) {
+    if (monrace.misc_flags.has(MonsterMiscType::QUESTOR) || monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::NOPET)) {
         return true;
     }
 

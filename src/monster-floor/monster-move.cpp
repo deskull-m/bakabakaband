@@ -478,10 +478,10 @@ bool process_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_p
         const auto p_pos = creature.get_position(); //!< @details 関数が長すぎてプレイヤーの座標が不変であることを保証できない.
         const auto m_pos = monster.get_position();
         const auto is_projectable = projectable(floor, p_pos, m_pos);
-        const auto can_see = disturb_near && monster.mflag.has(MonsterTemporaryFlagType::VIEW) && is_projectable;
+        const auto can_see = disturb_near && monster.get_monster_profile().mflag.has(MonsterTemporaryFlagType::VIEW) && is_projectable;
         const auto is_high_level = disturb_high && (apparent_monrace.r_tkills > 0) && (apparent_monrace.level >= creature.level);
         const auto is_unknown_level = disturb_unknown && (apparent_monrace.r_tkills == 0);
-        if (monster.ml && (disturb_move || can_see || is_high_level || is_unknown_level)) {
+        if (monster.get_monster_profile().ml && (disturb_move || can_see || is_high_level || is_unknown_level)) {
             if (monster.is_hostile()) {
                 disturb(creature, false, true);
             }
@@ -568,7 +568,7 @@ void process_sound(CreatureEntity &creature, MONSTER_IDX m_idx)
     const auto &monster = floor.m_list[m_idx];
     const auto &monrace = monster.get_monrace();
 
-    if (monster.ml || creature.skill_srh < randint1(100)) {
+    if (monster.get_monster_profile().ml || creature.skill_srh < randint1(100)) {
         return;
     }
     const auto m_name = std::string(_("それ", "It"));
@@ -623,7 +623,7 @@ void process_speak(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION oy, POS
         return;
     }
 
-    const auto m_name = monster.ml ? monster_desc(creature, monster, 0) : std::string(_("それ", "It"));
+    const auto m_name = monster.get_monster_profile().ml ? monster_desc(creature, monster, 0) : std::string(_("それ", "It"));
     const auto message_type = get_speak_type(monster);
     if (!message_type) {
         return;

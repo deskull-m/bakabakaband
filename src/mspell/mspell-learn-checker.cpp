@@ -17,7 +17,7 @@ bool spell_learnable(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     const auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
-    const auto seen = (!creature.is_blind() && monster.ml);
+    const auto seen = (!creature.is_blind() && monster.get_monster_profile().ml);
     const auto maneable = floor.has_los_at({ monster.y, monster.x });
     return seen && maneable && (AngbandWorld::get_instance().timewalk_m_idx == 0);
 }

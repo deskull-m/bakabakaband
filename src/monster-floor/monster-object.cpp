@@ -135,7 +135,7 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
     if (is_unpickable_object) {
         if (turn_flags_ptr->do_take && monrace.behavior_flags.has(MonsterBehaviorType::STUPID)) {
             turn_flags_ptr->did_take_item = true;
-            if (monster.ml && player_can_see_bold(creature, ny, nx)) {
+            if (monster.get_monster_profile().ml && player_can_see_bold(creature, ny, nx)) {
                 msg_format(_("%s^は%sを拾おうとしたが、だめだった。", "%s^ tries to pick up %s, but fails."), m_name.data(), o_name.data());
             }
         }
@@ -154,7 +154,7 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
         o_ptr->marked &= { OmType::TOUCHED };
         o_ptr->iy = o_ptr->ix = 0;
         o_ptr->held_m_idx = m_idx;
-        monster.hold_o_idx_list.add(*creature.current_floor_ptr, this_o_idx);
+        monster.get_monster_profile().hold_o_idx_list.add(*creature.current_floor_ptr, this_o_idx);
         RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::FOUND_ITEMS);
         return;
     }
@@ -216,7 +216,7 @@ void update_object_by_monster_movement(CreatureEntity &creature, turn_flags *tur
  */
 void monster_drop_carried_objects(CreatureEntity &creature, MonsterEntity &monster)
 {
-    for (auto it = monster.hold_o_idx_list.begin(); it != monster.hold_o_idx_list.end();) {
+    for (auto it = monster.get_monster_profile().hold_o_idx_list.begin(); it != monster.get_monster_profile().hold_o_idx_list.end();) {
         const auto this_o_idx = *it++;
         auto drop_item = creature.current_floor_ptr->o_list[this_o_idx]->clone();
         drop_item.held_m_idx = 0;
@@ -224,5 +224,5 @@ void monster_drop_carried_objects(CreatureEntity &creature, MonsterEntity &monst
         (void)drop_near(creature, drop_item, monster.get_position());
     }
 
-    monster.hold_o_idx_list.clear();
+    monster.get_monster_profile().hold_o_idx_list.clear();
 }

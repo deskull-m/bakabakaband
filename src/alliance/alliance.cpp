@@ -268,7 +268,7 @@ bool Alliance::is_hostile_to(const MonsterEntity &monster_other, const MonraceDe
     if (monrace.kind_flags.has(MonsterKindType::GOOD)) {
         sub_align2 |= SUB_ALIGN_GOOD;
     }
-    return MonsterEntity::check_sub_alignments(monster_other.sub_align, sub_align2);
+    return MonsterEntity::check_sub_alignments(monster_other.get_monster_profile().sub_align, sub_align2);
 }
 
 /*!
