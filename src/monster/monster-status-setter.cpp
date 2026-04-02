@@ -31,13 +31,14 @@
  * @param PlayerType プレイヤーへの参照ポインタ
  * @param m_ptr モンスター情報構造体の参照ポインタ
  */
-void set_pet(CreatureEntity &creature, MonsterEntity &monster)
+void set_pet(CreatureEntity &creature, CreatureEntity &target)
 {
+    auto &monster = static_cast<MonsterEntity &>(target);
     QuestCompletionChecker(creature, monster).complete();
-    monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::PET);
-    monster.get_monster_profile().alliance_idx = AllianceType::NONE;
+    target.get_monster_profile().mflag2.set(MonsterConstantFlagType::PET);
+    target.get_monster_profile().alliance_idx = AllianceType::NONE;
     if (monster.get_monrace().kind_flags.has_none_of(alignment_mask)) {
-        monster.get_monster_profile().sub_align = SUB_ALIGN_NEUTRAL;
+        target.get_monster_profile().sub_align = SUB_ALIGN_NEUTRAL;
     }
 }
 
@@ -46,12 +47,13 @@ void set_pet(CreatureEntity &creature, MonsterEntity &monster)
  * Anger the monster
  * @param m_ptr モンスター情報構造体の参照ポインタ
  */
-void anger_monster(CreatureEntity &creature, MonsterEntity &monster)
+void anger_monster(CreatureEntity &creature, CreatureEntity &target)
 {
-    if (AngbandSystem::get_instance().is_phase_out() || !monster.is_friendly()) {
+    if (AngbandSystem::get_instance().is_phase_out() || !target.is_friendly()) {
         return;
     }
 
+    auto &monster = static_cast<MonsterEntity &>(target);
     const auto m_name = monster_desc(creature, monster, 0);
     msg_format(_("%s^\u306f\u6012\u3063\u305f\uff01", "%s^ gets angry!"), m_name.data());
     monster.set_hostile();
