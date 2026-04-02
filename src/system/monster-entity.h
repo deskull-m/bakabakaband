@@ -37,7 +37,6 @@ public:
     bool is_hostile_to_melee(const MonsterEntity &other) const;
     bool is_hostile_align(const byte other_sub_align) const;
     bool is_named_pet() const;
-    bool is_original_ap() const;
     bool is_mimicry() const;
     bool is_male() const;
     bool is_female() const;

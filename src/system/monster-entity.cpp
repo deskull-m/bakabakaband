@@ -120,11 +120,6 @@ bool MonsterEntity::is_named_pet() const
     return this->is_pet() && this->is_named();
 }
 
-bool MonsterEntity::is_original_ap() const
-{
-    return this->ap_r_idx == this->r_idx;
-}
-
 /*!
  * @brief モンスターがアイテム類に擬態しているかどうかを返す
  * @param m_ptr モンスターの参照ポインタ

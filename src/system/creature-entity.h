@@ -216,6 +216,16 @@ public:
     }
 
     /*!
+     * @brief クリーチャーの外見種族が実種族と一致しているかどうかを判定
+     * @return 外見種族 == 実種族 ならtrue（通常状態）
+     * @details モンスターでは変身・誤認がない場合にtrue。プレイヤーでは常にtrue。
+     */
+    bool is_original_ap() const
+    {
+        return this->ap_r_idx == this->r_idx;
+    }
+
+    /*!
      * @brief クリーチャーの速度を設定
      * @param new_speed 速度値
      */
