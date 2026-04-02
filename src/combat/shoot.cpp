@@ -997,7 +997,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
  * @return 命中と判定された場合TRUEを返す
  * @note 最低命中率5%、最大命中率95%
  */
-bool test_hit_fire(CreatureEntity &creature, int chance, const MonsterEntity &monster, int vis, std::string_view item_name)
+bool test_hit_fire(CreatureEntity &creature, int chance, const CreatureEntity &target, int vis, std::string_view item_name)
 {
     int k;
     ARMOUR_CLASS ac;
@@ -1030,10 +1030,11 @@ bool test_hit_fire(CreatureEntity &creature, int chance, const MonsterEntity &mo
         return false;
     }
 
-    ac = monster.get_ac();
+    const auto &monster = static_cast<const MonsterEntity &>(target);
+    ac = target.get_ac();
     ac = ac * (8 - sniper_concent) / 8;
 
-    if (monster.r_idx == MonraceId::GOEMON && !monster.is_asleep()) {
+    if (target.r_idx == MonraceId::GOEMON && !monster.is_asleep()) {
         ac *= 3;
     }
 
@@ -1044,7 +1045,7 @@ bool test_hit_fire(CreatureEntity &creature, int chance, const MonsterEntity &mo
 
     /* Power competes against armor */
     if (randint0(chance) < (ac * 3 / 4)) {
-        if (monster.r_idx == MonraceId::GOEMON && !monster.is_asleep()) {
+        if (target.r_idx == MonraceId::GOEMON && !monster.is_asleep()) {
             const auto m_name = monster_desc(creature, monster, 0);
             msg_format(_("%sは%sを斬り捨てた！", "%s cuts down %s!"), m_name.data(), item_name.data());
         }
