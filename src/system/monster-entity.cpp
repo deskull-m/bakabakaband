@@ -72,20 +72,6 @@ MonsterEntity MonsterEntity::clone() const
     return *this;
 }
 
-bool MonsterEntity::is_friendly() const
-{
-    return this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FRIENDLY);
-}
-
-bool MonsterEntity::is_pet() const
-{
-    return this->get_monster_profile().mflag2.has(MonsterConstantFlagType::PET);
-}
-
-bool MonsterEntity::is_hostile() const
-{
-    return !this->is_friendly() && !this->is_pet();
-}
 
 /*!
  * @brief モンスターの属性とアライアンスに基づいた敵対関係の有無を返す
@@ -425,13 +411,6 @@ bool MonsterEntity::is_explodable() const
 }
 
 /*!
- * @brief モンスターに召喚主がいるか
- * @return 召喚主がいるならtrue
- */
-bool MonsterEntity::has_parent() const
-{
-    return this->get_monster_profile().parent_m_idx > 0;
-}
 
 /*!
  * @brief モンスターを撃破した際の述語メッセージを返す
@@ -803,11 +782,6 @@ void MonsterEntity::initialize_equivalent_player_classes()
         this->pclass_ref = nullptr;
         this->pclass = PlayerClassType::WARRIOR; // デフォルト
     }
-}
-
-bool MonsterEntity::is_riding() const
-{
-    return this->get_monster_profile().mflag2.has(MonsterConstantFlagType::RIDING);
 }
 
 Pos2D MonsterEntity::get_position() const

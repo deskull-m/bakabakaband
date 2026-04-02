@@ -397,6 +397,52 @@ public:
         return false;
     }
 
+    /*!
+     * @brief クリーチャーがペットかどうかを判定
+     * @return ペットならtrue、デフォルトはfalse（プレイヤーはペットではない）
+     */
+    virtual bool is_pet() const
+    {
+        return this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::PET);
+    }
+
+    /*!
+     * @brief クリーチャーがフレンドリー状態かどうかを判定
+     * @return フレンドリーならtrue、デフォルトはfalse（プレイヤーはフレンドリー判定対象外）
+     */
+    virtual bool is_friendly() const
+    {
+        return this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FRIENDLY);
+    }
+
+    /*!
+     * @brief クリーチャーが敵対状態かどうかを判定
+     * @return 敵対ならtrue（ペットでもフレンドリーでもない場合）
+     * @note プレイヤーに対してはfalseを返す
+     */
+    virtual bool is_hostile() const
+    {
+        return this->has_monster_profile() && !this->is_friendly() && !this->is_pet();
+    }
+
+    /*!
+     * @brief クリーチャーが騎乗されているかどうかを判定
+     * @return 騎乗されているならtrue、デフォルトはfalse
+     */
+    virtual bool is_riding() const
+    {
+        return this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::RIDING);
+    }
+
+    /*!
+     * @brief クリーチャーに召喚主がいるかどうかを判定
+     * @return 召喚主がいるならtrue、デフォルトはfalse
+     */
+    virtual bool has_parent() const
+    {
+        return this->has_monster_profile() && this->get_monster_profile().parent_m_idx > 0;
+    }
+
     bool is_tough() const
     {
         return this->ppersonality == PERSONALITY_TOUGH;
