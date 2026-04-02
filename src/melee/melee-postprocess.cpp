@@ -34,6 +34,7 @@
 #include "player/player-personality-types.h"
 #include "system/angband-system.h"
 #include "system/floor/floor-info.h"
+#include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
@@ -69,7 +70,7 @@ mam_pp_type::mam_pp_type(CreatureEntity &creature, MONSTER_IDX m_idx, int dam, b
     , src_idx(src_idx)
 {
     this->seen = is_seen(creature, *this->m_ptr);
-    this->known = this->m_ptr->cdis <= MAX_PLAYER_SIGHT;
+    this->known = Grid::calc_distance(creature.get_position(), this->m_ptr->get_position()) <= MAX_PLAYER_SIGHT;
     this->m_name = monster_desc(creature, *this->m_ptr, 0);
 }
 
@@ -298,7 +299,7 @@ void mon_take_hit_mon(CreatureEntity &creature, MONSTER_IDX m_idx, int dam, bool
     make_monster_fear(creature, mam_pp_ptr);
     if ((dam > 0) && !monster.is_pet() && !monster.is_friendly() && (mam_pp_ptr->src_idx != m_idx)) {
         const auto &monster_src = floor.m_list[src_idx];
-        if (monster_src.is_pet() && !creature.is_located_at({ monster.target_y, monster.target_x })) {
+        if (monster_src.is_pet() && !creature.is_located_at(monster.get_target_position())) {
             monster.set_target(monster_src.get_position());
         }
     }

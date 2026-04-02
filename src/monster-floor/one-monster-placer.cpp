@@ -379,7 +379,6 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         m_ptr->mtimed[mte] = 0;
     }
 
-    m_ptr->cdis = 0;
     m_ptr->reset_target();
     m_ptr->name.clear();
     m_ptr->exp = 0;

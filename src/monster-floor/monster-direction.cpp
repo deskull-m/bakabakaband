@@ -14,6 +14,7 @@
 #include "spell/range-calc.h"
 #include "system/angband-system.h"
 #include "system/floor/floor-info.h"
+#include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
 #include "target/projection-path-calculator.h"
@@ -32,16 +33,19 @@ static bool decide_pet_approch_direction(CreatureEntity &creature, const Monster
         return false;
     }
 
+    const auto p_pos = creature.get_position();
+    const auto cdis_from = Grid::calc_distance(p_pos, monster_from.get_position());
+    const auto cdis_to = Grid::calc_distance(p_pos, monster_to.get_position());
     if (creature.pet_follow_distance < 0) {
-        if (monster_to.cdis <= (0 - creature.pet_follow_distance)) {
+        if (cdis_to <= (0 - creature.pet_follow_distance)) {
             return true;
         }
-    } else if ((monster_from.cdis < monster_to.cdis) && (monster_to.cdis > creature.pet_follow_distance)) {
+    } else if ((cdis_from < cdis_to) && (cdis_to > creature.pet_follow_distance)) {
         return true;
     }
 
     const auto &monrace = monster_from.get_monrace();
-    return monrace.aaf < monster_to.cdis;
+    return monrace.aaf < cdis_to;
 }
 
 /*!
@@ -196,10 +200,11 @@ static tl::optional<MonsterMovementDirectionList> decide_pet_movement_direction(
         return mmdl;
     }
 
+    const auto cdis = Grid::calc_distance(creature.get_position(), monster.get_position());
     auto &pet_follow_distance = creature.pet_follow_distance;
-    const auto avoid = ((pet_follow_distance < 0) && (monster.cdis <= (0 - pet_follow_distance)));
-    const auto lonely = (!avoid && (monster.cdis > pet_follow_distance));
-    const auto distant = (monster.cdis > PET_SEEK_DIST);
+    const auto avoid = ((pet_follow_distance < 0) && (cdis <= (0 - pet_follow_distance)));
+    const auto lonely = (!avoid && (cdis > pet_follow_distance));
+    const auto distant = (cdis > PET_SEEK_DIST);
     if (!avoid && !lonely && !distant) {
         return MonsterMovementDirectionList::random_move(m_idx);
     }
@@ -235,7 +240,7 @@ tl::optional<MonsterMovementDirectionList> decide_monster_movement_direction(Cre
         return MonsterMovementDirectionList::random_move(m_idx);
     }
 
-    if (monrace.behavior_flags.has(MonsterBehaviorType::NEVER_MOVE) && (monster.cdis > 1)) {
+    if (monrace.behavior_flags.has(MonsterBehaviorType::NEVER_MOVE) && (Grid::calc_distance(creature.get_position(), monster.get_position()) > 1)) {
         return MonsterMovementDirectionList::random_move(m_idx);
     }
 

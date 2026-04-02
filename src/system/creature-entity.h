@@ -167,6 +167,23 @@ public:
     Pos2D get_neighbor(const Direction &dir) const;
 
     /*!
+     * @brief クリーチャーの攻撃目標座標を設定
+     * @param pos 目標座標
+     */
+    void set_target(const Pos2D &pos);
+
+    /*!
+     * @brief クリーチャーの攻撃目標座標をリセット
+     */
+    void reset_target();
+
+    /*!
+     * @brief クリーチャーの攻撃目標座標を取得
+     * @return 目標座標
+     */
+    Pos2D get_target_position() const;
+
+    /*!
      * @brief クリーチャーの現在HPを取得
      * @return 現在HP
      */
@@ -430,6 +447,8 @@ public:
 
     POSITION run_py{}; /*!< 走行中の目標Y座標 / Target Y position while running */
     POSITION run_px{}; /*!< 走行中の目標X座標 / Target X position while running */
+
+    Pos2D target{}; /*!< 攻撃目標座標 (0,0 は未設定) / Attack target position ({0,0} means none) */
 
     bool ambush_flag{}; /*!< 待ち伏せフラグ / Ambush flag */
 

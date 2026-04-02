@@ -94,7 +94,7 @@ void spell_badstatus_message_to_mons(CreatureEntity &creature, MONSTER_IDX m_idx
     auto &floor = *creature.current_floor_ptr;
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool see_t = see_monster(creature, t_idx);
-    bool known = monster_near_player(floor, m_idx, t_idx);
+    bool known = monster_near_player(creature, m_idx, t_idx);
     const auto m_name = monster_name(creature, m_idx);
     const auto t_name = monster_name(creature, t_idx);
 

@@ -595,24 +595,6 @@ tl::optional<bool> MonsterEntity::order_pet_hp(const MonsterEntity &other) const
 }
 
 /*!
- * @brief モンスターの目標地点をセットする
- * @param pos 目標座標
- */
-void MonsterEntity::set_target(const Pos2D &pos)
-{
-    this->target_y = pos.y;
-    this->target_x = pos.x;
-}
-
-/*!
- * @brief モンスターの目標地点をリセットする
- */
-void MonsterEntity::reset_target()
-{
-    this->set_target({ 0, 0 });
-}
-
-/*!
  * @brief モンスターを友好的にする
  */
 void MonsterEntity::set_friendly()
@@ -797,11 +779,6 @@ bool MonsterEntity::is_riding() const
 Pos2D MonsterEntity::get_position() const
 {
     return { this->y, this->x };
-}
-
-Pos2D MonsterEntity::get_target_position() const
-{
-    return { this->target_y, this->target_x };
 }
 
 bool MonsterEntity::can_ring_boss_call_nazgul() const

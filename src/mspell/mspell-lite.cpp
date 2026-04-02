@@ -139,10 +139,11 @@ static void check_lite_area_by_mspell(CreatureEntity &creature, msa_type *msa_pt
 {
     const auto &system = AngbandSystem::get_instance();
     auto light_by_disintegration = msa_ptr->ability_flags.has(MonsterAbilityType::BR_DISI);
-    light_by_disintegration &= msa_ptr->m_ptr->cdis < system.get_max_range() / 2;
     const auto pos = msa_ptr->get_position();
     const auto p_pos = creature.get_position();
     const auto m_pos = msa_ptr->m_ptr->get_position();
+    const auto cdis = Grid::calc_distance(p_pos, m_pos);
+    light_by_disintegration &= cdis < system.get_max_range() / 2;
     const auto &floor = *creature.current_floor_ptr;
     light_by_disintegration &= in_disintegration_range(floor, m_pos, pos);
     light_by_disintegration &= one_in_(10) || (projectable(floor, pos, m_pos) && one_in_(2));
@@ -153,7 +154,7 @@ static void check_lite_area_by_mspell(CreatureEntity &creature, msa_type *msa_pt
     }
 
     auto light_by_lite = msa_ptr->ability_flags.has(MonsterAbilityType::BR_LITE);
-    light_by_lite &= msa_ptr->m_ptr->cdis < system.get_max_range() / 2;
+    light_by_lite &= cdis < system.get_max_range() / 2;
     light_by_lite &= los(floor, m_pos, pos);
     light_by_lite &= one_in_(5);
     if (light_by_lite) {
@@ -162,7 +163,7 @@ static void check_lite_area_by_mspell(CreatureEntity &creature, msa_type *msa_pt
         return;
     }
 
-    if (msa_ptr->ability_flags.has_not(MonsterAbilityType::BA_LITE) || (msa_ptr->m_ptr->cdis > system.get_max_range())) {
+    if (msa_ptr->ability_flags.has_not(MonsterAbilityType::BA_LITE) || (cdis > system.get_max_range())) {
         return;
     }
 
@@ -173,22 +174,23 @@ static void check_lite_area_by_mspell(CreatureEntity &creature, msa_type *msa_pt
     }
 }
 
-static void decide_lite_breath(msa_type *msa_ptr)
+static void decide_lite_breath(CreatureEntity &creature, msa_type *msa_ptr)
 {
     if (msa_ptr->success) {
         return;
     }
 
-    if (msa_ptr->m_ptr->target_y && msa_ptr->m_ptr->target_x) {
-        msa_ptr->y = msa_ptr->m_ptr->target_y;
-        msa_ptr->x = msa_ptr->m_ptr->target_x;
+    const auto target_pos = msa_ptr->m_ptr->get_target_position();
+    if (target_pos.y && target_pos.x) {
+        msa_ptr->y = target_pos.y;
+        msa_ptr->x = target_pos.x;
         msa_ptr->ability_flags &= RF_ABILITY_INDIRECT_MASK;
         msa_ptr->success = true;
     }
 
     auto should_set = msa_ptr->y_br_lite == 0;
     should_set |= msa_ptr->x_br_lite == 0;
-    should_set |= msa_ptr->m_ptr->cdis > AngbandSystem::get_instance().get_max_range() / 2;
+    should_set |= Grid::calc_distance(creature.get_position(), msa_ptr->m_ptr->get_position()) > AngbandSystem::get_instance().get_max_range() / 2;
     should_set |= !one_in_(5);
     if (should_set) {
         return;
@@ -223,7 +225,7 @@ bool decide_lite_projection(CreatureEntity &creature, msa_type *msa_ptr)
         }
     }
 
-    decide_lite_breath(msa_ptr);
+    decide_lite_breath(creature, msa_ptr);
     return msa_ptr->success;
 }
 

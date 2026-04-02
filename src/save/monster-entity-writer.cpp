@@ -84,11 +84,11 @@ uint32_t MonsterEntityWriter::write_monster_flags() const
         set_bits(flags, SaveDataMonsterFlagType::MONFEAR);
     }
 
-    if (this->monster.target_y) {
+    if (this->monster.target.y) {
         set_bits(flags, SaveDataMonsterFlagType::TARGET_Y);
     }
 
-    if (this->monster.target_x) {
+    if (this->monster.target.x) {
         set_bits(flags, SaveDataMonsterFlagType::TARGET_X);
     }
 
@@ -181,11 +181,11 @@ void MonsterEntityWriter::write_monster_info(uint32_t flags) const
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::TARGET_Y)) {
-        wr_s16b((int16_t)this->monster.target_y);
+        wr_s16b((int16_t)this->monster.target.y);
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::TARGET_X)) {
-        wr_s16b((int16_t)this->monster.target_x);
+        wr_s16b((int16_t)this->monster.target.x);
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::INVULNER)) {

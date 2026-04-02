@@ -196,10 +196,6 @@ static um_type *initialize_um_type(CreatureEntity &creature, um_type *um_ptr, MO
 
 static POSITION decide_updated_distance(CreatureEntity &creature, um_type *um_ptr)
 {
-    if (!um_ptr->full) {
-        return um_ptr->m_ptr->cdis;
-    }
-
     int dy = (creature.y > um_ptr->fy) ? (creature.y - um_ptr->fy) : (um_ptr->fy - creature.y);
     int dx = (creature.x > um_ptr->fx) ? (creature.x - um_ptr->fx) : (um_ptr->fx - creature.x);
     POSITION distance = (dy > dx) ? (dy + (dx >> 1)) : (dx + (dy >> 1));
@@ -211,7 +207,6 @@ static POSITION decide_updated_distance(CreatureEntity &creature, um_type *um_pt
         distance = 1;
     }
 
-    um_ptr->m_ptr->cdis = distance;
     return distance;
 }
 

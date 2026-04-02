@@ -469,10 +469,8 @@ void hit_trap(CreatureEntity &creature, bool break_trap)
                 if (evil_idx && good_idx) {
                     auto &monster_evil = floor.m_list[evil_idx];
                     auto &monster_good = floor.m_list[good_idx];
-                    monster_evil.target_y = monster_good.y;
-                    monster_evil.target_x = monster_good.x;
-                    monster_good.target_y = monster_evil.y;
-                    monster_good.target_x = monster_evil.x;
+                    monster_evil.set_target(monster_good.get_position());
+                    monster_good.set_target(monster_evil.get_position());
                 }
             }
         }

@@ -20,6 +20,7 @@
 #include "monster/monster-status.h"
 #include "monster/smart-learn-types.h"
 #include "system/floor/floor-info.h"
+#include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
@@ -224,7 +225,7 @@ void aggravate_monsters(CreatureEntity &creature, MONSTER_IDX src_idx)
             continue;
         }
 
-        if (monster.cdis < MAX_PLAYER_SIGHT * 2) {
+        if (Grid::calc_distance(creature.get_position(), monster.get_position()) < MAX_PLAYER_SIGHT * 2) {
             if (monster.is_asleep()) {
                 (void)set_monster_csleep(floor, i, 0);
                 sleep = true;

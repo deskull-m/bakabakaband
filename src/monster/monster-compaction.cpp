@@ -120,7 +120,7 @@ void compact_monsters(CreatureEntity &creature, int size)
             if (monster.is_riding()) {
                 continue;
             }
-            if ((cur_dis > 0) && (monster.cdis < cur_dis)) {
+            if ((cur_dis > 0) && (Grid::calc_distance(creature.get_position(), monster.get_position()) < cur_dis)) {
                 continue;
             }
 
