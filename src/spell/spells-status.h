@@ -6,7 +6,6 @@
 class Direction;
 class ItemEntity;
 class CreatureEntity;
-class MonsterEntity;
 bool heal_monster(CreatureEntity &creature, const Direction &dir, int dam);
 bool speed_monster(CreatureEntity &creature, const Direction &dir, int power);
 bool slow_monster(CreatureEntity &creature, const Direction &dir, int power);
@@ -32,5 +31,5 @@ bool restore_all_status(CreatureEntity &creature);
 
 bool fishing(CreatureEntity &creature);
 bool cosmic_cast_off(CreatureEntity &creature, ItemEntity **o_ptr_ptr);
-void apply_nexus(const MonsterEntity &monster, CreatureEntity &creature);
+void apply_nexus(const CreatureEntity &attacker, CreatureEntity &creature);
 void status_shuffle(CreatureEntity &creature);
