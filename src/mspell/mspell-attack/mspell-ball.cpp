@@ -39,7 +39,7 @@ static bool message_fire_ball(CreatureEntity &creature, MONSTER_IDX m_idx, MONST
 
 static bool message_water_ball(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto known = monster_near_player(*creature.current_floor_ptr, m_idx, t_idx);
+    auto known = monster_near_player(creature, m_idx, t_idx);
     auto see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     auto mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     auto mon_to_player = (target_type == MONSTER_TO_PLAYER);

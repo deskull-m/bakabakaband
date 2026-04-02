@@ -67,6 +67,32 @@ Pos2D CreatureEntity::get_neighbor(const Direction &dir) const
     return this->get_position() + dir.vec();
 }
 
+/*!
+ * @brief クリーチャーの攻撃目標座標を設定
+ * @param pos 目標座標
+ */
+void CreatureEntity::set_target(const Pos2D &pos)
+{
+    this->target = pos;
+}
+
+/*!
+ * @brief クリーチャーの攻撃目標座標をリセット
+ */
+void CreatureEntity::reset_target()
+{
+    this->target = {};
+}
+
+/*!
+ * @brief クリーチャーの攻撃目標座標を取得
+ * @return 目標座標
+ */
+Pos2D CreatureEntity::get_target_position() const
+{
+    return this->target;
+}
+
 bool CreatureEntity::is_stunned() const
 {
     return this->get_timed_effect(CreatureTimedEffect::STUN) > 0;

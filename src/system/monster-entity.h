@@ -49,13 +49,10 @@ public:
     int death_count{}; /*!< 自壊するまでの残りターン数 */
     std::map<MonsterTimedEffect, short> mtimed; /*!< 与えられた時限効果の残りターン / Timed status counter */
 
-    POSITION cdis{}; /*!< 現在のプレイヤーから距離(逐一計算を避けるためのテンポラリ変数) Current dis from player */
     EnumClassFlagGroup<MonsterTemporaryFlagType> mflag{}; /*!< モンスター個体に与えられた特殊フラグ1 (セーブ不要) / Extra monster flags */
     EnumClassFlagGroup<MonsterConstantFlagType> mflag2{}; /*!< モンスター個体に与えられた特殊フラグ2 (セーブ必要) / Extra monster flags */
     bool ml{}; /*!< モンスターがプレイヤーにとって視認できるか(処理のためのテンポラリ変数) Monster is "visible" */
     ObjectIndexList hold_o_idx_list{}; /*!< モンスターが所持しているアイテムのリスト / Object list being held (if any) */
-    POSITION target_y{}; /*!< モンスターの攻撃目標対象Y座標 / Can attack !los player */
-    POSITION target_x{}; /*!< モンスターの攻撃目標対象X座標 /  Can attack !los player */
 
     /* TODO: クローン、ペット、有効化は意義が異なるので別変数に切り離すこと。save/loadのバージョン更新が面倒そうだけど */
     EnumClassFlagGroup<MonsterSmartLearnType> smart{}; /*!< モンスターのプレイヤーに対する学習状態 / Field for "smart_learn" - Some bit-flags for the "smart" field */
@@ -112,7 +109,6 @@ public:
     tl::optional<bool> order_pet_dismission(const MonsterEntity &other) const;
     bool is_riding() const;
     Pos2D get_position() const override;
-    Pos2D get_target_position() const;
     bool can_ring_boss_call_nazgul() const;
     std::string build_looking_description(bool needs_attitude) const;
     int get_ac() const override;
@@ -124,8 +120,6 @@ public:
     void set_hostile();
     void make_lore_treasure(int num_item, int num_gold) const;
     void reset_chameleon_polymorph();
-    void set_target(const Pos2D &pos);
-    void reset_target();
     void set_friendly();
     void initialize_equivalent_player_races();
     void initialize_equivalent_player_classes();

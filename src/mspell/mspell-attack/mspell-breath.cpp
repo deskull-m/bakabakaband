@@ -51,7 +51,7 @@ static void message_breath(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_
     auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
     auto see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
-    auto known = monster_near_player(floor, m_idx, t_idx);
+    auto known = monster_near_player(creature, m_idx, t_idx);
     auto mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     auto mon_to_player = (target_type == MONSTER_TO_PLAYER);
     const auto m_name = monster_name(creature, m_idx);

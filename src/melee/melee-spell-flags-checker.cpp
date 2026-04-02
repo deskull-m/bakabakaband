@@ -43,12 +43,13 @@ static void decide_melee_spell_target(CreatureEntity &creature, melee_spell_type
 static void decide_indirection_melee_spell(CreatureEntity &creature, melee_spell_type *ms_ptr)
 {
     const auto &monster_from = *ms_ptr->m_ptr;
-    if ((ms_ptr->target_idx != 0) || (monster_from.target_y == 0)) {
+    const auto target_pos = monster_from.get_target_position();
+    if ((ms_ptr->target_idx != 0) || (target_pos.y == 0)) {
         return;
     }
 
     const auto &floor = *creature.current_floor_ptr;
-    ms_ptr->target_idx = floor.grid_array[monster_from.target_y][monster_from.target_x].m_idx;
+    ms_ptr->target_idx = floor.get_grid(target_pos).m_idx;
     if (ms_ptr->target_idx == 0) {
         return;
     }

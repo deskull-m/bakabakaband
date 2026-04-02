@@ -572,22 +572,23 @@ void process_sound(CreatureEntity &creature, MONSTER_IDX m_idx)
         return;
     }
     const auto m_name = std::string(_("それ", "It"));
+    const auto cdis = Grid::calc_distance(creature.get_position(), monster.get_position());
 
-    if (monster.cdis <= MAX_PLAYER_SIGHT / 2) {
+    if (cdis <= MAX_PLAYER_SIGHT / 2) {
         const auto message = monrace.get_message(m_name, MonsterMessageType::WALK_CLOSERANGE);
         if (message) {
             show_sound_message(creature, *message);
         }
         return;
     }
-    if (monster.cdis <= MAX_PLAYER_SIGHT) {
+    if (cdis <= MAX_PLAYER_SIGHT) {
         const auto message = monrace.get_message(m_name, MonsterMessageType::WALK_MIDDLERANGE);
         if (message) {
             show_sound_message(creature, *message);
         }
         return;
     }
-    if (monster.cdis <= MAX_PLAYER_SIGHT * 2) {
+    if (cdis <= MAX_PLAYER_SIGHT * 2) {
         const auto message = monrace.get_message(m_name, MonsterMessageType::WALK_LONGRANGE);
         if (message) {
             show_sound_message(creature, *message);
@@ -615,7 +616,7 @@ void process_speak(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION oy, POS
     const auto &monster = floor.m_list[m_idx];
     const auto &monrace = monster.get_monrace();
     constexpr auto chance_speak = 8;
-    auto vociferous = monrace.r_misc_flags.has(MonsterMiscType::VOCIFEROUS) && (monster.cdis <= MAX_PLAYER_SIGHT * 2) && one_in_(chance_speak / 3 + 1);
+    auto vociferous = monrace.r_misc_flags.has(MonsterMiscType::VOCIFEROUS) && (Grid::calc_distance(creature.get_position(), monster.get_position()) <= MAX_PLAYER_SIGHT * 2) && one_in_(chance_speak / 3 + 1);
     const auto p_pos = creature.get_position();
     const auto can_speak = monster.get_appearance_monrace().speak_flags.any();
     if ((!vociferous) && (!can_speak || !aware || !floor.has_los_at({ oy, ox }) || !projectable(floor, pos, p_pos))) {

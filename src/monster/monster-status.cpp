@@ -15,6 +15,7 @@
 #include "monster/monster-update.h"
 #include "system/angband-system.h"
 #include "system/floor/floor-info.h"
+#include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
@@ -111,18 +112,19 @@ static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_
 {
     auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
+    const auto cdis = Grid::calc_distance(creature.get_position(), monster.get_position());
     switch (mte) {
     case MonsterTimedEffect::SLEEP: {
         auto &monrace = monster.get_monrace();
         auto is_wakeup = false;
-        if (monster.cdis < MAX_MONSTER_SENSING) {
+        if (cdis < MAX_MONSTER_SENSING) {
             /* Handle "sensing radius" */
-            if (monster.cdis <= (monster.is_pet() ? ((monrace.aaf > MAX_PLAYER_SIGHT) ? MAX_PLAYER_SIGHT : monrace.aaf) : monrace.aaf)) {
+            if (cdis <= (monster.is_pet() ? ((monrace.aaf > MAX_PLAYER_SIGHT) ? MAX_PLAYER_SIGHT : monrace.aaf) : monrace.aaf)) {
                 is_wakeup = true;
             }
 
             /* Handle "sight" and "aggravation" */
-            else if ((monster.cdis <= MAX_PLAYER_SIGHT) && floor.has_los_at({ monster.y, monster.x })) {
+            else if ((cdis <= MAX_PLAYER_SIGHT) && floor.has_los_at({ monster.y, monster.x })) {
                 is_wakeup = true;
             }
         }
@@ -145,7 +147,7 @@ static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_
 
         /* Hack -- amount of "waking" */
         /* Wake up faster near the player */
-        auto d = (monster.cdis < MAX_MONSTER_SENSING / 2) ? (MAX_MONSTER_SENSING / monster.cdis) : 1;
+        auto d = (cdis < MAX_MONSTER_SENSING / 2) ? (MAX_MONSTER_SENSING / cdis) : 1;
 
         /* Hack -- amount of "waking" is affected by speed of player */
         d = (d * speed_to_energy(creature.get_speed())) / 10;

@@ -281,7 +281,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
      *  Forward movements failed, but now received LOS attack!
      *  Try to flow by smell.
      */
-    if (player.no_flowed && count > 2 && monster.target_y) {
+    if (player.no_flowed && count > 2 && monster.get_target_position().y) {
         monster.mflag2.reset(MonsterConstantFlagType::NOFLOW);
     }
 
@@ -762,7 +762,7 @@ bool cast_spell(CreatureEntity &creature, MONSTER_IDX m_idx, bool aware)
     }
 
     auto counter_attack = false;
-    if (monster_from.target_y) {
+    if (monster_from.get_target_position().y) {
         const auto pos_to = monster_from.get_target_position();
         const auto t_m_idx = floor.get_grid(pos_to).m_idx;
         const auto &monster_to = floor.m_list[t_m_idx];
@@ -912,7 +912,7 @@ void sweep_monster_process(CreatureEntity &creature)
             continue;
         }
 
-        if ((monster.cdis >= MAX_MONSTER_SENSING) || !decide_process_continue(creature, monster)) {
+        if ((Grid::calc_distance(creature.get_position(), monster.get_position()) >= MAX_MONSTER_SENSING) || !decide_process_continue(creature, monster)) {
             continue;
         }
 
@@ -1006,17 +1006,18 @@ bool decide_process_continue(CreatureEntity &creature, MonsterEntity &monster)
         monster.mflag2.reset(MonsterConstantFlagType::NOFLOW);
     }
 
-    if (monster.cdis <= (monster.is_pet() ? (monrace.aaf > MAX_PLAYER_SIGHT ? MAX_PLAYER_SIGHT : monrace.aaf) : monrace.aaf)) {
+    const auto cdis = Grid::calc_distance(creature.get_position(), monster.get_position());
+    if (cdis <= (monster.is_pet() ? (monrace.aaf > MAX_PLAYER_SIGHT ? MAX_PLAYER_SIGHT : monrace.aaf) : monrace.aaf)) {
         return true;
     }
 
-    auto should_continue = (monster.cdis <= MAX_PLAYER_SIGHT) || AngbandSystem::get_instance().is_phase_out();
+    auto should_continue = (cdis <= MAX_PLAYER_SIGHT) || AngbandSystem::get_instance().is_phase_out();
     should_continue &= creature.current_floor_ptr->has_los_at({ monster.y, monster.x }) || has_aggravate(creature);
     if (should_continue) {
         return true;
     }
 
-    if (monster.target_y) {
+    if (monster.get_target_position().y) {
         return true;
     }
 
@@ -1035,7 +1036,7 @@ bool process_stalking(CreatureEntity &creature, MONSTER_IDX m_idx)
     }
 
     // モンスターからプレイヤーの距離が空いているなら何もしない
-    if (monster.cdis > STALKER_DISTANCE_THRESHOLD) {
+    if (Grid::calc_distance(creature.get_position(), monster.get_position()) > STALKER_DISTANCE_THRESHOLD) {
         return false;
     }
 

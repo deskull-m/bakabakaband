@@ -4,6 +4,7 @@
 #include "melee/melee-switcher.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
+#include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
@@ -39,7 +40,8 @@ mam_type *initialize_mam_type(CreatureEntity &creature, mam_type *mam_ptr, MONST
     mam_ptr->blinked = false;
     mam_ptr->power = 0;
     mam_ptr->obvious = false;
-    mam_ptr->known = (mam_ptr->m_ptr->cdis <= MAX_PLAYER_SIGHT) || (mam_ptr->t_ptr->cdis <= MAX_PLAYER_SIGHT);
+    const auto p_pos = creature.get_position();
+    mam_ptr->known = (Grid::calc_distance(p_pos, mam_ptr->m_ptr->get_position()) <= MAX_PLAYER_SIGHT) || (Grid::calc_distance(p_pos, mam_ptr->t_ptr->get_position()) <= MAX_PLAYER_SIGHT);
     mam_ptr->fear = false;
     mam_ptr->dead = false;
     return mam_ptr;

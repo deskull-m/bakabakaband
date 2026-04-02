@@ -877,7 +877,7 @@ bool change_wild_mode(CreatureEntity &creature, bool encount)
             has_pet = true;
         }
 
-        if (monster.is_asleep() || (monster.cdis > MAX_PLAYER_SIGHT) || !monster.is_hostile()) {
+        if (monster.is_asleep() || (Grid::calc_distance(creature.get_position(), monster.get_position()) > MAX_PLAYER_SIGHT) || !monster.is_hostile()) {
             continue;
         }
 

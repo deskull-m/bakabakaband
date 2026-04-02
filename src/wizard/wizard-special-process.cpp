@@ -727,7 +727,7 @@ void wiz_zap_surrounding_monsters(CreatureEntity &creature)
     const auto &floor = *creature.current_floor_ptr;
     for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
         const auto &monster = floor.m_list[i];
-        if (!monster.is_valid() || (i == creature.riding) || (monster.cdis > MAX_PLAYER_SIGHT)) {
+        if (!monster.is_valid() || (i == creature.riding) || (Grid::calc_distance(creature.get_position(), monster.get_position()) > MAX_PLAYER_SIGHT)) {
             continue;
         }
 

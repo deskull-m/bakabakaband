@@ -51,7 +51,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(CreatureEntity &creature
     const auto &monster = floor.m_list[m_idx];
     auto dummy_y = monster.y;
     auto dummy_x = monster.x;
-    if (see_monster(creature, m_idx) && monster_near_player(floor, m_idx, 0)) {
+    if (see_monster(creature, m_idx) && monster_near_player(creature, m_idx, 0)) {
         disturb(creature, true, true);
     }
 
@@ -142,11 +142,10 @@ static MonsterSpellResult spell_RF6_SPECIAL_ROLENTO(CreatureEntity &creature, PO
     int count = 0, k;
     int num = 1 + randint1(3);
     BIT_FLAGS mode = 0L;
-    const auto &floor = *creature.current_floor_ptr;
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool mon_to_mon = target_type == MONSTER_TO_MONSTER;
     bool mon_to_player = target_type == MONSTER_TO_PLAYER;
-    bool known = monster_near_player(floor, m_idx, t_idx);
+    bool known = monster_near_player(creature, m_idx, t_idx);
 
     mspell_cast_msg_blind msg(_("%s^が何か大量に投げた。", "%s^ spreads something."),
         _("%s^は手榴弾をばらまいた。", "%s^ throws some hand grenades."), _("%s^は手榴弾をばらまいた。", "%s^ throws some hand grenades."));

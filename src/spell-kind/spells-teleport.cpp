@@ -520,7 +520,7 @@ void teleport_away_followable(CreatureEntity &creature, MONSTER_IDX m_idx)
     const auto &monster = floor.m_list[m_idx];
     const auto old_m_pos = monster.get_position();
     bool old_ml = monster.ml;
-    POSITION old_cdis = monster.cdis;
+    const auto old_cdis = Grid::calc_distance(creature.get_position(), old_m_pos);
 
     teleport_away(creature, m_idx, MAX_PLAYER_SIGHT * 2 + 5, TELEPORT_SPONTANEOUS);
 

@@ -21,6 +21,7 @@
 #include "player/player-damage.h"
 #include "system/angband-system.h"
 #include "system/floor/floor-info.h"
+#include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
@@ -182,7 +183,7 @@ bool mass_genocide(CreatureEntity &creature, int power, bool player_cast)
         if (!monster.is_valid()) {
             continue;
         }
-        if (monster.cdis > MAX_PLAYER_SIGHT) {
+        if (Grid::calc_distance(creature.get_position(), monster.get_position()) > MAX_PLAYER_SIGHT) {
             continue;
         }
 
@@ -222,7 +223,7 @@ bool mass_genocide_undead(CreatureEntity &creature, int power, bool player_cast)
         if (!monster.has_undead_flag()) {
             continue;
         }
-        if (monster.cdis > MAX_PLAYER_SIGHT) {
+        if (Grid::calc_distance(creature.get_position(), monster.get_position()) > MAX_PLAYER_SIGHT) {
             continue;
         }
 

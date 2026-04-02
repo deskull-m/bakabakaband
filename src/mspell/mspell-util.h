@@ -11,7 +11,6 @@
 #define RF5_SPELL_START 32 * 4
 #define RF6_SPELL_START 32 * 5
 
-class FloorType;
 class CreatureEntity;
 
 struct mspell_cast_msg {
@@ -46,7 +45,7 @@ struct mspell_cast_msg_simple {
 };
 
 bool see_monster(CreatureEntity &creature, MONSTER_IDX m_idx);
-bool monster_near_player(const FloorType &floor, MONSTER_IDX m_idx, MONSTER_IDX t_idx);
+bool monster_near_player(const CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx);
 bool monspell_message_base(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, const mspell_cast_msg &msgs, bool msg_flag_aux, int target_type);
 bool monspell_message(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, const mspell_cast_msg_blind &msgs, int target_type);
 void simple_monspell_message(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, const mspell_cast_msg_simple &msgs, int target_type);

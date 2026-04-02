@@ -28,6 +28,7 @@
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
+#include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
@@ -316,7 +317,7 @@ bool make_attack_spell(CreatureEntity &creature, MONSTER_IDX m_idx)
     const auto &m_ref = *msa_ptr->m_ptr;
     auto should_prevent = m_ref.mflag.has(MonsterTemporaryFlagType::PREVENT_MAGIC);
     should_prevent |= !m_ref.is_hostile();
-    should_prevent |= (m_ref.cdis > AngbandSystem::get_instance().get_max_range()) && !m_ref.target_y;
+    should_prevent |= (Grid::calc_distance(creature.get_position(), m_ref.get_position()) > AngbandSystem::get_instance().get_max_range()) && !m_ref.get_target_position().y;
     if (should_prevent) {
         return false;
     }

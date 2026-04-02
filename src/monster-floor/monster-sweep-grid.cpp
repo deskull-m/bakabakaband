@@ -41,11 +41,12 @@ bool mon_will_run(CreatureEntity &creature, MONSTER_IDX m_idx)
         return true;
     }
 
+    const auto cdis = Grid::calc_distance(creature.get_position(), monster.get_position());
     if (monster.is_pet()) {
-        return (creature.pet_follow_distance < 0) && (monster.cdis <= (0 - creature.pet_follow_distance));
+        return (creature.pet_follow_distance < 0) && (cdis <= (0 - creature.pet_follow_distance));
     }
 
-    if (monster.cdis > MAX_PLAYER_SIGHT + 5) {
+    if (cdis > MAX_PLAYER_SIGHT + 5) {
         return false;
     }
 
@@ -53,7 +54,7 @@ bool mon_will_run(CreatureEntity &creature, MONSTER_IDX m_idx)
         return true;
     }
 
-    if (monster.cdis <= 5) {
+    if (cdis <= 5) {
         return false;
     }
 
@@ -477,7 +478,7 @@ public:
 
         std::vector<std::unique_ptr<const MonsterMoveGridDecider>> deciders;
 
-        if (!will_run && monster.target_y) {
+        if (!will_run && monster.get_target_position().y) {
             deciders.push_back(std::make_unique<SpecificTargetMoveGridDecider>(creature_ptr, m_idx));
         }
 

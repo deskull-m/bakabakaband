@@ -4,6 +4,7 @@
 #include "grid/grid.h"
 #include "monster/monster-info.h"
 #include "system/floor/floor-info.h"
+#include "system/grid-type-definition.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"
@@ -40,11 +41,13 @@ bool see_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
  * @param t_idx モンスターID二体目
  * @return モンスター2体のどちらかがプレイヤーの近くに居ればTRUE、どちらも遠ければFALSEを返す。
  */
-bool monster_near_player(const FloorType &floor, MONSTER_IDX m_idx, MONSTER_IDX t_idx)
+bool monster_near_player(const CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx)
 {
+    const auto &floor = *creature.current_floor_ptr;
+    const auto p_pos = creature.get_position();
     const auto &monster = floor.m_list[m_idx];
     const auto &monster_target = floor.m_list[t_idx];
-    return (monster.cdis <= MAX_PLAYER_SIGHT) || (monster_target.cdis <= MAX_PLAYER_SIGHT);
+    return (Grid::calc_distance(p_pos, monster.get_position()) <= MAX_PLAYER_SIGHT) || (Grid::calc_distance(p_pos, monster_target.get_position()) <= MAX_PLAYER_SIGHT);
 }
 
 /*!
@@ -62,7 +65,7 @@ bool monspell_message_base(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_
     auto &player = static_cast<PlayerType &>(creature);
     bool notice = false;
     auto &floor = *creature.current_floor_ptr;
-    bool known = monster_near_player(floor, m_idx, t_idx);
+    bool known = monster_near_player(creature, m_idx, t_idx);
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);

@@ -160,7 +160,7 @@ void update_mon_lite(CreatureEntity &creature)
         for (auto i = 1; i < floor.m_max; i++) {
             const auto &monster = floor.m_list[i];
             const auto &monrace = monster.get_monrace();
-            if (!monster.is_valid() || (monster.cdis > dis_lim)) {
+            if (!monster.is_valid() || (Grid::calc_distance(p_pos, monster.get_position()) > dis_lim)) {
                 continue;
             }
 

@@ -62,8 +62,8 @@ void MonsterLoader50::rd_monster(MonsterEntity &monster)
     monster.mtimed[MonsterTimedEffect::STUN] = any_bits(flags, SaveDataMonsterFlagType::STUNNED) ? rd_byte() : 0;
     monster.mtimed[MonsterTimedEffect::CONFUSION] = any_bits(flags, SaveDataMonsterFlagType::CONFUSED) ? rd_byte() : 0;
     monster.mtimed[MonsterTimedEffect::FEAR] = any_bits(flags, SaveDataMonsterFlagType::MONFEAR) ? rd_byte() : 0;
-    monster.target_y = any_bits(flags, SaveDataMonsterFlagType::TARGET_Y) ? rd_s16b() : 0;
-    monster.target_x = any_bits(flags, SaveDataMonsterFlagType::TARGET_X) ? rd_s16b() : 0;
+    monster.target.y = any_bits(flags, SaveDataMonsterFlagType::TARGET_Y) ? rd_s16b() : 0;
+    monster.target.x = any_bits(flags, SaveDataMonsterFlagType::TARGET_X) ? rd_s16b() : 0;
     monster.mtimed[MonsterTimedEffect::INVULNERABILITY] = any_bits(flags, SaveDataMonsterFlagType::INVULNER) ? rd_byte() : 0;
     monster.mflag.clear();
     monster.mflag2.clear();

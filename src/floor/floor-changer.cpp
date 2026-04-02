@@ -132,7 +132,7 @@ static MonraceDefinition &set_pet_params(CreatureEntity &creature, const int cur
     monster.ml = true;
     monster.mtimed[MonsterTimedEffect::SLEEP] = 0;
     monster.hold_o_idx_list.clear();
-    monster.target_y = 0;
+    monster.reset_target();
     auto &r_ref = monster.get_real_monrace();
     if (!ironman_nightmare) {
         monster.mflag.set(MonsterTemporaryFlagType::PREVENT_MAGIC);
