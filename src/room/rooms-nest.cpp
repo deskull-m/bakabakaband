@@ -44,7 +44,7 @@ const std::map<NestKind, nest_pit_type> nest_types = {
     { NestKind::UNDEAD, { _("アンデッド", "undead"), MonraceHook::UNDEAD, PitNestHook::NONE, 75, 5 } },
 };
 
-tl::optional<std::array<NestMonsterInfo, NUM_NEST_MON_TYPE>> pick_nest_monraces(CreatureEntity &creature, MonsterEntity &align)
+tl::optional<std::array<NestMonsterInfo, NUM_NEST_MON_TYPE>> pick_nest_monraces(CreatureEntity &creature, CreatureEntity &align)
 {
     std::array<NestMonsterInfo, NUM_NEST_MON_TYPE> nest_mon_info_list{};
     const auto &monraces = MonraceList::get_instance();

@@ -321,8 +321,9 @@ static void hissatsu_keiun_kininken(CreatureEntity &creature, samurai_slaying_ty
  * @param mode 剣術のスレイ型ID
  * @return スレイの倍率(/10倍)
  */
-MULTIPLY mult_hissatsu(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flags, const MonsterEntity &monster, combat_options mode)
+MULTIPLY mult_hissatsu(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flags, const CreatureEntity &target, combat_options mode)
 {
+    const auto &monster = static_cast<const MonsterEntity &>(target);
     auto &monrace = monster.get_monrace();
     samurai_slaying_type tmp_slaying(mult, flags, monster, mode, monrace);
     samurai_slaying_type *samurai_slaying_ptr = &tmp_slaying;

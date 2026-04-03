@@ -142,11 +142,12 @@ void update_lite_flags(turn_flags *turn_flags_ptr, const MonraceDefinition &monr
  * @param turn_flags_ptr ターン経過処理フラグへの参照ポインタ
  * @param m_ptr モンスターへの参照ポインタ
  */
-void update_monster_race_flags(CreatureEntity &creature, turn_flags *turn_flags_ptr, const MonsterEntity &monster)
+void update_monster_race_flags(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &target)
 {
     auto &player = static_cast<PlayerType &>(creature);
+    const auto &monster = static_cast<const MonsterEntity &>(target);
     auto &monrace = monster.get_monrace();
-    if (!is_original_ap_and_seen(player, monster)) {
+    if (!is_original_ap_and_seen(player, target)) {
         return;
     }
 

@@ -69,9 +69,9 @@ bool summon_possible(CreatureEntity &creature, POSITION y1, POSITION x1)
  * @param m_ptr 判定を行いたいモンスターの構造体参照ポインタ
  * @return 死者復活が有効な状態ならばTRUEを返す。
  */
-bool raise_possible(CreatureEntity &creature, const MonsterEntity &monster)
+bool raise_possible(CreatureEntity &creature, const CreatureEntity &target)
 {
-    const auto m_pos = monster.get_position();
+    const auto m_pos = target.get_position();
     const auto &floor = *creature.current_floor_ptr;
     for (auto xx = m_pos.x - 5; xx <= m_pos.x + 5; xx++) {
         for (auto yy = m_pos.y - 5; yy <= m_pos.y + 5; yy++) {
@@ -91,7 +91,7 @@ bool raise_possible(CreatureEntity &creature, const MonsterEntity &monster)
                 const auto &item = *floor.o_list[this_o_idx];
                 if (item.bi_key.tval() == ItemKindType::MONSTER_REMAINS) {
                     const auto &monrace = item.get_monrace();
-                    if (!monster_has_hostile_to_other_monster(monster, monrace)) {
+                    if (!monster_has_hostile_to_other_monster(target, monrace)) {
                         return true;
                     }
                 }

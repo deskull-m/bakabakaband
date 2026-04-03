@@ -67,8 +67,9 @@ DEPTH monster_level_idx(const FloorType &floor, MONSTER_IDX m_idx)
  * @return 修正を行った結果のダメージ量
  * @details RES_ALL持ちはAC軽減後のダメージを1/100に補正する. 光の剣は無敵を無効化する. 一定確率で無敵は貫通できる.
  */
-int mon_damage_mod(CreatureEntity &creature, const MonsterEntity &monster, int dam, bool is_psy_spear)
+int mon_damage_mod(CreatureEntity &creature, const CreatureEntity &target, int dam, bool is_psy_spear)
 {
+    const auto &monster = static_cast<const MonsterEntity &>(target);
     const auto &monrace = monster.get_monrace();
     if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL) && dam > 0) {
         dam /= 100;
@@ -81,18 +82,18 @@ int mon_damage_mod(CreatureEntity &creature, const MonsterEntity &monster, int d
 
     if (race_info.special_flags.has(MonsterSpecialType::DIMINISH_MAX_DAMAGE)) {
         race_info.r_special_flags.set(MonsterSpecialType::DIMINISH_MAX_DAMAGE);
-        if (dam > monster.hp / 10) {
-            dam = std::max(monster.hp / 10, monster.maxhp * 7 / 500);
+        if (dam > target.hp / 10) {
+            dam = std::max(target.hp / 10, target.maxhp * 7 / 500);
             msg_format(_("%s^は致命的なダメージを抑えた！", "%s^ resisted a critical damage!"), monster_desc(creature, monster, 0).data());
         }
     }
 
-    if (!monster.is_invulnerable()) {
+    if (!target.is_invulnerable()) {
         return dam;
     }
 
     if (is_psy_spear) {
-        if (!creature.is_blind() && is_seen(creature, monster)) {
+        if (!creature.is_blind() && is_seen(creature, target)) {
             msg_print(_("バリアを切り裂いた！", "The barrier is penetrated!"));
         }
 

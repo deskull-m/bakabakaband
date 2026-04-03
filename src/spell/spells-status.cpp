@@ -684,7 +684,7 @@ bool cosmic_cast_off(CreatureEntity &creature, ItemEntity **o_ptr_ptr)
  * @param monster 因果混乱をプレイヤーに与えたモンスターの情報参照
  * @param creature クリーチャーへの参照
  */
-void apply_nexus(const MonsterEntity &monster, CreatureEntity &creature)
+void apply_nexus(const CreatureEntity &attacker, CreatureEntity &creature)
 {
     if (!creature.is_player()) {
         return;
@@ -701,7 +701,7 @@ void apply_nexus(const MonsterEntity &monster, CreatureEntity &creature)
 
     case 4:
     case 5: {
-        teleport_player_to(player, monster.y, monster.x, TELEPORT_PASSIVE);
+        teleport_player_to(player, attacker.y, attacker.x, TELEPORT_PASSIVE);
         break;
     }
 

@@ -11,11 +11,10 @@
 #define DAMAGE_USELIFE 6
 
 class CreatureEntity;
-class MonsterEntity;
 int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_view kb_str, MonraceId killer_monrace_id = static_cast<MonraceId>(0));
 int acid_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool aura);
 int elec_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool aura);
 int fire_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool aura);
 int cold_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool aura);
-void touch_zap_player(const MonsterEntity &monster, CreatureEntity &creature);
+void touch_zap_player(const CreatureEntity &source, CreatureEntity &creature);
 void player_defecate(CreatureEntity &creature);

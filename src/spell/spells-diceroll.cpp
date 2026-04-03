@@ -19,8 +19,9 @@
  * @param m_ptr 対象モンスター
  * @return 魅了に抵抗したらTRUE
  */
-bool common_saving_throw_charm(CreatureEntity &creature, int pow, const MonsterEntity &monster)
+bool common_saving_throw_charm(CreatureEntity &creature, int pow, const CreatureEntity &target)
 {
+    const auto &monster = static_cast<const MonsterEntity &>(target);
     auto &monrace = monster.get_monrace();
 
     if (creature.current_floor_ptr->inside_arena) {
@@ -29,20 +30,20 @@ bool common_saving_throw_charm(CreatureEntity &creature, int pow, const MonsterE
 
     /* Memorize a flag */
     if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
-        if (is_original_ap_and_seen(creature, monster)) {
+        if (is_original_ap_and_seen(creature, target)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_ALL);
         }
         return true;
     }
 
     if (monrace.resistance_flags.has(MonsterResistanceType::NO_CONF)) {
-        if (is_original_ap_and_seen(creature, monster)) {
+        if (is_original_ap_and_seen(creature, target)) {
             monrace.resistance_flags.set(MonsterResistanceType::NO_CONF);
         }
         return true;
     }
 
-    if (monrace.misc_flags.has(MonsterMiscType::QUESTOR) || monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::NOPET)) {
+    if (monrace.misc_flags.has(MonsterMiscType::QUESTOR) || target.get_monster_profile().mflag2.has(MonsterConstantFlagType::NOPET)) {
         return true;
     }
 
@@ -59,8 +60,9 @@ bool common_saving_throw_charm(CreatureEntity &creature, int pow, const MonsterE
  * @param m_ptr 対象モンスター
  * @return 服従に抵抗したらTRUE
  */
-bool common_saving_throw_control(CreatureEntity &creature, int pow, const MonsterEntity &monster)
+bool common_saving_throw_control(CreatureEntity &creature, int pow, const CreatureEntity &target)
 {
+    const auto &monster = static_cast<const MonsterEntity &>(target);
     auto &monrace = monster.get_monrace();
 
     if (creature.current_floor_ptr->inside_arena) {
@@ -69,13 +71,13 @@ bool common_saving_throw_control(CreatureEntity &creature, int pow, const Monste
 
     /* Memorize a flag */
     if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
-        if (is_original_ap_and_seen(creature, monster)) {
+        if (is_original_ap_and_seen(creature, target)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_ALL);
         }
         return true;
     }
 
-    if (monrace.misc_flags.has(MonsterMiscType::QUESTOR) || monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::NOPET)) {
+    if (monrace.misc_flags.has(MonsterMiscType::QUESTOR) || target.get_monster_profile().mflag2.has(MonsterConstantFlagType::NOPET)) {
         return true;
     }
 

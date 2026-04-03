@@ -72,21 +72,6 @@ MonsterEntity MonsterEntity::clone() const
     return *this;
 }
 
-bool MonsterEntity::is_friendly() const
-{
-    return this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FRIENDLY);
-}
-
-bool MonsterEntity::is_pet() const
-{
-    return this->get_monster_profile().mflag2.has(MonsterConstantFlagType::PET);
-}
-
-bool MonsterEntity::is_hostile() const
-{
-    return !this->is_friendly() && !this->is_pet();
-}
-
 /*!
  * @brief モンスターの属性とアライアンスに基づいた敵対関係の有無を返す
  * @param other 比較対象モンスターへの参照
@@ -132,11 +117,6 @@ bool MonsterEntity::is_hostile_align(const byte other_sub_align) const
 bool MonsterEntity::is_named_pet() const
 {
     return this->is_pet() && this->is_named();
-}
-
-bool MonsterEntity::is_original_ap() const
-{
-    return this->ap_r_idx == this->r_idx;
 }
 
 /*!
@@ -222,11 +202,6 @@ short MonsterEntity::get_remaining_sleep() const
 bool MonsterEntity::is_dead() const
 {
     return this->hp < 0;
-}
-
-bool MonsterEntity::is_asleep() const
-{
-    return this->get_remaining_sleep() > 0;
 }
 
 short MonsterEntity::get_remaining_acceleration() const
@@ -422,15 +397,6 @@ bool MonsterEntity::is_explodable() const
 {
     const auto &monrace = this->get_monrace();
     return monrace.is_explodable();
-}
-
-/*!
- * @brief モンスターに召喚主がいるか
- * @return 召喚主がいるならtrue
- */
-bool MonsterEntity::has_parent() const
-{
-    return this->get_monster_profile().parent_m_idx > 0;
 }
 
 /*!
@@ -803,11 +769,6 @@ void MonsterEntity::initialize_equivalent_player_classes()
         this->pclass_ref = nullptr;
         this->pclass = PlayerClassType::WARRIOR; // デフォルト
     }
-}
-
-bool MonsterEntity::is_riding() const
-{
-    return this->get_monster_profile().mflag2.has(MonsterConstantFlagType::RIDING);
 }
 
 Pos2D MonsterEntity::get_position() const

@@ -93,6 +93,11 @@ Pos2D CreatureEntity::get_target_position() const
     return this->target;
 }
 
+bool CreatureEntity::is_asleep() const
+{
+    return this->get_timed_effect(CreatureTimedEffect::SLEEP_OR_PARALYSIS) > 0;
+}
+
 bool CreatureEntity::is_stunned() const
 {
     return this->get_timed_effect(CreatureTimedEffect::STUN) > 0;

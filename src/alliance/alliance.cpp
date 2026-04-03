@@ -259,7 +259,7 @@ std::string Alliance::get_ambush_message() const
  * @return monster_other で指定したモンスターに敵意を持つならばtrue
  * @details デフォルトではEVIL vs GOOD の属性判定のみを行う。各アライアンスでオーバーライド可能。
  */
-bool Alliance::is_hostile_to(const MonsterEntity &monster_other, const MonraceDefinition &monrace) const
+bool Alliance::is_hostile_to(const CreatureEntity &creature_other, const MonraceDefinition &monrace) const
 {
     uint8_t sub_align2 = SUB_ALIGN_NEUTRAL;
     if (monrace.kind_flags.has(MonsterKindType::EVIL)) {
@@ -268,7 +268,8 @@ bool Alliance::is_hostile_to(const MonsterEntity &monster_other, const MonraceDe
     if (monrace.kind_flags.has(MonsterKindType::GOOD)) {
         sub_align2 |= SUB_ALIGN_GOOD;
     }
-    return MonsterEntity::check_sub_alignments(monster_other.get_monster_profile().sub_align, sub_align2);
+    const auto sub_align1 = creature_other.has_monster_profile() ? creature_other.get_monster_profile().sub_align : static_cast<BIT_FLAGS8>(SUB_ALIGN_NEUTRAL);
+    return MonsterEntity::check_sub_alignments(sub_align1, sub_align2);
 }
 
 /*!

@@ -5,9 +5,8 @@
 enum class MonraceId : int16_t;
 class CreatureEntity;
 class FloorType;
-class MonsterEntity;
-void set_pet(CreatureEntity &creature, MonsterEntity &monster);
-void anger_monster(CreatureEntity &creature, MonsterEntity &monster);
+void set_pet(CreatureEntity &creature, CreatureEntity &target);
+void anger_monster(CreatureEntity &creature, CreatureEntity &target);
 bool set_monster_csleep(FloorType &floor, MONSTER_IDX m_idx, int v);
 bool set_monster_fast(FloorType &floor, MONSTER_IDX m_idx, int v);
 bool set_monster_slow(FloorType &floor, MONSTER_IDX m_idx, int v);

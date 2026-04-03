@@ -20,8 +20,8 @@
 #include <memory>
 #include <string>
 #include <string_view>
-#include <vector>
 #include <tl/optional.hpp>
+#include <vector>
 
 class Direction;
 class FloorType;
@@ -216,6 +216,16 @@ public:
     }
 
     /*!
+     * @brief クリーチャーの外見種族が実種族と一致しているかどうかを判定
+     * @return 外見種族 == 実種族 ならtrue（通常状態）
+     * @details モンスターでは変身・誤認がない場合にtrue。プレイヤーでは常にtrue。
+     */
+    bool is_original_ap() const
+    {
+        return this->ap_r_idx == this->r_idx;
+    }
+
+    /*!
      * @brief クリーチャーの速度を設定
      * @param new_speed 速度値
      */
@@ -312,6 +322,12 @@ public:
     virtual void set_timed_effect(CreatureTimedEffect effect, short value) = 0;
 
     /*!
+     * @brief クリーチャーが睡眠状態かどうかを判定
+     * @return 睡眠状態ならtrue
+     */
+    virtual bool is_asleep() const;
+
+    /*!
      * @brief クリーチャーが朦朧状態かどうかを判定
      * @return 朦朧状態ならtrue
      */
@@ -397,6 +413,52 @@ public:
         return false;
     }
 
+    /*!
+     * @brief クリーチャーがペットかどうかを判定
+     * @return ペットならtrue、デフォルトはfalse（プレイヤーはペットではない）
+     */
+    virtual bool is_pet() const
+    {
+        return this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::PET);
+    }
+
+    /*!
+     * @brief クリーチャーがフレンドリー状態かどうかを判定
+     * @return フレンドリーならtrue、デフォルトはfalse（プレイヤーはフレンドリー判定対象外）
+     */
+    virtual bool is_friendly() const
+    {
+        return this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FRIENDLY);
+    }
+
+    /*!
+     * @brief クリーチャーが敵対状態かどうかを判定
+     * @return 敵対ならtrue（ペットでもフレンドリーでもない場合）
+     * @note プレイヤーに対してはfalseを返す
+     */
+    virtual bool is_hostile() const
+    {
+        return this->has_monster_profile() && !this->is_friendly() && !this->is_pet();
+    }
+
+    /*!
+     * @brief クリーチャーが騎乗されているかどうかを判定
+     * @return 騎乗されているならtrue、デフォルトはfalse
+     */
+    virtual bool is_riding() const
+    {
+        return this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::RIDING);
+    }
+
+    /*!
+     * @brief クリーチャーに召喚主がいるかどうかを判定
+     * @return 召喚主がいるならtrue、デフォルトはfalse
+     */
+    virtual bool has_parent() const
+    {
+        return this->has_monster_profile() && this->get_monster_profile().parent_m_idx > 0;
+    }
+
     bool is_tough() const
     {
         return this->ppersonality == PERSONALITY_TOUGH;
@@ -435,20 +497,29 @@ public:
      * @return モンスター固有データへの参照
      * @pre has_monster_profile() == true
      */
-    MonsterProfile &get_monster_profile() { return this->monster_profile.value(); }
+    MonsterProfile &get_monster_profile()
+    {
+        return this->monster_profile.value();
+    }
 
     /*!
      * @brief モンスター固有データを取得する（const版）
      * @return モンスター固有データへのconst参照
      * @pre has_monster_profile() == true
      */
-    const MonsterProfile &get_monster_profile() const { return this->monster_profile.value(); }
+    const MonsterProfile &get_monster_profile() const
+    {
+        return this->monster_profile.value();
+    }
 
     /*!
      * @brief モンスター固有データを持っているかどうかを返す
      * @return モンスター固有データがあればtrue
      */
-    bool has_monster_profile() const { return this->monster_profile.has_value(); }
+    bool has_monster_profile() const
+    {
+        return this->monster_profile.has_value();
+    }
 
     // モンスター種族ID（プレイヤーの場合は0）
     MonraceId r_idx{}; /*!< モンスターの実種族ID (これが0の時は死亡扱いになる) / Monster race index 0 = dead. */

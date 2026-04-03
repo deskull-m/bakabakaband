@@ -211,27 +211,27 @@ bool monster_has_hostile_to_player(CreatureEntity &creature, int pa_good, int pa
  * @return monster_other で指定したモンスターに敵意を持つならばtrueを返す
  * @details アライアンス未所属（NONE）として判定する
  */
-bool monster_has_hostile_to_other_monster(const MonsterEntity &monster_other, const MonraceDefinition &monrace)
+bool monster_has_hostile_to_other_monster(const CreatureEntity &creature_other, const MonraceDefinition &monrace)
 {
-    return monster_has_hostile_to_other_monster(monster_other, monrace, AllianceType::NONE);
+    return monster_has_hostile_to_other_monster(creature_other, monrace, AllianceType::NONE);
 }
 
 /*!
  * @brief モンスターが他のモンスターに対して敵意を抱くかどうかを返す（アライアンス指定版）
- * @param monster_other 敵意を抱くか調べる他のモンスターの参照
+ * @param creature_other 敵意を抱くか調べる他のクリーチャーの参照
  * @param monrace モンスター種族情報の参照
  * @param alliance_id アライアンスID
- * @return monster_other で指定したモンスターに敵意を持つならばtrueを返す
+ * @return creature_other で指定したクリーチャーに敵意を持つならばtrueを返す
  */
-bool monster_has_hostile_to_other_monster(const MonsterEntity &monster_other, const MonraceDefinition &monrace, AllianceType alliance_id)
+bool monster_has_hostile_to_other_monster(const CreatureEntity &creature_other, const MonraceDefinition &monrace, AllianceType alliance_id)
 {
     const auto &alliance = alliance_list.at(alliance_id);
-    return alliance->is_hostile_to(monster_other, monrace);
+    return alliance->is_hostile_to(creature_other, monrace);
 }
 
-bool is_original_ap_and_seen(CreatureEntity &subject, const MonsterEntity &monster)
+bool is_original_ap_and_seen(CreatureEntity &subject, const CreatureEntity &creature)
 {
-    return monster.get_monster_profile().ml && !subject.effects()->hallucination().is_hallucinated() && monster.is_original_ap();
+    return creature.has_monster_profile() && creature.get_monster_profile().ml && !subject.effects()->hallucination().is_hallucinated() && creature.is_original_ap();
 }
 
 /*!

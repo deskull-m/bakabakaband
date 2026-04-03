@@ -34,13 +34,9 @@ public:
 
     void wipe();
     MonsterEntity clone() const;
-    bool is_friendly() const;
-    bool is_pet() const;
-    bool is_hostile() const;
     bool is_hostile_to_melee(const MonsterEntity &other) const;
     bool is_hostile_align(const byte other_sub_align) const;
     bool is_named_pet() const;
-    bool is_original_ap() const;
     bool is_mimicry() const;
     bool is_male() const;
     bool is_female() const;
@@ -55,7 +51,6 @@ public:
     short get_remaining_confusion() const;
     short get_remaining_fear() const;
     short get_remaining_invulnerability() const;
-    bool is_asleep() const;
     bool is_accelerated() const;
     bool is_decelerated() const override;
     bool is_stunned() const override;
@@ -70,14 +65,12 @@ public:
     bool has_demon_flag(bool is_apperance = false) const;
     bool has_undead_flag(bool is_apperance = false) const;
     bool is_explodable() const;
-    bool has_parent() const;
     std::string get_died_message() const;
     std::pair<TERM_COLOR, int> get_hp_bar_data() const;
     std::string get_pronoun_of_summoned_kin() const;
     tl::optional<std::string> get_pain_message(std::string_view monster_name, int damage) const;
     tl::optional<bool> order_pet_whistle(const MonsterEntity &other) const;
     tl::optional<bool> order_pet_dismission(const MonsterEntity &other) const;
-    bool is_riding() const;
     Pos2D get_position() const override;
     bool can_ring_boss_call_nazgul() const;
     std::string build_looking_description(bool needs_attitude) const;

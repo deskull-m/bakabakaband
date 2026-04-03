@@ -43,23 +43,29 @@
  * @param pos_target 目標座標
  * @return ビームが到達可能ならばTRUEを返す
  */
-bool direct_beam(CreatureEntity &creature, const MonsterEntity &monster, const Pos2D &pos_target)
+bool direct_beam(CreatureEntity &creature, const CreatureEntity &caster, const Pos2D &pos_target)
 {
     const auto &floor = *creature.current_floor_ptr;
-    const auto pos_source = monster.get_position();
+    const auto pos_source = caster.get_position();
     ProjectionPath grid_g(floor, AngbandSystem::get_instance().get_max_range(), creature.get_position(), pos_source, pos_target, PROJECT_THRU);
     if (grid_g.path_num()) {
         return false;
     }
 
-    const auto is_friend = monster.is_pet();
+    const auto is_friend = caster.is_pet();
     auto hit2 = false;
     for (const auto &pos : grid_g) {
         const auto &grid = floor.get_grid(pos);
         if (pos == pos_target) {
             hit2 = true;
-        } else if (is_friend && grid.has_monster() && !monster.is_hostile_to_melee(floor.m_list[grid.m_idx])) {
-            return false;
+        } else if (is_friend && grid.has_monster()) {
+            if (!caster.has_monster_profile()) {
+                return false;
+            }
+            const auto &caster_mon = static_cast<const MonsterEntity &>(caster);
+            if (!caster_mon.is_hostile_to_melee(floor.m_list[grid.m_idx])) {
+                return false;
+            }
         }
 
         if (is_friend && creature.is_located_at(pos)) {

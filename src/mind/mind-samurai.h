@@ -7,9 +7,8 @@
 
 class CreatureEntity;
 class MonsterAttackPlayer;
-class MonsterEntity;
 struct player_attack_type;
-MULTIPLY mult_hissatsu(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flags, const MonsterEntity &monster, combat_options mode);
+MULTIPLY mult_hissatsu(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flags, const CreatureEntity &target, combat_options mode);
 void concentration(CreatureEntity &creature);
 bool choose_samurai_stance(CreatureEntity &creature);
 int calc_attack_quality(CreatureEntity &creature, player_attack_type *pa_ptr);

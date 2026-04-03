@@ -270,11 +270,12 @@ void print_tomb(CreatureEntity &creature)
  * @param creature クリーチャーへの参照
  * @param monster モンスターへの参照
  */
-void print_monster_tomb(CreatureEntity &creature, MonsterEntity &monster)
+void print_monster_tomb(CreatureEntity &creature, CreatureEntity &target)
 {
     term_clear();
     read_dead_file(false);
 
+    const auto &monster = static_cast<MonsterEntity &>(target);
     const auto m_name = monster_desc(creature, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE);
     show_tomb_line(m_name, GRAVE_PLAYER_NAME_ROW);
 
@@ -284,8 +285,8 @@ void print_monster_tomb(CreatureEntity &creature, MonsterEntity &monster)
     show_tomb_line("Monster", GRAVE_PLAYER_TITLE_ROW);
 #endif
 
-    show_tomb_line(format(_("レベル: %d", "Level: %d"), monster.level), GRAVE_LEVEL_ROW);
-    show_tomb_line(format(_("HP: %d/%d", "HP: %d/%d"), monster.hp, monster.maxhp), GRAVE_EXP_ROW);
+    show_tomb_line(format(_("レベル: %d", "Level: %d"), target.level), GRAVE_LEVEL_ROW);
+    show_tomb_line(format(_("HP: %d/%d", "HP: %d/%d"), target.hp, target.maxhp), GRAVE_EXP_ROW);
 
     time_t ct = time((time_t *)0);
     show_tomb_line(format("%-.24s", ctime(&ct)), GRAVE_DEAD_DATETIME_ROW);

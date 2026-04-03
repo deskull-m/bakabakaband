@@ -3,6 +3,7 @@
 #include "monster-race/race-flags-resistance.h"
 #include "monster/monster-info.h"
 #include "system/monrace/monrace-definition.h"
+#include "system/monster-entity.h"
 
 ProcessResult effect_monster_lite_weak(CreatureEntity &creature, EffectMonster *em_ptr)
 {

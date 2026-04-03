@@ -20,9 +20,9 @@
 /*!
  * @brief AvaterChangerコンストラクタ
  */
-AvatarChanger::AvatarChanger(CreatureEntity &creature, const MonsterEntity &monster)
+AvatarChanger::AvatarChanger(CreatureEntity &creature, const CreatureEntity &target)
     : creature(creature)
-    , m_ptr(&monster)
+    , m_ptr(&static_cast<const MonsterEntity &>(target))
 {
 }
 
