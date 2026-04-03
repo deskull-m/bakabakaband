@@ -209,8 +209,45 @@ CreatureEntity
 
 ### ビルド確認
 
+ローグライクの性質上、自動テストは困難なため変更後はゲームを起動して基本動作を確認すること。
+
+CI と同等のチェックをローカルで実行するためのスクリプトを `.github/scripts/` に用意している。
+スクリプトは Linux 系シェル（`sh`）で実行すること。
+
+#### clang-format 整形チェック
+
+GitHub Actions の `check_format` ジョブと同等の確認を行う。
+
 ```bash
-cmake --build build --config Debug
+sh .github/scripts/ci-check-format.sh
 ```
 
-ローグライクの性質上、自動テストは困難なため変更後はゲームを起動して基本動作を確認すること。
+- `clang-format-15` が必要。未インストールの場合は `sudo apt-get install clang-format-15`
+- 整形が必要なファイルがある場合は差分を表示して終了コード 1 を返す
+
+#### autotools ビルドテスト
+
+GitHub Actions の `build_test_japanese` ジョブと同等のビルドを行う。
+
+```bash
+# デフォルト（g++、-Werror -Wall -Wextra、--disable-pch）
+sh .github/scripts/ci-build-test.sh
+
+# コンパイラ・フラグを変更する場合
+sh .github/scripts/ci-build-test.sh --cxx clang++-15 --cxxflags "-pipe -O3 -Werror -Wall -Wextra -stdlib=libc++"
+
+# 英語版ビルド
+sh .github/scripts/ci-build-test.sh --configure-opts "--disable-pch --disable-japanese"
+```
+
+- 依存パッケージ: `sudo apt-get install libncursesw5-dev libcurl4-openssl-dev nkf libc++-15-dev libc++abi-15-dev`
+- 内部で `./bootstrap` → `./configure` → `make -j$(nproc)` を順に実行する
+
+#### Windows (MSVC) ビルド確認
+
+MSVC ビルドは `.github/workflows/build-test-with-msvc.yml` を参照。
+ローカルでは VisualStudio ソリューションから Debug ビルドを実行して確認する：
+
+```powershell
+MSBuild -warnAsError .\VisualStudio\Bakabakaband.sln /t:Rebuild /p:Configuration=Debug
+```
