@@ -1046,7 +1046,7 @@ bool test_hit_fire(CreatureEntity &creature, int chance, CreatureEntity &target,
     /* Power competes against armor */
     if (randint0(chance) < (ac * 3 / 4)) {
         if (target.r_idx == MonraceId::GOEMON && !target.is_asleep()) {
-            const auto m_name = monster_desc(creature, dynamic_cast<MonsterEntity &>(target), MD_IGNORE_HALLU | MD_INDEF_HIDDEN);
+            const auto m_name = monster_desc(creature, target, MD_IGNORE_HALLU | MD_INDEF_HIDDEN);
             msg_format(_("%sは%sを斬り捨てた！", "%s cuts down %s!"), m_name.data(), item_name.data());
         }
         return false;
