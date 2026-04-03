@@ -5,7 +5,8 @@
 
 class ItemEntity;
 class CreatureEntity;
-bool test_hit_fire(CreatureEntity &creature, int chance, const CreatureEntity &target, int vis, std::string_view item_name);
+class MonsterEntity;
+bool test_hit_fire(CreatureEntity &creature, int chance, CreatureEntity &target, int vis, std::string_view item_name);
 void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SPELL_IDX snipe_type);
 int critical_shot(CreatureEntity &creature, WEIGHT weight, int plus_ammo, int plus_bow, int dam);
 int calc_crit_ratio_shot(CreatureEntity &creature, int plus_ammo, int plus_bow);

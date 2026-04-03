@@ -381,7 +381,7 @@ std::string probed_monster_info(CreatureEntity &creature, CreatureEntity &target
         lite_spot(creature, target.get_position());
     }
 
-    auto &monster = static_cast<MonsterEntity &>(target);
+    const auto &monster = static_cast<const MonsterEntity &>(target);
     const auto m_name = monster_desc(creature, monster, MD_IGNORE_HALLU | MD_INDEF_HIDDEN);
 
     concptr align;
@@ -411,7 +411,7 @@ std::string probed_monster_info(CreatureEntity &creature, CreatureEntity &target
         result.append("xxx ");
     }
 
-    if (monster.is_asleep()) {
+    if (target.is_asleep()) {
         result.append(_("睡眠 ", "sleeping "));
     }
     if (target.is_stunned()) {

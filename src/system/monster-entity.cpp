@@ -400,8 +400,6 @@ bool MonsterEntity::is_explodable() const
 }
 
 /*!
-
-/*!
  * @brief モンスターを撃破した際の述語メッセージを返す
  * @return 撃破されたモンスターの述語
  */

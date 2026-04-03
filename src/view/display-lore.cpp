@@ -1125,7 +1125,7 @@ void display_lore_this(CreatureEntity &creature, lore_type *lore_ptr)
         hooked_roff("に所属している");
 #else
         hooked_roff("belonging to ");
-        hooked_roff(alliance_list.at(lore_ptr->r_ptr->get_monster_profile().alliance_idx)->name.c_str());
+        hooked_roff(alliance_list.at(lore_ptr->r_ptr->alliance_idx)->name.c_str());
 #endif
     }
 

@@ -1,5 +1,4 @@
 #include "effect/effect-player-resist-hurt.h"
-#include "system/monster-entity.h"
 #include "artifact/fixed-art-types.h"
 #include "blue-magic/blue-magic-checker.h"
 #include "core/window-redrawer.h"
@@ -29,6 +28,7 @@
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/item-entity.h"
+#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 #include "world/world.h"
