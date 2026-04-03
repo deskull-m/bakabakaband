@@ -4,5 +4,4 @@
 #include <string>
 
 class CreatureEntity;
-class MonsterEntity;
-std::string monster_desc(CreatureEntity &subject, const MonsterEntity &monster, BIT_FLAGS mode);
+std::string monster_desc(CreatureEntity &subject, const CreatureEntity &monster, BIT_FLAGS mode);

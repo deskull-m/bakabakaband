@@ -232,29 +232,30 @@ static std::string add_cameleon_name(const MonsterEntity &monster, const BIT_FLA
  * @param mode 呼称オプション
  * @return std::string 要求されたモンスターの説明を含む文字列
  */
-std::string monster_desc(CreatureEntity &subject, const MonsterEntity &monster, BIT_FLAGS mode)
+std::string monster_desc(CreatureEntity &subject, const CreatureEntity &monster, BIT_FLAGS mode)
 {
-    const auto pronoun = decide_monster_personal_pronoun(monster, mode);
-    const auto &monrace = monster.get_monrace();
+    const auto &m = static_cast<const MonsterEntity &>(monster);
+    const auto pronoun = decide_monster_personal_pronoun(m, mode);
+    const auto &monrace = m.get_monrace();
     if (pronoun) {
         return *pronoun;
     }
 
-    const auto pronoun_self = get_monster_self_pronoun(monster, mode);
+    const auto pronoun_self = get_monster_self_pronoun(m, mode);
     if (pronoun_self) {
         return *pronoun_self;
     }
 
     const auto is_hallucinated = subject.effects()->hallucination().is_hallucinated();
-    const auto name = get_describing_monster_name(monster, is_hallucinated, mode);
+    const auto name = get_describing_monster_name(m, is_hallucinated, mode);
     std::stringstream ss;
 
-    if (monster.get_monster_profile().parent_m_idx > 0) {
-        const auto parent_monster = subject.current_floor_ptr->m_list[monster.get_monster_profile().parent_m_idx];
+    if (m.get_monster_profile().parent_m_idx > 0) {
+        const auto parent_monster = subject.current_floor_ptr->m_list[m.get_monster_profile().parent_m_idx];
         // 親ID＝自身のIDでは主を失った状態なのでスキップ
-        if (parent_monster.r_idx != monster.r_idx) {
-            auto parent_name = subject.current_floor_ptr->m_list[monster.get_monster_profile().parent_m_idx].get_monrace().name;
-            if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::QUYLTHLUG_BORN)) {
+        if (parent_monster.r_idx != m.r_idx) {
+            auto parent_name = subject.current_floor_ptr->m_list[m.get_monster_profile().parent_m_idx].get_monrace().name;
+            if (m.get_monster_profile().mflag2.has(MonsterConstantFlagType::QUYLTHLUG_BORN)) {
                 ss << parent_name << _("が産んだ", "-born ");
             } else if (monrace.misc_flags.has(MonsterMiscType::BREAK_DOWN)) {
                 ss << parent_name << _("が率いる", "leads ");
@@ -265,83 +266,83 @@ std::string monster_desc(CreatureEntity &subject, const MonsterEntity &monster, 
     }
 
 #ifdef JP
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::SANTA)) {
+    if (m.get_monster_profile().mflag2.has(MonsterConstantFlagType::SANTA)) {
         ss << "サンタと化した";
     }
 #endif
 #ifndef JP
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::SANTA)) {
+    if (m.get_monster_profile().mflag2.has(MonsterConstantFlagType::SANTA)) {
         ss << "Santa turned ";
     }
 #endif
 
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::ANGER)) {
+    if (m.get_monster_profile().mflag2.has(MonsterConstantFlagType::ANGER)) {
         ss << _("怒れる", "angry ");
     }
 
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::WAIFUIZED)) {
+    if (m.get_monster_profile().mflag2.has(MonsterConstantFlagType::WAIFUIZED)) {
         ss << _("美少女化した", "waifuized ");
     }
 
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::HUGE)) {
+    if (m.get_monster_profile().mflag2.has(MonsterConstantFlagType::HUGE)) {
         ss << _("超大型の", "huge ");
-    } else if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::LARGE)) {
+    } else if (m.get_monster_profile().mflag2.has(MonsterConstantFlagType::LARGE)) {
         ss << _("大型の", "large ");
     }
 
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::SMALL)) {
+    if (m.get_monster_profile().mflag2.has(MonsterConstantFlagType::SMALL)) {
         ss << _("小柄な", "small ");
     }
 
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::FAT)) {
+    if (m.get_monster_profile().mflag2.has(MonsterConstantFlagType::FAT)) {
         ss << _("肥満した", "fat ");
     }
 
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::GAUNT)) {
+    if (m.get_monster_profile().mflag2.has(MonsterConstantFlagType::GAUNT)) {
         ss << _("やせ衰えた", "gaunt ");
     }
 
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::ZOMBIFIED)) {
+    if (m.get_monster_profile().mflag2.has(MonsterConstantFlagType::ZOMBIFIED)) {
         ss << _("ゾンビと化した", "zombified ");
     }
 
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::NAKED)) {
+    if (m.get_monster_profile().mflag2.has(MonsterConstantFlagType::NAKED)) {
         ss << _("全裸の", "naked ");
     }
 
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
+    if (m.get_monster_profile().mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
         ss << _("違法改造の", "illegally modified ");
     }
 
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::LIGHTWEIGHT)) {
+    if (m.get_monster_profile().mflag2.has(MonsterConstantFlagType::LIGHTWEIGHT)) {
         ss << _("軽量化した", "lightweight ");
     }
 
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::DEFECATED)) {
+    if (m.get_monster_profile().mflag2.has(MonsterConstantFlagType::DEFECATED)) {
         ss << _("脱糞した", "defecated ");
     }
 
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::VOMITED)) {
+    if (m.get_monster_profile().mflag2.has(MonsterConstantFlagType::VOMITED)) {
         ss << _("嘔吐した", "vomited ");
     }
 
-    if (monster.is_pet() && !monster.is_original_ap()) {
+    if (m.is_pet() && !m.is_original_ap()) {
         ss << _(replace_monster_name_undefined(name), format("%s?", name.data()));
     } else {
-        ss << describe_non_pet(subject, monster, name, mode);
+        ss << describe_non_pet(subject, m, name, mode);
     }
 
-    if (monster.is_named()) {
-        ss << _("「", " called ") << monster.name << _("」", "");
+    if (m.is_named()) {
+        ss << _("「", " called ") << m.name << _("」", "");
     }
 
-    if (monster.is_riding()) {
+    if (m.is_riding()) {
         ss << _("(乗馬中)", "(riding)");
     }
 
-    ss << add_cameleon_name(monster, mode);
-    if (any_bits(mode, MD_IGNORE_HALLU) && !monster.is_original_ap()) {
-        ss << "(" << monster.get_monrace().name << ")";
+    ss << add_cameleon_name(m, mode);
+    if (any_bits(mode, MD_IGNORE_HALLU) && !m.is_original_ap()) {
+        ss << "(" << m.get_monrace().name << ")";
     }
 
     if (any_bits(mode, MD_POSSESSIVE)) {
