@@ -20,8 +20,8 @@
 #include <memory>
 #include <string>
 #include <string_view>
-#include <vector>
 #include <tl/optional.hpp>
+#include <vector>
 
 class Direction;
 class FloorType;
@@ -322,6 +322,12 @@ public:
     virtual void set_timed_effect(CreatureTimedEffect effect, short value) = 0;
 
     /*!
+     * @brief クリーチャーが睡眠状態かどうかを判定
+     * @return 睡眠状態ならtrue
+     */
+    virtual bool is_asleep() const;
+
+    /*!
      * @brief クリーチャーが朦朧状態かどうかを判定
      * @return 朦朧状態ならtrue
      */
@@ -491,20 +497,29 @@ public:
      * @return モンスター固有データへの参照
      * @pre has_monster_profile() == true
      */
-    MonsterProfile &get_monster_profile() { return this->monster_profile.value(); }
+    MonsterProfile &get_monster_profile()
+    {
+        return this->monster_profile.value();
+    }
 
     /*!
      * @brief モンスター固有データを取得する（const版）
      * @return モンスター固有データへのconst参照
      * @pre has_monster_profile() == true
      */
-    const MonsterProfile &get_monster_profile() const { return this->monster_profile.value(); }
+    const MonsterProfile &get_monster_profile() const
+    {
+        return this->monster_profile.value();
+    }
 
     /*!
      * @brief モンスター固有データを持っているかどうかを返す
      * @return モンスター固有データがあればtrue
      */
-    bool has_monster_profile() const { return this->monster_profile.has_value(); }
+    bool has_monster_profile() const
+    {
+        return this->monster_profile.has_value();
+    }
 
     // モンスター種族ID（プレイヤーの場合は0）
     MonraceId r_idx{}; /*!< モンスターの実種族ID (これが0の時は死亡扱いになる) / Monster race index 0 = dead. */

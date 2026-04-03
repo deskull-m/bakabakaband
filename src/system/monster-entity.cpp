@@ -72,7 +72,6 @@ MonsterEntity MonsterEntity::clone() const
     return *this;
 }
 
-
 /*!
  * @brief モンスターの属性とアライアンスに基づいた敵対関係の有無を返す
  * @param other 比較対象モンスターへの参照
@@ -203,11 +202,6 @@ short MonsterEntity::get_remaining_sleep() const
 bool MonsterEntity::is_dead() const
 {
     return this->hp < 0;
-}
-
-bool MonsterEntity::is_asleep() const
-{
-    return this->get_remaining_sleep() > 0;
 }
 
 short MonsterEntity::get_remaining_acceleration() const
