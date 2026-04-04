@@ -37,6 +37,34 @@ MonraceDefinition &CreatureEntity::get_real_monrace() const
     return MonraceList::get_instance().get_monrace(this->get_real_monrace_id());
 }
 
+bool CreatureEntity::has_living_flag(bool is_appearance) const
+{
+    const auto &monrace = is_appearance ? this->get_appearance_monrace() : this->get_monrace();
+    return monrace.has_living_flag();
+}
+
+bool CreatureEntity::has_demon_flag(bool is_appearance) const
+{
+    const auto &monrace = is_appearance ? this->get_appearance_monrace() : this->get_monrace();
+    return monrace.has_demon_flag();
+}
+
+bool CreatureEntity::has_undead_flag(bool is_appearance) const
+{
+    const auto &monrace = is_appearance ? this->get_appearance_monrace() : this->get_monrace();
+    return monrace.has_undead_flag();
+}
+
+bool CreatureEntity::is_explodable() const
+{
+    return this->get_monrace().is_explodable();
+}
+
+std::string CreatureEntity::get_died_message() const
+{
+    return this->get_monrace().get_died_message();
+}
+
 bool CreatureEntity::is_time_limit_esp() const
 {
     return this->tim_esp > 0;

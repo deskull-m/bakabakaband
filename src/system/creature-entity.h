@@ -280,6 +280,12 @@ public:
      */
     MonraceDefinition &get_real_monrace() const;
 
+    bool has_living_flag(bool is_appearance = false) const;
+    bool has_demon_flag(bool is_appearance = false) const;
+    bool has_undead_flag(bool is_appearance = false) const;
+    bool is_explodable() const;
+    std::string get_died_message() const;
+
     /*!
      * @brief 次の行動までに必要なエネルギーを取得
      * @return エネルギー値

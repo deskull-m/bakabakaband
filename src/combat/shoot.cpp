@@ -144,7 +144,6 @@ static MULTIPLY calc_shot_damage_with_slay(
     CreatureEntity &creature, ItemEntity *bow_ptr, ItemEntity *arrow_ptr, int tdam, const CreatureEntity &monster, SPELL_IDX snipe_type)
 {
     MULTIPLY mult = 10;
-    const auto &m = static_cast<const MonsterEntity &>(monster);
     auto &monrace = monster.get_monrace();
 
     const auto arrow_flags = arrow_ptr->get_flags();
@@ -264,7 +263,7 @@ static MULTIPLY calc_shot_damage_with_slay(
             }
         }
 
-        if ((flags.has(TR_SLAY_UNDEAD)) && m.has_undead_flag()) {
+        if ((flags.has(TR_SLAY_UNDEAD)) && monster.has_undead_flag()) {
             if (is_original_ap_and_seen(creature, monster)) {
                 monrace.r_kind_flags.set(MonsterKindType::UNDEAD);
             }
@@ -273,7 +272,7 @@ static MULTIPLY calc_shot_damage_with_slay(
             }
         }
 
-        if ((flags.has(TR_KILL_UNDEAD)) && m.has_undead_flag()) {
+        if ((flags.has(TR_KILL_UNDEAD)) && monster.has_undead_flag()) {
             if (is_original_ap_and_seen(creature, monster)) {
                 monrace.r_kind_flags.set(MonsterKindType::UNDEAD);
             }

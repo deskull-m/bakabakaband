@@ -56,11 +56,6 @@ public:
     void set_timed_effect(CreatureTimedEffect effect, short value) override;
     byte get_temporary_speed() const;
     int get_speed() const override;
-    bool has_living_flag(bool is_apperance = false) const;
-    bool has_demon_flag(bool is_apperance = false) const;
-    bool has_undead_flag(bool is_apperance = false) const;
-    bool is_explodable() const;
-    std::string get_died_message() const;
     std::pair<TERM_COLOR, int> get_hp_bar_data() const;
     std::string get_pronoun_of_summoned_kin() const;
     tl::optional<std::string> get_pain_message(std::string_view monster_name, int damage) const;

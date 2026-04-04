@@ -330,56 +330,6 @@ int MonsterEntity::get_speed() const
  * @return 生命体ならばtrue
  * @todo kind_flags をMonsterEntityへコピーする (将来的なモンスター仕様の拡張)
  */
-bool MonsterEntity::has_living_flag(bool is_apperance) const
-{
-    const auto &monrace = is_apperance ? this->get_appearance_monrace() : this->get_monrace();
-    return monrace.has_living_flag();
-}
-
-/*!
- * @brief モンスターが悪魔かどうかを返す
- * @param is_apperance たぬき、カメレオン、各種誤認ならtrue
- * @return 悪魔ならばtrue
- * @todo kind_flags をMonsterEntityへコピーする (将来的なモンスター仕様の拡張)
- */
-bool MonsterEntity::has_demon_flag(bool is_apperance) const
-{
-    const auto &monrace = is_apperance ? this->get_appearance_monrace() : this->get_monrace();
-    return monrace.has_demon_flag();
-}
-
-/*!
- * @brief モンスターがアンデッドかどうかを返す
- * @param is_apperance たぬき、カメレオン、各種誤認ならtrue
- * @return アンデッドならばtrue
- * @todo kind_flags をMonsterEntityへコピーする (将来的なモンスター仕様の拡張)
- */
-bool MonsterEntity::has_undead_flag(bool is_apperance) const
-{
-    const auto &monrace = is_apperance ? this->get_appearance_monrace() : this->get_monrace();
-    return monrace.has_undead_flag();
-}
-
-/*!
- * @brief モンスターが自爆するか否か
- * @return 自爆するならtrue
- */
-bool MonsterEntity::is_explodable() const
-{
-    const auto &monrace = this->get_monrace();
-    return monrace.is_explodable();
-}
-
-/*!
- * @brief モンスターを撃破した際の述語メッセージを返す
- * @return 撃破されたモンスターの述語
- */
-std::string MonsterEntity::get_died_message() const
-{
-    const auto &monrace = this->get_monrace();
-    return monrace.get_died_message();
-}
-
 /*!
  * @brief モンスターにダメージを与えた際の述語メッセージを返す
  * @return ダメージを受けたモンスターの述語
