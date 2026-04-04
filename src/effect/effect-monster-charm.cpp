@@ -415,13 +415,14 @@ ProcessResult effect_monster_crusade(CreatureEntity &creature, EffectMonster *em
  * @param hp 計算対象のHP
  * @return 捕まえられる最大HP
  */
-static int calcutate_capturable_hp(CreatureEntity &creature, const MonsterEntity &monster, int hp)
+static int calcutate_capturable_hp(CreatureEntity &creature, const CreatureEntity &monster, int hp)
 {
     if (monster.is_pet()) {
         return hp * 4L;
     }
 
-    if (CreatureClass(creature).equals(PlayerClassType::BEASTMASTER) && monster.has_living_flag()) {
+    const auto &m = static_cast<const MonsterEntity &>(monster);
+    if (CreatureClass(creature).equals(PlayerClassType::BEASTMASTER) && m.has_living_flag()) {
         return hp * 3 / 10;
     }
 
