@@ -24,7 +24,6 @@
 #include "system/floor/floor-info.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
@@ -275,8 +274,7 @@ void print_monster_tomb(CreatureEntity &creature, CreatureEntity &target)
     term_clear();
     read_dead_file(false);
 
-    const auto &monster = static_cast<MonsterEntity &>(target);
-    const auto m_name = monster_desc(creature, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE);
+    const auto m_name = monster_desc(creature, target, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE);
     show_tomb_line(m_name, GRAVE_PLAYER_NAME_ROW);
 
 #ifdef JP

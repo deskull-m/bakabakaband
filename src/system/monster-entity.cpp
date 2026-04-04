@@ -15,7 +15,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/redrawing-flags-updater.h"
-#include "term/term-color-types.h"
 #include "tracking/lore-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
@@ -114,11 +113,6 @@ bool MonsterEntity::is_hostile_align(const byte other_sub_align) const
     return MonsterEntity::check_sub_alignments(this->get_monster_profile().sub_align, other_sub_align);
 }
 
-bool MonsterEntity::is_named_pet() const
-{
-    return this->is_pet() && this->is_named();
-}
-
 /*!
  * @brief モンスターがアイテム類に擬態しているかどうかを返す
  * @param m_ptr モンスターの参照ポインタ
@@ -178,11 +172,6 @@ bool MonsterEntity::is_dead() const
 short MonsterEntity::get_remaining_acceleration() const
 {
     return this->get_monster_profile().mtimed.at(MonsterTimedEffect::FAST);
-}
-
-bool MonsterEntity::is_accelerated() const
-{
-    return this->get_remaining_acceleration() > 0;
 }
 
 bool MonsterEntity::is_decelerated() const
@@ -330,56 +319,6 @@ int MonsterEntity::get_speed() const
  * @return 生命体ならばtrue
  * @todo kind_flags をMonsterEntityへコピーする (将来的なモンスター仕様の拡張)
  */
-bool MonsterEntity::has_living_flag(bool is_apperance) const
-{
-    const auto &monrace = is_apperance ? this->get_appearance_monrace() : this->get_monrace();
-    return monrace.has_living_flag();
-}
-
-/*!
- * @brief モンスターが悪魔かどうかを返す
- * @param is_apperance たぬき、カメレオン、各種誤認ならtrue
- * @return 悪魔ならばtrue
- * @todo kind_flags をMonsterEntityへコピーする (将来的なモンスター仕様の拡張)
- */
-bool MonsterEntity::has_demon_flag(bool is_apperance) const
-{
-    const auto &monrace = is_apperance ? this->get_appearance_monrace() : this->get_monrace();
-    return monrace.has_demon_flag();
-}
-
-/*!
- * @brief モンスターがアンデッドかどうかを返す
- * @param is_apperance たぬき、カメレオン、各種誤認ならtrue
- * @return アンデッドならばtrue
- * @todo kind_flags をMonsterEntityへコピーする (将来的なモンスター仕様の拡張)
- */
-bool MonsterEntity::has_undead_flag(bool is_apperance) const
-{
-    const auto &monrace = is_apperance ? this->get_appearance_monrace() : this->get_monrace();
-    return monrace.has_undead_flag();
-}
-
-/*!
- * @brief モンスターが自爆するか否か
- * @return 自爆するならtrue
- */
-bool MonsterEntity::is_explodable() const
-{
-    const auto &monrace = this->get_monrace();
-    return monrace.is_explodable();
-}
-
-/*!
- * @brief モンスターを撃破した際の述語メッセージを返す
- * @return 撃破されたモンスターの述語
- */
-std::string MonsterEntity::get_died_message() const
-{
-    const auto &monrace = this->get_monrace();
-    return monrace.get_died_message();
-}
-
 /*!
  * @brief モンスターにダメージを与えた際の述語メッセージを返す
  * @return ダメージを受けたモンスターの述語
@@ -388,36 +327,6 @@ tl::optional<std::string> MonsterEntity::get_pain_message(std::string_view monst
 {
     auto &monrace = this->get_monrace();
     return MonsterPainDescriber(monrace.idx, monrace.symbol_definition.character, monster_name).describe(this->hp, damage, this->get_monster_profile().ml);
-}
-
-/*!
- * @brief モンスターの状態（無敵、起きているか、HPの割合）に応じてHPバーの色と長さを算出する
- * @return HPバーの色と長さ(1-10)のペア
- */
-std::pair<TERM_COLOR, int> MonsterEntity::get_hp_bar_data() const
-{
-    const auto percent = (this->maxhp > 0) ? (100 * this->hp / this->maxhp) : 0;
-    const auto len = std::clamp(percent / 10 + 1, 1, 10);
-
-    if (this->is_invulnerable()) {
-        return { TERM_WHITE, len };
-    }
-    if (this->is_asleep()) {
-        return { TERM_BLUE, len };
-    }
-    if (percent >= 100) {
-        return { TERM_L_GREEN, len };
-    }
-    if (percent >= 60) {
-        return { TERM_YELLOW, len };
-    }
-    if (percent >= 25) {
-        return { TERM_ORANGE, len };
-    }
-    if (percent >= 10) {
-        return { TERM_L_RED, len };
-    }
-    return { TERM_RED, len };
 }
 
 tl::optional<bool> MonsterEntity::order_pet_whistle(const MonsterEntity &other) const
@@ -483,12 +392,6 @@ void MonsterEntity::set_individual_speed(bool force_fixed_speed)
     }
 
     this->speed = speed;
-}
-
-void MonsterEntity::set_position(const Pos2D &pos)
-{
-    this->y = pos.y;
-    this->x = pos.x;
 }
 
 /*!

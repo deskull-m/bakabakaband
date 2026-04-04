@@ -3,7 +3,6 @@
 #include "system/angband.h"
 
 class CreatureEntity;
-class MonsterEntity;
 class AvatarChanger {
 public:
     AvatarChanger(CreatureEntity &creature, const CreatureEntity &target);
@@ -12,7 +11,7 @@ public:
 
 private:
     CreatureEntity &creature;
-    const MonsterEntity *m_ptr;
+    const CreatureEntity *m_ptr;
     void change_virtue_non_beginner();
     void change_virtue_unique();
     void change_virtue_good_evil();

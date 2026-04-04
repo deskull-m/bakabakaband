@@ -8,6 +8,7 @@
 #include "system/monrace/monrace-list.h"
 #include "system/monster-profile.h"
 #include "system/redrawing-flags-updater.h"
+#include "term/term-color-types.h"
 #include "term/z-form.h"
 #include "term/z-rand.h"
 #include "timed-effect/timed-effects.h"
@@ -35,6 +36,60 @@ MonraceId CreatureEntity::get_real_monrace_id() const
 MonraceDefinition &CreatureEntity::get_real_monrace() const
 {
     return MonraceList::get_instance().get_monrace(this->get_real_monrace_id());
+}
+
+bool CreatureEntity::has_living_flag(bool is_appearance) const
+{
+    const auto &monrace = is_appearance ? this->get_appearance_monrace() : this->get_monrace();
+    return monrace.has_living_flag();
+}
+
+bool CreatureEntity::has_demon_flag(bool is_appearance) const
+{
+    const auto &monrace = is_appearance ? this->get_appearance_monrace() : this->get_monrace();
+    return monrace.has_demon_flag();
+}
+
+bool CreatureEntity::has_undead_flag(bool is_appearance) const
+{
+    const auto &monrace = is_appearance ? this->get_appearance_monrace() : this->get_monrace();
+    return monrace.has_undead_flag();
+}
+
+bool CreatureEntity::is_explodable() const
+{
+    return this->get_monrace().is_explodable();
+}
+
+std::string CreatureEntity::get_died_message() const
+{
+    return this->get_monrace().get_died_message();
+}
+
+std::pair<TERM_COLOR, int> CreatureEntity::get_hp_bar_data() const
+{
+    const auto percent = (this->maxhp > 0) ? (100 * this->hp / this->maxhp) : 0;
+    const auto len = std::clamp(percent / 10 + 1, 1, 10);
+
+    if (this->is_invulnerable()) {
+        return { TERM_WHITE, len };
+    }
+    if (this->is_asleep()) {
+        return { TERM_BLUE, len };
+    }
+    if (percent >= 100) {
+        return { TERM_L_GREEN, len };
+    }
+    if (percent >= 60) {
+        return { TERM_YELLOW, len };
+    }
+    if (percent >= 25) {
+        return { TERM_ORANGE, len };
+    }
+    if (percent >= 10) {
+        return { TERM_L_RED, len };
+    }
+    return { TERM_RED, len };
 }
 
 bool CreatureEntity::is_time_limit_esp() const
@@ -147,6 +202,11 @@ bool CreatureEntity::is_invulnerable() const
 }
 
 bool CreatureEntity::is_fast() const
+{
+    return this->get_timed_effect(CreatureTimedEffect::ACCELERATION) > 0;
+}
+
+bool CreatureEntity::is_accelerated() const
 {
     return this->get_timed_effect(CreatureTimedEffect::ACCELERATION) > 0;
 }

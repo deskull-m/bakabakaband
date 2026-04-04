@@ -17,7 +17,6 @@
 #include "system/enums/monrace/monrace-id.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 
@@ -62,8 +61,7 @@ MULTIPLY mult_slaying(CreatureEntity &creature, MULTIPLY mult, const TrFlags &fl
         { TR_KILL_DRAGON, MonsterKindType::DRAGON, 50 },
     };
 
-    const auto &monster = static_cast<const MonsterEntity &>(target);
-    auto &monrace = monster.get_monrace();
+    auto &monrace = target.get_monrace();
     for (size_t i = 0; i < sizeof(slay_table) / sizeof(slay_table[0]); ++i) {
         const struct slay_table_t *p = &slay_table[i];
 
@@ -103,8 +101,7 @@ MULTIPLY mult_brand(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flag
         { TR_BRAND_POIS, RFR_EFF_IM_POISON_MASK, MonsterResistanceType::MAX },
     };
 
-    const auto &monster = static_cast<const MonsterEntity &>(target);
-    auto &monrace = monster.get_monrace();
+    auto &monrace = target.get_monrace();
     for (size_t i = 0; i < sizeof(brand_table) / sizeof(brand_table[0]); ++i) {
         const struct brand_table_t *p = &brand_table[i];
 

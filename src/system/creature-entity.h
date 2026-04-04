@@ -217,6 +217,25 @@ public:
     }
 
     /*!
+     * @brief クリーチャーが名前付きペットかどうかを判定
+     * @return 名前付きペットならtrue
+     */
+    bool is_named_pet() const
+    {
+        return this->is_pet() && this->is_named();
+    }
+
+    /*!
+     * @brief クリーチャーの座標を設定する
+     * @param pos 設定する座標
+     */
+    void set_position(const Pos2D &pos)
+    {
+        this->y = pos.y;
+        this->x = pos.x;
+    }
+
+    /*!
      * @brief クリーチャーの外見種族が実種族と一致しているかどうかを判定
      * @return 外見種族 == 実種族 ならtrue（通常状態）
      * @details モンスターでは変身・誤認がない場合にtrue。プレイヤーでは常にtrue。
@@ -279,6 +298,13 @@ public:
      * @return 真の種族定義への参照
      */
     MonraceDefinition &get_real_monrace() const;
+
+    bool has_living_flag(bool is_appearance = false) const;
+    bool has_demon_flag(bool is_appearance = false) const;
+    bool has_undead_flag(bool is_appearance = false) const;
+    bool is_explodable() const;
+    std::string get_died_message() const;
+    std::pair<TERM_COLOR, int> get_hp_bar_data() const;
 
     /*!
      * @brief 次の行動までに必要なエネルギーを取得
@@ -399,6 +425,12 @@ public:
      * @return 加速中ならtrue
      */
     virtual bool is_fast() const;
+
+    /*!
+     * @brief クリーチャーが加速しているかどうかを判定
+     * @return 加速中ならtrue
+     */
+    virtual bool is_accelerated() const;
 
     /*!
      * @brief クリーチャーが減速しているかどうかを判定

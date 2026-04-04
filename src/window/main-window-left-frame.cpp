@@ -308,12 +308,11 @@ static void print_health_monster_in_arena_for_wizard(CreatureEntity &creature)
 static std::vector<condition_layout_info> get_condition_layout_info(const CreatureEntity &monster)
 {
     std::vector<condition_layout_info> result;
-    const auto &m = static_cast<const MonsterEntity &>(monster);
 
     if (monster.is_invulnerable()) {
         result.push_back({ effect_type_to_label.at(MonsterTimedEffect::INVULNERABILITY), TERM_WHITE });
     }
-    if (m.is_accelerated()) {
+    if (monster.is_accelerated()) {
         result.push_back({ effect_type_to_label.at(MonsterTimedEffect::FAST), TERM_L_GREEN });
     }
     if (monster.is_decelerated()) {

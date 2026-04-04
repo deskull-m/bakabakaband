@@ -62,7 +62,6 @@
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
@@ -689,15 +688,14 @@ void PlayerType::on_death(std::string_view cause)
  */
 static void process_aura_damage(const CreatureEntity &source, CreatureEntity &creature, bool immune, MonsterAuraType aura_flag, dam_func dam_func, concptr message)
 {
-    const auto &monster = static_cast<const MonsterEntity &>(source);
-    auto &monrace = monster.get_monrace();
+    auto &monrace = source.get_monrace();
     if (monrace.aura_flags.has_not(aura_flag) || immune) {
         return;
     }
 
     int aura_damage = Dice::roll(1 + (monrace.level / 26), 1 + (monrace.level / 17));
     msg_print(message);
-    (*dam_func)(creature, aura_damage, monster_desc(creature, monster, MD_WRONGDOER_NAME).data(), true);
+    (*dam_func)(creature, aura_damage, monster_desc(creature, source, MD_WRONGDOER_NAME).data(), true);
     if (is_original_ap_and_seen(creature, source)) {
         monrace.r_aura_flags.set(aura_flag);
     }
