@@ -35,7 +35,7 @@
  * @param checker 射線判定の振り分け
  * @return 有効な座標があった場合はその座標、なかったらnullopt
  */
-static tl::optional<Pos2D> adjacent_grid_check(CreatureEntity &creature, const MonsterEntity &monster, const Pos2D &pos, TerrainCharacteristics tc)
+static tl::optional<Pos2D> adjacent_grid_check(CreatureEntity &creature, const CreatureEntity &monster, const Pos2D &pos, TerrainCharacteristics tc)
 {
     constexpr std::array<std::array<int, 8>, 4> directions = {
         {
