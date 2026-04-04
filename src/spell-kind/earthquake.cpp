@@ -179,21 +179,23 @@ tl::optional<Pos2D> decide_monster_dodge_position(const FloorType &floor, const 
     return pos_candidates.empty() ? tl::nullopt : tl::make_optional(rand_choice(pos_candidates));
 }
 
-void move_monster_to(CreatureEntity &creature, MonsterEntity &monster, const Pos2D &pos_to)
+void move_monster_to(CreatureEntity &creature, CreatureEntity &monster, const Pos2D &pos_to)
 {
+    auto &m = static_cast<MonsterEntity &>(monster);
     auto &floor = *creature.current_floor_ptr;
     const auto pos_from = monster.get_position();
     auto &grid_from = floor.get_grid(pos_from);
     auto &grid_to = floor.get_grid(pos_to);
     grid_to.m_idx = std::exchange(grid_from.m_idx, {});
-    monster.set_position(pos_to);
+    m.set_position(pos_to);
     update_monster(creature, grid_to.m_idx, true);
     lite_spot(creature, pos_from);
     lite_spot(creature, pos_to);
 }
 
-bool process_monster_damage(CreatureEntity &creature, MonsterEntity &monster, bool has_dodged)
+bool process_monster_damage(CreatureEntity &creature, CreatureEntity &monster, bool has_dodged)
 {
+    auto &m = static_cast<MonsterEntity &>(monster);
     auto &floor = *creature.current_floor_ptr;
     auto &grid = floor.get_grid(monster.get_position());
     const auto damage = (has_dodged ? Dice::roll(4, 8) : (monster.hp + 1));
@@ -208,7 +210,7 @@ bool process_monster_damage(CreatureEntity &creature, MonsterEntity &monster, bo
         msg_format(_("%s^は岩石に埋もれてしまった！", "%s^ is embedded in the rock!"), m_name.data());
     }
 
-    if (record_named_pet && monster.is_named_pet()) {
+    if (record_named_pet && m.is_named_pet()) {
         const auto m2_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
         exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_EARTHQUAKE, m2_name);
     }
@@ -217,7 +219,7 @@ bool process_monster_damage(CreatureEntity &creature, MonsterEntity &monster, bo
     return true;
 }
 
-void process_hit_to_monster(CreatureEntity &creature, MonsterEntity &monster, std::span<const Pos2D> pos_collapses)
+void process_hit_to_monster(CreatureEntity &creature, CreatureEntity &monster, std::span<const Pos2D> pos_collapses)
 {
     const auto &floor = *creature.current_floor_ptr;
     const auto pos_dodge = decide_monster_dodge_position(floor, creature.get_position(), monster, pos_collapses);

@@ -102,7 +102,7 @@ bool cast_spell(CreatureEntity &creature, MONSTER_IDX m_idx, bool aware);
 bool process_monster_fear(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx);
 
 void sweep_monster_process(CreatureEntity &creature);
-bool decide_process_continue(CreatureEntity &creature, MonsterEntity &monster);
+bool decide_process_continue(CreatureEntity &creature, CreatureEntity &monster);
 bool process_stalking(CreatureEntity &creature, MONSTER_IDX m_idx);
 
 constexpr auto STALKER_CHANCE_DENOMINATOR = 32; //!< モンスターが背後に忍び寄る確率分母
@@ -998,7 +998,7 @@ void sweep_monster_process(CreatureEntity &creature)
  * @param m_ptr モンスターへの参照ポインタ
  * @return 後続処理が必要ならTRUE
  */
-bool decide_process_continue(CreatureEntity &creature, MonsterEntity &monster)
+bool decide_process_continue(CreatureEntity &creature, CreatureEntity &monster)
 {
     const auto &monrace = monster.get_monrace();
     auto &player = static_cast<PlayerType &>(creature);

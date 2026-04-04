@@ -108,7 +108,7 @@ tl::optional<MonraceId> wiz_select_summon_monrace_id()
     return (choice != monrace_ids.end()) ? tl::make_optional(*choice) : tl::nullopt;
 }
 
-void wiz_select_chameleon_polymorph(MonsterEntity &monster)
+void wiz_select_chameleon_polymorph(CreatureEntity &monster)
 {
     msg_print("Please select a monster to polymorph into.");
     msg_erase();

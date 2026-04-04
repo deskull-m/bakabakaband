@@ -68,7 +68,7 @@ static bool capture_monster(CreatureEntity &creature, ItemEntity &item)
     return true;
 }
 
-static void restore_monster_nickname(MonsterEntity &monster, ItemEntity &item)
+static void restore_monster_nickname(CreatureEntity &monster, ItemEntity &item)
 {
     if (!item.is_inscribed()) {
         return;
