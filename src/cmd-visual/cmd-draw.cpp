@@ -15,8 +15,8 @@
 #include "player/player-status.h"
 #include "player/process-name.h"
 #include "racial/racial-android.h"
+#include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
@@ -166,7 +166,7 @@ static tl::optional<int> input_status_command(CreatureEntity &creature, int page
  * @brief モンスターのステータスを簡易表示する（プレイヤー表示フォーマットを流用）
  * @param monster_ptr モンスターへの参照ポインタ
  */
-static void display_monster_status(MonsterEntity *monster_ptr)
+static void display_monster_status(CreatureEntity *monster_ptr)
 {
     term_clear();
 
@@ -258,9 +258,8 @@ void do_cmd_player_status(CreatureEntity *creature_ptr)
 {
     // モンスターの場合は専用の表示
     if (!creature_ptr->is_player()) {
-        auto *monster_ptr = static_cast<MonsterEntity *>(creature_ptr);
         screen_save();
-        display_monster_status(monster_ptr);
+        display_monster_status(creature_ptr);
         inkey();
         screen_load();
         return;
