@@ -323,9 +323,8 @@ static void hissatsu_keiun_kininken(CreatureEntity &creature, samurai_slaying_ty
  */
 MULTIPLY mult_hissatsu(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flags, const CreatureEntity &target, combat_options mode)
 {
-    const auto &monster = static_cast<const MonsterEntity &>(target);
-    auto &monrace = monster.get_monrace();
-    samurai_slaying_type tmp_slaying(mult, flags, monster, mode, monrace);
+    auto &monrace = target.get_monrace();
+    samurai_slaying_type tmp_slaying(mult, flags, target, mode, monrace);
     samurai_slaying_type *samurai_slaying_ptr = &tmp_slaying;
     hissatsu_burning_strike(creature, samurai_slaying_ptr);
     hissatsu_serpent_tongue(creature, samurai_slaying_ptr);

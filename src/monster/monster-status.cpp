@@ -69,8 +69,7 @@ DEPTH monster_level_idx(const FloorType &floor, MONSTER_IDX m_idx)
  */
 int mon_damage_mod(CreatureEntity &creature, const CreatureEntity &target, int dam, bool is_psy_spear)
 {
-    const auto &monster = static_cast<const MonsterEntity &>(target);
-    const auto &monrace = monster.get_monrace();
+    const auto &monrace = target.get_monrace();
     if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL) && dam > 0) {
         dam /= 100;
         if ((dam == 0) && one_in_(3)) {
@@ -78,13 +77,13 @@ int mon_damage_mod(CreatureEntity &creature, const CreatureEntity &target, int d
         }
     }
 
-    auto &race_info = monster.get_monrace();
+    auto &race_info = target.get_monrace();
 
     if (race_info.special_flags.has(MonsterSpecialType::DIMINISH_MAX_DAMAGE)) {
         race_info.r_special_flags.set(MonsterSpecialType::DIMINISH_MAX_DAMAGE);
         if (dam > target.hp / 10) {
             dam = std::max(target.hp / 10, target.maxhp * 7 / 500);
-            msg_format(_("%s^は致命的なダメージを抑えた！", "%s^ resisted a critical damage!"), monster_desc(creature, monster, 0).data());
+            msg_format(_("%s^は致命的なダメージを抑えた！", "%s^ resisted a critical damage!"), monster_desc(creature, target, 0).data());
         }
     }
 

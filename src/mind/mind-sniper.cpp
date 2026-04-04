@@ -27,7 +27,6 @@
 #include "player-status/player-energy.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
@@ -409,8 +408,7 @@ static int get_snipe_power(CreatureEntity &creature, COMMAND_CODE *sn, bool only
  */
 MULTIPLY calc_snipe_damage_with_slay(CreatureEntity &creature, MULTIPLY mult, const CreatureEntity &target, SPELL_IDX snipe_type)
 {
-    const auto &monster = static_cast<const MonsterEntity &>(target);
-    auto &monrace = monster.get_monrace();
+    auto &monrace = target.get_monrace();
     auto &player = static_cast<PlayerType &>(creature);
     bool seen = is_seen(player, target);
 

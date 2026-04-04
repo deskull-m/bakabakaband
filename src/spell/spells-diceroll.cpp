@@ -10,7 +10,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 
 /*!
@@ -21,8 +20,7 @@
  */
 bool common_saving_throw_charm(CreatureEntity &creature, int pow, const CreatureEntity &target)
 {
-    const auto &monster = static_cast<const MonsterEntity &>(target);
-    auto &monrace = monster.get_monrace();
+    auto &monrace = target.get_monrace();
 
     if (creature.current_floor_ptr->inside_arena) {
         return true;
@@ -62,8 +60,7 @@ bool common_saving_throw_charm(CreatureEntity &creature, int pow, const Creature
  */
 bool common_saving_throw_control(CreatureEntity &creature, int pow, const CreatureEntity &target)
 {
-    const auto &monster = static_cast<const MonsterEntity &>(target);
-    auto &monrace = monster.get_monrace();
+    auto &monrace = target.get_monrace();
 
     if (creature.current_floor_ptr->inside_arena) {
         return true;
