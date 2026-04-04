@@ -19,7 +19,6 @@ enum class MonraceId : int16_t;
 enum class PlayerRaceType;
 enum class PlayerClassType : short;
 class FloorType;
-class MonraceDefinition;
 class MonsterEntityWriter;
 class MonsterEntity : public CreatureEntity {
 public:
@@ -40,10 +39,6 @@ public:
     bool is_mimicry() const;
     bool is_male() const;
     bool is_female() const;
-    MonraceId get_real_monrace_id() const;
-    MonraceDefinition &get_real_monrace() const;
-    MonraceDefinition &get_appearance_monrace() const;
-    MonraceDefinition &get_monrace() const;
     short get_remaining_sleep() const;
     short get_remaining_acceleration() const;
     short get_remaining_deceleration() const;
