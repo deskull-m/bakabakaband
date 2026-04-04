@@ -8,6 +8,7 @@
 #include "system/monrace/monrace-list.h"
 #include "system/monster-profile.h"
 #include "system/redrawing-flags-updater.h"
+#include "term/term-color-types.h"
 #include "term/z-form.h"
 #include "term/z-rand.h"
 #include "timed-effect/timed-effects.h"
@@ -63,6 +64,32 @@ bool CreatureEntity::is_explodable() const
 std::string CreatureEntity::get_died_message() const
 {
     return this->get_monrace().get_died_message();
+}
+
+std::pair<TERM_COLOR, int> CreatureEntity::get_hp_bar_data() const
+{
+    const auto percent = (this->maxhp > 0) ? (100 * this->hp / this->maxhp) : 0;
+    const auto len = std::clamp(percent / 10 + 1, 1, 10);
+
+    if (this->is_invulnerable()) {
+        return { TERM_WHITE, len };
+    }
+    if (this->is_asleep()) {
+        return { TERM_BLUE, len };
+    }
+    if (percent >= 100) {
+        return { TERM_L_GREEN, len };
+    }
+    if (percent >= 60) {
+        return { TERM_YELLOW, len };
+    }
+    if (percent >= 25) {
+        return { TERM_ORANGE, len };
+    }
+    if (percent >= 10) {
+        return { TERM_L_RED, len };
+    }
+    return { TERM_RED, len };
 }
 
 bool CreatureEntity::is_time_limit_esp() const

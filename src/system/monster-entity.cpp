@@ -15,7 +15,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/redrawing-flags-updater.h"
-#include "term/term-color-types.h"
 #include "tracking/lore-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
@@ -333,36 +332,6 @@ tl::optional<std::string> MonsterEntity::get_pain_message(std::string_view monst
 {
     auto &monrace = this->get_monrace();
     return MonsterPainDescriber(monrace.idx, monrace.symbol_definition.character, monster_name).describe(this->hp, damage, this->get_monster_profile().ml);
-}
-
-/*!
- * @brief モンスターの状態（無敵、起きているか、HPの割合）に応じてHPバーの色と長さを算出する
- * @return HPバーの色と長さ(1-10)のペア
- */
-std::pair<TERM_COLOR, int> MonsterEntity::get_hp_bar_data() const
-{
-    const auto percent = (this->maxhp > 0) ? (100 * this->hp / this->maxhp) : 0;
-    const auto len = std::clamp(percent / 10 + 1, 1, 10);
-
-    if (this->is_invulnerable()) {
-        return { TERM_WHITE, len };
-    }
-    if (this->is_asleep()) {
-        return { TERM_BLUE, len };
-    }
-    if (percent >= 100) {
-        return { TERM_L_GREEN, len };
-    }
-    if (percent >= 60) {
-        return { TERM_YELLOW, len };
-    }
-    if (percent >= 25) {
-        return { TERM_ORANGE, len };
-    }
-    if (percent >= 10) {
-        return { TERM_L_RED, len };
-    }
-    return { TERM_RED, len };
 }
 
 tl::optional<bool> MonsterEntity::order_pet_whistle(const MonsterEntity &other) const
