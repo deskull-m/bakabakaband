@@ -174,11 +174,6 @@ short MonsterEntity::get_remaining_acceleration() const
     return this->get_monster_profile().mtimed.at(MonsterTimedEffect::FAST);
 }
 
-bool MonsterEntity::is_accelerated() const
-{
-    return this->get_remaining_acceleration() > 0;
-}
-
 bool MonsterEntity::is_decelerated() const
 {
     return this->get_remaining_deceleration() > 0;

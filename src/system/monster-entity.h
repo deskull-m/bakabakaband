@@ -45,7 +45,6 @@ public:
     short get_remaining_confusion() const;
     short get_remaining_fear() const;
     short get_remaining_invulnerability() const;
-    bool is_accelerated() const;
     bool is_decelerated() const override;
     bool is_stunned() const override;
     bool is_confused() const override;

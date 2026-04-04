@@ -206,6 +206,11 @@ bool CreatureEntity::is_fast() const
     return this->get_timed_effect(CreatureTimedEffect::ACCELERATION) > 0;
 }
 
+bool CreatureEntity::is_accelerated() const
+{
+    return this->get_timed_effect(CreatureTimedEffect::ACCELERATION) > 0;
+}
+
 bool CreatureEntity::is_decelerated() const
 {
     return this->get_timed_effect(CreatureTimedEffect::DECELERATION) > 0;

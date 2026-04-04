@@ -427,6 +427,12 @@ public:
     virtual bool is_fast() const;
 
     /*!
+     * @brief クリーチャーが加速しているかどうかを判定
+     * @return 加速中ならtrue
+     */
+    virtual bool is_accelerated() const;
+
+    /*!
      * @brief クリーチャーが減速しているかどうかを判定
      * @return 減速中ならtrue
      */
