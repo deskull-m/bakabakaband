@@ -111,7 +111,7 @@ tl::optional<Pos2D> find_safety(CreatureEntity &creature, short m_idx)
  * @param candidate 隠れられる地点の候補地
  */
 static void sweep_hiding_candidate(
-    CreatureEntity &creature, const MonsterEntity &monster, std::span<const Pos2DVec> offsets, coordinate_candidate &candidate)
+    CreatureEntity &creature, const CreatureEntity &monster, std::span<const Pos2DVec> offsets, coordinate_candidate &candidate)
 {
     const auto &floor = *creature.current_floor_ptr;
     const auto &monrace = monster.get_monrace();
