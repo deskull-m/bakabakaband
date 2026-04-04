@@ -6,19 +6,18 @@
 #include "util/point-2d.h"
 #include <tuple>
 
-class MonsterEntity;
 class ItemEntity;
 class QuestType;
 class QuestCompletionChecker {
 public:
-    QuestCompletionChecker(CreatureEntity &creature, const MonsterEntity &monster);
+    QuestCompletionChecker(CreatureEntity &creature, const CreatureEntity &monster);
     virtual ~QuestCompletionChecker() = default;
 
     void complete();
 
 private:
     CreatureEntity *creature_ptr;
-    const MonsterEntity *m_ptr;
+    const CreatureEntity *m_ptr;
     QuestId quest_idx;
     QuestType *q_ptr = nullptr;
 
