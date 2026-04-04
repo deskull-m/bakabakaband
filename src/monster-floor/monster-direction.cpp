@@ -27,7 +27,7 @@
  * @param plus モンスターIDの増減 (1/2 の確率で+1、1/2の確率で-1)
  * @return ペットがモンスターに近づくならばTRUE
  */
-static bool decide_pet_approch_direction(CreatureEntity &creature, const MonsterEntity &monster_from, const MonsterEntity &monster_to)
+static bool decide_pet_approch_direction(CreatureEntity &creature, const CreatureEntity &monster_from, const CreatureEntity &monster_to)
 {
     if (!monster_from.is_pet()) {
         return false;
@@ -153,7 +153,7 @@ static tl::optional<MonsterMovementDirectionList> get_enemy_dir(CreatureEntity &
  * @param mosnter モンスターへの参照
  * @return 不規則な方向へ移動するならtrue
  */
-static bool random_walk(CreatureEntity &creature, const MonsterEntity &monster)
+static bool random_walk(CreatureEntity &creature, const CreatureEntity &monster)
 {
     auto &monrace = monster.get_monrace();
     if (monrace.behavior_flags.has_all_of({ MonsterBehaviorType::RAND_MOVE_50, MonsterBehaviorType::RAND_MOVE_25 }) && evaluate_percent(75)) {
