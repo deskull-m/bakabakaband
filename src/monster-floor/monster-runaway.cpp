@@ -42,7 +42,7 @@ static bool is_acting_monster(const MonraceId r_idx)
  * @param m_ptr モンスターへの参照ポインタ
  * @param m_name モンスター名称
  */
-static void escape_monster(CreatureEntity &player, turn_flags *turn_flags_ptr, const MonsterEntity &monster, concptr m_name)
+static void escape_monster(CreatureEntity &player, turn_flags *turn_flags_ptr, const CreatureEntity &monster, concptr m_name)
 {
     if (turn_flags_ptr->is_riding_mon) {
         msg_format(_("%sはあなたの束縛から脱出した。", "%s^ succeeded to escape from your restriction!"), m_name);
