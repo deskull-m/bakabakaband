@@ -127,7 +127,7 @@ void fix_inventory(CreatureEntity &creature)
  *  name: name of monster
  * </pre>
  */
-static void print_monster_line(TERM_LEN x, TERM_LEN y, const MonsterEntity &monster, int n_same, int n_awake)
+static void print_monster_line(TERM_LEN x, TERM_LEN y, const CreatureEntity &monster, int n_same, int n_awake)
 {
     term_erase(0, y);
     term_gotoxy(x, y);
@@ -218,11 +218,12 @@ void print_monster_list(const FloorType &floor, const std::vector<MONSTER_IDX> &
     }
 }
 
-static void print_pet_list_oneline(CreatureEntity &creature, const MonsterEntity &monster, TERM_LEN x, TERM_LEN y, TERM_LEN width)
+static void print_pet_list_oneline(CreatureEntity &creature, const CreatureEntity &monster, TERM_LEN x, TERM_LEN y, TERM_LEN width)
 {
+    const auto &m = static_cast<const MonsterEntity &>(monster);
     const auto &monrace = monster.get_appearance_monrace();
     const auto name = monster_desc(creature, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE | MD_NO_OWNER);
-    const auto &[bar_color, bar_len] = monster.get_hp_bar_data();
+    const auto &[bar_color, bar_len] = m.get_hp_bar_data();
     const auto is_visible = monster.get_monster_profile().ml && !creature.effects()->hallucination().is_hallucinated();
 
     term_erase(0, y);

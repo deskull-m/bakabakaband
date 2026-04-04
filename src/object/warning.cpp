@@ -57,7 +57,7 @@ ItemEntity *choose_warning_item(CreatureEntity &creature)
  * @param dam 基本ダメージ
  * @param max 算出した最大ダメージを返すポインタ
  */
-static void spell_damcalc(CreatureEntity &creature, const MonsterEntity &monster, AttributeType typ, int dam, int *max)
+static void spell_damcalc(CreatureEntity &creature, const CreatureEntity &monster, AttributeType typ, int dam, int *max)
 {
     const auto &monrace = monster.get_monrace();
     int rlev = monrace.level;
@@ -256,7 +256,7 @@ static void spell_damcalc_by_spellnum(CreatureEntity &creature, MonsterAbilityTy
  * @param blow モンスターの打撃能力の構造体参照
  * @return 算出された最大ダメージを返す。
  */
-static int blow_damcalc(const MonsterEntity &monster, CreatureEntity &creature, const MonsterBlow &blow)
+static int blow_damcalc(const CreatureEntity &monster, CreatureEntity &creature, const MonsterBlow &blow)
 {
     int dam = blow.damage_dice.maxroll();
     int dummy_max = 0;

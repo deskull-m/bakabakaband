@@ -30,7 +30,7 @@
 /*!
  * @brief モンスターがカオス属性へ耐性を示すかどうか
  */
-static bool monster_has_chaos_resist(CreatureEntity &creature, const MonsterEntity &monster)
+static bool monster_has_chaos_resist(CreatureEntity &creature, const CreatureEntity &monster)
 {
     auto &monrace = monster.get_monrace();
     if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_CHAOS)) {
