@@ -105,7 +105,7 @@ bool show_gold_on_floor = false;
 /*
  * Evaluate number of kill needed to gain level
  */
-static std::string evaluate_monster_exp(CreatureEntity &creature, const MonsterEntity &monster)
+static std::string evaluate_monster_exp(CreatureEntity &creature, const CreatureEntity &monster)
 {
     const auto &monrace = monster.get_appearance_monrace();
     if ((creature.level >= PY_MAX_LEVEL) || CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
