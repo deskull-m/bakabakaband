@@ -60,7 +60,7 @@ static void check_riding_preservation(CreatureEntity &creature)
     }
 }
 
-static bool check_pet_preservation_conditions(CreatureEntity &creature, const MonsterEntity &monster)
+static bool check_pet_preservation_conditions(CreatureEntity &creature, const CreatureEntity &monster)
 {
     auto &player = static_cast<PlayerType &>(creature);
     auto *player_ptr = &player;
