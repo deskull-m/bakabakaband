@@ -92,7 +92,7 @@ static std::string get_monster_personal_pronoun(const int kind, const BIT_FLAGS 
     }
 }
 
-static tl::optional<std::string> decide_monster_personal_pronoun(const MonsterEntity &monster, const BIT_FLAGS mode)
+static tl::optional<std::string> decide_monster_personal_pronoun(const CreatureEntity &monster, const BIT_FLAGS mode)
 {
     const auto seen = any_bits(mode, MD_ASSUME_VISIBLE) || (none_bits(mode, MD_ASSUME_HIDDEN) && monster.get_monster_profile().ml);
     const auto pron = (seen && any_bits(mode, MD_PRON_VISIBLE)) || (!seen && any_bits(mode, MD_PRON_HIDDEN));
@@ -105,25 +105,26 @@ static tl::optional<std::string> decide_monster_personal_pronoun(const MonsterEn
     return get_monster_personal_pronoun(kind, mode);
 }
 
-static tl::optional<std::string> get_monster_self_pronoun(const MonsterEntity &monster, const BIT_FLAGS mode)
+static tl::optional<std::string> get_monster_self_pronoun(const CreatureEntity &monster, const BIT_FLAGS mode)
 {
     constexpr BIT_FLAGS self = MD_POSSESSIVE | MD_OBJECTIVE;
     if (!match_bits(mode, self, self)) {
         return tl::nullopt;
     }
 
-    if (monster.is_female()) {
+    const auto &m = static_cast<const MonsterEntity &>(monster);
+    if (m.is_female()) {
         return _("彼女自身", "herself");
     }
 
-    if (monster.is_male()) {
+    if (m.is_male()) {
         return _("彼自身", "himself");
     }
 
     return _("それ自身", "itself");
 }
 
-static std::string get_describing_monster_name(const MonsterEntity &monster, const bool is_hallucinated, const BIT_FLAGS mode)
+static std::string get_describing_monster_name(const CreatureEntity &monster, const bool is_hallucinated, const BIT_FLAGS mode)
 {
     const auto &monrace = monster.get_appearance_monrace();
     if (!is_hallucinated || any_bits(mode, MD_IGNORE_HALLU)) {
@@ -162,7 +163,7 @@ static std::string replace_monster_name_undefined(std::string_view name)
 }
 #endif
 
-static tl::optional<std::string> get_fake_monster_name(const CreatureEntity &creature, const MonsterEntity &monster, const std::string &name, const BIT_FLAGS mode)
+static tl::optional<std::string> get_fake_monster_name(const CreatureEntity &creature, const CreatureEntity &monster, const std::string &name, const BIT_FLAGS mode)
 {
     const auto &monrace = monster.get_appearance_monrace();
     const auto is_hallucinated = creature.effects()->hallucination().is_hallucinated();
@@ -181,7 +182,7 @@ static tl::optional<std::string> get_fake_monster_name(const CreatureEntity &cre
     return name;
 }
 
-static std::string describe_non_pet(const CreatureEntity &creature, const MonsterEntity &monster, const std::string &name, const BIT_FLAGS mode)
+static std::string describe_non_pet(const CreatureEntity &creature, const CreatureEntity &monster, const std::string &name, const BIT_FLAGS mode)
 {
     const auto fake_name = get_fake_monster_name(creature, monster, name, mode);
     if (fake_name) {
@@ -212,7 +213,7 @@ static std::string describe_non_pet(const CreatureEntity &creature, const Monste
     return ss.str();
 }
 
-static std::string add_cameleon_name(const MonsterEntity &monster, const BIT_FLAGS mode)
+static std::string add_cameleon_name(const CreatureEntity &monster, const BIT_FLAGS mode)
 {
     if (none_bits(mode, MD_IGNORE_HALLU) || monster.get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON)) {
         return "";

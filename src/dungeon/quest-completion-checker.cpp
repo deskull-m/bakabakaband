@@ -16,7 +16,7 @@
 #include <algorithm>
 #include <range/v3/algorithm.hpp>
 
-QuestCompletionChecker::QuestCompletionChecker(CreatureEntity &creature, const MonsterEntity &monster)
+QuestCompletionChecker::QuestCompletionChecker(CreatureEntity &creature, const CreatureEntity &monster)
     : creature_ptr(&creature)
     , m_ptr(&monster)
     , quest_idx(QuestId::NONE)
@@ -50,7 +50,7 @@ void QuestCompletionChecker::complete()
     this->make_reward(pos);
 }
 
-static bool check_quest_completion(CreatureEntity &creature, const QuestType &quest, const MonsterEntity &monster)
+static bool check_quest_completion(CreatureEntity &creature, const QuestType &quest, const CreatureEntity &monster)
 {
     const auto &floor = *creature.current_floor_ptr;
     if (quest.status != QuestStatusType::TAKEN) {

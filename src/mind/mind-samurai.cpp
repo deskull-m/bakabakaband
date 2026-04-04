@@ -40,15 +40,15 @@
 #include "view/display-messages.h"
 
 struct samurai_slaying_type {
-    samurai_slaying_type(MULTIPLY mult, const TrFlags &flags, const MonsterEntity &monster, combat_options mode, MonraceDefinition &monrace);
+    samurai_slaying_type(MULTIPLY mult, const TrFlags &flags, const CreatureEntity &monster, combat_options mode, MonraceDefinition &monrace);
     MULTIPLY mult;
     TrFlags flags;
-    const MonsterEntity *m_ptr;
+    const CreatureEntity *m_ptr;
     combat_options mode;
     MonraceDefinition *r_ptr;
 };
 
-samurai_slaying_type::samurai_slaying_type(MULTIPLY mult, const TrFlags &flags, const MonsterEntity &monster, combat_options mode, MonraceDefinition &monrace)
+samurai_slaying_type::samurai_slaying_type(MULTIPLY mult, const TrFlags &flags, const CreatureEntity &monster, combat_options mode, MonraceDefinition &monrace)
     : mult(mult)
     , flags(flags)
     , m_ptr(&monster)
@@ -152,7 +152,7 @@ static void hissatsu_zanma_ken(samurai_slaying_type *samurai_slaying_ptr)
         return;
     }
 
-    if (!samurai_slaying_ptr->m_ptr->has_living_flag() && samurai_slaying_ptr->r_ptr->kind_flags.has(MonsterKindType::EVIL)) {
+    if (!static_cast<const MonsterEntity *>(samurai_slaying_ptr->m_ptr)->has_living_flag() && samurai_slaying_ptr->r_ptr->kind_flags.has(MonsterKindType::EVIL)) {
         if (samurai_slaying_ptr->mult < 15) {
             samurai_slaying_ptr->mult = 25;
         } else if (samurai_slaying_ptr->mult < 50) {
@@ -274,7 +274,7 @@ static void hissatsu_bloody_maelstroem(CreatureEntity &creature, samurai_slaying
 {
     auto &player = static_cast<PlayerType &>(creature);
     const auto &player_cut = player.effects()->cut();
-    if ((samurai_slaying_ptr->mode == HISSATSU_SEKIRYUKA) && player_cut.is_cut() && samurai_slaying_ptr->m_ptr->has_living_flag()) {
+    if ((samurai_slaying_ptr->mode == HISSATSU_SEKIRYUKA) && player_cut.is_cut() && static_cast<const MonsterEntity *>(samurai_slaying_ptr->m_ptr)->has_living_flag()) {
         auto tmp = std::min<short>(100, std::max<short>(10, player_cut.current() / 10));
         if (samurai_slaying_ptr->mult < tmp) {
             samurai_slaying_ptr->mult = tmp;
@@ -293,7 +293,8 @@ static void hissatsu_keiun_kininken(CreatureEntity &creature, samurai_slaying_ty
         return;
     }
 
-    if (samurai_slaying_ptr->m_ptr->has_undead_flag()) {
+    const auto *m = static_cast<const MonsterEntity *>(samurai_slaying_ptr->m_ptr);
+    if (m->has_undead_flag()) {
         if (is_original_ap_and_seen(creature, *samurai_slaying_ptr->m_ptr)) {
             samurai_slaying_ptr->r_ptr->r_kind_flags.set(MonsterKindType::UNDEAD);
 

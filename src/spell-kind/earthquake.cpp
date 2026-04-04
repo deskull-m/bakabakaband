@@ -164,7 +164,7 @@ bool can_monster_dodge_to(const FloorType &floor, const Pos2D &p_pos, const Pos2
     return can_dodge;
 }
 
-tl::optional<Pos2D> decide_monster_dodge_position(const FloorType &floor, const Pos2D &p_pos, const MonsterEntity &monster, std::span<const Pos2D> pos_collapses)
+tl::optional<Pos2D> decide_monster_dodge_position(const FloorType &floor, const Pos2D &p_pos, const CreatureEntity &monster, std::span<const Pos2D> pos_collapses)
 {
     if (monster.get_monrace().behavior_flags.has(MonsterBehaviorType::NEVER_MOVE)) {
         return tl::nullopt;
