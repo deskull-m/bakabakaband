@@ -217,6 +217,25 @@ public:
     }
 
     /*!
+     * @brief クリーチャーが名前付きペットかどうかを判定
+     * @return 名前付きペットならtrue
+     */
+    bool is_named_pet() const
+    {
+        return this->is_pet() && this->is_named();
+    }
+
+    /*!
+     * @brief クリーチャーの座標を設定する
+     * @param pos 設定する座標
+     */
+    void set_position(const Pos2D &pos)
+    {
+        this->y = pos.y;
+        this->x = pos.x;
+    }
+
+    /*!
      * @brief クリーチャーの外見種族が実種族と一致しているかどうかを判定
      * @return 外見種族 == 実種族 ならtrue（通常状態）
      * @details モンスターでは変身・誤認がない場合にtrue。プレイヤーでは常にtrue。

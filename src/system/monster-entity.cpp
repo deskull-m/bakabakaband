@@ -114,11 +114,6 @@ bool MonsterEntity::is_hostile_align(const byte other_sub_align) const
     return MonsterEntity::check_sub_alignments(this->get_monster_profile().sub_align, other_sub_align);
 }
 
-bool MonsterEntity::is_named_pet() const
-{
-    return this->is_pet() && this->is_named();
-}
-
 /*!
  * @brief モンスターがアイテム類に擬態しているかどうかを返す
  * @param m_ptr モンスターの参照ポインタ
@@ -433,12 +428,6 @@ void MonsterEntity::set_individual_speed(bool force_fixed_speed)
     }
 
     this->speed = speed;
-}
-
-void MonsterEntity::set_position(const Pos2D &pos)
-{
-    this->y = pos.y;
-    this->x = pos.x;
 }
 
 /*!

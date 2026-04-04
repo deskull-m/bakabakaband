@@ -35,7 +35,6 @@ public:
     MonsterEntity clone() const;
     bool is_hostile_to_melee(const MonsterEntity &other) const;
     bool is_hostile_align(const byte other_sub_align) const;
-    bool is_named_pet() const;
     bool is_mimicry() const;
     bool is_male() const;
     bool is_female() const;
@@ -69,7 +68,6 @@ public:
     void on_death(std::string_view cause) override;
 
     void set_individual_speed(bool force_fixed_speed);
-    void set_position(const Pos2D &pos);
     void set_hostile();
     void make_lore_treasure(int num_item, int num_gold) const;
     void reset_chameleon_polymorph();
