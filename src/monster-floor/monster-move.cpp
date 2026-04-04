@@ -39,7 +39,7 @@
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
-static bool check_hp_for_terrain_destruction(const TerrainType &terrain, const MonsterEntity &monster)
+static bool check_hp_for_terrain_destruction(const TerrainType &terrain, const CreatureEntity &monster)
 {
     auto can_destroy = terrain.flags.has_not(TerrainCharacteristics::GLASS);
     can_destroy |= monster.get_monrace().behavior_flags.has(MonsterBehaviorType::STUPID);
@@ -55,7 +55,7 @@ static bool check_hp_for_terrain_destruction(const TerrainType &terrain, const M
  * @param can_cross モンスターが地形を踏破できるならばTRUE
  * @return 透過も破壊もしなかった場合はFALSE、それ以外はTRUE
  */
-static bool process_wall(CreatureEntity &creature, turn_flags *turn_flags_ptr, const MonsterEntity &monster, const Pos2D &pos, bool can_cross)
+static bool process_wall(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &monster, const Pos2D &pos, bool can_cross)
 {
     const auto &grid = creature.current_floor_ptr->get_grid(pos);
     const auto &terrain = grid.get_terrain();
@@ -108,7 +108,7 @@ static bool process_wall(CreatureEntity &creature, turn_flags *turn_flags_ptr, c
  * @return ドアを打ち破るならここでの処理は実行せずtrue、開けるだけなら開けてfalseを返す
  * @todo 関数名と処理内容が不一致、後で直す
  */
-static bool bash_normal_door(CreatureEntity &creature, turn_flags *turn_flags_ptr, const MonsterEntity &monster, const Pos2D &pos)
+static bool bash_normal_door(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &monster, const Pos2D &pos)
 {
     const auto &monrace = monster.get_monrace();
     const auto &grid = creature.current_floor_ptr->get_grid(pos);
@@ -146,7 +146,7 @@ static bool bash_normal_door(CreatureEntity &creature, turn_flags *turn_flags_pt
  * @param may_bash ドアを打ち破るならtrue、開けるだけならfalse
  * @todo 関数名と処理内容が不一致、後で直す
  */
-static void bash_glass_door(CreatureEntity &creature, turn_flags *turn_flags_ptr, const MonsterEntity &monster, const TerrainType &terrain, bool may_bash)
+static void bash_glass_door(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &monster, const TerrainType &terrain, bool may_bash)
 {
     const auto &monrace = monster.get_monrace();
     auto can_bash = may_bash;
@@ -184,7 +184,7 @@ static void bash_glass_door(CreatureEntity &creature, turn_flags *turn_flags_ptr
  * @param pos モンスターの移動先座標
  * @return モンスターが死亡した場合のみFALSE
  */
-static bool process_door(CreatureEntity &creature, turn_flags *turn_flags_ptr, const MonsterEntity &monster, const Pos2D &pos)
+static bool process_door(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &monster, const Pos2D &pos)
 {
     auto &monrace = monster.get_monrace();
     const auto &floor = *creature.current_floor_ptr;
@@ -234,7 +234,7 @@ static bool process_door(CreatureEntity &creature, turn_flags *turn_flags_ptr, c
  * @param pos モンスターの移動先座標
  * @return ルーンに侵入できるか否か
  */
-static bool process_protection_rune(CreatureEntity &creature, turn_flags *turn_flags_ptr, const MonsterEntity &monster, const Pos2D &pos)
+static bool process_protection_rune(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &monster, const Pos2D &pos)
 {
     auto &grid = creature.current_floor_ptr->get_grid(pos);
     const auto &monrace = monster.get_monrace();
@@ -270,7 +270,7 @@ static bool process_protection_rune(CreatureEntity &creature, turn_flags *turn_f
  * @param pos モンスターの移動先座標
  * @return モンスターが死亡した場合のみFALSE
  */
-static bool process_explosive_rune(CreatureEntity &creature, turn_flags *turn_flags_ptr, const MonsterEntity &monster, const Pos2D &pos)
+static bool process_explosive_rune(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &monster, const Pos2D &pos)
 {
     const auto &grid = creature.current_floor_ptr->get_grid(pos);
     const auto &monrace = monster.get_monrace();
@@ -303,7 +303,7 @@ static bool process_explosive_rune(CreatureEntity &creature, turn_flags *turn_fl
  * @param pos モンスターの移動先座標
  * @return モンスターが死亡した場合のみFALSE
  */
-static bool process_post_dig_wall(CreatureEntity &creature, turn_flags *turn_flags_ptr, const MonsterEntity &monster, const Pos2D &pos)
+static bool process_post_dig_wall(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &monster, const Pos2D &pos)
 {
     auto &monrace = monster.get_monrace();
     const auto &grid = creature.current_floor_ptr->get_grid(pos);
@@ -518,7 +518,7 @@ static bool can_speak(const MonraceDefinition &ap_r_ref, MonsterSpeakType mon_sp
     return can_speak_all || can_speak_specific;
 }
 
-static tl::optional<MonsterMessageType> get_speak_type(const MonsterEntity &monster)
+static tl::optional<MonsterMessageType> get_speak_type(const CreatureEntity &monster)
 {
     const auto &ap_monrace = monster.get_appearance_monrace();
     if (monster.is_fearful() && can_speak(ap_monrace, MonsterSpeakType::SPEAK_FEAR)) {
