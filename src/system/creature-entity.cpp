@@ -1,13 +1,41 @@
 #include "system/creature-entity.h"
 #include "floor/geometry.h"
 #include "inventory/inventory-slot-types.h"
+#include "monster/monster-flag-types.h"
 #include "player-ability/player-ability-types.h"
 #include "system/item-entity.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
+#include "system/monster-profile.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/z-form.h"
 #include "term/z-rand.h"
 #include "timed-effect/timed-effects.h"
 #include <range/v3/algorithm.hpp>
+
+MonraceDefinition &CreatureEntity::get_monrace() const
+{
+    return MonraceList::get_instance().get_monrace(this->r_idx);
+}
+
+MonraceDefinition &CreatureEntity::get_appearance_monrace() const
+{
+    return MonraceList::get_instance().get_monrace(this->ap_r_idx);
+}
+
+MonraceId CreatureEntity::get_real_monrace_id() const
+{
+    if (!this->has_monster_profile() || this->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON)) {
+        return this->r_idx;
+    }
+
+    return this->get_monrace().kind_flags.has(MonsterKindType::UNIQUE) ? MonraceId::CHAMELEON_K : MonraceId::CHAMELEON;
+}
+
+MonraceDefinition &CreatureEntity::get_real_monrace() const
+{
+    return MonraceList::get_instance().get_monrace(this->get_real_monrace_id());
+}
 
 bool CreatureEntity::is_time_limit_esp() const
 {

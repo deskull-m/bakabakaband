@@ -165,35 +165,6 @@ bool MonsterEntity::is_female() const
     return monrace.is_female() || this->get_monster_profile().mflag2.has(MonsterConstantFlagType::WAIFUIZED);
 }
 
-MonraceId MonsterEntity::get_real_monrace_id() const
-{
-    const auto &monrace = this->get_monrace();
-    if (this->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON)) {
-        return this->r_idx;
-    }
-
-    return monrace.kind_flags.has(MonsterKindType::UNIQUE) ? MonraceId::CHAMELEON_K : MonraceId::CHAMELEON;
-}
-
-/*!
- * @brief モンスターの真の種族定義を返す (CHAMAELEONフラグ専用)
- * @return 真のモンスター種族参照
- */
-MonraceDefinition &MonsterEntity::get_real_monrace() const
-{
-    return MonraceList::get_instance().get_monrace(this->get_real_monrace_id());
-}
-
-MonraceDefinition &MonsterEntity::get_appearance_monrace() const
-{
-    return MonraceList::get_instance().get_monrace(this->ap_r_idx);
-}
-
-MonraceDefinition &MonsterEntity::get_monrace() const
-{
-    return MonraceList::get_instance().get_monrace(this->r_idx);
-}
-
 short MonsterEntity::get_remaining_sleep() const
 {
     return this->get_monster_profile().mtimed.at(MonsterTimedEffect::SLEEP);

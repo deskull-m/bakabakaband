@@ -26,6 +26,7 @@
 class Direction;
 class FloorType;
 class ItemEntity;
+class MonraceDefinition;
 class TimedEffects;
 
 // Forward declarations for race/class/personality info
@@ -254,6 +255,30 @@ public:
     {
         return this->current_floor_ptr;
     }
+
+    /*!
+     * @brief クリーチャーの実種族定義を取得する
+     * @return 実種族定義への参照（r_idx が MonraceId::PLAYER の場合はプレイヤー種族エントリを返す）
+     */
+    MonraceDefinition &get_monrace() const;
+
+    /*!
+     * @brief クリーチャーの外見種族定義を取得する
+     * @return 外見種族定義への参照（通常は get_monrace() と同じ、変身・誤認時は異なる）
+     */
+    MonraceDefinition &get_appearance_monrace() const;
+
+    /*!
+     * @brief クリーチャーの真の種族IDを取得する（カメレオン変身考慮）
+     * @return 真の種族ID
+     */
+    MonraceId get_real_monrace_id() const;
+
+    /*!
+     * @brief クリーチャーの真の種族定義を取得する（カメレオン変身考慮）
+     * @return 真の種族定義への参照
+     */
+    MonraceDefinition &get_real_monrace() const;
 
     /*!
      * @brief 次の行動までに必要なエネルギーを取得
