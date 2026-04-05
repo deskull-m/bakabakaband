@@ -33,7 +33,7 @@ public:
 
     void wipe();
     MonsterEntity clone() const;
-    bool is_hostile_to_melee(const MonsterEntity &other) const;
+    bool is_hostile_to_melee(const CreatureEntity &other) const override;
     bool is_hostile_align(const byte other_sub_align) const;
     bool is_mimicry() const;
     short get_remaining_sleep() const;

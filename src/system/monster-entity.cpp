@@ -76,7 +76,7 @@ MonsterEntity MonsterEntity::clone() const
  * @param other 比較対象モンスターへの参照
  * @return 敵対関係にあるか否か
  */
-bool MonsterEntity::is_hostile_to_melee(const MonsterEntity &other) const
+bool MonsterEntity::is_hostile_to_melee(const CreatureEntity &other) const
 {
     if (AngbandSystem::get_instance().is_phase_out()) {
         return !this->is_pet() && !other.is_pet();

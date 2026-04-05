@@ -62,8 +62,7 @@ bool direct_beam(CreatureEntity &creature, const CreatureEntity &caster, const P
             if (!caster.has_monster_profile()) {
                 return false;
             }
-            const auto &caster_mon = static_cast<const MonsterEntity &>(caster);
-            if (!caster_mon.is_hostile_to_melee(floor.m_list[grid.m_idx])) {
+            if (!caster.is_hostile_to_melee(floor.m_list[grid.m_idx])) {
                 return false;
             }
         }

@@ -511,6 +511,17 @@ public:
     }
 
     /*!
+     * @brief 近接攻撃において敵対しているかどうかを判定
+     * @param other 対象クリーチャー
+     * @return 敵対しているならtrue、デフォルトはfalse
+     */
+    virtual bool is_hostile_to_melee(const CreatureEntity &other) const
+    {
+        (void)other;
+        return false;
+    }
+
+    /*!
      * @brief クリーチャーが騎乗されているかどうかを判定
      * @return 騎乗されているならtrue、デフォルトはfalse
      */
