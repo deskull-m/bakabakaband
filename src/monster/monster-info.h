@@ -11,7 +11,6 @@
 enum class MonraceId : int16_t;
 enum class AllianceType : int;
 class MonraceDefinition;
-class MonsterEntity;
 class CreatureEntity;
 bool monster_can_cross_terrain(CreatureEntity *creature_ptr, FEAT_IDX feat, const MonraceDefinition &monrace, BIT_FLAGS16 mode);
 bool monster_can_enter(CreatureEntity *creature_ptr, POSITION y, POSITION x, const MonraceDefinition &monrace, BIT_FLAGS16 mode);

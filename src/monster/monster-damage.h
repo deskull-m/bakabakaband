@@ -9,7 +9,6 @@
 
 enum class MonraceId : short;
 class MonraceDefinition;
-class MonsterEntity;
 class CreatureEntity;
 class MonsterDamageProcessor {
 public:
