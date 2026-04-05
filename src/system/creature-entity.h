@@ -590,6 +590,14 @@ public:
     byte get_temporary_speed() const;
 
     /*!
+     * @brief クリーチャーの状態をデフォルト（空）にリセットする
+     * @note モンスターでは *this = {} を行う。プレイヤーではデフォルト実装は何もしない。
+     */
+    virtual void wipe()
+    {
+    }
+
+    /*!
      * @brief 二つのサブアライメントが敵対しているかどうかを判定
      * @param sub_align1 アライメント1
      * @param sub_align2 アライメント2

@@ -29,7 +29,7 @@ public:
     MonsterEntity(const MonsterEntity &) = default;
     MonsterEntity &operator=(const MonsterEntity &) = default;
 
-    void wipe();
+    void wipe() override;
     MonsterEntity clone() const;
     bool is_hostile_to_melee(const CreatureEntity &other) const override;
     bool is_hostile_align(const byte other_sub_align) const;

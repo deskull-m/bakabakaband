@@ -253,7 +253,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     CreatureEntity *m_ptr;
     m_ptr = &floor.m_list[g_ptr->m_idx];
-    static_cast<MonsterEntity *>(m_ptr)->wipe(); // モンスターを初期化（古いデータをクリア）
+    m_ptr->wipe(); // モンスターを初期化（古いデータをクリア）
 
     // モンスターの能力値をランダムに初期化
     get_stats(m_ptr);
