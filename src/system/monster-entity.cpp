@@ -14,7 +14,6 @@
 #include "system/monrace/monrace-list.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/lore-tracker.h"
-#include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
 #include <algorithm>
@@ -30,29 +29,6 @@ MonsterEntity::MonsterEntity()
     this->r_idx = MonraceId::PLAYER; // デフォルトはプレイヤー（無効な状態）
     this->ap_r_idx = MonraceId::PLAYER;
     this->patron = 0; // パトロンなし
-}
-
-/*!
- * @brief モンスターの属性に基づいた敵対関係の有無を返す
- * @param sub_align1 モンスター1のサブフラグ
- * @param sub_align2 モンスター2のサブフラグ
- * @return 敵対関係にあるか否か
- */
-bool MonsterEntity::check_sub_alignments(const byte sub_align1, const byte sub_align2)
-{
-    if (sub_align1 == sub_align2) {
-        return false;
-    }
-
-    auto this_evil = any_bits(sub_align1, SUB_ALIGN_EVIL);
-    this_evil &= any_bits(sub_align2, SUB_ALIGN_GOOD);
-    if (this_evil) {
-        return true;
-    }
-
-    auto this_good = any_bits(sub_align1, SUB_ALIGN_GOOD);
-    this_good &= any_bits(sub_align2, SUB_ALIGN_EVIL);
-    return this_good;
 }
 
 void MonsterEntity::wipe()
@@ -108,7 +84,7 @@ bool MonsterEntity::is_hostile_to_melee(const CreatureEntity &other) const
  */
 bool MonsterEntity::is_hostile_align(const byte other_sub_align) const
 {
-    return MonsterEntity::check_sub_alignments(this->get_monster_profile().sub_align, other_sub_align);
+    return CreatureEntity::check_sub_alignments(this->get_monster_profile().sub_align, other_sub_align);
 }
 
 /*!

@@ -14,7 +14,25 @@
 #include "term/z-form.h"
 #include "term/z-rand.h"
 #include "timed-effect/timed-effects.h"
+#include "util/bit-flags-calculator.h"
 #include <range/v3/algorithm.hpp>
+
+bool CreatureEntity::check_sub_alignments(const byte sub_align1, const byte sub_align2)
+{
+    if (sub_align1 == sub_align2) {
+        return false;
+    }
+
+    auto this_evil = any_bits(sub_align1, SUB_ALIGN_EVIL);
+    this_evil &= any_bits(sub_align2, SUB_ALIGN_GOOD);
+    if (this_evil) {
+        return true;
+    }
+
+    auto this_good = any_bits(sub_align1, SUB_ALIGN_GOOD);
+    this_good &= any_bits(sub_align2, SUB_ALIGN_EVIL);
+    return this_good;
+}
 
 MonraceDefinition &CreatureEntity::get_monrace() const
 {

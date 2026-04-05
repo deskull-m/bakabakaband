@@ -201,7 +201,7 @@ bool monster_has_hostile_to_player(CreatureEntity &creature, int pa_good, int pa
     }
 
     const auto sub_align2 = get_recial_sub_align(monrace);
-    return MonsterEntity::check_sub_alignments(sub_align1, sub_align2);
+    return CreatureEntity::check_sub_alignments(sub_align1, sub_align2);
 }
 
 /*!

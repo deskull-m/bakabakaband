@@ -29,8 +29,6 @@ public:
     MonsterEntity(const MonsterEntity &) = default;
     MonsterEntity &operator=(const MonsterEntity &) = default;
 
-    static bool check_sub_alignments(const byte sub_align1, const byte sub_align2);
-
     void wipe();
     MonsterEntity clone() const;
     bool is_hostile_to_melee(const CreatureEntity &other) const override;

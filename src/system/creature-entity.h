@@ -590,6 +590,14 @@ public:
     byte get_temporary_speed() const;
 
     /*!
+     * @brief 二つのサブアライメントが敵対しているかどうかを判定
+     * @param sub_align1 アライメント1
+     * @param sub_align2 アライメント2
+     * @return 敵対しているならtrue
+     */
+    static bool check_sub_alignments(const byte sub_align1, const byte sub_align2);
+
+    /*!
      * @brief 近接攻撃において敵対しているかどうかを判定
      * @param other 対象クリーチャー
      * @return 敵対しているならtrue、デフォルトはfalse
