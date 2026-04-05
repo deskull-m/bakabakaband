@@ -432,6 +432,11 @@ public:
     {
     }
 
+    virtual std::string build_looking_description([[maybe_unused]] bool needs_attitude) const
+    {
+        return "";
+    }
+
     /*!
      * @brief クリーチャーが睡眠状態かどうかを判定
      * @return 睡眠状態ならtrue

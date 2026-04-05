@@ -49,7 +49,7 @@ public:
     tl::optional<bool> order_pet_dismission(const CreatureEntity &other) const;
     Pos2D get_position() const override;
     bool can_ring_boss_call_nazgul() const;
-    std::string build_looking_description(bool needs_attitude) const;
+    std::string build_looking_description(bool needs_attitude) const override;
     int get_ac() const override;
     void on_take_hit(int damage) override;
     void on_death(std::string_view cause) override;

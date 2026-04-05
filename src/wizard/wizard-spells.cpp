@@ -127,7 +127,7 @@ void wiz_summon_specific_monster_common(CreatureEntity &creature, MonraceId monr
     }
 
     const auto p_pos = creature.get_position();
-    const auto index_to_monster = [&creature](auto index) -> MonsterEntity & {
+    const auto index_to_monster = [&creature](auto index) -> CreatureEntity & {
         return creature.current_floor_ptr->m_list[index];
     };
     auto monster =
