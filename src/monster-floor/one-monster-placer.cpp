@@ -284,7 +284,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     const auto &new_monrace = m_ptr->get_monrace();
     const auto is_summoned = summoner_m_idx.has_value();
-    const MonsterEntity &summoner = floor.m_list[summoner_m_idx.value_or(0)];
+    const CreatureEntity &summoner = floor.m_list[summoner_m_idx.value_or(0)];
 
     auto same_appearance_as_parent = m_ptr->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON);
     same_appearance_as_parent &= any_bits(mode, PM_MULTIPLY);

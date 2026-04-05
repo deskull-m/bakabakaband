@@ -49,7 +49,7 @@
 struct mam_pp_type {
     mam_pp_type(CreatureEntity &creature, MONSTER_IDX m_idx, int dam, bool *dead, bool *fear, std::string_view note, MONSTER_IDX src_idx);
     MONSTER_IDX m_idx;
-    MonsterEntity *m_ptr;
+    CreatureEntity *m_ptr;
     int dam;
     bool *dead;
     bool *fear;

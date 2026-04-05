@@ -45,7 +45,7 @@
 
 // Update Monster.
 struct um_type {
-    MonsterEntity *m_ptr;
+    CreatureEntity *m_ptr;
     bool do_disturb;
     POSITION fy;
     POSITION fx;
@@ -80,7 +80,7 @@ bool update_riding_monster(CreatureEntity &creature, turn_flags *turn_flags_ptr,
 
     auto &monster = player.current_floor_ptr->m_list[m_idx];
     auto &grid = player.current_floor_ptr->grid_array[ny][nx];
-    MonsterEntity *y_ptr = &player.current_floor_ptr->m_list[grid.m_idx];
+    CreatureEntity *y_ptr = &player.current_floor_ptr->m_list[grid.m_idx];
     if (turn_flags_ptr->is_riding_mon) {
         return move_player_effect(player, ny, nx, MPE_DONT_PICKUP);
     }
