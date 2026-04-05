@@ -168,7 +168,7 @@ void print_monster_list(const FloorType &floor, const std::vector<MONSTER_IDX> &
 {
     TERM_LEN line = y;
     struct info {
-        const MonsterEntity *monster_entity;
+        const CreatureEntity *monster_entity;
         int visible_count; // 現在数
         int awake_count; // 起きている数
     };
