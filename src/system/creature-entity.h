@@ -571,6 +571,22 @@ public:
     {
     }
 
+    virtual void set_friendly()
+    {
+    }
+
+    virtual void set_individual_speed([[maybe_unused]] bool force_fixed_speed)
+    {
+    }
+
+    virtual void initialize_equivalent_player_races()
+    {
+    }
+
+    virtual void initialize_equivalent_player_classes()
+    {
+    }
+
     byte get_temporary_speed() const;
 
     /*!

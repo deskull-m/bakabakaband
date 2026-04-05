@@ -54,13 +54,13 @@ public:
     void on_take_hit(int damage) override;
     void on_death(std::string_view cause) override;
 
-    void set_individual_speed(bool force_fixed_speed);
+    void set_individual_speed(bool force_fixed_speed) override;
     void set_hostile() override;
     void make_lore_treasure(int num_item, int num_gold) const override;
     void reset_chameleon_polymorph() override;
-    void set_friendly();
-    void initialize_equivalent_player_races();
-    void initialize_equivalent_player_classes();
+    void set_friendly() override;
+    void initialize_equivalent_player_races() override;
+    void initialize_equivalent_player_classes() override;
 
     // CreatureEntityインターフェースの実装
     POSITION get_x() const override;
