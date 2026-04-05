@@ -251,7 +251,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         return tl::nullopt;
     }
 
-    MonsterEntity *m_ptr;
+    CreatureEntity *m_ptr;
     m_ptr = &floor.m_list[g_ptr->m_idx];
     m_ptr->wipe(); // モンスターを初期化（古いデータをクリア）
 

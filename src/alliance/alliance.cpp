@@ -269,7 +269,7 @@ bool Alliance::is_hostile_to(const CreatureEntity &creature_other, const Monrace
         sub_align2 |= SUB_ALIGN_GOOD;
     }
     const auto sub_align1 = creature_other.has_monster_profile() ? creature_other.get_monster_profile().sub_align : static_cast<BIT_FLAGS8>(SUB_ALIGN_NEUTRAL);
-    return MonsterEntity::check_sub_alignments(sub_align1, sub_align2);
+    return CreatureEntity::check_sub_alignments(sub_align1, sub_align2);
 }
 
 /*!

@@ -571,7 +571,39 @@ public:
     {
     }
 
+    virtual void set_friendly()
+    {
+    }
+
+    virtual void set_individual_speed([[maybe_unused]] bool force_fixed_speed)
+    {
+    }
+
+    virtual void initialize_equivalent_player_races()
+    {
+    }
+
+    virtual void initialize_equivalent_player_classes()
+    {
+    }
+
     byte get_temporary_speed() const;
+
+    /*!
+     * @brief クリーチャーの状態をデフォルト（空）にリセットする
+     * @note モンスターでは *this = {} を行う。プレイヤーではデフォルト実装は何もしない。
+     */
+    virtual void wipe()
+    {
+    }
+
+    /*!
+     * @brief 二つのサブアライメントが敵対しているかどうかを判定
+     * @param sub_align1 アライメント1
+     * @param sub_align2 アライメント2
+     * @return 敵対しているならtrue
+     */
+    static bool check_sub_alignments(const byte sub_align1, const byte sub_align2);
 
     /*!
      * @brief 近接攻撃において敵対しているかどうかを判定

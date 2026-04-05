@@ -623,7 +623,7 @@ bool decide_monster_multiplication(CreatureEntity &creature, MONSTER_IDX m_idx, 
  */
 void process_monster_spawn_item(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    MonsterEntity *m_ptr = &creature.current_floor_ptr->m_list[m_idx];
+    CreatureEntity *m_ptr = &creature.current_floor_ptr->m_list[m_idx];
     MonraceDefinition &monrace = MonraceList::get_instance().get_monrace(m_ptr->r_idx);
     for (const auto &spawn_info : monrace.spawn_items) {
         auto num = std::get<0>(spawn_info);
@@ -644,7 +644,7 @@ void process_monster_spawn_item(CreatureEntity &creature, MONSTER_IDX m_idx)
  */
 void process_monster_spawn_zanki(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    MonsterEntity *m_ptr = &creature.current_floor_ptr->m_list[m_idx];
+    CreatureEntity *m_ptr = &creature.current_floor_ptr->m_list[m_idx];
     MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
     if (r_ptr->level < 30 || !r_ptr->kind_flags.has(MonsterKindType::UNIQUE) || r_ptr->r_misc_flags.has(MonsterMiscType::EMPTY_MIND)) {
         return;
@@ -691,7 +691,7 @@ void process_monster_change_feat(CreatureEntity &creature, MONSTER_IDX m_idx)
 bool process_monster_spawn_monster(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION oy, POSITION ox)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    MonsterEntity *m_ptr = &creature.current_floor_ptr->m_list[m_idx];
+    CreatureEntity *m_ptr = &creature.current_floor_ptr->m_list[m_idx];
     MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
     if ((r_ptr->spawn_monsters.size() == 0) || (creature.current_floor_ptr->num_repro >= MAX_REPRODUCTION)) {
         return false;
