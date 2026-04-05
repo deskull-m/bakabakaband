@@ -145,8 +145,7 @@ void update_lite_flags(turn_flags *turn_flags_ptr, const MonraceDefinition &monr
 void update_monster_race_flags(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &target)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    const auto &monster = static_cast<const MonsterEntity &>(target);
-    auto &monrace = monster.get_monrace();
+    auto &monrace = target.get_monrace();
     if (!is_original_ap_and_seen(player, target)) {
         return;
     }

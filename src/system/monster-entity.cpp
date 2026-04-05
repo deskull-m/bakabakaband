@@ -1,7 +1,6 @@
 #include "system/monster-entity.h"
 #include "alliance/alliance.h"
 #include "core/speed-table.h"
-#include "game-option/birth-options.h"
 #include "monster-race/race-kind-flags.h"
 #include "monster/monster-pain-describer.h"
 #include "monster/monster-status.h"
@@ -76,7 +75,7 @@ MonsterEntity MonsterEntity::clone() const
  * @param other 比較対象モンスターへの参照
  * @return 敵対関係にあるか否か
  */
-bool MonsterEntity::is_hostile_to_melee(const MonsterEntity &other) const
+bool MonsterEntity::is_hostile_to_melee(const CreatureEntity &other) const
 {
     if (AngbandSystem::get_instance().is_phase_out()) {
         return !this->is_pet() && !other.is_pet();
@@ -145,18 +144,6 @@ bool MonsterEntity::is_mimicry() const
 bool MonsterEntity::is_valid() const
 {
     return MonraceList::is_valid(this->r_idx);
-}
-
-bool MonsterEntity::is_male() const
-{
-    const auto &monrace = this->get_monrace();
-    return monrace.is_male();
-}
-
-bool MonsterEntity::is_female() const
-{
-    const auto &monrace = this->get_monrace();
-    return monrace.is_female() || this->get_monster_profile().mflag2.has(MonsterConstantFlagType::WAIFUIZED);
 }
 
 short MonsterEntity::get_remaining_sleep() const
@@ -273,35 +260,6 @@ void MonsterEntity::set_timed_effect(CreatureTimedEffect effect, short value)
     default:
         break;
     }
-}
-
-/*
- * @brief 悪夢モード、一時加速、一時減速に基づくモンスターの現在速度を返す
- */
-byte MonsterEntity::get_temporary_speed() const
-{
-    auto speed = this->speed;
-    if (ironman_nightmare) {
-        speed += 5;
-    }
-
-    if (this->is_accelerated()) {
-        speed += 10;
-    }
-
-    if (this->is_decelerated()) {
-        speed -= 10;
-    }
-
-    if (this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FAT)) {
-        speed -= 5;
-    }
-
-    if (this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FRENZY)) {
-        speed += 10;
-    }
-
-    return speed;
 }
 
 /*!

@@ -425,8 +425,7 @@ void MonsterDamageProcessor::show_bounty_message(std::string_view m_name)
 void MonsterDamageProcessor::get_exp_from_mon(const CreatureEntity &target, int exp_dam)
 {
     auto &player = static_cast<PlayerType &>(this->creature);
-    const auto &monster = static_cast<const MonsterEntity &>(target);
-    const auto &monrace = monster.get_monrace();
+    const auto &monrace = target.get_monrace();
     if (!target.is_valid() || target.is_pet() || AngbandSystem::get_instance().is_phase_out()) {
         return;
     }

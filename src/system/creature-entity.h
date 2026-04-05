@@ -217,6 +217,18 @@ public:
     }
 
     /*!
+     * @brief クリーチャーが男性かどうかを判定
+     * @return 男性ならtrue
+     */
+    bool is_male() const;
+
+    /*!
+     * @brief クリーチャーが女性かどうかを判定
+     * @return 女性ならtrue（WAIFUIZED フラグも含む）
+     */
+    bool is_female() const;
+
+    /*!
      * @brief クリーチャーが名前付きペットかどうかを判定
      * @return 名前付きペットならtrue
      */
@@ -496,6 +508,27 @@ public:
     virtual bool is_hostile() const
     {
         return this->has_monster_profile() && !this->is_friendly() && !this->is_pet();
+    }
+
+    /*!
+     * @brief クリーチャーを敵対状態に設定する
+     * @note モンスターの場合はペット・フレンドリーフラグをリセットし同盟も更新する。プレイヤーには無効。
+     */
+    virtual void set_hostile()
+    {
+    }
+
+    byte get_temporary_speed() const;
+
+    /*!
+     * @brief 近接攻撃において敵対しているかどうかを判定
+     * @param other 対象クリーチャー
+     * @return 敵対しているならtrue、デフォルトはfalse
+     */
+    virtual bool is_hostile_to_melee(const CreatureEntity &other) const
+    {
+        (void)other;
+        return false;
     }
 
     /*!

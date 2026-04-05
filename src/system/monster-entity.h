@@ -33,11 +33,9 @@ public:
 
     void wipe();
     MonsterEntity clone() const;
-    bool is_hostile_to_melee(const MonsterEntity &other) const;
+    bool is_hostile_to_melee(const CreatureEntity &other) const override;
     bool is_hostile_align(const byte other_sub_align) const;
     bool is_mimicry() const;
-    bool is_male() const;
-    bool is_female() const;
     short get_remaining_sleep() const;
     short get_remaining_acceleration() const;
     short get_remaining_deceleration() const;
@@ -52,7 +50,6 @@ public:
     bool is_invulnerable() const override;
     short get_timed_effect(CreatureTimedEffect effect) const override;
     void set_timed_effect(CreatureTimedEffect effect, short value) override;
-    byte get_temporary_speed() const;
     int get_speed() const override;
     std::string get_pronoun_of_summoned_kin() const;
     tl::optional<std::string> get_pain_message(std::string_view monster_name, int damage) const;
@@ -66,7 +63,7 @@ public:
     void on_death(std::string_view cause) override;
 
     void set_individual_speed(bool force_fixed_speed);
-    void set_hostile();
+    void set_hostile() override;
     void make_lore_treasure(int num_item, int num_gold) const;
     void reset_chameleon_polymorph();
     void set_friendly();

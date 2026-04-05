@@ -1,5 +1,6 @@
 #include "system/creature-entity.h"
 #include "floor/geometry.h"
+#include "game-option/birth-options.h"
 #include "inventory/inventory-slot-types.h"
 #include "monster/monster-flag-types.h"
 #include "player-ability/player-ability-types.h"
@@ -64,6 +65,17 @@ bool CreatureEntity::is_explodable() const
 std::string CreatureEntity::get_died_message() const
 {
     return this->get_monrace().get_died_message();
+}
+
+bool CreatureEntity::is_male() const
+{
+    return this->get_monrace().is_male();
+}
+
+bool CreatureEntity::is_female() const
+{
+    const auto &monrace = this->get_monrace();
+    return monrace.is_female() || (this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::WAIFUIZED));
 }
 
 std::pair<TERM_COLOR, int> CreatureEntity::get_hp_bar_data() const
@@ -261,6 +273,34 @@ std::string CreatureEntity::decrease_ability_all()
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     return _("あなたは以前ほど力強くなくなってしまった...。", "You're not as powerful as you used to be...");
+}
+
+byte CreatureEntity::get_temporary_speed() const
+{
+    auto speed = this->speed;
+    if (ironman_nightmare) {
+        speed += 5;
+    }
+
+    if (this->is_accelerated()) {
+        speed += 10;
+    }
+
+    if (this->is_decelerated()) {
+        speed -= 10;
+    }
+
+    if (this->has_monster_profile()) {
+        if (this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FAT)) {
+            speed -= 5;
+        }
+
+        if (this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FRENZY)) {
+            speed += 10;
+        }
+    }
+
+    return speed;
 }
 
 int CreatureEntity::calc_life_rating() const
