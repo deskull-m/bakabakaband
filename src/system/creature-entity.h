@@ -384,6 +384,54 @@ public:
      */
     virtual void set_timed_effect(CreatureTimedEffect effect, short value) = 0;
 
+    short get_remaining_sleep() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::SLEEP_OR_PARALYSIS);
+    }
+
+    short get_remaining_stun() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::STUN);
+    }
+
+    short get_remaining_confusion() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::CONFUSION);
+    }
+
+    short get_remaining_fear() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::FEAR);
+    }
+
+    short get_remaining_invulnerability() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::INVULNERABILITY);
+    }
+
+    short get_remaining_acceleration() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::ACCELERATION);
+    }
+
+    short get_remaining_deceleration() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::DECELERATION);
+    }
+
+    tl::optional<std::string> get_pain_message(std::string_view monster_name, int damage) const;
+
+    /*!
+     * @brief カメレオンの変身を元に戻す。モンスター以外は何もしない。
+     */
+    virtual void reset_chameleon_polymorph()
+    {
+    }
+
+    virtual void make_lore_treasure([[maybe_unused]] int num_item, [[maybe_unused]] int num_gold) const
+    {
+    }
+
     /*!
      * @brief クリーチャーが睡眠状態かどうかを判定
      * @return 睡眠状態ならtrue

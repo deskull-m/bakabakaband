@@ -2,7 +2,6 @@
 #include "alliance/alliance.h"
 #include "core/speed-table.h"
 #include "monster-race/race-kind-flags.h"
-#include "monster/monster-pain-describer.h"
 #include "monster/monster-status.h"
 #include "player-info/class-info.h"
 #include "player-info/class-types.h"
@@ -146,19 +145,9 @@ bool MonsterEntity::is_valid() const
     return MonraceList::is_valid(this->r_idx);
 }
 
-short MonsterEntity::get_remaining_sleep() const
-{
-    return this->get_monster_profile().mtimed.at(MonsterTimedEffect::SLEEP);
-}
-
 bool MonsterEntity::is_dead() const
 {
     return this->hp < 0;
-}
-
-short MonsterEntity::get_remaining_acceleration() const
-{
-    return this->get_monster_profile().mtimed.at(MonsterTimedEffect::FAST);
 }
 
 bool MonsterEntity::is_decelerated() const
@@ -166,24 +155,9 @@ bool MonsterEntity::is_decelerated() const
     return this->get_remaining_deceleration() > 0;
 }
 
-short MonsterEntity::get_remaining_deceleration() const
-{
-    return this->get_monster_profile().mtimed.at(MonsterTimedEffect::SLOW);
-}
-
-short MonsterEntity::get_remaining_stun() const
-{
-    return this->get_monster_profile().mtimed.at(MonsterTimedEffect::STUN);
-}
-
 bool MonsterEntity::is_stunned() const
 {
     return this->get_remaining_stun() > 0;
-}
-
-short MonsterEntity::get_remaining_confusion() const
-{
-    return this->get_monster_profile().mtimed.at(MonsterTimedEffect::CONFUSION);
 }
 
 bool MonsterEntity::is_confused() const
@@ -191,19 +165,9 @@ bool MonsterEntity::is_confused() const
     return this->get_remaining_confusion() > 0;
 }
 
-short MonsterEntity::get_remaining_fear() const
-{
-    return this->get_monster_profile().mtimed.at(MonsterTimedEffect::FEAR);
-}
-
 bool MonsterEntity::is_fearful() const
 {
     return this->get_remaining_fear() > 0;
-}
-
-short MonsterEntity::get_remaining_invulnerability() const
-{
-    return this->get_monster_profile().mtimed.at(MonsterTimedEffect::INVULNERABILITY);
 }
 
 bool MonsterEntity::is_invulnerable() const
@@ -277,17 +241,7 @@ int MonsterEntity::get_speed() const
  * @return 生命体ならばtrue
  * @todo kind_flags をMonsterEntityへコピーする (将来的なモンスター仕様の拡張)
  */
-/*!
- * @brief モンスターにダメージを与えた際の述語メッセージを返す
- * @return ダメージを受けたモンスターの述語
- */
-tl::optional<std::string> MonsterEntity::get_pain_message(std::string_view monster_name, int damage) const
-{
-    auto &monrace = this->get_monrace();
-    return MonsterPainDescriber(monrace.idx, monrace.symbol_definition.character, monster_name).describe(this->hp, damage, this->get_monster_profile().ml);
-}
-
-tl::optional<bool> MonsterEntity::order_pet_whistle(const MonsterEntity &other) const
+tl::optional<bool> MonsterEntity::order_pet_whistle(const CreatureEntity &other) const
 {
     const auto is_ordered_name = this->order_pet_named(other);
     if (is_ordered_name) {
@@ -304,7 +258,7 @@ tl::optional<bool> MonsterEntity::order_pet_whistle(const MonsterEntity &other) 
     return this->order_pet_hp(other);
 }
 
-tl::optional<bool> MonsterEntity::order_pet_dismission(const MonsterEntity &other) const
+tl::optional<bool> MonsterEntity::order_pet_dismission(const CreatureEntity &other) const
 {
     const auto is_ordered_name = this->order_pet_named(other);
     if (is_ordered_name) {
@@ -400,7 +354,7 @@ void MonsterEntity::make_lore_treasure(int num_item, int num_gold) const
     }
 }
 
-tl::optional<bool> MonsterEntity::order_pet_named(const MonsterEntity &other) const
+tl::optional<bool> MonsterEntity::order_pet_named(const CreatureEntity &other) const
 {
     if (this->is_named() && !other.is_named()) {
         return true;
@@ -413,7 +367,7 @@ tl::optional<bool> MonsterEntity::order_pet_named(const MonsterEntity &other) co
     return tl::nullopt;
 }
 
-tl::optional<bool> MonsterEntity::order_pet_hp(const MonsterEntity &other) const
+tl::optional<bool> MonsterEntity::order_pet_hp(const CreatureEntity &other) const
 {
     if (this->hp > other.hp) {
         return true;

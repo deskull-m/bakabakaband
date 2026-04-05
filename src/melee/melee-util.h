@@ -9,13 +9,13 @@ enum class RaceBlowEffectType;
 enum class RaceBlowMethodType;
 
 /* monster-attack-monster type*/
-class MonsterEntity;
+class CreatureEntity;
 struct mam_type {
     BlowEffectType attribute{};
     MONSTER_IDX m_idx = 0;
     MONSTER_IDX t_idx = 0;
-    MonsterEntity *m_ptr = nullptr;
-    MonsterEntity *t_ptr = nullptr;
+    CreatureEntity *m_ptr = nullptr;
+    CreatureEntity *t_ptr = nullptr;
     GAME_TEXT m_name[MAX_NLEN]{};
     GAME_TEXT t_name[MAX_NLEN]{};
     int damage = 0;
@@ -42,5 +42,4 @@ struct mam_type {
     bool dead = false;
 };
 
-class CreatureEntity;
 mam_type *initialize_mam_type(CreatureEntity &creature, mam_type *mam_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx);

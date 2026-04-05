@@ -9,7 +9,6 @@
 
 class CreatureEntity;
 class MonraceDefinition;
-class MonsterEntity;
 struct melee_spell_type {
     melee_spell_type(CreatureEntity &creature, MONSTER_IDX m_idx);
 
@@ -25,8 +24,8 @@ struct melee_spell_type {
     MONSTER_IDX m_idx;
     MonsterAbilityType thrown_spell;
 
-    MonsterEntity *m_ptr;
-    const MonsterEntity *t_ptr;
+    CreatureEntity *m_ptr;
+    const CreatureEntity *t_ptr;
     MonraceDefinition *r_ptr;
     bool see_m;
     bool maneable;

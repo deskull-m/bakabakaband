@@ -3,6 +3,7 @@
 #include "game-option/birth-options.h"
 #include "inventory/inventory-slot-types.h"
 #include "monster/monster-flag-types.h"
+#include "monster/monster-pain-describer.h"
 #include "player-ability/player-ability-types.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
@@ -273,6 +274,16 @@ std::string CreatureEntity::decrease_ability_all()
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     return _("あなたは以前ほど力強くなくなってしまった...。", "You're not as powerful as you used to be...");
+}
+
+tl::optional<std::string> CreatureEntity::get_pain_message(std::string_view monster_name, int damage) const
+{
+    if (!this->has_monster_profile()) {
+        return tl::nullopt;
+    }
+
+    auto &monrace = this->get_monrace();
+    return MonsterPainDescriber(monrace.idx, monrace.symbol_definition.character, monster_name).describe(this->hp, damage, this->get_monster_profile().ml);
 }
 
 byte CreatureEntity::get_temporary_speed() const

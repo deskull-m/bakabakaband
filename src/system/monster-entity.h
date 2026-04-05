@@ -36,13 +36,6 @@ public:
     bool is_hostile_to_melee(const CreatureEntity &other) const override;
     bool is_hostile_align(const byte other_sub_align) const;
     bool is_mimicry() const;
-    short get_remaining_sleep() const;
-    short get_remaining_acceleration() const;
-    short get_remaining_deceleration() const;
-    short get_remaining_stun() const;
-    short get_remaining_confusion() const;
-    short get_remaining_fear() const;
-    short get_remaining_invulnerability() const;
     bool is_decelerated() const override;
     bool is_stunned() const override;
     bool is_confused() const override;
@@ -52,9 +45,8 @@ public:
     void set_timed_effect(CreatureTimedEffect effect, short value) override;
     int get_speed() const override;
     std::string get_pronoun_of_summoned_kin() const;
-    tl::optional<std::string> get_pain_message(std::string_view monster_name, int damage) const;
-    tl::optional<bool> order_pet_whistle(const MonsterEntity &other) const;
-    tl::optional<bool> order_pet_dismission(const MonsterEntity &other) const;
+    tl::optional<bool> order_pet_whistle(const CreatureEntity &other) const;
+    tl::optional<bool> order_pet_dismission(const CreatureEntity &other) const;
     Pos2D get_position() const override;
     bool can_ring_boss_call_nazgul() const;
     std::string build_looking_description(bool needs_attitude) const;
@@ -64,8 +56,8 @@ public:
 
     void set_individual_speed(bool force_fixed_speed);
     void set_hostile() override;
-    void make_lore_treasure(int num_item, int num_gold) const;
-    void reset_chameleon_polymorph();
+    void make_lore_treasure(int num_item, int num_gold) const override;
+    void reset_chameleon_polymorph() override;
     void set_friendly();
     void initialize_equivalent_player_races();
     void initialize_equivalent_player_classes();
@@ -83,8 +75,8 @@ public:
     bool is_player() const override;
 
 private:
-    tl::optional<bool> order_pet_named(const MonsterEntity &other) const;
-    tl::optional<bool> order_pet_hp(const MonsterEntity &other) const;
+    tl::optional<bool> order_pet_named(const CreatureEntity &other) const;
+    tl::optional<bool> order_pet_hp(const CreatureEntity &other) const;
     std::string build_damage_description() const;
     std::string build_attitude_description() const;
 };
