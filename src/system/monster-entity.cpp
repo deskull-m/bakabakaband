@@ -241,7 +241,7 @@ int MonsterEntity::get_speed() const
  * @return 生命体ならばtrue
  * @todo kind_flags をMonsterEntityへコピーする (将来的なモンスター仕様の拡張)
  */
-tl::optional<bool> MonsterEntity::order_pet_whistle(const MonsterEntity &other) const
+tl::optional<bool> MonsterEntity::order_pet_whistle(const CreatureEntity &other) const
 {
     const auto is_ordered_name = this->order_pet_named(other);
     if (is_ordered_name) {
@@ -258,7 +258,7 @@ tl::optional<bool> MonsterEntity::order_pet_whistle(const MonsterEntity &other) 
     return this->order_pet_hp(other);
 }
 
-tl::optional<bool> MonsterEntity::order_pet_dismission(const MonsterEntity &other) const
+tl::optional<bool> MonsterEntity::order_pet_dismission(const CreatureEntity &other) const
 {
     const auto is_ordered_name = this->order_pet_named(other);
     if (is_ordered_name) {
@@ -354,7 +354,7 @@ void MonsterEntity::make_lore_treasure(int num_item, int num_gold) const
     }
 }
 
-tl::optional<bool> MonsterEntity::order_pet_named(const MonsterEntity &other) const
+tl::optional<bool> MonsterEntity::order_pet_named(const CreatureEntity &other) const
 {
     if (this->is_named() && !other.is_named()) {
         return true;
@@ -367,7 +367,7 @@ tl::optional<bool> MonsterEntity::order_pet_named(const MonsterEntity &other) co
     return tl::nullopt;
 }
 
-tl::optional<bool> MonsterEntity::order_pet_hp(const MonsterEntity &other) const
+tl::optional<bool> MonsterEntity::order_pet_hp(const CreatureEntity &other) const
 {
     if (this->hp > other.hp) {
         return true;

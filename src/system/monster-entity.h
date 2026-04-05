@@ -45,8 +45,8 @@ public:
     void set_timed_effect(CreatureTimedEffect effect, short value) override;
     int get_speed() const override;
     std::string get_pronoun_of_summoned_kin() const;
-    tl::optional<bool> order_pet_whistle(const MonsterEntity &other) const;
-    tl::optional<bool> order_pet_dismission(const MonsterEntity &other) const;
+    tl::optional<bool> order_pet_whistle(const CreatureEntity &other) const;
+    tl::optional<bool> order_pet_dismission(const CreatureEntity &other) const;
     Pos2D get_position() const override;
     bool can_ring_boss_call_nazgul() const;
     std::string build_looking_description(bool needs_attitude) const;
@@ -75,8 +75,8 @@ public:
     bool is_player() const override;
 
 private:
-    tl::optional<bool> order_pet_named(const MonsterEntity &other) const;
-    tl::optional<bool> order_pet_hp(const MonsterEntity &other) const;
+    tl::optional<bool> order_pet_named(const CreatureEntity &other) const;
+    tl::optional<bool> order_pet_hp(const CreatureEntity &other) const;
     std::string build_damage_description() const;
     std::string build_attitude_description() const;
 };
