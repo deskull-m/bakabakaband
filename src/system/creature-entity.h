@@ -217,6 +217,18 @@ public:
     }
 
     /*!
+     * @brief クリーチャーが男性かどうかを判定
+     * @return 男性ならtrue
+     */
+    bool is_male() const;
+
+    /*!
+     * @brief クリーチャーが女性かどうかを判定
+     * @return 女性ならtrue（WAIFUIZED フラグも含む）
+     */
+    bool is_female() const;
+
+    /*!
      * @brief クリーチャーが名前付きペットかどうかを判定
      * @return 名前付きペットならtrue
      */

@@ -66,6 +66,17 @@ std::string CreatureEntity::get_died_message() const
     return this->get_monrace().get_died_message();
 }
 
+bool CreatureEntity::is_male() const
+{
+    return this->get_monrace().is_male();
+}
+
+bool CreatureEntity::is_female() const
+{
+    const auto &monrace = this->get_monrace();
+    return monrace.is_female() || (this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::WAIFUIZED));
+}
+
 std::pair<TERM_COLOR, int> CreatureEntity::get_hp_bar_data() const
 {
     const auto percent = (this->maxhp > 0) ? (100 * this->hp / this->maxhp) : 0;

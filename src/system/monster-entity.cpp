@@ -147,18 +147,6 @@ bool MonsterEntity::is_valid() const
     return MonraceList::is_valid(this->r_idx);
 }
 
-bool MonsterEntity::is_male() const
-{
-    const auto &monrace = this->get_monrace();
-    return monrace.is_male();
-}
-
-bool MonsterEntity::is_female() const
-{
-    const auto &monrace = this->get_monrace();
-    return monrace.is_female() || this->get_monster_profile().mflag2.has(MonsterConstantFlagType::WAIFUIZED);
-}
-
 short MonsterEntity::get_remaining_sleep() const
 {
     return this->get_monster_profile().mtimed.at(MonsterTimedEffect::SLEEP);
