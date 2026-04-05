@@ -3,8 +3,6 @@
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "term/z-form.h"
 #include "util/string-processor.h"
 #include <functional>
