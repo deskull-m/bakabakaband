@@ -381,8 +381,7 @@ std::string probed_monster_info(CreatureEntity &creature, CreatureEntity &target
         lite_spot(creature, target.get_position());
     }
 
-    const auto &monster = static_cast<const MonsterEntity &>(target);
-    const auto m_name = monster_desc(creature, monster, MD_IGNORE_HALLU | MD_INDEF_HIDDEN);
+    const auto m_name = monster_desc(creature, target, MD_IGNORE_HALLU | MD_INDEF_HIDDEN);
 
     concptr align;
     if (monrace.kind_flags.has_all_of(alignment_mask)) {
@@ -401,7 +400,7 @@ std::string probed_monster_info(CreatureEntity &creature, CreatureEntity &target
         align = _("中立", "neutral");
     }
 
-    const auto speed = monster.get_temporary_speed() - STANDARD_SPEED;
+    const auto speed = target.get_temporary_speed() - STANDARD_SPEED;
     constexpr auto mes = _("%s ... 属性:%s HP:%d/%d AC:%d 速度:%s%d 経験:", "%s ... align:%s HP:%d/%d AC:%d speed:%s%d exp:");
     auto result = format(mes, m_name.data(), align, (int)target.hp, (int)target.maxhp, target.get_ac(), (speed > 0) ? "+" : "", speed);
 

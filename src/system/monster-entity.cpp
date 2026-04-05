@@ -1,7 +1,6 @@
 #include "system/monster-entity.h"
 #include "alliance/alliance.h"
 #include "core/speed-table.h"
-#include "game-option/birth-options.h"
 #include "monster-race/race-kind-flags.h"
 #include "monster/monster-pain-describer.h"
 #include "monster/monster-status.h"
@@ -261,35 +260,6 @@ void MonsterEntity::set_timed_effect(CreatureTimedEffect effect, short value)
     default:
         break;
     }
-}
-
-/*
- * @brief 悪夢モード、一時加速、一時減速に基づくモンスターの現在速度を返す
- */
-byte MonsterEntity::get_temporary_speed() const
-{
-    auto speed = this->speed;
-    if (ironman_nightmare) {
-        speed += 5;
-    }
-
-    if (this->is_accelerated()) {
-        speed += 10;
-    }
-
-    if (this->is_decelerated()) {
-        speed -= 10;
-    }
-
-    if (this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FAT)) {
-        speed -= 5;
-    }
-
-    if (this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FRENZY)) {
-        speed += 10;
-    }
-
-    return speed;
 }
 
 /*!

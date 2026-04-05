@@ -52,10 +52,9 @@ void anger_monster(CreatureEntity &creature, CreatureEntity &target)
         return;
     }
 
-    auto &monster = static_cast<MonsterEntity &>(target);
-    const auto m_name = monster_desc(creature, monster, 0);
+    const auto m_name = monster_desc(creature, target, 0);
     msg_format(_("%s^\u306f\u6012\u3063\u305f\uff01", "%s^ gets angry!"), m_name.data());
-    monster.set_hostile();
+    target.set_hostile();
     chg_virtue(creature, Virtue::INDIVIDUALISM, 1);
     chg_virtue(creature, Virtue::HONOUR, -1);
     chg_virtue(creature, Virtue::JUSTICE, -1);

@@ -1,5 +1,6 @@
 #include "system/creature-entity.h"
 #include "floor/geometry.h"
+#include "game-option/birth-options.h"
 #include "inventory/inventory-slot-types.h"
 #include "monster/monster-flag-types.h"
 #include "player-ability/player-ability-types.h"
@@ -272,6 +273,34 @@ std::string CreatureEntity::decrease_ability_all()
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     return _("あなたは以前ほど力強くなくなってしまった...。", "You're not as powerful as you used to be...");
+}
+
+byte CreatureEntity::get_temporary_speed() const
+{
+    auto speed = this->speed;
+    if (ironman_nightmare) {
+        speed += 5;
+    }
+
+    if (this->is_accelerated()) {
+        speed += 10;
+    }
+
+    if (this->is_decelerated()) {
+        speed -= 10;
+    }
+
+    if (this->has_monster_profile()) {
+        if (this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FAT)) {
+            speed -= 5;
+        }
+
+        if (this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FRENZY)) {
+            speed += 10;
+        }
+    }
+
+    return speed;
 }
 
 int CreatureEntity::calc_life_rating() const

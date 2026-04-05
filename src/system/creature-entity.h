@@ -511,6 +511,16 @@ public:
     }
 
     /*!
+     * @brief クリーチャーを敵対状態に設定する
+     * @note モンスターの場合はペット・フレンドリーフラグをリセットし同盟も更新する。プレイヤーには無効。
+     */
+    virtual void set_hostile()
+    {
+    }
+
+    byte get_temporary_speed() const;
+
+    /*!
      * @brief 近接攻撃において敵対しているかどうかを判定
      * @param other 対象クリーチャー
      * @return 敵対しているならtrue、デフォルトはfalse
