@@ -31,7 +31,7 @@
 
 static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, MonsterAbilityType ms_type, POSITION y, POSITION x, MONSTER_IDX m_idx)
 {
-    MonsterEntity *m_ptr = &creature.current_floor_ptr->m_list[m_idx];
+    CreatureEntity *m_ptr = &creature.current_floor_ptr->m_list[m_idx];
     MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
 
     // クイルスルグは自身を中心に召喚する
@@ -215,7 +215,7 @@ static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, Mons
 static MonsterSpellResult monspell_to_monster_impl(
     CreatureEntity &creature, MonsterAbilityType ms_type, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, bool is_special_spell)
 {
-    MonsterEntity *m_ptr = &creature.current_floor_ptr->m_list[m_idx];
+    CreatureEntity *m_ptr = &creature.current_floor_ptr->m_list[m_idx];
     MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
 
     // クイルスルグは自身を中心に召喚する
