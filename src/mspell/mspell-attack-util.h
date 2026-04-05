@@ -16,7 +16,6 @@ enum mspell_lite_type {
 
 // Monster Spell Attack.
 class CreatureEntity;
-class MonsterEntity;
 class MonraceDefinition;
 struct msa_type {
     msa_type(CreatureEntity &creature, MONSTER_IDX m_idx);
@@ -32,7 +31,7 @@ struct msa_type {
     DEPTH rlev = 0;
 
     MONSTER_IDX m_idx;
-    MonsterEntity *m_ptr;
+    CreatureEntity *m_ptr;
     POSITION x;
     POSITION y;
     mspell_lite_type do_spell;

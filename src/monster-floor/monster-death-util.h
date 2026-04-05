@@ -5,13 +5,13 @@
 
 // @todo PlayerType に依存するオブジェクトメソッドを追加予定.
 class FloorType;
-class MonsterEntity;
+class CreatureEntity;
 class MonraceDefinition;
 class MonsterDeath {
 public:
     MonsterDeath(FloorType &floor, short m_idx, bool drop_item);
     short m_idx;
-    MonsterEntity *m_ptr;
+    CreatureEntity *m_ptr;
     MonraceDefinition *r_ptr;
     MonraceDefinition *ap_r_ptr;
     bool do_gold;

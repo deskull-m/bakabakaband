@@ -11,7 +11,6 @@
 #include <string>
 
 class Grid;
-class MonsterEntity;
 class ItemEntity;
 class CreatureEntity;
 class ObjectThrowHitMonster {
@@ -19,7 +18,7 @@ public:
     ObjectThrowHitMonster(CreatureEntity &creature, POSITION y, POSITION x);
 
     MONSTER_IDX m_idx{};
-    MonsterEntity *m_ptr{};
+    CreatureEntity *m_ptr{};
     std::string m_name{};
 };
 

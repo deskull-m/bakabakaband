@@ -4,16 +4,16 @@
 #include "system/angband.h"
 #include <tl/optional.hpp>
 
-class MonsterEntity;
+class CreatureEntity;
 class FallOffHorseEffect;
 class FloorType;
 class EffectPlayerType {
 public:
     EffectPlayerType(const FloorType &floor, short src_idx, int dam, AttributeType attribute, BIT_FLAGS flag);
     DEPTH rlev; // モンスターのレベル (但し0のモンスターは1になる).
-    MonsterEntity *m_ptr;
+    CreatureEntity *m_ptr;
     short src_idx;
-    const MonsterEntity *src_ptr;
+    const CreatureEntity *src_ptr;
     std::string killer;
     std::string m_name;
     int get_damage;
@@ -28,7 +28,6 @@ public:
 
 struct ProjectResult;
 class CapturedMonsterType;
-class CreatureEntity;
 using project_func = ProjectResult (*)(
     CreatureEntity &creature, MONSTER_IDX src_idx, POSITION rad, POSITION y, POSITION x, int dam, AttributeType typ, BIT_FLAGS flag, tl::optional<CapturedMonsterType *> cap_mon_ptr);
 

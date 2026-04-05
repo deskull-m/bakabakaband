@@ -7,7 +7,6 @@ enum class RaceBlowEffectType;
 enum class RaceBlowMethodType;
 class CreatureEntity;
 class SpellHex;
-class MonsterEntity;
 class ItemEntity;
 class MonsterAttackPlayer {
 public:
@@ -16,7 +15,7 @@ public:
     int abbreviate = 0; // 2回目以降の省略表現フラグ.
 #endif
     short m_idx;
-    MonsterEntity *m_ptr;
+    CreatureEntity *m_ptr;
     RaceBlowMethodType method;
     RaceBlowEffectType effect;
     bool do_silly_attack;
