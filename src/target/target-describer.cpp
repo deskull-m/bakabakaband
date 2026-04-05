@@ -64,7 +64,7 @@ public:
     char query = '\001';
     std::vector<short> floor_item_index;
     Grid *g_ptr;
-    MonsterEntity *m_ptr;
+    CreatureEntity *m_ptr;
     OBJECT_IDX next_o_idx = 0;
     FEAT_IDX feat = 0;
     TerrainType *terrain_ptr = nullptr;
