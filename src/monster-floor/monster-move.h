@@ -9,7 +9,6 @@ constexpr auto BREAK_RUNE_EXPLOSION = 299; /*!< 爆発のルーンの発動し�
 
 class CreatureEntity;
 class Direction;
-class MonsterEntity;
 class MonsterMovementDirectionList;
 class MonraceDefinition;
 class PlayerType;
