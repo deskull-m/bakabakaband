@@ -1,6 +1,5 @@
 #include "monster-floor/monster-remover.h"
 #include "system/creature-entity.h"
-#include "system/monster-entity.h"
 #include "core/stuff-handler.h"
 #include "floor/floor-object.h"
 #include "grid/grid.h"
@@ -85,7 +84,7 @@ void delete_monster_idx(CreatureEntity &creature, short m_idx)
         }
     }
 
-    static_cast<MonsterEntity &>(monster) = {};
+    monster.wipe();
     floor.m_cnt--;
     lite_spot(creature, m_pos);
     if (monrace.brightness_flags.has_any_of(ld_mask)) {
@@ -109,7 +108,7 @@ void wipe_monsters_list(CreatureEntity &creature)
         }
 
         floor.get_grid(monster.get_position()).m_idx = 0;
-        static_cast<MonsterEntity &>(monster) = {};
+        monster.wipe();
     }
 
     monraces.reset_current_numbers();
