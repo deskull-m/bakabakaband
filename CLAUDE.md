@@ -79,6 +79,20 @@ if (creature.is_player()) {
 
 キャストは最小限に。可能な限りバーチャルメソッドで処理すること。
 
+### GCC ビルド注意事項
+
+ヘッダファイルで `uint8_t` 等の固定幅整数型を使う場合は、`<cstdint>` を明示的にインクルードすること。
+GCC は MSVC と異なり、他のヘッダ経由での暗黙インクルードに依存できない。
+
+```cpp
+// NG: <cstdint> なしで uint8_t を使うとGCCエラー
+tl::optional<MonraceId> select_pit_nest_monrace_id(CreatureEntity &creature, uint8_t &sub_align, int boost);
+
+// OK: <cstdint> を明示的にインクルード
+#include <cstdint>
+tl::optional<MonraceId> select_pit_nest_monrace_id(CreatureEntity &creature, uint8_t &sub_align, int boost);
+```
+
 ---
 
 ## 残タスク ロードマップ
