@@ -1,6 +1,5 @@
 #include "system/floor/floor-info.h"
 #include "system/creature-entity.h"
-#include "system/monster-entity.h"
 #include "dungeon/quest.h"
 #include "floor/geometry.h"
 #include "game-option/birth-options.h"
@@ -294,8 +293,8 @@ bool FloorType::check_terrain_state(const Pos2D &pos, GridCountKind gck) const
  */
 bool FloorType::order_pet_whistle(short index1, short index2) const
 {
-    const auto &monster1 = static_cast<const MonsterEntity &>(this->get_monster(index1));
-    const auto &monster2 = static_cast<const MonsterEntity &>(this->get_monster(index2));
+    const auto &monster1 = this->m_list[index1];
+    const auto &monster2 = this->m_list[index2];
     const auto is_ordered = monster1.order_pet_whistle(monster2);
     if (is_ordered) {
         return *is_ordered;
