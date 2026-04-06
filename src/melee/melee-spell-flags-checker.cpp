@@ -1,5 +1,4 @@
 #include "melee/melee-spell-flags-checker.h"
-#include "system/creature-entity.h"
 #include "dungeon/dungeon-flag-types.h"
 #include "effect/effect-characteristics.h"
 #include "floor/line-of-sight.h"
@@ -15,6 +14,7 @@
 #include "player-base/player-class.h"
 #include "spell-kind/spells-world.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"

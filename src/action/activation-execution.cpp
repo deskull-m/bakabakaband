@@ -4,7 +4,6 @@
  */
 
 #include "action/activation-execution.h"
-#include "system/creature-entity.h"
 #include "action/action-limited.h"
 #include "artifact/random-art-effects.h"
 #include "core/window-redrawer.h"
@@ -46,6 +45,7 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-key.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"

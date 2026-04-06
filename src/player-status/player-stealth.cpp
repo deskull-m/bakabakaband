@@ -1,5 +1,4 @@
 #include "player-status/player-stealth.h"
-#include "system/creature-entity.h"
 #include "mind/mind-ninja.h"
 #include "mutation/mutation-flag-types.h"
 #include "player-base/player-class.h"
@@ -15,6 +14,7 @@
 #include "player/player-status.h"
 #include "player/race-info-table.h"
 #include "spell-realm/spells-hex.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"

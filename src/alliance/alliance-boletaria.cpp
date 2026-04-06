@@ -1,7 +1,7 @@
 #include "alliance/alliance-boletaria.h"
-#include "system/creature-entity.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"

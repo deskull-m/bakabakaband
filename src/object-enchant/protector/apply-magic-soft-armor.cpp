@@ -5,13 +5,13 @@
  */
 
 #include "object-enchant/protector/apply-magic-soft-armor.h"
-#include "system/creature-entity.h"
 #include "object-enchant/object-boost.h"
 #include "object/object-kind-hook.h"
 #include "object/tval-types.h"
 #include "sv-definition/sv-armor-types.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 

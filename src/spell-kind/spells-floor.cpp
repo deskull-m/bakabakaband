@@ -5,7 +5,6 @@
  */
 
 #include "spell-kind/spells-floor.h"
-#include "system/creature-entity.h"
 #include "action/travel-execution.h"
 #include "dungeon/quest.h"
 #include "flavor/flavor-describer.h"
@@ -26,6 +25,7 @@
 #include "spell-kind/spells-teleport.h"
 #include "status/bad-status-setter.h"
 #include "system/artifact-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"

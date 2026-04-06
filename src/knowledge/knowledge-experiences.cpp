@@ -5,7 +5,6 @@
  */
 
 #include "knowledge/knowledge-experiences.h"
-#include "system/creature-entity.h"
 #include "core/show-file.h"
 #include "game-option/cheat-options.h"
 #include "game-option/text-display-options.h"
@@ -19,6 +18,7 @@
 #include "sv-definition/sv-bow-types.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "util/angband-files.h"
 

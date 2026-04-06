@@ -1,10 +1,10 @@
 #include "racial/class-racial-switcher.h"
-#include "system/creature-entity.h"
 #include "cmd-action/cmd-spell.h"
 #include "mind/mind-elementalist.h"
 #include "player/player-realm.h"
 #include "racial/racial-util.h"
 #include "realm/realm-types.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 
 void switch_class_racial(CreatureEntity &creature, rc_type *rc_ptr)

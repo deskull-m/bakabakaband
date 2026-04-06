@@ -4,9 +4,9 @@
  */
 
 #include "blue-magic/blue-magic-status.h"
-#include "system/creature-entity.h"
 #include "blue-magic/blue-magic-util.h"
 #include "spell/spells-status.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "view/display-messages.h"

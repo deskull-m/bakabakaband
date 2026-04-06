@@ -1,5 +1,4 @@
 #include "effect/effect-monster-charm.h"
-#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "dungeon/quest.h"
 #include "effect/effect-monster-util.h"
@@ -19,6 +18,7 @@
 #include "player/player-status-flags.h"
 #include "spell/spells-diceroll.h"
 #include "status/bad-status-setter.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"

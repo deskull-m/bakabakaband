@@ -1,5 +1,4 @@
 #include "hpmp/hp-mp-processor.h"
-#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "cmd-action/cmd-pet.h"
 #include "core/window-redrawer.h"
@@ -31,6 +30,7 @@
 #include "player/special-defense-types.h"
 #include "status/bad-status-setter.h"
 #include "status/element-resistance.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"

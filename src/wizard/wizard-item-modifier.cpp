@@ -1,5 +1,4 @@
 #include "wizard/wizard-item-modifier.h"
-#include "system/creature-entity.h"
 #include "artifact/fixed-art-generator.h"
 #include "artifact/fixed-art-types.h"
 #include "artifact/random-art-effects.h"
@@ -29,6 +28,7 @@
 #include "system/baseitem/baseitem-allocation.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"

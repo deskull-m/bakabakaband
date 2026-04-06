@@ -6,7 +6,6 @@
  */
 
 #include "floor/floor-object.h"
-#include "system/creature-entity.h"
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
 #include "game-option/birth-options.h"
@@ -28,6 +27,7 @@
 #include "range/v3/range/conversion.hpp"
 #include "system/artifact-type-definition.h"
 #include "system/baseitem/baseitem-allocation.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"

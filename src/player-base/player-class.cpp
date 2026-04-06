@@ -5,7 +5,6 @@
  * @details PlayerRaceからPlayerClassへの依存はあるが、逆は依存させないこと.
  */
 #include "player-base/player-class.h"
-#include "system/creature-entity.h"
 #include "cmd-io/diary-subtitle-table.h"
 #include "inventory/inventory-slot-types.h"
 #include "mind/mind-elementalist.h"
@@ -27,6 +26,7 @@
 #include "player/special-defense-types.h"
 #include "realm/realm-types.h"
 #include "status/action-setter.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"

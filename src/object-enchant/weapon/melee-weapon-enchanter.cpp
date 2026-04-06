@@ -5,8 +5,8 @@
  */
 
 #include "object-enchant/weapon/melee-weapon-enchanter.h"
-#include "system/creature-entity.h"
 #include "artifact/random-art-generator.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 
 MeleeWeaponEnchanter::MeleeWeaponEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power)

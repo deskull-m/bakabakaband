@@ -1,5 +1,4 @@
 #include "store/home.h"
-#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "game-option/birth-options.h"
 #include "game-option/game-play-options.h"
@@ -7,6 +6,7 @@
 #include "object/object-value.h"
 #include "object/tval-types.h"
 #include "store/store-util.h"
+#include "system/creature-entity.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/item-entity.h"

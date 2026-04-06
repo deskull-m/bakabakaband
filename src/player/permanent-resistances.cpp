@@ -1,5 +1,4 @@
 #include "player/permanent-resistances.h"
-#include "system/creature-entity.h"
 #include "inventory/inventory-slot-types.h"
 #include "mind/mind-elementalist.h"
 #include "mutation/mutation-flag-types.h"
@@ -11,6 +10,7 @@
 #include "player/player-personality-types.h"
 #include "player/player-status-flags.h"
 #include "player/special-defense-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"

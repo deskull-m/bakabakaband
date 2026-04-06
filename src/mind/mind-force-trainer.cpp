@@ -1,5 +1,4 @@
 #include "mind/mind-force-trainer.h"
-#include "system/creature-entity.h"
 #include "action/travel-execution.h"
 #include "avatar/avatar.h"
 #include "core/disturbance.h"
@@ -26,6 +25,7 @@
 #include "spell-kind/spells-lite.h"
 #include "spell/summon-types.h"
 #include "status/temporary-resistance.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"

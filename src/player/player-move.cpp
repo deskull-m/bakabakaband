@@ -6,7 +6,6 @@
  */
 
 #include "player/player-move.h"
-#include "system/creature-entity.h"
 #include "core/disturbance.h"
 #include "core/special-internal-keys.h"
 #include "core/stuff-handler.h"
@@ -36,6 +35,7 @@
 #include "spell-kind/spells-floor.h"
 #include "spell-realm/spells-song.h"
 #include "status/action-setter.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"

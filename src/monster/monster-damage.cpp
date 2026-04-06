@@ -5,7 +5,6 @@
  */
 
 #include "monster/monster-damage.h"
-#include "system/creature-entity.h"
 #include "avatar/avatar-changer.h"
 #include "core/speed-table.h"
 #include "core/stuff-handler.h"
@@ -40,6 +39,7 @@
 #include "status/bad-status-setter.h"
 #include "status/experience.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"

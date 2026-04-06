@@ -1,5 +1,4 @@
 #include "monster/monster-status-setter.h"
-#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "cmd-visual/cmd-draw.h"
 #include "core/speed-table.h"
@@ -15,6 +14,7 @@
 #include "monster/smart-learn-types.h"
 #include "player/player-status-flags.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"

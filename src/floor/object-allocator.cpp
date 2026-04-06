@@ -1,5 +1,4 @@
 #include "floor/object-allocator.h"
-#include "system/creature-entity.h"
 #include "dungeon/quest.h"
 #include "floor/floor-generator-util.h"
 #include "floor/floor-object.h"
@@ -8,6 +7,7 @@
 #include "grid/object-placer.h"
 #include "object-enchant/item-apply-magic.h"
 #include "object/object-kind-hook.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"

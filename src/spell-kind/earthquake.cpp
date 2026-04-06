@@ -1,5 +1,4 @@
 #include "spell-kind/earthquake.h"
-#include "system/creature-entity.h"
 #include "dungeon/quest.h"
 #include "floor/floor-object.h"
 #include "game-option/play-record-options.h"
@@ -16,6 +15,7 @@
 #include "player/player-move.h"
 #include "player/player-status-flags.h"
 #include "status/bad-status-setter.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"

@@ -10,7 +10,6 @@
  */
 
 #include "wizard/wizard-special-process.h"
-#include "system/creature-entity.h"
 #include "artifact/fixed-art-generator.h"
 #include "cmd-io/cmd-save.h"
 #include "cmd-visual/cmd-draw.h"
@@ -57,6 +56,7 @@
 #include "spell/spells-status.h"
 #include "status/bad-status-setter.h"
 #include "system/artifact-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/enums/dungeon/dungeon-id.h"

@@ -1,5 +1,4 @@
 #include "player-ability/player-dexterity.h"
-#include "system/creature-entity.h"
 #include "mutation/mutation-flag-types.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
@@ -12,6 +11,7 @@
 #include "player/special-defense-types.h"
 #include "realm/realm-hex-numbers.h"
 #include "spell-realm/spells-hex.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 

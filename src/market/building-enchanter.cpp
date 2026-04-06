@@ -1,5 +1,4 @@
 #include "market/building-enchanter.h"
-#include "system/creature-entity.h"
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
 #include "floor/floor-object.h"
@@ -9,6 +8,7 @@
 #include "object/item-use-flags.h"
 #include "racial/racial-android.h"
 #include "spell/spells-object.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"

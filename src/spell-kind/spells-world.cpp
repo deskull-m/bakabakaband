@@ -5,7 +5,6 @@
  */
 
 #include "spell-kind/spells-world.h"
-#include "system/creature-entity.h"
 #include "cmd-io/cmd-save.h"
 #include "core/asking-player.h"
 #include "dungeon/quest-completion-checker.h"
@@ -24,6 +23,7 @@
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/dungeon/dungeon-record.h"

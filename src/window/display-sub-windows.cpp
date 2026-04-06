@@ -1,5 +1,4 @@
 #include "window/display-sub-windows.h"
-#include "system/creature-entity.h"
 #include "flavor/flavor-describer.h"
 #include "game-option/option-flags.h"
 #include "game-option/special-options.h"
@@ -25,6 +24,7 @@
 #include "player/player-status-table.h"
 #include "player/player-status.h"
 #include "spell/spells-execution.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"

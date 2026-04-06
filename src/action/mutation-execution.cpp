@@ -4,7 +4,6 @@
  */
 
 #include "action/mutation-execution.h"
-#include "system/creature-entity.h"
 #include "cmd-item/cmd-throw.h"
 #include "core/asking-player.h"
 #include "dungeon/quest.h"
@@ -45,6 +44,7 @@
 #include "spell/summon-types.h"
 #include "status/element-resistance.h"
 #include "status/shape-changer.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"

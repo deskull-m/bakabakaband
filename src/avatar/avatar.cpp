@@ -13,11 +13,11 @@
  */
 
 #include "avatar/avatar.h"
-#include "system/creature-entity.h"
 #include "game-option/text-display-options.h"
 #include "player-info/class-info.h"
 #include "player-info/race-types.h"
 #include "player/player-realm.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/enum-converter.h"

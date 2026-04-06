@@ -5,7 +5,6 @@
  */
 
 #include "player/eldritch-horror.h"
-#include "system/creature-entity.h"
 #include "core/stuff-handler.h"
 #include "locale/english.h"
 #include "monster-floor/place-monster-types.h"
@@ -24,6 +23,7 @@
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"

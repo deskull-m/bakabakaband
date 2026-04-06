@@ -1,5 +1,4 @@
 #include "effect/effect-monster-spirit.h"
-#include "system/creature-entity.h"
 #include "effect/effect-monster-util.h"
 #include "hpmp/hp-mp-processor.h"
 #include "monster-race/race-ability-mask.h"
@@ -8,6 +7,7 @@
 #include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
 #include "monster/monster-util.h"
+#include "system/creature-entity.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/redrawing-flags-updater.h"

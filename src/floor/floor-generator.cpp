@@ -10,8 +10,6 @@
  */
 
 #include "floor/floor-generator.h"
-#include "system/creature-entity.h"
-#include "system/monster-entity.h"
 #include "dungeon/dungeon-flag-types.h"
 #include "dungeon/quest.h"
 #include "floor/cave-generator.h"
@@ -40,6 +38,7 @@
 #include "monster/monster-util.h"
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/enums/terrain/terrain-tag.h"
@@ -48,6 +47,7 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
+#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"

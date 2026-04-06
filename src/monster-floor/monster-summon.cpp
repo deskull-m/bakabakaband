@@ -1,5 +1,4 @@
 #include "monster-floor/monster-summon.h"
-#include "system/creature-entity.h"
 #include "dungeon/dungeon-flag-types.h"
 #include "floor/geometry.h"
 #include "main/sound-definitions-table.h"
@@ -11,6 +10,7 @@
 #include "monster/monster-list.h"
 #include "monster/monster-util.h"
 #include "spell/summon-types.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"

@@ -5,7 +5,6 @@
  */
 
 #include "alliance/alliance.h"
-#include "system/creature-entity.h"
 #include "birth/birth-body-spec.h"
 #include "birth/birth-stat.h"
 #include "core/disturbance.h"
@@ -33,6 +32,7 @@
 #include "monster/monster-util.h"
 #include "object/warning.h"
 #include "player/player-status.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"

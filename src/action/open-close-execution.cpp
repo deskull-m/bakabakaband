@@ -6,7 +6,6 @@
  */
 
 #include "action/open-close-execution.h"
-#include "system/creature-entity.h"
 #include "action/movement-execution.h"
 #include "combat/attack-power-table.h"
 #include "floor/floor-object.h"
@@ -24,6 +23,7 @@
 #include "status/experience.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"

@@ -7,7 +7,6 @@
  */
 
 #include "effect/effect-monster-switcher.h"
-#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "cmd-action/cmd-attack.h"
 #include "effect/attribute-types.h"
@@ -29,6 +28,7 @@
 #include "monster/monster-util.h"
 #include "player/player-damage.h"
 #include "spell-kind/spells-genocide.h"
+#include "system/creature-entity.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "util/bit-flags-calculator.h"

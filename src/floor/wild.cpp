@@ -9,7 +9,6 @@
  */
 
 #include "floor/wild.h"
-#include "system/creature-entity.h"
 #include "alliance/alliance.h"
 #include "core/asking-player.h"
 #include "dungeon/quest.h"
@@ -32,6 +31,7 @@
 #include "spell-realm/spells-hex.h"
 #include "status/action-setter.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/enums/dungeon/dungeon-id.h"

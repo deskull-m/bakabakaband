@@ -5,7 +5,6 @@
  */
 
 #include "object-enchant/item-magic-applier.h"
-#include "system/creature-entity.h"
 #include "artifact/fixed-art-generator.h"
 #include "object-enchant/enchanter-base.h"
 #include "object-enchant/enchanter-factory.h"
@@ -15,6 +14,7 @@
 #include "player/player-status-flags.h"
 #include "system/artifact-type-definition.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"

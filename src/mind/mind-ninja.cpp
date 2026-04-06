@@ -1,5 +1,4 @@
 #include "mind/mind-ninja.h"
-#include "system/creature-entity.h"
 #include "cmd-action/cmd-attack.h"
 #include "cmd-item/cmd-throw.h"
 #include "core/disturbance.h"
@@ -39,6 +38,7 @@
 #include "status/temporary-resistance.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"

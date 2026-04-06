@@ -7,7 +7,6 @@
  */
 
 #include "info-reader/fixed-map-parser.h"
-#include "system/creature-entity.h"
 #include "dungeon/quest.h"
 #include "floor/fixed-map-generator.h"
 #include "game-option/birth-options.h"
@@ -20,6 +19,7 @@
 #include "player/player-realm.h"
 #include "system/angband-exceptions.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/player-type-definition.h"
 #include "util/angband-files.h"

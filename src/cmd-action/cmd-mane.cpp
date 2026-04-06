@@ -10,7 +10,6 @@
  */
 
 #include "cmd-action/cmd-mane.h"
-#include "system/creature-entity.h"
 #include "action/action-limited.h"
 #include "artifact/fixed-art-types.h"
 #include "cmd-action/cmd-spell.h"
@@ -50,6 +49,7 @@
 #include "status/bad-status-setter.h"
 #include "status/body-improvement.h"
 #include "status/buff-setter.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"

@@ -1,5 +1,4 @@
 #include "target/target-getter.h"
-#include "system/creature-entity.h"
 #include "core/asking-player.h"
 #include "effect/spells-effect-util.h"
 #include "floor/geometry.h"
@@ -9,6 +8,7 @@
 #include "main/sound-of-music.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-status.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"

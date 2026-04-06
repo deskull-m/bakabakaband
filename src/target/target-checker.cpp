@@ -10,13 +10,13 @@
  */
 
 #include "target/target-checker.h"
-#include "system/creature-entity.h"
 #include "core/disturbance.h"
 #include "core/window-redrawer.h"
 #include "game-option/disturbance-options.h"
 #include "game-option/map-screen-options.h"
 #include "io/cursor.h"
 #include "io/screen-util.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"

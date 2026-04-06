@@ -4,7 +4,6 @@
  * @author Hourier
  */
 #include "cmd-item/cmd-throw.h"
-#include "system/creature-entity.h"
 #include "game-option/special-options.h"
 #include "inventory/inventory-slot-types.h"
 #include "object-use/throw-execution.h"
@@ -15,6 +14,7 @@
 #include "player/special-defense-types.h"
 #include "specific-object/torch.h"
 #include "status/action-setter.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "world/world.h"

@@ -5,7 +5,6 @@
  */
 
 #include "cmd-action/cmd-attack.h"
-#include "system/creature-entity.h"
 #include "action/action-limited.h"
 #include "artifact/fixed-art-types.h"
 #include "avatar/avatar.h"
@@ -45,6 +44,7 @@
 #include "status/bad-status-setter.h"
 #include "sv-definition/sv-junk-types.h"
 #include "system/angband-exceptions.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"

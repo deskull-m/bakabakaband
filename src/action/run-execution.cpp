@@ -4,7 +4,6 @@
  */
 
 #include "action/run-execution.h"
-#include "system/creature-entity.h"
 #include "action/movement-execution.h"
 #include "core/disturbance.h"
 #include "game-option/disturbance-options.h"
@@ -14,6 +13,7 @@
 #include "player-status/player-energy.h"
 #include "player/player-status-flags.h"
 #include "player/player-status.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"

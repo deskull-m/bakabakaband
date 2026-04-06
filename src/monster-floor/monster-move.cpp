@@ -5,7 +5,6 @@
  */
 
 #include "monster-floor/monster-move.h"
-#include "system/creature-entity.h"
 #include "core/disturbance.h"
 #include "core/speed-table.h"
 #include "core/window-redrawer.h"
@@ -28,6 +27,7 @@
 #include "pet/pet-util.h"
 #include "player/player-status-flags.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"

@@ -6,9 +6,9 @@
  */
 
 #include "achievement/achievement-tracker.h"
-#include "system/creature-entity.h"
 #include "achievement/achievement-definitions.h"
 #include "core/stuff-handler.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"

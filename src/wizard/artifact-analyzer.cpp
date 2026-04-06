@@ -1,5 +1,4 @@
 #include "wizard/artifact-analyzer.h"
-#include "system/creature-entity.h"
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
 #include "locale/japanese.h"
@@ -8,6 +7,7 @@
 #include "object-enchant/trg-types.h"
 #include "object/object-info.h"
 #include "system/artifact-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"

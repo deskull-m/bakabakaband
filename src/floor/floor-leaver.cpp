@@ -1,5 +1,4 @@
 #include "floor/floor-leaver.h"
-#include "system/creature-entity.h"
 #include "dungeon/quest.h"
 #include "floor/floor-mode-changer.h"
 #include "floor/floor-save-util.h"
@@ -25,6 +24,7 @@
 #include "spell-class/spells-mirror-master.h"
 #include "system/angband-system.h"
 #include "system/artifact-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"

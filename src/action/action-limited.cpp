@@ -4,13 +4,13 @@
  */
 
 #include "action/action-limited.h"
-#include "system/creature-entity.h"
 #include "dungeon/dungeon-flag-types.h"
 #include "game-option/disturbance-options.h"
 #include "grid/grid.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
 #include "player-base/player-class.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "term/screen-processor.h"

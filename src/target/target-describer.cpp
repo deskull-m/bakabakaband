@@ -1,5 +1,4 @@
 #include "target/target-describer.h"
-#include "system/creature-entity.h"
 #include "action/travel-execution.h"
 #include "cmd-visual/cmd-draw.h"
 #include "core/stuff-handler.h"
@@ -19,6 +18,7 @@
 #include "player-info/race-types.h"
 #include "player/player-status-table.h"
 #include "system/building-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/enums/grid-flow.h"

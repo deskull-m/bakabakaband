@@ -5,7 +5,6 @@
  */
 
 #include "object-activation/activation-others.h"
-#include "system/creature-entity.h"
 #include "artifact/fixed-art-types.h"
 #include "avatar/avatar.h"
 #include "cmd-io/cmd-save.h"
@@ -42,6 +41,7 @@
 #include "status/bad-status-setter.h"
 #include "status/body-improvement.h"
 #include "status/buff-setter.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"

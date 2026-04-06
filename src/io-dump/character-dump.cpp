@@ -1,5 +1,4 @@
 #include "io-dump/character-dump.h"
-#include "system/creature-entity.h"
 #include "artifact/fixed-art-types.h"
 #include "avatar/avatar.h"
 #include "dungeon/quest.h"
@@ -30,6 +29,7 @@
 #include "store/store.h"
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"

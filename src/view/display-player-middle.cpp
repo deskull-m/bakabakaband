@@ -1,5 +1,4 @@
 #include "view/display-player-middle.h"
-#include "system/creature-entity.h"
 #include "combat/shoot.h"
 #include "game-option/birth-options.h"
 #include "game-option/special-options.h"
@@ -21,6 +20,7 @@
 #include "player/player-status-table.h"
 #include "player/player-status.h"
 #include "sv-definition/sv-bow-types.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/inner-game-data.h"
 #include "system/item-entity.h"

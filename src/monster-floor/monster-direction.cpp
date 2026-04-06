@@ -5,7 +5,6 @@
  */
 
 #include "monster-floor/monster-direction.h"
-#include "system/creature-entity.h"
 #include "monster-floor/monster-sweep-grid.h"
 #include "monster/monster-info.h"
 #include "monster/monster-processor-util.h"
@@ -14,6 +13,7 @@
 #include "player/player-status-flags.h"
 #include "spell/range-calc.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"

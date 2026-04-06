@@ -5,7 +5,6 @@
  */
 
 #include "market/arena.h"
-#include "system/creature-entity.h"
 #include "core/asking-player.h"
 #include "core/show-file.h"
 #include "core/stuff-handler.h"
@@ -15,6 +14,7 @@
 #include "market/building-util.h"
 #include "player-base/player-class.h"
 #include "status/buff-setter.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "term/screen-processor.h"

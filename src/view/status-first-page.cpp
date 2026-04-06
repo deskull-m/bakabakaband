@@ -6,7 +6,6 @@
  */
 
 #include "view/status-first-page.h"
-#include "system/creature-entity.h"
 #include "artifact/fixed-art-types.h"
 #include "combat/attack-power-table.h"
 #include "combat/shoot.h"
@@ -31,6 +30,7 @@
 #include "player/player-status.h"
 #include "player/special-defense-types.h"
 #include "sv-definition/sv-weapon-types.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"

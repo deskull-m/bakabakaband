@@ -1,5 +1,4 @@
 #include "floor/floor-changer.h"
-#include "system/creature-entity.h"
 #include "action/travel-execution.h"
 #include "dungeon/dungeon-flag-types.h"
 #include "dungeon/quest-monster-placer.h"
@@ -33,6 +32,7 @@
 #include "player-base/player-class.h"
 #include "spell-kind/spells-floor.h"
 #include "system/artifact-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/enums/terrain/terrain-tag.h"

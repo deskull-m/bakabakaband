@@ -1,7 +1,7 @@
 #include "core/stuff-handler.h"
-#include "system/creature-entity.h"
 #include "core/window-redrawer.h"
 #include "player/player-status.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"

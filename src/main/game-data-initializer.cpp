@@ -4,7 +4,6 @@
  */
 
 #include "main/game-data-initializer.h"
-#include "system/creature-entity.h"
 #include "cmd-io/macro-util.h"
 #include "dungeon/quest.h"
 #include "effect/attribute-types.h"
@@ -15,6 +14,7 @@
 #include "system/baseitem/baseitem-allocation.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/dungeon/dungeon-record.h"

@@ -5,7 +5,6 @@
  */
 
 #include "market/melee-arena.h"
-#include "system/creature-entity.h"
 #include "core/asking-player.h"
 #include "floor/floor-mode-changer.h"
 #include "io/input-key-acceptor.h"
@@ -14,6 +13,7 @@
 #include "status/buff-setter.h"
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"

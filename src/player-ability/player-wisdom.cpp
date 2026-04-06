@@ -1,5 +1,4 @@
 #include "player-ability/player-wisdom.h"
-#include "system/creature-entity.h"
 #include "mutation/mutation-flag-types.h"
 #include "player-base/player-class.h"
 #include "player-info/class-info.h"
@@ -9,6 +8,7 @@
 #include "player/player-personality.h"
 #include "player/race-info-table.h"
 #include "player/special-defense-types.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 

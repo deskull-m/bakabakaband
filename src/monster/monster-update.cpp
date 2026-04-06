@@ -5,7 +5,6 @@
  */
 
 #include "monster/monster-update.h"
-#include "system/creature-entity.h"
 #include "core/disturbance.h"
 #include "core/window-redrawer.h"
 #include "dungeon/dungeon-flag-types.h"
@@ -29,6 +28,7 @@
 #include "player/special-defense-types.h"
 #include "status/element-resistance.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"

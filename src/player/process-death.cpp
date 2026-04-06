@@ -7,7 +7,6 @@
  */
 
 #include "player/process-death.h"
-#include "system/creature-entity.h"
 #include "core/asking-player.h"
 #include "core/stuff-handler.h"
 #include "flavor/flavor-describer.h"
@@ -22,6 +21,7 @@
 #include "object/item-use-flags.h"
 #include "perception/object-perception.h"
 #include "player-info/class-info.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"

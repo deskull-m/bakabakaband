@@ -6,7 +6,6 @@
  */
 
 #include "mspell/mspell-status.h"
-#include "system/creature-entity.h"
 #include "blue-magic/blue-magic-checker.h"
 #include "core/disturbance.h"
 #include "effect/attribute-types.h"
@@ -27,6 +26,7 @@
 #include "player/player-status-flags.h"
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"

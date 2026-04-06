@@ -1,5 +1,4 @@
 #include "specific-object/torch.h"
-#include "system/creature-entity.h"
 #include "dungeon/dungeon-flag-types.h"
 #include "inventory/inventory-slot-types.h"
 #include "mind/mind-ninja.h"
@@ -9,6 +8,7 @@
 #include "player-info/race-info.h"
 #include "player/special-defense-types.h"
 #include "sv-definition/sv-lite-types.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"

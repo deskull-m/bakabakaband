@@ -5,7 +5,6 @@
  */
 
 #include "mind/mind-cavalry.h"
-#include "system/creature-entity.h"
 #include "cmd-action/cmd-pet.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-info.h"
@@ -14,6 +13,7 @@
 #include "pet/pet-fall-off.h"
 #include "player/player-skill.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"

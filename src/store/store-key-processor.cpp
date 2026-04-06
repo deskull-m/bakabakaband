@@ -1,5 +1,4 @@
 #include "store/store-key-processor.h"
-#include "system/creature-entity.h"
 #include "autopick/autopick-pref-processor.h"
 #include "cmd-action/cmd-mind.h"
 #include "cmd-action/cmd-spell.h"
@@ -31,6 +30,7 @@
 #include "store/sell-order.h"
 #include "store/store-util.h"
 #include "store/store.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"

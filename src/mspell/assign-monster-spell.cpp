@@ -5,7 +5,6 @@
  */
 
 #include "mspell/assign-monster-spell.h"
-#include "system/creature-entity.h"
 #include "blue-magic/blue-magic-checker.h"
 #include "effect/attribute-types.h"
 #include "monster-race/race-ability-flags.h"
@@ -23,6 +22,7 @@
 #include "mspell/mspell-status.h"
 #include "mspell/mspell-summon.h"
 #include "mspell/mspell-util.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"

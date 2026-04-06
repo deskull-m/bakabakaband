@@ -1,5 +1,4 @@
 #include "market/play-gamble.h"
-#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "core/asking-player.h"
 #include "core/show-file.h"
@@ -7,6 +6,7 @@
 #include "market/building-actions-table.h"
 #include "market/building-util.h"
 #include "market/poker.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"

@@ -4,9 +4,9 @@
  */
 
 #include "main/scene-table-monster.h"
-#include "system/creature-entity.h"
 #include "dungeon/quest.h"
 #include "main/music-definitions-table.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/inner-game-data.h"
 #include "system/monrace/monrace-definition.h"

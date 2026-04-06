@@ -6,7 +6,6 @@
  */
 
 #include "mind/monk-attack.h"
-#include "system/creature-entity.h"
 #include "cmd-action/cmd-attack.h"
 #include "combat/attack-criticality.h"
 #include "combat/slaying.h"
@@ -25,6 +24,7 @@
 #include "player-info/monk-data-type.h"
 #include "player/attack-defense-types.h"
 #include "player/special-defense-types.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"

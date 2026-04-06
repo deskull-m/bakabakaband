@@ -1,5 +1,4 @@
 #include "spell-kind/spells-polymorph.h"
-#include "system/creature-entity.h"
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
 #include "floor/floor-object.h"
@@ -15,6 +14,7 @@
 #include "monster/monster-util.h"
 #include "player/player-sex.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"

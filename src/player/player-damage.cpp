@@ -1,5 +1,4 @@
 #include "player/player-damage.h"
-#include "system/creature-entity.h"
 #include "autopick/autopick-pref-processor.h"
 #include "avatar/avatar.h"
 #include "blue-magic/blue-magic-checker.h"
@@ -58,6 +57,7 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/building-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"

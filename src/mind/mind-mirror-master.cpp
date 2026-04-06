@@ -6,7 +6,6 @@
  */
 
 #include "mind/mind-mirror-master.h"
-#include "system/creature-entity.h"
 #include "action/travel-execution.h"
 #include "core/disturbance.h"
 #include "core/stuff-handler.h"
@@ -38,6 +37,7 @@
 #include "status/buff-setter.h"
 #include "status/sight-setter.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/player-type-definition.h"

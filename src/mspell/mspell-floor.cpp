@@ -5,7 +5,6 @@
  */
 
 #include "mspell/mspell-floor.h"
-#include "system/creature-entity.h"
 #include "blue-magic/blue-magic-checker.h"
 #include "core/disturbance.h"
 #include "effect/attribute-types.h"
@@ -32,6 +31,7 @@
 #include "spell-kind/spells-teleport.h"
 #include "spell-kind/spells-world.h"
 #include "spell-realm/spells-hex.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"

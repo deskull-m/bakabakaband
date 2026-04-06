@@ -1,10 +1,10 @@
 #include "view/display-lore-status.h"
-#include "system/creature-entity.h"
 #include "locale/japanese.h"
 #include "lore/lore-calculator.h"
 #include "lore/lore-util.h"
 #include "monster-race/race-brightness-flags.h"
 #include "monster-race/race-flags-resistance.h"
+#include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "term/term-color-types.h"
 

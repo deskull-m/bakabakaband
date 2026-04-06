@@ -1,5 +1,4 @@
 #include "mind/mind-weaponsmith.h"
-#include "system/creature-entity.h"
 #include "action/action-limited.h"
 #include "autopick/autopick.h"
 #include "core/asking-player.h"
@@ -19,6 +18,7 @@
 #include "player-status/player-energy.h"
 #include "smith/object-smith.h"
 #include "smith/smith-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"

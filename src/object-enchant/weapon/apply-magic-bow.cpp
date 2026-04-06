@@ -5,9 +5,9 @@
  */
 
 #include "object-enchant/weapon/apply-magic-bow.h"
-#include "system/creature-entity.h"
 #include "artifact/random-art-generator.h"
 #include "inventory/inventory-slot-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 
 /*!

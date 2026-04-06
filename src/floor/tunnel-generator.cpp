@@ -1,7 +1,7 @@
 #include "floor/tunnel-generator.h"
-#include "system/creature-entity.h"
 #include "floor/dungeon-tunnel-util.h"
 #include "grid/grid.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-data-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"

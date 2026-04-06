@@ -1,5 +1,4 @@
 #include "player/patron.h"
-#include "system/creature-entity.h"
 #include "cmd-action/cmd-pet.h"
 #include "cmd-io/cmd-dump.h"
 #include "flavor/flavor-describer.h"
@@ -34,6 +33,7 @@
 #include "status/experience.h"
 #include "status/shape-changer.h"
 #include "sv-definition/sv-weapon-types.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"

@@ -1,5 +1,4 @@
 #include "spell-kind/spells-fetcher.h"
-#include "system/creature-entity.h"
 #include "core/stuff-handler.h"
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
@@ -10,6 +9,7 @@
 #include "monster/monster-status-setter.h"
 #include "monster/monster-update.h"
 #include "monster/monster-util.h"
+#include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"

@@ -5,7 +5,6 @@
  */
 
 #include "spell/spells-object.h"
-#include "system/creature-entity.h"
 #include "artifact/fixed-art-types.h"
 #include "avatar/avatar.h"
 #include "core/window-redrawer.h"
@@ -34,6 +33,7 @@
 #include "sv-definition/sv-weapon-types.h"
 #include "system/artifact-type-definition.h"
 #include "system/baseitem/baseitem-key.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"

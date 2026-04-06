@@ -1,5 +1,4 @@
 #include "spell-kind/spells-perception.h"
-#include "system/creature-entity.h"
 #include "autopick/autopick.h"
 #include "avatar/avatar.h"
 #include "core/stuff-handler.h"
@@ -22,6 +21,7 @@
 #include "object/object-mark-types.h"
 #include "perception/identification.h"
 #include "perception/object-perception.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"

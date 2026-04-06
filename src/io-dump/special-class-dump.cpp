@@ -5,7 +5,6 @@
  */
 
 #include "io-dump/special-class-dump.h"
-#include "system/creature-entity.h"
 #include "blue-magic/blue-magic-checker.h"
 #include "cmd-item/cmd-magiceat.h"
 #include "mind/mind-blue-mage.h"
@@ -18,6 +17,7 @@
 #include "smith/object-smith.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "util/enum-converter.h"
 #include "util/flag-group.h"
 #include <algorithm>

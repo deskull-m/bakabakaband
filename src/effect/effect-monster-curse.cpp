@@ -1,7 +1,7 @@
 #include "effect/effect-monster-curse.h"
-#include "system/creature-entity.h"
 #include "effect/effect-monster-util.h"
 #include "monster/monster-util.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "view/display-messages.h"

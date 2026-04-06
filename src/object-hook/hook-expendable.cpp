@@ -1,5 +1,4 @@
 #include "object-hook/hook-expendable.h"
-#include "system/creature-entity.h"
 #include "artifact/fixed-art-types.h"
 #include "core/window-redrawer.h"
 #include "object-enchant/item-feeling.h"
@@ -13,6 +12,7 @@
 #include "sv-definition/sv-lite-types.h"
 #include "sv-definition/sv-other-types.h"
 #include "system/baseitem/baseitem-key.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"

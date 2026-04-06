@@ -13,7 +13,6 @@
  */
 
 #include "monster/monster-processor.h"
-#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "cmd-io/cmd-dump.h"
 #include "core/disturbance.h"
@@ -70,6 +69,7 @@
 #include "system/angband-system.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"

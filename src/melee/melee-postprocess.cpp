@@ -11,7 +11,6 @@
  */
 
 #include "melee/melee-postprocess.h"
-#include "system/creature-entity.h"
 #include "core/disturbance.h"
 #include "effect/attribute-types.h"
 #include "floor/geometry.h"
@@ -34,6 +33,7 @@
 #include "player-info/race-types.h"
 #include "player/player-personality-types.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"

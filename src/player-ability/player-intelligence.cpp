@@ -1,5 +1,4 @@
 #include "player-ability/player-intelligence.h"
-#include "system/creature-entity.h"
 #include "mutation/mutation-flag-types.h"
 #include "player-base/player-class.h"
 #include "player-info/class-info.h"
@@ -11,6 +10,7 @@
 #include "player/special-defense-types.h"
 #include "realm/realm-hex-numbers.h"
 #include "spell-realm/spells-hex.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 

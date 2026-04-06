@@ -4,7 +4,6 @@
  */
 
 #include "action/movement-execution.h"
-#include "system/creature-entity.h"
 #include "action/open-close-execution.h"
 #include "artifact/fixed-art-types.h"
 #include "cmd-action/cmd-attack.h"
@@ -32,6 +31,7 @@
 #include "player/player-move.h"
 #include "player/player-status-flags.h"
 #include "player/player-status.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"

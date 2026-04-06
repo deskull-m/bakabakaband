@@ -1,5 +1,4 @@
 #include "spell-kind/spells-pet.h"
-#include "system/creature-entity.h"
 #include "core/asking-player.h"
 #include "effect/attribute-types.h"
 #include "effect/effect-characteristics.h"
@@ -11,6 +10,7 @@
 #include "monster/monster-description-types.h"
 #include "monster/monster-info.h"
 #include "monster/smart-learn-types.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"

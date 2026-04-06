@@ -1,5 +1,4 @@
 #include "monster-floor/monster-death.h"
-#include "system/creature-entity.h"
 #include "alliance/alliance.h"
 #include "artifact/fixed-art-generator.h"
 #include "artifact/fixed-art-types.h"
@@ -38,6 +37,7 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/building-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"

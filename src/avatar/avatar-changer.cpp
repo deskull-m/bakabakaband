@@ -5,11 +5,11 @@
  */
 
 #include "avatar/avatar-changer.h"
-#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "monster-race/monster-kind-mask.h"
 #include "monster-race/race-ability-mask.h"
 #include "monster/monster-info.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"

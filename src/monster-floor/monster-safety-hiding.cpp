@@ -5,11 +5,11 @@
  */
 
 #include "monster-floor/monster-safety-hiding.h"
-#include "system/creature-entity.h"
 #include "monster-floor/monster-dist-offsets.h"
 #include "monster/monster-info.h"
 #include "monster/monster-processor-util.h"
 #include "mspell/mspell-checker.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"

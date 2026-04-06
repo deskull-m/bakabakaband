@@ -5,11 +5,11 @@
  */
 
 #include "object-enchant/weapon/apply-magic-sword.h"
-#include "system/creature-entity.h"
 #include "floor/floor-base-definitions.h"
 #include "inventory/inventory-slot-types.h"
 #include "object-enchant/object-boost.h"
 #include "sv-definition/sv-weapon-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "view/display-messages.h"
 

@@ -5,7 +5,6 @@
  */
 
 #include "wizard/wizard-spells.h"
-#include "system/creature-entity.h"
 #include "blue-magic/blue-magic-checker.h"
 #include "core/asking-player.h"
 #include "core/window-redrawer.h"
@@ -35,6 +34,7 @@
 #include "spell-realm/spells-sorcery.h"
 #include "spell/spells-status.h"
 #include "spell/summon-types.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"

@@ -1,5 +1,4 @@
 #include "spell-realm/spells-hex.h"
-#include "system/creature-entity.h"
 #include "core/asking-player.h"
 #include "core/window-redrawer.h"
 #include "effect/effect-characteristics.h"
@@ -19,6 +18,7 @@
 #include "spell/technic-info-table.h"
 #include "status/action-setter.h"
 #include "system/angband-exceptions.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"

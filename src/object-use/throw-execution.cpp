@@ -6,7 +6,6 @@
  */
 
 #include "object-use/throw-execution.h"
-#include "system/creature-entity.h"
 #include "action/weapon-shield.h"
 #include "artifact/fixed-art-types.h"
 #include "combat/attack-power-table.h"
@@ -42,6 +41,7 @@
 #include "racial/racial-android.h"
 #include "specific-object/torch.h"
 #include "system/angband-exceptions.h"
+#include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"

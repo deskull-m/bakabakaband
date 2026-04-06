@@ -1,5 +1,4 @@
 #include "inventory/inventory-curse.h"
-#include "system/creature-entity.h"
 #include "artifact/fixed-art-types.h"
 #include "cmd-io/cmd-save.h"
 #include "core/asking-player.h"
@@ -30,6 +29,7 @@
 #include "status/bad-status-setter.h"
 #include "status/buff-setter.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/floor/floor-info.h"

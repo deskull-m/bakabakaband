@@ -1,5 +1,4 @@
 #include "mspell/mspell-attack/mspell-curse.h"
-#include "system/creature-entity.h"
 #include "core/disturbance.h"
 #include "effect/attribute-types.h"
 #include "effect/effect-processor.h"
@@ -10,6 +9,7 @@
 #include "mspell/mspell-data.h"
 #include "mspell/mspell-result.h"
 #include "mspell/mspell-util.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "view/display-messages.h"
 

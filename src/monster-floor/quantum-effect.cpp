@@ -1,5 +1,4 @@
 #include "monster-floor/quantum-effect.h"
-#include "system/creature-entity.h"
 #include "effect/attribute-types.h"
 #include "floor/line-of-sight.h"
 #include "monster-floor/monster-death.h"
@@ -11,6 +10,7 @@
 #include "mspell/assign-monster-spell.h"
 #include "mspell/mspell-result.h"
 #include "spell-kind/spells-teleport.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "view/display-messages.h"

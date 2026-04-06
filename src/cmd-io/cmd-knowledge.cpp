@@ -1,5 +1,4 @@
 #include "cmd-io/cmd-knowledge.h"
-#include "system/creature-entity.h"
 #include "cmd-visual/cmd-draw.h"
 #include "game-option/birth-options.h"
 #include "io/input-key-acceptor.h"
@@ -16,6 +15,7 @@
 #include "knowledge/knowledge-self.h"
 #include "knowledge/knowledge-uniques.h"
 #include "main/sound-of-music.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "term/gameterm.h"

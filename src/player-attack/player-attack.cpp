@@ -5,7 +5,6 @@
  */
 
 #include "player-attack/player-attack.h"
-#include "system/creature-entity.h"
 #include "artifact/fixed-art-types.h"
 #include "avatar/avatar.h"
 #include "cmd-action/cmd-attack.h"
@@ -45,6 +44,7 @@
 #include "spell-kind/earthquake.h"
 #include "spell-realm/spells-hex.h"
 #include "sv-definition/sv-weapon-types.h"
+#include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"

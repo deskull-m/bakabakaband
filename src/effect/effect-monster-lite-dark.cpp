@@ -1,8 +1,8 @@
 #include "effect/effect-monster-lite-dark.h"
-#include "system/creature-entity.h"
 #include "effect/effect-monster-util.h"
 #include "monster-race/race-flags-resistance.h"
 #include "monster/monster-info.h"
+#include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
 
 ProcessResult effect_monster_lite_weak(CreatureEntity &creature, EffectMonster *em_ptr)

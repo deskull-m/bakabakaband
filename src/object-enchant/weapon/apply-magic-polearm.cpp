@@ -5,10 +5,10 @@
  */
 
 #include "object-enchant/weapon/apply-magic-polearm.h"
-#include "system/creature-entity.h"
 #include "floor/floor-base-definitions.h"
 #include "inventory/inventory-slot-types.h"
 #include "sv-definition/sv-weapon-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 
 /*!

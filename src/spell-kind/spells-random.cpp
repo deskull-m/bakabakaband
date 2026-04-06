@@ -5,7 +5,6 @@
  */
 
 #include "spell-kind/spells-random.h"
-#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "effect/attribute-types.h"
 #include "effect/effect-characteristics.h"
@@ -33,6 +32,7 @@
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
 #include "status/experience.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/player-type-definition.h"
 #include "target/target-getter.h"

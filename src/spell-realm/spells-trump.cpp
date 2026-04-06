@@ -1,5 +1,4 @@
 #include "spell-realm/spells-trump.h"
-#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/place-monster-types.h"
@@ -19,6 +18,7 @@
 #include "status/base-status.h"
 #include "status/buff-setter.h"
 #include "status/experience.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/player-type-definition.h"
 #include "target/target-getter.h"

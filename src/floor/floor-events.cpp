@@ -1,5 +1,4 @@
 #include "floor/floor-events.h"
-#include "system/creature-entity.h"
 #include "cmd-io/cmd-dump.h"
 #include "core/disturbance.h"
 #include "dungeon/quest.h"
@@ -27,6 +26,7 @@
 #include "sv-definition/sv-protector-types.h"
 #include "sv-definition/sv-ring-types.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"

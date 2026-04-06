@@ -12,7 +12,6 @@
  */
 
 #include "artifact/fixed-art-generator.h"
-#include "system/creature-entity.h"
 #include "artifact/fixed-art-types.h"
 #include "floor/floor-object.h"
 #include "object-enchant/object-boost.h"
@@ -21,6 +20,7 @@
 #include "player-base/player-class.h"
 #include "specific-object/bloody-moon.h"
 #include "system/artifact-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 

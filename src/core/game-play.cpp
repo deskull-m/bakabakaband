@@ -11,7 +11,6 @@
  */
 
 #include "core/game-play.h"
-#include "system/creature-entity.h"
 #include "autopick/autopick-pref-processor.h"
 #include "birth/character-builder.h"
 #include "birth/inventory-initializer.h"
@@ -75,6 +74,7 @@
 #include "sv-definition/sv-weapon-types.h"
 #include "system/angband-system.h"
 #include "system/angband-version.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"

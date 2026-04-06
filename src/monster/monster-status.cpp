@@ -1,5 +1,4 @@
 #include "monster/monster-status.h"
-#include "system/creature-entity.h"
 #include "autopick/autopick-pref-processor.h"
 #include "core/speed-table.h"
 #include "floor/geometry.h"
@@ -15,6 +14,7 @@
 #include "monster/monster-status-setter.h" //!< @todo 相互依存. 後で何とかする.
 #include "monster/monster-update.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"

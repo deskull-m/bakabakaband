@@ -1,6 +1,6 @@
 #include "alliance/alliance-ungoliant.h"
-#include "system/creature-entity.h"
 #include "alliance/alliance.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"

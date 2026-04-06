@@ -5,7 +5,6 @@
  */
 
 #include "spell-kind/spells-teleport.h"
-#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "core/asking-player.h"
 #include "core/speed-table.h"
@@ -24,6 +23,7 @@
 #include "player-base/player-class.h"
 #include "player/player-move.h"
 #include "spell-kind/spells-launcher.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"

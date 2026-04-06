@@ -1,5 +1,4 @@
 #include "system/player-type-definition.h"
-#include "system/creature-entity.h"
 #include "floor/geometry.h"
 #include "inventory/inventory-slot-types.h"
 #include "market/arena-entry.h"
@@ -11,6 +10,7 @@
 #include "realm/realm-hex-numbers.h"
 #include "realm/realm-song-numbers.h"
 #include "system/angband-exceptions.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"

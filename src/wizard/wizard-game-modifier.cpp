@@ -4,13 +4,13 @@
  */
 
 #include "wizard/wizard-game-modifier.h"
-#include "system/creature-entity.h"
 #include "core/asking-player.h"
 #include "dungeon/quest.h"
 #include "info-reader/fixed-map-parser.h"
 #include "io/input-key-requester.h"
 #include "player-info/self-info.h"
 #include "system/building-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
