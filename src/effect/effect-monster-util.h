@@ -1,12 +1,12 @@
 #pragma once
 
 #include "system/angband.h"
+#include "system/creature-entity.h"
 #include "util/point-2d.h"
 #include <string>
 
 enum class AttributeType;
 class Grid;
-class CreatureEntity;
 class MonraceDefinition;
 class EffectMonster {
 public:
