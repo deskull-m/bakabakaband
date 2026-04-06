@@ -9,6 +9,7 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/enums/terrain/terrain-kind.h"
+#include "system/monster-entity.h"
 #include "util/point-2d.h"
 #include <array>
 #include <map>
@@ -68,7 +69,6 @@ enum class TerrainTag;
 #include "system/monster-entity.h"
 class DungeonDefinition;
 class Grid;
-class CreatureEntity;
 class ItemEntity;
 class FloorType {
 public:
