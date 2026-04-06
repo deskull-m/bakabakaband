@@ -6,7 +6,6 @@
 
 #include "monster/monster-damage.h"
 #include "system/creature-entity.h"
-#include "system/monster-entity.h"
 #include "avatar/avatar-changer.h"
 #include "core/speed-table.h"
 #include "core/stuff-handler.h"
@@ -100,8 +99,7 @@ MonsterDamageProcessor::MonsterDamageProcessor(CreatureEntity &creature, MONSTER
  */
 bool MonsterDamageProcessor::mon_take_hit(std::string_view note)
 {
-    auto &player = static_cast<PlayerType &>(this->creature);
-    auto &monster = static_cast<MonsterEntity &>(player.current_floor_ptr->get_monster(this->m_idx));
+    auto &monster = this->creature.current_floor_ptr->m_list[this->m_idx];
     const auto exp_mon = monster.clone();
     auto exp_dam = (monster.hp > this->dam) ? this->dam : monster.hp;
     this->get_exp_from_mon(exp_mon, exp_dam);
