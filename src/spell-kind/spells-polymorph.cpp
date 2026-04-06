@@ -1,6 +1,5 @@
 #include "spell-kind/spells-polymorph.h"
 #include "system/creature-entity.h"
-#include "system/monster-entity.h"
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
 #include "floor/floor-object.h"
@@ -91,7 +90,7 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
         return false;
     }
 
-    auto back_m = static_cast<MonsterEntity &>(monster).clone();
+    auto back_m = floor.m_list[grid.m_idx].clone();
     new_r_idx = select_polymorph_monrace_id(creature, old_r_idx);
     if (new_r_idx == old_r_idx) {
         return false;
@@ -123,7 +122,7 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
     } else {
         m_idx = place_specific_monster(creature, y, x, old_r_idx, (mode | PM_NO_KAGE | PM_IGNORE_TERRAIN));
         if (m_idx) {
-            static_cast<MonsterEntity &>(floor.get_monster(*m_idx)) = back_m.clone();
+            floor.m_list[*m_idx] = back_m.clone();
             floor.reset_mproc();
         } else {
             preserve_hold_objects = false;
