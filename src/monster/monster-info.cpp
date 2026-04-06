@@ -229,6 +229,24 @@ bool monster_has_hostile_to_other_monster(const CreatureEntity &creature_other, 
     return alliance->is_hostile_to(creature_other, monrace);
 }
 
+/*!
+ * @brief サブアライメント値と種族定義に基づく敵意判定
+ * @param sub_align 確認対象のサブアライメント値
+ * @param monrace モンスター種族情報の参照
+ * @return sub_align のクリーチャーが monrace に対して敵意を持つならtrue
+ */
+bool monster_has_hostile_sub_align(uint8_t sub_align, const MonraceDefinition &monrace)
+{
+    uint8_t sub_align2 = SUB_ALIGN_NEUTRAL;
+    if (monrace.kind_flags.has(MonsterKindType::EVIL)) {
+        sub_align2 |= SUB_ALIGN_EVIL;
+    }
+    if (monrace.kind_flags.has(MonsterKindType::GOOD)) {
+        sub_align2 |= SUB_ALIGN_GOOD;
+    }
+    return CreatureEntity::check_sub_alignments(sub_align, sub_align2);
+}
+
 bool is_original_ap_and_seen(CreatureEntity &subject, const CreatureEntity &creature)
 {
     return creature.has_monster_profile() && creature.get_monster_profile().ml && !subject.effects()->hallucination().is_hallucinated() && creature.is_original_ap();

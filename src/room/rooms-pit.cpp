@@ -17,7 +17,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
 #include <algorithm>
@@ -85,23 +84,23 @@ const std::vector<TrappedMonster> place_table_trapped_pit = {
 };
 // clang-format on
 
-tl::optional<std::array<MonraceId, NUM_PIT_MONRACES>> pick_pit_monraces(CreatureEntity &creature, CreatureEntity &align, int boost = 0)
+tl::optional<std::array<MonraceId, NUM_PIT_MONRACES>> pick_pit_monraces(CreatureEntity &creature, uint8_t &sub_align, int boost = 0)
 {
     std::array<MonraceId, NUM_PIT_MONRACES> whats{};
     const auto &monraces = MonraceList::get_instance();
     for (auto &what : whats) {
-        const auto monrace_id = select_pit_nest_monrace_id(creature, align, boost);
+        const auto monrace_id = select_pit_nest_monrace_id(creature, sub_align, boost);
         if (!monrace_id) {
             return tl::nullopt;
         }
 
         const auto &monrace = monraces.get_monrace(*monrace_id);
         if (monrace.kind_flags.has(MonsterKindType::EVIL)) {
-            align.get_monster_profile().sub_align |= SUB_ALIGN_EVIL;
+            sub_align |= SUB_ALIGN_EVIL;
         }
 
         if (monrace.kind_flags.has(MonsterKindType::GOOD)) {
-            align.get_monster_profile().sub_align |= SUB_ALIGN_GOOD;
+            sub_align |= SUB_ALIGN_GOOD;
         }
 
         what = *monrace_id;
@@ -217,10 +216,8 @@ bool build_type6(CreatureEntity &creature, DungeonData *dd_ptr)
     const auto &pit = pit_types.at(*pit_type);
     pit.prepare_filter(creature);
     get_mon_num_prep_enum(creature, pit.monrace_hook);
-    MonsterEntity align;
-    align.get_monster_profile().sub_align = SUB_ALIGN_NEUTRAL;
-
-    auto whats = pick_pit_monraces(creature, align, 11);
+    uint8_t sub_align = SUB_ALIGN_NEUTRAL;
+    auto whats = pick_pit_monraces(creature, sub_align, 11);
     if (!whats) {
         return false;
     }
@@ -358,9 +355,8 @@ bool build_type13(CreatureEntity &creature, DungeonData *dd_ptr)
     const auto &pit = pit_types.at(*pit_type);
     pit.prepare_filter(creature);
     get_mon_num_prep_enum(creature, pit.monrace_hook, MonraceHookTerrain::TRAPPED_PIT);
-    MonsterEntity align;
-    align.get_monster_profile().sub_align = SUB_ALIGN_NEUTRAL;
-    auto whats = pick_pit_monraces(creature, align);
+    uint8_t sub_align = SUB_ALIGN_NEUTRAL;
+    auto whats = pick_pit_monraces(creature, sub_align);
     if (!whats) {
         return false;
     }

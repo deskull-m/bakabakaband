@@ -107,7 +107,7 @@ tl::optional<PitKind> pick_pit_type(const FloorType &floor, const std::map<PitKi
  * @return モンスター種族ID (見つからなかったらnullopt)
  * @details Nestにはそのフロアの通常レベルより11高いモンスターを中心に選ぶ
  */
-tl::optional<MonraceId> select_pit_nest_monrace_id(CreatureEntity &creature, CreatureEntity &align, int boost)
+tl::optional<MonraceId> select_pit_nest_monrace_id(CreatureEntity &creature, uint8_t &sub_align, int boost)
 {
     auto &player = static_cast<PlayerType &>(creature);
     const auto &floor = *creature.current_floor_ptr;
@@ -115,7 +115,7 @@ tl::optional<MonraceId> select_pit_nest_monrace_id(CreatureEntity &creature, Cre
     for (auto attempts = 100; attempts > 0; attempts--) {
         const auto monrace_id = get_mon_num(player, 0, floor.dun_level + boost, PM_NONE);
         const auto &monrace = monraces.get_monrace(monrace_id);
-        if (monster_has_hostile_to_other_monster(align, monrace)) {
+        if (monster_has_hostile_sub_align(sub_align, monrace)) {
             continue;
         }
 

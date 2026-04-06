@@ -18,7 +18,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "util/probability-table.h"
 #include "wizard/wizard-messages.h"
 #include <array>
@@ -44,23 +43,23 @@ const std::map<NestKind, nest_pit_type> nest_types = {
     { NestKind::UNDEAD, { _("アンデッド", "undead"), MonraceHook::UNDEAD, PitNestHook::NONE, 75, 5 } },
 };
 
-tl::optional<std::array<NestMonsterInfo, NUM_NEST_MON_TYPE>> pick_nest_monraces(CreatureEntity &creature, CreatureEntity &align)
+tl::optional<std::array<NestMonsterInfo, NUM_NEST_MON_TYPE>> pick_nest_monraces(CreatureEntity &creature, uint8_t &sub_align)
 {
     std::array<NestMonsterInfo, NUM_NEST_MON_TYPE> nest_mon_info_list{};
     const auto &monraces = MonraceList::get_instance();
     for (auto &nest_mon_info : nest_mon_info_list) {
-        const auto monrace_id = select_pit_nest_monrace_id(creature, align, 11);
+        const auto monrace_id = select_pit_nest_monrace_id(creature, sub_align, 11);
         if (!monrace_id) {
             return tl::nullopt;
         }
 
         const auto &monrace = monraces.get_monrace(*monrace_id);
         if (monrace.kind_flags.has(MonsterKindType::EVIL)) {
-            align.get_monster_profile().sub_align |= SUB_ALIGN_EVIL;
+            sub_align |= SUB_ALIGN_EVIL;
         }
 
         if (monrace.kind_flags.has(MonsterKindType::GOOD)) {
-            align.get_monster_profile().sub_align |= SUB_ALIGN_GOOD;
+            sub_align |= SUB_ALIGN_GOOD;
         }
 
         nest_mon_info.monrace_id = *monrace_id;
@@ -209,10 +208,8 @@ bool build_type5(CreatureEntity &creature, DungeonData *dd_ptr)
     const auto &nest = nest_types.at(*nest_type);
     nest.prepare_filter(creature);
     get_mon_num_prep_enum(creature, nest.monrace_hook);
-    MonsterEntity align;
-    align.get_monster_profile().sub_align = SUB_ALIGN_NEUTRAL;
-
-    auto nest_mon_info_list = pick_nest_monraces(creature, align);
+    uint8_t sub_align = SUB_ALIGN_NEUTRAL;
+    auto nest_mon_info_list = pick_nest_monraces(creature, sub_align);
     if (!nest_mon_info_list) {
         return false;
     }
