@@ -1,4 +1,5 @@
 #include "alliance/alliance.h"
+#include "system/creature-entity.h"
 #include "alliance/alliance-amber.h"
 #include "alliance/alliance-angartha.h"
 #include "alliance/alliance-anor-londo.h"

@@ -1,4 +1,6 @@
 #include "spell-kind/spells-polymorph.h"
+#include "system/creature-entity.h"
+#include "system/monster-entity.h"
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
 #include "floor/floor-object.h"
@@ -19,7 +21,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
 #include "term/screen-processor.h"
@@ -76,7 +77,7 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
 {
     auto &floor = *creature.current_floor_ptr;
     const auto &grid = floor.grid_array[y][x];
-    auto &monster = floor.m_list[grid.m_idx];
+    auto &monster = floor.get_monster(grid.m_idx);
     MonraceId new_r_idx;
     MonraceId old_r_idx = monster.r_idx;
     const auto target_m_idx = Target::get_last_target().get_m_idx();
@@ -90,7 +91,7 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
         return false;
     }
 
-    auto back_m = monster.clone();
+    auto back_m = static_cast<MonsterEntity &>(monster).clone();
     new_r_idx = select_polymorph_monrace_id(creature, old_r_idx);
     if (new_r_idx == old_r_idx) {
         return false;
@@ -114,7 +115,7 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
     bool polymorphed = false;
     auto m_idx = place_specific_monster(creature, y, x, new_r_idx, mode);
     if (m_idx) {
-        auto &monster_polymorphed = floor.m_list[*m_idx];
+        auto &monster_polymorphed = floor.get_monster(*m_idx);
         monster_polymorphed.name = back_m.name;
         monster_polymorphed.get_monster_profile().parent_m_idx = back_m.get_monster_profile().parent_m_idx;
         monster_polymorphed.get_monster_profile().hold_o_idx_list = back_m.get_monster_profile().hold_o_idx_list;
@@ -122,7 +123,7 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
     } else {
         m_idx = place_specific_monster(creature, y, x, old_r_idx, (mode | PM_NO_KAGE | PM_IGNORE_TERRAIN));
         if (m_idx) {
-            floor.m_list[*m_idx] = back_m.clone();
+            static_cast<MonsterEntity &>(floor.get_monster(*m_idx)) = back_m.clone();
             floor.reset_mproc();
         } else {
             preserve_hold_objects = false;

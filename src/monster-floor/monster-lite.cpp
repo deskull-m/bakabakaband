@@ -13,7 +13,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/point-2d.h"
 #include "view/display-messages.h"
@@ -158,7 +157,7 @@ void update_mon_lite(CreatureEntity &creature)
     const auto p_pos = creature.get_position();
     if (!world.timewalk_m_idx) {
         for (auto i = 1; i < floor.m_max; i++) {
-            const auto &monster = floor.m_list[i];
+            const auto &monster = floor.get_monster(i);
             const auto &monrace = monster.get_monrace();
             if (!monster.is_valid() || (Grid::calc_distance(p_pos, monster.get_position()) > dis_lim)) {
                 continue;

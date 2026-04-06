@@ -7,6 +7,7 @@
  */
 
 #include "player/process-death.h"
+#include "system/creature-entity.h"
 #include "core/asking-player.h"
 #include "core/stuff-handler.h"
 #include "flavor/flavor-describer.h"

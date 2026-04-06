@@ -1,4 +1,5 @@
 #include "monster-attack/monster-attack-lose.h"
+#include "system/creature-entity.h"
 #include "mind/mind-mirror-master.h"
 #include "monster-attack/monster-attack-player.h"
 #include "monster-attack/monster-attack-status.h"

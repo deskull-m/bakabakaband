@@ -5,6 +5,7 @@
  */
 
 #include "cmd-io/cmd-process-screen.h"
+#include "system/creature-entity.h"
 #include "cmd-visual/cmd-draw.h"
 #include "core/asking-player.h"
 #include "core/stuff-handler.h"

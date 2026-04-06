@@ -1,4 +1,5 @@
 #include "alliance/alliance-amber.h"
+#include "system/creature-entity.h"
 #include "monster-race/race-kind-flags.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"

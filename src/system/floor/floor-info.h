@@ -65,9 +65,10 @@ struct town_vault {
 
 enum class TerrainCharacteristics;
 enum class TerrainTag;
+#include "system/monster-entity.h"
 class DungeonDefinition;
 class Grid;
-class MonsterEntity;
+class CreatureEntity;
 class ItemEntity;
 class FloorType {
 public:
@@ -150,6 +151,8 @@ public:
     void add_mproc(short m_idx, MonsterTimedEffect mte);
     void remove_mproc(short m_idx, MonsterTimedEffect mte);
 
+    CreatureEntity &get_monster(MONSTER_IDX m_idx);
+    const CreatureEntity &get_monster(MONSTER_IDX m_idx) const;
     short pop_empty_index_monster();
     short pop_empty_index_item();
     void forget_lite();

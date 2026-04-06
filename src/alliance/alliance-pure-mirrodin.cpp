@@ -1,4 +1,5 @@
 #include "alliance/alliance-pure-mirrodin.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 int AlliancePureMirrodin::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {

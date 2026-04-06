@@ -1,4 +1,5 @@
 #include "market/building-craft-fix.h"
+#include "system/creature-entity.h"
 #include "artifact/fixed-art-types.h"
 #include "artifact/random-art-effects.h"
 #include "core/asking-player.h"

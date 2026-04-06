@@ -1,4 +1,5 @@
 #include "monster-floor/quantum-effect.h"
+#include "system/creature-entity.h"
 #include "effect/attribute-types.h"
 #include "floor/line-of-sight.h"
 #include "monster-floor/monster-death.h"
@@ -12,7 +13,6 @@
 #include "spell-kind/spells-teleport.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "view/display-messages.h"
 
 /*!
@@ -23,7 +23,7 @@
  */
 static void vanish_nonunique(CreatureEntity &creature, MONSTER_IDX m_idx, bool see_m)
 {
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     if (see_m) {
         const auto m_name = monster_desc(creature, monster, 0);
         msg_format(_("%sは消え去った！", "%s^ disappears!"), m_name.data());
@@ -51,7 +51,7 @@ static void vanish_nonunique(CreatureEntity &creature, MONSTER_IDX m_idx, bool s
 static void produce_quantum_effect(CreatureEntity &creature, MONSTER_IDX m_idx, bool see_m)
 {
     const auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     const auto coherent = los(floor, monster.get_position(), creature.get_position());
     if (!see_m && !coherent) {
         return;
@@ -81,7 +81,7 @@ static void produce_quantum_effect(CreatureEntity &creature, MONSTER_IDX m_idx, 
  */
 bool process_quantum_effect(CreatureEntity &creature, MONSTER_IDX m_idx, bool see_m)
 {
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     if (monrace.kind_flags.has_not(MonsterKindType::QUANTUM) && monrace.kind_flags.has_not(MonsterKindType::MONKEY_SPACE)) {
         return false;

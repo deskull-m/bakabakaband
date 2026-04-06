@@ -17,7 +17,6 @@
 #include "system/floor/town-list.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
 #include "world/world.h"

@@ -1,4 +1,5 @@
 #include "io-dump/random-art-info-dumper.h"
+#include "system/creature-entity.h"
 #include "inventory/inventory-slot-types.h"
 #include "io/files-util.h"
 #include "perception/object-perception.h"

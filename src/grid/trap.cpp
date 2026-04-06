@@ -31,7 +31,6 @@
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
@@ -467,8 +466,8 @@ void hit_trap(CreatureEntity &creature, bool break_trap)
 
                 /* Let them fight each other */
                 if (evil_idx && good_idx) {
-                    auto &monster_evil = floor.m_list[evil_idx];
-                    auto &monster_good = floor.m_list[good_idx];
+                    auto &monster_evil = floor.get_monster(evil_idx);
+                    auto &monster_good = floor.get_monster(good_idx);
                     monster_evil.set_target(monster_good.get_position());
                     monster_good.set_target(monster_evil.get_position());
                 }

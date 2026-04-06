@@ -1,4 +1,5 @@
 #include "alliance/alliance-shire.h"
+#include "system/creature-entity.h"
 #include "alliance/alliance.h"
 #include "effect/effect-characteristics.h"
 #include "floor/floor-util.h"

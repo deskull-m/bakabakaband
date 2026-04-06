@@ -1,4 +1,5 @@
 #include "target/target-sorter.h"
+#include "system/creature-entity.h"
 #include "artifact/fixed-art-types.h"
 #include "dungeon/quest.h"
 #include "grid/grid.h"
@@ -7,7 +8,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/terrain/terrain-definition.h"
 
 TargetSorter::TargetSorter(const Pos2D &p_pos)
@@ -29,8 +29,8 @@ bool TargetSorter::compare_importance(const FloorType &floor, const Pos2D &pos_a
 
     const auto &grid1 = floor.get_grid(pos_a);
     const auto &grid2 = floor.get_grid(pos_b);
-    const auto &monster_a = floor.m_list[grid1.m_idx];
-    const auto &monster_b = floor.m_list[grid2.m_idx];
+    const auto &monster_a = floor.get_monster(grid1.m_idx);
+    const auto &monster_b = floor.get_monster(grid2.m_idx);
     if (this->p_pos == pos_a) {
         return true;
     }

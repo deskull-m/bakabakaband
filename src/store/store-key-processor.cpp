@@ -1,4 +1,5 @@
 #include "store/store-key-processor.h"
+#include "system/creature-entity.h"
 #include "autopick/autopick-pref-processor.h"
 #include "cmd-action/cmd-mind.h"
 #include "cmd-action/cmd-spell.h"

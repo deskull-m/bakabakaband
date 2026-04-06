@@ -14,7 +14,6 @@
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "view/display-messages.h"
 
 /*!

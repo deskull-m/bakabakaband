@@ -5,6 +5,7 @@
  */
 
 #include "avatar/avatar-changer.h"
+#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "monster-race/monster-kind-mask.h"
 #include "monster-race/race-ability-mask.h"

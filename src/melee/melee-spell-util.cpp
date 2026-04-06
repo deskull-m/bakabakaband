@@ -1,4 +1,5 @@
 #include "melee/melee-spell-util.h"
+#include "system/creature-entity.h"
 #include "dungeon/dungeon-flag-types.h"
 #include "dungeon/quest.h"
 #include "floor/geometry.h"
@@ -6,7 +7,6 @@
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 
 melee_spell_type::melee_spell_type(CreatureEntity &creature, MONSTER_IDX m_idx)
@@ -14,7 +14,7 @@ melee_spell_type::melee_spell_type(CreatureEntity &creature, MONSTER_IDX m_idx)
     , thrown_spell(MonsterAbilityType::MAX)
 {
     auto &floor = *creature.current_floor_ptr;
-    this->m_ptr = &floor.m_list[m_idx];
+    this->m_ptr = &floor.get_monster(m_idx);
     this->t_ptr = nullptr;
     this->r_ptr = &this->m_ptr->get_monrace();
     auto &player = static_cast<PlayerType &>(creature);

@@ -4,6 +4,7 @@
  */
 
 #include "action/tunnel-execution.h"
+#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "grid/grid.h"
 #include "io/input-key-requester.h"

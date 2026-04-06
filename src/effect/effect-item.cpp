@@ -20,7 +20,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include <set>
@@ -226,7 +225,7 @@ bool affect_item(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, POSI
             }
 
             BIT_FLAGS mode = 0L;
-            if (is_player(src_idx) || creature.current_floor_ptr->m_list[src_idx].is_pet()) {
+            if (is_player(src_idx) || creature.current_floor_ptr->get_monster(src_idx).is_pet()) {
                 mode |= PM_FORCE_PET;
             }
 

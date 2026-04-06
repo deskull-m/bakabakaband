@@ -28,7 +28,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "target/projection-path-calculator.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -127,7 +126,7 @@ tl::optional<Pos2D> mon_scatter(CreatureEntity &creature, MonraceId monrace_id, 
 tl::optional<MONSTER_IDX> multiply_monster(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId r_idx, bool clone, BIT_FLAGS mode)
 {
     auto &floor = *creature.current_floor_ptr;
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     const auto pos = mon_scatter(creature, monster.r_idx, monster.get_position(), 1);
     if (!pos) {
         return tl::nullopt;
@@ -143,7 +142,7 @@ tl::optional<MONSTER_IDX> multiply_monster(CreatureEntity &creature, MONSTER_IDX
     }
 
     if (clone || monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CLONED)) {
-        floor.m_list[*multiplied_m_idx].get_monster_profile().mflag2.set({ MonsterConstantFlagType::CLONED, MonsterConstantFlagType::NOPET });
+        floor.get_monster(*multiplied_m_idx).get_monster_profile().mflag2.set({ MonsterConstantFlagType::CLONED, MonsterConstantFlagType::NOPET });
     }
 
     return multiplied_m_idx;
@@ -370,7 +369,7 @@ bool alloc_horde(CreatureEntity &creature, POSITION y, POSITION x, summon_specif
     }
 
     const auto m_idx = floor.get_grid(pos).m_idx;
-    const auto &monentity = floor.m_list[m_idx];
+    const auto &monentity = floor.get_monster(m_idx);
     for (auto attempts = randint1(10) + 5; attempts > 0; attempts--) {
         const auto pos_scat = scatter(floor, pos, 5, PROJECT_NONE);
         (void)(*summon_specific)(creature, pos_scat.y, pos_scat.x, floor.dun_level + 5, SUMMON_KIN, PM_ALLOW_GROUP, m_idx);

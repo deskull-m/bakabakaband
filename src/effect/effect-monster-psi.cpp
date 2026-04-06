@@ -1,4 +1,5 @@
 #include "effect/effect-monster-psi.h"
+#include "system/creature-entity.h"
 #include "core/window-redrawer.h"
 #include "effect/effect-monster-util.h"
 #include "floor/line-of-sight.h"
@@ -12,7 +13,6 @@
 #include "status/bad-status-setter.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"

@@ -1,4 +1,5 @@
 #include "alliance/alliance-incubetor.h"
+#include "system/creature-entity.h"
 #include "alliance/alliance.h"
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"

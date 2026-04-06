@@ -5,6 +5,7 @@
  */
 
 #include "effect/effect-monster-util.h"
+#include "system/creature-entity.h"
 #include "effect/attribute-types.h"
 #include "floor/geometry.h"
 #include "monster-floor/monster-death.h"
@@ -15,7 +16,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 
 /*!
  * @brief EffectMonster構造体のコンストラクタ
@@ -41,8 +41,8 @@ EffectMonster::EffectMonster(CreatureEntity &creature, MONSTER_IDX src_idx, POSI
 {
     auto &floor = *creature.current_floor_ptr;
     this->g_ptr = &floor.grid_array[this->y][this->x];
-    this->m_ptr = &floor.m_list[this->g_ptr->m_idx];
-    this->m_caster_ptr = this->is_monster() ? &floor.m_list[this->src_idx] : nullptr;
+    this->m_ptr = &floor.get_monster(this->g_ptr->m_idx);
+    this->m_caster_ptr = this->is_monster() ? &floor.get_monster(this->src_idx) : nullptr;
     this->r_ptr = &this->m_ptr->get_monrace();
     this->seen = this->m_ptr->get_monster_profile().ml;
     this->seen_msg = is_seen(creature, *this->m_ptr);

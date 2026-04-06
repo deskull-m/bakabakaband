@@ -4,6 +4,7 @@
  */
 
 #include "action/mutation-execution.h"
+#include "system/creature-entity.h"
 #include "cmd-item/cmd-throw.h"
 #include "core/asking-player.h"
 #include "dungeon/quest.h"
@@ -48,7 +49,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "util/bit-flags-calculator.h"
@@ -265,7 +265,7 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
             return true;
         }
 
-        auto &monster = floor.m_list[grid.m_idx];
+        auto &monster = floor.get_monster(grid.m_idx);
         const auto &monrace = monster.get_monrace();
         auto can_banish = monrace.kind_flags.has(MonsterKindType::EVIL);
         can_banish &= monrace.misc_flags.has_not(MonsterMiscType::QUESTOR);

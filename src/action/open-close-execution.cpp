@@ -6,6 +6,7 @@
  */
 
 #include "action/open-close-execution.h"
+#include "system/creature-entity.h"
 #include "action/movement-execution.h"
 #include "combat/attack-power-table.h"
 #include "floor/floor-object.h"

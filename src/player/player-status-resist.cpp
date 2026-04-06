@@ -1,4 +1,5 @@
 #include "player/player-status-resist.h"
+#include "system/creature-entity.h"
 #include "artifact/fixed-art-types.h"
 #include "grid/grid.h"
 #include "inventory/inventory-slot-types.h"
@@ -22,7 +23,6 @@
 #include "sv-definition/sv-weapon-types.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"

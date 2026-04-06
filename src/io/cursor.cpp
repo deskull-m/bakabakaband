@@ -10,7 +10,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
@@ -53,7 +52,7 @@ void print_path(CreatureEntity &creature, POSITION y, POSITION x)
         const auto &grid = floor.get_grid(pos_path);
         if (panel_contains(pos_path)) {
             DisplaySymbolPair symbol_pair({ default_color, '\0' }, { default_color, '*' });
-            if (grid.has_monster() && floor.m_list[grid.m_idx].get_monster_profile().ml) {
+            if (grid.has_monster() && floor.get_monster(grid.m_idx).get_monster_profile().ml) {
                 symbol_pair = map_info(creature, pos_path);
                 auto &symbol_foreground = symbol_pair.symbol_foreground;
                 if (!symbol_foreground.is_ascii_graphics()) {

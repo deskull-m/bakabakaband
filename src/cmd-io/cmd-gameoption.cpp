@@ -1,4 +1,5 @@
 #include "cmd-io/cmd-gameoption.h"
+#include "system/creature-entity.h"
 #include "autopick/autopick.h"
 #include "cmd-io/cmd-autopick.h"
 #include "cmd-io/cmd-dump.h"

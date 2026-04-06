@@ -6,7 +6,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "timed-effect/timed-effects.h"
 
@@ -15,8 +14,8 @@ mam_type *initialize_mam_type(CreatureEntity &creature, mam_type *mam_ptr, MONST
     mam_ptr->attribute = BlowEffectType::NONE;
     mam_ptr->m_idx = m_idx;
     mam_ptr->t_idx = t_idx;
-    mam_ptr->m_ptr = &creature.current_floor_ptr->m_list[m_idx];
-    mam_ptr->t_ptr = &creature.current_floor_ptr->m_list[t_idx];
+    mam_ptr->m_ptr = &creature.current_floor_ptr->get_monster(m_idx);
+    mam_ptr->t_ptr = &creature.current_floor_ptr->get_monster(t_idx);
     mam_ptr->damage = 0;
     if (creature.is_player()) {
         auto &player = static_cast<PlayerType &>(creature);

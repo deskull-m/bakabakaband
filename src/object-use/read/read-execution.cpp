@@ -5,6 +5,7 @@
  */
 
 #include "object-use/read/read-execution.h"
+#include "system/creature-entity.h"
 #include "action/action-limited.h"
 #include "avatar/avatar.h"
 #include "core/window-redrawer.h"

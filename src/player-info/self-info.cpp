@@ -11,6 +11,7 @@
  */
 
 #include "player-info/self-info.h"
+#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "io/input-key-acceptor.h"
 #include "object-enchant/trc-types.h"

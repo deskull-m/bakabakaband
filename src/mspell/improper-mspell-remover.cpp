@@ -7,7 +7,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 
 static void add_cheat_remove_flags(CreatureEntity &creature, msr_type *msr_ptr)
 {
@@ -39,7 +38,7 @@ void remove_bad_spells(MONSTER_IDX m_idx, CreatureEntity &creature, EnumClassFla
         return;
     }
 
-    auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     if (smart_learn) {
         /* 時々学習情報を忘れる */
         if (one_in_(100)) {

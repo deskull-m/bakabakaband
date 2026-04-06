@@ -1,8 +1,8 @@
 #include "core/stuff-handler.h"
+#include "system/creature-entity.h"
 #include "core/window-redrawer.h"
 #include "player/player-status.h"
 #include "system/floor/floor-info.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "tracking/lore-tracker.h"
@@ -54,7 +54,7 @@ void object_kind_track(CreatureEntity &creature, short bi_id)
 void health_track(CreatureEntity &creature, short m_idx)
 {
     const auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     if (monster.is_riding()) {
         return;
     }

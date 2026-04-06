@@ -1,4 +1,5 @@
 #include "alliance/alliance-ide.h"
+#include "system/creature-entity.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
 #include "system/enums/monrace/monrace-id.h"

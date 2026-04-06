@@ -23,7 +23,6 @@
 #include "system/monrace/monrace-allocation.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/services/dungeon-monrace-service.h"
 #include "system/terrain/terrain-definition.h"
@@ -343,7 +342,7 @@ static bool place_monster_can_escort(CreatureEntity &creature, MonraceId monrace
 {
     const auto &floor = *creature.current_floor_ptr;
     const auto dungeon_id = floor.dungeon_id;
-    const auto &escorted_monster = floor.m_list[escorted_m_idx];
+    const auto &escorted_monster = floor.get_monster(escorted_m_idx);
     const auto &monraces = MonraceList::get_instance();
     const auto &escorted_monrace = monraces.get_monrace(escorted_monrace_id);
     const auto &monrace = monraces.get_monrace(monrace_id);
@@ -458,7 +457,7 @@ static bool summon_specific_okay(CreatureEntity &creature, MonraceId monrace_id,
 
     const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
     if (condition.summoner_m_idx) {
-        const auto &monster = floor.m_list[*condition.summoner_m_idx];
+        const auto &monster = floor.get_monster(*condition.summoner_m_idx);
         if (monster_has_hostile_to_other_monster(monster, monrace)) {
             return false;
         }
@@ -489,7 +488,7 @@ static bool summon_specific_okay(CreatureEntity &creature, MonraceId monrace_id,
         return check_summon_specific(creature, MonraceId::PLAYER, monrace_id, condition.type);
     }
 
-    const auto &monster = floor.m_list[*condition.summoner_m_idx];
+    const auto &monster = floor.get_monster(*condition.summoner_m_idx);
     return check_summon_specific(creature, monster.r_idx, monrace_id, condition.type);
 }
 
@@ -578,13 +577,13 @@ static bool monster_hook_chameleon_lord(CreatureEntity &creature, const Chameleo
     }
 
     const auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[ct.m_idx];
+    const auto &monster = floor.get_monster(ct.m_idx);
     const auto &old_monrace = monster.get_monrace();
     if (old_monrace.misc_flags.has_not(MonsterMiscType::CHAMELEON)) {
         return !monster_has_hostile_to_other_monster(monster, monrace);
     }
 
-    return !ct.summoner_m_idx || !monster_has_hostile_to_other_monster(floor.m_list[*ct.summoner_m_idx], monrace);
+    return !ct.summoner_m_idx || !monster_has_hostile_to_other_monster(floor.get_monster(*ct.summoner_m_idx), monrace);
 }
 
 /*!
@@ -619,7 +618,7 @@ static bool monster_hook_chameleon(CreatureEntity &creature, const ChameleonTran
     }
 
     const auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[ct.m_idx];
+    const auto &monster = floor.get_monster(ct.m_idx);
     const auto &old_monrace = monster.get_monrace();
     if (old_monrace.misc_flags.has_not(MonsterMiscType::CHAMELEON)) {
         if (old_monrace.kind_flags.has(MonsterKindType::GOOD) && monrace.kind_flags.has_not(MonsterKindType::GOOD)) {
@@ -633,7 +632,7 @@ static bool monster_hook_chameleon(CreatureEntity &creature, const ChameleonTran
         if (old_monrace.kind_flags.has_none_of(alignment_mask) && monrace.kind_flags.has_any_of(alignment_mask)) {
             return false;
         }
-    } else if (ct.summoner_m_idx && monster_has_hostile_to_other_monster(floor.m_list[*ct.summoner_m_idx], monrace)) {
+    } else if (ct.summoner_m_idx && monster_has_hostile_to_other_monster(floor.get_monster(*ct.summoner_m_idx), monrace)) {
         return false;
     }
 
@@ -728,7 +727,7 @@ void mark_monsters_present(CreatureEntity &creature)
     auto &floor = *creature.current_floor_ptr;
 
     for (MONSTER_IDX m_idx = floor.m_max - 1; m_idx >= 1; m_idx--) {
-        auto &monster = floor.m_list[m_idx];
+        auto &monster = floor.get_monster(m_idx);
         if (!monster.is_valid()) {
             continue;
         }

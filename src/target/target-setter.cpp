@@ -1,4 +1,5 @@
 #include "target/target-setter.h"
+#include "system/creature-entity.h"
 #include "action/travel-execution.h"
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"

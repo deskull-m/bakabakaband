@@ -10,6 +10,8 @@
  */
 
 #include "floor/floor-generator.h"
+#include "system/creature-entity.h"
+#include "system/monster-entity.h"
 #include "dungeon/dungeon-flag-types.h"
 #include "dungeon/quest.h"
 #include "floor/cave-generator.h"
@@ -46,7 +48,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
@@ -281,12 +282,12 @@ static void generate_gambling_arena(CreatureEntity &creature)
         constexpr auto mode = PM_NO_KAGE | PM_NO_PET;
         const auto m_idx = place_specific_monster(*player_ptr, m_pos.y, m_pos.x, gladiator.monrace_id, mode);
         if (m_idx > 0) {
-            floor.m_list[*m_idx].set_friendly();
+            floor.get_monster(*m_idx).set_friendly();
         }
     }
 
     for (short i = 1; i < floor.m_max; i++) {
-        auto &monster = floor.m_list[i];
+        auto &monster = floor.get_monster(i);
         if (!monster.is_valid()) {
             continue;
         }

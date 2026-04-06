@@ -1,4 +1,5 @@
 #include "player-info/mutation-info.h"
+#include "system/creature-entity.h"
 #include "mutation/mutation-flag-types.h"
 #include "player-info/self-info-util.h"
 #include "player/player-status-flags.h"

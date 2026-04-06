@@ -1,4 +1,5 @@
 #include "alliance/alliance-eldrazi.h"
+#include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"
 

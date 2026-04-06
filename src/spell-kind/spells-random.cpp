@@ -5,6 +5,7 @@
  */
 
 #include "spell-kind/spells-random.h"
+#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "effect/attribute-types.h"
 #include "effect/effect-characteristics.h"

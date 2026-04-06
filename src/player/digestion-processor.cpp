@@ -1,4 +1,5 @@
 #include "player/digestion-processor.h"
+#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "core/disturbance.h"
 #include "core/speed-table.h"

@@ -5,6 +5,7 @@
  */
 
 #include "alliance/alliance.h"
+#include "system/creature-entity.h"
 #include "birth/birth-body-spec.h"
 #include "birth/birth-stat.h"
 #include "core/disturbance.h"

@@ -1,4 +1,5 @@
 #include "spell-kind/earthquake.h"
+#include "system/creature-entity.h"
 #include "dungeon/quest.h"
 #include "floor/floor-object.h"
 #include "game-option/play-record-options.h"
@@ -20,7 +21,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
@@ -61,7 +61,7 @@ std::vector<Pos2D> decide_collapse_positions(const FloorType &floor, std::span<c
             return false;
         }
 
-        const auto &monster = floor.m_list[grid.m_idx];
+        const auto &monster = floor.get_monster(grid.m_idx);
         return monster.get_monrace().misc_flags.has(MonsterMiscType::QUESTOR);
     };
 
@@ -97,7 +97,7 @@ std::string build_killer_on_earthquake(CreatureEntity &creature, int m_idx)
         return _("地震", "an earthquake");
     }
 
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     const auto m_name = monster_desc(creature, monster, MD_WRONGDOER_NAME);
     return format(_("%sの起こした地震", "an earthquake caused by %s"), m_name.data());
 }
@@ -241,7 +241,7 @@ void process_hit_to_monsters(CreatureEntity &creature, std::span<const Pos2D> po
     const auto has_monster = [&](const auto &pos) { return floor.get_grid(pos).has_monster(); };
     for (const auto &pos : pos_collapses | ranges::views::filter(has_monster)) {
         auto &grid = floor.get_grid(pos);
-        auto &monster = floor.m_list[grid.m_idx];
+        auto &monster = floor.get_monster(grid.m_idx);
         if (monster.is_riding()) {
             continue;
         }

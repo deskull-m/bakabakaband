@@ -5,6 +5,7 @@
  */
 
 #include "object-enchant/protector/apply-magic-cloak.h"
+#include "system/creature-entity.h"
 #include "artifact/random-art-generator.h"
 #include "inventory/inventory-slot-types.h"
 #include "object-enchant/object-ego.h"

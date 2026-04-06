@@ -1,4 +1,5 @@
 #include "player-status/player-speed.h"
+#include "system/creature-entity.h"
 #include "artifact/fixed-art-types.h"
 #include "inventory/inventory-slot-types.h"
 #include "monster/monster-status.h"
@@ -23,7 +24,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 
@@ -275,7 +275,7 @@ int16_t PlayerSpeed::mutation_bonus()
  */
 int16_t PlayerSpeed::riding_bonus()
 {
-    const auto &monster = (&this->creature)->current_floor_ptr->m_list[this->creature.riding];
+    const auto &monster = (&this->creature)->current_floor_ptr->get_monster(this->creature.riding);
     int16_t speed = monster.speed;
     int16_t bonus = 0;
     if (!this->creature.riding) {
@@ -315,7 +315,7 @@ int16_t PlayerSpeed::inventory_weight_bonus()
     int16_t bonus = 0;
     auto weight = calc_inventory_weight(this->creature);
     if (this->creature.riding) {
-        const auto &monster = this->creature.current_floor_ptr->m_list[this->creature.riding];
+        const auto &monster = this->creature.current_floor_ptr->get_monster(this->creature.riding);
         const auto &monrace = monster.get_monrace();
         auto count = 1500 + monrace.level * 25;
         if (weight > count) {

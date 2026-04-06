@@ -1,4 +1,5 @@
 #include "effect/effect-player-oldies.h"
+#include "system/creature-entity.h"
 #include "effect/effect-player.h"
 #include "game-option/birth-options.h"
 #include "hpmp/hp-mp-processor.h"

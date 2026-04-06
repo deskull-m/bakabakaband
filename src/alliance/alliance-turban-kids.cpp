@@ -1,4 +1,5 @@
 #include "alliance/alliance-turban-kids.h"
+#include "system/creature-entity.h"
 #include "floor/floor-util.h"
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/place-monster-types.h"

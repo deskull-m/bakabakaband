@@ -14,13 +14,12 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 void blood_curse_to_enemy(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     const auto &grid = creature.current_floor_ptr->grid_array[monster.y][monster.x];
     BIT_FLAGS curse_flg = (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP);
     int count = 0;

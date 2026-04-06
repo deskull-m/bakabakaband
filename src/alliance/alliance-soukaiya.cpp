@@ -1,4 +1,5 @@
 #include "alliance/alliance-soukaiya.h"
+#include "system/creature-entity.h"
 #include "effect/effect-characteristics.h"
 #include "floor/floor-util.h"
 #include "monster-floor/monster-summon.h"

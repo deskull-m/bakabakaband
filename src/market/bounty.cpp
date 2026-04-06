@@ -1,4 +1,5 @@
 #include "market/bounty.h"
+#include "system/creature-entity.h"
 #include "autopick/autopick.h"
 #include "avatar/avatar.h"
 #include "core/asking-player.h"

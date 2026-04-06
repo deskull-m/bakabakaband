@@ -4,6 +4,7 @@
  */
 
 #include "wizard/wizard-game-modifier.h"
+#include "system/creature-entity.h"
 #include "core/asking-player.h"
 #include "dungeon/quest.h"
 #include "info-reader/fixed-map-parser.h"

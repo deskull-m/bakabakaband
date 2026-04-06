@@ -4,6 +4,7 @@
  */
 
 #include "action/action-limited.h"
+#include "system/creature-entity.h"
 #include "dungeon/dungeon-flag-types.h"
 #include "game-option/disturbance-options.h"
 #include "grid/grid.h"

@@ -1,4 +1,5 @@
 #include "effect/effect-player-curse.h"
+#include "system/creature-entity.h"
 #include "blue-magic/blue-magic-checker.h"
 #include "effect/effect-player.h"
 #include "mind/mind-mirror-master.h"
@@ -6,7 +7,6 @@
 #include "player/player-damage.h"
 #include "status/bad-status-setter.h"
 #include "system/enums/monrace/monrace-id.h"
-#include "system/monster-entity.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 

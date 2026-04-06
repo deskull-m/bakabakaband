@@ -1,4 +1,5 @@
 #include "market/play-gamble.h"
+#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "core/asking-player.h"
 #include "core/show-file.h"

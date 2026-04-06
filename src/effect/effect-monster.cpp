@@ -5,6 +5,7 @@
  */
 
 #include "effect/effect-monster.h"
+#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "core/disturbance.h"
 #include "core/stuff-handler.h"
@@ -44,7 +45,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "tracking/lore-tracker.h"
@@ -528,7 +528,7 @@ static void effect_damage_makes_polymorph(CreatureEntity &creature, EffectMonste
         em_ptr->dam = 0;
     }
 
-    em_ptr->m_ptr = &creature.current_floor_ptr->m_list[em_ptr->g_ptr->m_idx];
+    em_ptr->m_ptr = &creature.current_floor_ptr->get_monster(em_ptr->g_ptr->m_idx);
     em_ptr->r_ptr = &em_ptr->m_ptr->get_monrace();
 }
 

@@ -1,4 +1,5 @@
 #include "alliance/alliance-slaanesh.h"
+#include "system/creature-entity.h"
 #include "alliance/alliance.h"
 #include "core/disturbance.h"
 #include "effect/effect-characteristics.h"

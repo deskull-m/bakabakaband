@@ -1,4 +1,5 @@
 #include "player/patron.h"
+#include "system/creature-entity.h"
 #include "cmd-action/cmd-pet.h"
 #include "cmd-io/cmd-dump.h"
 #include "flavor/flavor-describer.h"

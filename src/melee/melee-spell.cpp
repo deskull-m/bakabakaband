@@ -1,4 +1,5 @@
 #include "melee/melee-spell.h"
+#include "system/creature-entity.h"
 #include "core/disturbance.h"
 #include "melee/melee-spell-flags-checker.h"
 #include "melee/melee-spell-util.h"
@@ -14,7 +15,6 @@
 #include "spell-realm/spells-hex.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/string-processor.h"

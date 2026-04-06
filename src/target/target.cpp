@@ -1,7 +1,6 @@
 #include "target/target.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/monster-entity.h"
 #include "target/target-preparation.h"
 #include <variant>
 
@@ -58,7 +57,7 @@ public:
     }
     tl::optional<Pos2D> operator()(const TargetMonster &target_monster) const
     {
-        const auto &monster = this->creature_ptr->current_floor_ptr->m_list[target_monster.m_idx];
+        const auto &monster = this->creature_ptr->current_floor_ptr->get_monster(target_monster.m_idx);
         return monster.get_position();
     }
 

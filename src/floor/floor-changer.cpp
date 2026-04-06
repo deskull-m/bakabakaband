@@ -1,4 +1,5 @@
 #include "floor/floor-changer.h"
+#include "system/creature-entity.h"
 #include "action/travel-execution.h"
 #include "dungeon/dungeon-flag-types.h"
 #include "dungeon/quest-monster-placer.h"

@@ -1,4 +1,5 @@
 #include "dungeon/quest-completion-checker.h"
+#include "system/creature-entity.h"
 #include "effect/effect-characteristics.h"
 #include "floor/floor-object.h"
 #include "floor/floor-util.h"
@@ -9,7 +10,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "view/display-messages.h"
@@ -215,7 +215,7 @@ int QuestCompletionChecker::count_all_hostile_monsters()
     const auto &floor = *this->creature_ptr->current_floor_ptr;
     const auto hostile_monster_exists = [&floor](const Pos2D &pos) {
         const auto &grid = floor.get_grid(pos);
-        return grid.has_monster() && floor.m_list[grid.m_idx].is_hostile();
+        return grid.has_monster() && floor.get_monster(grid.m_idx).is_hostile();
     };
 
     return ranges::count_if(floor.get_area(), hostile_monster_exists);

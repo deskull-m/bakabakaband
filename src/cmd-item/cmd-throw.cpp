@@ -4,6 +4,7 @@
  * @author Hourier
  */
 #include "cmd-item/cmd-throw.h"
+#include "system/creature-entity.h"
 #include "game-option/special-options.h"
 #include "inventory/inventory-slot-types.h"
 #include "object-use/throw-execution.h"

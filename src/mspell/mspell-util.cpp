@@ -1,11 +1,11 @@
 #include "mspell/mspell-util.h"
+#include "system/creature-entity.h"
 #include "core/disturbance.h"
 #include "floor/geometry.h"
 #include "grid/grid.h"
 #include "monster/monster-info.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
@@ -30,7 +30,7 @@ mspell_cast_msg_simple::mspell_cast_msg_simple(concptr to_player, concptr to_mon
  */
 bool see_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     return is_seen(creature, monster);
 }
 
@@ -45,8 +45,8 @@ bool monster_near_player(const CreatureEntity &creature, MONSTER_IDX m_idx, MONS
 {
     const auto &floor = *creature.current_floor_ptr;
     const auto p_pos = creature.get_position();
-    const auto &monster = floor.m_list[m_idx];
-    const auto &monster_target = floor.m_list[t_idx];
+    const auto &monster = floor.get_monster(m_idx);
+    const auto &monster_target = floor.get_monster(t_idx);
     return (Grid::calc_distance(p_pos, monster.get_position()) <= MAX_PLAYER_SIGHT) || (Grid::calc_distance(p_pos, monster_target.get_position()) <= MAX_PLAYER_SIGHT);
 }
 

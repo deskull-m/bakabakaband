@@ -4,6 +4,7 @@
  */
 
 #include "action/racial-execution.h"
+#include "system/creature-entity.h"
 #include "action/action-limited.h"
 #include "artifact/fixed-art-types.h"
 #include "core/asking-player.h"

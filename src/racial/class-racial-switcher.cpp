@@ -1,4 +1,5 @@
 #include "racial/class-racial-switcher.h"
+#include "system/creature-entity.h"
 #include "cmd-action/cmd-spell.h"
 #include "mind/mind-elementalist.h"
 #include "player/player-realm.h"

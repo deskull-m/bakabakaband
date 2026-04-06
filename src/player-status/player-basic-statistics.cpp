@@ -1,4 +1,5 @@
 #include "player-status/player-basic-statistics.h"
+#include "system/creature-entity.h"
 #include "core/window-redrawer.h"
 #include "mutation/mutation-flag-types.h"
 #include "player-base/player-race.h"

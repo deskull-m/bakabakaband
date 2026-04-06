@@ -1,4 +1,5 @@
 #include "floor/pattern-walk.h"
+#include "system/creature-entity.h"
 #include "cmd-io/cmd-save.h"
 #include "core/asking-player.h"
 #include "dungeon/quest.h"

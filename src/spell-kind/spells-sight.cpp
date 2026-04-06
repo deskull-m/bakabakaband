@@ -1,4 +1,5 @@
 #include "spell-kind/spells-sight.h"
+#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
@@ -22,7 +23,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
@@ -48,7 +48,7 @@ bool project_all_los(CreatureEntity &creature, AttributeType typ, int dam)
     auto &floor = *creature.current_floor_ptr;
     const auto p_pos = creature.get_position();
     for (short i = 1; i < floor.m_max; i++) {
-        auto &monster = floor.m_list[i];
+        auto &monster = floor.get_monster(i);
         if (!monster.is_valid()) {
             continue;
         }
@@ -64,7 +64,7 @@ bool project_all_los(CreatureEntity &creature, AttributeType typ, int dam)
     BIT_FLAGS flg = PROJECT_JUMP | PROJECT_KILL | PROJECT_HIDE;
     auto obvious = false;
     for (short i = 1; i < floor.m_max; i++) {
-        auto &monster = floor.m_list[i];
+        auto &monster = floor.get_monster(i);
         if (monster.get_monster_profile().mflag.has_not(MonsterTemporaryFlagType::LOS)) {
             continue;
         }
@@ -217,7 +217,7 @@ void aggravate_monsters(CreatureEntity &creature, MONSTER_IDX src_idx)
     auto speed = false;
     auto &floor = *creature.current_floor_ptr;
     for (short i = 1; i < floor.m_max; i++) {
-        auto &monster = floor.m_list[i];
+        auto &monster = floor.get_monster(i);
         if (!monster.is_valid()) {
             continue;
         }
@@ -444,7 +444,7 @@ bool probing(CreatureEntity &creature)
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     auto probe = false;
     for (short i = 1; i < floor.m_max; i++) {
-        auto &monster = floor.m_list[i];
+        auto &monster = floor.get_monster(i);
         auto &monrace = monster.get_monrace();
         if (!monster.is_valid()) {
             continue;

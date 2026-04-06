@@ -1,4 +1,5 @@
 #include "player/process-name.h"
+#include "system/creature-entity.h"
 #include "autopick/autopick-reader-writer.h"
 #include "core/asking-player.h"
 #include "game-option/birth-options.h"

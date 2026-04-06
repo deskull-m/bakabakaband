@@ -5,6 +5,7 @@
  */
 
 #include "object-enchant/item-magic-applier.h"
+#include "system/creature-entity.h"
 #include "artifact/fixed-art-generator.h"
 #include "object-enchant/enchanter-base.h"
 #include "object-enchant/enchanter-factory.h"

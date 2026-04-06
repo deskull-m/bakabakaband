@@ -1,4 +1,5 @@
 #include "mind/mind-hobbit.h"
+#include "system/creature-entity.h"
 #include "floor/floor-object.h"
 #include "sv-definition/sv-food-types.h"
 #include "system/baseitem/baseitem-definition.h"

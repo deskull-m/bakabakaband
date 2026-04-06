@@ -10,6 +10,7 @@
  */
 
 #include "wizard/wizard-special-process.h"
+#include "system/creature-entity.h"
 #include "artifact/fixed-art-generator.h"
 #include "cmd-io/cmd-save.h"
 #include "cmd-visual/cmd-draw.h"
@@ -63,7 +64,6 @@
 #include "system/floor/wilderness-grid.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
@@ -726,7 +726,7 @@ void wiz_zap_surrounding_monsters(CreatureEntity &creature)
 {
     const auto &floor = *creature.current_floor_ptr;
     for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-        const auto &monster = floor.m_list[i];
+        const auto &monster = floor.get_monster(i);
         if (!monster.is_valid() || (i == creature.riding) || (Grid::calc_distance(creature.get_position(), monster.get_position()) > MAX_PLAYER_SIGHT)) {
             continue;
         }
@@ -748,7 +748,7 @@ void wiz_zap_floor_monsters(CreatureEntity &creature)
 {
     const auto &floor = *creature.current_floor_ptr;
     for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-        const auto &monster = floor.m_list[i];
+        const auto &monster = floor.get_monster(i);
         if (!monster.is_valid() || monster.is_riding()) {
             continue;
         }

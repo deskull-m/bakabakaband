@@ -17,7 +17,6 @@
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 

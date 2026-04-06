@@ -5,6 +5,7 @@
  */
 
 #include "knowledge/knowledge-experiences.h"
+#include "system/creature-entity.h"
 #include "core/show-file.h"
 #include "game-option/cheat-options.h"
 #include "game-option/text-display-options.h"

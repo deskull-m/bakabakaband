@@ -12,6 +12,7 @@
  */
 
 #include "artifact/fixed-art-generator.h"
+#include "system/creature-entity.h"
 #include "artifact/fixed-art-types.h"
 #include "floor/floor-object.h"
 #include "object-enchant/object-boost.h"

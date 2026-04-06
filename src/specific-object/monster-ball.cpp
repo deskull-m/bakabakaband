@@ -14,7 +14,6 @@
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "util/flag-group.h"
@@ -108,7 +107,7 @@ static bool release_monster(CreatureEntity &creature, ItemEntity &item, const Di
         return false;
     }
 
-    auto &monster = creature.current_floor_ptr->m_list[*m_idx];
+    auto &monster = creature.current_floor_ptr->get_monster(*m_idx);
     if (item.captured_monster_speed > 0) {
         monster.speed = item.captured_monster_speed;
     }

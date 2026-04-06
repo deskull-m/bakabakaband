@@ -13,6 +13,7 @@
  */
 
 #include "avatar/avatar.h"
+#include "system/creature-entity.h"
 #include "game-option/text-display-options.h"
 #include "player-info/class-info.h"
 #include "player-info/race-types.h"

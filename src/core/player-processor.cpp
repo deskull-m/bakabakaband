@@ -1,4 +1,5 @@
 #include "core/player-processor.h"
+#include "system/creature-entity.h"
 #include "action/run-execution.h"
 #include "action/travel-execution.h"
 #include "core/disturbance.h"

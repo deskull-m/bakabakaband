@@ -1,4 +1,5 @@
 #include "market/building-service.h"
+#include "system/creature-entity.h"
 #include "player-base/player-class.h"
 #include "player/player-realm.h"
 #include "system/building-type-definition.h"

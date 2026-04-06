@@ -1,4 +1,5 @@
 #include "floor/floor-events.h"
+#include "system/creature-entity.h"
 #include "cmd-io/cmd-dump.h"
 #include "core/disturbance.h"
 #include "dungeon/quest.h"
@@ -31,7 +32,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
@@ -131,7 +131,7 @@ static int get_dungeon_feeling(const auto &floor)
     const auto base = 10;
     auto rating = 0;
     for (short i = 1; i < floor.m_max; i++) {
-        const auto &monster = floor.m_list[i];
+        const auto &monster = floor.get_monster(i);
         auto delta = 0;
         if (!monster.is_valid() || monster.is_pet()) {
             continue;

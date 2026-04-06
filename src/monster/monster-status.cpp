@@ -1,4 +1,5 @@
 #include "monster/monster-status.h"
+#include "system/creature-entity.h"
 #include "autopick/autopick-pref-processor.h"
 #include "core/speed-table.h"
 #include "floor/geometry.h"
@@ -18,7 +19,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "timed-effect/timed-effects.h"
@@ -40,7 +40,7 @@ static uint32_t csleep_noise;
  */
 bool monster_is_powerful(const FloorType &floor, MONSTER_IDX m_idx)
 {
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     return monrace.misc_flags.has(MonsterMiscType::POWERFUL);
 }
@@ -52,7 +52,7 @@ bool monster_is_powerful(const FloorType &floor, MONSTER_IDX m_idx)
  */
 DEPTH monster_level_idx(const FloorType &floor, MONSTER_IDX m_idx)
 {
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     return (monrace.level >= 1) ? monrace.level : 1;
 }
@@ -111,7 +111,7 @@ int mon_damage_mod(CreatureEntity &creature, const CreatureEntity &target, int d
 static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_idx, MonsterTimedEffect mte)
 {
     auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     const auto cdis = Grid::calc_distance(creature.get_position(), monster.get_position());
     switch (mte) {
     case MonsterTimedEffect::SLEEP: {
@@ -308,7 +308,7 @@ void process_monsters_mtimed(CreatureEntity &creature, MonsterTimedEffect mte)
 void dispel_monster_status(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     const auto m_name = monster_desc(creature, monster, 0);
     if (set_monster_invulner(floor, m_idx, 0, true)) {
         if (monster.get_monster_profile().ml) {
@@ -342,7 +342,7 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
     }
 
     auto &floor = *creature.current_floor_ptr;
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     if (!monster.is_valid()) {
         return;
     }

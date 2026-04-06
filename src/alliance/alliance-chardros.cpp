@@ -1,4 +1,5 @@
 #include "alliance/alliance-chardros.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 
 int AllianceChardros::calcImpressionPoint(const CreatureEntity &creature) const

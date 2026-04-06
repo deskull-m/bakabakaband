@@ -1,4 +1,5 @@
 #include "market/building-recharger.h"
+#include "system/creature-entity.h"
 #include "autopick/autopick.h"
 #include "core/asking-player.h"
 #include "flavor/flavor-describer.h"

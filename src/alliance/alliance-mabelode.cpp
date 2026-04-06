@@ -1,4 +1,5 @@
 #include "alliance/alliance-mabelode.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 int AllianceMabelode::calcImpressionPoint(const CreatureEntity &creature) const
 {

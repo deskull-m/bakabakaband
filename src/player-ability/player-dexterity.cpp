@@ -1,4 +1,5 @@
 #include "player-ability/player-dexterity.h"
+#include "system/creature-entity.h"
 #include "mutation/mutation-flag-types.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"

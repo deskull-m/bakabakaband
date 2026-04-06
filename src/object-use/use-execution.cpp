@@ -4,6 +4,7 @@
  * @author Hourier
  */
 #include "object-use/use-execution.h"
+#include "system/creature-entity.h"
 #include "action/action-limited.h"
 #include "avatar/avatar.h"
 #include "cmd-item/cmd-usestaff.h"

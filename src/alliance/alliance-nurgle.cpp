@@ -1,4 +1,5 @@
 #include "alliance/alliance-nurgle.h"
+#include "system/creature-entity.h"
 #include "alliance/alliance.h"
 #include "core/disturbance.h"
 #include "effect/attribute-types.h"

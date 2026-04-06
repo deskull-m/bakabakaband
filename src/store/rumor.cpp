@@ -1,4 +1,5 @@
 #include "store/rumor.h"
+#include "system/creature-entity.h"
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
 #include "io/files-util.h"

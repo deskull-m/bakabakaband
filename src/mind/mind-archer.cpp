@@ -1,4 +1,5 @@
 #include "mind/mind-archer.h"
+#include "system/creature-entity.h"
 #include "action/action-limited.h"
 #include "autopick/autopick.h"
 #include "core/asking-player.h"

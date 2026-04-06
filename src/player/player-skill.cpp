@@ -1,4 +1,5 @@
 #include "player/player-skill.h"
+#include "system/creature-entity.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
 #include "player-info/class-info.h"
@@ -7,7 +8,6 @@
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 
@@ -339,7 +339,7 @@ void PlayerSkill::gain_riding_skill_exp_on_melee_attack(const MonraceDefinition 
         return;
     }
 
-    auto riding_level = this->creature_ptr->current_floor_ptr->m_list[this->creature_ptr->riding].get_monrace().level;
+    auto riding_level = this->creature_ptr->current_floor_ptr->get_monster(this->creature_ptr->riding).get_monrace().level;
     int inc = 0;
 
     if ((now_exp / 200 - 5) < monrace.level) {
@@ -367,7 +367,7 @@ void PlayerSkill::gain_riding_skill_exp_on_range_attack()
     }
 
     const auto &floor = *this->creature_ptr->current_floor_ptr;
-    const auto &monster = floor.m_list[this->creature_ptr->riding];
+    const auto &monster = floor.get_monster(this->creature_ptr->riding);
     const auto &monrace = monster.get_monrace();
     if (((this->creature_ptr->skill_exp[PlayerSkillKindType::RIDING] - (RIDING_EXP_BEGINNER * 2)) / 200 < monrace.level) && one_in_(2)) {
         this->creature_ptr->skill_exp[PlayerSkillKindType::RIDING] += 1;
@@ -383,7 +383,7 @@ void PlayerSkill::gain_riding_skill_exp_on_fall_off_check(int dam)
         return;
     }
 
-    auto riding_level = this->creature_ptr->current_floor_ptr->m_list[this->creature_ptr->riding].get_monrace().level;
+    auto riding_level = this->creature_ptr->current_floor_ptr->get_monster(this->creature_ptr->riding).get_monrace().level;
 
     if ((dam / 2 + riding_level) <= (now_exp / 30 + 10)) {
         return;

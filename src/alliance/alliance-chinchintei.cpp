@@ -1,4 +1,5 @@
 #include "alliance/alliance-chinchintei.h"
+#include "system/creature-entity.h"
 #include "alliance/alliance.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-list.h"

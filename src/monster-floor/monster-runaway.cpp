@@ -18,7 +18,6 @@
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "target/projection-path-calculator.h"
 #include "view/display-messages.h"
 
@@ -88,7 +87,7 @@ static void escape_monster(CreatureEntity &player, turn_flags *turn_flags_ptr, c
  */
 bool runaway_monster(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx)
 {
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     bool can_runaway = monster.is_pet() || monster.is_friendly();
     can_runaway &= (monrace.kind_flags.has(MonsterKindType::UNIQUE)) || (monrace.population_flags.has(MonsterPopulationType::NAZGUL));

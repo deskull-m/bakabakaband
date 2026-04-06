@@ -1,4 +1,5 @@
 #include "spell-kind/spells-launcher.h"
+#include "system/creature-entity.h"
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
 #include "floor/geometry.h"

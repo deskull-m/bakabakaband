@@ -1,4 +1,5 @@
 #include "wizard/artifact-analyzer.h"
+#include "system/creature-entity.h"
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
 #include "locale/japanese.h"

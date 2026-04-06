@@ -31,7 +31,6 @@
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "target/projection-path-calculator.h"
 #include "util/string-processor.h"
@@ -298,7 +297,7 @@ int summon_cyber(CreatureEntity &creature, POSITION y, POSITION x, tl::optional<
     BIT_FLAGS mode = PM_ALLOW_GROUP;
     const auto &floor = *creature.current_floor_ptr;
     if (summoner_m_idx) {
-        const auto &monster = floor.m_list[*summoner_m_idx];
+        const auto &monster = floor.get_monster(*summoner_m_idx);
         if (monster.is_pet()) {
             mode |= PM_FORCE_PET;
         }
@@ -337,7 +336,7 @@ void mitokohmon(CreatureEntity &creature)
         const auto &floor = *creature.current_floor_ptr;
         const auto p_pos = creature.get_position();
         for (auto i = floor.m_max - 1; i > 0; i--) {
-            const auto &monster = floor.m_list[i];
+            const auto &monster = floor.get_monster(i);
             if (!monster.is_valid()) {
                 continue;
             }

@@ -1,4 +1,5 @@
 #include "spell-kind/spells-specific-bolt.h"
+#include "system/creature-entity.h"
 #include "effect/attribute-types.h"
 #include "effect/effect-characteristics.h"
 #include "floor/geometry.h"

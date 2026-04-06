@@ -1,4 +1,5 @@
 #include "spell-kind/spells-perception.h"
+#include "system/creature-entity.h"
 #include "autopick/autopick.h"
 #include "avatar/avatar.h"
 #include "core/stuff-handler.h"

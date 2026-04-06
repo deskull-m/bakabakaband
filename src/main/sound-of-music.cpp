@@ -4,6 +4,7 @@
  */
 
 #include "main/sound-of-music.h"
+#include "system/creature-entity.h"
 #include "game-option/disturbance-options.h"
 #include "game-option/special-options.h"
 #include "main/scene-table.h"

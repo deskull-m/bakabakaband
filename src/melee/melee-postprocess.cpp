@@ -11,6 +11,7 @@
  */
 
 #include "melee/melee-postprocess.h"
+#include "system/creature-entity.h"
 #include "core/disturbance.h"
 #include "effect/attribute-types.h"
 #include "floor/geometry.h"
@@ -36,7 +37,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
@@ -62,7 +62,7 @@ struct mam_pp_type {
 
 mam_pp_type::mam_pp_type(CreatureEntity &creature, MONSTER_IDX m_idx, int dam, bool *dead, bool *fear, std::string_view note, MONSTER_IDX src_idx)
     : m_idx(m_idx)
-    , m_ptr(&creature.current_floor_ptr->m_list[m_idx])
+    , m_ptr(&creature.current_floor_ptr->get_monster(m_idx))
     , dam(dam)
     , dead(dead)
     , fear(fear)
@@ -275,7 +275,7 @@ static void fall_off_horse_by_melee(CreatureEntity &creature, mam_pp_type *mam_p
 void mon_take_hit_mon(CreatureEntity &creature, MONSTER_IDX m_idx, int dam, bool *dead, bool *fear, std::string_view note, MONSTER_IDX src_idx)
 {
     auto &floor = *creature.current_floor_ptr;
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     mam_pp_type tmp_mam_pp(creature, m_idx, dam, dead, fear, note, src_idx);
     mam_pp_type *mam_pp_ptr = &tmp_mam_pp;
     prepare_redraw(mam_pp_ptr);
@@ -298,7 +298,7 @@ void mon_take_hit_mon(CreatureEntity &creature, MONSTER_IDX m_idx, int dam, bool
     cancel_fear_by_pain(creature, mam_pp_ptr);
     make_monster_fear(creature, mam_pp_ptr);
     if ((dam > 0) && !monster.is_pet() && !monster.is_friendly() && (mam_pp_ptr->src_idx != m_idx)) {
-        const auto &monster_src = floor.m_list[src_idx];
+        const auto &monster_src = floor.get_monster(src_idx);
         if (monster_src.is_pet() && !creature.is_located_at(monster.get_target_position())) {
             monster.set_target(monster_src.get_position());
         }

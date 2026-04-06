@@ -6,6 +6,7 @@
  */
 
 #include "mind/mind-mirror-master.h"
+#include "system/creature-entity.h"
 #include "action/travel-execution.h"
 #include "core/disturbance.h"
 #include "core/stuff-handler.h"

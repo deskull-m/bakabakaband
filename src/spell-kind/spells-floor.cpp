@@ -5,6 +5,7 @@
  */
 
 #include "spell-kind/spells-floor.h"
+#include "system/creature-entity.h"
 #include "action/travel-execution.h"
 #include "dungeon/quest.h"
 #include "flavor/flavor-describer.h"
@@ -31,7 +32,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
@@ -306,7 +306,7 @@ bool destroy_area(CreatureEntity &creature, const POSITION y1, const POSITION x1
             }
 
             if (grid.has_monster()) {
-                auto &monster = floor.m_list[grid.m_idx];
+                auto &monster = floor.get_monster(grid.m_idx);
                 auto &monrace = monster.get_monrace();
 
                 if (in_generate) /* In generation */

@@ -1,4 +1,6 @@
 #include "system/floor/floor-info.h"
+#include "system/creature-entity.h"
+#include "system/monster-entity.h"
 #include "dungeon/quest.h"
 #include "floor/geometry.h"
 #include "game-option/birth-options.h"
@@ -21,7 +23,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "system/services/dungeon-monrace-service.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
@@ -48,6 +49,16 @@ FloorType::FloorType()
 int FloorType::get_level() const
 {
     return this->dun_level;
+}
+
+CreatureEntity &FloorType::get_monster(MONSTER_IDX m_idx)
+{
+    return this->m_list[m_idx];
+}
+
+const CreatureEntity &FloorType::get_monster(MONSTER_IDX m_idx) const
+{
+    return this->m_list[m_idx];
 }
 
 Grid &FloorType::get_grid(const Pos2D &pos)
@@ -283,8 +294,8 @@ bool FloorType::check_terrain_state(const Pos2D &pos, GridCountKind gck) const
  */
 bool FloorType::order_pet_whistle(short index1, short index2) const
 {
-    const auto &monster1 = this->m_list[index1];
-    const auto &monster2 = this->m_list[index2];
+    const auto &monster1 = static_cast<const MonsterEntity &>(this->get_monster(index1));
+    const auto &monster2 = static_cast<const MonsterEntity &>(this->get_monster(index2));
     const auto is_ordered = monster1.order_pet_whistle(monster2);
     if (is_ordered) {
         return *is_ordered;
@@ -531,7 +542,7 @@ void FloorType::reset_mproc()
 {
     this->reset_mproc_max();
     for (short i = this->m_max - 1; i >= 1; i--) {
-        const auto &monster = this->m_list[i];
+        const auto &monster = this->get_monster(i);
         if (!monster.is_valid()) {
             continue;
         }
@@ -610,7 +621,7 @@ short FloorType::pop_empty_index_monster()
 
     /* Recycle dead monsters */
     for (short i = 1; i < this->m_max; i++) {
-        const auto &monster = this->m_list[i];
+        const auto &monster = this->get_monster(i);
         if (monster.is_valid()) {
             continue;
         }

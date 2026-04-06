@@ -11,6 +11,7 @@
  */
 
 #include "cmd-action/cmd-mind.h"
+#include "system/creature-entity.h"
 #include "action/action-limited.h"
 #include "core/asking-player.h"
 #include "core/window-redrawer.h"

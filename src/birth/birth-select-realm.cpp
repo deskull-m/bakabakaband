@@ -1,4 +1,5 @@
 #include "birth/birth-select-realm.h"
+#include "system/creature-entity.h"
 #include "birth/birth-util.h"
 #include "core/asking-player.h"
 #include "io/input-key-acceptor.h"

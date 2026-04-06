@@ -5,6 +5,7 @@
  */
 
 #include "melee/monster-attack-monster.h"
+#include "system/creature-entity.h"
 #include "combat/attack-accuracy.h"
 #include "combat/hallucination-attacks-table.h"
 #include "core/disturbance.h"
@@ -30,7 +31,6 @@
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"

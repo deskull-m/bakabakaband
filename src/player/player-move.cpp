@@ -6,6 +6,7 @@
  */
 
 #include "player/player-move.h"
+#include "system/creature-entity.h"
 #include "core/disturbance.h"
 #include "core/special-internal-keys.h"
 #include "core/stuff-handler.h"
@@ -39,7 +40,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
@@ -149,13 +149,13 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
             grid_new.m_idx = om_idx;
             grid_old.m_idx = nm_idx;
             if (om_idx > 0) {
-                auto &monster = floor.m_list[om_idx];
+                auto &monster = floor.get_monster(om_idx);
                 monster.set_position(pos_new);
                 update_monster(creature, om_idx, true);
             }
 
             if (nm_idx > 0) {
-                auto &monster = floor.m_list[nm_idx];
+                auto &monster = floor.get_monster(nm_idx);
                 monster.set_position(pos_old);
                 update_monster(creature, nm_idx, true);
             }

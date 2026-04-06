@@ -1,4 +1,5 @@
 #include "effect/effect-monster-oldies.h"
+#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "effect/effect-monster-util.h"
 #include "monster-floor/monster-generator.h"
@@ -10,7 +11,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/bit-flags-calculator.h"

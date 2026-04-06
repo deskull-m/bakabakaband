@@ -1,4 +1,5 @@
 #include "mind/mind-priest.h"
+#include "system/creature-entity.h"
 #include "core/window-redrawer.h"
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"

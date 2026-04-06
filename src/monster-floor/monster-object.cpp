@@ -23,7 +23,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -130,7 +129,7 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
     const POSITION ny, const POSITION nx, std::string_view m_name, std::string_view o_name, const OBJECT_IDX this_o_idx)
 {
     auto &floor = *creature.current_floor_ptr;
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     if (is_unpickable_object) {
         if (turn_flags_ptr->do_take && monrace.behavior_flags.has(MonsterBehaviorType::STUPID)) {
@@ -181,7 +180,7 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
  */
 void update_object_by_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx, POSITION ny, POSITION nx)
 {
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     const auto &grid = creature.current_floor_ptr->grid_array[ny][nx];
     turn_flags_ptr->do_take = monrace.behavior_flags.has(MonsterBehaviorType::TAKE_ITEM);

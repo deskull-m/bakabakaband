@@ -10,6 +10,7 @@
  */
 
 #include "cmd-action/cmd-mane.h"
+#include "system/creature-entity.h"
 #include "action/action-limited.h"
 #include "artifact/fixed-art-types.h"
 #include "cmd-action/cmd-spell.h"
@@ -53,7 +54,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
@@ -759,7 +759,7 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
             break;
         }
 
-        const auto &monster = floor.m_list[grid_target.m_idx];
+        const auto &monster = floor.get_monster(grid_target.m_idx);
         auto &monrace = monster.get_monrace();
         const auto m_name = monster_desc(creature, monster, 0);
         if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT)) {

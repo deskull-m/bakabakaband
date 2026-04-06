@@ -5,6 +5,7 @@
  */
 
 #include "spell/spells-object.h"
+#include "system/creature-entity.h"
 #include "artifact/fixed-art-types.h"
 #include "avatar/avatar.h"
 #include "core/window-redrawer.h"

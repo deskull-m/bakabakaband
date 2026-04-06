@@ -1,4 +1,5 @@
 #include "store/home.h"
+#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "game-option/birth-options.h"
 #include "game-option/game-play-options.h"

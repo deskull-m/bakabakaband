@@ -1,4 +1,5 @@
 #include "effect/effect-monster-resist-hurt.h"
+#include "system/creature-entity.h"
 #include "effect/effect-monster-util.h"
 #include "monster-race/race-brightness-flags.h"
 #include "monster-race/race-flags-resistance.h"
@@ -8,7 +9,6 @@
 #include "system/enums/monrace/monrace-id.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "util/bit-flags-calculator.h"
 
 /*!

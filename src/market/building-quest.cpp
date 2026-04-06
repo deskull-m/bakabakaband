@@ -1,4 +1,5 @@
 #include "market/building-quest.h"
+#include "system/creature-entity.h"
 #include "core/asking-player.h"
 #include "dungeon/quest.h"
 #include "floor/wild.h"

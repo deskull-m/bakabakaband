@@ -1,4 +1,5 @@
 #include "player-status/player-stealth.h"
+#include "system/creature-entity.h"
 #include "mind/mind-ninja.h"
 #include "mutation/mutation-flag-types.h"
 #include "player-base/player-class.h"

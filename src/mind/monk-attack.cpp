@@ -6,6 +6,7 @@
  */
 
 #include "mind/monk-attack.h"
+#include "system/creature-entity.h"
 #include "cmd-action/cmd-attack.h"
 #include "combat/attack-criticality.h"
 #include "combat/slaying.h"
@@ -27,7 +28,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "target/target-getter.h"
 #include "timed-effect/timed-effects.h"
 #include "util/string-processor.h"

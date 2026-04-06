@@ -2,11 +2,10 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 
 msa_type::msa_type(CreatureEntity &creature, MONSTER_IDX m_idx)
     : m_idx(m_idx)
-    , m_ptr(&creature.current_floor_ptr->m_list[m_idx])
+    , m_ptr(&creature.current_floor_ptr->get_monster(m_idx))
     , x(creature.x)
     , y(creature.y)
     , do_spell(DO_SPELL_NONE)

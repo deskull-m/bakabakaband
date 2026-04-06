@@ -5,6 +5,7 @@
  */
 
 #include "pet/pet-fall-off.h"
+#include "system/creature-entity.h"
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
 #include "floor/geometry.h"
@@ -19,7 +20,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
@@ -39,7 +39,7 @@ void check_fall_off_horse(CreatureEntity &creature, MonsterAttackPlayer *monap_p
         return;
     }
 
-    const auto m_steed_name = monster_desc(creature, creature.current_floor_ptr->m_list[creature.riding], 0);
+    const auto m_steed_name = monster_desc(creature, creature.current_floor_ptr->get_monster(creature.riding), 0);
     if (process_fall_off_horse(creature, (monap_ptr->damage > 200) ? 200 : monap_ptr->damage, false)) {
         msg_format(_("%s^から落ちてしまった！", "You have fallen from %s."), m_steed_name.data());
     }
@@ -88,7 +88,7 @@ static bool calc_fall_off_possibility(CreatureEntity &creature, const int dam, c
  */
 bool process_fall_off_horse(CreatureEntity &creature, int dam, bool force)
 {
-    const auto &monster = creature.current_floor_ptr->m_list[creature.riding];
+    const auto &monster = creature.current_floor_ptr->get_monster(creature.riding);
     const auto &monrace = monster.get_monrace();
 
     if (!creature.riding || AngbandWorld::get_instance().is_wild_mode()) {

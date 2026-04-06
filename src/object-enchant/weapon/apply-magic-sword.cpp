@@ -5,6 +5,7 @@
  */
 
 #include "object-enchant/weapon/apply-magic-sword.h"
+#include "system/creature-entity.h"
 #include "floor/floor-base-definitions.h"
 #include "inventory/inventory-slot-types.h"
 #include "object-enchant/object-boost.h"

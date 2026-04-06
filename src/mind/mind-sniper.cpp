@@ -6,6 +6,7 @@
  */
 
 #include "mind/mind-sniper.h"
+#include "system/creature-entity.h"
 #include "action/action-limited.h"
 #include "cmd-action/cmd-shoot.h"
 #include "core/asking-player.h"

@@ -5,6 +5,7 @@
  */
 
 #include "cmd-action/cmd-racial.h"
+#include "system/creature-entity.h"
 #include "action/action-limited.h"
 #include "action/mutation-execution.h"
 #include "action/racial-execution.h"

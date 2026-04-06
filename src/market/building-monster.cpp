@@ -1,4 +1,5 @@
 #include "market/building-monster.h"
+#include "system/creature-entity.h"
 #include "core/asking-player.h"
 #include "core/stuff-handler.h"
 #include "game-option/game-play-options.h"

@@ -1,17 +1,17 @@
 #include "monster-floor/monster-death-util.h"
+#include "system/creature-entity.h"
 #include "monster/monster-info.h"
 #include "monster/smart-learn-types.h"
 #include "system/angband-system.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 
 MonsterDeath::MonsterDeath(FloorType &floor, short m_idx, bool drop_item)
     : m_idx(m_idx)
-    , m_ptr(&floor.m_list[m_idx])
+    , m_ptr(&floor.get_monster(m_idx))
 {
     this->r_ptr = &this->m_ptr->get_monrace();
     this->ap_r_ptr = this->r_ptr;

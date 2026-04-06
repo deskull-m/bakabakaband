@@ -1,4 +1,5 @@
 #include "spell-realm/spells-sorcery.h"
+#include "system/creature-entity.h"
 #include "core/asking-player.h"
 #include "core/window-redrawer.h"
 #include "flavor/flavor-describer.h"

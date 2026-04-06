@@ -5,6 +5,7 @@
  */
 
 #include "knowledge/knowledge-quests.h"
+#include "system/creature-entity.h"
 #include "artifact/fixed-art-types.h"
 #include "core/show-file.h"
 #include "dungeon/quest.h"

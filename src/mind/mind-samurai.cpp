@@ -5,6 +5,7 @@
  */
 
 #include "mind/mind-samurai.h"
+#include "system/creature-entity.h"
 #include "action/action-limited.h"
 #include "avatar/avatar.h"
 #include "cmd-action/cmd-attack.h"
@@ -29,7 +30,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"

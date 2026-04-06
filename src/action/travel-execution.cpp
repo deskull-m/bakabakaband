@@ -4,6 +4,7 @@
  */
 
 #include "action/travel-execution.h"
+#include "system/creature-entity.h"
 #include "action/movement-execution.h"
 #include "core/disturbance.h"
 #include "game-option/disturbance-options.h"
@@ -14,7 +15,6 @@
 #include "player/player-status-flags.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "timed-effect/timed-effects.h"
@@ -161,7 +161,7 @@ Direction decide_travel_step_dir(CreatureEntity &creature, const Direction &prev
         const auto pos = creature.get_neighbor(dir);
         const auto &grid = floor.get_grid(pos);
         if (grid.has_monster()) {
-            const auto &monster = floor.m_list[grid.m_idx];
+            const auto &monster = floor.get_monster(grid.m_idx);
             if (monster.get_monster_profile().ml) {
                 return Direction::none();
             }

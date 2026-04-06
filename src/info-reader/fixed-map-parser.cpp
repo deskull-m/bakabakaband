@@ -7,6 +7,7 @@
  */
 
 #include "info-reader/fixed-map-parser.h"
+#include "system/creature-entity.h"
 #include "dungeon/quest.h"
 #include "floor/fixed-map-generator.h"
 #include "game-option/birth-options.h"

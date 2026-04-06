@@ -1,4 +1,5 @@
 #include "floor/floor-leaver.h"
+#include "system/creature-entity.h"
 #include "dungeon/quest.h"
 #include "floor/floor-mode-changer.h"
 #include "floor/floor-save-util.h"

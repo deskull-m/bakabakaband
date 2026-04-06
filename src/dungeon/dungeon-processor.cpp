@@ -1,4 +1,5 @@
 #include "dungeon/dungeon-processor.h"
+#include "system/creature-entity.h"
 #include "cmd-io/cmd-dump.h"
 #include "core/disturbance.h"
 #include "core/object-compressor.h"

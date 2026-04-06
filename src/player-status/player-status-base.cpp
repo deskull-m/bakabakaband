@@ -1,4 +1,5 @@
 #include "player-status/player-status-base.h"
+#include "system/creature-entity.h"
 #include "inventory/inventory-slot-types.h"
 #include "player/player-status.h"
 #include "system/item-entity.h"

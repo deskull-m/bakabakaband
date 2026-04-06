@@ -4,6 +4,7 @@
  * @author Hourier
  */
 #include "object-use/zaprod-execution.h"
+#include "system/creature-entity.h"
 #include "action/action-limited.h"
 #include "avatar/avatar.h"
 #include "cmd-item/cmd-zaprod.h" // 相互依存。暫定的措置、後で何とかする.

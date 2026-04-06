@@ -5,6 +5,7 @@
  */
 
 #include "io/mutations-dump.h"
+#include "system/creature-entity.h"
 #include "mutation/mutation-flag-types.h"
 #include "player/player-status-flags.h"
 #include "system/player-type-definition.h"

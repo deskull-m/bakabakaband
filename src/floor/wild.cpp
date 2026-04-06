@@ -9,6 +9,7 @@
  */
 
 #include "floor/wild.h"
+#include "system/creature-entity.h"
 #include "alliance/alliance.h"
 #include "core/asking-player.h"
 #include "dungeon/quest.h"
@@ -42,7 +43,6 @@
 #include "system/floor/town-list.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/grid-type-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
@@ -868,7 +868,7 @@ bool change_wild_mode(CreatureEntity &creature, bool encount)
     bool has_pet = false;
     PlayerEnergy energy(creature);
     for (int i = 1; i < player_ptr->current_floor_ptr->m_max; i++) {
-        const auto &monster = player_ptr->current_floor_ptr->m_list[i];
+        const auto &monster = player_ptr->current_floor_ptr->get_monster(i);
         if (!monster.is_valid()) {
             continue;
         }

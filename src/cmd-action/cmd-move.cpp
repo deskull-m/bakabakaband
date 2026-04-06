@@ -1,4 +1,5 @@
 #include "cmd-action/cmd-move.h"
+#include "system/creature-entity.h"
 #include "action/action-limited.h"
 #include "action/movement-execution.h"
 #include "action/run-execution.h"

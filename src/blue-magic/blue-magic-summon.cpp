@@ -4,6 +4,7 @@
  */
 
 #include "blue-magic/blue-magic-summon.h"
+#include "system/creature-entity.h"
 #include "blue-magic/blue-magic-util.h"
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/place-monster-types.h"

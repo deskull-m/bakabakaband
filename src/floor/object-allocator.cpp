@@ -1,4 +1,5 @@
 #include "floor/object-allocator.h"
+#include "system/creature-entity.h"
 #include "dungeon/quest.h"
 #include "floor/floor-generator-util.h"
 #include "floor/floor-object.h"

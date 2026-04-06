@@ -5,6 +5,7 @@
  */
 
 #include "mspell/mspell-floor.h"
+#include "system/creature-entity.h"
 #include "blue-magic/blue-magic-checker.h"
 #include "core/disturbance.h"
 #include "effect/attribute-types.h"
@@ -34,7 +35,6 @@
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
@@ -57,7 +57,7 @@ MonsterSpellResult spell_RF4_SHRIEK(MONSTER_IDX m_idx, CreatureEntity &creature,
 
     simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
 
-    const auto &monster = player_ptr.current_floor_ptr->m_list[m_idx];
+    const auto &monster = player_ptr.current_floor_ptr->get_monster(m_idx);
     auto result = MonsterSpellResult::make_valid();
     if (monster.r_idx == MonraceId::LEE_QIEZI) {
         msg_print(_("しかし、その声は誰の心にも響かなかった…。", "However, that voice didn't touch anyone's heart..."));
@@ -177,8 +177,8 @@ MonsterSpellResult spell_RF6_TELE_TO(CreatureEntity &creature, MONSTER_IDX m_idx
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
     const auto &floor = *player_ptr.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
-    const auto &monster_target = floor.m_list[t_idx];
+    const auto &monster = floor.get_monster(m_idx);
+    const auto &monster_target = floor.get_monster(t_idx);
     auto &monrace_target = monster_target.get_monrace();
 
     mspell_cast_msg_simple msg(_("%s^があなたを引き戻した。", "%s^ commands you to return."),
@@ -249,7 +249,7 @@ MonsterSpellResult spell_RF6_TELE_AWAY(CreatureEntity &creature, MONSTER_IDX m_i
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
     const auto &floor = *player_ptr.current_floor_ptr;
-    const auto &monster_target = floor.m_list[t_idx];
+    const auto &monster_target = floor.get_monster(t_idx);
     auto &monrace_target = monster_target.get_monrace();
 
     mspell_cast_msg_simple msg(_("%s^にテレポートさせられた。", "%s^ teleports you away."),
@@ -331,7 +331,7 @@ MonsterSpellResult spell_RF6_TELE_LEVEL(CreatureEntity &creature, MONSTER_IDX m_
     const auto res = MonsterSpellResult::make_valid();
 
     const auto &floor = *player_ptr.current_floor_ptr;
-    const auto &monster_target = floor.m_list[t_idx];
+    const auto &monster_target = floor.get_monster(t_idx);
     const auto &monrace_target = monster_target.get_monrace();
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool resist, saving_throw;
@@ -391,7 +391,7 @@ MonsterSpellResult spell_RF6_DARKNESS(CreatureEntity &creature, POSITION y, POSI
     mspell_cast_msg_blind msg;
     concptr msg_done;
     const auto &floor = *player_ptr.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     bool can_use_lite_area = false;
     bool monster_to_monster = target_type == MONSTER_TO_MONSTER;
@@ -405,7 +405,7 @@ MonsterSpellResult spell_RF6_DARKNESS(CreatureEntity &creature, POSITION y, POSI
         can_use_lite_area = true;
     }
 
-    const auto &t_ref = floor.m_list[t_idx];
+    const auto &t_ref = floor.get_monster(t_idx);
     if (monster_to_monster && !t_ref.is_hostile()) {
         can_use_lite_area = false;
     }
@@ -493,7 +493,7 @@ MonsterSpellResult spell_RF6_TRAPS(CreatureEntity &creature, POSITION y, POSITIO
 MonsterSpellResult spell_RF6_RAISE_DEAD(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     auto &player_ptr = static_cast<PlayerType &>(creature);
-    const auto &monster = player_ptr.current_floor_ptr->m_list[m_idx];
+    const auto &monster = player_ptr.current_floor_ptr->get_monster(m_idx);
     mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
         _("%s^が死者復活の呪文を唱えた。", "%s^ casts a spell to revive corpses."), _("%s^が死者復活の呪文を唱えた。", "%s^ casts a spell to revive corpses."));
 

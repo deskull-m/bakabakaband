@@ -1,4 +1,5 @@
 #include "monster/monster-status-setter.h"
+#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "cmd-visual/cmd-draw.h"
 #include "core/speed-table.h"
@@ -17,7 +18,6 @@
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
@@ -70,7 +70,7 @@ void anger_monster(CreatureEntity &creature, CreatureEntity &target)
  */
 bool set_monster_csleep(FloorType &floor, MONSTER_IDX m_idx, int v)
 {
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
@@ -115,7 +115,7 @@ bool set_monster_csleep(FloorType &floor, MONSTER_IDX m_idx, int v)
  */
 bool set_monster_fast(FloorType &floor, MONSTER_IDX m_idx, int v)
 {
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     bool notice = false;
     v = (v > 200) ? 200 : (v < 0) ? 0
                                   : v;
@@ -152,7 +152,7 @@ bool set_monster_fast(FloorType &floor, MONSTER_IDX m_idx, int v)
  */
 bool set_monster_slow(FloorType &floor, MONSTER_IDX m_idx, int v)
 {
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     bool notice = false;
     v = (v > 200) ? 200 : (v < 0) ? 0
                                   : v;
@@ -189,7 +189,7 @@ bool set_monster_slow(FloorType &floor, MONSTER_IDX m_idx, int v)
  */
 bool set_monster_stunned(FloorType &floor, MONSTER_IDX m_idx, int v)
 {
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     bool notice = false;
     v = (v > 200) ? 200 : (v < 0) ? 0
                                   : v;
@@ -218,7 +218,7 @@ bool set_monster_stunned(FloorType &floor, MONSTER_IDX m_idx, int v)
  */
 bool set_monster_confused(FloorType &floor, MONSTER_IDX m_idx, int v)
 {
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     bool notice = false;
     v = (v > 200) ? 200 : (v < 0) ? 0
                                   : v;
@@ -247,7 +247,7 @@ bool set_monster_confused(FloorType &floor, MONSTER_IDX m_idx, int v)
  */
 bool set_monster_monfear(FloorType &floor, MONSTER_IDX m_idx, int v)
 {
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     bool notice = false;
 
     // 狂乱状態のモンスターは恐怖しない
@@ -295,7 +295,7 @@ bool set_monster_monfear(FloorType &floor, MONSTER_IDX m_idx, int v)
  */
 bool set_monster_invulner(FloorType &floor, MONSTER_IDX m_idx, int v, bool energy_need)
 {
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     bool notice = false;
     v = (v > 200) ? 200 : (v < 0) ? 0
                                   : v;
@@ -341,7 +341,7 @@ bool set_monster_invulner(FloorType &floor, MONSTER_IDX m_idx, int v, bool energ
 bool set_monster_timewalk(CreatureEntity &creature, MONSTER_IDX m_idx, int num, bool vs_player)
 {
     auto &floor = *creature.current_floor_ptr;
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     auto &world = AngbandWorld::get_instance();
     const auto &monrace = monster.get_real_monrace();
     if (world.timewalk_m_idx) {

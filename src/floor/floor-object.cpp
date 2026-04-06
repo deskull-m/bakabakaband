@@ -6,6 +6,7 @@
  */
 
 #include "floor/floor-object.h"
+#include "system/creature-entity.h"
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
 #include "game-option/birth-options.h"
@@ -30,7 +31,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
@@ -329,7 +329,7 @@ ObjectIndexList &get_o_idx_list_contains(FloorType &floor, OBJECT_IDX o_idx)
     auto *o_ptr = floor.o_list[o_idx].get();
 
     if (o_ptr->is_held_by_monster()) {
-        return floor.m_list[o_ptr->held_m_idx].get_monster_profile().hold_o_idx_list;
+        return floor.get_monster(o_ptr->held_m_idx).get_monster_profile().hold_o_idx_list;
     } else {
         return floor.grid_array[o_ptr->iy][o_ptr->ix].o_idx_list;
     }

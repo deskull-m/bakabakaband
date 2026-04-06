@@ -5,6 +5,7 @@
  */
 
 #include "cmd-action/cmd-attack.h"
+#include "system/creature-entity.h"
 #include "action/action-limited.h"
 #include "artifact/fixed-art-types.h"
 #include "avatar/avatar.h"
@@ -49,7 +50,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "timed-effect/timed-effects.h"
@@ -69,7 +69,7 @@
 static void natural_attack(CreatureEntity &creature, MONSTER_IDX m_idx, PlayerMutationType attack, bool *fear, bool *mdeath)
 {
     WEIGHT n_weight = 0;
-    auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
 
     Dice dice{};
@@ -161,7 +161,7 @@ static void natural_attack(CreatureEntity &creature, MONSTER_IDX m_idx, PlayerMu
  */
 static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear, bool *mdeath)
 {
-    auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
 
     // 頭突きの基本パラメータ
@@ -245,7 +245,7 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
  */
 static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear, bool *mdeath)
 {
-    auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
 
     // 体当たりの基本パラメータ（プレイヤーの体重や筋力に依存）
@@ -351,7 +351,7 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
 {
     auto &floor = *creature.current_floor_ptr;
     const auto &grid = floor.grid_array[y][x];
-    const auto &monster = floor.m_list[grid.m_idx];
+    const auto &monster = floor.get_monster(grid.m_idx);
     const auto &monrace = monster.get_monrace();
 
     const auto mutation_attack_methods = {
@@ -474,7 +474,7 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
     if (fear && monster.get_monster_profile().ml && !mdeath) {
         // 1/20の確率で恐怖せず狂乱状態になる
         if (one_in_(20)) {
-            auto &current_monster = floor.m_list[grid.m_idx];
+            auto &current_monster = floor.get_monster(grid.m_idx);
             current_monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::FRENZY);
             (void)set_monster_monfear(*creature.current_floor_ptr, grid.m_idx, 0);
             sound(SoundKind::FLEE);
@@ -516,7 +516,7 @@ bool do_cmd_headbutt(CreatureEntity &creature)
         return false;
     }
 
-    const auto &monster = floor.m_list[grid.m_idx];
+    const auto &monster = floor.get_monster(grid.m_idx);
     const auto m_name = monster_desc(creature, monster, 0);
 
     // エネルギー消費
@@ -569,7 +569,7 @@ bool do_cmd_headbutt(CreatureEntity &creature)
     if (fear && monster.get_monster_profile().ml && !mdeath) {
         // 1/20の確率で恐怖せず狂乱状態になる
         if (one_in_(20)) {
-            auto &current_monster = floor.m_list[grid.m_idx];
+            auto &current_monster = floor.get_monster(grid.m_idx);
             current_monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::FRENZY);
             (void)set_monster_monfear(*creature.current_floor_ptr, grid.m_idx, 0);
             sound(SoundKind::FLEE);
@@ -604,7 +604,7 @@ void do_cmd_body_slam(CreatureEntity &creature)
     }
 
     const auto m_idx = grid.m_idx;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
 
     auto m_name = monster_desc(creature, monster, 0);
 
@@ -641,7 +641,7 @@ void do_cmd_body_slam(CreatureEntity &creature)
     if (fear && monster.get_monster_profile().ml && !mdeath) {
         // 1/20の確率で恐怖せず狂乱状態になる
         if (one_in_(20)) {
-            auto &current_monster = floor.m_list[m_idx];
+            auto &current_monster = floor.get_monster(m_idx);
             current_monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::FRENZY);
             (void)set_monster_monfear(*creature.current_floor_ptr, m_idx, 0);
             sound(SoundKind::FLEE);
@@ -662,7 +662,7 @@ void do_cmd_body_slam(CreatureEntity &creature)
  */
 static void enema_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear, bool *mdeath)
 {
-    auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
 
     // 浣腸の基本パラメータ（プレイヤーの体重や筋力に依存）
@@ -745,7 +745,7 @@ void do_cmd_enema(CreatureEntity &creature)
     }
 
     const auto m_idx = grid.m_idx;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
 
     auto m_name = monster_desc(creature, monster, 0);
 
@@ -782,7 +782,7 @@ void do_cmd_enema(CreatureEntity &creature)
     if (fear && monster.get_monster_profile().ml && !mdeath) {
         // 1/20の確率で恐怖せず狂乱状態になる
         if (one_in_(20)) {
-            auto &current_monster = floor.m_list[m_idx];
+            auto &current_monster = floor.get_monster(m_idx);
             current_monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::FRENZY);
             (void)set_monster_monfear(*creature.current_floor_ptr, m_idx, 0);
             sound(SoundKind::FLEE);

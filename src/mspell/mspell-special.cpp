@@ -32,7 +32,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
@@ -48,7 +47,7 @@
 static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     auto dummy_y = monster.y;
     auto dummy_x = monster.x;
     if (see_monster(creature, m_idx) && monster_near_player(creature, m_idx, 0)) {
@@ -72,8 +71,8 @@ static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(CreatureEntity &creature
                 continue;
             }
 
-            floor.m_list[*summoned_m_idx].hp = separated_hp;
-            floor.m_list[*summoned_m_idx].maxhp = separated_maxhp;
+            floor.get_monster(*summoned_m_idx).hp = separated_hp;
+            floor.get_monster(*summoned_m_idx).maxhp = separated_maxhp;
         }
 
         const auto &m_name = monraces.get_monrace(it_unified->first).name;
@@ -93,7 +92,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(CreatureEntity &creature
         auto unified_hp = 0;
         auto unified_maxhp = 0;
         for (short k = 1; k < floor.m_max; k++) {
-            const auto &monster_separate = floor.m_list[k];
+            const auto &monster_separate = floor.get_monster(k);
             if (!separates.contains(monster_separate.r_idx)) {
                 continue;
             }
@@ -109,8 +108,8 @@ static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(CreatureEntity &creature
         }
 
         if (auto summoned_m_idx = summon_named_creature(creature, 0, dummy_y, dummy_x, unified_unique, MD_NONE)) {
-            floor.m_list[*summoned_m_idx].hp = unified_hp;
-            floor.m_list[*summoned_m_idx].maxhp = unified_maxhp;
+            floor.get_monster(*summoned_m_idx).hp = unified_hp;
+            floor.get_monster(*summoned_m_idx).maxhp = unified_maxhp;
         }
 
         using namespace std::string_view_literals;
@@ -178,8 +177,8 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(CreatureEntity &creature, POSITION
 {
     mspell_cast_msg_simple msg{};
     const auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
-    const auto &monster_target = floor.m_list[t_idx];
+    const auto &monster = floor.get_monster(m_idx);
+    const auto &monster_target = floor.get_monster(t_idx);
     const auto &monrace_target = monster_target.get_monrace();
     bool monster_to_player = (target_type == MONSTER_TO_PLAYER);
     bool monster_to_monster = (target_type == MONSTER_TO_MONSTER);
@@ -238,7 +237,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(CreatureEntity &creature, POSITION
     }
 
     if (monster_to_player && creature.riding) {
-        const auto &m_ref = floor.m_list[creature.riding];
+        const auto &m_ref = floor.get_monster(creature.riding);
         mon_take_hit_mon(creature, creature.riding, dam, &dead, &fear, m_ref.get_died_message(), m_idx);
     }
 
@@ -263,7 +262,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(CreatureEntity &creature, POSITION
 MonsterSpellResult spell_RF6_SPECIAL(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     const auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     const auto r_idx = monster.r_idx;
     if (MonraceList::get_instance().can_unify_separate(r_idx)) {

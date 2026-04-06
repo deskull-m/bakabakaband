@@ -5,6 +5,7 @@
  */
 
 #include "monster/monster-update.h"
+#include "system/creature-entity.h"
 #include "core/disturbance.h"
 #include "core/window-redrawer.h"
 #include "dungeon/dungeon-flag-types.h"
@@ -34,7 +35,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
@@ -78,9 +78,9 @@ bool update_riding_monster(CreatureEntity &creature, turn_flags *turn_flags_ptr,
     }
     auto &player = static_cast<PlayerType &>(creature);
 
-    auto &monster = player.current_floor_ptr->m_list[m_idx];
+    auto &monster = player.current_floor_ptr->get_monster(m_idx);
     auto &grid = player.current_floor_ptr->grid_array[ny][nx];
-    CreatureEntity *y_ptr = &player.current_floor_ptr->m_list[grid.m_idx];
+    CreatureEntity *y_ptr = &player.current_floor_ptr->get_monster(grid.m_idx);
     if (turn_flags_ptr->is_riding_mon) {
         return move_player_effect(player, ny, nx, MPE_DONT_PICKUP);
     }
@@ -183,7 +183,7 @@ static um_type *initialize_um_type(CreatureEntity &creature, um_type *um_ptr, MO
 {
     auto &player = static_cast<PlayerType &>(creature);
     auto &floor = *creature.current_floor_ptr;
-    um_ptr->m_ptr = &floor.m_list[m_idx];
+    um_ptr->m_ptr = &floor.get_monster(m_idx);
     um_ptr->do_disturb = disturb_move;
     um_ptr->fy = um_ptr->m_ptr->y;
     um_ptr->fx = um_ptr->m_ptr->x;
@@ -638,7 +638,7 @@ void update_monsters(CreatureEntity &creature, bool full)
 {
     const auto &floor = *creature.current_floor_ptr;
     for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-        const auto &monster = floor.m_list[i];
+        const auto &monster = floor.get_monster(i);
         if (!monster.is_valid()) {
             continue;
         }
@@ -655,7 +655,7 @@ void update_monsters(CreatureEntity &creature, bool full)
 void update_smart_learn(CreatureEntity &creature, MONSTER_IDX m_idx, int what)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     if (!smart_learn || (monrace.behavior_flags.has(MonsterBehaviorType::STUPID)) || ((monrace.behavior_flags.has_not(MonsterBehaviorType::SMART)) && one_in_(2))) {
         return;

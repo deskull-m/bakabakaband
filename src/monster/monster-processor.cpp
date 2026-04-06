@@ -13,6 +13,7 @@
  */
 
 #include "monster/monster-processor.h"
+#include "system/creature-entity.h"
 #include "avatar/avatar.h"
 #include "cmd-io/cmd-dump.h"
 #include "core/disturbance.h"
@@ -75,7 +76,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
@@ -140,7 +140,7 @@ constexpr auto STALKER_DISTANCE_THRESHOLD = 20; //!< モンスターが背後に
 void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     turn_flags tmp_flags;
     turn_flags *turn_flags_ptr = init_turn_flags(monster.is_riding(), &tmp_flags);
     turn_flags_ptr->see_m = is_seen(player, monster);
@@ -320,7 +320,7 @@ bool process_stealth(CreatureEntity &creature, MONSTER_IDX m_idx)
         return true;
     }
 
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     int tmp = player.level * 6 + (player.skill_stl + 10) * 4;
     if (player.monlite) {
@@ -347,7 +347,7 @@ bool process_stealth(CreatureEntity &creature, MONSTER_IDX m_idx)
 void decide_drop_from_monster(CreatureEntity &creature, MONSTER_IDX m_idx, bool is_riding_mon)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     if (!is_riding_mon || monrace.misc_flags.has(MonsterMiscType::RIDING)) {
         return;
@@ -357,7 +357,7 @@ void decide_drop_from_monster(CreatureEntity &creature, MONSTER_IDX m_idx, bool 
 #ifdef JP
         msg_print("地面に落とされた。");
 #else
-        const auto m_name = monster_desc(creature, creature.current_floor_ptr->m_list[player.riding], 0);
+        const auto m_name = monster_desc(creature, creature.current_floor_ptr->get_monster(player.riding), 0);
         msg_format("You have fallen from %s.", m_name.data());
 #endif
     }
@@ -374,7 +374,7 @@ bool vanish_summoned_children(CreatureEntity &creature, MONSTER_IDX m_idx, bool 
 {
     auto &player = static_cast<PlayerType &>(creature);
     const auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
 
     if (!monster.has_parent()) {
@@ -382,7 +382,7 @@ bool vanish_summoned_children(CreatureEntity &creature, MONSTER_IDX m_idx, bool 
     }
 
     // parent_m_idxが自分自身を指している場合は召喚主は消滅している
-    if (monster.get_monster_profile().parent_m_idx != m_idx && floor.m_list[monster.get_monster_profile().parent_m_idx].is_valid()) {
+    if (monster.get_monster_profile().parent_m_idx != m_idx && floor.get_monster(monster.get_monster_profile().parent_m_idx).is_valid()) {
         return false;
     }
 
@@ -421,7 +421,7 @@ bool vanish_summoned_children(CreatureEntity &creature, MONSTER_IDX m_idx, bool 
  */
 bool awake_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     auto &monrace = monster.get_monrace();
     if (!monster.is_asleep()) {
         return true;
@@ -457,7 +457,7 @@ bool awake_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
 void process_angar(CreatureEntity &creature, MONSTER_IDX m_idx, bool see_m)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     auto gets_angry = monster.is_friendly() && has_aggravate(creature);
     const auto should_aggravate = monster.is_pet();
@@ -504,7 +504,7 @@ void process_angar(CreatureEntity &creature, MONSTER_IDX m_idx, bool see_m)
 bool explode_grenade(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     if (monster.r_idx != MonraceId::GRENADE) {
         return false;
     }
@@ -522,7 +522,7 @@ bool explode_grenade(CreatureEntity &creature, MONSTER_IDX m_idx)
 void process_special(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     auto &monrace = monster.get_monrace();
     auto can_do_special = monrace.ability_flags.has(MonsterAbilityType::SPECIAL);
     can_do_special &= monster.r_idx == MonraceId::OHMU;
@@ -556,7 +556,7 @@ void process_special(CreatureEntity &creature, MONSTER_IDX m_idx)
 
     for (int k = 0; k < A_MAX; k++) {
         if (auto summoned_m_idx = summon_specific(creature, monster.y, monster.x, rlev, SUMMON_MOLD, (PM_ALLOW_GROUP | p_mode), m_idx)) {
-            if (creature.current_floor_ptr->m_list[*summoned_m_idx].get_monster_profile().ml) {
+            if (creature.current_floor_ptr->get_monster(*summoned_m_idx).get_monster_profile().ml) {
                 count++;
             }
         }
@@ -579,7 +579,7 @@ bool decide_monster_multiplication(CreatureEntity &creature, MONSTER_IDX m_idx, 
 {
     auto &player = static_cast<PlayerType &>(creature);
     const auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     auto &monrace = monster.get_monrace();
     if (monrace.misc_flags.has_not(MonsterMiscType::MULTIPLY) || (floor.num_repro >= MAX_REPRODUCTION)) {
         return false;
@@ -606,10 +606,10 @@ bool decide_monster_multiplication(CreatureEntity &creature, MONSTER_IDX m_idx, 
     constexpr auto chance_reproduction = 8;
     if ((k < 4) && (!k || !randint0(k * chance_reproduction))) {
         if (auto multiplied_m_idx = multiply_monster(player, m_idx, monrace.idx, false, (monster.is_pet() ? PM_FORCE_PET : 0))) {
-            if (creature.current_floor_ptr->m_list[*multiplied_m_idx].get_monster_profile().ml && is_original_ap_and_seen(creature, monster)) {
+            if (creature.current_floor_ptr->get_monster(*multiplied_m_idx).get_monster_profile().ml && is_original_ap_and_seen(creature, monster)) {
                 monrace.r_misc_flags.set(MonsterMiscType::MULTIPLY);
             }
-            if (floor.m_list[*multiplied_m_idx].get_monster_profile().ml && is_original_ap_and_seen(creature, monster)) {
+            if (floor.get_monster(*multiplied_m_idx).get_monster_profile().ml && is_original_ap_and_seen(creature, monster)) {
                 monrace.r_misc_flags.set(MonsterMiscType::MULTIPLY);
             }
             return true;
@@ -623,7 +623,7 @@ bool decide_monster_multiplication(CreatureEntity &creature, MONSTER_IDX m_idx, 
  */
 void process_monster_spawn_item(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    CreatureEntity *m_ptr = &creature.current_floor_ptr->m_list[m_idx];
+    CreatureEntity *m_ptr = &creature.current_floor_ptr->get_monster(m_idx);
     MonraceDefinition &monrace = MonraceList::get_instance().get_monrace(m_ptr->r_idx);
     for (const auto &spawn_info : monrace.spawn_items) {
         auto num = std::get<0>(spawn_info);
@@ -644,7 +644,7 @@ void process_monster_spawn_item(CreatureEntity &creature, MONSTER_IDX m_idx)
  */
 void process_monster_spawn_zanki(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    CreatureEntity *m_ptr = &creature.current_floor_ptr->m_list[m_idx];
+    CreatureEntity *m_ptr = &creature.current_floor_ptr->get_monster(m_idx);
     MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
     if (r_ptr->level < 30 || !r_ptr->kind_flags.has(MonsterKindType::UNIQUE) || r_ptr->r_misc_flags.has(MonsterMiscType::EMPTY_MIND)) {
         return;
@@ -668,7 +668,7 @@ void process_monster_spawn_zanki(CreatureEntity &creature, MONSTER_IDX m_idx)
  */
 void process_monster_change_feat(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    auto *m_ptr = &creature.current_floor_ptr->m_list[m_idx];
+    auto *m_ptr = &creature.current_floor_ptr->get_monster(m_idx);
     auto *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
     for (const auto &spawn_info : r_ptr->change_feats) {
         auto num = std::get<0>(spawn_info);
@@ -691,7 +691,7 @@ void process_monster_change_feat(CreatureEntity &creature, MONSTER_IDX m_idx)
 bool process_monster_spawn_monster(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION oy, POSITION ox)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    CreatureEntity *m_ptr = &creature.current_floor_ptr->m_list[m_idx];
+    CreatureEntity *m_ptr = &creature.current_floor_ptr->get_monster(m_idx);
     MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
     if ((r_ptr->spawn_monsters.size() == 0) || (creature.current_floor_ptr->num_repro >= MAX_REPRODUCTION)) {
         return false;
@@ -726,7 +726,7 @@ bool process_monster_spawn_monster(CreatureEntity &creature, MONSTER_IDX m_idx, 
         auto idx = std::get<2>(spawn_info);
         if (randint1(deno) <= num) {
             if (multiply_monster(player, m_idx, idx, false, (m_ptr->is_pet() ? PM_FORCE_PET : 0))) {
-                auto &monster = creature.current_floor_ptr->m_list[m_idx];
+                auto &monster = creature.current_floor_ptr->get_monster(m_idx);
                 if (monster.get_monster_profile().ml && is_original_ap_and_seen(creature, *m_ptr)) {
                     r_ptr->misc_flags.set(MonsterMiscType::MULTIPLY);
                 }
@@ -749,7 +749,7 @@ bool cast_spell(CreatureEntity &creature, MONSTER_IDX m_idx, bool aware)
 {
     auto &player = static_cast<PlayerType &>(creature);
     const auto &floor = *creature.current_floor_ptr;
-    const auto &monster_from = floor.m_list[m_idx];
+    const auto &monster_from = floor.get_monster(m_idx);
     const auto &monrace = monster_from.get_monrace();
 
     // 狂乱状態のモンスターは魔法を使わない
@@ -765,7 +765,7 @@ bool cast_spell(CreatureEntity &creature, MONSTER_IDX m_idx, bool aware)
     if (monster_from.get_target_position().y) {
         const auto pos_to = monster_from.get_target_position();
         const auto t_m_idx = floor.get_grid(pos_to).m_idx;
-        const auto &monster_to = floor.m_list[t_m_idx];
+        const auto &monster_to = floor.get_monster(t_m_idx);
         const auto pos_from = monster_from.get_position();
         const auto is_projectable = projectable(floor, pos_from, pos_to);
         if (t_m_idx && monster_from.is_hostile_to_melee(monster_to) && is_projectable) {
@@ -797,7 +797,7 @@ bool cast_spell(CreatureEntity &creature, MONSTER_IDX m_idx, bool aware)
 bool process_monster_fear(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx)
 {
     const auto &baseitems = BaseitemList::get_instance();
-    auto *m_ptr = &creature.current_floor_ptr->m_list[m_idx];
+    auto *m_ptr = &creature.current_floor_ptr->get_monster(m_idx);
     const auto m_name = monster_desc(creature, *m_ptr, 0);
     const auto &monrace = m_ptr->get_monrace();
 
@@ -821,7 +821,7 @@ bool process_monster_fear(CreatureEntity &creature, turn_flags *turn_flags_ptr, 
         m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::VOMITED);
     }
 
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     bool is_battle_determined = !turn_flags_ptr->do_turn && !turn_flags_ptr->do_move && monster.is_fearful() && turn_flags_ptr->aware;
     if (!is_battle_determined) {
         return false;
@@ -896,13 +896,13 @@ void sweep_monster_process(CreatureEntity &creature)
     // 先に現在存在するモンスターをリストアップしておく
     std::vector<MONSTER_IDX> valid_m_idx_list;
     for (MONSTER_IDX m_idx = floor.m_max - 1; m_idx >= 1; m_idx--) {
-        if (floor.m_list[m_idx].is_valid()) {
+        if (floor.get_monster(m_idx).is_valid()) {
             valid_m_idx_list.push_back(m_idx);
         }
     }
 
     for (const auto m_idx : valid_m_idx_list) {
-        auto &monster = floor.m_list[m_idx];
+        auto &monster = floor.get_monster(m_idx);
 
         if (player.leaving) {
             return;
@@ -1027,7 +1027,7 @@ bool decide_process_continue(CreatureEntity &creature, CreatureEntity &monster)
 bool process_stalking(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
 
     // モンスターが背後に忍び寄るフラグを持っていないなら何もしない

@@ -5,6 +5,7 @@
  */
 
 #include "object-enchant/weapon/melee-weapon-enchanter.h"
+#include "system/creature-entity.h"
 #include "artifact/random-art-generator.h"
 #include "system/item-entity.h"
 

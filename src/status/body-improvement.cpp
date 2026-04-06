@@ -1,4 +1,5 @@
 #include "status/body-improvement.h"
+#include "system/creature-entity.h"
 #include "action/travel-execution.h"
 #include "avatar/avatar.h"
 #include "core/disturbance.h"

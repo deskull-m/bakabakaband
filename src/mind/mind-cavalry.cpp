@@ -5,6 +5,7 @@
  */
 
 #include "mind/mind-cavalry.h"
+#include "system/creature-entity.h"
 #include "cmd-action/cmd-pet.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-info.h"
@@ -15,7 +16,6 @@
 #include "system/angband-system.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
@@ -35,7 +35,7 @@ bool rodeo(CreatureEntity &creature)
         return true;
     }
 
-    auto &monster = creature.current_floor_ptr->m_list[creature.riding];
+    auto &monster = creature.current_floor_ptr->get_monster(creature.riding);
     const auto &monrace = monster.get_monrace();
     const auto m_name = monster_desc(creature, monster, 0);
     msg_format(_("%sに乗った。", "You ride on %s."), m_name.data());

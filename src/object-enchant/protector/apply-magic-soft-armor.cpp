@@ -5,6 +5,7 @@
  */
 
 #include "object-enchant/protector/apply-magic-soft-armor.h"
+#include "system/creature-entity.h"
 #include "object-enchant/object-boost.h"
 #include "object/object-kind-hook.h"
 #include "object/tval-types.h"

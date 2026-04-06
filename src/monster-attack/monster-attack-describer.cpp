@@ -5,6 +5,7 @@
  */
 
 #include "monster-attack/monster-attack-describer.h"
+#include "system/creature-entity.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
 #include "monster-attack/insults-moans.h"
@@ -12,7 +13,6 @@
 #include "monster-attack/monster-attack-table.h"
 #include "system/angband.h"
 #include "system/enums/monrace/monrace-id.h"
-#include "system/monster-entity.h"
 
 static void show_jaian_song(MonsterAttackPlayer *monap_ptr)
 {

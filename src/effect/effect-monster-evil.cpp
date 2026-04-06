@@ -1,10 +1,10 @@
 #include "effect/effect-monster-evil.h"
+#include "system/creature-entity.h"
 #include "effect/effect-monster-util.h"
 #include "monster-race/monster-race-hook.h"
 #include "monster-race/race-flags-resistance.h"
 #include "monster/monster-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 
 static bool effect_monster_away_resist(CreatureEntity &creature, EffectMonster *em_ptr)
 {

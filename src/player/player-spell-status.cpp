@@ -1,4 +1,5 @@
 #include "player/player-spell-status.h"
+#include "system/creature-entity.h"
 #include "player-base/player-class.h"
 #include "util/bit-flags-calculator.h"
 

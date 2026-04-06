@@ -6,6 +6,7 @@
  */
 
 #include "view/status-first-page.h"
+#include "system/creature-entity.h"
 #include "artifact/fixed-art-types.h"
 #include "combat/attack-power-table.h"
 #include "combat/shoot.h"

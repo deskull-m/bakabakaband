@@ -1,4 +1,5 @@
 #include "hpmp/hp-mp-regenerator.h"
+#include "system/creature-entity.h"
 #include "cmd-item/cmd-magiceat.h"
 #include "core/window-redrawer.h"
 #include "inventory/inventory-slot-types.h"
@@ -13,7 +14,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
@@ -176,7 +176,7 @@ void regenerate_monsters(CreatureEntity &creature)
     auto &tracker = HealthBarTracker::get_instance();
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     for (short i = 1; i < creature.current_floor_ptr->m_max; i++) {
-        auto &monster = creature.current_floor_ptr->m_list[i];
+        auto &monster = creature.current_floor_ptr->get_monster(i);
         const auto &monrace = monster.get_monrace();
         if (!monster.is_valid()) {
             continue;

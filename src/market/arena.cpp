@@ -5,6 +5,7 @@
  */
 
 #include "market/arena.h"
+#include "system/creature-entity.h"
 #include "core/asking-player.h"
 #include "core/show-file.h"
 #include "core/stuff-handler.h"

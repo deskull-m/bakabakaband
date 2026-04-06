@@ -1,4 +1,5 @@
 #include "cmd-io/cmd-knowledge.h"
+#include "system/creature-entity.h"
 #include "cmd-visual/cmd-draw.h"
 #include "game-option/birth-options.h"
 #include "io/input-key-acceptor.h"

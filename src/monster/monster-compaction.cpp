@@ -1,4 +1,5 @@
 #include "monster/monster-compaction.h"
+#include "system/monster-entity.h"
 #include "core/stuff-handler.h"
 #include "game-option/play-record-options.h"
 #include "io/write-diary.h"
@@ -11,7 +12,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "target/target-checker.h"
 #include "tracking/health-bar-tracker.h"
 #include "view/display-messages.h"
@@ -30,7 +30,7 @@ static void compact_monsters_aux(CreatureEntity &creature, MONSTER_IDX i1, MONST
     }
 
     auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[i1];
+    const auto &monster = floor.get_monster(i1);
 
     const auto y = monster.y;
     const auto x = monster.x;
@@ -65,7 +65,7 @@ static void compact_monsters_aux(CreatureEntity &creature, MONSTER_IDX i1, MONST
 
     if (monster.is_pet()) {
         for (int i = 1; i < floor.m_max; i++) {
-            CreatureEntity *m2_ptr = &floor.m_list[i];
+            CreatureEntity *m2_ptr = &floor.get_monster(i);
 
             if (m2_ptr->get_monster_profile().parent_m_idx == i1) {
                 m2_ptr->get_monster_profile().parent_m_idx = i2;
@@ -73,7 +73,7 @@ static void compact_monsters_aux(CreatureEntity &creature, MONSTER_IDX i1, MONST
         }
     }
 
-    floor.m_list[i2] = std::exchange(floor.m_list[i1], {});
+    static_cast<MonsterEntity &>(floor.get_monster(i2)) = std::exchange(static_cast<MonsterEntity &>(floor.get_monster(i1)), {});
 
     for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
         const auto index = floor.get_mproc_index(i1, mte);
@@ -109,7 +109,7 @@ void compact_monsters(CreatureEntity &creature, int size)
         int cur_lev = 5 * cnt;
         int cur_dis = 5 * (20 - cnt);
         for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-            const auto &monster = floor.m_list[i];
+            const auto &monster = floor.get_monster(i);
             const auto &monrace = monster.get_monrace();
             if (!monster.is_valid()) {
                 continue;
@@ -149,7 +149,7 @@ void compact_monsters(CreatureEntity &creature, int size)
 
     /* Excise dead monsters (backwards!) */
     for (MONSTER_IDX i = floor.m_max - 1; i >= 1; i--) {
-        const auto &monster = floor.m_list[i];
+        const auto &monster = floor.get_monster(i);
         if (monster.is_valid()) {
             continue;
         }

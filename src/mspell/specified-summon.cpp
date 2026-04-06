@@ -1,4 +1,6 @@
 #include "mspell/specified-summon.h"
+#include "system/creature-entity.h"
+#include "system/monster-entity.h"
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
 #include "floor/floor-util.h"
@@ -17,7 +19,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"
 

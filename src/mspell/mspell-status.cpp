@@ -6,6 +6,7 @@
  */
 
 #include "mspell/mspell-status.h"
+#include "system/creature-entity.h"
 #include "blue-magic/blue-magic-checker.h"
 #include "core/disturbance.h"
 #include "effect/attribute-types.h"
@@ -29,7 +30,6 @@
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "view/display-messages.h"
@@ -171,7 +171,7 @@ MonsterSpellResult spell_RF5_DRAIN_MANA(CreatureEntity &creature, POSITION y, PO
  */
 MonsterSpellResult spell_RF5_MIND_BLAST(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     bool seen = (!creature.is_blind() && monster.get_monster_profile().ml);
     const auto m_name = monster_name(creature, m_idx);
     const auto t_name = monster_name(creature, t_idx);
@@ -209,7 +209,7 @@ MonsterSpellResult spell_RF5_MIND_BLAST(CreatureEntity &creature, POSITION y, PO
  */
 MonsterSpellResult spell_RF5_BRAIN_SMASH(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     bool seen = (!creature.is_blind() && monster.get_monster_profile().ml);
     const auto m_name = monster_name(creature, m_idx);
     const auto t_name = monster_name(creature, t_idx);
@@ -248,7 +248,7 @@ MonsterSpellResult spell_RF5_SCARE(MONSTER_IDX m_idx, CreatureEntity &creature, 
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
     const auto &floor = *creature.current_floor_ptr;
-    const auto &monster_target = floor.m_list[t_idx];
+    const auto &monster_target = floor.get_monster(t_idx);
     const auto &monrace_target = monster_target.get_monrace();
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool resist, saving_throw;
@@ -305,7 +305,7 @@ MonsterSpellResult spell_RF5_BLIND(MONSTER_IDX m_idx, CreatureEntity &creature, 
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
     const auto &floor = *creature.current_floor_ptr;
-    const auto &monster_target = floor.m_list[t_idx];
+    const auto &monster_target = floor.get_monster(t_idx);
     const auto &monrace_target = monster_target.get_monrace();
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool resist, saving_throw;
@@ -370,7 +370,7 @@ MonsterSpellResult spell_RF5_CONF(MONSTER_IDX m_idx, CreatureEntity &creature, M
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
     const auto &floor = *creature.current_floor_ptr;
-    const auto &monster_target = floor.m_list[t_idx];
+    const auto &monster_target = floor.get_monster(t_idx);
     const auto &monrace_target = monster_target.get_monrace();
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool resist, saving_throw;
@@ -428,7 +428,7 @@ MonsterSpellResult spell_RF5_HOLD(MONSTER_IDX m_idx, CreatureEntity &creature, M
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
     const auto &floor = *creature.current_floor_ptr;
-    const auto &monster_target = floor.m_list[t_idx];
+    const auto &monster_target = floor.get_monster(t_idx);
     const auto &monrace_target = monster_target.get_monrace();
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool resist, saving_throw;
@@ -482,7 +482,7 @@ MonsterSpellResult spell_RF5_HOLD(MONSTER_IDX m_idx, CreatureEntity &creature, M
 MonsterSpellResult spell_RF6_HASTE(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     bool see_m = see_monster(creature, m_idx);
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     const auto m_name = monster_name(creature, m_idx);
     const auto m_poss = monster_desc(creature, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
 
@@ -516,7 +516,7 @@ MonsterSpellResult spell_RF5_SLOW(MONSTER_IDX m_idx, CreatureEntity &creature, M
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
     const auto &floor = *creature.current_floor_ptr;
-    const auto &monster_target = floor.m_list[t_idx];
+    const auto &monster_target = floor.get_monster(t_idx);
     const auto &monrace_target = monster_target.get_monrace();
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool resist, saving_throw;
@@ -582,7 +582,7 @@ MonsterSpellResult spell_RF6_HEAL(CreatureEntity &creature, MONSTER_IDX m_idx, M
 
     mspell_cast_msg msg;
     auto &floor = *creature.current_floor_ptr;
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     DEPTH rlev = monster_level_idx(floor, m_idx);
     const auto is_blind = creature.is_blind();
     const auto seen = (!is_blind && monster.get_monster_profile().ml);
@@ -642,7 +642,7 @@ MonsterSpellResult spell_RF6_HEAL(CreatureEntity &creature, MONSTER_IDX m_idx, M
  */
 MonsterSpellResult spell_RF6_INVULNER(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     bool seen = (!creature.is_blind() && monster.get_monster_profile().ml);
     mspell_cast_msg msg(_("%s^が何かを力強くつぶやいた。", "%s^ mumbles powerfully."),
         _("%s^が何かを力強くつぶやいた。", "%s^ mumbles powerfully."), _("%sは無傷の球の呪文を唱えた。", "%s^ casts a Globe of Invulnerability."),

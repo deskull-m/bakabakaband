@@ -1,4 +1,5 @@
 #include "view/display-messages.h"
+#include "system/creature-entity.h"
 #include "core/window-redrawer.h"
 #include "game-option/cheat-options.h"
 #include "game-option/input-options.h"

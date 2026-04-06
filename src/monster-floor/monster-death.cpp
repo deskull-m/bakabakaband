@@ -1,4 +1,5 @@
 #include "monster-floor/monster-death.h"
+#include "system/creature-entity.h"
 #include "alliance/alliance.h"
 #include "artifact/fixed-art-generator.h"
 #include "artifact/fixed-art-types.h"
@@ -43,7 +44,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/services/baseitem-monrace-service.h"
 #include "system/system-variables.h"

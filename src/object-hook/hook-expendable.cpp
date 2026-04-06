@@ -1,4 +1,5 @@
 #include "object-hook/hook-expendable.h"
+#include "system/creature-entity.h"
 #include "artifact/fixed-art-types.h"
 #include "core/window-redrawer.h"
 #include "object-enchant/item-feeling.h"
