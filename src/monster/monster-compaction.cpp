@@ -1,5 +1,4 @@
 #include "monster/monster-compaction.h"
-#include "system/monster-entity.h"
 #include "core/stuff-handler.h"
 #include "game-option/play-record-options.h"
 #include "io/write-diary.h"
@@ -73,7 +72,7 @@ static void compact_monsters_aux(CreatureEntity &creature, MONSTER_IDX i1, MONST
         }
     }
 
-    static_cast<MonsterEntity &>(floor.get_monster(i2)) = std::exchange(static_cast<MonsterEntity &>(floor.get_monster(i1)), {});
+    floor.m_list[i2] = std::exchange(floor.m_list[i1], {});
 
     for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
         const auto index = floor.get_mproc_index(i1, mte);
