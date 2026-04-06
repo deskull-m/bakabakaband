@@ -31,13 +31,13 @@
 #include "player/player-move.h"
 #include "player/player-status-flags.h"
 #include "player/player-status.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
@@ -141,7 +141,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
         p_can_enter = false;
     }
 
-    const auto &monster = floor.m_list[grid.m_idx];
+    const auto &monster = floor.get_monster(grid.m_idx);
 
     auto &terrain = grid.get_terrain();
     auto p_can_kill_walls = has_kill_wall(creature);
@@ -188,7 +188,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
         }
     }
 
-    const auto &riding_monster = floor.m_list[player.riding];
+    const auto &riding_monster = floor.get_monster(player.riding);
     const auto &riding_monrace = riding_monster.get_monrace();
     PlayerEnergy energy(creature);
     if (can_move && player.riding) {

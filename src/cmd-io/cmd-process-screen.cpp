@@ -13,6 +13,7 @@
 #include "io/files-util.h"
 #include "io/input-key-acceptor.h"
 #include "system/angband-exceptions.h"
+#include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"

@@ -6,6 +6,7 @@
 #include "market/building-actions-table.h"
 #include "market/building-util.h"
 #include "market/poker.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"

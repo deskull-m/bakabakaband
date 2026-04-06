@@ -48,7 +48,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
@@ -78,7 +77,7 @@ void do_cmd_pet_dismiss(CreatureEntity &creature)
     const auto &floor = *creature.current_floor_ptr;
     std::vector<short> pet_index;
     for (short pet_indice = floor.m_max - 1; pet_indice >= 1; pet_indice--) {
-        const auto &monster = floor.m_list[pet_indice];
+        const auto &monster = floor.get_monster(pet_indice);
         if (monster.is_pet()) {
             pet_index.push_back(pet_indice);
         }
@@ -95,7 +94,7 @@ void do_cmd_pet_dismiss(CreatureEntity &creature)
     const int num_pet_index = std::ssize(pet_index);
     for (auto i = 0; i < num_pet_index; i++) {
         const auto pet_ctr = pet_index[i];
-        const auto &monster = floor.m_list[pet_ctr];
+        const auto &monster = floor.get_monster(pet_ctr);
         auto delete_this = false;
         const auto should_ask = (pet_ctr == riding_index) || monster.is_named();
         const auto friend_name = monster_desc(creature, monster, MD_ASSUME_VISIBLE);
@@ -227,7 +226,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
             return false;
         }
 
-        const auto &monster = player.current_floor_ptr->m_list[grid.m_idx];
+        const auto &monster = player.current_floor_ptr->get_monster(grid.m_idx);
 
         if (!grid.has_monster() || !monster.get_monster_profile().ml) {
             msg_print(_("その場所にはモンスターはいません。", "There is no monster here."));
@@ -321,7 +320,7 @@ static void do_name_pet(CreatureEntity &creature)
         return;
     }
 
-    auto &monster = floor.m_list[grid.m_idx];
+    auto &monster = floor.get_monster(grid.m_idx);
     if (!monster.is_pet()) {
         msg_print(_("そのモンスターはペットではない。", "This monster is not a pet."));
         return;
@@ -385,7 +384,7 @@ void do_cmd_pet(CreatureEntity &creature)
     powers[num++] = PET_DISMISS;
 
     const auto is_hallucinated = creature.effects()->hallucination().is_hallucinated();
-    const auto taget_of_pet = creature.current_floor_ptr->m_list[creature.pet_t_m_idx].get_appearance_monrace().name.data();
+    const auto taget_of_pet = creature.current_floor_ptr->get_monster(creature.pet_t_m_idx).get_appearance_monrace().name.data();
     const auto target_of_pet_appearance = is_hallucinated ? _("何か奇妙な物", "something strange") : taget_of_pet;
     const auto mes = _("ペットのターゲットを指定 (現在：%s)", "specify a target of pet (now:%s)");
     const auto target_name = creature.pet_t_m_idx > 0 ? target_of_pet_appearance : _("指定なし", "nothing");
@@ -674,7 +673,7 @@ void do_cmd_pet(CreatureEntity &creature)
     {
         /* Check pets (backwards) */
         for (pet_ctr = creature.current_floor_ptr->m_max - 1; pet_ctr >= 1; pet_ctr--) {
-            const auto &m_ref = creature.current_floor_ptr->m_list[pet_ctr];
+            const auto &m_ref = creature.current_floor_ptr->get_monster(pet_ctr);
             if (m_ref.is_pet()) {
                 break;
             }
@@ -695,7 +694,7 @@ void do_cmd_pet(CreatureEntity &creature)
             creature.pet_t_m_idx = 0;
         } else {
             const auto &grid = creature.current_floor_ptr->get_grid(*pos);
-            if (grid.has_monster() && (creature.current_floor_ptr->m_list[grid.m_idx].get_monster_profile().ml)) {
+            if (grid.has_monster() && (creature.current_floor_ptr->get_monster(grid.m_idx).get_monster_profile().ml)) {
                 creature.pet_t_m_idx = creature.current_floor_ptr->get_grid(*pos).m_idx;
                 creature.pet_follow_distance = PET_DESTROY_DIST;
             } else {
@@ -747,7 +746,7 @@ void do_cmd_pet(CreatureEntity &creature)
         if (creature.pet_extra_flags & PF_PICKUP_ITEMS) {
             creature.pet_extra_flags &= ~(PF_PICKUP_ITEMS);
             for (pet_ctr = creature.current_floor_ptr->m_max - 1; pet_ctr >= 1; pet_ctr--) {
-                auto &monster = creature.current_floor_ptr->m_list[pet_ctr];
+                auto &monster = creature.current_floor_ptr->get_monster(pet_ctr);
                 if (monster.is_pet()) {
                     monster_drop_carried_objects(creature, monster);
                 }

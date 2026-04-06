@@ -7,6 +7,7 @@
 #include "monster-floor/one-monster-placer.h"
 #include "monster-floor/place-monster-types.h"
 #include "spell/summon-types.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"

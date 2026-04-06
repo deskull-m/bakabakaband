@@ -38,12 +38,12 @@
 #include "status/temporary-resistance.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
@@ -166,7 +166,7 @@ bool rush_attack(CreatureEntity &creature, bool *mdeath)
         }
 
         update_monster(*player_ptr, grid_new.m_idx, true);
-        const auto &monster = floor.m_list[grid_new.m_idx];
+        const auto &monster = floor.get_monster(grid_new.m_idx);
         if (tm_idx != grid_new.m_idx) {
 #ifdef JP
             msg_format("%s%sが立ちふさがっている！", tm_idx > 0 ? "別の" : "", monster.get_monster_profile().ml ? "モンスター" : "何か");

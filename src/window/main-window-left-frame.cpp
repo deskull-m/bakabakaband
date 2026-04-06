@@ -9,7 +9,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
@@ -289,7 +288,7 @@ static void print_health_monster_in_arena_for_wizard(CreatureEntity &creature)
 
         term_putstr(col - 2, row + row_offset, 12, TERM_WHITE, "      /     ");
 
-        auto &monster = creature.current_floor_ptr->m_list[monster_list_index];
+        auto &monster = creature.current_floor_ptr->get_monster(monster_list_index);
         if (monster.is_valid()) {
             const auto &monrace = monster.get_monrace();
             const auto &symbol_config = monrace.symbol_config;
@@ -390,7 +389,7 @@ void print_health(CreatureEntity &creature, bool riding)
         return;
     }
 
-    const auto &monster = creature.current_floor_ptr->m_list[monster_idx.value()];
+    const auto &monster = creature.current_floor_ptr->get_monster(monster_idx.value());
 
     if ((!monster.get_monster_profile().ml) || (creature.effects()->hallucination().is_hallucinated()) || monster.is_dead()) {
         term_putstr(col, row, max_width, TERM_WHITE, "[----------]");

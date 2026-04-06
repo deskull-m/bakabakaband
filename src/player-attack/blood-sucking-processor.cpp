@@ -17,7 +17,6 @@
 #include "spell-realm/spells-hex.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"

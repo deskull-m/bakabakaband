@@ -41,11 +41,11 @@
 #include "racial/racial-android.h"
 #include "specific-object/torch.h"
 #include "system/angband-exceptions.h"
+#include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
@@ -66,7 +66,7 @@ ObjectThrowHitMonster::ObjectThrowHitMonster(CreatureEntity &creature, POSITION 
     }
 
     this->m_idx = grid.m_idx;
-    this->m_ptr = &floor.m_list[grid.m_idx];
+    this->m_ptr = &floor.get_monster(grid.m_idx);
     this->m_name = monster_name(creature, grid.m_idx);
 }
 

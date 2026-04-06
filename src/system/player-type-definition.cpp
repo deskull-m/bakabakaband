@@ -10,10 +10,10 @@
 #include "realm/realm-hex-numbers.h"
 #include "realm/realm-song-numbers.h"
 #include "system/angband-exceptions.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "timed-effect/timed-effects.h"
 #include "world/world.h"
@@ -63,13 +63,13 @@ void PlayerType::plus_incident(INCIDENT incidentID, int num)
 void PlayerType::ride_monster(MONSTER_IDX m_idx)
 {
     if (is_monster(this->riding)) {
-        this->current_floor_ptr->m_list[this->riding].get_monster_profile().mflag2.reset(MonsterConstantFlagType::RIDING);
+        this->current_floor_ptr->get_monster(this->riding).get_monster_profile().mflag2.reset(MonsterConstantFlagType::RIDING);
     }
 
     this->riding = m_idx;
 
     if (is_monster(m_idx)) {
-        this->current_floor_ptr->m_list[m_idx].get_monster_profile().mflag2.set(MonsterConstantFlagType::RIDING);
+        this->current_floor_ptr->get_monster(m_idx).get_monster_profile().mflag2.set(MonsterConstantFlagType::RIDING);
     }
 }
 

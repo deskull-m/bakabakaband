@@ -14,7 +14,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
 #include "timed-effect/timed-effects.h"
@@ -50,7 +49,7 @@ static void cave_temp_room_lite(CreatureEntity &creature, const std::vector<Pos2
         grid.info |= (CAVE_GLOW);
         if (grid.has_monster()) {
             auto chance = 25;
-            const auto &monster = floor.m_list[grid.m_idx];
+            const auto &monster = floor.get_monster(grid.m_idx);
             const auto &monrace = monster.get_monrace();
             update_monster(creature, grid.m_idx, false);
             if (monrace.behavior_flags.has(MonsterBehaviorType::STUPID)) {

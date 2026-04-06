@@ -33,6 +33,7 @@
 #include "status/experience.h"
 #include "status/shape-changer.h"
 #include "sv-definition/sv-weapon-types.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"

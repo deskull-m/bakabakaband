@@ -46,7 +46,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
@@ -460,7 +459,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
     if (creature.muta.has(PlayerMutationType::WARNING) && one_in_(1000)) {
         int danger_amount = 0;
         for (auto m_idx = 0; m_idx < creature.current_floor_ptr->m_max; m_idx++) {
-            const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+            const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
             const auto &monrace = monster.get_monrace();
             if (!monster.is_valid()) {
                 continue;

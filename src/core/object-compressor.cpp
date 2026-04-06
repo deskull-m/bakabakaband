@@ -6,7 +6,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/z-rand.h"
 #include "view/display-messages.h"
@@ -35,7 +34,7 @@ public:
         }
 
         const auto &floor = *creature.current_floor_ptr;
-        const auto pos = item.is_held_by_monster() ? floor.m_list[item.held_m_idx].get_position() : item.get_position();
+        const auto pos = item.is_held_by_monster() ? floor.get_monster(item.held_m_idx).get_position() : item.get_position();
 
         if (Grid::calc_distance(creature.get_position(), pos) < this->distance_threshold) {
             return false;

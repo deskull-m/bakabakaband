@@ -4,12 +4,12 @@
 #include "grid/grid.h"
 #include "monster-race/race-brightness-mask.h"
 #include "monster/monster-status-setter.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
@@ -23,7 +23,7 @@
 void delete_monster_idx(CreatureEntity &creature, short m_idx)
 {
     auto &floor = *creature.current_floor_ptr;
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     auto &monrace = monster.get_monrace();
     const auto m_pos = monster.get_position();
     monster.get_real_monrace().decrement_current_numbers();
@@ -78,13 +78,13 @@ void delete_monster_idx(CreatureEntity &creature, short m_idx)
     // 召喚元のモンスターが消滅した時は、召喚されたモンスターのparent_m_idxが
     // 召喚されたモンスター自身のm_idxを指すようにする
     for (MONSTER_IDX child_m_idx = 1; child_m_idx < floor.m_max; child_m_idx++) {
-        auto &child_monster = floor.m_list[child_m_idx];
+        auto &child_monster = floor.get_monster(child_m_idx);
         if (child_monster.is_valid() && child_monster.get_monster_profile().parent_m_idx == m_idx) {
             child_monster.get_monster_profile().parent_m_idx = child_m_idx;
         }
     }
 
-    monster = {};
+    monster.wipe();
     floor.m_cnt--;
     lite_spot(creature, m_pos);
     if (monrace.brightness_flags.has_any_of(ld_mask)) {
@@ -102,13 +102,13 @@ void wipe_monsters_list(CreatureEntity &creature)
     auto &monraces = MonraceList::get_instance();
     auto &floor = *creature.current_floor_ptr;
     for (auto i = floor.m_max - 1; i >= 1; i--) {
-        auto &monster = floor.m_list[i];
+        auto &monster = floor.get_monster(i);
         if (!monster.is_valid()) {
             continue;
         }
 
         floor.get_grid(monster.get_position()).m_idx = 0;
-        monster = {};
+        monster.wipe();
     }
 
     monraces.reset_current_numbers();

@@ -92,12 +92,12 @@
 #include "status/base-status.h"
 #include "sv-definition/sv-lite-types.h"
 #include "sv-definition/sv-weapon-types.h"
+#include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/services/dungeon-service.h"
 #include "system/terrain/terrain-definition.h"
@@ -1932,7 +1932,7 @@ static int16_t calc_riding_bow_penalty(CreatureEntity &creature)
             penalty = 5;
         }
     } else {
-        penalty = floor.m_list[creature.riding].get_monrace().level - creature.skill_exp[PlayerSkillKindType::RIDING] / 80;
+        penalty = floor.get_monster(creature.riding).get_monrace().level - creature.skill_exp[PlayerSkillKindType::RIDING] / 80;
         penalty += 30;
         if (penalty < 30) {
             penalty = 30;
@@ -2291,7 +2291,7 @@ static short calc_to_hit(CreatureEntity &creature, INVENTORY_IDX slot, bool is_r
                 if (CreatureClass(creature).is_tamer()) {
                     penalty = 5;
                 } else {
-                    penalty = creature.current_floor_ptr->m_list[creature.riding].get_monrace().level - creature.skill_exp[PlayerSkillKindType::RIDING] / 80;
+                    penalty = creature.current_floor_ptr->get_monster(creature.riding).get_monrace().level - creature.skill_exp[PlayerSkillKindType::RIDING] / 80;
                     penalty += 30;
                     if (penalty < 30) {
                         penalty = 30;

@@ -41,12 +41,12 @@
 #include "status/bad-status-setter.h"
 #include "status/body-improvement.h"
 #include "status/buff-setter.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
@@ -167,7 +167,7 @@ bool activate_unique_detection(CreatureEntity &creature)
 {
     msg_print(_("奇妙な場所が頭の中に浮かんだ．．．", "Some strange places show up in your mind. And you see ..."));
     for (int i = creature.current_floor_ptr->m_max - 1; i >= 1; i--) {
-        const auto &monster = creature.current_floor_ptr->m_list[i];
+        const auto &monster = creature.current_floor_ptr->get_monster(i);
         if (!monster.is_valid()) {
             continue;
         }
@@ -467,7 +467,7 @@ bool activate_whistle(CreatureEntity &creature, const ItemEntity &item)
     const auto &floor = *creature.current_floor_ptr;
     std::vector<short> pet_index;
     for (short pet_indice = floor.m_max - 1; pet_indice >= 1; pet_indice--) {
-        const auto &monster = floor.m_list[pet_indice];
+        const auto &monster = floor.get_monster(pet_indice);
         if (monster.is_pet() && !monster.is_riding()) {
             pet_index.push_back(pet_indice);
         }

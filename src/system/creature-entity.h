@@ -23,6 +23,8 @@
 #include <tl/optional.hpp>
 #include <vector>
 
+constexpr int MONSTER_MAXHP = 10000000; //!< モンスターの最大HP
+
 class Direction;
 class FloorType;
 class ItemEntity;

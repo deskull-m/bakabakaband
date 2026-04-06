@@ -9,7 +9,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 
@@ -448,7 +447,7 @@ static int monspell_damage_base(
 int monspell_damage(CreatureEntity &creature, MonsterAbilityType ms_type, MONSTER_IDX m_idx, int TYPE)
 {
     const auto &floor = *creature.get_floor();
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     DEPTH rlev = monster_level_idx(floor, m_idx);
     int hp = (TYPE == DAM_ROLL) ? monster.hp : monster.max_maxhp;

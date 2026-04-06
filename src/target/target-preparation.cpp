@@ -1,5 +1,6 @@
 #include "target/target-preparation.h"
 #include "game-option/input-options.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
@@ -34,7 +35,7 @@
 bool target_able(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     const auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     if (!monster.is_valid()) {
         return false;
     }
@@ -79,7 +80,7 @@ static bool target_set_accept(CreatureEntity &creature, const Pos2D &pos)
 
     const auto &grid = floor.get_grid(pos);
     if (grid.has_monster()) {
-        auto &monster = floor.m_list[grid.m_idx];
+        auto &monster = floor.get_monster(grid.m_idx);
         if (monster.get_monster_profile().ml) {
             return true;
         }
@@ -140,7 +141,7 @@ std::vector<Pos2D> target_set_prepare(CreatureEntity &creature, target_type mode
                 continue;
             }
 
-            const auto &monster = floor.m_list[grid.m_idx];
+            const auto &monster = floor.get_monster(grid.m_idx);
             if (is_killable && !target_pet && monster.is_pet()) {
                 continue;
             }
@@ -180,13 +181,13 @@ void target_sensing_monsters_prepare(CreatureEntity &creature, std::vector<MONST
     }
 
     for (MONSTER_IDX i = 1; i < creature.current_floor_ptr->m_max; i++) {
-        const auto &monster = creature.current_floor_ptr->m_list[i];
+        const auto &monster = creature.current_floor_ptr->get_monster(i);
         if (!monster.is_valid() || !monster.get_monster_profile().ml || monster.is_pet()) {
             continue;
         }
 
         // 感知魔法/スキルやESPで感知していない擬態モンスターはモンスター一覧に表示しない
-        if (monster.is_mimicry() && monster.get_monster_profile().mflag2.has_none_of({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW }) && monster.get_monster_profile().mflag.has_not(MonsterTemporaryFlagType::ESP)) {
+        if (static_cast<const MonsterEntity &>(monster).is_mimicry() && monster.get_monster_profile().mflag2.has_none_of({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW }) && monster.get_monster_profile().mflag.has_not(MonsterTemporaryFlagType::ESP)) {
             continue;
         }
 
@@ -194,8 +195,8 @@ void target_sensing_monsters_prepare(CreatureEntity &creature, std::vector<MONST
     }
 
     auto comp_importance = [&floor = *creature.current_floor_ptr](MONSTER_IDX idx1, MONSTER_IDX idx2) {
-        const auto &monster1 = floor.m_list[idx1];
-        const auto &monster2 = floor.m_list[idx2];
+        const auto &monster1 = floor.get_monster(idx1);
+        const auto &monster2 = floor.get_monster(idx2);
         const auto &monrace1 = monster1.get_appearance_monrace();
         const auto &monrace2 = monster2.get_appearance_monrace();
 
@@ -246,7 +247,7 @@ std::vector<MONSTER_IDX> target_pets_prepare(CreatureEntity &creature)
     const auto &floor = *creature.current_floor_ptr;
 
     for (short i = 1; i < floor.m_max; ++i) {
-        const auto &monster = floor.m_list[i];
+        const auto &monster = floor.get_monster(i);
 
         if (monster.is_valid() && monster.is_pet()) {
             pets.push_back(i);
@@ -254,8 +255,8 @@ std::vector<MONSTER_IDX> target_pets_prepare(CreatureEntity &creature)
     }
 
     auto comp_importance = [&floor](MONSTER_IDX idx1, MONSTER_IDX idx2) {
-        const auto &monster1 = floor.m_list[idx1];
-        const auto &monster2 = floor.m_list[idx2];
+        const auto &monster1 = floor.get_monster(idx1);
+        const auto &monster2 = floor.get_monster(idx2);
         const auto &ap_monrace1 = monster1.get_appearance_monrace();
         const auto &ap_monrace2 = monster2.get_appearance_monrace();
 

@@ -53,7 +53,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-checker.h"
@@ -738,7 +737,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
                 sound(SoundKind::SHOOT_HIT);
                 Grid *c_mon_ptr = &floor.grid_array[y][x];
 
-                auto &monster = floor.m_list[c_mon_ptr->m_idx];
+                auto &monster = floor.get_monster(c_mon_ptr->m_idx);
                 auto &monrace = monster.get_monrace();
 
                 /* Check the visibility */
@@ -971,7 +970,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
             *floor.o_list[item_idx] = std::move(fire_item);
 
             /* Carry object */
-            auto &monster = floor.m_list[m_idx];
+            auto &monster = floor.get_monster(m_idx);
             monster.get_monster_profile().hold_o_idx_list.add(floor, item_idx);
         } else if (floor.has_terrain_characteristics(pos_impact, TerrainCharacteristics::PROJECTION)) {
             /* Drop (or break) near that location */

@@ -14,6 +14,7 @@
 #include "player-status/player-energy.h"
 #include "racial/racial-switcher.h"
 #include "racial/racial-util.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"

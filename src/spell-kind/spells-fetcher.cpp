@@ -9,12 +9,12 @@
 #include "monster/monster-status-setter.h"
 #include "monster/monster-update.h"
 #include "monster/monster-util.h"
+#include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
@@ -124,7 +124,7 @@ bool fetch_monster(CreatureEntity &creature)
     if (!is_monster(m_idx)) {
         return false;
     }
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     if (monster.is_riding()) {
         return false;
     }

@@ -52,7 +52,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "timed-effect/timed-effects.h"
@@ -67,7 +66,7 @@
  */
 MonsterAttackPlayer::MonsterAttackPlayer(CreatureEntity &creature, short m_idx)
     : m_idx(m_idx)
-    , m_ptr(&creature.current_floor_ptr->m_list[m_idx])
+    , m_ptr(&creature.current_floor_ptr->get_monster(m_idx))
     , method(RaceBlowMethodType::NONE)
     , effect(RaceBlowEffectType::NONE)
     , do_silly_attack(one_in_(2) && creature.effects()->hallucination().is_hallucinated())

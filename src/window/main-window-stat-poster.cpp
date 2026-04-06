@@ -20,7 +20,6 @@
 #include "status/element-resistance.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/monster-entity.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
@@ -262,7 +261,7 @@ void print_speed(CreatureEntity &creature)
     const auto is_slow = creature.is_decelerated();
     if (speed > 0) {
         if (creature.riding) {
-            const auto &monster = floor.m_list[creature.riding];
+            const auto &monster = floor.get_monster(creature.riding);
             if (monster.is_accelerated() && !monster.is_decelerated()) {
                 attr = TERM_L_BLUE;
             } else if (monster.is_decelerated() && !monster.is_accelerated()) {
@@ -280,7 +279,7 @@ void print_speed(CreatureEntity &creature)
         sprintf(buf, "%s(+%d)", (creature.riding ? _("乗馬", "Ride") : _("加速", "Fast")), speed);
     } else if (speed < 0) {
         if (creature.riding) {
-            const auto &monster = floor.m_list[creature.riding];
+            const auto &monster = floor.get_monster(creature.riding);
             if (monster.is_accelerated() && !monster.is_decelerated()) {
                 attr = TERM_L_BLUE;
             } else if (monster.is_decelerated() && !monster.is_accelerated()) {

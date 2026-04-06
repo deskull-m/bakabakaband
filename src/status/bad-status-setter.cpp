@@ -17,6 +17,7 @@
 #include "status/base-status.h"
 #include "status/buff-setter.h"
 #include "system/angband-exceptions.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "timed-effect/timed-effects.h"

@@ -30,6 +30,7 @@
 #include "spell-realm/spells-song.h"
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-record.h"
 #include "system/enums/dungeon/dungeon-id.h"

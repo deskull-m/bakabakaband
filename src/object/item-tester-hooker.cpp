@@ -5,6 +5,7 @@
  */
 
 #include "object/item-tester-hooker.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "target/target-describer.h"
 

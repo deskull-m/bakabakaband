@@ -11,6 +11,7 @@
 #include "object/object-value.h"
 #include "player-info/equipment-info.h"
 #include "spell-realm/spells-craft.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"

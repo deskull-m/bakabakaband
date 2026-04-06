@@ -13,10 +13,10 @@
 #include "player/player-status-flags.h"
 #include "spell/range-calc.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "target/projection-path-calculator.h"
 
 /*!
@@ -60,7 +60,7 @@ static bool decide_pet_approch_direction(CreatureEntity &creature, const Creatur
 static void decide_enemy_approch_direction(CreatureEntity &creature, MONSTER_IDX m_idx, int start, int plus, POSITION *y, POSITION *x)
 {
     auto &floor = *creature.current_floor_ptr;
-    const auto &monster_from = floor.m_list[m_idx];
+    const auto &monster_from = floor.get_monster(m_idx);
     const auto &monrace = monster_from.get_monrace();
     for (int i = start; ((i < start + floor.m_max) && (i > start - floor.m_max)); i += plus) {
         const auto dummy = (i % floor.m_max);
@@ -69,7 +69,7 @@ static void decide_enemy_approch_direction(CreatureEntity &creature, MONSTER_IDX
         }
 
         const auto t_idx = dummy;
-        const auto &monster_to = floor.m_list[t_idx];
+        const auto &monster_to = floor.get_monster(t_idx);
         if (&monster_to == &monster_from) {
             continue;
         }
@@ -113,15 +113,15 @@ static void decide_enemy_approch_direction(CreatureEntity &creature, MONSTER_IDX
 static tl::optional<MonsterMovementDirectionList> get_enemy_dir(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     const auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
 
     POSITION x = 0, y = 0;
     if (creature.riding_t_m_idx && creature.is_located_at({ monster.y, monster.x })) {
-        y = floor.m_list[creature.riding_t_m_idx].y;
-        x = floor.m_list[creature.riding_t_m_idx].x;
+        y = floor.get_monster(creature.riding_t_m_idx).y;
+        x = floor.get_monster(creature.riding_t_m_idx).x;
     } else if (monster.is_pet() && creature.pet_t_m_idx) {
-        y = floor.m_list[creature.pet_t_m_idx].y;
-        x = floor.m_list[creature.pet_t_m_idx].x;
+        y = floor.get_monster(creature.pet_t_m_idx).y;
+        x = floor.get_monster(creature.pet_t_m_idx).x;
     } else {
         int start;
         int plus = 1;
@@ -191,7 +191,7 @@ static bool random_walk(CreatureEntity &creature, const CreatureEntity &monster)
  */
 static tl::optional<MonsterMovementDirectionList> decide_pet_movement_direction(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     if (!monster.is_pet()) {
         return tl::nullopt;
     }
@@ -229,7 +229,7 @@ static tl::optional<MonsterMovementDirectionList> decide_pet_movement_direction(
  */
 tl::optional<MonsterMovementDirectionList> decide_monster_movement_direction(CreatureEntity &creature, MONSTER_IDX m_idx, bool aware)
 {
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
 
     if (monster.is_confused() || !aware) {

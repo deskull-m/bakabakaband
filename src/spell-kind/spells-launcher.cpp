@@ -2,6 +2,7 @@
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
 #include "floor/geometry.h"
+#include "system/creature-entity.h"
 #include "system/grid-type-definition.h"
 #include "system/player-type-definition.h"
 #include "target/target-checker.h"

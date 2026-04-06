@@ -20,10 +20,10 @@
 #include "player/player-status-table.h"
 #include "player/player-status.h"
 #include "sv-definition/sv-bow-types.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/inner-game-data.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
@@ -201,7 +201,7 @@ static int calc_temporary_speed(CreatureEntity &creature)
             tmp_speed = 99;
         }
     } else {
-        const auto &m_ref = creature.current_floor_ptr->m_list[creature.riding];
+        const auto &m_ref = creature.current_floor_ptr->get_monster(creature.riding);
         if (m_ref.is_accelerated()) {
             tmp_speed += 10;
         }

@@ -3,6 +3,7 @@
 #include "io/files-util.h"
 #include "perception/object-perception.h"
 #include "store/store-util.h"
+#include "system/creature-entity.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/item-entity.h"

@@ -18,9 +18,9 @@
 #include "spell/technic-info-table.h"
 #include "status/action-setter.h"
 #include "system/angband-exceptions.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
@@ -340,7 +340,7 @@ void SpellHex::store_vengeful_damage(int dam)
  */
 bool SpellHex::check_hex_barrier(MONSTER_IDX m_idx, spell_hex_type type) const
 {
-    const auto &monster = this->player.current_floor_ptr->m_list[m_idx];
+    const auto &monster = this->player.current_floor_ptr->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     return this->is_spelling_specific(type) && ((this->player.level * 3 / 2) >= randint1(monrace.level));
 }
@@ -374,7 +374,7 @@ void SpellHex::eyes_on_eyes(MONSTER_IDX m_idx, int dam)
         return;
     }
 
-    const auto &monster = this->player.current_floor_ptr->m_list[m_idx];
+    const auto &monster = this->player.current_floor_ptr->get_monster(m_idx);
     const auto m_name = monster_desc(player, monster, 0);
 #ifdef JP
     msg_format("攻撃が%s自身を傷つけた！", m_name.data());

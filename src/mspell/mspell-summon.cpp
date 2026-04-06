@@ -17,6 +17,7 @@
 #include "spell-kind/spells-launcher.h"
 #include "spell/spells-summon.h"
 #include "spell/summon-types.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
@@ -55,7 +56,7 @@ static void summon_disturb(CreatureEntity &creature, int target_type, bool known
 static BIT_FLAGS monster_u_mode(const FloorType &floor, MONSTER_IDX m_idx)
 {
     BIT_FLAGS u_mode = 0L;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     bool pet = monster.is_pet();
     if (!pet) {
         u_mode |= PM_ALLOW_UNIQUE;
@@ -105,7 +106,7 @@ static void decide_summon_kin_caster(
     CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type, concptr m_name, concptr m_poss, const bool known)
 {
     auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool mon_to_mon = target_type == MONSTER_TO_MONSTER;
     bool mon_to_player = target_type == MONSTER_TO_PLAYER;
@@ -129,8 +130,8 @@ static void decide_summon_kin_caster(
 #ifdef JP
         (void)m_poss;
 #endif
-        _(msg_format("%sが魔法で%sを召喚した。", m_name, monster.get_pronoun_of_summoned_kin().data()),
-            msg_format("%s^ magically summons %s %s.", m_name, m_poss, monster.get_pronoun_of_summoned_kin().data()));
+        _(msg_format("%sが魔法で%sを召喚した。", m_name, monster.get_monrace().get_pronoun_of_summoned_kin().data()),
+            msg_format("%s^ magically summons %s %s.", m_name, m_poss, monster.get_monrace().get_pronoun_of_summoned_kin().data()));
     }
 
     if (mon_to_mon && known && !see_either) {
@@ -152,7 +153,7 @@ static void decide_summon_kin_caster(
 MonsterSpellResult spell_RF6_S_KIN(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     DEPTH rlev = monster_level_idx(floor, m_idx);
     const auto m_name = monster_name(creature, m_idx);
     const auto m_poss = monster_desc(creature, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
@@ -265,7 +266,7 @@ MonsterSpellResult spell_RF6_S_KIN(CreatureEntity &creature, POSITION y, POSITIO
 MonsterSpellResult spell_RF6_S_CYBER(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
@@ -741,7 +742,7 @@ MonsterSpellResult spell_RF6_S_ANGEL(CreatureEntity &creature, POSITION y, POSIT
     monspell_message(creature, m_idx, t_idx, msg, target_type);
     summon_disturb(creature, target_type, known, see_either);
 
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     int num = 1;
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
@@ -927,7 +928,7 @@ MonsterSpellResult spell_RF6_S_DRAGON(CreatureEntity &creature, POSITION y, POSI
 MonsterSpellResult spell_RF6_S_HI_UNDEAD(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
@@ -937,7 +938,7 @@ MonsterSpellResult spell_RF6_S_HI_UNDEAD(CreatureEntity &creature, POSITION y, P
     summon_disturb(creature, target_type, known, see_either);
 
     int count = 0;
-    if (monster.can_ring_boss_call_nazgul() && mon_to_player) {
+    if (static_cast<const MonsterEntity &>(monster).can_ring_boss_call_nazgul() && mon_to_player) {
         count += summon_NAZGUL(creature, y, x, m_idx);
     } else {
         mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
@@ -1142,7 +1143,7 @@ MonsterSpellResult spell_RF6_S_UNIQUE(CreatureEntity &creature, POSITION y, POSI
     monspell_message(creature, m_idx, t_idx, msg, target_type);
     summon_disturb(creature, target_type, known, see_either);
 
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     bool uniques_are_summoned = false;
     int count = 0;
     for (auto k = 0; k < S_NUM_4; k++) {

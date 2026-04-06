@@ -4,6 +4,7 @@
 #include "player-info/mimic-info-table.h"
 #include "player-info/race-types.h"
 #include "player/race-info-table.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "util/enum-converter.h"
 

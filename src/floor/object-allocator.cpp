@@ -7,6 +7,7 @@
 #include "grid/object-placer.h"
 #include "object-enchant/item-apply-magic.h"
 #include "object/object-kind-hook.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"

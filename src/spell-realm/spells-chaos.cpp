@@ -9,10 +9,10 @@
 #include "player/player-damage.h"
 #include "spell-kind/spells-floor.h"
 #include "spell-kind/spells-launcher.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
@@ -142,7 +142,7 @@ bool vanish_dungeon(CreatureEntity &creature)
         auto &grid = floor.get_grid(pos);
         const auto &terrrain = grid.get_terrain();
         grid.info &= ~(CAVE_ROOM | CAVE_ICKY);
-        const auto &monster = floor.m_list[grid.m_idx];
+        const auto &monster = floor.get_monster(grid.m_idx);
         if (grid.has_monster() && monster.is_asleep()) {
             (void)set_monster_csleep(floor, grid.m_idx, 0);
             if (monster.get_monster_profile().ml) {

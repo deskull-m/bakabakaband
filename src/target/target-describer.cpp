@@ -18,6 +18,7 @@
 #include "player-info/race-types.h"
 #include "player/player-status-table.h"
 #include "system/building-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/enums/grid-flow.h"
@@ -27,7 +28,6 @@
 #include "system/floor/town-list.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/system-variables.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
@@ -85,7 +85,7 @@ GridExamination::GridExamination(FloorType &floor, POSITION y, POSITION x, targe
     , info(info)
 {
     this->g_ptr = &floor.grid_array[y][x];
-    this->m_ptr = &floor.m_list[this->g_ptr->m_idx];
+    this->m_ptr = &floor.get_monster(this->g_ptr->m_idx);
     this->next_o_idx = 0;
 }
 
@@ -287,7 +287,7 @@ static bool within_char_util(const short input)
 
 static short describe_grid(CreatureEntity &creature, GridExamination *ge_ptr)
 {
-    if (!ge_ptr->g_ptr->has_monster() || !creature.current_floor_ptr->m_list[ge_ptr->g_ptr->m_idx].get_monster_profile().ml) {
+    if (!ge_ptr->g_ptr->has_monster() || !creature.current_floor_ptr->get_monster(ge_ptr->g_ptr->m_idx).get_monster_profile().ml) {
         return CONTINUOUS_DESCRIPTION;
     }
 

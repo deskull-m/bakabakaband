@@ -16,13 +16,12 @@
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
-#include "system/monster-entity.h"
 #include "view/display-messages.h"
 
 static bool message_fire_ball(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     mspell_cast_msg_blind msg;
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
 
     if (monster.r_idx == MonraceId::ROLENTO) {
         msg.blind = _("%sが何かを投げた。", "%s^ throws something.");

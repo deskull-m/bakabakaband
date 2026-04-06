@@ -1,6 +1,7 @@
 #include "alliance/alliance-khaine.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 
 /*!

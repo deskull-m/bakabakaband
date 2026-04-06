@@ -20,10 +20,10 @@
 #include "monster/monster-status.h"
 #include "player/player-damage.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
@@ -43,7 +43,7 @@
 bool genocide_aux(CreatureEntity &creature, MONSTER_IDX m_idx, int power, bool player_cast, int dam_side, concptr spell_name)
 {
     auto &floor = *creature.current_floor_ptr;
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     auto &monrace = monster.get_monrace();
     if (monster.is_pet() && !player_cast) {
         return false;
@@ -143,7 +143,7 @@ bool symbol_genocide(CreatureEntity &creature, int power, bool player_cast)
 
     auto result = false;
     for (short i = 1; i < floor.m_max; i++) {
-        const auto &monster = floor.m_list[i];
+        const auto &monster = floor.get_monster(i);
         const auto &monrace = monster.get_monrace();
         if (!monster.is_valid() || (monrace.symbol_definition.character != symbol)) {
             continue;
@@ -179,7 +179,7 @@ bool mass_genocide(CreatureEntity &creature, int power, bool player_cast)
 
     bool result = false;
     for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-        const auto &monster = floor.m_list[i];
+        const auto &monster = floor.get_monster(i);
         if (!monster.is_valid()) {
             continue;
         }
@@ -216,7 +216,7 @@ bool mass_genocide_undead(CreatureEntity &creature, int power, bool player_cast)
 
     bool result = false;
     for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-        const auto &monster = floor.m_list[i];
+        const auto &monster = floor.get_monster(i);
         if (!monster.is_valid()) {
             continue;
         }

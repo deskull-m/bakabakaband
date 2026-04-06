@@ -4,12 +4,11 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 
 msr_type::msr_type(CreatureEntity &creature, short m_idx, const EnumClassFlagGroup<MonsterAbilityType> &ability_flags)
     : ability_flags(ability_flags)
 {
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     this->r_ptr = &monster.get_monrace();
 }
 

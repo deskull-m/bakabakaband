@@ -45,9 +45,9 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-key.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
@@ -218,7 +218,7 @@ static bool activate_whistle(CreatureEntity &user, ae_type *ae_ptr)
     const auto &floor = *user.current_floor_ptr;
     std::vector<short> pet_index;
     for (short pet_indice = floor.m_max - 1; pet_indice >= 1; pet_indice--) {
-        const auto &monster = floor.m_list[pet_indice];
+        const auto &monster = floor.get_monster(pet_indice);
         if (monster.is_pet() && (user.riding != pet_indice)) {
             pet_index.push_back(pet_indice);
         }

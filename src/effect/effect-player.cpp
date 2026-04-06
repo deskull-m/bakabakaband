@@ -25,7 +25,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "target/projection-path-calculator.h"
 #include "view/display-messages.h"
 #include <string>
@@ -49,7 +48,7 @@ EffectPlayerType::EffectPlayerType(const FloorType &floor, short src_idx, int da
     , attribute(attribute)
     , flag(flag)
 {
-    this->src_ptr = this->is_monster() ? &floor.m_list[src_idx] : nullptr;
+    this->src_ptr = this->is_monster() ? &floor.get_monster(src_idx) : nullptr;
 }
 
 bool EffectPlayerType::is_player() const
@@ -94,7 +93,7 @@ static bool process_bolt_reflection(CreatureEntity &creature, EffectPlayerType *
     Pos2D pos(0, 0);
     if (ep_ptr->is_monster()) {
         const auto &floor = *creature.current_floor_ptr;
-        const auto &monster = floor.m_list[ep_ptr->src_idx];
+        const auto &monster = floor.get_monster(ep_ptr->src_idx);
         do {
             const Pos2DVec vec(randint1(3) - 1, randint1(3) - 1);
             pos = monster.get_position() + vec;
@@ -156,7 +155,7 @@ static ProcessResult check_continue_player_effect(CreatureEntity &creature, Effe
 static void describe_effect_source(CreatureEntity &creature, EffectPlayerType *ep_ptr, concptr src_name)
 {
     if (ep_ptr->is_monster()) {
-        ep_ptr->m_ptr = &creature.current_floor_ptr->m_list[ep_ptr->src_idx];
+        ep_ptr->m_ptr = &creature.current_floor_ptr->get_monster(ep_ptr->src_idx);
         ep_ptr->rlev = ep_ptr->m_ptr->get_monrace().level >= 1 ? ep_ptr->m_ptr->get_monrace().level : 1;
         ep_ptr->m_name = monster_desc(creature, *ep_ptr->m_ptr, 0);
         ep_ptr->killer = src_name;

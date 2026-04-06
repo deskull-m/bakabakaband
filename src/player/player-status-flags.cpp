@@ -36,11 +36,11 @@
 #include "spell-realm/spells-hex.h"
 #include "spell-realm/spells-song.h"
 #include "sv-definition/sv-weapon-types.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
@@ -514,7 +514,7 @@ bool has_kill_wall(CreatureEntity &creature)
         return false;
     }
 
-    const auto &riding_monster = player.current_floor_ptr->m_list[player.riding];
+    const auto &riding_monster = player.current_floor_ptr->get_monster(player.riding);
     const auto &riding_monrace = riding_monster.get_monrace();
     return riding_monrace.feature_flags.has(MonsterFeatureType::KILL_WALL);
 }
@@ -536,7 +536,7 @@ bool has_pass_wall(CreatureEntity &creature)
         return can_player_pass_wall;
     }
 
-    const auto &monster = player.current_floor_ptr->m_list[player.riding];
+    const auto &monster = player.current_floor_ptr->get_monster(player.riding);
     const auto &monrace = monster.get_monrace();
     return can_player_pass_wall && monrace.feature_flags.has(MonsterFeatureType::PASS_WALL);
 }
@@ -1063,7 +1063,7 @@ BIT_FLAGS has_levitation(CreatureEntity &creature)
         return result;
     }
 
-    const auto &monster = player.current_floor_ptr->m_list[player.riding];
+    const auto &monster = player.current_floor_ptr->get_monster(player.riding);
     const auto &monrace = monster.get_monrace();
     return monrace.feature_flags.has(MonsterFeatureType::CAN_FLY) ? FLAG_CAUSE_RIDING : FLAG_CAUSE_NONE;
 }
@@ -1079,7 +1079,7 @@ bool has_can_swim(CreatureEntity &creature)
     }
     auto &player = static_cast<PlayerType &>(creature);
 
-    const auto &monster = player.current_floor_ptr->m_list[player.riding];
+    const auto &monster = player.current_floor_ptr->get_monster(player.riding);
     const auto &monrace = monster.get_monrace();
     return monrace.feature_flags.has_any_of({ MonsterFeatureType::CAN_SWIM, MonsterFeatureType::AQUATIC });
 }

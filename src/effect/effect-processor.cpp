@@ -24,7 +24,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "target/projection-path-calculator.h"
 #include "timed-effect/timed-effects.h"
@@ -39,7 +38,7 @@ Pos2D decide_source_position(CreatureEntity &creature, MONSTER_IDX src_idx, cons
         return pos_target;
     }
     if (is_monster(src_idx)) {
-        return creature.current_floor_ptr->m_list[src_idx].get_position();
+        return creature.current_floor_ptr->get_monster(src_idx).get_position();
     }
     return creature.get_position();
 }
@@ -242,7 +241,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
 
     const auto p_pos = player.get_position();
     if (flag & PROJECT_KILL) {
-        see_s_msg = is_monster(src_idx) ? is_seen(player, floor.m_list[src_idx])
+        see_s_msg = is_monster(src_idx) ? is_seen(player, floor.get_monster(src_idx))
                                         : (is_player(src_idx) ? true : (player_can_see_bold(player, pos_source.y, pos_source.x) && projectable(floor, p_pos, pos_source)));
     }
 
@@ -274,7 +273,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
         for (const auto &[dist, pos] : positions) {
             const auto &grid = floor.get_grid(pos);
             if (positions.size() <= 1) {
-                const auto &monster = floor.m_list[grid.m_idx];
+                const auto &monster = floor.get_monster(grid.m_idx);
                 auto &monrace = monster.get_monrace();
                 if ((flag & PROJECT_REFLECTABLE) && grid.m_idx && monrace.misc_flags.has(MonsterMiscType::REFLECTING) && (!monster.is_riding() || !(flag & PROJECT_PLAYER)) && (!src_idx || path_n > 1) && !one_in_(10)) {
 
@@ -383,7 +382,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
             const Pos2D pos_project(project_m_y, project_m_x);
             const auto &grid = floor.get_grid(pos_project);
             if (grid.has_monster()) {
-                auto &monster = floor.m_list[grid.m_idx];
+                auto &monster = floor.get_monster(grid.m_idx);
                 if (monster.get_monster_profile().ml) {
                     if (!player.effects()->hallucination().is_hallucinated()) {
                         tracker.set_trackee(monster.ap_r_idx);
@@ -438,7 +437,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
 
             std::string who_name;
             if (is_monster(src_idx)) {
-                who_name = monster_desc(player, floor.m_list[src_idx], MD_WRONGDOER_NAME);
+                who_name = monster_desc(player, floor.get_monster(src_idx), MD_WRONGDOER_NAME);
             }
 
             if (affect_player(src_idx, player, who_name.data(), effective_dist, pos.y, pos.x, dam, typ, flag, fall_off_horse_effect, project)) {

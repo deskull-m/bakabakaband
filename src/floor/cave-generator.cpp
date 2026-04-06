@@ -22,6 +22,7 @@
 #include "room/room-generator.h"
 #include "room/rooms-maze-vault.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-data-definition.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"

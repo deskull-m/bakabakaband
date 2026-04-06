@@ -29,6 +29,7 @@
 #include "status/bad-status-setter.h"
 #include "status/buff-setter.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/floor/floor-info.h"

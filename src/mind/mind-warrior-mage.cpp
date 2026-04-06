@@ -1,6 +1,7 @@
 #include "mind/mind-warrior-mage.h"
 #include "hpmp/hp-mp-processor.h"
 #include "player/player-damage.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"

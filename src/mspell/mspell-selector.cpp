@@ -17,7 +17,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "util/enum-converter.h"
 #include "world/world.h"
 
@@ -324,7 +323,7 @@ MonsterAbilityType choose_attack_spell(CreatureEntity &creature, msa_type *msa_p
     std::vector<MonsterAbilityType> heal;
     std::vector<MonsterAbilityType> dispel;
 
-    const auto &monster = creature.current_floor_ptr->m_list[msa_ptr->m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(msa_ptr->m_idx);
     const auto &monrace = monster.get_monrace();
     if (monrace.behavior_flags.has(MonsterBehaviorType::STUPID)) {
         return rand_choice(msa_ptr->mspells);

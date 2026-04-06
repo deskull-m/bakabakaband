@@ -25,6 +25,7 @@
 #include "player-info/weapon-effect-info.h"
 #include "player/attack-defense-types.h"
 #include "player/player-status-flags.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"

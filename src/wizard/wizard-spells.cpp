@@ -34,11 +34,11 @@
 #include "spell-realm/spells-sorcery.h"
 #include "spell/spells-status.h"
 #include "spell/summon-types.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/grid-selector.h"
 #include "target/target-checker.h"
@@ -128,7 +128,7 @@ void wiz_summon_specific_monster_common(CreatureEntity &creature, MonraceId monr
 
     const auto p_pos = creature.get_position();
     const auto index_to_monster = [&creature](auto index) -> CreatureEntity & {
-        return creature.current_floor_ptr->m_list[index];
+        return creature.current_floor_ptr->get_monster(index);
     };
     auto monster =
         summon_named_creature(creature, 0, p_pos.y, p_pos.x, *summon_monrace_id, mode)

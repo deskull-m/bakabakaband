@@ -4,6 +4,7 @@
 #include "player/player-realm.h"
 #include "racial/racial-util.h"
 #include "realm/realm-types.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 
 void switch_class_racial(CreatureEntity &creature, rc_type *rc_ptr)

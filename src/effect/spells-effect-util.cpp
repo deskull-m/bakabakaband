@@ -4,7 +4,6 @@
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
-#include "system/monster-entity.h"
 #include "view/display-messages.h"
 #include <algorithm>
 
@@ -50,7 +49,7 @@ void FallOffHorseEffect::apply() const
     }
 
     const auto &floor = *this->creature_ptr->current_floor_ptr;
-    const auto m_name = monster_desc(*this->creature_ptr, floor.m_list[creature_ptr->riding], 0);
+    const auto m_name = monster_desc(*this->creature_ptr, floor.get_monster(creature_ptr->riding), 0);
 
     if (this->shake_off_damage > 0) {
         if (process_fall_off_horse(*this->creature_ptr, this->shake_off_damage, false)) {

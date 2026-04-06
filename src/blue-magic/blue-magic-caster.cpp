@@ -32,7 +32,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-checker.h"
@@ -108,7 +107,7 @@ static tl::optional<std::string> exe_blue_teleport_back(CreatureEntity &creature
         return tl::nullopt;
     }
 
-    const auto &monster = floor.m_list[grid.m_idx];
+    const auto &monster = floor.get_monster(grid.m_idx);
     auto &monrace = monster.get_monrace();
     auto m_name = monster_desc(creature, monster, 0);
     if (monrace.resistance_flags.has_not(MonsterResistanceType::RESIST_TELEPORT)) {

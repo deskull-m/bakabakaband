@@ -45,11 +45,11 @@
 #include "spell-kind/spells-world.h"
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
+#include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/grid-selector.h"
@@ -1421,7 +1421,7 @@ static bool is_target_grid_dark(const FloorType &floor, const Pos2D &pos)
             }
 
             const auto d = Grid::calc_distance(pos, pos_neighbor);
-            const auto &monrace = floor.m_list[m_idx].get_monrace();
+            const auto &monrace = floor.get_monster(m_idx).get_monrace();
             if (d <= 1 && monrace.brightness_flags.has_any_of({ MonsterBrightnessType::HAS_LITE_1, MonsterBrightnessType::SELF_LITE_1 })) {
                 return false;
             }

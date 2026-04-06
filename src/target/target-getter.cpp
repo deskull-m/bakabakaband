@@ -8,9 +8,9 @@
 #include "main/sound-of-music.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-status.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "target/target-checker.h"
 #include "target/target-setter.h"
@@ -147,7 +147,7 @@ Direction get_direction(CreatureEntity &creature)
         return dir;
     }
 
-    const auto &monster = creature.current_floor_ptr->m_list[player.riding];
+    const auto &monster = creature.current_floor_ptr->get_monster(player.riding);
     const auto m_name = monster_desc(creature, monster, 0);
     const auto fmt = monster.is_confused()
                          ? _("%sは混乱している。", "%s^ is confused.")
@@ -205,7 +205,7 @@ Direction get_rep_dir(CreatureEntity &creature, bool under)
             dir = rand_choice(Direction::directions_8());
         }
     } else if (player.riding) {
-        const auto &monster = creature.current_floor_ptr->m_list[player.riding];
+        const auto &monster = creature.current_floor_ptr->get_monster(player.riding);
         const auto &monrace = monster.get_monrace();
         if (monster.is_confused()) {
             if (evaluate_percent(75)) {
@@ -222,7 +222,7 @@ Direction get_rep_dir(CreatureEntity &creature, bool under)
         if (is_confused) {
             msg_print(_("あなたは混乱している。", "You are confused."));
         } else {
-            const auto &monster = creature.current_floor_ptr->m_list[player.riding];
+            const auto &monster = creature.current_floor_ptr->get_monster(player.riding);
             const auto m_name = monster_desc(creature, monster, 0);
             if (monster.is_confused()) {
                 msg_format(_("%sは混乱している。", "%s^ is confused."), m_name.data());

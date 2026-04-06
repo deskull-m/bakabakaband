@@ -11,6 +11,7 @@
 #include "main/sound-of-music.h"
 #include "player-status/player-energy.h"
 #include "player/player-move.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/player-type-definition.h"

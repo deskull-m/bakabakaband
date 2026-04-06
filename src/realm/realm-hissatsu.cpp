@@ -42,7 +42,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/grid-selector.h"
 #include "target/projection-path-calculator.h"
@@ -255,7 +254,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
                 auto pos_target = pos;
                 auto pos_origin = pos;
                 const auto m_idx = grid.m_idx;
-                auto &monster = floor.m_list[m_idx];
+                auto &monster = floor.get_monster(m_idx);
                 const auto m_name = monster_desc(creature, monster, 0);
                 const auto p_pos = creature.get_position();
                 auto pos_neighbor = pos;
@@ -432,7 +431,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
                 const auto pos = creature.get_position();
                 const auto pos_ddd = pos + d.vec();
                 const auto &grid = floor.get_grid(pos_ddd);
-                const auto &monster = floor.m_list[grid.m_idx];
+                const auto &monster = floor.get_monster(grid.m_idx);
                 if (!grid.has_monster() || (!monster.get_monster_profile().ml && !floor.has_terrain_characteristics(pos_ddd, TerrainCharacteristics::PROJECTION))) {
                     continue;
                 }
@@ -543,7 +542,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
                 const auto pos_new = pos + dir.vec();
                 const auto m_idx = grid.m_idx;
-                auto &monster = floor.m_list[m_idx];
+                auto &monster = floor.get_monster(m_idx);
 
                 /* Monster cannot move back? */
                 if (!monster_can_enter(&creature, pos_new.y, pos_new.x, monster.get_monrace(), 0)) {

@@ -14,12 +14,12 @@
 #include "player-base/player-class.h"
 #include "spell-kind/spells-world.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "target/projection-path-calculator.h"
 #include "util/bit-flags-calculator.h"
@@ -34,7 +34,7 @@ static void decide_melee_spell_target(CreatureEntity &creature, melee_spell_type
 
     ms_ptr->target_idx = player.pet_t_m_idx;
     const auto &floor = *creature.current_floor_ptr;
-    ms_ptr->t_ptr = &floor.m_list[ms_ptr->target_idx];
+    ms_ptr->t_ptr = &floor.get_monster(ms_ptr->target_idx);
     if ((ms_ptr->m_idx == ms_ptr->target_idx) || !projectable(floor, ms_ptr->m_ptr->get_position(), ms_ptr->t_ptr->get_position())) {
         ms_ptr->target_idx = 0;
     }
@@ -54,7 +54,7 @@ static void decide_indirection_melee_spell(CreatureEntity &creature, melee_spell
         return;
     }
 
-    ms_ptr->t_ptr = &floor.m_list[ms_ptr->target_idx];
+    ms_ptr->t_ptr = &floor.get_monster(ms_ptr->target_idx);
     const auto &monster_to = *ms_ptr->t_ptr;
     auto &player = static_cast<PlayerType &>(creature);
     if ((ms_ptr->m_idx == ms_ptr->target_idx) || ((ms_ptr->target_idx != player.pet_t_m_idx) && !monster_from.is_hostile_to_melee(monster_to))) {
@@ -94,7 +94,7 @@ static bool check_melee_spell_projection(CreatureEntity &creature, melee_spell_t
         }
 
         ms_ptr->target_idx = dummy;
-        ms_ptr->t_ptr = &floor.m_list[ms_ptr->target_idx];
+        ms_ptr->t_ptr = &floor.get_monster(ms_ptr->target_idx);
         const auto &monster_from = *ms_ptr->m_ptr;
         const auto &monster_to = *ms_ptr->t_ptr;
         const auto is_enemies = monster_from.is_hostile_to_melee(monster_to);

@@ -8,6 +8,7 @@
 #include "player/player-personality.h"
 #include "player/race-info-table.h"
 #include "player/special-defense-types.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 

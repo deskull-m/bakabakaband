@@ -36,7 +36,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/inner-game-data.h"
-#include "system/monster-entity.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/screen-processor.h"
@@ -179,7 +178,7 @@ void WorldTurnProcessor::process_monster_arena()
     const auto &floor = *this->creature.current_floor_ptr;
     const auto monster_exists = [&](const Pos2D &pos) {
         const auto &grid = floor.get_grid(pos);
-        return grid.has_monster() && !floor.m_list[grid.m_idx].is_riding();
+        return grid.has_monster() && !floor.get_monster(grid.m_idx).is_riding();
     };
     const auto to_m_idx = [&](const Pos2D &pos) { return floor.get_grid(pos).m_idx; };
     const auto m_idxs = floor.get_area() |
@@ -206,7 +205,7 @@ void WorldTurnProcessor::process_monster_arena()
 
 void WorldTurnProcessor::process_monster_arena_winner(int win_m_idx)
 {
-    const auto &monster = this->creature.current_floor_ptr->m_list[win_m_idx];
+    const auto &monster = this->creature.current_floor_ptr->get_monster(win_m_idx);
     const auto m_name = monster_desc(this->creature, monster, 0);
     msg_format(_("%sが勝利した！", "%s won!"), m_name.data());
     msg_erase();

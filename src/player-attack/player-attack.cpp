@@ -44,12 +44,12 @@
 #include "spell-kind/earthquake.h"
 #include "spell-realm/spells-hex.h"
 #include "sv-definition/sv-weapon-types.h"
+#include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
@@ -74,7 +74,7 @@ player_attack_type::player_attack_type(FloorType &floor, POSITION y, POSITION x,
     , magical_effect(MagicalBrandEffectType::NONE)
 {
     this->m_idx = this->g_ptr->m_idx;
-    this->m_ptr = &floor.m_list[this->g_ptr->m_idx];
+    this->m_ptr = &floor.get_monster(this->g_ptr->m_idx);
     this->r_idx = this->m_ptr->r_idx;
     this->r_ptr = &this->m_ptr->get_monrace();
     this->ma_ptr = &ma_blows[0];
@@ -611,7 +611,7 @@ void massacre(CreatureEntity &creature)
     for (const auto &d : Direction::directions_8()) {
         const auto pos = creature.get_neighbor(d);
         const auto &grid = floor.get_grid(pos);
-        const auto &monster = floor.m_list[grid.m_idx];
+        const auto &monster = floor.get_monster(grid.m_idx);
         if (grid.has_monster() && (monster.get_monster_profile().ml || floor.has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION))) {
             do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
         }

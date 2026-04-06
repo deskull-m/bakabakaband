@@ -23,10 +23,10 @@
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "timed-effect/timed-effects.h"
@@ -67,7 +67,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
     auto &monraces = MonraceList::get_instance();
     auto power = 100;
     if (!necro && m_idx) {
-        auto &monster = creature.current_floor_ptr->m_list[*m_idx];
+        auto &monster = creature.current_floor_ptr->get_monster(*m_idx);
         auto &monrace = monster.get_appearance_monrace();
         const auto m_name = monster_desc(creature, monster, 0);
         power = monrace.level / 2;

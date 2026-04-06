@@ -11,7 +11,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
@@ -256,7 +255,7 @@ DisplaySymbolPair map_info(CreatureEntity &creature, const Pos2D &pos)
         return symbol_pair;
     }
 
-    const auto &monster = floor.m_list[grid.m_idx];
+    const auto &monster = floor.get_monster(grid.m_idx);
     if (!monster.get_monster_profile().ml) {
         symbol_pair.symbol_foreground = set_term_color(creature, pos, symbol_pair.symbol_foreground);
         return symbol_pair;

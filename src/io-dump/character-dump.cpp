@@ -29,6 +29,7 @@
 #include "store/store.h"
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
@@ -36,7 +37,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/services/dungeon-service.h"
 #include "term/gameterm.h"
@@ -64,7 +64,7 @@ static void dump_aux_pet(CreatureEntity &creature, FILE *fff)
     auto pet = false;
     auto pet_settings = false;
     for (auto i = floor.m_max - 1; i >= 1; i--) {
-        const auto &monster = floor.m_list[i];
+        const auto &monster = floor.get_monster(i);
         if (!monster.is_valid()) {
             continue;
         }

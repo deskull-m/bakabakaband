@@ -33,7 +33,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "target/projection-path-calculator.h"
 
 /*!
@@ -62,7 +61,7 @@ bool direct_beam(CreatureEntity &creature, const CreatureEntity &caster, const P
             if (!caster.has_monster_profile()) {
                 return false;
             }
-            if (!caster.is_hostile_to_melee(floor.m_list[grid.m_idx])) {
+            if (!caster.is_hostile_to_melee(floor.get_monster(grid.m_idx))) {
                 return false;
             }
         }
@@ -196,7 +195,7 @@ Pos2D get_project_point(const FloorType &floor, const Pos2D &p_pos, const Pos2D 
  */
 bool dispel_check_monster(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx)
 {
-    const auto &t_ref = creature.current_floor_ptr->m_list[t_idx];
+    const auto &t_ref = creature.current_floor_ptr->get_monster(t_idx);
     if (t_ref.is_invulnerable()) {
         return true;
     }
@@ -258,7 +257,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
     }
 
     const auto &floor_ref = *creature.current_floor_ptr;
-    const auto &monster = floor_ref.m_list[m_idx];
+    const auto &monster = floor_ref.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     if (monrace.ability_flags.has(MonsterAbilityType::BR_ACID)) {
         if (!has_immune_acid(creature) && (creature.oppose_acid || music_singing(creature, MUSIC_RESIST))) {
@@ -350,8 +349,8 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
         return true;
     }
 
-    const auto &m_ref = creature.current_floor_ptr->m_list[creature.riding];
-    if (creature.riding && (creature.current_floor_ptr->m_list[creature.riding].speed < 135) && m_ref.is_accelerated()) {
+    const auto &m_ref = creature.current_floor_ptr->get_monster(creature.riding);
+    if (creature.riding && (creature.current_floor_ptr->get_monster(creature.riding).speed < 135) && m_ref.is_accelerated()) {
         return true;
     }
 

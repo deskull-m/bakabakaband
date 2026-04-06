@@ -15,6 +15,7 @@
 #include "locale/english.h"
 #include "object-enchant/special-object-flags.h"
 #include "system/artifact-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-record.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/enums/monrace/monrace-id.h"

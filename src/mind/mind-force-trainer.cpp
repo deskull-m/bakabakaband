@@ -25,10 +25,10 @@
 #include "spell-kind/spells-lite.h"
 #include "spell/summon-types.h"
 #include "status/temporary-resistance.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
@@ -219,7 +219,7 @@ bool shock_power(CreatureEntity &creature)
     auto pos_target = pos;
     const auto pos_origin = pos;
     const auto m_idx = grid.m_idx;
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     const auto m_name = monster_desc(creature, monster, 0);
 

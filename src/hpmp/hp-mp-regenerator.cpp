@@ -9,11 +9,11 @@
 #include "player/attack-defense-types.h"
 #include "player/player-status-table.h"
 #include "player/special-defense-types.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
@@ -176,7 +176,7 @@ void regenerate_monsters(CreatureEntity &creature)
     auto &tracker = HealthBarTracker::get_instance();
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     for (short i = 1; i < creature.current_floor_ptr->m_max; i++) {
-        auto &monster = creature.current_floor_ptr->m_list[i];
+        auto &monster = creature.current_floor_ptr->get_monster(i);
         const auto &monrace = monster.get_monrace();
         if (!monster.is_valid()) {
             continue;

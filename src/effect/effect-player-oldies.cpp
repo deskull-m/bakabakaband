@@ -5,6 +5,7 @@
 #include "player/eldritch-horror.h"
 #include "status/bad-status-setter.h"
 #include "status/buff-setter.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"

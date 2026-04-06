@@ -15,7 +15,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/monster-entity.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/target-getter.h"
 #include "util/bit-flags-calculator.h"
@@ -44,7 +43,7 @@ bool eat_rock(CreatureEntity &creature)
     } else if (terrain.flags.has(TerrainCharacteristics::PERMANENT)) {
         msg_format(_("いてっ！この%sはあなたの歯より硬い！", "Ouch!  This %s is harder than your teeth!"), terrain_mimic.name.data());
     } else if (grid.has_monster()) {
-        const auto &monster = creature.current_floor_ptr->m_list[grid.m_idx];
+        const auto &monster = creature.current_floor_ptr->get_monster(grid.m_idx);
         msg_print(_("何かが邪魔しています！", "There's something in the way!"));
         if (!monster.get_monster_profile().ml || !monster.is_pet()) {
             do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);

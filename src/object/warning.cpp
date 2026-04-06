@@ -17,7 +17,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "target/projection-path-calculator.h"
 #include "view/display-messages.h"
 #include <vector>
@@ -244,7 +243,7 @@ static void spell_damcalc(CreatureEntity &creature, const CreatureEntity &monste
  */
 static void spell_damcalc_by_spellnum(CreatureEntity &creature, MonsterAbilityType ms_type, AttributeType typ, MONSTER_IDX m_idx, int *max)
 {
-    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     int dam = monspell_damage(creature, ms_type, m_idx, DAM_MAX);
     spell_damcalc(creature, monster, typ, dam, max);
 }
@@ -356,7 +355,7 @@ bool process_warning(CreatureEntity &creature, POSITION xx, POSITION yy)
                 continue;
             }
 
-            const auto &monster = floor.m_list[grid.m_idx];
+            const auto &monster = floor.get_monster(grid.m_idx);
 
             if (monster.is_asleep()) {
                 continue;

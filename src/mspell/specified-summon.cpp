@@ -12,6 +12,7 @@
 #include "mspell/mspell-util.h"
 #include "spell-kind/spells-launcher.h"
 #include "spell/summon-types.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"

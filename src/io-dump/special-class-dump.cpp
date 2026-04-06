@@ -17,6 +17,7 @@
 #include "smith/object-smith.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "util/enum-converter.h"
 #include "util/flag-group.h"
 #include <algorithm>

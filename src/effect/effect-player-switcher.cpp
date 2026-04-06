@@ -6,6 +6,7 @@
 #include "effect/effect-player-spirit.h"
 #include "effect/effect-player.h"
 #include "player/player-damage.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 
 /*!

@@ -31,6 +31,7 @@
 #include "spell-realm/spells-hex.h"
 #include "status/action-setter.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/enums/dungeon/dungeon-id.h"
@@ -42,7 +43,6 @@
 #include "system/floor/town-list.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/grid-type-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
@@ -868,7 +868,7 @@ bool change_wild_mode(CreatureEntity &creature, bool encount)
     bool has_pet = false;
     PlayerEnergy energy(creature);
     for (int i = 1; i < player_ptr->current_floor_ptr->m_max; i++) {
-        const auto &monster = player_ptr->current_floor_ptr->m_list[i];
+        const auto &monster = player_ptr->current_floor_ptr->get_monster(i);
         if (!monster.is_valid()) {
             continue;
         }

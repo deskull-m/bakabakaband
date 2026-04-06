@@ -5,6 +5,7 @@
  */
 
 #include "object-enchant/protector/apply-magic-hard-armor.h"
+#include "system/creature-entity.h"
 
 /*
  * @brief コンストラクタ

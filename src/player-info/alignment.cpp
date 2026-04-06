@@ -12,7 +12,6 @@
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "util/bit-flags-calculator.h"
 #include <array>
 #include <fmt/format.h>
@@ -47,7 +46,7 @@ void PlayerAlignment::update_alignment()
     this->reset_alignment();
     const auto &floor = *this->creature_ptr->current_floor_ptr;
     for (MONSTER_IDX m_idx = floor.m_max - 1; m_idx >= 1; m_idx--) {
-        const auto &monster = floor.m_list[m_idx];
+        const auto &monster = floor.get_monster(m_idx);
         if (!monster.is_valid()) {
             continue;
         }

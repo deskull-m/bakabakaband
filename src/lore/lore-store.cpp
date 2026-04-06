@@ -115,7 +115,7 @@ int lore_do_probe(CreatureEntity &creature, MonraceId r_idx)
  */
 void lore_treasure(CreatureEntity &creature, MONSTER_IDX m_idx, ITEM_NUMBER num_item, ITEM_NUMBER num_gold)
 {
-    auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    auto &monster = creature.current_floor_ptr->get_monster(m_idx);
     auto &monrace = monster.get_monrace();
     if (!monster.is_original_ap()) {
         return;

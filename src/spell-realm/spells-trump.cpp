@@ -18,6 +18,7 @@
 #include "status/base-status.h"
 #include "status/buff-setter.h"
 #include "status/experience.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/player-type-definition.h"
 #include "target/target-getter.h"

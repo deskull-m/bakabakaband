@@ -33,7 +33,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
@@ -294,7 +293,7 @@ void build_streamer(CreatureEntity &creature, FEAT_IDX feat, int chance)
                 }
             }
 
-            const auto &monrace = floor.m_list[grid.m_idx].get_monrace();
+            const auto &monrace = floor.get_monster(grid.m_idx).get_monrace();
             if (grid.has_monster() && !(streamer.flags.has(TerrainCharacteristics::PLACE) && monster_can_cross_terrain(&creature, feat, monrace, 0))) {
                 /* Delete the monster (if any) */
                 delete_monster(player, pos);

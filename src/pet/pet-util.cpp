@@ -4,10 +4,10 @@
 #include "monster/monster-info.h"
 #include "monster/monster-status.h"
 #include "player-info/class-info.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
@@ -71,7 +71,7 @@ PERCENTAGE calculate_upkeep(CreatureEntity &creature)
     DEPTH total_friend_levels = 0;
     total_friends = 0;
     for (auto m_idx = creature.current_floor_ptr->m_max - 1; m_idx >= 1; m_idx--) {
-        const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+        const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
         if (!monster.is_valid()) {
             continue;
         }

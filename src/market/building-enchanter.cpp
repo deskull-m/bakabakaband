@@ -8,6 +8,7 @@
 #include "object/item-use-flags.h"
 #include "racial/racial-android.h"
 #include "spell/spells-object.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"

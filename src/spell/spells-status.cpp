@@ -46,7 +46,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
@@ -608,7 +607,7 @@ bool fishing(CreatureEntity &creature)
 
     const auto &grid = floor.get_grid(pos);
     if (grid.has_monster()) {
-        const auto m_name = monster_desc(player, floor.m_list[grid.m_idx], 0);
+        const auto m_name = monster_desc(player, floor.get_monster(grid.m_idx), 0);
         msg_format(_("%sが邪魔だ！", "%s^ is standing in your way."), m_name.data());
         PlayerEnergy(player).reset_player_turn();
         return false;

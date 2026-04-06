@@ -20,6 +20,7 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-key.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"

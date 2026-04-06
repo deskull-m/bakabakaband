@@ -24,7 +24,6 @@
 #include "system/monrace/monrace-allocation.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/system-variables.h"
@@ -154,7 +153,7 @@ MonraceId get_mon_num(CreatureEntity &creature, int min_level, int max_level, ui
 static tl::optional<MonraceId> polymorph_of_chameleon(CreatureEntity &creature, short m_idx, short terrain_id, tl::optional<short> summoner_m_idx)
 {
     auto &floor = *creature.current_floor_ptr;
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     const auto old_unique = monster.get_monrace().kind_flags.has(MonsterKindType::UNIQUE);
     ChameleonTransformation ct(m_idx, terrain_id, old_unique, std::move(summoner_m_idx));
     get_mon_num_prep_chameleon(creature, ct);
@@ -190,7 +189,7 @@ static tl::optional<MonraceId> polymorph_of_chameleon(CreatureEntity &creature, 
 void choose_chameleon_polymorph(CreatureEntity &creature, short m_idx, short terrain_id, tl::optional<short> summoner_m_idx)
 {
     auto &floor = *creature.current_floor_ptr;
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     auto new_monrace_id = polymorph_of_chameleon(creature, m_idx, terrain_id, summoner_m_idx);
     if (!new_monrace_id) {
         return;
@@ -209,7 +208,7 @@ void choose_chameleon_polymorph(CreatureEntity &creature, short m_idx, short ter
  */
 int get_monster_crowd_number(const FloorType &floor, short m_idx)
 {
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     const auto m_pos = monster.get_position();
     auto count = 0;
     for (const auto &d : Direction::directions_8()) {

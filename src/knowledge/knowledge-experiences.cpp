@@ -18,6 +18,7 @@
 #include "sv-definition/sv-bow-types.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "util/angband-files.h"
 

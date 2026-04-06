@@ -17,7 +17,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 
@@ -33,7 +32,7 @@
 void exe_monster_attack_to_player(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx, const Pos2D &pos)
 {
     auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     auto &monrace = monster.get_monrace();
     if (!turn_flags_ptr->do_move || !creature.is_located_at(pos)) {
         return;
@@ -75,9 +74,9 @@ void exe_monster_attack_to_player(CreatureEntity &creature, turn_flags *turn_fla
 static bool exe_monster_attack_to_monster(CreatureEntity &creature, MONSTER_IDX m_idx, const Grid &grid)
 {
     const auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     auto &monrace = monster.get_monrace();
-    const auto &monster_target = creature.current_floor_ptr->m_list[grid.m_idx];
+    const auto &monster_target = creature.current_floor_ptr->get_monster(grid.m_idx);
     if (monrace.behavior_flags.has(MonsterBehaviorType::NEVER_BLOW)) {
         return false;
     }
@@ -125,9 +124,9 @@ bool process_monster_attack_to_monster(CreatureEntity &creature, turn_flags *tur
     }
 
     turn_flags_ptr->do_move = false;
-    const auto &monster_from = creature.current_floor_ptr->m_list[m_idx];
+    const auto &monster_from = creature.current_floor_ptr->get_monster(m_idx);
     const auto &monrace_from = monster_from.get_monrace();
-    const auto &monster_to = creature.current_floor_ptr->m_list[grid.m_idx];
+    const auto &monster_to = creature.current_floor_ptr->get_monster(grid.m_idx);
     const auto &monrace_to = monster_to.get_monrace();
     auto do_kill_body = monrace_from.behavior_flags.has(MonsterBehaviorType::KILL_BODY) && monrace_from.behavior_flags.has_not(MonsterBehaviorType::NEVER_BLOW);
     do_kill_body &= (monrace_from.mexp * monrace_from.level > monrace_to.mexp * monrace_to.level);

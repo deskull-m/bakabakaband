@@ -23,6 +23,7 @@
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/dungeon/dungeon-record.h"
@@ -33,7 +34,6 @@
 #include "system/floor/wilderness-grid.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/services/dungeon-service.h"
@@ -65,7 +65,7 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
     std::string m_name;
     auto see_m = true;
     auto &floor = *player.current_floor_ptr;
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     if (m_idx <= 0) {
         m_name = _("あなた", "you");
     } else {
@@ -245,7 +245,7 @@ bool teleport_level_other(CreatureEntity &creature)
         return true;
     }
 
-    const auto &monster = floor.m_list[target_m_idx];
+    const auto &monster = floor.get_monster(target_m_idx);
     const auto &monrace = monster.get_monrace();
     const auto m_name = monster_desc(player, monster, 0);
     msg_format(_("%s^の足を指さした。", "You gesture at %s^'s feet."), m_name.data());

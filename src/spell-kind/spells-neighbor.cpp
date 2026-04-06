@@ -5,6 +5,7 @@
 #include "floor/floor-util.h"
 #include "grid/grid.h"
 #include "spell-kind/earthquake.h"
+#include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/player-type-definition.h"

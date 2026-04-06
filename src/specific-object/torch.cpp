@@ -8,6 +8,7 @@
 #include "player-info/race-info.h"
 #include "player/special-defense-types.h"
 #include "sv-definition/sv-lite-types.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"

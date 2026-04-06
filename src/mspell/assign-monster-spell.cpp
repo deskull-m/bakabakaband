@@ -22,16 +22,16 @@
 #include "mspell/mspell-status.h"
 #include "mspell/mspell-summon.h"
 #include "mspell/mspell-util.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 
 static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, MonsterAbilityType ms_type, POSITION y, POSITION x, MONSTER_IDX m_idx)
 {
-    CreatureEntity *m_ptr = &creature.current_floor_ptr->m_list[m_idx];
+    CreatureEntity *m_ptr = &creature.current_floor_ptr->get_monster(m_idx);
     MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
 
     // クイルスルグは自身を中心に召喚する
@@ -215,7 +215,7 @@ static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, Mons
 static MonsterSpellResult monspell_to_monster_impl(
     CreatureEntity &creature, MonsterAbilityType ms_type, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, bool is_special_spell)
 {
-    CreatureEntity *m_ptr = &creature.current_floor_ptr->m_list[m_idx];
+    CreatureEntity *m_ptr = &creature.current_floor_ptr->get_monster(m_idx);
     MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
 
     // クイルスルグは自身を中心に召喚する

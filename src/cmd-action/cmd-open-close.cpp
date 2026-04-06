@@ -24,7 +24,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/target-getter.h"
@@ -128,7 +127,7 @@ void do_cmd_open(CreatureEntity &creature)
         const auto o_idx = chest_check(floor, pos, false);
         if (grid.get_terrain(TerrainKind::MIMIC).flags.has_not(TerrainCharacteristics::OPEN) && !o_idx) {
             msg_print(_("そこには開けるものが見当たらない。", "You see nothing there to open."));
-        } else if (grid.has_monster() && !floor.m_list[grid.m_idx].is_riding()) {
+        } else if (grid.has_monster() && !floor.get_monster(grid.m_idx).is_riding()) {
             PlayerEnergy(creature).set_player_turn_energy(100);
             msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
             do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
@@ -227,7 +226,7 @@ void do_cmd_disarm(CreatureEntity &creature)
         const auto o_idx = chest_check(floor, pos, true);
         if (!floor.has_trap_at(pos) && !o_idx) {
             msg_print(_("そこには解除するものが見当たらない。", "You see nothing there to disarm."));
-        } else if (grid.has_monster() && !floor.m_list[grid.m_idx].is_riding()) {
+        } else if (grid.has_monster() && !floor.get_monster(grid.m_idx).is_riding()) {
             msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
             do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
         } else if (o_idx) {

@@ -44,11 +44,11 @@
 #include "spell/summon-types.h"
 #include "status/element-resistance.h"
 #include "status/shape-changer.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "util/bit-flags-calculator.h"
@@ -265,7 +265,7 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
             return true;
         }
 
-        auto &monster = floor.m_list[grid.m_idx];
+        auto &monster = floor.get_monster(grid.m_idx);
         const auto &monrace = monster.get_monrace();
         auto can_banish = monrace.kind_flags.has(MonsterKindType::EVIL);
         can_banish &= monrace.misc_flags.has_not(MonsterMiscType::QUESTOR);

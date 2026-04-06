@@ -27,12 +27,12 @@
 #include "pet/pet-util.h"
 #include "player/player-status-flags.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
@@ -397,7 +397,7 @@ bool process_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_p
         }
 
         auto &grid = floor.get_grid(pos_neighbor);
-        auto &monster = floor.m_list[m_idx];
+        auto &monster = floor.get_monster(m_idx);
         auto &monrace = monster.get_monrace();
         auto can_cross = monster_can_cross_terrain(&creature, grid.feat, monrace, turn_flags_ptr->is_riding_mon ? CEM_RIDING : 0);
         if (!process_wall(creature, turn_flags_ptr, monster, pos_neighbor, can_cross)) {
@@ -418,7 +418,7 @@ bool process_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_p
         }
 
         if (turn_flags_ptr->is_riding_mon) {
-            const auto &monster_riding = floor.m_list[creature.riding];
+            const auto &monster_riding = floor.get_monster(creature.riding);
             if (!creature.riding_ryoute && !monster_riding.is_fearful()) {
                 turn_flags_ptr->do_move = false;
             }
@@ -565,7 +565,7 @@ void process_sound(CreatureEntity &creature, MONSTER_IDX m_idx)
     }
 
     const auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
 
     if (monster.get_monster_profile().ml || creature.skill_srh < randint1(100)) {
@@ -613,7 +613,7 @@ void process_speak(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION oy, POS
     }
 
     const auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     constexpr auto chance_speak = 8;
     auto vociferous = monrace.r_misc_flags.has(MonsterMiscType::VOCIFEROUS) && (Grid::calc_distance(creature.get_position(), monster.get_position()) <= MAX_PLAYER_SIGHT * 2) && one_in_(chance_speak / 3 + 1);

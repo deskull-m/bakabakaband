@@ -8,6 +8,7 @@
 #include "achievement/achievement-checker.h"
 #include "achievement/achievement-tracker.h"
 #include "achievement/achievement-types.h"
+#include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"

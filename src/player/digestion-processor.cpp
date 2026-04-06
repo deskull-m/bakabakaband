@@ -15,6 +15,7 @@
 #include "player/special-defense-types.h"
 #include "status/bad-status-setter.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"

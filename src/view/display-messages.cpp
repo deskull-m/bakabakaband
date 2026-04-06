@@ -9,6 +9,7 @@
 #include "load/load-util.h"
 #include "main/sound-of-music.h"
 #include "save/save-util.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"

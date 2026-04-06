@@ -11,6 +11,7 @@
 #include "io/input-key-requester.h"
 #include "io/screen-util.h"
 #include "main/sound-of-music.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/player-type-definition.h"

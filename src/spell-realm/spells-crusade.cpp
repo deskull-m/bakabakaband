@@ -16,6 +16,7 @@
 #include "spell-kind/spells-floor.h"
 #include "spell-kind/spells-sight.h"
 #include "spell/range-calc.h"
+#include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"

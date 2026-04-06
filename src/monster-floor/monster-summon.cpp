@@ -10,12 +10,12 @@
 #include "monster/monster-list.h"
 #include "monster/monster-util.h"
 #include "spell/summon-types.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 
 /*!
@@ -82,7 +82,7 @@ tl::optional<MONSTER_IDX> summon_specific(CreatureEntity &subject, POSITION y1, 
     if (!summoner_m_idx) {
         notice = true;
     } else {
-        const auto &monster = player.current_floor_ptr->m_list[*summoner_m_idx];
+        const auto &monster = player.current_floor_ptr->get_monster(*summoner_m_idx);
         if (monster.is_pet()) {
             notice = true;
         } else if (is_seen(subject, monster)) {

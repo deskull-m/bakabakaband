@@ -47,6 +47,7 @@
 #include "spell-realm/spells-song.h"
 #include "status/action-setter.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"

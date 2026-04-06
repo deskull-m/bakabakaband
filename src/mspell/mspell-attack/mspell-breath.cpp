@@ -16,7 +16,6 @@
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
-#include "system/monster-entity.h"
 #include "view/display-messages.h"
 
 /*!
@@ -49,7 +48,7 @@ static bool spell_RF4_BREATH_special_message(MonraceId r_idx, AttributeType GF_T
 static void message_breath(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type, std::string_view type_s, AttributeType GF_TYPE)
 {
     auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     auto see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     auto known = monster_near_player(creature, m_idx, t_idx);
     auto mon_to_mon = (target_type == MONSTER_TO_MONSTER);

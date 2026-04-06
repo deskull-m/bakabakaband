@@ -3,6 +3,7 @@
 #include "effect/effect-characteristics.h"
 #include "floor/geometry.h"
 #include "spell-kind/spells-launcher.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 
 /*!

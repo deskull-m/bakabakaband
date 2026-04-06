@@ -8,6 +8,7 @@
 #include "system/artifact-type-definition.h"
 #include "system/baseitem/baseitem-allocation.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/enums/dungeon/dungeon-id.h"
@@ -21,7 +22,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "system/services/dungeon-monrace-service.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
@@ -48,6 +48,16 @@ FloorType::FloorType()
 int FloorType::get_level() const
 {
     return this->dun_level;
+}
+
+CreatureEntity &FloorType::get_monster(MONSTER_IDX m_idx)
+{
+    return this->m_list[m_idx];
+}
+
+const CreatureEntity &FloorType::get_monster(MONSTER_IDX m_idx) const
+{
+    return this->m_list[m_idx];
 }
 
 Grid &FloorType::get_grid(const Pos2D &pos)
@@ -531,7 +541,7 @@ void FloorType::reset_mproc()
 {
     this->reset_mproc_max();
     for (short i = this->m_max - 1; i >= 1; i--) {
-        const auto &monster = this->m_list[i];
+        const auto &monster = this->get_monster(i);
         if (!monster.is_valid()) {
             continue;
         }
@@ -610,7 +620,7 @@ short FloorType::pop_empty_index_monster()
 
     /* Recycle dead monsters */
     for (short i = 1; i < this->m_max; i++) {
-        const auto &monster = this->m_list[i];
+        const auto &monster = this->get_monster(i);
         if (monster.is_valid()) {
             continue;
         }

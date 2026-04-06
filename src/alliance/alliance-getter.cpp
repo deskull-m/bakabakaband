@@ -1,4 +1,5 @@
 #include "alliance/alliance-getter.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 
 int AllianceGetter::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const

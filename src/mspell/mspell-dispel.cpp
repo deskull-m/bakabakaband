@@ -27,7 +27,6 @@
 #include "status/temporary-resistance.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
@@ -167,7 +166,7 @@ MonsterSpellResult spell_RF4_DISPEL(MONSTER_IDX m_idx, CreatureEntity &creature,
         return res;
     }
     const auto &floor = *creature.current_floor_ptr;
-    const auto &target = floor.m_list[t_idx];
+    const auto &target = floor.get_monster(t_idx);
     if (target_type == MONSTER_TO_MONSTER) {
         if (target.is_riding()) {
             dispel_player(creature);

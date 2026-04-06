@@ -30,7 +30,6 @@
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/grid-selector.h"
@@ -294,7 +293,7 @@ void SpellsMirrorMaster::project_seeker_ray(int target_x, int target_y, int dam)
                 res.notice = true;
             }
             const auto &grid = floor.grid_array[project_m_y][project_m_x];
-            const auto &monster = floor.m_list[grid.m_idx];
+            const auto &monster = floor.get_monster(grid.m_idx);
             if (project_m_n == 1 && grid.has_monster() && monster.get_monster_profile().ml) {
                 if (!this->creature_ptr->effects()->hallucination().is_hallucinated()) {
                     tracker.set_trackee(monster.ap_r_idx);
@@ -394,7 +393,7 @@ static bool activate_super_ray_effect(CreatureEntity &creature, int y, int x, in
 
     const auto &floor = *creature.current_floor_ptr;
     const auto &grid = floor.grid_array[project_m_y][project_m_x];
-    const auto &monster = floor.m_list[grid.m_idx];
+    const auto &monster = floor.get_monster(grid.m_idx);
     if (project_m_n == 1 && grid.has_monster() && monster.get_monster_profile().ml) {
         if (!creature.effects()->hallucination().is_hallucinated()) {
             LoreTracker::get_instance().set_trackee(monster.ap_r_idx);

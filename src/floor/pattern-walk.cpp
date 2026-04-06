@@ -18,6 +18,7 @@
 #include "spell/spells-status.h"
 #include "status/bad-status-setter.h"
 #include "status/experience.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/enums/terrain/terrain-tag.h"

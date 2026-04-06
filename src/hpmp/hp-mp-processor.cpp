@@ -30,12 +30,12 @@
 #include "player/special-defense-types.h"
 #include "status/bad-status-setter.h"
 #include "status/element-resistance.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "timed-effect/timed-effects.h"
@@ -318,9 +318,9 @@ void process_player_hp_mp(CreatureEntity &creature)
 
     if (creature.riding) {
         int damage;
-        auto auras = floor.m_list[creature.riding].get_monrace().aura_flags;
+        auto auras = floor.get_monster(creature.riding).get_monrace().aura_flags;
         if (auras.has(MonsterAuraType::FIRE) && !has_immune_fire(creature)) {
-            damage = floor.m_list[creature.riding].get_monrace().level / 2;
+            damage = floor.get_monster(creature.riding).get_monrace().level / 2;
             if (race.tr_flags().has(TR_VUL_FIRE)) {
                 damage += damage / 3;
             }
@@ -337,7 +337,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         }
 
         if (auras.has(MonsterAuraType::ELEC) && !has_immune_elec(creature)) {
-            damage = floor.m_list[creature.riding].get_monrace().level / 2;
+            damage = floor.get_monster(creature.riding).get_monrace().level / 2;
             if (race.tr_flags().has(TR_VUL_ELEC)) {
                 damage += damage / 3;
             }
@@ -354,7 +354,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         }
 
         if (auras.has(MonsterAuraType::COLD) && !has_immune_cold(creature)) {
-            damage = floor.m_list[creature.riding].get_monrace().level / 2;
+            damage = floor.get_monster(creature.riding).get_monrace().level / 2;
             if (race.tr_flags().has(TR_VUL_COLD)) {
                 damage += damage / 3;
             }

@@ -13,10 +13,10 @@
 #include "player-status/player-energy.h"
 #include "player/player-status-flags.h"
 #include "player/player-status.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "view/display-messages.h"
@@ -214,7 +214,7 @@ static bool run_test(CreatureEntity &creature)
         const auto pos = creature.get_neighbor(new_dir);
         const auto &grid = floor.get_grid(pos);
         if (grid.has_monster()) {
-            const auto &monster = floor.m_list[grid.m_idx];
+            const auto &monster = floor.get_monster(grid.m_idx);
             if (monster.get_monster_profile().ml) {
                 return true;
             }

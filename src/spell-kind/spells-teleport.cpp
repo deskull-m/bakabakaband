@@ -23,11 +23,11 @@
 #include "player-base/player-class.h"
 #include "player/player-move.h"
 #include "spell-kind/spells-launcher.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/grid-selector.h"
@@ -53,7 +53,7 @@ bool teleport_swap(CreatureEntity &creature, const Direction &dir)
     }
 
     const auto &grid = creature.current_floor_ptr->get_grid(pos);
-    if (!grid.has_monster() || creature.current_floor_ptr->m_list[grid.m_idx].is_riding()) {
+    if (!grid.has_monster() || creature.current_floor_ptr->get_monster(grid.m_idx).is_riding()) {
         msg_print(_("それとは場所を交換できません。", "You can't trade places with that!"));
         return false;
     }
@@ -63,7 +63,7 @@ bool teleport_swap(CreatureEntity &creature, const Direction &dir)
         return false;
     }
 
-    const auto &monster = creature.current_floor_ptr->m_list[grid.m_idx];
+    const auto &monster = creature.current_floor_ptr->get_monster(grid.m_idx);
     auto &monrace = monster.get_monrace();
 
     (void)set_monster_csleep(*creature.current_floor_ptr, grid.m_idx, 0);
@@ -109,7 +109,7 @@ bool teleport_monster(CreatureEntity &creature, const Direction &dir, int distan
 bool teleport_away(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION dis, teleport_flags mode)
 {
     auto &floor = *creature.current_floor_ptr;
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     if (!monster.is_valid()) {
         return false;
     }
@@ -193,7 +193,7 @@ bool teleport_away(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION dis, te
 void teleport_monster_to(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION ty, POSITION tx, int power, teleport_flags mode)
 {
     auto &floor = *creature.current_floor_ptr;
-    auto &monster = floor.m_list[m_idx];
+    auto &monster = floor.get_monster(m_idx);
     if (!monster.is_valid()) {
         return;
     }
@@ -398,7 +398,7 @@ void teleport_player(CreatureEntity &creature, POSITION dis, BIT_FLAGS mode)
             if (!is_monster(tmp_m_idx)) {
                 continue;
             }
-            const auto &monster = creature.current_floor_ptr->m_list[tmp_m_idx];
+            const auto &monster = creature.current_floor_ptr->get_monster(tmp_m_idx);
             if (!monster.is_riding()) {
                 const auto &monrace = monster.get_monrace();
 
@@ -438,13 +438,13 @@ void teleport_player_away(MONSTER_IDX m_idx, CreatureEntity &creature, POSITION 
     for (POSITION xx = -1; xx < 2; xx++) {
         for (POSITION yy = -1; yy < 2; yy++) {
             const auto tmp_m_idx = floor.grid_array[oy + yy][ox + xx].m_idx;
-            auto is_teleportable = is_monster(tmp_m_idx) && !floor.m_list[tmp_m_idx].is_riding();
+            auto is_teleportable = is_monster(tmp_m_idx) && !floor.get_monster(tmp_m_idx).is_riding();
             is_teleportable &= m_idx != tmp_m_idx;
             if (!is_teleportable) {
                 continue;
             }
 
-            const auto &monster = creature.current_floor_ptr->m_list[tmp_m_idx];
+            const auto &monster = creature.current_floor_ptr->get_monster(tmp_m_idx);
             const auto &monrace = monster.get_monrace();
 
             bool can_follow = monrace.ability_flags.has(MonsterAbilityType::TPORT);
@@ -517,7 +517,7 @@ void teleport_away_followable(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     auto &player = static_cast<PlayerType &>(creature);
     const auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &monster = floor.get_monster(m_idx);
     const auto old_m_pos = monster.get_position();
     bool old_ml = monster.get_monster_profile().ml;
     const auto old_cdis = Grid::calc_distance(creature.get_position(), old_m_pos);

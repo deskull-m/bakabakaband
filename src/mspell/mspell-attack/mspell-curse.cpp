@@ -9,6 +9,7 @@
 #include "mspell/mspell-data.h"
 #include "mspell/mspell-result.h"
 #include "mspell/mspell-util.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "view/display-messages.h"
 

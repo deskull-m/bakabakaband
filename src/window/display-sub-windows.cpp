@@ -24,13 +24,13 @@
 #include "player/player-status-table.h"
 #include "player/player-status.h"
 #include "spell/spells-execution.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "target/target-preparation.h"
@@ -178,7 +178,7 @@ void print_monster_list(const FloorType &floor, const std::vector<MONSTER_IDX> &
 
     // 描画に必要なデータを集める
     for (auto monster_index : monster_list) {
-        const auto &monster = floor.m_list[monster_index];
+        const auto &monster = floor.get_monster(monster_index);
 
         if (monster.is_pet()) {
             continue;
@@ -245,7 +245,7 @@ static void print_pet_list_oneline(CreatureEntity &creature, const CreatureEntit
 static void print_pet_list(CreatureEntity &creature, const std::vector<MONSTER_IDX> &pets, TERM_LEN x, TERM_LEN y, TERM_LEN width, TERM_LEN height)
 {
     for (auto n = 0U; n < pets.size(); ++n) {
-        const auto &monster = creature.current_floor_ptr->m_list[pets[n]];
+        const auto &monster = creature.current_floor_ptr->get_monster(pets[n]);
         const int line = y + n;
 
         print_pet_list_oneline(creature, monster, x, line, width);
@@ -539,7 +539,7 @@ static bool is_seeing_monster_on(const FloorType &floor, const Grid &grid)
         return false;
     }
 
-    const auto &monster = floor.m_list[grid.m_idx];
+    const auto &monster = floor.get_monster(grid.m_idx);
     return monster.is_valid() && monster.get_monster_profile().ml;
 }
 
@@ -572,7 +572,7 @@ static void display_floor_item_list(CreatureEntity &creature, const Pos2D &pos)
         if (is_hallucinated) {
             line = format(_("(X:%03d Y:%03d) 何か奇妙な物の足元の発見済みアイテム一覧", "Found items at (%03d,%03d) under something strange"), pos.x, pos.y);
         } else {
-            const auto &monster = floor_ptr->m_list[g_ptr->m_idx];
+            const auto &monster = floor_ptr->get_monster(g_ptr->m_idx);
             const auto &monrace = monster.get_appearance_monrace();
             line = format(_("(X:%03d Y:%03d) %sの足元の発見済みアイテム一覧", "Found items at (%03d,%03d) under %s"), pos.x, pos.y, monrace.name.data());
         }
