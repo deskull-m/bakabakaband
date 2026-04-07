@@ -285,8 +285,12 @@ public:
     /*!
      * @brief クリーチャーが死亡しているかどうかを判定
      * @return 死亡していればtrue
+     * @details デフォルト実装は hp < 0（モンスター用）。PlayerType はオーバーライドして is_dead_ フラグを返す。
      */
-    virtual bool is_dead() const = 0;
+    virtual bool is_dead() const
+    {
+        return this->hp < 0;
+    }
 
     /*!
      * @brief クリーチャーの実効ACを取得
@@ -653,11 +657,9 @@ public:
      * @param other 対象クリーチャー
      * @return 敵対しているならtrue、デフォルトはfalse
      */
-    virtual bool is_hostile_to_melee(const CreatureEntity &other) const
-    {
-        (void)other;
-        return false;
-    }
+    virtual bool is_hostile_to_melee(const CreatureEntity &other) const;
+    bool is_hostile_align(byte other_sub_align) const;
+    bool is_mimicry() const;
 
     /*!
      * @brief クリーチャーが騎乗されているかどうかを判定
