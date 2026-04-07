@@ -501,21 +501,15 @@ public:
 
     /*!
      * @brief クリーチャーが盲目かどうかを判定
-     * @return 盲目ならtrue、デフォルトはfalse
+     * @return 盲目ならtrue（モンスターは常にfalse）
      */
-    virtual bool is_blind() const
-    {
-        return false;
-    }
+    virtual bool is_blind() const;
 
     /*!
      * @brief クリーチャーが麻痺しているかどうかを判定
-     * @return 麻痺していればtrue、デフォルトはfalse
+     * @return 麻痺していればtrue（モンスターは常にfalse）
      */
-    virtual bool is_paralyzed() const
-    {
-        return false;
-    }
+    virtual bool is_paralyzed() const;
 
     /*!
      * @brief クリーチャーが加速しているかどうかを判定

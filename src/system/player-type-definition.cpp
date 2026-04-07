@@ -167,6 +167,10 @@ short PlayerType::get_timed_effect(CreatureTimedEffect effect) const
         return eff.deceleration().current();
     case CreatureTimedEffect::SLEEP_OR_PARALYSIS:
         return eff.paralysis().current();
+    case CreatureTimedEffect::BLINDNESS:
+        return eff.blindness().current();
+    case CreatureTimedEffect::PARALYSIS:
+        return eff.paralysis().current();
     default:
         return 0;
     }
@@ -197,6 +201,12 @@ void PlayerType::set_timed_effect(CreatureTimedEffect effect, short value)
     case CreatureTimedEffect::SLEEP_OR_PARALYSIS:
         eff.paralysis().set(value);
         break;
+    case CreatureTimedEffect::BLINDNESS:
+        eff.blindness().set(value);
+        break;
+    case CreatureTimedEffect::PARALYSIS:
+        eff.paralysis().set(value);
+        break;
     default:
         break;
     }
@@ -210,16 +220,6 @@ bool PlayerType::is_invulnerable() const
 
     const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
     return bard && *bard && (*bard)->singing_song == MUSIC_INVULN;
-}
-
-bool PlayerType::is_blind() const
-{
-    return this->effects()->blindness().is_blind();
-}
-
-bool PlayerType::is_paralyzed() const
-{
-    return this->effects()->paralysis().is_paralyzed();
 }
 
 bool PlayerType::is_fast() const
