@@ -212,11 +212,6 @@ void MonsterEntity::set_hostile()
     }
 }
 
-std::string MonsterEntity::get_pronoun_of_summoned_kin() const
-{
-    return this->get_monrace().get_pronoun_of_summoned_kin();
-}
-
 tl::optional<bool> MonsterEntity::order_pet_named(const CreatureEntity &other) const
 {
     if (this->is_named() && !other.is_named()) {

@@ -27,7 +27,6 @@ public:
     bool is_hostile_to_melee(const CreatureEntity &other) const override;
     bool is_hostile_align(const byte other_sub_align) const;
     bool is_mimicry() const;
-    std::string get_pronoun_of_summoned_kin() const;
     tl::optional<bool> order_pet_whistle(const CreatureEntity &other) const;
     tl::optional<bool> order_pet_dismission(const CreatureEntity &other) const;
     bool can_ring_boss_call_nazgul() const;
