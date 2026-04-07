@@ -1,4 +1,5 @@
 #include "floor/party-monsters.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "world/world.h"
 

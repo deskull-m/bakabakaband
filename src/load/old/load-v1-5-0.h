@@ -2,6 +2,9 @@
 
 #include "system/angband.h"
 
+class MonraceDefinition;
+enum class MonraceId : int16_t;
+
 // TODO: 更に分割する可能性が中程度あるのでヘッダに置いておく
 enum old_monster_resistance_type {
     RF3_IM_ACID = 0x00010000, /* Resist acid a lot */
