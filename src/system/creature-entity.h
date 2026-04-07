@@ -6,9 +6,13 @@
 #include "object-enchant/trc-types.h"
 #include "player-ability/player-ability-types.h"
 #include "player-info/class-specific-data.h"
+#include "player-info/class-types.h"
+#include "player-info/race-types.h"
 #include "player/player-personality-types.h"
+#include "player/player-sex.h"
 #include "player/player-skill.h"
 #include "system/angband.h"
+#include "system/enums/dungeon/dungeon-id.h"
 #include "system/creature-timed-effect-types.h"
 #include "system/monster-profile.h"
 #include "system/system-variables.h"
@@ -25,24 +29,15 @@
 
 constexpr int MONSTER_MAXHP = 10000000; //!< モンスターの最大HP
 
+// Forward declarations
 class Direction;
 class FloorType;
 class ItemEntity;
 class MonraceDefinition;
 class TimedEffects;
-
-// Forward declarations for race/class/personality info
 struct player_race_info;
 struct player_personality;
 struct player_class_info;
-enum class MonraceId : int16_t;
-enum class Virtue : short;
-enum player_sex : byte;
-enum class PlayerRaceType;
-enum class PlayerClassType : short;
-enum class MimicKindType;
-
-enum class DungeonId;
 enum class ElementRealmType;
 enum class FixedArtifactId : short;
 enum class ItemKindType : short;
@@ -52,10 +47,6 @@ enum class MonsterAbilityType;
 enum class PlayerSkillKindType;
 enum class RealmType;
 enum class Virtue : short;
-class Direction;
-class FloorType;
-class ItemEntity;
-class TimedEffects;
 
 enum class INCIDENT {
     WALK = 0,

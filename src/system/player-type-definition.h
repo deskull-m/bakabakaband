@@ -1,45 +1,8 @@
 #pragma once
 
-#include "combat/martial-arts-style.h"
-#include "mutation/mutation-flag-types.h"
-#include "object-enchant/trc-types.h"
-#include "player-ability/player-ability-types.h"
-#include "player-info/class-specific-data.h"
-#include "player-info/class-types.h"
-#include "player-info/race-types.h"
-#include "player/player-personality-types.h"
-#include "player/player-sex.h"
-#include "system/angband.h"
 #include "system/creature-entity.h"
-#include "system/enums/dungeon/dungeon-id.h"
-#include "system/system-variables.h"
-#include "util/dice.h"
-#include "util/flag-group.h"
-#include "util/point-2d.h"
-#include <array>
-#include <map>
-#include <string>
 #include <string_view>
 
-// Forward declarations
-struct player_race_info;
-struct player_personality;
-struct player_class_info;
-
-enum class DungeonId;
-enum class ElementRealmType;
-enum class FixedArtifactId : short;
-enum class ItemKindType : short;
-enum class MimicKindType;
-enum class MonraceId : int16_t;
-enum class MonsterAbilityType;
-enum class PlayerSkillKindType;
-enum class RealmType;
-enum class Virtue : short;
-class Direction;
-class FloorType;
-class ItemEntity;
-class TimedEffects;
 class PlayerType : public CreatureEntity {
 public:
     PlayerType();
