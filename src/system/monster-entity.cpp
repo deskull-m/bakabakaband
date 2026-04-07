@@ -577,17 +577,6 @@ int MonsterEntity::get_ac() const
     return this->ac;
 }
 
-// CreatureEntityインターフェースの実装
-int MonsterEntity::get_current_hp() const
-{
-    return this->hp;
-}
-
-int MonsterEntity::get_max_hp() const
-{
-    return this->maxhp;
-}
-
 int MonsterEntity::get_level() const
 {
     // 個体レベルが設定されていればそれを使用、未設定なら種族レベルを使用
