@@ -356,8 +356,12 @@ public:
     /*!
      * @brief クリーチャーがプレイヤーかどうかを判定
      * @return プレイヤーならtrue、モンスターならfalse
+     * @details デフォルトはfalse（モンスター）。PlayerTypeのみtrueを返す。
      */
-    virtual bool is_player() const = 0;
+    virtual bool is_player() const
+    {
+        return false;
+    }
 
     /*!
      * @brief クリーチャーの実効ACを取得
@@ -434,10 +438,14 @@ public:
     tl::optional<std::string> get_pain_message(std::string_view monster_name, int damage) const;
 
     /*!
-     * @brief カメレオンの変身を元に戻す。モンスター以外は何もしない。
+     * @brief カメレオンの変身を元に戻す。
+     * @details r_idx と ap_r_idx を実種族IDにリセットする。
      */
     virtual void reset_chameleon_polymorph()
     {
+        const auto real_id = this->get_real_monrace_id();
+        this->r_idx = real_id;
+        this->ap_r_idx = real_id;
     }
 
     virtual void make_lore_treasure([[maybe_unused]] int num_item, [[maybe_unused]] int num_gold) const
@@ -583,8 +591,15 @@ public:
     {
     }
 
+    /*!
+     * @brief クリーチャーをフレンドリー状態に設定する
+     * @details モンスターの場合は FRIENDLY フラグをセットする。
+     */
     virtual void set_friendly()
     {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().mflag2.set(MonsterConstantFlagType::FRIENDLY);
+        }
     }
 
     virtual void set_individual_speed([[maybe_unused]] bool force_fixed_speed)

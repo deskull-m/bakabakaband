@@ -38,8 +38,6 @@ public:
     void set_individual_speed(bool force_fixed_speed) override;
     void set_hostile() override;
     void make_lore_treasure(int num_item, int num_gold) const override;
-    void reset_chameleon_polymorph() override;
-    void set_friendly() override;
     void initialize_equivalent_player_races() override;
     void initialize_equivalent_player_classes() override;
 
@@ -47,7 +45,6 @@ public:
     bool is_dead() const override;
 
     int get_level() const override;
-    bool is_player() const override;
 
 private:
     tl::optional<bool> order_pet_named(const CreatureEntity &other) const;
