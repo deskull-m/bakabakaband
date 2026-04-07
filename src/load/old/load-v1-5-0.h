@@ -1,7 +1,9 @@
 #pragma once
 
 #include "system/angband.h"
-#include "system/monster-entity.h"
+#include "system/enums/monrace/monrace-id.h"
+
+class MonraceDefinition;
 
 // TODO: 更に分割する可能性が中程度あるのでヘッダに置いておく
 enum old_monster_resistance_type {
