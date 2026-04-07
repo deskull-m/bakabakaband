@@ -11,6 +11,7 @@
 #include "floor/floor-save-util.h"
 #include "floor/floor-save.h"
 #include "floor/floor-util.h"
+#include "floor/party-monsters.h"
 #include "floor/wild.h"
 #include "game-option/birth-options.h"
 #include "game-option/play-record-options.h"
@@ -105,7 +106,7 @@ static std::pair<short, Pos2D> decide_pet_index(CreatureEntity &creature, const 
         int j;
         for (j = 1000; j > 0; j--) {
             pos = scatter(floor, p_pos, d, PROJECT_NONE);
-            if (monster_can_enter(player_ptr, pos.y, pos.x, party_mon[current_monster].get_monrace(), 0)) {
+            if (monster_can_enter(player_ptr, pos.y, pos.x, party_monsters[current_monster].get_monrace(), 0)) {
                 break;
             }
         }
@@ -126,7 +127,7 @@ static MonraceDefinition &set_pet_params(CreatureEntity &creature, const int cur
 
     player_ptr->current_floor_ptr->grid_array[cy][cx].m_idx = m_idx;
     auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
-    monster = party_mon[current_monster].clone();
+    monster = party_monsters[current_monster].clone();
     monster.y = cy;
     monster.x = cx;
     monster.current_floor_ptr = player_ptr->current_floor_ptr;
@@ -151,10 +152,10 @@ static void place_pet(CreatureEntity &creature)
     auto &player = static_cast<PlayerType &>(creature);
     auto *player_ptr = &player;
 
-    const auto max_num = AngbandWorld::get_instance().is_wild_mode() ? 1 : MAX_PARTY_MON;
+    const auto max_num = AngbandWorld::get_instance().is_wild_mode() ? 1 : PartyMonsters::MAX_SIZE;
     auto &floor = *player_ptr->current_floor_ptr;
     for (int current_monster = 0; current_monster < max_num; current_monster++) {
-        if (!MonraceList::is_valid(party_mon[current_monster].r_idx)) {
+        if (!MonraceList::is_valid(party_monsters[current_monster].r_idx)) {
             continue;
         }
 
@@ -167,7 +168,7 @@ static void place_pet(CreatureEntity &creature)
                 floor.num_repro++;
             }
         } else {
-            const auto &monster = party_mon[current_monster];
+            const auto &monster = party_monsters[current_monster];
             auto &monrace = monster.get_real_monrace();
             msg_format(_("%sとはぐれてしまった。", "You have lost sight of %s."), monster_desc(*player_ptr, monster, 0).data());
             if (record_named_pet && monster.is_named()) {
@@ -180,9 +181,7 @@ static void place_pet(CreatureEntity &creature)
         }
     }
 
-    for (auto &monster : party_mon) {
-        monster.wipe();
-    }
+    party_monsters.wipe_all();
 }
 
 /*!

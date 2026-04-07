@@ -638,6 +638,7 @@ hengband_SOURCES = \
 	floor/floor-object.cpp floor/floor-object.h \
 	floor/floor-save.cpp floor/floor-save.h \
 	floor/floor-save-util.cpp floor/floor-save-util.h \
+	floor/party-monsters.cpp floor/party-monsters.h \
 	floor/floor-streams.cpp floor/floor-streams.h \
 	floor/floor-util.cpp floor/floor-util.h \
 	floor/geometry.cpp floor/geometry.h \

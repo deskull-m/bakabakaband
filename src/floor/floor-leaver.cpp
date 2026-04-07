@@ -4,6 +4,7 @@
 #include "floor/floor-save-util.h"
 #include "floor/floor-save.h"
 #include "floor/line-of-sight.h"
+#include "floor/party-monsters.h"
 #include "floor/wild.h"
 #include "game-option/birth-options.h"
 #include "game-option/play-record-options.h"
@@ -56,7 +57,7 @@ static void check_riding_preservation(CreatureEntity &creature)
         player_ptr->pet_extra_flags &= ~(PF_TWO_HANDS);
         player_ptr->riding_ryoute = player_ptr->old_riding_ryoute = false;
     } else {
-        party_mon[0] = monster.clone();
+        party_monsters[0] = monster.clone();
         delete_monster_idx(creature, player_ptr->riding);
     }
 }
@@ -99,13 +100,13 @@ static void sweep_preserving_pet(CreatureEntity &creature)
         return;
     }
 
-    for (MONSTER_IDX i = player_ptr->current_floor_ptr->m_max - 1, party_monster_num = 1; (i >= 1) && (party_monster_num < MAX_PARTY_MON); i--) {
+    for (MONSTER_IDX i = player_ptr->current_floor_ptr->m_max - 1, party_monster_num = 1; (i >= 1) && (party_monster_num < PartyMonsters::MAX_SIZE); i--) {
         const auto &monster = player_ptr->current_floor_ptr->m_list[i];
         if (!monster.is_valid() || !monster.is_pet() || monster.is_riding() || check_pet_preservation_conditions(creature, monster)) {
             continue;
         }
 
-        party_mon[party_monster_num] = player_ptr->current_floor_ptr->m_list[i].clone();
+        party_monsters[party_monster_num] = player_ptr->current_floor_ptr->m_list[i].clone();
         party_monster_num++;
         delete_monster_idx(creature, i);
     }
@@ -140,9 +141,7 @@ static void preserve_pet(CreatureEntity &creature)
     auto &player = static_cast<PlayerType &>(creature);
     auto *player_ptr = &player;
 
-    for (auto &mon : party_mon) {
-        mon.r_idx = MonraceList::empty_id();
-    }
+    party_monsters.invalidate_all();
 
     check_riding_preservation(creature);
     sweep_preserving_pet(creature);
