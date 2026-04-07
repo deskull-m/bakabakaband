@@ -32,14 +32,12 @@ public:
     tl::optional<bool> order_pet_dismission(const CreatureEntity &other) const;
     bool can_ring_boss_call_nazgul() const;
     std::string build_looking_description(bool needs_attitude) const override;
-    int get_ac() const override;
 
     void set_individual_speed(bool force_fixed_speed) override;
     void set_hostile() override;
     void initialize_equivalent_player_races() override;
     void initialize_equivalent_player_classes() override;
 
-    bool is_valid() const override;
     bool is_dead() const override;
 
     int get_level() const override;
