@@ -927,7 +927,7 @@ MonsterSpellResult spell_RF6_S_DRAGON(CreatureEntity &creature, POSITION y, POSI
 MonsterSpellResult spell_RF6_S_HI_UNDEAD(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     auto &floor = *creature.current_floor_ptr;
-    const auto &monster = floor.get_monster(m_idx);
+    const auto &monster = floor.m_list[m_idx];
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
@@ -937,7 +937,7 @@ MonsterSpellResult spell_RF6_S_HI_UNDEAD(CreatureEntity &creature, POSITION y, P
     summon_disturb(creature, target_type, known, see_either);
 
     int count = 0;
-    if (static_cast<const MonsterEntity &>(monster).can_ring_boss_call_nazgul() && mon_to_player) {
+    if (monster.can_ring_boss_call_nazgul() && mon_to_player) {
         count += summon_NAZGUL(creature, y, x, m_idx);
     } else {
         mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
