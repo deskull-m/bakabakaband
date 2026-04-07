@@ -10,10 +10,8 @@
  * The "hold_o_idx" field points to the first object of a stack
  * of objects (if any) being carried by the monster (see above).
  */
-class MonsterEntityWriter;
 class MonsterEntity : public CreatureEntity {
 public:
-    friend class MonsterEntityWriter;
     MonsterEntity();
     MonsterEntity(MonsterEntity &&) = default;
     MonsterEntity &operator=(MonsterEntity &&) = default;
