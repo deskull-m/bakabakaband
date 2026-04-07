@@ -603,9 +603,7 @@ public:
      * @brief クリーチャーを敵対状態に設定する
      * @note モンスターの場合はペット・フレンドリーフラグをリセットし同盟も更新する。プレイヤーには無効。
      */
-    virtual void set_hostile()
-    {
-    }
+    virtual void set_hostile();
 
     /*!
      * @brief クリーチャーをフレンドリー状態に設定する
@@ -660,6 +658,8 @@ public:
     virtual bool is_hostile_to_melee(const CreatureEntity &other) const;
     bool is_hostile_align(byte other_sub_align) const;
     bool is_mimicry() const;
+    tl::optional<bool> order_pet_whistle(const CreatureEntity &other) const;
+    tl::optional<bool> order_pet_dismission(const CreatureEntity &other) const;
 
     /*!
      * @brief クリーチャーが騎乗されているかどうかを判定
@@ -1174,4 +1174,6 @@ protected:
 private:
     std::string build_damage_description() const;
     std::string build_attitude_description() const;
+    tl::optional<bool> order_pet_named(const CreatureEntity &other) const;
+    tl::optional<bool> order_pet_hp(const CreatureEntity &other) const;
 };
