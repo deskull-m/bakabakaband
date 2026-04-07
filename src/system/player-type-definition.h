@@ -59,8 +59,6 @@ public:
 
     bool is_player() const override;
 
-    int get_ac() const override;
-
     void on_take_hit(int damage) override;
     void on_death(std::string_view cause) override;
 

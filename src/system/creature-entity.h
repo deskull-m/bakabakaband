@@ -294,9 +294,7 @@ public:
 
     /*!
      * @brief クリーチャーの実効ACを取得
-     * @return 実効AC値（プレイヤーは ac + to_a、モンスターは NAKED フラグ考慮後の ac）
-     * @details デフォルト実装はモンスター用（NAKED フラグで 0 を返す場合あり）。
-     *          PlayerType はオーバーライドして ac + to_a を返す。
+     * @return 実効AC値（ac + to_a。ただしモンスターで NAKED フラグ付きの場合は 0）
      */
     virtual int get_ac() const;
 

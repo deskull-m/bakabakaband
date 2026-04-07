@@ -149,11 +149,6 @@ bool PlayerType::is_player() const
     return true;
 }
 
-int PlayerType::get_ac() const
-{
-    return this->ac + this->to_a;
-}
-
 short PlayerType::get_timed_effect(CreatureTimedEffect effect) const
 {
     const auto &eff = *this->effects();
