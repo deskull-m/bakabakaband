@@ -372,8 +372,15 @@ public:
     /*!
      * @brief ダメージを受けた際のフック（dealt_damage等の蓄積処理）
      * @param damage 受けたダメージ量
+     * @details dealt_damage を加算し max_maxhp * 100 を上限とする。
      */
-    virtual void on_take_hit([[maybe_unused]] int damage) {}
+    virtual void on_take_hit(int damage)
+    {
+        this->dealt_damage += damage;
+        if (this->dealt_damage > this->max_maxhp * 100) {
+            this->dealt_damage = this->max_maxhp * 100;
+        }
+    }
 
     /*!
      * @brief 死亡した際のフック（死亡処理・記録等）

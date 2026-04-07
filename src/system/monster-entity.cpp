@@ -503,11 +503,3 @@ int MonsterEntity::get_level() const
     }
     return this->get_monrace().level / 2;
 }
-
-void MonsterEntity::on_take_hit(int damage)
-{
-    this->dealt_damage += damage;
-    if (this->dealt_damage > this->max_maxhp * 100) {
-        this->dealt_damage = this->max_maxhp * 100;
-    }
-}
