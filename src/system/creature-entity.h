@@ -360,12 +360,9 @@ public:
 
     /*!
      * @brief クリーチャーのレベルを取得
-     * @return レベル値
+     * @return レベル値。個体レベルが設定されていればそれを返し、未設定なら種族レベルの半分を返す。
      */
-    virtual int get_level() const
-    {
-        return this->level;
-    }
+    virtual int get_level() const;
 
     /*!
      * @brief クリーチャーがプレイヤーかどうかを判定
@@ -616,9 +613,7 @@ public:
         }
     }
 
-    virtual void set_individual_speed([[maybe_unused]] bool force_fixed_speed)
-    {
-    }
+    virtual void set_individual_speed(bool force_fixed_speed);
 
     /*!
      * @brief モンスターのフラグに基づいて対応するプレイヤー種族IDを初期化する
