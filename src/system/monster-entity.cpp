@@ -222,19 +222,6 @@ std::string MonsterEntity::get_pronoun_of_summoned_kin() const
     return this->get_monrace().get_pronoun_of_summoned_kin();
 }
 
-void MonsterEntity::make_lore_treasure(int num_item, int num_gold) const
-{
-    auto &monrace = this->get_monrace();
-    if (!this->is_original_ap()) {
-        return;
-    }
-
-    monrace.make_lore_treasure(num_item, num_gold);
-    if (LoreTracker::get_instance().is_tracking(this->r_idx)) {
-        RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
-    }
-}
-
 tl::optional<bool> MonsterEntity::order_pet_named(const CreatureEntity &other) const
 {
     if (this->is_named() && !other.is_named()) {

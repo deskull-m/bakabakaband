@@ -14,6 +14,7 @@
 #include "term/z-form.h"
 #include "term/z-rand.h"
 #include "timed-effect/timed-effects.h"
+#include "tracking/lore-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include <range/v3/algorithm.hpp>
 
@@ -305,6 +306,19 @@ void CreatureEntity::set_timed_effect(CreatureTimedEffect effect, short value)
         break;
     default:
         break;
+    }
+}
+
+void CreatureEntity::make_lore_treasure(int num_item, int num_gold) const
+{
+    auto &monrace = this->get_monrace();
+    if (!this->is_original_ap()) {
+        return;
+    }
+
+    monrace.make_lore_treasure(num_item, num_gold);
+    if (LoreTracker::get_instance().is_tracking(this->r_idx)) {
+        RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
     }
 }
 
