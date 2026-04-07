@@ -7,9 +7,13 @@
 #include "monster/monster-flag-types.h"
 #include "monster/monster-pain-describer.h"
 #include "player-ability/player-ability-types.h"
+#include "player-info/bard-data-type.h"
 #include "player-info/class-info.h"
 #include "player-info/class-types.h"
 #include "player-info/race-types.h"
+#include "player-info/sniper-data-type.h"
+#include "player-info/spell-hex-data-type.h"
+#include "realm/realm-song-numbers.h"
 #include "player/race-info-table.h"
 #include "system/angband-system.h"
 #include "system/floor/floor-info.h"
@@ -135,12 +139,28 @@ std::pair<TERM_COLOR, int> CreatureEntity::get_hp_bar_data() const
 
 bool CreatureEntity::is_time_limit_esp() const
 {
-    return this->tim_esp > 0;
+    if (this->tim_esp > 0) {
+        return true;
+    }
+
+    const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
+    if (bard && *bard && (*bard)->singing_song == MUSIC_MIND) {
+        return true;
+    }
+
+    const auto *sniper = std::get_if<std::shared_ptr<SniperData>>(&this->class_specific_data);
+    const auto sniper_concent = sniper && *sniper ? (*sniper)->concent : 0;
+    return sniper_concent >= CONCENT_TELE_THRESHOLD;
 }
 
 bool CreatureEntity::is_time_limit_stealth() const
 {
-    return this->tim_stealth > 0;
+    if (this->tim_stealth > 0) {
+        return true;
+    }
+
+    const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
+    return bard && *bard && (*bard)->singing_song == MUSIC_STEALTH;
 }
 
 /*!
@@ -239,12 +259,22 @@ bool CreatureEntity::is_fearful() const
 
 bool CreatureEntity::is_invulnerable() const
 {
-    return this->get_timed_effect(CreatureTimedEffect::INVULNERABILITY) > 0;
+    if (this->get_timed_effect(CreatureTimedEffect::INVULNERABILITY) > 0) {
+        return true;
+    }
+
+    const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
+    return bard && *bard && (*bard)->singing_song == MUSIC_INVULN;
 }
 
 bool CreatureEntity::is_fast() const
 {
-    return this->get_timed_effect(CreatureTimedEffect::ACCELERATION) > 0;
+    if (this->get_timed_effect(CreatureTimedEffect::ACCELERATION) > 0) {
+        return true;
+    }
+
+    const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
+    return bard && *bard && ((*bard)->singing_song == MUSIC_SPEED || (*bard)->singing_song == MUSIC_SHERO);
 }
 
 bool CreatureEntity::is_accelerated() const
@@ -265,6 +295,41 @@ bool CreatureEntity::is_blind() const
 bool CreatureEntity::is_paralyzed() const
 {
     return this->get_timed_effect(CreatureTimedEffect::PARALYSIS) > 0;
+}
+
+bool CreatureEntity::is_blessed() const
+{
+    if (this->blessed > 0) {
+        return true;
+    }
+
+    const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
+    if (bard && *bard && (*bard)->singing_song == MUSIC_BLESS) {
+        return true;
+    }
+
+    const auto *hex = std::get_if<std::shared_ptr<spell_hex_data_type>>(&this->class_specific_data);
+    return hex && *hex && (*hex)->casting_spells.has(HEX_BLESS);
+}
+
+bool CreatureEntity::is_hero() const
+{
+    if (this->hero > 0) {
+        return true;
+    }
+
+    const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
+    return bard && *bard && ((*bard)->singing_song == MUSIC_HERO || (*bard)->singing_song == MUSIC_SHERO);
+}
+
+bool CreatureEntity::is_shero() const
+{
+    return this->berserk > 0 || this->pclass == PlayerClassType::BERSERKER;
+}
+
+bool CreatureEntity::is_echizen() const
+{
+    return this->ppersonality == PERSONALITY_COMBAT || this->is_wielding(FixedArtifactId::CRIMSON);
 }
 
 short CreatureEntity::get_timed_effect(CreatureTimedEffect effect) const
