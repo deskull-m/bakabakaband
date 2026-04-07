@@ -849,3 +849,13 @@ void CreatureEntity::set_individual_speed(bool force_fixed_speed)
 
     this->speed = speed;
 }
+
+bool CreatureEntity::can_ring_boss_call_nazgul() const
+{
+    auto is_boss = this->r_idx == MonraceId::MORGOTH;
+    is_boss |= this->r_idx == MonraceId::SAURON;
+    is_boss |= this->r_idx == MonraceId::ANGMAR;
+    const auto &nazgul = MonraceList::get_instance().get_monrace(MonraceId::NAZGUL);
+    const auto is_nazgul_alive = (nazgul.cur_num + 2) < nazgul.max_num;
+    return is_boss && is_nazgul_alive;
+}

@@ -1,7 +1,5 @@
 #include "system/monster-entity.h"
 #include "system/enums/monrace/monrace-id.h"
-#include "system/monrace/monrace-definition.h"
-#include "system/monrace/monrace-list.h"
 
 MonsterEntity::MonsterEntity()
 {
@@ -29,14 +27,3 @@ MonsterEntity MonsterEntity::clone() const
 {
     return *this;
 }
-
-bool MonsterEntity::can_ring_boss_call_nazgul() const
-{
-    auto is_boss = this->r_idx == MonraceId::MORGOTH;
-    is_boss |= this->r_idx == MonraceId::SAURON;
-    is_boss |= this->r_idx == MonraceId::ANGMAR;
-    const auto &nazgul = MonraceList::get_instance().get_monrace(MonraceId::NAZGUL);
-    const auto is_nazgul_alive = (nazgul.cur_num + 2) < nazgul.max_num;
-    return is_boss && is_nazgul_alive;
-}
-
