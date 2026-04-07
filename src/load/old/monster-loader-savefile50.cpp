@@ -11,7 +11,7 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
@@ -19,7 +19,7 @@
 /*!
  * @brief モンスターを読み込む(v3.0.0 Savefile ver50まで)
  */
-void MonsterLoader50::rd_monster(MonsterEntity &monster)
+void MonsterLoader50::rd_monster(CreatureEntity &monster)
 {
     auto flags = rd_u32b();
     monster.r_idx = i2enum<MonraceId>(rd_s16b());
