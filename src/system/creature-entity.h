@@ -381,16 +381,20 @@ public:
      * @brief クリーチャーの時限効果の残りターン数を取得
      * @param effect 取得する時限効果の種別
      * @return 残りターン数（0なら効果なし）
+     * @details デフォルト実装は MonsterProfile::mtimed を参照する（モンスター用）。
+     *          PlayerType はオーバーライドして TimedEffects を使う。
      */
-    virtual short get_timed_effect(CreatureTimedEffect effect) const = 0;
+    virtual short get_timed_effect(CreatureTimedEffect effect) const;
 
     /*!
      * @brief クリーチャーの時限効果の残りターン数を直接設定する（セーブ/ロード・内部操作用）
      * @param effect 設定する時限効果の種別
      * @param value 設定するターン数
      * @note メッセージや副作用は発生しない。ゲームロジックからの呼び出しには専用セッターを使うこと。
+     * @details デフォルト実装は MonsterProfile::mtimed を更新する（モンスター用）。
+     *          PlayerType はオーバーライドして TimedEffects を使う。
      */
-    virtual void set_timed_effect(CreatureTimedEffect effect, short value) = 0;
+    virtual void set_timed_effect(CreatureTimedEffect effect, short value);
 
     short get_remaining_sleep() const
     {
