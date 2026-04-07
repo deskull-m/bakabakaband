@@ -13,6 +13,7 @@
 #include "core/asking-player.h"
 #include "floor/floor-mode-changer.h"
 #include "floor/floor-save-util.h"
+#include "floor/party-monsters.h"
 #include "io/files-util.h"
 #include "io/uid-checker.h"
 #include "monster/monster-info.h"
@@ -23,7 +24,6 @@
 #include "term/z-form.h"
 #include "util/angband-files.h"
 #include "view/display-messages.h"
-#include "world/world.h"
 #include <ctime>
 
 static std::string get_saved_floor_name(int level)
@@ -213,18 +213,9 @@ FLOOR_IDX get_unused_floor_id(CreatureEntity &creature)
 }
 
 /*!
- * @brief フロアにいるペットの数を数える
- * @todo party_mon をPartyMonsters クラスに組み上げてそのオブジェクトメソッドに繰り込む
+ * @brief フロアにいるペットの種族出現数カウンタを加算する
  */
 void precalc_cur_num_of_pet()
 {
-    const auto max_num = AngbandWorld::get_instance().is_wild_mode() ? 1 : MAX_PARTY_MON;
-    for (auto i = 0; i < max_num; i++) {
-        auto &monster = party_mon[i];
-        if (!monster.is_valid()) {
-            continue;
-        }
-
-        monster.get_real_monrace().increment_current_numbers();
-    }
+    party_monsters.precalc_cur_num_of_pet();
 }

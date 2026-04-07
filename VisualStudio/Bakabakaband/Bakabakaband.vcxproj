@@ -504,6 +504,7 @@
     <ClCompile Include="..\..\src\floor\floor-leaver.cpp" />
     <ClCompile Include="..\..\src\floor\floor-mode-changer.cpp" />
     <ClCompile Include="..\..\src\floor\floor-save-util.cpp" />
+    <ClCompile Include="..\..\src\floor\party-monsters.cpp" />
     <ClCompile Include="..\..\src\floor\floor-util.cpp" />
     <ClCompile Include="..\..\src\floor\line-of-sight.cpp" />
     <ClCompile Include="..\..\src\floor\object-allocator.cpp" />
@@ -1403,6 +1404,7 @@
     <ClInclude Include="..\..\src\floor\floor-base-definitions.h" />
     <ClInclude Include="..\..\src\floor\floor-generator-util.h" />
     <ClInclude Include="..\..\src\floor\floor-save-util.h" />
+    <ClInclude Include="..\..\src\floor\party-monsters.h" />
     <ClInclude Include="..\..\src\floor\floor-util.h" />
     <ClInclude Include="..\..\src\floor\line-of-sight.h" />
     <ClInclude Include="..\..\src\floor\object-allocator.h" />
