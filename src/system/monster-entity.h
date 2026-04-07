@@ -12,10 +12,6 @@
  * The "hold_o_idx" field points to the first object of a stack
  * of objects (if any) being carried by the monster (see above).
  */
-enum class MonraceId : int16_t;
-enum class PlayerRaceType;
-enum class PlayerClassType : short;
-class FloorType;
 class MonsterEntityWriter;
 class MonsterEntity : public CreatureEntity {
 public:
