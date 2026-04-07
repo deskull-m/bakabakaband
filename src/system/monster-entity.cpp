@@ -3,19 +3,11 @@
 #include "core/speed-table.h"
 #include "monster-race/race-kind-flags.h"
 #include "monster/monster-status.h"
-#include "player-info/class-info.h"
-#include "player-info/class-types.h"
-#include "player-info/race-types.h"
-#include "player/race-info-table.h"
 #include "system/angband-system.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
-#include "tracking/lore-tracker.h"
-#include "util/enum-converter.h"
-#include "util/string-processor.h"
 #include <algorithm>
 
 MonsterEntity::MonsterEntity()
