@@ -40,7 +40,6 @@ public:
     std::string build_looking_description(bool needs_attitude) const override;
     int get_ac() const override;
     void on_take_hit(int damage) override;
-    void on_death(std::string_view cause) override;
 
     void set_individual_speed(bool force_fixed_speed) override;
     void set_hostile() override;
