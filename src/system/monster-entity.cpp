@@ -217,16 +217,6 @@ void MonsterEntity::set_hostile()
     }
 }
 
-/*
- * 捕獲・死亡の際にカメレオンの変身を元に戻す
- */
-void MonsterEntity::reset_chameleon_polymorph()
-{
-    auto real_monrace_id = this->get_real_monrace_id();
-    this->r_idx = real_monrace_id;
-    this->ap_r_idx = real_monrace_id;
-}
-
 std::string MonsterEntity::get_pronoun_of_summoned_kin() const
 {
     return this->get_monrace().get_pronoun_of_summoned_kin();
@@ -269,14 +259,6 @@ tl::optional<bool> MonsterEntity::order_pet_hp(const CreatureEntity &other) cons
     }
 
     return tl::nullopt;
-}
-
-/*!
- * @brief モンスターを友好的にする
- */
-void MonsterEntity::set_friendly()
-{
-    this->get_monster_profile().mflag2.set(MonsterConstantFlagType::FRIENDLY);
 }
 
 /*!
@@ -533,11 +515,6 @@ int MonsterEntity::get_level() const
         return this->level;
     }
     return this->get_monrace().level / 2;
-}
-
-bool MonsterEntity::is_player() const
-{
-    return false;
 }
 
 void MonsterEntity::on_take_hit(int damage)
