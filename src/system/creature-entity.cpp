@@ -322,6 +322,19 @@ void CreatureEntity::make_lore_treasure(int num_item, int num_gold) const
     }
 }
 
+bool CreatureEntity::is_valid() const
+{
+    return MonraceList::is_valid(this->r_idx);
+}
+
+int CreatureEntity::get_ac() const
+{
+    if (this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::NAKED)) {
+        return 0;
+    }
+    return this->ac;
+}
+
 /*!
  * @brief ツリー構造インシデント数加算
  * @param incident_id 階層構造のインシデントID（例: "root/attack/critical"）

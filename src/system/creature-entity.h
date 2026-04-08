@@ -277,14 +277,24 @@ public:
     /*!
      * @brief クリーチャーが有効（生存中）かどうかを判定
      * @return 有効ならtrue
+     * @details デフォルト実装は MonraceList::is_valid(r_idx)（モンスター用）。
+     *          PlayerType はオーバーライドして常に true を返す。
      */
-    virtual bool is_valid() const = 0;
+    virtual bool is_valid() const;
 
     /*!
      * @brief クリーチャーが死亡しているかどうかを判定
      * @return 死亡していればtrue
      */
     virtual bool is_dead() const = 0;
+
+    /*!
+     * @brief クリーチャーの実効ACを取得
+     * @return 実効AC値（プレイヤーは ac + to_a、モンスターは NAKED フラグ考慮後の ac）
+     * @details デフォルト実装はモンスター用（NAKED フラグで 0 を返す場合あり）。
+     *          PlayerType はオーバーライドして ac + to_a を返す。
+     */
+    virtual int get_ac() const;
 
     /*!
      * @brief クリーチャーが所属するフロアを取得
@@ -362,12 +372,6 @@ public:
     {
         return false;
     }
-
-    /*!
-     * @brief クリーチャーの実効ACを取得
-     * @return 実効AC値（プレイヤーは ac + to_a、モンスターは総合AC）
-     */
-    virtual int get_ac() const = 0;
 
     /*!
      * @brief ダメージを受けた際のフック（dealt_damage等の蓄積処理）

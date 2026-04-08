@@ -116,11 +116,6 @@ bool MonsterEntity::is_mimicry() const
     return monrace.behavior_flags.has(MonsterBehaviorType::NEVER_MOVE) || this->is_asleep();
 }
 
-bool MonsterEntity::is_valid() const
-{
-    return MonraceList::is_valid(this->r_idx);
-}
-
 bool MonsterEntity::is_dead() const
 {
     return this->hp < 0;
@@ -485,14 +480,6 @@ std::string MonsterEntity::build_attitude_description() const
     }
 
     return "";
-}
-
-int MonsterEntity::get_ac() const
-{
-    if (this->get_monster_profile().mflag2.has(MonsterConstantFlagType::NAKED)) {
-        return 0;
-    }
-    return this->ac;
 }
 
 int MonsterEntity::get_level() const
