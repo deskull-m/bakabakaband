@@ -448,9 +448,13 @@ public:
         this->ap_r_idx = real_id;
     }
 
-    virtual void make_lore_treasure([[maybe_unused]] int num_item, [[maybe_unused]] int num_gold) const
-    {
-    }
+    /*!
+     * @brief ルアー記録に宝物情報を追加する
+     * @param num_item アイテム数
+     * @param num_gold 金貨数
+     * @details is_original_ap() でない場合は何もしない。
+     */
+    virtual void make_lore_treasure(int num_item, int num_gold) const;
 
     virtual std::string build_looking_description([[maybe_unused]] bool needs_attitude) const
     {

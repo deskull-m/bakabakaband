@@ -37,7 +37,6 @@ public:
 
     void set_individual_speed(bool force_fixed_speed) override;
     void set_hostile() override;
-    void make_lore_treasure(int num_item, int num_gold) const override;
     void initialize_equivalent_player_races() override;
     void initialize_equivalent_player_classes() override;
 
