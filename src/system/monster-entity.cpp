@@ -126,31 +126,6 @@ bool MonsterEntity::is_dead() const
     return this->hp < 0;
 }
 
-bool MonsterEntity::is_decelerated() const
-{
-    return this->get_remaining_deceleration() > 0;
-}
-
-bool MonsterEntity::is_stunned() const
-{
-    return this->get_remaining_stun() > 0;
-}
-
-bool MonsterEntity::is_confused() const
-{
-    return this->get_remaining_confusion() > 0;
-}
-
-bool MonsterEntity::is_fearful() const
-{
-    return this->get_remaining_fear() > 0;
-}
-
-bool MonsterEntity::is_invulnerable() const
-{
-    return this->get_remaining_invulnerability() > 0;
-}
-
 short MonsterEntity::get_timed_effect(CreatureTimedEffect effect) const
 {
     switch (effect) {
@@ -200,15 +175,6 @@ void MonsterEntity::set_timed_effect(CreatureTimedEffect effect, short value)
     default:
         break;
     }
-}
-
-/*!
- * @brief モンスターの基本速度を取得
- * @return 基本速度値
- */
-int MonsterEntity::get_speed() const
-{
-    return this->speed;
 }
 
 /*!
@@ -533,11 +499,6 @@ void MonsterEntity::initialize_equivalent_player_classes()
     }
 }
 
-Pos2D MonsterEntity::get_position() const
-{
-    return { this->y, this->x };
-}
-
 bool MonsterEntity::can_ring_boss_call_nazgul() const
 {
     auto is_boss = this->r_idx == MonraceId::MORGOTH;
@@ -617,16 +578,6 @@ int MonsterEntity::get_ac() const
 }
 
 // CreatureEntityインターフェースの実装
-POSITION MonsterEntity::get_x() const
-{
-    return this->x;
-}
-
-POSITION MonsterEntity::get_y() const
-{
-    return this->y;
-}
-
 int MonsterEntity::get_current_hp() const
 {
     return this->hp;
