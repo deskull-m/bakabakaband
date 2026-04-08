@@ -192,13 +192,19 @@ public:
      * @brief クリーチャーの現在HPを取得
      * @return 現在HP
      */
-    virtual int get_current_hp() const = 0;
+    virtual int get_current_hp() const
+    {
+        return this->hp;
+    }
 
     /*!
      * @brief クリーチャーの最大HPを取得
      * @return 最大HP
      */
-    virtual int get_max_hp() const = 0;
+    virtual int get_max_hp() const
+    {
+        return this->maxhp;
+    }
 
     /*!
      * @brief クリーチャーの速度を取得

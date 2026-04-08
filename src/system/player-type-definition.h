@@ -55,10 +55,6 @@ public:
     bool in_saved_floor() const;
     bool try_resist_eldritch_horror() const;
 
-    // CreatureEntityインターフェースの実装
-    int get_current_hp() const override;
-    int get_max_hp() const override;
-
     bool is_valid() const override;
     bool is_dead() const override;
 

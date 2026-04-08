@@ -50,10 +50,6 @@ public:
     void initialize_equivalent_player_races() override;
     void initialize_equivalent_player_classes() override;
 
-    // CreatureEntityインターフェースの実装
-    int get_current_hp() const override;
-    int get_max_hp() const override;
-
     bool is_valid() const override;
     bool is_dead() const override;
 

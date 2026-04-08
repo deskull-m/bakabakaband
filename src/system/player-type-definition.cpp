@@ -139,17 +139,6 @@ bool PlayerType::try_resist_eldritch_horror() const
     return evaluate_percent(this->skill_sav) || one_in_(2);
 }
 
-// CreatureEntityインターフェースの実装
-int PlayerType::get_current_hp() const
-{
-    return this->hp;
-}
-
-int PlayerType::get_max_hp() const
-{
-    return this->maxhp;
-}
-
 bool PlayerType::is_valid() const
 {
     return true; // プレイヤーは常に有効
