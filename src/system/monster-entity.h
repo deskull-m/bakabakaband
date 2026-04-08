@@ -33,7 +33,6 @@ public:
     bool can_ring_boss_call_nazgul() const;
     std::string build_looking_description(bool needs_attitude) const override;
     int get_ac() const override;
-    void on_take_hit(int damage) override;
 
     void set_individual_speed(bool force_fixed_speed) override;
     void set_hostile() override;
