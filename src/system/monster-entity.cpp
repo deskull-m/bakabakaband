@@ -126,57 +126,6 @@ bool MonsterEntity::is_dead() const
     return this->hp < 0;
 }
 
-short MonsterEntity::get_timed_effect(CreatureTimedEffect effect) const
-{
-    switch (effect) {
-    case CreatureTimedEffect::STUN:
-        return this->get_monster_profile().mtimed.at(MonsterTimedEffect::STUN);
-    case CreatureTimedEffect::CONFUSION:
-        return this->get_monster_profile().mtimed.at(MonsterTimedEffect::CONFUSION);
-    case CreatureTimedEffect::FEAR:
-        return this->get_monster_profile().mtimed.at(MonsterTimedEffect::FEAR);
-    case CreatureTimedEffect::INVULNERABILITY:
-        return this->get_monster_profile().mtimed.at(MonsterTimedEffect::INVULNERABILITY);
-    case CreatureTimedEffect::ACCELERATION:
-        return this->get_monster_profile().mtimed.at(MonsterTimedEffect::FAST);
-    case CreatureTimedEffect::DECELERATION:
-        return this->get_monster_profile().mtimed.at(MonsterTimedEffect::SLOW);
-    case CreatureTimedEffect::SLEEP_OR_PARALYSIS:
-        return this->get_monster_profile().mtimed.at(MonsterTimedEffect::SLEEP);
-    default:
-        return 0;
-    }
-}
-
-void MonsterEntity::set_timed_effect(CreatureTimedEffect effect, short value)
-{
-    switch (effect) {
-    case CreatureTimedEffect::STUN:
-        this->get_monster_profile().mtimed[MonsterTimedEffect::STUN] = value;
-        break;
-    case CreatureTimedEffect::CONFUSION:
-        this->get_monster_profile().mtimed[MonsterTimedEffect::CONFUSION] = value;
-        break;
-    case CreatureTimedEffect::FEAR:
-        this->get_monster_profile().mtimed[MonsterTimedEffect::FEAR] = value;
-        break;
-    case CreatureTimedEffect::INVULNERABILITY:
-        this->get_monster_profile().mtimed[MonsterTimedEffect::INVULNERABILITY] = value;
-        break;
-    case CreatureTimedEffect::ACCELERATION:
-        this->get_monster_profile().mtimed[MonsterTimedEffect::FAST] = value;
-        break;
-    case CreatureTimedEffect::DECELERATION:
-        this->get_monster_profile().mtimed[MonsterTimedEffect::SLOW] = value;
-        break;
-    case CreatureTimedEffect::SLEEP_OR_PARALYSIS:
-        this->get_monster_profile().mtimed[MonsterTimedEffect::SLEEP] = value;
-        break;
-    default:
-        break;
-    }
-}
-
 /*!
  * @brief モンスターが生命体かどうかを返す
  * @param is_apperance たぬき、カメレオン、各種誤認ならtrue
@@ -598,4 +547,3 @@ void MonsterEntity::on_take_hit(int damage)
         this->dealt_damage = this->max_maxhp * 100;
     }
 }
-

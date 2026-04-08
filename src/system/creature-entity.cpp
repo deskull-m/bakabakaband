@@ -247,6 +247,67 @@ bool CreatureEntity::is_decelerated() const
     return this->get_timed_effect(CreatureTimedEffect::DECELERATION) > 0;
 }
 
+short CreatureEntity::get_timed_effect(CreatureTimedEffect effect) const
+{
+    if (!this->has_monster_profile()) {
+        return 0;
+    }
+
+    const auto &mp = this->get_monster_profile();
+    switch (effect) {
+    case CreatureTimedEffect::STUN:
+        return mp.mtimed.at(MonsterTimedEffect::STUN);
+    case CreatureTimedEffect::CONFUSION:
+        return mp.mtimed.at(MonsterTimedEffect::CONFUSION);
+    case CreatureTimedEffect::FEAR:
+        return mp.mtimed.at(MonsterTimedEffect::FEAR);
+    case CreatureTimedEffect::INVULNERABILITY:
+        return mp.mtimed.at(MonsterTimedEffect::INVULNERABILITY);
+    case CreatureTimedEffect::ACCELERATION:
+        return mp.mtimed.at(MonsterTimedEffect::FAST);
+    case CreatureTimedEffect::DECELERATION:
+        return mp.mtimed.at(MonsterTimedEffect::SLOW);
+    case CreatureTimedEffect::SLEEP_OR_PARALYSIS:
+        return mp.mtimed.at(MonsterTimedEffect::SLEEP);
+    default:
+        return 0;
+    }
+}
+
+void CreatureEntity::set_timed_effect(CreatureTimedEffect effect, short value)
+{
+    if (!this->has_monster_profile()) {
+        return;
+    }
+
+    auto &mp = this->get_monster_profile();
+    switch (effect) {
+    case CreatureTimedEffect::STUN:
+        mp.mtimed[MonsterTimedEffect::STUN] = value;
+        break;
+    case CreatureTimedEffect::CONFUSION:
+        mp.mtimed[MonsterTimedEffect::CONFUSION] = value;
+        break;
+    case CreatureTimedEffect::FEAR:
+        mp.mtimed[MonsterTimedEffect::FEAR] = value;
+        break;
+    case CreatureTimedEffect::INVULNERABILITY:
+        mp.mtimed[MonsterTimedEffect::INVULNERABILITY] = value;
+        break;
+    case CreatureTimedEffect::ACCELERATION:
+        mp.mtimed[MonsterTimedEffect::FAST] = value;
+        break;
+    case CreatureTimedEffect::DECELERATION:
+        mp.mtimed[MonsterTimedEffect::SLOW] = value;
+        break;
+    case CreatureTimedEffect::SLEEP_OR_PARALYSIS:
+        mp.mtimed[MonsterTimedEffect::SLEEP] = value;
+        break;
+    default:
+        break;
+    }
+}
+
 /*!
  * @brief ツリー構造インシデント数加算
  * @param incident_id 階層構造のインシデントID（例: "root/attack/critical"）
