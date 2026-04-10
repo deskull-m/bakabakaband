@@ -5,6 +5,7 @@
  */
 
 #include "monster-attack/monster-attack-describer.h"
+#include "system/player-type-definition.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
 #include "monster-attack/insults-moans.h"

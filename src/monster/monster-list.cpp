@@ -24,7 +24,6 @@
 #include "system/monrace/monrace-allocation.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/system-variables.h"
 #include "view/display-messages.h"

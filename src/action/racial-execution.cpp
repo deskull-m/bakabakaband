@@ -16,7 +16,6 @@
 #include "racial/racial-util.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"

@@ -6,6 +6,7 @@
  */
 
 #include "cmd-action/cmd-spell.h"
+#include "system/player-type-definition.h"
 #include "action/action-limited.h"
 #include "autopick/autopick-reader-writer.h"
 #include "avatar/avatar.h"

@@ -5,7 +5,6 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief オブジェクトの真の価格を算出する /

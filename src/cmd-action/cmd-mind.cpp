@@ -11,6 +11,7 @@
  */
 
 #include "cmd-action/cmd-mind.h"
+#include "system/player-type-definition.h"
 #include "action/action-limited.h"
 #include "core/asking-player.h"
 #include "core/window-redrawer.h"

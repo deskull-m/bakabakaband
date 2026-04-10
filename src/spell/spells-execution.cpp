@@ -14,7 +14,6 @@
 #include "realm/realm-trump.h"
 #include "realm/realm-types.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief 魔法処理のメインルーチン

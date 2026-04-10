@@ -3,7 +3,6 @@
 #include "player-info/self-info-util.h"
 #include "player/player-status-flags.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 
 /*!< @todo FEAELESS フラグも記述して問題ないと思われる */

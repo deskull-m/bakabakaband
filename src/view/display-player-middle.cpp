@@ -24,7 +24,6 @@
 #include "system/floor/floor-info.h"
 #include "system/inner-game-data.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
 #include "timed-effect/timed-effects.h"

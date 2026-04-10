@@ -23,7 +23,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 

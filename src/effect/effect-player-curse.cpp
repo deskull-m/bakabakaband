@@ -1,4 +1,5 @@
 #include "effect/effect-player-curse.h"
+#include "system/player-type-definition.h"
 #include "blue-magic/blue-magic-checker.h"
 #include "effect/effect-player.h"
 #include "mind/mind-mirror-master.h"

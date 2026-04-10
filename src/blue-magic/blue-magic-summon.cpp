@@ -10,7 +10,6 @@
 #include "spell/spells-summon.h"
 #include "spell/summon-types.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 bool cast_blue_summon_kin(CreatureEntity &creature, bmc_type *bmc_ptr)

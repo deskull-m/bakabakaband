@@ -1,4 +1,5 @@
 #include "monster-attack/monster-attack-lose.h"
+#include "system/player-type-definition.h"
 #include "mind/mind-mirror-master.h"
 #include "monster-attack/monster-attack-player.h"
 #include "monster-attack/monster-attack-status.h"
@@ -10,7 +11,6 @@
 #include "status/base-status.h"
 #include "status/element-resistance.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 /*!

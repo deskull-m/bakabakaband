@@ -23,7 +23,6 @@
 #include "system/monrace/monrace-allocation.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "system/services/dungeon-monrace-service.h"
 #include "system/terrain/terrain-definition.h"
 #include "util/bit-flags-calculator.h"

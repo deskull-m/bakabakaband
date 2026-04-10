@@ -1,4 +1,5 @@
 #include "mind/mind-power-getter.h"
+#include "system/player-type-definition.h"
 #include "core/asking-player.h"
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"

@@ -6,7 +6,6 @@
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 
 MonsterDeath::MonsterDeath(FloorType &floor, short m_idx, bool drop_item)

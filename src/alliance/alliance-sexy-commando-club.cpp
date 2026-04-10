@@ -11,7 +11,6 @@
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"

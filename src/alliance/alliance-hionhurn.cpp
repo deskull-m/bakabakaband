@@ -1,6 +1,5 @@
 #include "alliance/alliance-hionhurn.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 
 int AllianceHionhurn::calcImpressionPoint(const CreatureEntity &creature) const
 {

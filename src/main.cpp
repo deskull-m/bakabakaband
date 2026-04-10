@@ -7,6 +7,7 @@
  */
 
 #include "core/asking-player.h"
+#include "system/player-type-definition.h"
 #include "core/game-play.h"
 #include "core/scores.h"
 #include "game-option/runtime-arguments.h"
@@ -19,7 +20,6 @@
 #include "player/process-name.h"
 #include "system/angband-version.h"
 #include "system/angband.h"
-#include "system/player-type-definition.h"
 #include "system/system-variables.h"
 #include "term/gameterm.h"
 #include "term/term-color-types.h"

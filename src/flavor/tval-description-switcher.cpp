@@ -5,6 +5,7 @@
  */
 
 #include "flavor/tval-description-switcher.h"
+#include "system/player-type-definition.h"
 #include "flavor/flavor-util.h"
 #include "flavor/object-flavor-types.h"
 #include "locale/english.h"

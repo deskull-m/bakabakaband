@@ -8,7 +8,6 @@
 #include "sv-definition/sv-lite-types.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 #include "world/world.h"

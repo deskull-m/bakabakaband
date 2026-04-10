@@ -28,7 +28,6 @@
 #include "object/tval-types.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 
 std::unique_ptr<EnchanterBase> EnchanterFactory::create_enchanter(CreatureEntity &creature, ItemEntity *o_ptr, int lev, int power)
 {

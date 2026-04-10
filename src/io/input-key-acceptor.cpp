@@ -1,4 +1,5 @@
 #include "io/input-key-acceptor.h"
+#include "system/player-type-definition.h"
 #include "cmd-io/macro-util.h"
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
@@ -6,7 +7,6 @@
 #include "game-option/map-screen-options.h"
 #include "io/macro-configurations-store.h"
 #include "io/signal-handlers.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "world/world.h"

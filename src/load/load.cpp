@@ -10,6 +10,7 @@
  */
 
 #include "load/load.h"
+#include "system/player-type-definition.h"
 #include "core/asking-player.h"
 #include "dungeon/quest.h"
 #include "game-option/birth-options.h"

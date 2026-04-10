@@ -5,6 +5,7 @@
  */
 
 #include "io/input-key-processor.h"
+#include "system/player-type-definition.h"
 #include "autopick/autopick-pref-processor.h"
 #include "cmd-action/cmd-hissatsu.h"
 #include "cmd-action/cmd-mane.h"

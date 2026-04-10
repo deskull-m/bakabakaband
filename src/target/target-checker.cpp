@@ -18,7 +18,6 @@
 #include "io/screen-util.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-preparation.h"
 #include "target/target-types.h"
