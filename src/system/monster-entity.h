@@ -31,8 +31,6 @@ public:
     tl::optional<bool> order_pet_whistle(const CreatureEntity &other) const;
     tl::optional<bool> order_pet_dismission(const CreatureEntity &other) const;
     bool can_ring_boss_call_nazgul() const;
-    std::string build_looking_description(bool needs_attitude) const override;
-
     void set_individual_speed(bool force_fixed_speed) override;
     void set_hostile() override;
 
@@ -43,6 +41,4 @@ public:
 private:
     tl::optional<bool> order_pet_named(const CreatureEntity &other) const;
     tl::optional<bool> order_pet_hp(const CreatureEntity &other) const;
-    std::string build_damage_description() const;
-    std::string build_attitude_description() const;
 };
