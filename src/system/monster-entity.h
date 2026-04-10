@@ -2,8 +2,6 @@
 
 #include "system/creature-entity.h"
 #include "system/monster-profile.h"
-#include <string>
-#include <string_view>
 
 /*!
  * @brief Monster information, for a specific monster.
@@ -27,16 +25,11 @@ public:
     bool is_hostile_to_melee(const CreatureEntity &other) const override;
     bool is_hostile_align(const byte other_sub_align) const;
     bool is_mimicry() const;
-    std::string get_pronoun_of_summoned_kin() const;
     tl::optional<bool> order_pet_whistle(const CreatureEntity &other) const;
     tl::optional<bool> order_pet_dismission(const CreatureEntity &other) const;
     bool can_ring_boss_call_nazgul() const;
-    std::string build_looking_description(bool needs_attitude) const override;
-
     void set_individual_speed(bool force_fixed_speed) override;
     void set_hostile() override;
-    void initialize_equivalent_player_races() override;
-    void initialize_equivalent_player_classes() override;
 
     bool is_dead() const override;
 
@@ -45,6 +38,4 @@ public:
 private:
     tl::optional<bool> order_pet_named(const CreatureEntity &other) const;
     tl::optional<bool> order_pet_hp(const CreatureEntity &other) const;
-    std::string build_damage_description() const;
-    std::string build_attitude_description() const;
 };

@@ -467,10 +467,7 @@ public:
      */
     virtual void make_lore_treasure(int num_item, int num_gold) const;
 
-    virtual std::string build_looking_description([[maybe_unused]] bool needs_attitude) const
-    {
-        return "";
-    }
+    virtual std::string build_looking_description(bool needs_attitude) const;
 
     /*!
      * @brief クリーチャーが睡眠状態かどうかを判定
@@ -621,13 +618,17 @@ public:
     {
     }
 
-    virtual void initialize_equivalent_player_races()
-    {
-    }
+    /*!
+     * @brief モンスターのフラグに基づいて対応するプレイヤー種族IDを初期化する
+     * @details モンスター以外では何もしない。
+     */
+    virtual void initialize_equivalent_player_races();
 
-    virtual void initialize_equivalent_player_classes()
-    {
-    }
+    /*!
+     * @brief モンスターのフラグに基づいて対応するプレイヤー職業IDを初期化する
+     * @details モンスター以外では何もしない。
+     */
+    virtual void initialize_equivalent_player_classes();
 
     byte get_temporary_speed() const;
 
@@ -1167,4 +1168,8 @@ public:
 
 protected:
     std::shared_ptr<TimedEffects> timed_effects; /*!< 時限効果管理オブジェクト */
+
+private:
+    std::string build_damage_description() const;
+    std::string build_attitude_description() const;
 };
