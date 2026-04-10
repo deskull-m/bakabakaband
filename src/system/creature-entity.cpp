@@ -652,7 +652,7 @@ int CreatureEntity::get_ac() const
     if (this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::NAKED)) {
         return 0;
     }
-    return this->ac;
+    return this->ac + this->to_a;
 }
 
 std::string CreatureEntity::build_looking_description(bool needs_attitude) const
