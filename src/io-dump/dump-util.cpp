@@ -1,5 +1,4 @@
 #include "io-dump/dump-util.h"
-#include "system/player-type-definition.h"
 #include "floor/geometry.h"
 #include "game-option/keymap-directory-getter.h"
 #include "game-option/special-options.h"

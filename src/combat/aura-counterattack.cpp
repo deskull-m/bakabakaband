@@ -5,7 +5,6 @@
  */
 
 #include "combat/aura-counterattack.h"
-#include "system/player-type-definition.h"
 #include "effect/attribute-types.h"
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"

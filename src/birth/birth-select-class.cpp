@@ -1,5 +1,4 @@
 #include "birth/birth-select-class.h"
-#include "system/player-type-definition.h"
 #include "birth/birth-util.h"
 #include "io/input-key-acceptor.h"
 #include "player-info/class-info.h"

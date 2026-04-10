@@ -11,7 +11,6 @@
  */
 
 #include "melee/melee-postprocess.h"
-#include "system/player-type-definition.h"
 #include "core/disturbance.h"
 #include "effect/attribute-types.h"
 #include "floor/geometry.h"

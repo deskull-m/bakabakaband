@@ -52,7 +52,6 @@
  */
 
 #include "cmd-item/cmd-magiceat.h"
-#include "system/player-type-definition.h"
 #include "action/action-limited.h"
 #include "avatar/avatar.h"
 #include "cmd-item/cmd-usestaff.h"

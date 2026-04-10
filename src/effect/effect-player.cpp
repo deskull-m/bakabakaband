@@ -5,7 +5,6 @@
  */
 
 #include "effect/effect-player.h"
-#include "system/player-type-definition.h"
 #include "core/disturbance.h"
 #include "effect/effect-characteristics.h"
 #include "effect/effect-player-switcher.h"

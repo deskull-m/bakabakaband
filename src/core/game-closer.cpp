@@ -6,7 +6,6 @@
  */
 
 #include "core/game-closer.h"
-#include "system/player-type-definition.h"
 #include "cmd-io/cmd-save.h"
 #include "core/asking-player.h"
 #include "core/score-util.h"

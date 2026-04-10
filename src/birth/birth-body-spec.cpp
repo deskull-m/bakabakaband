@@ -6,7 +6,6 @@
 #include "player/player-personality-types.h"
 #include "player/player-sex.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief クリーチャーの身長体重を決める / Get creature's height and weight

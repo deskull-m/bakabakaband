@@ -5,7 +5,6 @@
  */
 
 #include "mind/mind-samurai.h"
-#include "system/player-type-definition.h"
 #include "action/action-limited.h"
 #include "avatar/avatar.h"
 #include "cmd-action/cmd-attack.h"

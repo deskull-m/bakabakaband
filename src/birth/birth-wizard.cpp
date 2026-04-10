@@ -1,5 +1,4 @@
 #include "birth/birth-wizard.h"
-#include "system/player-type-definition.h"
 #include "avatar/avatar.h"
 #include "birth/auto-roller.h"
 #include "birth/birth-body-spec.h"
