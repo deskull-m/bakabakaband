@@ -64,15 +64,6 @@ public:
 
     short get_timed_effect(CreatureTimedEffect effect) const override;
     void set_timed_effect(CreatureTimedEffect effect, short value) override;
-
-    bool is_invulnerable() const override;
-    bool is_fast() const override;
-    bool is_blessed() const override;
-    bool is_hero() const override;
-    bool is_shero() const override;
-    bool is_echizen() const override;
-    bool is_time_limit_esp() const override;
-    bool is_time_limit_stealth() const override;
 };
 
 extern PlayerType *p_ptr;
