@@ -67,29 +67,6 @@ void PlayerType::ride_monster(MONSTER_IDX m_idx)
     }
 }
 
-/*!
- * @brief 自身の状態が全快で、かつフロアに影響を与えないかを検証する
- * @return 上記の通りか
- * @todo 時限効果系に分類されるものはいずれTimedEffectsクラスのメソッドとして繰り込みたい
- */
-bool PlayerType::is_fully_healthy() const
-{
-    auto effects = this->effects();
-    auto is_fully_healthy = this->hp == this->maxhp;
-    is_fully_healthy &= this->csp >= this->msp;
-    is_fully_healthy &= !effects->blindness().is_blind();
-    is_fully_healthy &= !effects->confusion().is_confused();
-    is_fully_healthy &= !effects->poison().is_poisoned();
-    is_fully_healthy &= !effects->fear().is_fearful();
-    is_fully_healthy &= !effects->stun().is_stunned();
-    is_fully_healthy &= !effects->cut().is_cut();
-    is_fully_healthy &= !effects->deceleration().is_slow();
-    is_fully_healthy &= !effects->paralysis().is_paralyzed();
-    is_fully_healthy &= !effects->hallucination().is_hallucinated();
-    is_fully_healthy &= !this->word_recall;
-    is_fully_healthy &= !this->alter_reality;
-    return is_fully_healthy;
-}
 
 bool PlayerType::is_located_at_running_destination() const
 {

@@ -298,6 +298,9 @@ public:
         return this->floor_id != 0;
     }
 
+    bool is_fully_healthy() const;
+
+
     /*!
      * @brief モンスターがいない場合にのみ位置を設定する
      * @return 設定できた場合 true

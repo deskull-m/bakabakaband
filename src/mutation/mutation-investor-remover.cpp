@@ -11,7 +11,6 @@
 #include "player-base/player-race.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -37,7 +36,7 @@ static void sweep_gain_mutation(CreatureEntity &creature, glm_type *gm_ptr)
 
 static void race_dependent_mutation(CreatureEntity &creature, glm_type *gm_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (gm_ptr->choose_mut != 0) {
         return;
     }
@@ -230,7 +229,7 @@ static void neutralize_other_status(CreatureEntity &creature, glm_type *gm_ptr)
  */
 bool gain_mutation(CreatureEntity &creature, MUTATION_IDX choose_mut)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     glm_type tmp_gm;
     glm_type *gm_ptr = initialize_glm_type(&tmp_gm, choose_mut);
     sweep_gain_mutation(creature, gm_ptr);
@@ -293,7 +292,7 @@ static void sweep_lose_mutation(CreatureEntity &creature, glm_type *glm_ptr)
  */
 bool lose_mutation(CreatureEntity &creature, MUTATION_IDX choose_mut)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     glm_type tmp_glm;
     glm_type *glm_ptr = initialize_glm_type(&tmp_glm, choose_mut);
     sweep_lose_mutation(creature, glm_ptr);
@@ -314,7 +313,7 @@ bool lose_mutation(CreatureEntity &creature, MUTATION_IDX choose_mut)
 
 void lose_all_mutations(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (creature.muta.any()) {
         chg_virtue(creature, Virtue::CHANCE, -5);
         msg_print(_("全ての突然変異が治った。", "You are cured of all mutations."));

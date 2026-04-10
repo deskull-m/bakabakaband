@@ -34,7 +34,6 @@
 #include "status/experience.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "view/display-messages.h"
 
@@ -44,7 +43,7 @@
  */
 void call_chaos(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     constexpr static auto hurt_types = { AttributeType::ELEC, AttributeType::POIS, AttributeType::ACID, AttributeType::COLD, AttributeType::FIRE,
         AttributeType::MISSILE, AttributeType::PLASMA, AttributeType::HOLY_FIRE, AttributeType::WATER, AttributeType::LITE,
         AttributeType::DARK, AttributeType::FORCE, AttributeType::INERTIAL, AttributeType::MANA, AttributeType::METEOR, AttributeType::ICE,
@@ -100,7 +99,7 @@ void call_chaos(CreatureEntity &creature)
  */
 bool activate_ty_curse(CreatureEntity &creature, bool stop_ty, int *count)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     BIT_FLAGS flg = (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP);
     bool is_first_curse = true;
     const auto &floor = *creature.current_floor_ptr;
@@ -255,7 +254,7 @@ bool activate_ty_curse(CreatureEntity &creature, bool stop_ty, int *count)
  */
 void wild_magic(CreatureEntity &creature, int spell)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     int type = SUMMON_MOLD + randint0(6);
     if (type < SUMMON_MOLD) {
         type = SUMMON_MOLD;
@@ -368,7 +367,7 @@ void wild_magic(CreatureEntity &creature, int spell)
  */
 void cast_wonder(CreatureEntity &creature, const Direction &dir)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     PLAYER_LEVEL plev = player.level;
     int die = randint1(100) + plev / 5;
     int vir = virtue_number(creature, Virtue::CHANCE);

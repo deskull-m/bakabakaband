@@ -43,7 +43,6 @@
 #include "system/floor/town-list.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "util/bit-flags-calculator.h"
@@ -281,17 +280,17 @@ static void generate_wilderness_area(FloorType &floor, const WildernessGrid &wg,
  */
 static void generate_area(CreatureEntity &creature, const Pos2D &pos, bool is_border, bool is_corner)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
+    auto &player = creature;
+
     const auto &wilderness = WildernessGrids::get_instance();
     const auto &wg = wilderness.get_grid(pos);
-    player_ptr->town_num = wg.get_town();
-    auto &floor = *player_ptr->current_floor_ptr;
+    player.town_num = wg.get_town();
+    auto &floor = *player.current_floor_ptr;
     floor.base_level = wg.get_level();
     floor.dun_level = 0;
     floor.monster_level = floor.base_level;
     floor.object_level = floor.base_level;
-    if (player_ptr->town_num) {
+    if (player.town_num) {
         init_buildings();
         if (is_border || is_corner) {
             init_flags = i2enum<init_flags_type>(INIT_CREATE_DUNGEON | INIT_ONLY_FEATURES);
@@ -306,11 +305,11 @@ static void generate_area(CreatureEntity &creature, const Pos2D &pos, bool is_bo
 
         for (auto tv : floor.vault_list) {
             const auto vault = &vaults_info[static_cast<int>(tv.id)];
-            build_vault(*vault, *player_ptr, tv.y, tv.x, vault->hgt, vault->wid, vault->text.data(), tv.yoffset, tv.xoffset, tv.transno);
+            build_vault(*vault, player, tv.y, tv.x, vault->hgt, vault->wid, vault->text.data(), tv.yoffset, tv.xoffset, tv.transno);
         }
 
         if (!is_corner && !is_border) {
-            player_ptr->visit |= (1UL << (player_ptr->town_num - 1));
+            player.visit |= (1UL << (player.town_num - 1));
         }
     } else {
         generate_wilderness_area(floor, wg, is_corner);
@@ -378,8 +377,8 @@ static void generate_area(CreatureEntity &creature, const Pos2D &pos, bool is_bo
  */
 static void generate_wild_monsters(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
+    auto &player = creature;
+
     constexpr auto num_ambush_monsters = 100;
     constexpr auto num_normal_monsters = 25;
     const auto lim = generate_encounter ? num_ambush_monsters : num_normal_monsters;
@@ -402,16 +401,16 @@ static void generate_wild_monsters(CreatureEntity &creature)
 
         if (alliance_it != alliance_list.end()) {
             const auto &alliance = alliance_it->second;
-            int impression = alliance->calcImpressionPoint(*player_ptr);
-            auto ambush_monsters = alliance->get_ambush_monsters(*player_ptr, impression);
+            int impression = alliance->calcImpressionPoint(player);
+            auto ambush_monsters = alliance->get_ambush_monsters(player, impression);
 
             // アライアンス固有のモンスターを配置
             if (!ambush_monsters.empty()) {
                 for (const auto &monster_id : ambush_monsters) {
                     for (int i = 0; i < 3; i++) { // 各モンスターを3体ずつ配置
-                        auto y = randint0(player_ptr->current_floor_ptr->height);
-                        auto x = randint0(player_ptr->current_floor_ptr->width);
-                        (void)place_monster_one(*player_ptr, y, x, monster_id, PM_ALLOW_GROUP);
+                        auto y = randint0(player.current_floor_ptr->height);
+                        auto x = randint0(player.current_floor_ptr->width);
+                        (void)place_monster_one(player, y, x, monster_id, PM_ALLOW_GROUP);
                     }
                 }
             }
@@ -421,11 +420,11 @@ static void generate_wild_monsters(CreatureEntity &creature)
     // 通常のランダムモンスター生成（襲撃時も追加で生成）
     for (auto i = 0; i < lim; i++) {
         BIT_FLAGS mode = 0;
-        if (!(generate_encounter || (one_in_(2) && (!player_ptr->town_num)))) {
+        if (!(generate_encounter || (one_in_(2) && (!player.town_num)))) {
             mode |= PM_ALLOW_SLEEP;
         }
 
-        (void)alloc_monster(*player_ptr, generate_encounter ? 0 : 3, mode, summon_specific);
+        (void)alloc_monster(player, generate_encounter ? 0 : 3, mode, summon_specific);
     }
 }
 
@@ -437,9 +436,9 @@ static void generate_wild_monsters(CreatureEntity &creature)
  */
 void wilderness_gen(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = creature;
+
+    auto &floor = *player.current_floor_ptr;
     floor.height = MAX_HGT;
     floor.width = MAX_WID;
     panel_row_min = floor.height;
@@ -552,7 +551,7 @@ void wilderness_gen(CreatureEntity &creature)
         }
     }
 
-    if (player_ptr->teleport_town) {
+    if (player.teleport_town) {
         for (const auto &pos : floor.get_area()) {
             auto &grid = floor.get_grid(pos);
             const auto &terrain = grid.get_terrain();
@@ -560,7 +559,7 @@ void wilderness_gen(CreatureEntity &creature)
                 continue;
             }
 
-            if ((terrain.subtype != 4) && !((player_ptr->town_num == 1) && (terrain.subtype == 0))) {
+            if ((terrain.subtype != 4) && !((player.town_num == 1) && (terrain.subtype == 0))) {
                 continue;
             }
 
@@ -568,11 +567,11 @@ void wilderness_gen(CreatureEntity &creature)
                 delete_monster_idx(creature, grid.m_idx);
             }
 
-            player_ptr->oldpy = pos.y;
-            player_ptr->oldpx = pos.x;
+            player.oldpy = pos.y;
+            player.oldpx = pos.x;
         }
 
-        player_ptr->teleport_town = false;
+        player.teleport_town = false;
     } else if (floor.is_leaving_dungeon()) {
         for (const auto &pos : floor.get_area()) {
             auto &grid = floor.get_grid(pos);
@@ -584,14 +583,14 @@ void wilderness_gen(CreatureEntity &creature)
                 delete_monster_idx(creature, grid.m_idx);
             }
 
-            player_ptr->oldpy = pos.y;
-            player_ptr->oldpx = pos.x;
+            player.oldpy = pos.y;
+            player.oldpx = pos.x;
         }
 
-        player_ptr->teleport_town = false;
+        player.teleport_town = false;
     }
 
-    if (!player_ptr->try_set_position(player_ptr->get_old_position())) {
+    if (!player.try_set_position(player.get_old_position())) {
         return;
     }
 
@@ -615,9 +614,9 @@ void wilderness_gen(CreatureEntity &creature)
  */
 void wilderness_gen_small(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = creature;
+
+    auto &floor = *player.current_floor_ptr;
     for (auto x = 0; x < MAX_WID; x++) {
         for (auto y = 0; y < MAX_HGT; y++) {
             floor.get_grid({ y, x }).set_terrain_id(TerrainTag::PERMANENT_WALL);
@@ -669,8 +668,8 @@ void wilderness_gen_small(CreatureEntity &creature)
 
     panel_row_min = floor.height;
     panel_col_min = floor.width;
-    player_ptr->set_position(wilderness.get_player_position());
-    player_ptr->town_num = 0;
+    player.set_position(wilderness.get_player_position());
+    player.town_num = 0;
 }
 
 /*!
@@ -843,10 +842,10 @@ void init_wilderness_encounter()
  */
 bool change_wild_mode(CreatureEntity &creature, bool encount)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
+    auto &player = creature;
+
     generate_encounter = encount;
-    if (player_ptr->leaving) {
+    if (player.leaving) {
         return false;
     }
 
@@ -858,17 +857,17 @@ bool change_wild_mode(CreatureEntity &creature, bool encount)
     auto &world = AngbandWorld::get_instance();
     auto &wilderness = WildernessGrids::get_instance();
     if (world.is_wild_mode()) {
-        wilderness.set_player_position(player_ptr->get_position());
-        player_ptr->energy_need = 0;
+        wilderness.set_player_position(player.get_position());
+        player.energy_need = 0;
         world.set_wild_mode(false);
-        player_ptr->leaving = true;
+        player.leaving = true;
         return true;
     }
 
     bool has_pet = false;
     PlayerEnergy energy(creature);
-    for (int i = 1; i < player_ptr->current_floor_ptr->m_max; i++) {
-        const auto &monster = player_ptr->current_floor_ptr->get_monster(i);
+    for (int i = 1; i < player.current_floor_ptr->m_max; i++) {
+        const auto &monster = player.current_floor_ptr->get_monster(i);
         if (!monster.is_valid()) {
             continue;
         }
@@ -895,8 +894,8 @@ bool change_wild_mode(CreatureEntity &creature, bool encount)
     }
 
     energy.set_player_turn_energy(1000);
-    player_ptr->oldpx = player_ptr->x;
-    player_ptr->oldpy = player_ptr->y;
+    player.oldpx = player.x;
+    player.oldpy = player.y;
     SpellHex spell_hex(creature);
     if (spell_hex.is_spelling_any()) {
         spell_hex.stop_all_spells();
@@ -904,6 +903,6 @@ bool change_wild_mode(CreatureEntity &creature, bool encount)
 
     set_action(creature, ACTION_NONE);
     world.set_wild_mode(true);
-    player_ptr->leaving = true;
+    player.leaving = true;
     return true;
 }
