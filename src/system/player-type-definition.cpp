@@ -102,11 +102,6 @@ bool PlayerType::is_located_at_running_destination() const
     return (this->y == this->run_py) && (this->x == this->run_px);
 }
 
-bool PlayerType::is_located_at(const Pos2D &pos) const
-{
-    return (this->y == pos.y) && (this->x == pos.x);
-}
-
 /*!
  * @brief プレイヤーを指定座標に配置する
  * @param pos 配置先座標
