@@ -6,9 +6,6 @@
 class PlayerType : public CreatureEntity {
 public:
     PlayerType();
-    void plus_incident(INCIDENT incidentID, int num);
-
-    void set_position(const Pos2D &pos);
 
     bool is_valid() const override;
     bool is_dead() const override;
