@@ -102,11 +102,6 @@ bool PlayerType::is_located_at_running_destination() const
     return (this->y == this->run_py) && (this->x == this->run_px);
 }
 
-bool PlayerType::is_located_at(const Pos2D &pos) const
-{
-    return (this->y == pos.y) && (this->x == pos.x);
-}
-
 /*!
  * @brief プレイヤーを指定座標に配置する
  * @param pos 配置先座標
@@ -212,21 +207,6 @@ void PlayerType::set_timed_effect(CreatureTimedEffect effect, short value)
     }
 }
 
-bool PlayerType::is_confused() const
-{
-    return this->effects()->confusion().is_confused();
-}
-
-bool PlayerType::is_stunned() const
-{
-    return this->effects()->stun().is_stunned();
-}
-
-bool PlayerType::is_fearful() const
-{
-    return this->effects()->fear().is_fearful();
-}
-
 bool PlayerType::is_invulnerable() const
 {
     if (this->invuln > 0) {
@@ -252,11 +232,6 @@ bool PlayerType::is_fast() const
     const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
     const auto singing_speed = bard && *bard && ((*bard)->singing_song == MUSIC_SPEED || (*bard)->singing_song == MUSIC_SHERO);
     return this->effects()->acceleration().is_fast() || singing_speed;
-}
-
-bool PlayerType::is_decelerated() const
-{
-    return this->effects()->deceleration().is_slow();
 }
 
 bool PlayerType::is_blessed() const

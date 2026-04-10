@@ -49,7 +49,6 @@ public:
     void ride_monster(MONSTER_IDX m_idx);
     bool is_fully_healthy() const;
     bool is_located_at_running_destination() const;
-    bool is_located_at(const Pos2D &pos) const override;
     bool try_set_position(const Pos2D &pos);
     void set_position(const Pos2D &pos);
     bool in_saved_floor() const;
@@ -68,14 +67,10 @@ public:
     short get_timed_effect(CreatureTimedEffect effect) const override;
     void set_timed_effect(CreatureTimedEffect effect, short value) override;
 
-    bool is_confused() const override;
-    bool is_stunned() const override;
-    bool is_fearful() const override;
     bool is_invulnerable() const override;
     bool is_blind() const override;
     bool is_paralyzed() const override;
     bool is_fast() const override;
-    bool is_decelerated() const override;
     bool is_blessed() const override;
     bool is_hero() const override;
     bool is_shero() const override;

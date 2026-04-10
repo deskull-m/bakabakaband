@@ -4,12 +4,12 @@
 #include "player-info/race-types.h"
 #include "save/item-writer.h"
 #include "save/save-util.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "util/enum-converter.h"
 
-MonsterEntityWriter::MonsterEntityWriter(const MonsterEntity &monster)
+MonsterEntityWriter::MonsterEntityWriter(const CreatureEntity &monster)
     : monster(monster)
 {
 }
