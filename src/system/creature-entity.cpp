@@ -257,6 +257,16 @@ bool CreatureEntity::is_decelerated() const
     return this->get_timed_effect(CreatureTimedEffect::DECELERATION) > 0;
 }
 
+bool CreatureEntity::is_blind() const
+{
+    return this->get_timed_effect(CreatureTimedEffect::BLINDNESS) > 0;
+}
+
+bool CreatureEntity::is_paralyzed() const
+{
+    return this->get_timed_effect(CreatureTimedEffect::PARALYSIS) > 0;
+}
+
 short CreatureEntity::get_timed_effect(CreatureTimedEffect effect) const
 {
     if (!this->has_monster_profile()) {

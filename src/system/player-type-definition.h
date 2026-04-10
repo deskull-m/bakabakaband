@@ -66,8 +66,6 @@ public:
     void set_timed_effect(CreatureTimedEffect effect, short value) override;
 
     bool is_invulnerable() const override;
-    bool is_blind() const override;
-    bool is_paralyzed() const override;
     bool is_fast() const override;
     bool is_blessed() const override;
     bool is_hero() const override;
