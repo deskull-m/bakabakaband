@@ -19,7 +19,6 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "util/angband-files.h"
 
 /*
@@ -27,7 +26,7 @@
  */
 void do_cmd_knowledge_weapon_exp(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
     if (!open_temporary_file(&fff, file_name)) {
@@ -80,7 +79,7 @@ void do_cmd_knowledge_weapon_exp(CreatureEntity &creature)
  */
 void do_cmd_knowledge_spell_exp(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
     if (!open_temporary_file(&fff, file_name)) {
@@ -165,7 +164,7 @@ void do_cmd_knowledge_spell_exp(CreatureEntity &creature)
  */
 void do_cmd_knowledge_skill_exp(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     FILE *fff = nullptr;
     char file_name[FILE_NAME_SIZE];
     if (!open_temporary_file(&fff, file_name)) {

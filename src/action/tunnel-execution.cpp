@@ -14,7 +14,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "view/display-messages.h"
@@ -62,7 +61,7 @@ bool exe_tunnel(CreatureEntity &creature, POSITION y, POSITION x)
         return false;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     PlayerEnergy(player).set_player_turn_energy(100);
     const auto &terrain = grid.get_terrain();
     const auto power = terrain.power;

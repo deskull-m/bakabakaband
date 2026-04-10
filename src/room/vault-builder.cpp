@@ -9,7 +9,6 @@
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 /*
@@ -39,7 +38,7 @@ static bool is_cave_empty_grid(const CreatureEntity &creature, const Grid &grid)
  */
 void vault_monsters(CreatureEntity &creature, const Pos2D &pos_center, int num)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     for (auto k = 0; k < num; k++) {
         for (auto i = 0; i < 9; i++) {
@@ -68,7 +67,7 @@ void vault_monsters(CreatureEntity &creature, const Pos2D &pos_center, int num)
  */
 void vault_objects(CreatureEntity &creature, const Pos2D &pos_center, int num)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     for (; num > 0; --num) {
         Pos2D pos = pos_center;

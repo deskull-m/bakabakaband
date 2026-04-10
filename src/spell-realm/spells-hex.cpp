@@ -21,7 +21,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
@@ -368,7 +367,7 @@ void SpellHex::interrupt_spelling()
  */
 void SpellHex::eyes_on_eyes(MONSTER_IDX m_idx, int dam)
 {
-    auto &player = static_cast<PlayerType &>(this->player);
+    auto &player = this->player;
     const auto is_eyeeye_finished = (this->player.tim_eyeeye == 0) && !this->is_spelling_specific(HEX_EYE_FOR_EYE);
     if (is_eyeeye_finished || (dam == 0) || this->player.is_dead()) {
         return;

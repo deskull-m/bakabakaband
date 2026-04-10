@@ -34,7 +34,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
 #include "util/bit-flags-calculator.h"
@@ -50,7 +49,7 @@ static void check_riding_preservation(CreatureEntity &creature)
 
     const auto &monster = creature.current_floor_ptr->m_list[creature.riding];
     if (monster.has_parent()) {
-        auto &player = static_cast<PlayerType &>(creature);
+        auto &player = creature;
         player.ride_monster(0);
         creature.pet_extra_flags &= ~(PF_TWO_HANDS);
         creature.riding_ryoute = creature.old_riding_ryoute = false;

@@ -21,7 +21,6 @@
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 #include "util/angband-files.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -43,7 +42,7 @@ static concptr variant = "ZANGBAND";
  */
 static std::string parse_fixed_map_expression(CreatureEntity &creature, char **sp, char *fp)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     constexpr char b1 = '[';
     constexpr char b2 = ']';
 

@@ -12,7 +12,6 @@
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 int AllianceSlaanesh::calcImpressionPoint(const CreatureEntity &creature) const
@@ -58,7 +57,7 @@ bool AllianceSlaanesh::isAnnihilated()
 
 void AllianceSlaanesh::panishment(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto impression = calcImpressionPoint(creature);
     if (isAnnihilated() || impression > -40) {
         return;

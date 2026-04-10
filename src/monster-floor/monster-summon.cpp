@@ -16,7 +16,6 @@
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief モンスター死亡時に召喚されうるモンスターかどうかの判定
@@ -44,7 +43,7 @@ static bool is_dead_summoning(summon_type type)
  */
 tl::optional<MONSTER_IDX> summon_specific(CreatureEntity &subject, POSITION y1, POSITION x1, DEPTH lev, summon_type type, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
 {
-    auto &player = static_cast<PlayerType &>(subject);
+    auto &player = subject;
     const auto &floor = *player.current_floor_ptr;
     if (floor.inside_arena) {
         return tl::nullopt;

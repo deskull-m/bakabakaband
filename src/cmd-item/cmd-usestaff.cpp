@@ -38,7 +38,6 @@
 #include "sv-definition/sv-staff-types.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 #include "util/dice.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -55,7 +54,7 @@
  */
 int staff_effect(CreatureEntity &creature, int sval, bool *use_charge, bool powerful, bool magic, bool known)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     int k;
     bool ident = false;
     PLAYER_LEVEL lev = powerful ? player.level * 2 : player.level;
@@ -314,7 +313,7 @@ int staff_effect(CreatureEntity &creature, int sval, bool *use_charge, bool powe
  */
 void do_cmd_use_staff(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }

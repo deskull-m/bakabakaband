@@ -5,7 +5,6 @@
 #include "io/files-util.h"
 #include "player/player-personality.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "util/angband-files.h"
@@ -29,7 +28,7 @@
  */
 void process_player_name(CreatureEntity &creature, bool is_new_savefile)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &world = AngbandWorld::get_instance();
     const std::string old_player_base = world.character_generated ? player.base_name : "";
 
@@ -128,7 +127,7 @@ void process_player_name(CreatureEntity &creature, bool is_new_savefile)
  */
 void get_name(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto finalizer = util::make_finalizer([&creature]() {
         display_player_misc_info(creature);
     });

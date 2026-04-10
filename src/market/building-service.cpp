@@ -3,7 +3,6 @@
 #include "player/player-realm.h"
 #include "system/building-type-definition.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "util/enum-converter.h"
@@ -18,7 +17,7 @@
  */
 bool is_owner(CreatureEntity &creature, const building_type &bldg)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     constexpr auto building_owner = 2;
     if (bldg.member_class[enum2i(player.pclass)] == building_owner) {
         return true;
@@ -50,7 +49,7 @@ bool is_owner(CreatureEntity &creature, const building_type &bldg)
  */
 bool is_member(CreatureEntity &creature, const building_type &bldg)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (static_cast<bool>(bldg.member_class[enum2i(player.pclass)])) {
         return true;
     }

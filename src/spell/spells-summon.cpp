@@ -31,7 +31,6 @@
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "target/projection-path-calculator.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -244,7 +243,7 @@ bool cast_summon_octopus(CreatureEntity &creature)
  */
 bool cast_summon_greater_demon(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     constexpr auto q = _("どの死体を捧げますか? ", "Sacrifice which corpse? ");
     constexpr auto s = _("捧げられる死体を持っていない。", "You have nothing to sacrifice.");
     short i_idx;
@@ -483,7 +482,7 @@ int activate_hi_summon(CreatureEntity &creature, POSITION y, POSITION x, bool ca
  */
 void cast_invoke_spirits(CreatureEntity &creature, const Direction &dir)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     PLAYER_LEVEL plev = creature.level;
     int die = randint1(100) + plev / 5;
     int vir = virtue_number(creature, Virtue::CHANCE);

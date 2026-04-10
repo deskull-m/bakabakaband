@@ -9,7 +9,7 @@
 #include "load/dummy-loader.h"
 #include "load/load-util.h"
 #include "load/world-loader.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "world/world.h"
 
 /*!
@@ -18,7 +18,7 @@
  */
 void rd_extra(CreatureEntity &creature)
 {
-    static_cast<PlayerType &>(creature).ride_monster(rd_s16b());
+    creature.ride_monster(rd_s16b());
     creature.floor_id = rd_s16b();
     rd_dummy_monsters();
 

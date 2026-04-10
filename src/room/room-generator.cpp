@@ -19,7 +19,6 @@
 #include "system/dungeon/dungeon-list.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "util/enum-converter.h"
 #include "util/probability-table.h"
 #include "wizard/wizard-messages.h"
@@ -100,7 +99,7 @@ static void move_prob_list(RoomType dst, RoomType src, std::map<RoomType, int> &
  */
 bool generate_rooms(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto *floor_ptr = creature.current_floor_ptr;
     auto &dungeon = floor_ptr->get_generated_dungeon_definition();
 

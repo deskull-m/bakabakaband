@@ -13,7 +13,6 @@
 #include "spell-realm/spells-craft.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/object-sort.h"
 #include "view/display-messages.h"
@@ -139,7 +138,7 @@ void inven_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
  */
 void drop_from_inventory(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUMBER amt)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto *o_ptr = creature.inventory[i_idx].get();
     if (amt <= 0) {
         return;
@@ -379,7 +378,7 @@ bool check_store_item_to_inventory(CreatureEntity &creature, const ItemEntity *o
  */
 INVENTORY_IDX inven_takeoff(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUMBER amt)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &item_inventory = *creature.inventory[i_idx];
     if (amt <= 0) {
         return -1;

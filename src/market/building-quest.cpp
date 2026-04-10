@@ -12,7 +12,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "view/display-messages.h"
@@ -25,7 +24,7 @@
  */
 static void get_questinfo(CreatureEntity &creature, QuestId quest_id, bool do_init)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     quest_text_lines.clear();
 
     auto &floor = *player.current_floor_ptr;
@@ -67,7 +66,7 @@ static void print_questinfo(CreatureEntity &creature, QuestId quest_id, bool do_
  */
 void castle_quest(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     clear_bldg(4, 18);
     const auto &floor = *player.current_floor_ptr;
     const auto quest_id = i2enum<QuestId>(floor.get_grid(player.get_position()).special);

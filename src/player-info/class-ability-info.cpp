@@ -3,11 +3,10 @@
 #include "player/player-realm.h"
 #include "realm/realm-types.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 
 void set_class_ability_info(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     switch (creature.pclass) {
     case PlayerClassType::WARRIOR:
         if (creature.level > 39) {

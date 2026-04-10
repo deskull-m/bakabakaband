@@ -9,7 +9,6 @@
 #include "object-enchant/protector/abstract-protector-enchanter.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 
 /*
  * @brief コンストラクタ
@@ -30,6 +29,6 @@ DragonArmorEnchanter::DragonArmorEnchanter(CreatureEntity &creature, ItemEntity 
 void DragonArmorEnchanter::apply_magic()
 {
     if ((this->power > 2) || one_in_(50)) {
-        become_random_artifact(static_cast<PlayerType &>(this->creature), this->o_ptr, false);
+        become_random_artifact(this->creature, this->o_ptr, false);
     }
 }

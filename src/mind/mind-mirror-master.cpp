@@ -40,7 +40,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/grid-selector.h"
 #include "target/projection-path-calculator.h"
@@ -300,7 +299,7 @@ bool set_multishadow(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
  */
 bool set_dustrobe(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
@@ -359,7 +358,7 @@ static int number_of_mirrors(const FloorType &floor)
  */
 bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     PLAYER_LEVEL plev = player.level;
     int tmp;
     TIME_EFFECT t;

@@ -9,7 +9,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -22,7 +21,7 @@
  */
 static void recharged_notice(CreatureEntity &creature, const ItemEntity &item)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (!item.is_inscribed()) {
         return;
     }
@@ -54,7 +53,7 @@ static void recharged_notice(CreatureEntity &creature, const ItemEntity &item)
  */
 void recharge_magic_items(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     int i;
     bool changed;
 

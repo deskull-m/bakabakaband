@@ -54,7 +54,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-checker.h"
@@ -366,7 +365,7 @@ static int get_mane_power(CreatureEntity &creature, int *sn, bool baigaesi)
  */
 static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto *player_ptr = &player;
     PLAYER_LEVEL plev = creature.get_level();
     BIT_FLAGS mode = (PM_ALLOW_GROUP | PM_FORCE_PET);

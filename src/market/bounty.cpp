@@ -26,7 +26,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/services/dungeon-service.h"
 #include "term/screen-processor.h"
@@ -43,7 +42,7 @@
  */
 bool exchange_cash(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto change = false;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     constexpr auto fmt_convert = _("%s を換金しますか？", "Convert %s into money? ");

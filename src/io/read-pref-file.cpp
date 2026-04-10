@@ -16,7 +16,6 @@
 #include "player-info/race-info.h"
 #include "player/player-realm.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "util/angband-files.h"
 #include "util/buffer-shaper.h"
 #include "util/finalizer.h"
@@ -277,7 +276,7 @@ void close_auto_dump(FILE **fpp, std::string_view mark)
  */
 void load_all_pref_files(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     process_pref_file(creature, "user.prf");
     process_pref_file(creature, format("user-%s.prf", ANGBAND_SYS));
@@ -306,7 +305,7 @@ bool read_histpref(CreatureEntity &creature)
         return false;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     histpref_buf = "";
     std::stringstream ss;

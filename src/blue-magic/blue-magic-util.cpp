@@ -6,12 +6,11 @@
 #include "blue-magic/blue-magic-util.h"
 #include "monster-floor/place-monster-types.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 
 bmc_type *initialize_blue_magic_type(
     CreatureEntity &creature, bmc_type *bmc_ptr, MonsterAbilityType spell, const bool success, get_pseudo_monstetr_level_pf get_pseudo_monstetr_level)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     bmc_ptr->spell = spell;
     bmc_ptr->plev = (*get_pseudo_monstetr_level)(creature);
     bmc_ptr->summon_lev = player.level * 2 / 3 + randint1(player.level / 2);

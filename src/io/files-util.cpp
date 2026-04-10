@@ -20,7 +20,6 @@
 #include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "util/angband-files.h"
 #include "util/string-processor.h"
@@ -231,7 +230,7 @@ tl::optional<std::string> get_random_line_ja_only(concptr file_name, int entry, 
  */
 static errr counts_seek(CreatureEntity &creature, int fd, uint32_t where, bool flag)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     char temp1[128]{}, temp2[128]{};
     auto short_pclass = enum2i(player.pclass);
 #ifdef SAVEFILE_USE_UID

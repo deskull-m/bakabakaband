@@ -7,7 +7,6 @@
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/angband-files.h"
 #include "util/finalizer.h"
 #include "view/display-messages.h"
@@ -73,7 +72,7 @@ static void spoil_random_artifact_aux(CreatureEntity &creature, const ItemEntity
  */
 void spoil_random_artifact(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto path = path_build(ANGBAND_DIR_USER, "randifact.txt");
     std::ofstream ofs(path);
     if (!ofs) {

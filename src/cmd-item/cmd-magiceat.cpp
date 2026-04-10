@@ -74,7 +74,6 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -93,7 +92,7 @@
  */
 static tl::optional<BaseitemKey> select_magic_eater(CreatureEntity &creature, bool only_browse)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     bool flag, request_list;
     auto tval = ItemKindType::NONE;
     int menu_line = (use_menu ? 1 : 0);
@@ -491,7 +490,7 @@ static tl::optional<BaseitemKey> select_magic_eater(CreatureEntity &creature, bo
  */
 bool do_cmd_magic_eater(CreatureEntity &creature, bool only_browse, bool powerful)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     bool use_charge = true;
 
     if (cmd_limit_confused(creature)) {

@@ -22,7 +22,6 @@
 #include "system/artifact-type-definition.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief 恐怖の仮面への特殊処理
@@ -42,7 +41,7 @@ static bool invest_terror_mask(CreatureEntity &creature, ItemEntity *o_ptr)
     if (!creature.is_player()) {
         return false;
     }
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     switch (player.pclass) {
     case PlayerClassType::WARRIOR:
     case PlayerClassType::ARCHER:
@@ -68,7 +67,7 @@ static void milim_swimsuit(CreatureEntity &creature, ItemEntity *o_ptr)
     if (!o_ptr->is_specific_artifact(FixedArtifactId::MILIM) || !creature.is_player()) {
         return;
     }
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (player.ppersonality != PERSONALITY_SEXY) {
         return;
     }
@@ -117,7 +116,7 @@ static void invest_special_artifact_abilities(CreatureEntity &creature, ItemEnti
         return;
     case FixedArtifactId::HEAVENLY_MAIDEN:
         if (creature.is_player()) {
-            auto &player = static_cast<PlayerType &>(creature);
+            auto &player = creature;
             if (player.psex != SEX_FEMALE) {
                 o_ptr->art_flags.set(TR_AGGRAVATE);
             }

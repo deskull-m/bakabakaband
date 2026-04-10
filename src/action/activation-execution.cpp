@@ -48,7 +48,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
@@ -315,7 +314,7 @@ static bool activate_raygun(CreatureEntity &creature, ae_type *ae_ptr)
  */
 void exe_activate(CreatureEntity &creature, INVENTORY_IDX i_idx)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     bool activated = false;
     if (i_idx <= INVEN_PACK && BaseitemList::get_instance().get_baseitem(player.inventory[i_idx]->bi_id).flags.has_not(TR_INVEN_ACTIVATE)) {
         msg_print(_("このアイテムは装備しないと始動できない。", "That object must be activated by equipment."));

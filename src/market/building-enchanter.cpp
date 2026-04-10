@@ -10,7 +10,6 @@
 #include "spell/spells-object.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
 
@@ -25,7 +24,7 @@
  */
 bool enchant_item(CreatureEntity &creature, PRICE cost, HIT_PROB to_hit, int to_dam, ARMOUR_CLASS to_ac, const ItemTester &item_tester)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     clear_bldg(4, 18);
     int maxenchant = (player.level / 5);
     prt(format(_("現在のあなたの技量だと、+%d まで改良できます。", "  Based on your skill, we can improve up to +%d."), maxenchant), 5, 0);

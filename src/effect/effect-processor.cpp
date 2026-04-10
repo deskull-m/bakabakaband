@@ -24,7 +24,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "target/projection-path-calculator.h"
 #include "timed-effect/timed-effects.h"
 #include "tracking/lore-tracker.h"
@@ -64,7 +63,7 @@ Pos2D decide_source_position(CreatureEntity &creature, MONSTER_IDX src_idx, cons
 ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSITION rad, const POSITION target_y, const POSITION target_x, const int dam,
     const AttributeType typ, BIT_FLAGS flag, tl::optional<CapturedMonsterType *> cap_mon_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     monster_target_y = player.y;
     monster_target_x = player.x;
 
@@ -290,7 +289,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
                     }
 
                     if (is_seen(player, monster)) {
-                        const auto m_name = monster.get_monster_profile().ml ? monster_desc(static_cast<PlayerType &>(player), monster, 0) : std::string(_("それ", "It"));
+                        const auto m_name = monster.get_monster_profile().ml ? monster_desc(player, monster, 0) : std::string(_("それ", "It"));
                         sound(SoundKind::REFLECT);
                         const auto reflect_message = monrace.get_message(m_name, MonsterMessageType::MESSAGE_REFLECT);
                         if (reflect_message) {

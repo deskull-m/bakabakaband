@@ -47,7 +47,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-checker.h"
@@ -134,7 +133,7 @@ bool activate_judgement(CreatureEntity &creature, std::string_view name)
     msg_format(_("%sは赤く明るく光った！", "The %s flashes bright red!"), name.data());
     chg_virtue(creature, Virtue::KNOWLEDGE, 1);
     chg_virtue(creature, Virtue::ENLIGHTEN, 1);
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     wiz_lite(creature, false);
 
     msg_format(_("%sはあなたの体力を奪った...", "The %s drains your vitality..."), name.data());

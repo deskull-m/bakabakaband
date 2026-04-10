@@ -19,7 +19,6 @@
 #include "sv-definition/sv-weapon-types.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -68,7 +67,7 @@ static void show_weapon_dmg(int r, int c, int mindice, int maxdice, int blows, i
  */
 static void compare_weapon_aux(CreatureEntity &creature, ItemEntity *o_ptr, int col, int r)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     int blow = player.num_blow[0];
     bool force = false;
     bool dokubari = false;
@@ -261,7 +260,7 @@ static void compare_weapon_aux(CreatureEntity &creature, ItemEntity *o_ptr, int 
  */
 static void list_weapon(CreatureEntity &creature, const ItemEntity &item, TERM_LEN row, TERM_LEN col)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto eff_dd = item.damage_dice.num + player.damage_dice_bonus[0].num;
     const auto eff_ds = item.damage_dice.sides + player.damage_dice_bonus[0].sides;
     const auto hit_reliability = player.skill_thn + (player.to_h[0] + item.to_h) * BTH_PLUS_ADJ;
@@ -301,7 +300,7 @@ static void list_weapon(CreatureEntity &creature, const ItemEntity &item, TERM_L
  */
 PRICE compare_weapons(CreatureEntity &creature, PRICE bcost)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     ItemEntity *o_ptr[2]{};
     TERM_LEN row = 2;
     TERM_LEN wid = 38, mgn = 2;

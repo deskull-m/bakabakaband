@@ -23,7 +23,6 @@
 #include "realm/realm-types.h"
 #include "spell/spell-info.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "timed-effect/timed-effects.h"
@@ -252,7 +251,7 @@ static bool switch_blue_magic_choice(const char key, int &menu_line, const bluem
  */
 int calculate_blue_magic_failure_probability(CreatureEntity &creature, const monster_power &mp, int need_mana)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto chance = mp.fail;
     if (player.level > mp.level) {
         chance -= 3 * (player.level - mp.level);
@@ -481,7 +480,7 @@ static tl::optional<MonsterAbilityType> select_learnt_spells_by_menu(CreatureEnt
  */
 tl::optional<MonsterAbilityType> get_learned_power(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto bluemage_data = CreatureClass(player).get_specific_data<bluemage_data_type>();
     if (!bluemage_data) {
         return tl::nullopt;

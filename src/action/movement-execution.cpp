@@ -38,7 +38,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "timed-effect/timed-effects.h"
@@ -82,7 +81,7 @@ static bool boundary_floor(const Grid &grid, const TerrainType &terrain, const T
  */
 void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup, bool break_trap)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto pos = creature.get_neighbor(dir);
     auto &floor = *creature.current_floor_ptr;
     auto &grid = floor.get_grid(pos);

@@ -15,7 +15,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
@@ -140,7 +139,7 @@ Direction decide_travel_step_dir(CreatureEntity &creature, const Direction &prev
     auto &floor = *creature.current_floor_ptr;
     const auto &p_grid = floor.get_grid(p_pos);
     if (creature.is_player()) {
-        auto &player = static_cast<PlayerType &>(creature);
+        auto &player = creature;
         if ((disturb_trap_detect || alert_trap_detect) && player.dtrap && none_bits(p_grid.info, CAVE_IN_DETECT)) {
             player.dtrap = false;
             if (none_bits(p_grid.info, CAVE_UNSAFE)) {
@@ -280,7 +279,7 @@ void Travel::step(CreatureEntity &creature)
         return;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     PlayerEnergy(player).set_player_turn_energy(100);
     exe_movement(creature, this->dir, always_pickup, false);
 

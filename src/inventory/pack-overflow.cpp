@@ -9,7 +9,6 @@
 #include "player/player-status.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 /*!
@@ -17,7 +16,7 @@
  */
 void pack_overflow(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (!player.inventory[INVEN_PACK]->is_valid()) {
         return;
     }

@@ -6,7 +6,6 @@
 #include "player-base/player-class.h"
 #include "player/player-realm.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
@@ -228,7 +227,7 @@ static void cleanup_realm_selection_window(void)
  */
 static bool check_realm_selection(CreatureEntity &creature, int count)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (count < 2) {
         prt(_("何かキーを押してください", "Hit any key."), 0, 0);
         (void)inkey();
@@ -264,7 +263,7 @@ static void print_choosed_realms(CreatureEntity &creature)
 {
     put_str(_("魔法        :", "Magic       :"), 6, 1);
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     PlayerRealm pr(player);
     std::string choosed_realms;
     if (pr.realm2().is_available()) {
@@ -288,7 +287,7 @@ bool get_player_realms(CreatureEntity &creature)
     put_str("                                   ", 5, 40);
     put_str("                                   ", 6, 40);
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     PlayerRealm pr(player);
     pr.reset();
 

@@ -33,7 +33,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "view/display-messages.h"
@@ -238,7 +237,7 @@ void add_river(FloorType &floor, DungeonData *dd_ptr)
  */
 void build_streamer(CreatureEntity &creature, FEAT_IDX feat, int chance)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &streamer = TerrainList::get_instance().get_terrain(feat);
     bool streamer_is_wall = streamer.flags.has(TerrainCharacteristics::WALL) && streamer.flags.has_not(TerrainCharacteristics::PERMANENT);
     bool streamer_may_have_gold = streamer.flags.has(TerrainCharacteristics::MAY_HAVE_GOLD);
@@ -418,7 +417,7 @@ void place_trees(CreatureEntity &creature, const Pos2D &pos)
  */
 void destroy_level(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     msg_print_wizard(player, CHEAT_DUNGEON, _("階に*破壊*の痕跡を生成しました。", "Destroyed Level."));
 
     /* Drop a few epi-centers (usually about two) */

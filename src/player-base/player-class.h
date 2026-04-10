@@ -68,10 +68,9 @@ std::shared_ptr<T> CreatureClass::get_specific_data() const
     if (!this->creature.is_player()) {
         return nullptr;
     }
-    auto &player = static_cast<PlayerType &>(this->creature);
-    if (!std::holds_alternative<std::shared_ptr<T>>(player.class_specific_data)) {
+    if (!std::holds_alternative<std::shared_ptr<T>>(this->creature.class_specific_data)) {
         return nullptr;
     }
 
-    return std::get<std::shared_ptr<T>>(player.class_specific_data);
+    return std::get<std::shared_ptr<T>>(this->creature.class_specific_data);
 }

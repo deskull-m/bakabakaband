@@ -12,7 +12,6 @@
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 int AllianceTzeentch::calcImpressionPoint(const CreatureEntity &creature) const
@@ -77,7 +76,7 @@ void AllianceTzeentch::panishment(CreatureEntity &creature)
     if (!creature.is_player()) {
         return;
     }
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (one_in_(22)) {
         Pos2D m_pos(player.get_position());
         m_pos = scatter(*player.current_floor_ptr, m_pos, 15, PROJECT_NONE);

@@ -6,7 +6,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "timed-effect/timed-effects.h"
 
 mam_type *initialize_mam_type(CreatureEntity &creature, mam_type *mam_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx)
@@ -18,7 +17,7 @@ mam_type *initialize_mam_type(CreatureEntity &creature, mam_type *mam_ptr, MONST
     mam_ptr->t_ptr = &creature.current_floor_ptr->get_monster(t_idx);
     mam_ptr->damage = 0;
     if (creature.is_player()) {
-        auto &player = static_cast<PlayerType &>(creature);
+        auto &player = creature;
         mam_ptr->see_m = is_seen(player, *mam_ptr->m_ptr);
         mam_ptr->see_t = is_seen(player, *mam_ptr->t_ptr);
         mam_ptr->do_silly_attack = one_in_(2) && player.effects()->hallucination().is_hallucinated();

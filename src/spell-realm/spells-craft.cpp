@@ -19,7 +19,6 @@
 #include "sv-definition/sv-protector-types.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -294,7 +293,7 @@ bool choose_ele_immune(CreatureEntity &creature, TIME_EFFECT immune_turn)
  */
 bool pulish_shield(CreatureEntity &creature)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
+    auto &player_ptr = creature;
     constexpr auto q = _("どの盾を磨きますか？", "Polish which shield? ");
     constexpr auto s = _("磨く盾がありません。", "You have no shield to polish.");
     const auto options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
