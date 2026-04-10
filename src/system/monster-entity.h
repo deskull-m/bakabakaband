@@ -22,5 +22,4 @@ public:
 
     void wipe() override;
     MonsterEntity clone() const;
-    bool can_ring_boss_call_nazgul() const;
 };

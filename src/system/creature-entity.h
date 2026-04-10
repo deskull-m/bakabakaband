@@ -338,6 +338,7 @@ public:
     bool has_undead_flag(bool is_appearance = false) const;
     bool is_explodable() const;
     std::string get_died_message() const;
+    bool can_ring_boss_call_nazgul() const;
     std::pair<TERM_COLOR, int> get_hp_bar_data() const;
 
     /*!
