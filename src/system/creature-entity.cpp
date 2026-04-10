@@ -10,6 +10,7 @@
 #include "player-info/class-types.h"
 #include "player-info/race-types.h"
 #include "player/race-info-table.h"
+#include "system/angband-system.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -331,6 +332,63 @@ void CreatureEntity::make_lore_treasure(int num_item, int num_gold) const
 bool CreatureEntity::is_valid() const
 {
     return MonraceList::is_valid(this->r_idx);
+}
+
+bool CreatureEntity::is_hostile_to_melee(const CreatureEntity &other) const
+{
+    if (!this->has_monster_profile() || !other.has_monster_profile()) {
+        return false;
+    }
+
+    if (AngbandSystem::get_instance().is_phase_out()) {
+        return !this->is_pet() && !other.is_pet();
+    }
+
+    const auto &monrace1 = this->get_monrace();
+    const auto &monrace2 = other.get_monrace();
+    const auto is_m1_wild = monrace1.wilderness_flags.has_any_of({ MonsterWildernessType::WILD_TOWN, MonsterWildernessType::WILD_ALL });
+    const auto is_m2_wild = monrace2.wilderness_flags.has_any_of({ MonsterWildernessType::WILD_TOWN, MonsterWildernessType::WILD_ALL });
+    if (is_m1_wild && is_m2_wild) {
+        if (!this->is_pet() && !other.is_pet()) {
+            return false;
+        }
+    }
+
+    if (this->get_monster_profile().alliance_idx != other.get_monster_profile().alliance_idx) {
+        return true;
+    } else if (this->is_hostile_align(other.get_monster_profile().sub_align)) {
+        if (this->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON) || other.get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON)) {
+            return true;
+        }
+    }
+
+    return this->is_hostile() != other.is_hostile();
+}
+
+bool CreatureEntity::is_hostile_align(byte other_sub_align) const
+{
+    if (!this->has_monster_profile()) {
+        return false;
+    }
+    return CreatureEntity::check_sub_alignments(this->get_monster_profile().sub_align, other_sub_align);
+}
+
+bool CreatureEntity::is_mimicry() const
+{
+    if (this->ap_r_idx == MonraceId::BEHINDER) {
+        return true;
+    }
+
+    const auto &monrace = this->get_appearance_monrace();
+    if (!monrace.symbol_char_is_any_of(R"(/|\()[]="$,.!?&`#%<>+~)")) {
+        return false;
+    }
+
+    if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
+        return true;
+    }
+
+    return monrace.behavior_flags.has(MonsterBehaviorType::NEVER_MOVE) || this->is_asleep();
 }
 
 void CreatureEntity::initialize_equivalent_player_races()
