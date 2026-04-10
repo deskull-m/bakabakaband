@@ -285,8 +285,12 @@ public:
     /*!
      * @brief クリーチャーが死亡しているかどうかを判定
      * @return 死亡していればtrue
+     * @details デフォルト実装は hp < 0（モンスター用）。PlayerType はオーバーライドして is_dead_ フラグを返す。
      */
-    virtual bool is_dead() const = 0;
+    virtual bool is_dead() const
+    {
+        return this->hp < 0;
+    }
 
     /*!
      * @brief クリーチャーの実効ACを取得
@@ -334,6 +338,7 @@ public:
     bool has_undead_flag(bool is_appearance = false) const;
     bool is_explodable() const;
     std::string get_died_message() const;
+    bool can_ring_boss_call_nazgul() const;
     std::pair<TERM_COLOR, int> get_hp_bar_data() const;
 
     /*!
@@ -356,12 +361,9 @@ public:
 
     /*!
      * @brief クリーチャーのレベルを取得
-     * @return レベル値
+     * @return レベル値。個体レベルが設定されていればそれを返し、未設定なら種族レベルの半分を返す。
      */
-    virtual int get_level() const
-    {
-        return this->level;
-    }
+    virtual int get_level() const;
 
     /*!
      * @brief クリーチャーがプレイヤーかどうかを判定
@@ -599,9 +601,7 @@ public:
      * @brief クリーチャーを敵対状態に設定する
      * @note モンスターの場合はペット・フレンドリーフラグをリセットし同盟も更新する。プレイヤーには無効。
      */
-    virtual void set_hostile()
-    {
-    }
+    virtual void set_hostile();
 
     /*!
      * @brief クリーチャーをフレンドリー状態に設定する
@@ -614,9 +614,7 @@ public:
         }
     }
 
-    virtual void set_individual_speed([[maybe_unused]] bool force_fixed_speed)
-    {
-    }
+    virtual void set_individual_speed(bool force_fixed_speed);
 
     /*!
      * @brief モンスターのフラグに基づいて対応するプレイヤー種族IDを初期化する
@@ -653,11 +651,11 @@ public:
      * @param other 対象クリーチャー
      * @return 敵対しているならtrue、デフォルトはfalse
      */
-    virtual bool is_hostile_to_melee(const CreatureEntity &other) const
-    {
-        (void)other;
-        return false;
-    }
+    virtual bool is_hostile_to_melee(const CreatureEntity &other) const;
+    bool is_hostile_align(byte other_sub_align) const;
+    bool is_mimicry() const;
+    tl::optional<bool> order_pet_whistle(const CreatureEntity &other) const;
+    tl::optional<bool> order_pet_dismission(const CreatureEntity &other) const;
 
     /*!
      * @brief クリーチャーが騎乗されているかどうかを判定
@@ -1172,4 +1170,6 @@ protected:
 private:
     std::string build_damage_description() const;
     std::string build_attitude_description() const;
+    tl::optional<bool> order_pet_named(const CreatureEntity &other) const;
+    tl::optional<bool> order_pet_hp(const CreatureEntity &other) const;
 };

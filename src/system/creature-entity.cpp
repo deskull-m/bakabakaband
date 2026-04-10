@@ -1,4 +1,5 @@
 #include "system/creature-entity.h"
+#include "core/speed-table.h"
 #include "floor/geometry.h"
 #include "game-option/birth-options.h"
 #include "inventory/inventory-slot-types.h"
@@ -10,6 +11,8 @@
 #include "player-info/class-types.h"
 #include "player-info/race-types.h"
 #include "player/race-info-table.h"
+#include "system/angband-system.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -331,6 +334,152 @@ void CreatureEntity::make_lore_treasure(int num_item, int num_gold) const
 bool CreatureEntity::is_valid() const
 {
     return MonraceList::is_valid(this->r_idx);
+}
+
+bool CreatureEntity::is_hostile_to_melee(const CreatureEntity &other) const
+{
+    if (!this->has_monster_profile() || !other.has_monster_profile()) {
+        return false;
+    }
+
+    if (AngbandSystem::get_instance().is_phase_out()) {
+        return !this->is_pet() && !other.is_pet();
+    }
+
+    const auto &monrace1 = this->get_monrace();
+    const auto &monrace2 = other.get_monrace();
+    const auto is_m1_wild = monrace1.wilderness_flags.has_any_of({ MonsterWildernessType::WILD_TOWN, MonsterWildernessType::WILD_ALL });
+    const auto is_m2_wild = monrace2.wilderness_flags.has_any_of({ MonsterWildernessType::WILD_TOWN, MonsterWildernessType::WILD_ALL });
+    if (is_m1_wild && is_m2_wild) {
+        if (!this->is_pet() && !other.is_pet()) {
+            return false;
+        }
+    }
+
+    if (this->get_monster_profile().alliance_idx != other.get_monster_profile().alliance_idx) {
+        return true;
+    } else if (this->is_hostile_align(other.get_monster_profile().sub_align)) {
+        if (this->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON) || other.get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON)) {
+            return true;
+        }
+    }
+
+    return this->is_hostile() != other.is_hostile();
+}
+
+bool CreatureEntity::is_hostile_align(byte other_sub_align) const
+{
+    if (!this->has_monster_profile()) {
+        return false;
+    }
+    return CreatureEntity::check_sub_alignments(this->get_monster_profile().sub_align, other_sub_align);
+}
+
+bool CreatureEntity::is_mimicry() const
+{
+    if (this->ap_r_idx == MonraceId::BEHINDER) {
+        return true;
+    }
+
+    const auto &monrace = this->get_appearance_monrace();
+    if (!monrace.symbol_char_is_any_of(R"(/|\()[]="$,.!?&`#%<>+~)")) {
+        return false;
+    }
+
+    if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
+        return true;
+    }
+
+    return monrace.behavior_flags.has(MonsterBehaviorType::NEVER_MOVE) || this->is_asleep();
+}
+
+void CreatureEntity::set_hostile()
+{
+    if (!this->has_monster_profile()) {
+        return;
+    }
+
+    if (AngbandSystem::get_instance().is_phase_out()) {
+        return;
+    }
+
+    this->get_monster_profile().mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
+
+    if (this->get_monster_profile().alliance_idx != AllianceType::NONE) {
+        for (auto &monster : this->current_floor_ptr->m_list) {
+            if (monster.get_monster_profile().alliance_idx == this->get_monster_profile().alliance_idx) {
+                monster.get_monster_profile().mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
+            }
+        }
+    }
+}
+
+tl::optional<bool> CreatureEntity::order_pet_whistle(const CreatureEntity &other) const
+{
+    const auto is_ordered_name = this->order_pet_named(other);
+    if (is_ordered_name) {
+        return *is_ordered_name;
+    }
+
+    const auto &monrace1 = this->get_monrace();
+    const auto &monrace2 = other.get_monrace();
+    const auto is_ordered_race = monrace1.order_pet(monrace2);
+    if (is_ordered_race) {
+        return *is_ordered_race;
+    }
+
+    return this->order_pet_hp(other);
+}
+
+tl::optional<bool> CreatureEntity::order_pet_dismission(const CreatureEntity &other) const
+{
+    const auto is_ordered_name = this->order_pet_named(other);
+    if (is_ordered_name) {
+        return *is_ordered_name;
+    }
+
+    if (!this->has_parent() && other.has_parent()) {
+        return true;
+    }
+
+    if (this->has_parent() && !other.has_parent()) {
+        return false;
+    }
+
+    const auto &monrace1 = this->get_monrace();
+    const auto &monrace2 = other.get_monrace();
+    const auto is_ordered_race = monrace1.order_pet(monrace2);
+    if (is_ordered_race) {
+        return *is_ordered_race;
+    }
+
+    return this->order_pet_hp(other);
+}
+
+tl::optional<bool> CreatureEntity::order_pet_named(const CreatureEntity &other) const
+{
+    if (this->is_named() && !other.is_named()) {
+        return true;
+    }
+
+    if (!this->is_named() && other.is_named()) {
+        return false;
+    }
+
+    return tl::nullopt;
+}
+
+tl::optional<bool> CreatureEntity::order_pet_hp(const CreatureEntity &other) const
+{
+    if (this->hp > other.hp) {
+        return true;
+    }
+
+    if (this->hp < other.hp) {
+        return false;
+    }
+
+    return tl::nullopt;
 }
 
 void CreatureEntity::initialize_equivalent_player_races()
@@ -664,4 +813,49 @@ int CreatureEntity::calc_life_rating() const
     const auto expected_hp = this->hit_dice.maxroll() + this->hit_dice.floored_expected_value_multiplied_by(roll_num);
 
     return actual_hp * 100 / expected_hp;
+}
+
+int CreatureEntity::get_level() const
+{
+    if (this->level > 0) {
+        return this->level;
+    }
+    return this->get_monrace().level / 2;
+}
+
+/*!
+ * @brief モンスターの個体加速を設定する / Get initial monster speed
+ * @param force_fixed_speed 速度を固定にする(個体差を適用しない)か否か
+ */
+void CreatureEntity::set_individual_speed(bool force_fixed_speed)
+{
+    if (!this->has_monster_profile()) {
+        return;
+    }
+
+    const auto &monrace = this->get_monrace();
+    auto speed = monrace.speed;
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && !force_fixed_speed) {
+        /* Allow some small variation per monster */
+        int i = speed_to_energy(monrace.speed) / (one_in_(4) ? 3 : 10);
+        if (i) {
+            speed += static_cast<uint8_t>(rand_spread(0, i));
+        }
+    }
+
+    if (speed > STANDARD_SPEED + 99) {
+        speed = STANDARD_SPEED + 99;
+    }
+
+    this->speed = speed;
+}
+
+bool CreatureEntity::can_ring_boss_call_nazgul() const
+{
+    auto is_boss = this->r_idx == MonraceId::MORGOTH;
+    is_boss |= this->r_idx == MonraceId::SAURON;
+    is_boss |= this->r_idx == MonraceId::ANGMAR;
+    const auto &nazgul = MonraceList::get_instance().get_monrace(MonraceId::NAZGUL);
+    const auto is_nazgul_alive = (nazgul.cur_num + 2) < nazgul.max_num;
+    return is_boss && is_nazgul_alive;
 }
