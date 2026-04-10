@@ -192,13 +192,19 @@ public:
      * @brief クリーチャーの現在HPを取得
      * @return 現在HP
      */
-    virtual int get_current_hp() const = 0;
+    virtual int get_current_hp() const
+    {
+        return this->hp;
+    }
 
     /*!
      * @brief クリーチャーの最大HPを取得
      * @return 最大HP
      */
-    virtual int get_max_hp() const = 0;
+    virtual int get_max_hp() const
+    {
+        return this->maxhp;
+    }
 
     /*!
      * @brief クリーチャーの速度を取得
@@ -271,14 +277,24 @@ public:
     /*!
      * @brief クリーチャーが有効（生存中）かどうかを判定
      * @return 有効ならtrue
+     * @details デフォルト実装は MonraceList::is_valid(r_idx)（モンスター用）。
+     *          PlayerType はオーバーライドして常に true を返す。
      */
-    virtual bool is_valid() const = 0;
+    virtual bool is_valid() const;
 
     /*!
      * @brief クリーチャーが死亡しているかどうかを判定
      * @return 死亡していればtrue
      */
     virtual bool is_dead() const = 0;
+
+    /*!
+     * @brief クリーチャーの実効ACを取得
+     * @return 実効AC値（プレイヤーは ac + to_a、モンスターは NAKED フラグ考慮後の ac）
+     * @details デフォルト実装はモンスター用（NAKED フラグで 0 を返す場合あり）。
+     *          PlayerType はオーバーライドして ac + to_a を返す。
+     */
+    virtual int get_ac() const;
 
     /*!
      * @brief クリーチャーが所属するフロアを取得
@@ -350,20 +366,25 @@ public:
     /*!
      * @brief クリーチャーがプレイヤーかどうかを判定
      * @return プレイヤーならtrue、モンスターならfalse
+     * @details デフォルトはfalse（モンスター）。PlayerTypeのみtrueを返す。
      */
-    virtual bool is_player() const = 0;
-
-    /*!
-     * @brief クリーチャーの実効ACを取得
-     * @return 実効AC値（プレイヤーは ac + to_a、モンスターは総合AC）
-     */
-    virtual int get_ac() const = 0;
+    virtual bool is_player() const
+    {
+        return false;
+    }
 
     /*!
      * @brief ダメージを受けた際のフック（dealt_damage等の蓄積処理）
      * @param damage 受けたダメージ量
+     * @details dealt_damage を加算し max_maxhp * 100 を上限とする。
      */
-    virtual void on_take_hit([[maybe_unused]] int damage) {}
+    virtual void on_take_hit(int damage)
+    {
+        this->dealt_damage += damage;
+        if (this->dealt_damage > this->max_maxhp * 100) {
+            this->dealt_damage = this->max_maxhp * 100;
+        }
+    }
 
     /*!
      * @brief 死亡した際のフック（死亡処理・記録等）
@@ -375,16 +396,20 @@ public:
      * @brief クリーチャーの時限効果の残りターン数を取得
      * @param effect 取得する時限効果の種別
      * @return 残りターン数（0なら効果なし）
+     * @details デフォルト実装は MonsterProfile::mtimed を参照する（モンスター用）。
+     *          PlayerType はオーバーライドして TimedEffects を使う。
      */
-    virtual short get_timed_effect(CreatureTimedEffect effect) const = 0;
+    virtual short get_timed_effect(CreatureTimedEffect effect) const;
 
     /*!
      * @brief クリーチャーの時限効果の残りターン数を直接設定する（セーブ/ロード・内部操作用）
      * @param effect 設定する時限効果の種別
      * @param value 設定するターン数
      * @note メッセージや副作用は発生しない。ゲームロジックからの呼び出しには専用セッターを使うこと。
+     * @details デフォルト実装は MonsterProfile::mtimed を更新する（モンスター用）。
+     *          PlayerType はオーバーライドして TimedEffects を使う。
      */
-    virtual void set_timed_effect(CreatureTimedEffect effect, short value) = 0;
+    virtual void set_timed_effect(CreatureTimedEffect effect, short value);
 
     short get_remaining_sleep() const
     {
@@ -424,15 +449,23 @@ public:
     tl::optional<std::string> get_pain_message(std::string_view monster_name, int damage) const;
 
     /*!
-     * @brief カメレオンの変身を元に戻す。モンスター以外は何もしない。
+     * @brief カメレオンの変身を元に戻す。
+     * @details r_idx と ap_r_idx を実種族IDにリセットする。
      */
     virtual void reset_chameleon_polymorph()
     {
+        const auto real_id = this->get_real_monrace_id();
+        this->r_idx = real_id;
+        this->ap_r_idx = real_id;
     }
 
-    virtual void make_lore_treasure([[maybe_unused]] int num_item, [[maybe_unused]] int num_gold) const
-    {
-    }
+    /*!
+     * @brief ルアー記録に宝物情報を追加する
+     * @param num_item アイテム数
+     * @param num_gold 金貨数
+     * @details is_original_ap() でない場合は何もしない。
+     */
+    virtual void make_lore_treasure(int num_item, int num_gold) const;
 
     virtual std::string build_looking_description([[maybe_unused]] bool needs_attitude) const
     {
@@ -573,8 +606,15 @@ public:
     {
     }
 
+    /*!
+     * @brief クリーチャーをフレンドリー状態に設定する
+     * @details モンスターの場合は FRIENDLY フラグをセットする。
+     */
     virtual void set_friendly()
     {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().mflag2.set(MonsterConstantFlagType::FRIENDLY);
+        }
     }
 
     virtual void set_individual_speed([[maybe_unused]] bool force_fixed_speed)

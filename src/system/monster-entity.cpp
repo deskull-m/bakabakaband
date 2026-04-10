@@ -116,99 +116,9 @@ bool MonsterEntity::is_mimicry() const
     return monrace.behavior_flags.has(MonsterBehaviorType::NEVER_MOVE) || this->is_asleep();
 }
 
-bool MonsterEntity::is_valid() const
-{
-    return MonraceList::is_valid(this->r_idx);
-}
-
 bool MonsterEntity::is_dead() const
 {
     return this->hp < 0;
-}
-
-bool MonsterEntity::is_decelerated() const
-{
-    return this->get_remaining_deceleration() > 0;
-}
-
-bool MonsterEntity::is_stunned() const
-{
-    return this->get_remaining_stun() > 0;
-}
-
-bool MonsterEntity::is_confused() const
-{
-    return this->get_remaining_confusion() > 0;
-}
-
-bool MonsterEntity::is_fearful() const
-{
-    return this->get_remaining_fear() > 0;
-}
-
-bool MonsterEntity::is_invulnerable() const
-{
-    return this->get_remaining_invulnerability() > 0;
-}
-
-short MonsterEntity::get_timed_effect(CreatureTimedEffect effect) const
-{
-    switch (effect) {
-    case CreatureTimedEffect::STUN:
-        return this->get_monster_profile().mtimed.at(MonsterTimedEffect::STUN);
-    case CreatureTimedEffect::CONFUSION:
-        return this->get_monster_profile().mtimed.at(MonsterTimedEffect::CONFUSION);
-    case CreatureTimedEffect::FEAR:
-        return this->get_monster_profile().mtimed.at(MonsterTimedEffect::FEAR);
-    case CreatureTimedEffect::INVULNERABILITY:
-        return this->get_monster_profile().mtimed.at(MonsterTimedEffect::INVULNERABILITY);
-    case CreatureTimedEffect::ACCELERATION:
-        return this->get_monster_profile().mtimed.at(MonsterTimedEffect::FAST);
-    case CreatureTimedEffect::DECELERATION:
-        return this->get_monster_profile().mtimed.at(MonsterTimedEffect::SLOW);
-    case CreatureTimedEffect::SLEEP_OR_PARALYSIS:
-        return this->get_monster_profile().mtimed.at(MonsterTimedEffect::SLEEP);
-    default:
-        return 0;
-    }
-}
-
-void MonsterEntity::set_timed_effect(CreatureTimedEffect effect, short value)
-{
-    switch (effect) {
-    case CreatureTimedEffect::STUN:
-        this->get_monster_profile().mtimed[MonsterTimedEffect::STUN] = value;
-        break;
-    case CreatureTimedEffect::CONFUSION:
-        this->get_monster_profile().mtimed[MonsterTimedEffect::CONFUSION] = value;
-        break;
-    case CreatureTimedEffect::FEAR:
-        this->get_monster_profile().mtimed[MonsterTimedEffect::FEAR] = value;
-        break;
-    case CreatureTimedEffect::INVULNERABILITY:
-        this->get_monster_profile().mtimed[MonsterTimedEffect::INVULNERABILITY] = value;
-        break;
-    case CreatureTimedEffect::ACCELERATION:
-        this->get_monster_profile().mtimed[MonsterTimedEffect::FAST] = value;
-        break;
-    case CreatureTimedEffect::DECELERATION:
-        this->get_monster_profile().mtimed[MonsterTimedEffect::SLOW] = value;
-        break;
-    case CreatureTimedEffect::SLEEP_OR_PARALYSIS:
-        this->get_monster_profile().mtimed[MonsterTimedEffect::SLEEP] = value;
-        break;
-    default:
-        break;
-    }
-}
-
-/*!
- * @brief モンスターの基本速度を取得
- * @return 基本速度値
- */
-int MonsterEntity::get_speed() const
-{
-    return this->speed;
 }
 
 /*!
@@ -302,32 +212,9 @@ void MonsterEntity::set_hostile()
     }
 }
 
-/*
- * 捕獲・死亡の際にカメレオンの変身を元に戻す
- */
-void MonsterEntity::reset_chameleon_polymorph()
-{
-    auto real_monrace_id = this->get_real_monrace_id();
-    this->r_idx = real_monrace_id;
-    this->ap_r_idx = real_monrace_id;
-}
-
 std::string MonsterEntity::get_pronoun_of_summoned_kin() const
 {
     return this->get_monrace().get_pronoun_of_summoned_kin();
-}
-
-void MonsterEntity::make_lore_treasure(int num_item, int num_gold) const
-{
-    auto &monrace = this->get_monrace();
-    if (!this->is_original_ap()) {
-        return;
-    }
-
-    monrace.make_lore_treasure(num_item, num_gold);
-    if (LoreTracker::get_instance().is_tracking(this->r_idx)) {
-        RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
-    }
 }
 
 tl::optional<bool> MonsterEntity::order_pet_named(const CreatureEntity &other) const
@@ -354,14 +241,6 @@ tl::optional<bool> MonsterEntity::order_pet_hp(const CreatureEntity &other) cons
     }
 
     return tl::nullopt;
-}
-
-/*!
- * @brief モンスターを友好的にする
- */
-void MonsterEntity::set_friendly()
-{
-    this->get_monster_profile().mflag2.set(MonsterConstantFlagType::FRIENDLY);
 }
 
 /*!
@@ -533,11 +412,6 @@ void MonsterEntity::initialize_equivalent_player_classes()
     }
 }
 
-Pos2D MonsterEntity::get_position() const
-{
-    return { this->y, this->x };
-}
-
 bool MonsterEntity::can_ring_boss_call_nazgul() const
 {
     auto is_boss = this->r_idx == MonraceId::MORGOTH;
@@ -608,35 +482,6 @@ std::string MonsterEntity::build_attitude_description() const
     return "";
 }
 
-int MonsterEntity::get_ac() const
-{
-    if (this->get_monster_profile().mflag2.has(MonsterConstantFlagType::NAKED)) {
-        return 0;
-    }
-    return this->ac;
-}
-
-// CreatureEntityインターフェースの実装
-POSITION MonsterEntity::get_x() const
-{
-    return this->x;
-}
-
-POSITION MonsterEntity::get_y() const
-{
-    return this->y;
-}
-
-int MonsterEntity::get_current_hp() const
-{
-    return this->hp;
-}
-
-int MonsterEntity::get_max_hp() const
-{
-    return this->maxhp;
-}
-
 int MonsterEntity::get_level() const
 {
     // 個体レベルが設定されていればそれを使用、未設定なら種族レベルを使用
@@ -644,22 +489,4 @@ int MonsterEntity::get_level() const
         return this->level;
     }
     return this->get_monrace().level / 2;
-}
-
-bool MonsterEntity::is_player() const
-{
-    return false;
-}
-
-void MonsterEntity::on_take_hit(int damage)
-{
-    this->dealt_damage += damage;
-    if (this->dealt_damage > this->max_maxhp * 100) {
-        this->dealt_damage = this->max_maxhp * 100;
-    }
-}
-
-void MonsterEntity::on_death([[maybe_unused]] std::string_view cause)
-{
-    // モンスター死亡時の経験値・徳処理は MonsterDamageProcessor::process_dead_exp_virtue() で行う
 }
