@@ -22,15 +22,8 @@ public:
 
     void wipe() override;
     MonsterEntity clone() const;
-    tl::optional<bool> order_pet_whistle(const CreatureEntity &other) const;
-    tl::optional<bool> order_pet_dismission(const CreatureEntity &other) const;
     bool can_ring_boss_call_nazgul() const;
     void set_individual_speed(bool force_fixed_speed) override;
-    void set_hostile() override;
 
     int get_level() const override;
-
-private:
-    tl::optional<bool> order_pet_named(const CreatureEntity &other) const;
-    tl::optional<bool> order_pet_hp(const CreatureEntity &other) const;
 };

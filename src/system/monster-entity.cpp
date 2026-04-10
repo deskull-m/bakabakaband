@@ -38,54 +38,6 @@ MonsterEntity MonsterEntity::clone() const
 }
 
 /*!
- * @brief モンスターが生命体かどうかを返す
- * @param is_apperance たぬき、カメレオン、各種誤認ならtrue
- * @return 生命体ならばtrue
- * @todo kind_flags をMonsterEntityへコピーする (将来的なモンスター仕様の拡張)
- */
-tl::optional<bool> MonsterEntity::order_pet_whistle(const CreatureEntity &other) const
-{
-    const auto is_ordered_name = this->order_pet_named(other);
-    if (is_ordered_name) {
-        return *is_ordered_name;
-    }
-
-    const auto &monrace1 = this->get_monrace();
-    const auto &monrace2 = other.get_monrace();
-    const auto is_ordered_race = monrace1.order_pet(monrace2);
-    if (is_ordered_race) {
-        return *is_ordered_race;
-    }
-
-    return this->order_pet_hp(other);
-}
-
-tl::optional<bool> MonsterEntity::order_pet_dismission(const CreatureEntity &other) const
-{
-    const auto is_ordered_name = this->order_pet_named(other);
-    if (is_ordered_name) {
-        return *is_ordered_name;
-    }
-
-    if (!this->has_parent() && other.has_parent()) {
-        return true;
-    }
-
-    if (this->has_parent() && !other.has_parent()) {
-        return false;
-    }
-
-    const auto &monrace1 = this->get_monrace();
-    const auto &monrace2 = other.get_monrace();
-    const auto is_ordered_race = monrace1.order_pet(monrace2);
-    if (is_ordered_race) {
-        return *is_ordered_race;
-    }
-
-    return this->order_pet_hp(other);
-}
-
-/*!
  * @brief モンスターの個体加速を設定する / Get initial monster speed
  * @param force_fixed_speed 速度を固定にする(個体差を適用しない)か否か
  */
@@ -106,52 +58,6 @@ void MonsterEntity::set_individual_speed(bool force_fixed_speed)
     }
 
     this->speed = speed;
-}
-
-/*!
- * @brief モンスターを敵に回す
- */
-void MonsterEntity::set_hostile()
-{
-    if (AngbandSystem::get_instance().is_phase_out()) {
-        return;
-    }
-
-    this->get_monster_profile().mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
-
-    if (this->get_monster_profile().alliance_idx != AllianceType::NONE) {
-        for (auto &monster : this->current_floor_ptr->m_list) {
-            if (monster.get_monster_profile().alliance_idx == this->get_monster_profile().alliance_idx) {
-                monster.get_monster_profile().mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
-            }
-        }
-    }
-}
-
-tl::optional<bool> MonsterEntity::order_pet_named(const CreatureEntity &other) const
-{
-    if (this->is_named() && !other.is_named()) {
-        return true;
-    }
-
-    if (!this->is_named() && other.is_named()) {
-        return false;
-    }
-
-    return tl::nullopt;
-}
-
-tl::optional<bool> MonsterEntity::order_pet_hp(const CreatureEntity &other) const
-{
-    if (this->hp > other.hp) {
-        return true;
-    }
-
-    if (this->hp < other.hp) {
-        return false;
-    }
-
-    return tl::nullopt;
 }
 
 bool MonsterEntity::can_ring_boss_call_nazgul() const

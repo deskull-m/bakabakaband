@@ -11,6 +11,7 @@
 #include "player-info/race-types.h"
 #include "player/race-info-table.h"
 #include "system/angband-system.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -389,6 +390,95 @@ bool CreatureEntity::is_mimicry() const
     }
 
     return monrace.behavior_flags.has(MonsterBehaviorType::NEVER_MOVE) || this->is_asleep();
+}
+
+void CreatureEntity::set_hostile()
+{
+    if (!this->has_monster_profile()) {
+        return;
+    }
+
+    if (AngbandSystem::get_instance().is_phase_out()) {
+        return;
+    }
+
+    this->get_monster_profile().mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
+
+    if (this->get_monster_profile().alliance_idx != AllianceType::NONE) {
+        for (auto &monster : this->current_floor_ptr->m_list) {
+            if (monster.get_monster_profile().alliance_idx == this->get_monster_profile().alliance_idx) {
+                monster.get_monster_profile().mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
+            }
+        }
+    }
+}
+
+tl::optional<bool> CreatureEntity::order_pet_whistle(const CreatureEntity &other) const
+{
+    const auto is_ordered_name = this->order_pet_named(other);
+    if (is_ordered_name) {
+        return *is_ordered_name;
+    }
+
+    const auto &monrace1 = this->get_monrace();
+    const auto &monrace2 = other.get_monrace();
+    const auto is_ordered_race = monrace1.order_pet(monrace2);
+    if (is_ordered_race) {
+        return *is_ordered_race;
+    }
+
+    return this->order_pet_hp(other);
+}
+
+tl::optional<bool> CreatureEntity::order_pet_dismission(const CreatureEntity &other) const
+{
+    const auto is_ordered_name = this->order_pet_named(other);
+    if (is_ordered_name) {
+        return *is_ordered_name;
+    }
+
+    if (!this->has_parent() && other.has_parent()) {
+        return true;
+    }
+
+    if (this->has_parent() && !other.has_parent()) {
+        return false;
+    }
+
+    const auto &monrace1 = this->get_monrace();
+    const auto &monrace2 = other.get_monrace();
+    const auto is_ordered_race = monrace1.order_pet(monrace2);
+    if (is_ordered_race) {
+        return *is_ordered_race;
+    }
+
+    return this->order_pet_hp(other);
+}
+
+tl::optional<bool> CreatureEntity::order_pet_named(const CreatureEntity &other) const
+{
+    if (this->is_named() && !other.is_named()) {
+        return true;
+    }
+
+    if (!this->is_named() && other.is_named()) {
+        return false;
+    }
+
+    return tl::nullopt;
+}
+
+tl::optional<bool> CreatureEntity::order_pet_hp(const CreatureEntity &other) const
+{
+    if (this->hp > other.hp) {
+        return true;
+    }
+
+    if (this->hp < other.hp) {
+        return false;
+    }
+
+    return tl::nullopt;
 }
 
 void CreatureEntity::initialize_equivalent_player_races()
