@@ -531,35 +531,23 @@ public:
 
     /*!
      * @brief クリーチャーが祝福状態かどうかを判定
-     * @return 祝福されていればtrue、デフォルトはfalse
+     * @return 祝福されていればtrue
      */
-    virtual bool is_blessed() const
-    {
-        return false;
-    }
+    virtual bool is_blessed() const;
 
     /*!
      * @brief クリーチャーが士気高揚状態かどうかを判定
-     * @return 士気高揚ならtrue、デフォルトはfalse
+     * @return 士気高揚ならtrue
      */
-    virtual bool is_hero() const
-    {
-        return false;
-    }
+    virtual bool is_hero() const;
 
     /*!
      * @brief クリーチャーが狂戦士状態かどうかを判定
-     * @return 狂戦士ならtrue、デフォルトはfalse
+     * @return 狂戦士ならtrue
      */
-    virtual bool is_shero() const
-    {
-        return false;
-    }
+    virtual bool is_shero() const;
 
-    virtual bool is_echizen() const
-    {
-        return false;
-    }
+    virtual bool is_echizen() const;
 
     /*!
      * @brief クリーチャーがペットかどうかを判定

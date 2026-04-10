@@ -3,12 +3,6 @@
 #include "inventory/inventory-slot-types.h"
 #include "market/arena-entry.h"
 #include "monster/monster-util.h"
-#include "player-info/bard-data-type.h"
-#include "player-info/class-types.h"
-#include "player-info/sniper-data-type.h"
-#include "player-info/spell-hex-data-type.h"
-#include "realm/realm-hex-numbers.h"
-#include "realm/realm-song-numbers.h"
 #include "system/angband-exceptions.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
@@ -210,71 +204,4 @@ void PlayerType::set_timed_effect(CreatureTimedEffect effect, short value)
     default:
         break;
     }
-}
-
-bool PlayerType::is_invulnerable() const
-{
-    if (this->invuln > 0) {
-        return true;
-    }
-
-    const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
-    return bard && *bard && (*bard)->singing_song == MUSIC_INVULN;
-}
-
-bool PlayerType::is_fast() const
-{
-    const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
-    const auto singing_speed = bard && *bard && ((*bard)->singing_song == MUSIC_SPEED || (*bard)->singing_song == MUSIC_SHERO);
-    return this->effects()->acceleration().is_fast() || singing_speed;
-}
-
-bool PlayerType::is_blessed() const
-{
-    if (this->blessed > 0) {
-        return true;
-    }
-
-    const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
-    if (bard && *bard && (*bard)->singing_song == MUSIC_BLESS) {
-        return true;
-    }
-
-    const auto *hex = std::get_if<std::shared_ptr<spell_hex_data_type>>(&this->class_specific_data);
-    return hex && *hex && (*hex)->casting_spells.has(HEX_BLESS);
-}
-
-bool PlayerType::is_hero() const
-{
-    if (this->hero > 0) {
-        return true;
-    }
-
-    const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
-    return bard && *bard && ((*bard)->singing_song == MUSIC_HERO || (*bard)->singing_song == MUSIC_SHERO);
-}
-
-bool PlayerType::is_shero() const
-{
-    return this->berserk > 0 || this->pclass == PlayerClassType::BERSERKER;
-}
-
-bool PlayerType::is_echizen() const
-{
-    return this->ppersonality == PERSONALITY_COMBAT || this->is_wielding(FixedArtifactId::CRIMSON);
-}
-
-bool PlayerType::is_time_limit_esp() const
-{
-    const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
-    const auto singing_mind = bard && *bard && (*bard)->singing_song == MUSIC_MIND;
-    const auto *sniper_specific = std::get_if<std::shared_ptr<SniperData>>(&this->class_specific_data);
-    const auto sniper_concent = sniper_specific && *sniper_specific ? (*sniper_specific)->concent : 0;
-    return this->tim_esp > 0 || singing_mind || (sniper_concent >= CONCENT_TELE_THRESHOLD);
-}
-
-bool PlayerType::is_time_limit_stealth() const
-{
-    const auto *bard = std::get_if<std::shared_ptr<bard_data_type>>(&this->class_specific_data);
-    return this->tim_stealth > 0 || (bard && *bard && (*bard)->singing_song == MUSIC_STEALTH);
 }
