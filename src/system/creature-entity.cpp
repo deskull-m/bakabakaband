@@ -257,6 +257,16 @@ bool CreatureEntity::is_decelerated() const
     return this->get_timed_effect(CreatureTimedEffect::DECELERATION) > 0;
 }
 
+bool CreatureEntity::is_blind() const
+{
+    return this->get_timed_effect(CreatureTimedEffect::BLINDNESS) > 0;
+}
+
+bool CreatureEntity::is_paralyzed() const
+{
+    return this->get_timed_effect(CreatureTimedEffect::PARALYSIS) > 0;
+}
+
 short CreatureEntity::get_timed_effect(CreatureTimedEffect effect) const
 {
     if (!this->has_monster_profile()) {
@@ -652,7 +662,7 @@ int CreatureEntity::get_ac() const
     if (this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::NAKED)) {
         return 0;
     }
-    return this->ac;
+    return this->ac + this->to_a;
 }
 
 std::string CreatureEntity::build_looking_description(bool needs_attitude) const

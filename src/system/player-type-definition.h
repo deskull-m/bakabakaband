@@ -59,8 +59,6 @@ public:
 
     bool is_player() const override;
 
-    int get_ac() const override;
-
     void on_take_hit(int damage) override;
     void on_death(std::string_view cause) override;
 
@@ -68,8 +66,6 @@ public:
     void set_timed_effect(CreatureTimedEffect effect, short value) override;
 
     bool is_invulnerable() const override;
-    bool is_blind() const override;
-    bool is_paralyzed() const override;
     bool is_fast() const override;
     bool is_blessed() const override;
     bool is_hero() const override;

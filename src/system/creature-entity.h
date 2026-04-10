@@ -294,9 +294,7 @@ public:
 
     /*!
      * @brief クリーチャーの実効ACを取得
-     * @return 実効AC値（プレイヤーは ac + to_a、モンスターは NAKED フラグ考慮後の ac）
-     * @details デフォルト実装はモンスター用（NAKED フラグで 0 を返す場合あり）。
-     *          PlayerType はオーバーライドして ac + to_a を返す。
+     * @return 実効AC値（ac + to_a。ただしモンスターで NAKED フラグ付きの場合は 0）
      */
     virtual int get_ac() const;
 
@@ -503,21 +501,15 @@ public:
 
     /*!
      * @brief クリーチャーが盲目かどうかを判定
-     * @return 盲目ならtrue、デフォルトはfalse
+     * @return 盲目ならtrue（モンスターは常にfalse）
      */
-    virtual bool is_blind() const
-    {
-        return false;
-    }
+    virtual bool is_blind() const;
 
     /*!
      * @brief クリーチャーが麻痺しているかどうかを判定
-     * @return 麻痺していればtrue、デフォルトはfalse
+     * @return 麻痺していればtrue（モンスターは常にfalse）
      */
-    virtual bool is_paralyzed() const
-    {
-        return false;
-    }
+    virtual bool is_paralyzed() const;
 
     /*!
      * @brief クリーチャーが加速しているかどうかを判定

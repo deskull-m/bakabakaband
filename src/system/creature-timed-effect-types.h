@@ -12,5 +12,7 @@ enum class CreatureTimedEffect {
     ACCELERATION, /*!< 加速 / Acceleration (Fast) */
     DECELERATION, /*!< 減速 / Deceleration (Slow) */
     SLEEP_OR_PARALYSIS, /*!< 眠り・麻痺 / Sleep or Paralysis */
+    BLINDNESS, /*!< 盲目 / Blindness (プレイヤーのみ、モンスターは常に0) */
+    PARALYSIS, /*!< 麻痺 / Paralysis (プレイヤーのみ、モンスターは SLEEP_OR_PARALYSIS で代替) */
     MAX,
 };
