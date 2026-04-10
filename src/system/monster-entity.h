@@ -2,8 +2,6 @@
 
 #include "system/creature-entity.h"
 #include "system/monster-profile.h"
-#include <string>
-#include <string_view>
 
 /*!
  * @brief Monster information, for a specific monster.
