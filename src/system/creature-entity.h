@@ -621,13 +621,17 @@ public:
     {
     }
 
-    virtual void initialize_equivalent_player_races()
-    {
-    }
+    /*!
+     * @brief モンスターのフラグに基づいて対応するプレイヤー種族IDを初期化する
+     * @details モンスター以外では何もしない。
+     */
+    virtual void initialize_equivalent_player_races();
 
-    virtual void initialize_equivalent_player_classes()
-    {
-    }
+    /*!
+     * @brief モンスターのフラグに基づいて対応するプレイヤー職業IDを初期化する
+     * @details モンスター以外では何もしない。
+     */
+    virtual void initialize_equivalent_player_classes();
 
     byte get_temporary_speed() const;
 

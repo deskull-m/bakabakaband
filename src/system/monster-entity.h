@@ -35,8 +35,6 @@ public:
 
     void set_individual_speed(bool force_fixed_speed) override;
     void set_hostile() override;
-    void initialize_equivalent_player_races() override;
-    void initialize_equivalent_player_classes() override;
 
     bool is_dead() const override;
 
