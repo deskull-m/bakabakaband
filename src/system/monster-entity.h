@@ -23,7 +23,4 @@ public:
     void wipe() override;
     MonsterEntity clone() const;
     bool can_ring_boss_call_nazgul() const;
-    void set_individual_speed(bool force_fixed_speed) override;
-
-    int get_level() const override;
 };

@@ -1,4 +1,5 @@
 #include "system/creature-entity.h"
+#include "core/speed-table.h"
 #include "floor/geometry.h"
 #include "game-option/birth-options.h"
 #include "inventory/inventory-slot-types.h"
@@ -812,4 +813,39 @@ int CreatureEntity::calc_life_rating() const
     const auto expected_hp = this->hit_dice.maxroll() + this->hit_dice.floored_expected_value_multiplied_by(roll_num);
 
     return actual_hp * 100 / expected_hp;
+}
+
+int CreatureEntity::get_level() const
+{
+    if (this->level > 0) {
+        return this->level;
+    }
+    return this->get_monrace().level / 2;
+}
+
+/*!
+ * @brief モンスターの個体加速を設定する / Get initial monster speed
+ * @param force_fixed_speed 速度を固定にする(個体差を適用しない)か否か
+ */
+void CreatureEntity::set_individual_speed(bool force_fixed_speed)
+{
+    if (!this->has_monster_profile()) {
+        return;
+    }
+
+    const auto &monrace = this->get_monrace();
+    auto speed = monrace.speed;
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && !force_fixed_speed) {
+        /* Allow some small variation per monster */
+        int i = speed_to_energy(monrace.speed) / (one_in_(4) ? 3 : 10);
+        if (i) {
+            speed += static_cast<uint8_t>(rand_spread(0, i));
+        }
+    }
+
+    if (speed > STANDARD_SPEED + 99) {
+        speed = STANDARD_SPEED + 99;
+    }
+
+    this->speed = speed;
 }
