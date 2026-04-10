@@ -30,7 +30,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
@@ -272,7 +271,7 @@ static void hissatsu_lightning_eagle(CreatureEntity &creature, samurai_slaying_t
  */
 static void hissatsu_bloody_maelstroem(CreatureEntity &creature, samurai_slaying_type *samurai_slaying_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &player_cut = player.effects()->cut();
     if ((samurai_slaying_ptr->mode == HISSATSU_SEKIRYUKA) && player_cut.is_cut() && samurai_slaying_ptr->m_ptr->has_living_flag()) {
         auto tmp = std::min<short>(100, std::max<short>(10, player_cut.current() / 10));
@@ -344,7 +343,7 @@ MULTIPLY mult_hissatsu(CreatureEntity &creature, MULTIPLY mult, const TrFlags &f
 
 void concentration(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     int max_csp = std::max(player.msp * 4, player.level * 5 + 5);
 
     if (total_friends) {
@@ -374,7 +373,7 @@ void concentration(CreatureEntity &creature)
  */
 bool choose_samurai_stance(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     char choice;
 
     if (cmd_limit_confused(player)) {
@@ -465,7 +464,7 @@ bool choose_samurai_stance(CreatureEntity &creature)
  */
 int calc_attack_quality(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto *o_ptr = player.inventory[INVEN_MAIN_HAND + pa_ptr->hand].get();
     int bonus = player.to_h[pa_ptr->hand] + o_ptr->to_h;
     int chance = (player.skill_thn + (bonus * BTH_PLUS_ADJ));
@@ -496,7 +495,7 @@ int calc_attack_quality(CreatureEntity &creature, player_attack_type *pa_ptr)
  */
 void mineuchi(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (pa_ptr->mode != HISSATSU_MINEUCHI) {
         return;
     }
@@ -528,7 +527,7 @@ void mineuchi(CreatureEntity &creature, player_attack_type *pa_ptr)
  */
 void musou_counterattack(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto is_musou = CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU);
     if ((!player.counter && !is_musou) || !monap_ptr->alive || player.is_dead() || !monap_ptr->m_ptr->get_monster_profile().ml || (player.csp <= 7)) {
         return;

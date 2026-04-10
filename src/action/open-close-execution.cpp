@@ -28,7 +28,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/screen-processor.h"
@@ -45,7 +44,7 @@
  */
 bool exe_open(CreatureEntity &creature, POSITION y, POSITION x)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const Pos2D pos(y, x);
     const auto &grid = creature.current_floor_ptr->get_grid(pos);
     auto &terrain = grid.get_terrain();
@@ -110,7 +109,7 @@ bool exe_open(CreatureEntity &creature, POSITION y, POSITION x)
  */
 bool exe_close(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &floor = *creature.current_floor_ptr;
     const auto &grid = floor.get_grid(pos);
     const auto terrain_id = grid.feat;
@@ -156,7 +155,7 @@ bool exe_close(CreatureEntity &creature, const Pos2D &pos)
  */
 bool easy_open_door(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &floor = *creature.current_floor_ptr;
     if (!floor.has_closed_door_at(pos)) {
         return false;
@@ -220,7 +219,7 @@ bool easy_open_door(CreatureEntity &creature, const Pos2D &pos)
  */
 bool exe_disarm_chest(CreatureEntity &creature, POSITION y, POSITION x, OBJECT_IDX o_idx)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const Pos2D pos(y, x);
     auto *o_ptr = creature.current_floor_ptr->o_list[o_idx].get();
     PlayerEnergy(player).set_player_turn_energy(100);
@@ -283,7 +282,7 @@ bool exe_disarm_chest(CreatureEntity &creature, POSITION y, POSITION x, OBJECT_I
 
 bool exe_disarm(CreatureEntity &creature, POSITION y, POSITION x, const Direction &dir)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &baseitems = BaseitemList::get_instance();
     const Pos2D pos(y, x);
     const auto &grid = creature.current_floor_ptr->get_grid(pos);
@@ -349,7 +348,7 @@ bool exe_disarm(CreatureEntity &creature, POSITION y, POSITION x, const Directio
  */
 bool exe_bash(CreatureEntity &creature, POSITION y, POSITION x, const Direction &dir)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &floor = *creature.current_floor_ptr;
     const Pos2D pos(y, x);
     const auto &grid = floor.get_grid(pos);

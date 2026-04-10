@@ -527,7 +527,7 @@ void jump_floor(CreatureEntity &creature, DungeonId dun_idx, DEPTH depth)
     constexpr auto mes = _("%sへとウィザード・テレポートで移動した。\n", "You wizard-teleported to %s.\n");
     msg_print_wizard(creature, 2, format(mes, to.data()));
     floor.quest_number = QuestId::NONE;
-    PlayerEnergy(*player_ptr).reset_player_turn();
+    PlayerEnergy(player).reset_player_turn();
     player.energy_need = 0;
     fcms->set(FloorChangeMode::FIRST_FLOOR);
     player.leaving = true;

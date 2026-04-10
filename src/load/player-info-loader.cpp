@@ -29,7 +29,6 @@
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/inner-game-data.h"
-#include "system/player-type-definition.h"
 #include "timed-effect/timed-effects.h"
 #include "world/world.h"
 
@@ -39,7 +38,7 @@
  */
 static void rd_realms(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     PlayerRealm pr(player);
     pr.reset();
 
@@ -66,7 +65,7 @@ static void rd_realms(CreatureEntity &creature)
  */
 void rd_base_info(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     creature.name = rd_string();
     if (creature.name.length() > 40) {
         creature.name.resize(40);
@@ -168,7 +167,7 @@ void rd_skills(CreatureEntity &creature)
 
 static void set_race(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     InnerGameData::get_instance().set_start_race(i2enum<PlayerRaceType>(rd_byte()));
     player.old_race1 = rd_u32b();
     player.old_race2 = rd_u32b();
@@ -340,7 +339,7 @@ static void rd_bad_status(CreatureEntity &creature)
 
 static void rd_energy(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     creature.energy_need = rd_s16b();
     player.enchant_energy_need = rd_s16b();
 }
@@ -447,7 +446,7 @@ static void rd_timed_effects(CreatureEntity &creature)
 
 static void rd_player_status(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     rd_base_status(creature);
     strip_bytes(24);
     creature.au = rd_s32b();
@@ -518,7 +517,7 @@ static void rd_player_status(CreatureEntity &creature)
 
 void rd_player_info(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     rd_player_status(creature);
     rd_special_attack(creature);
     rd_special_action(creature);

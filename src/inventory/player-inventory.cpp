@@ -28,7 +28,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
 #include "term/z-form.h"
@@ -50,7 +49,7 @@
  */
 bool can_get_item(CreatureEntity &creature, const ItemTester &item_tester)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     for (int j = 0; j < INVEN_TOTAL; j++) {
         if (item_tester.okay(player.inventory[j].get())) {
             return true;
@@ -81,7 +80,7 @@ static bool query_pickup(std::string_view item_name)
 
 static void py_pickup_all_golds_on_floor(CreatureEntity &creature, const Grid &grid)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     for (auto it = grid.o_idx_list.begin(); it != grid.o_idx_list.end();) {
         const auto i_idx = *it++;
         auto &item = *player.current_floor_ptr->o_list[i_idx];
@@ -106,7 +105,7 @@ static void py_pickup_all_golds_on_floor(CreatureEntity &creature, const Grid &g
 
 static void py_pickup_single_item(CreatureEntity &creature, short i_idx, bool pickup)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &item = *player.current_floor_ptr->o_list[i_idx];
     const auto item_name = describe_flavor(player, item, 0);
 
@@ -132,7 +131,7 @@ static void py_pickup_single_item(CreatureEntity &creature, short i_idx, bool pi
 
 static void py_pickup_multiple_items(CreatureEntity &creature, bool pickup)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &floor = *player.current_floor_ptr;
     const auto &grid = floor.get_grid(player.get_position());
 
@@ -169,7 +168,7 @@ static void py_pickup_multiple_items(CreatureEntity &creature, bool pickup)
  */
 static void py_pickup_floor(CreatureEntity &creature, bool pickup)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &o_list = player.current_floor_ptr->o_list;
     const auto exclude_marked_as_skip = ranges::views::remove_if([&](auto i_idx) { return o_list.at(i_idx)->marked.has(OmType::SUPRESS_MESSAGE); });
     const auto &grid = player.current_floor_ptr->get_grid(player.get_position());
@@ -209,7 +208,7 @@ static void py_pickup_floor(CreatureEntity &creature, bool pickup)
  */
 static void print_pickup_message(CreatureEntity &creature, [[maybe_unused]] const ItemEntity &picked_item, const ItemEntity &picked_slot_item, short slot)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto item_name = describe_flavor(player, picked_slot_item, 0);
     const auto item_name_with_label = fmt::format(_("{}({})", "{} ({})"), item_name, index_to_label(slot));
 
@@ -245,7 +244,7 @@ static void print_pickup_message(CreatureEntity &creature, [[maybe_unused]] cons
  */
 void process_player_pickup_item(CreatureEntity &creature, OBJECT_IDX o_idx)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     // delete_object_idx()で配列から削除した後にも使用するためshared_ptrをコピーする
     const std::shared_ptr<ItemEntity> picked_item_ptr = player.current_floor_ptr->o_list[o_idx];
 
@@ -275,7 +274,7 @@ void process_player_pickup_item(CreatureEntity &creature, OBJECT_IDX o_idx)
  */
 void carry(CreatureEntity &creature, bool pickup)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     verify_panel(creature);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);

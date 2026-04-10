@@ -20,7 +20,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "tracking/lore-tracker.h"
@@ -37,7 +36,7 @@
  */
 static bool detect_feat_flag(CreatureEntity &creature, POSITION range, TerrainCharacteristics flag, bool known)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &floor = *player.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
@@ -86,7 +85,7 @@ static bool detect_feat_flag(CreatureEntity &creature, POSITION range, TerrainCh
  */
 bool detect_traps(CreatureEntity &creature, POSITION range, bool known)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     bool detect = detect_feat_flag(creature, range, TerrainCharacteristics::TRAP, known);
     if (!known && detect) {
         detect_feat_flag(creature, range, TerrainCharacteristics::TRAP, true);
@@ -115,7 +114,7 @@ bool detect_traps(CreatureEntity &creature, POSITION range, bool known)
  */
 bool detect_doors(CreatureEntity &creature, POSITION range)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     bool detect = detect_feat_flag(creature, range, TerrainCharacteristics::DOOR, true);
 
     if (music_singing(player, MUSIC_DETECT) && get_singing_count(player) > 0) {
@@ -136,7 +135,7 @@ bool detect_doors(CreatureEntity &creature, POSITION range)
  */
 bool detect_stairs(CreatureEntity &creature, POSITION range)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     bool detect = detect_feat_flag(creature, range, TerrainCharacteristics::STAIRS, true);
 
     if (music_singing(player, MUSIC_DETECT) && get_singing_count(player) > 0) {
@@ -157,7 +156,7 @@ bool detect_stairs(CreatureEntity &creature, POSITION range)
  */
 bool detect_treasure(CreatureEntity &creature, POSITION range)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     bool detect = detect_feat_flag(creature, range, TerrainCharacteristics::HAS_GOLD, true);
 
     if (music_singing(player, MUSIC_DETECT) && get_singing_count(player) > 6) {
@@ -177,7 +176,7 @@ bool detect_treasure(CreatureEntity &creature, POSITION range)
  */
 bool detect_objects_gold(CreatureEntity &creature, POSITION range)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     POSITION range2 = range;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
@@ -229,7 +228,7 @@ bool detect_objects_gold(CreatureEntity &creature, POSITION range)
  */
 bool detect_objects_normal(CreatureEntity &creature, POSITION range)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     POSITION range2 = range;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
@@ -338,7 +337,7 @@ bool detect_objects_magic(CreatureEntity &creature, POSITION range)
  */
 bool detect_monsters_normal(CreatureEntity &creature, POSITION range)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
@@ -383,7 +382,7 @@ bool detect_monsters_normal(CreatureEntity &creature, POSITION range)
  */
 bool detect_monsters_invis(CreatureEntity &creature, POSITION range)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
@@ -582,7 +581,7 @@ bool detect_monsters_mind(CreatureEntity &creature, POSITION range)
  */
 bool detect_monsters_string(CreatureEntity &creature, POSITION range, concptr Match)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;

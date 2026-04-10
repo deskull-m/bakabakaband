@@ -17,6 +17,7 @@
 #include "player/race-info-table.h"
 #include "system/angband-system.h"
 #include "system/floor/floor-info.h"
+#include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -30,6 +31,17 @@
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include <range/v3/algorithm.hpp>
+
+bool CreatureEntity::try_set_position(const Pos2D &pos)
+{
+    if (this->current_floor_ptr->get_grid(pos).has_monster()) {
+        return false;
+    }
+
+    this->y = pos.y;
+    this->x = pos.x;
+    return true;
+}
 
 bool CreatureEntity::check_sub_alignments(const byte sub_align1, const byte sub_align2)
 {

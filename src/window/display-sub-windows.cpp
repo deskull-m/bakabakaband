@@ -268,7 +268,7 @@ static void print_pet_list(CreatureEntity &creature, const std::vector<MONSTER_I
  */
 void fix_monster_list(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     static std::vector<MONSTER_IDX> monster_list;
     std::once_flag once;
 
@@ -290,7 +290,7 @@ void fix_monster_list(CreatureEntity &creature)
  */
 void fix_pet_list(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     display_sub_windows(SubWindowRedrawingFlag::PETS,
         [&player, &creature] {
             const auto &[wid, hgt] = term_get_size();
@@ -309,7 +309,7 @@ static void display_equipment(CreatureEntity &creature, const ItemTester &item_t
         return;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &[wid, hgt] = term_get_size();
     byte attr = TERM_WHITE;
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
@@ -501,7 +501,7 @@ void fix_dungeon(CreatureEntity &creature)
  */
 void fix_monster(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (!LoreTracker::get_instance().is_tracking()) {
         return;
     }
@@ -551,7 +551,7 @@ static bool is_seeing_monster_on(const FloorType &floor, const Grid &grid)
  */
 static void display_floor_item_list(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &[wid, hgt] = term_get_size();
     if (hgt <= 0) {
         return;
@@ -637,7 +637,7 @@ void fix_floor_item_list(CreatureEntity &creature, const Pos2D &pos)
  */
 static void display_found_item_list(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &[wid, hgt] = term_get_size();
     if (hgt <= 0) {
         return;
@@ -720,7 +720,7 @@ void fix_found_item_list(CreatureEntity &creature)
  */
 static void display_spell_list(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     TERM_LEN y, x;
     int m[9]{};
 

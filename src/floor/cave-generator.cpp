@@ -31,7 +31,6 @@
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "util/bit-flags-calculator.h"
@@ -175,7 +174,7 @@ static void generate_circular_waterway(CreatureEntity &creature)
 
 static bool decide_tunnel_planned_site(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon, dt_type *dt_ptr, int i)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     dd_ptr->tunn_n = 0;
     dd_ptr->wall_n = 0;
     if (dungeon.flags.has(DungeonFeatureType::NO_TUNNEL)) {
@@ -211,7 +210,7 @@ static void make_tunnels(CreatureEntity &creature, DungeonData *dd_ptr)
 
 static void make_walls(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon, dt_type *dt_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     for (size_t j = 0; j < dd_ptr->wall_n; j++) {
         dd_ptr->tunnel_pos = dd_ptr->walls[j];
         auto &grid = creature.current_floor_ptr->get_grid(dd_ptr->tunnel_pos);
@@ -243,7 +242,7 @@ static bool make_centers(CreatureEntity &creature, DungeonData *dd_ptr, const Du
 
 static void make_doors(CreatureEntity &creature, DungeonData *dd_ptr, dt_type *dt_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     for (size_t i = 0; i < dd_ptr->door_n; i++) {
         dd_ptr->tunnel_pos = dd_ptr->doors[i];
         for (const auto &d : Direction::directions_4()) {
@@ -264,7 +263,7 @@ static void make_only_tunnel_points(const FloorType &floor, DungeonData *dd_ptr)
 
 static bool make_one_floor(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     if (dungeon.flags.has(DungeonFeatureType::NO_ROOM)) {
         make_only_tunnel_points(floor, dd_ptr);
@@ -330,7 +329,7 @@ static bool make_one_floor(CreatureEntity &creature, DungeonData *dd_ptr, const 
 
 static bool switch_making_floor(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (dungeon.flags.has(DungeonFeatureType::MAZE)) {
         const auto &floor = *creature.current_floor_ptr;
         build_maze_vault(player, { floor.height / 2 - 1, floor.width / 2 - 1 }, { floor.height - 4, floor.width - 4 }, false);
@@ -418,7 +417,7 @@ static void make_perm_walls(CreatureEntity &creature)
 
 static bool check_place_necessary_objects(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto p_pos = new_player_spot(creature);
     if (!p_pos) {
         dd_ptr->why = _("プレイヤー配置に失敗", "Failed to place a player");
@@ -436,7 +435,7 @@ static bool check_place_necessary_objects(CreatureEntity &creature, DungeonData 
 
 static void decide_dungeon_data_allocation(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &floor = *creature.current_floor_ptr;
     dd_ptr->alloc_object_num = floor.dun_level / 3 + 5;
     if (dd_ptr->alloc_object_num > 30) {
@@ -467,7 +466,7 @@ static void decide_dungeon_data_allocation(CreatureEntity &creature, DungeonData
 
 static bool allocate_dungeon_data(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     dd_ptr->alloc_monster_num += randint1(8);
     auto &floor = *creature.current_floor_ptr;
 
@@ -558,7 +557,7 @@ uint32_t calculate_terrain_seed(int dungeon_id, int dun_level)
  */
 tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32_t> seed)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     // 乱数種の保存と復元用
     Xoshiro128StarStar::state_type original_state{};
     bool seed_was_fixed = false;
@@ -677,7 +676,7 @@ tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32
  */
 void apply_vestige_terrain_replacement(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     auto &terrains = TerrainList::get_instance();
 
@@ -732,7 +731,7 @@ void apply_void_terrain_placement(CreatureEntity &creature)
         return;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     auto &terrains = TerrainList::get_instance();
 

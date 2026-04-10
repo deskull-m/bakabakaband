@@ -37,7 +37,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "system/services/dungeon-service.h"
 #include "term/gameterm.h"
 #include "term/z-form.h"
@@ -59,7 +58,7 @@
  */
 static void dump_aux_pet(CreatureEntity &creature, FILE *fff)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &floor = *creature.current_floor_ptr;
     auto pet = false;
     auto pet_settings = false;
@@ -138,7 +137,7 @@ static void dump_aux_quest(CreatureEntity &creature, FILE *fff)
  */
 static void dump_aux_last_message(CreatureEntity &creature, FILE *fff)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (!creature.is_dead()) {
         return;
     }
@@ -374,7 +373,7 @@ static void dump_aux_monsters(FILE *fff)
  */
 static void dump_aux_race_history(CreatureEntity &creature, FILE *fff)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (!player.old_race1 && !player.old_race2) {
         return;
     }
@@ -408,7 +407,7 @@ static void dump_aux_race_history(CreatureEntity &creature, FILE *fff)
  */
 static void dump_aux_realm_history(CreatureEntity &creature, FILE *fff)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (player.old_realm == 0) {
         return;
     }
@@ -431,7 +430,7 @@ static void dump_aux_realm_history(CreatureEntity &creature, FILE *fff)
  */
 static void dump_aux_virtues(CreatureEntity &creature, FILE *fff)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     fmt::println(fff, _("\n\n  [自分に関する情報]\n", "\n\n  [HP-rate & Max stat & Virtues]\n"));
 
 #ifdef JP
@@ -470,7 +469,7 @@ static void dump_aux_virtues(CreatureEntity &creature, FILE *fff)
  */
 static void dump_aux_mutations(CreatureEntity &creature, FILE *fff)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (player.muta.any()) {
         fmt::println(fff, _("\n\n  [突然変異]\n", "\n\n  [Mutations]\n"));
         dump_mutations(creature, fff);
@@ -484,7 +483,7 @@ static void dump_aux_mutations(CreatureEntity &creature, FILE *fff)
  */
 static void dump_aux_equipment_inventory(CreatureEntity &creature, FILE *fff)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (player.equip_cnt) {
         fmt::println(fff, _("  [キャラクタの装備]\n", "  [Character Equipment]\n"));
         for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
@@ -521,7 +520,7 @@ static void dump_aux_equipment_inventory(CreatureEntity &creature, FILE *fff)
  */
 static void dump_aux_home_museum(CreatureEntity &creature, FILE *fff)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &home = towns_info[1].get_store(StoreSaleType::HOME);
     if (home.stock_num) {
         fmt::println(fff, _("  [我が家のアイテム]", "  [Home Inventory]"));
