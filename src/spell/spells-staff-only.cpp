@@ -1,4 +1,5 @@
 #include "spell/spells-staff-only.h"
+#include "combat/damage-dispatcher.h"
 #include "effect/attribute-types.h"
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
@@ -70,7 +71,7 @@ bool unleash_mana_storm(CreatureEntity &creature, bool powerful)
         PROJECT_KILL | PROJECT_ITEM | PROJECT_GRID);
 
     if (!CreatureClass(creature).is_wizard()) {
-        (void)take_hit(creature, DAMAGE_NOESCAPE, 50, _("コントロールし難い強力な魔力の解放", "unleashing magics too mighty to control"));
+        (void)apply_damage_to_creature(creature, DAMAGE_NOESCAPE, 50, _("コントロールし難い強力な魔力の解放", "unleashing magics too mighty to control"));
     }
 
     return true;

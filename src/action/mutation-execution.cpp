@@ -5,6 +5,7 @@
 
 #include "action/mutation-execution.h"
 #include "cmd-item/cmd-throw.h"
+#include "combat/damage-dispatcher.h"
 #include "core/asking-player.h"
 #include "dungeon/quest.h"
 #include "effect/attribute-types.h"
@@ -229,7 +230,7 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
         return true;
     case PlayerMutationType::STERILITY:
         msg_print(_("突然頭が痛くなった！", "You suddenly have a headache!"));
-        take_hit(creature, DAMAGE_LOSELIFE, randint1(17) + 17, _("禁欲を強いた疲労", "the strain of forcing abstinence"));
+        apply_damage_to_creature(creature, DAMAGE_LOSELIFE, randint1(17) + 17, _("禁欲を強いた疲労", "the strain of forcing abstinence"));
         floor.num_repro += MAX_REPRODUCTION;
         return true;
     case PlayerMutationType::HIT_AND_AWAY:

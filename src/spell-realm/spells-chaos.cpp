@@ -1,4 +1,5 @@
 #include "spell-realm/spells-chaos.h"
+#include "combat/damage-dispatcher.h"
 #include "dungeon/quest.h"
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
@@ -76,7 +77,7 @@ void call_the_void(CreatureEntity &creature)
         if (!vanish_dungeon(creature)) {
             msg_print(_("ダンジョンは一瞬静まり返った。", "The dungeon becomes quiet for a moment."));
         }
-        take_hit(player_ptr, DAMAGE_NOESCAPE, 100 + randint1(150), _("自殺的な虚無招来", "a suicidal Call the Void"));
+        apply_damage_to_creature(player_ptr, DAMAGE_NOESCAPE, 100 + randint1(150), _("自殺的な虚無招来", "a suicidal Call the Void"));
         return;
     }
 
@@ -85,7 +86,7 @@ void call_the_void(CreatureEntity &creature)
     } else {
         msg_print(_("ダンジョンは大きく揺れた。", "The dungeon trembles."));
     }
-    take_hit(player_ptr, DAMAGE_NOESCAPE, 100 + randint1(150), _("自殺的な虚無招来", "a suicidal Call the Void"));
+    apply_damage_to_creature(player_ptr, DAMAGE_NOESCAPE, 100 + randint1(150), _("自殺的な虚無招来", "a suicidal Call the Void"));
 }
 
 /*!

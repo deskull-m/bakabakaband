@@ -1,4 +1,5 @@
 #include "mind/mind-warrior-mage.h"
+#include "combat/damage-dispatcher.h"
 #include "hpmp/hp-mp-processor.h"
 #include "player/player-damage.h"
 #include "system/creature-entity.h"
@@ -8,7 +9,7 @@
 bool comvert_hp_to_mp(CreatureEntity &creature)
 {
     constexpr auto mes = _("ＨＰからＭＰへの無謀な変換", "thoughtless conversion from HP to SP");
-    auto gain_sp = take_hit(creature, DAMAGE_USELIFE, creature.level, mes) / 5;
+    auto gain_sp = apply_damage_to_creature(creature, DAMAGE_USELIFE, creature.level, mes) / 5;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags = {
         MainWindowRedrawingFlag::HP,

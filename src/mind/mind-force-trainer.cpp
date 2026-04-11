@@ -1,6 +1,7 @@
 #include "mind/mind-force-trainer.h"
 #include "action/travel-execution.h"
 #include "avatar/avatar.h"
+#include "combat/damage-dispatcher.h"
 #include "core/disturbance.h"
 #include "core/stuff-handler.h"
 #include "effect/attribute-types.h"
@@ -310,7 +311,7 @@ bool cast_force_spell(CreatureEntity &creature, MindForceTrainerType spell)
             msg_print(_("気が暴走した！", "The Force exploded!"));
             fire_ball(creature, AttributeType::MANA, Direction::self(), get_current_ki(creature) / 2, 10);
             auto data = CreatureClass(creature).get_specific_data<force_trainer_data_type>();
-            take_hit(creature, DAMAGE_LOSELIFE, data->ki / 2, _("気の暴走", "Explosion of the Force"));
+            apply_damage_to_creature(creature, DAMAGE_LOSELIFE, data->ki / 2, _("気の暴走", "Explosion of the Force"));
         } else {
             return true;
         }
