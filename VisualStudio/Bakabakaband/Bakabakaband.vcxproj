@@ -2209,6 +2209,7 @@
     <ClInclude Include="..\..\src\locale\japanese.h" />
     <ClInclude Include="..\..\src\combat\aura-counterattack.h" />
     <ClInclude Include="..\..\src\combat\damage-dispatcher.h" />
+    <ClInclude Include="..\..\src\combat\damage-dispatcher-internal.h" />
     <ClInclude Include="..\..\src\wizard\tval-descriptions-table.h" />
     <ClInclude Include="..\..\src\load\quest-loader.h" />
     <ClInclude Include="..\..\src\view\display-store.h" />

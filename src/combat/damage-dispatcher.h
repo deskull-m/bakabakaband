@@ -4,11 +4,12 @@
  * @file damage-dispatcher.h
  * @brief プレイヤー・モンスター両対応のダメージ処理統一エントリポイント（Phase 4）
  * @details
- * 現状プレイヤーとモンスターでダメージ処理のエントリが分離しているため、
- * 呼び出し元が被害者の種別を気にせず統一的に書けるようにする薄いディスパッチャ。
- * 内部では is_player() で振り分けて既存の take_hit() または
- * MonsterDamageProcessor::mon_take_hit() に委譲する。
- * 将来的に両者を統合する際のリファクタリングの起点として機能する。
+ * プレイヤー・モンスター双方のダメージ処理エントリを統一する公開 API。
+ * 呼び出し元は被害者の種別を気にせず本関数を呼べばよい。
+ * 内部では is_player() で振り分けて、プレイヤー経路は
+ * apply_damage_to_player_impl() （damage-dispatcher-internal.h）、
+ * モンスター経路は MonsterDamageProcessor::mon_take_hit() に委譲する。
+ * 旧 take_hit() 自由関数はこの吸収により公開 API から削除された。
  */
 
 #include "effect/attribute-types.h"
@@ -52,7 +53,7 @@ struct DamageContext {
 int apply_damage_to_creature(CreatureEntity &victim, int damage, const DamageContext &ctx);
 
 /*!
- * @brief 環境ダメージ用の便利オーバーロード（既存 take_hit() と同一シグネチャ）
+ * @brief 環境ダメージ用の便利オーバーロード（旧 take_hit() と同一シグネチャ）
  * @param victim 被害者
  * @param damage_type DAMAGE_ATTACK 等 (src/player/player-damage.h)
  * @param damage 与えるダメージ量
@@ -60,7 +61,8 @@ int apply_damage_to_creature(CreatureEntity &victim, int damage, const DamageCon
  * @param killer_monrace_id プレイヤー死因となったモンスター種族（環境ダメージなら省略可）
  * @return プレイヤー経路: 実際に適用されたダメージ量 / モンスター経路: 死亡したら 1、さもなくば 0
  * @note
- * トラップ・飢餓・呪い装備等の環境ダメージを take_hit() から置換しやすくするためのショートカット。
+ * トラップ・飢餓・呪い装備等の環境ダメージからの呼び出しに適したショートカット。
+ * 旧 take_hit() との移行互換性のためのシグネチャでもある。
  * モンスター経路では加害者が無いため、現状は 0 を返すのみ（環境効果が直接モンスターを殺すケースは未実装）。
  */
 int apply_damage_to_creature(CreatureEntity &victim, int damage_type, int damage, std::string_view cause,

@@ -1,5 +1,6 @@
 #include "player/player-damage.h"
 #include "autopick/autopick-pref-processor.h"
+#include "combat/damage-dispatcher-internal.h"
 #include "system/player-type-definition.h"
 #include "avatar/avatar.h"
 #include "blue-magic/blue-magic-checker.h"
@@ -163,7 +164,7 @@ int acid_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool au
         }
     }
 
-    int get_damage = take_hit(creature, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
+    int get_damage = apply_damage_to_player_impl(creature, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
     if (!aura && !(double_resist && has_resist_acid(creature))) {
         inventory_damage(creature, BreakerAcid(), inv);
     }
@@ -199,7 +200,7 @@ int elec_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool au
         }
     }
 
-    int get_damage = take_hit(creature, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
+    int get_damage = apply_damage_to_player_impl(creature, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
     if (!aura && !(double_resist && has_resist_elec(creature))) {
         inventory_damage(creature, BreakerElec(), inv);
     }
@@ -235,7 +236,7 @@ int fire_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool au
         }
     }
 
-    int get_damage = take_hit(creature, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
+    int get_damage = apply_damage_to_player_impl(creature, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
     if (!aura && !(double_resist && has_resist_fire(creature))) {
         inventory_damage(creature, BreakerFire(), inv);
     }
@@ -269,7 +270,7 @@ int cold_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool au
         }
     }
 
-    int get_damage = take_hit(creature, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
+    int get_damage = apply_damage_to_player_impl(creature, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
     if (!aura && !(double_resist && has_resist_cold(creature))) {
         inventory_damage(creature, BreakerCold(), inv);
     }
@@ -297,7 +298,7 @@ static void death_save(CreatureEntity &creature)
  * the game when he dies, since the "You die." message is shown before
  * setting the creature to "dead".
  */
-int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_view hit_from, MonraceId killer_monrace_id)
+int apply_damage_to_player_impl(CreatureEntity &creature, int damage_type, int damage, std::string_view hit_from, MonraceId killer_monrace_id)
 {
     const auto old_chp = creature.hp;
     const auto hp_warning_threshold = (creature.maxhp * hitpoint_warn / 10);

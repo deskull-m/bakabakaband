@@ -4,14 +4,14 @@
  */
 
 #include "combat/damage-dispatcher.h"
+#include "combat/damage-dispatcher-internal.h"
 #include "monster/monster-damage.h"
-#include "player/player-damage.h"
 #include "system/creature-entity.h"
 
 int apply_damage_to_creature(CreatureEntity &victim, int damage, const DamageContext &ctx)
 {
     if (victim.is_player()) {
-        return take_hit(victim, ctx.damage_type, damage, ctx.cause, ctx.killer_monrace_id);
+        return apply_damage_to_player_impl(victim, ctx.damage_type, damage, ctx.cause, ctx.killer_monrace_id);
     }
 
     // モンスター経路は加害者を必須とする（MonsterDamageProcessor の第1引数が加害者のため）
