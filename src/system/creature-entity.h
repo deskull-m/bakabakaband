@@ -290,6 +290,21 @@ public:
     virtual int get_ac() const;
 
     /*!
+     * @brief セーブフロアに滞在中かどうか
+     * @return floor_id が 0 でなければ true
+     */
+    bool in_saved_floor() const
+    {
+        return this->floor_id != 0;
+    }
+
+    /*!
+     * @brief モンスターがいない場合にのみ位置を設定する
+     * @return 設定できた場合 true
+     */
+    bool try_set_position(const Pos2D &pos);
+
+    /*!
      * @brief クリーチャーが所属するフロアを取得
      * @return フロアへのポインタ
      */

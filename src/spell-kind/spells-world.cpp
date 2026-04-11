@@ -34,7 +34,6 @@
 #include "system/floor/wilderness-grid.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/services/dungeon-service.h"
 #include "target/projection-path-calculator.h"
@@ -61,7 +60,7 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
         return;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     std::string m_name;
     auto see_m = true;
     auto &floor = *player.current_floor_ptr;
@@ -226,7 +225,7 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
 
 bool teleport_level_other(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     const auto pos = target_set(creature, TARGET_KILL).get_position();
     if (!pos) {
@@ -271,7 +270,7 @@ bool tele_town(CreatureEntity &creature)
         return false;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (player.current_floor_ptr->is_underground()) {
         msg_print(_("この魔法は地上でしか使えない！", "This spell can only be used on the surface!"));
         return false;
@@ -349,7 +348,7 @@ void reserve_alter_reality(CreatureEntity &creature, TIME_EFFECT turns)
         return;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (player.current_floor_ptr->inside_arena || ironman_downward) {
         msg_print(_("何も起こらなかった。", "Nothing happens."));
         return;
@@ -433,7 +432,7 @@ bool recall_player(CreatureEntity &creature, TIME_EFFECT turns)
         return true;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &floor = *player.current_floor_ptr;
     if (floor.inside_arena || ironman_downward) {
         msg_print(_("何も起こらなかった。", "Nothing happens."));
@@ -489,7 +488,7 @@ bool free_level_recall(CreatureEntity &creature)
         return false;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto select_dungeon = choose_dungeon(_("にテレポート", "teleport"), 4, 0);
     if (!select_dungeon) {
         return false;
@@ -536,7 +535,7 @@ bool reset_recall(CreatureEntity &creature)
         return false;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto select_dungeon = choose_dungeon(_("をセット", "reset"), 2, 14);
     if (ironman_downward) {
         msg_print(_("何も起こらなかった。", "Nothing happens."));

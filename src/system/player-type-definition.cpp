@@ -101,26 +101,10 @@ bool PlayerType::is_located_at_running_destination() const
  * @param pos 配置先座標
  * @return 配置に成功したらTRUE
  */
-bool PlayerType::try_set_position(const Pos2D &pos)
-{
-    if (this->current_floor_ptr->get_grid(pos).has_monster()) {
-        return false;
-    }
-
-    this->y = pos.y;
-    this->x = pos.x;
-    return true;
-}
-
 void PlayerType::set_position(const Pos2D &pos)
 {
     this->y = pos.y;
     this->x = pos.x;
-}
-
-bool PlayerType::in_saved_floor() const
-{
-    return this->floor_id != 0;
 }
 
 bool PlayerType::try_resist_eldritch_horror() const

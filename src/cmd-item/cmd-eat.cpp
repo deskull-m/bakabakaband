@@ -53,7 +53,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/dice.h"
 #include "util/string-processor.h"
@@ -68,7 +67,7 @@
  */
 static bool exe_eat_junk_type_object(CreatureEntity &creature, ItemEntity *o_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (o_ptr->bi_key.tval() != ItemKindType::JUNK) {
         return false;
     }
@@ -104,7 +103,7 @@ static bool exe_eat_junk_type_object(CreatureEntity &creature, ItemEntity *o_ptr
  */
 static bool exe_eat_soul(CreatureEntity &creature, ItemEntity *o_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (!(o_ptr->bi_key.tval() == ItemKindType::MONSTER_REMAINS && o_ptr->bi_key.sval() == SV_SOUL)) {
         return false;
     }
@@ -134,7 +133,7 @@ static bool exe_eat_soul(CreatureEntity &creature, ItemEntity *o_ptr)
  */
 static bool exe_eat_corpse_type_object(CreatureEntity &creature, ItemEntity *o_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (!(o_ptr->bi_key.tval() == ItemKindType::MONSTER_REMAINS && o_ptr->bi_key.sval() == SV_CORPSE)) {
         return false;
     }
@@ -274,7 +273,7 @@ static bool exe_eat_corpse_type_object(CreatureEntity &creature, ItemEntity *o_p
  */
 static bool exe_eat_food_type_object(CreatureEntity &creature, const BaseitemKey &bi_key)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (bi_key.tval() != ItemKindType::FOOD) {
         return false;
     }
@@ -483,7 +482,7 @@ static bool exe_eat_food_type_object(CreatureEntity &creature, const BaseitemKey
  */
 static bool exe_eat_charge_of_magic_device(CreatureEntity &creature, ItemEntity *o_ptr, short i_idx)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (!o_ptr->is_wand_staff() || (CreatureRace(&creature).food() != PlayerRaceFoodType::MANA)) {
         return false;
     }
@@ -546,7 +545,7 @@ static bool exe_eat_charge_of_magic_device(CreatureEntity &creature, ItemEntity 
  */
 void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (music_singing_any(player)) {
         stop_singing(player);
     }
@@ -711,7 +710,7 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
  */
 void do_cmd_eat_food(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
     constexpr auto q = _("どれを食べますか? ", "Eat which item? ");
     constexpr auto s = _("食べ物がない。", "You have nothing to eat.");

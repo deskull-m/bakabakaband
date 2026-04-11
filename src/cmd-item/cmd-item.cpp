@@ -60,7 +60,6 @@
 #include "status/action-setter.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
@@ -109,7 +108,7 @@ void do_cmd_inven(CreatureEntity &creature)
  */
 void do_cmd_drop(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     int amt = 1;
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
@@ -148,7 +147,7 @@ void do_cmd_drop(CreatureEntity &creature)
  */
 void do_cmd_observe(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     constexpr auto q = _("どのアイテムを調べますか? ", "Examine which item? ");
     constexpr auto s = _("調べられるアイテムがない。", "You have nothing to examine.");
     short i_idx;
@@ -175,7 +174,7 @@ void do_cmd_observe(CreatureEntity &creature)
  */
 void do_cmd_uninscribe(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     constexpr auto q = _("どのアイテムの銘を消しますか? ", "Un-inscribe which item? ");
     constexpr auto s = _("銘を消せるアイテムがない。", "You have nothing to un-inscribe.");
     short i_idx;
@@ -212,7 +211,7 @@ void do_cmd_uninscribe(CreatureEntity &creature)
  */
 void do_cmd_inscribe(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     constexpr auto q = _("どのアイテムに銘を刻みますか? ", "Inscribe which item? ");
     constexpr auto s = _("銘を刻めるアイテムがない。", "You have nothing to inscribe.");
     short i_idx;
@@ -254,7 +253,7 @@ void do_cmd_inscribe(CreatureEntity &creature)
  */
 void do_cmd_use(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (AngbandWorld::get_instance().is_wild_mode() || cmd_limit_arena(creature)) {
         return;
     }
@@ -312,7 +311,7 @@ void do_cmd_use(CreatureEntity &creature)
  */
 void do_cmd_activate(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (AngbandWorld::get_instance().is_wild_mode() || cmd_limit_arena(creature)) {
         return;
     }

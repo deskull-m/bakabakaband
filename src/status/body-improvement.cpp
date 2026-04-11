@@ -9,7 +9,6 @@
 #include "realm/realm-song-numbers.h"
 #include "spell-realm/spells-song.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
@@ -85,7 +84,7 @@ void BodyImprovement::set_protection(short v, bool is_decrease)
  */
 bool set_invuln(CreatureEntity &creature, short v, bool do_dec)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
@@ -150,7 +149,7 @@ bool set_invuln(CreatureEntity &creature, short v, bool do_dec)
  */
 bool set_tim_regen(CreatureEntity &creature, short v, bool do_dec)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
@@ -199,7 +198,7 @@ bool set_tim_regen(CreatureEntity &creature, short v, bool do_dec)
  */
 bool set_tim_reflect(CreatureEntity &creature, short v, bool do_dec)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
@@ -248,7 +247,7 @@ bool set_tim_reflect(CreatureEntity &creature, short v, bool do_dec)
  */
 bool set_pass_wall(CreatureEntity &creature, short v, bool do_dec)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
@@ -297,7 +296,7 @@ bool set_pass_wall(CreatureEntity &creature, short v, bool do_dec)
  */
 bool set_tim_emission(CreatureEntity &creature, short v, bool do_dec)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
@@ -346,7 +345,7 @@ bool set_tim_emission(CreatureEntity &creature, short v, bool do_dec)
  */
 bool set_tim_exorcism(CreatureEntity &creature, short v, bool do_dec)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;

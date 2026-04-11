@@ -47,7 +47,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "util/bit-flags-calculator.h"
@@ -66,8 +65,7 @@
  */
 static Pos2D build_arena(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
+    auto &player = creature;
 
     const auto yval = SCREEN_HGT / 2;
     const auto xval = SCREEN_WID / 2;
@@ -75,11 +73,11 @@ static Pos2D build_arena(CreatureEntity &creature)
     const auto y_depth = yval + 15;
     const auto x_left = xval - 15;
     const auto x_right = xval + 15;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *player.current_floor_ptr;
     for (auto y = y_height; y <= y_height + 5; y++) {
         for (auto x = x_left; x <= x_right; x++) {
             const Pos2D pos(y, x);
-            place_bold(*player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(player, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -87,7 +85,7 @@ static Pos2D build_arena(CreatureEntity &creature)
     for (auto y = y_depth; y >= y_depth - 5; y--) {
         for (auto x = x_left; x <= x_right; x++) {
             const Pos2D pos(y, x);
-            place_bold(*player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(player, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -95,7 +93,7 @@ static Pos2D build_arena(CreatureEntity &creature)
     for (auto x = x_left; x <= x_left + 5; x++) {
         for (auto y = y_height; y <= y_depth; y++) {
             const Pos2D pos(y, x);
-            place_bold(*player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(player, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -103,28 +101,28 @@ static Pos2D build_arena(CreatureEntity &creature)
     for (auto x = x_right; x >= x_right - 5; x--) {
         for (auto y = y_height; y <= y_depth; y++) {
             const Pos2D pos(y, x);
-            place_bold(*player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(player, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
 
     // 柱っぽいもの
-    place_bold(*player_ptr, y_height + 6, x_left + 18, GB_EXTRA_PERM);
+    place_bold(player, y_height + 6, x_left + 18, GB_EXTRA_PERM);
     floor.get_grid({ y_height + 6, x_left + 18 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(*player_ptr, y_depth - 6, x_left + 18, GB_EXTRA_PERM);
+    place_bold(player, y_depth - 6, x_left + 18, GB_EXTRA_PERM);
     floor.get_grid({ y_depth - 6, x_left + 18 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(*player_ptr, y_height + 6, x_right - 18, GB_EXTRA_PERM);
+    place_bold(player, y_height + 6, x_right - 18, GB_EXTRA_PERM);
     floor.get_grid({ y_height + 6, x_right - 18 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(*player_ptr, y_depth - 6, x_right - 18, GB_EXTRA_PERM);
+    place_bold(player, y_depth - 6, x_right - 18, GB_EXTRA_PERM);
     floor.get_grid({ y_depth - 6, x_right - 18 }).info |= CAVE_GLOW | CAVE_MARK;
 
-    place_bold(*player_ptr, y_height + 9, x_left + 21, GB_EXTRA_PERM);
+    place_bold(player, y_height + 9, x_left + 21, GB_EXTRA_PERM);
     floor.get_grid({ y_height + 9, x_left + 21 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(*player_ptr, y_depth - 9, x_left + 21, GB_EXTRA_PERM);
+    place_bold(player, y_depth - 9, x_left + 21, GB_EXTRA_PERM);
     floor.get_grid({ y_height - 9, x_left + 21 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(*player_ptr, y_height + 9, x_right - 21, GB_EXTRA_PERM);
+    place_bold(player, y_height + 9, x_right - 21, GB_EXTRA_PERM);
     floor.get_grid({ y_height + 9, x_left - 21 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(*player_ptr, y_depth - 9, x_right - 21, GB_EXTRA_PERM);
+    place_bold(player, y_depth - 9, x_right - 21, GB_EXTRA_PERM);
     floor.get_grid({ y_height - 9, x_left - 21 }).info |= CAVE_GLOW | CAVE_MARK;
 
     const Pos2D pos(y_height + 10, xval);
@@ -142,15 +140,14 @@ static Pos2D build_arena(CreatureEntity &creature)
  */
 static void generate_challenge_arena(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
+    auto &player = creature;
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *player.current_floor_ptr;
     floor.height = SCREEN_HGT;
     floor.width = SCREEN_WID;
     for (auto y = 0; y < MAX_HGT; y++) {
         for (auto x = 0; x < MAX_WID; x++) {
-            place_bold(*player_ptr, y, x, GB_SOLID_PERM);
+            place_bold(player, y, x, GB_SOLID_PERM);
             floor.get_grid({ y, x }).add_info(CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -162,13 +159,13 @@ static void generate_challenge_arena(CreatureEntity &creature)
     }
 
     const auto pos = build_arena(creature);
-    if (!player_ptr->try_set_position(pos)) {
+    if (!player.try_set_position(pos)) {
         return;
     }
 
     auto &entries = ArenaEntryList::get_instance();
     const auto &monrace = entries.get_monrace();
-    if (place_specific_monster(*player_ptr, player_ptr->y + 5, player_ptr->x, monrace.idx, PM_NO_KAGE | PM_NO_PET)) {
+    if (place_specific_monster(player, player.y + 5, player.x, monrace.idx, PM_NO_KAGE | PM_NO_PET)) {
         return;
     }
 
@@ -183,8 +180,7 @@ static void generate_challenge_arena(CreatureEntity &creature)
  */
 static Pos2D build_battle(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
+    auto &player = creature;
 
     const auto yval = ARENA_WID / 2;
     const auto xval = ARENA_HGT / 2;
@@ -192,11 +188,11 @@ static Pos2D build_battle(CreatureEntity &creature)
     const auto y_depth = yval + 15;
     const auto x_left = xval - 15;
     const auto x_right = xval + 15;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *player.current_floor_ptr;
     for (auto y = y_height; y <= y_height + 5; y++) {
         for (auto x = x_left; x <= x_right; x++) {
             const Pos2D pos(y, x);
-            place_bold(*player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(player, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -204,7 +200,7 @@ static Pos2D build_battle(CreatureEntity &creature)
     for (auto y = y_depth; y >= y_depth - 3; y--) {
         for (auto x = x_left; x <= x_right; x++) {
             const Pos2D pos(y, x);
-            place_bold(*player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(player, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -212,7 +208,7 @@ static Pos2D build_battle(CreatureEntity &creature)
     for (auto x = x_left; x <= x_left + 17; x++) {
         for (auto y = y_height; y <= y_depth; y++) {
             const Pos2D pos(y, x);
-            place_bold(*player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(player, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -220,18 +216,18 @@ static Pos2D build_battle(CreatureEntity &creature)
     for (auto x = x_right; x >= x_right - 17; x--) {
         for (auto y = y_height; y <= y_depth; y++) {
             const Pos2D pos(y, x);
-            place_bold(*player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(player, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
 
-    place_bold(*player_ptr, y_height + 6, x_left + 18, GB_EXTRA_PERM);
+    place_bold(player, y_height + 6, x_left + 18, GB_EXTRA_PERM);
     floor.get_grid({ y_height + 6, x_left + 18 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(*player_ptr, y_depth - 4, x_left + 18, GB_EXTRA_PERM);
+    place_bold(player, y_depth - 4, x_left + 18, GB_EXTRA_PERM);
     floor.get_grid({ y_depth - 4, x_left + 18 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(*player_ptr, y_height + 6, x_right - 18, GB_EXTRA_PERM);
+    place_bold(player, y_height + 6, x_right - 18, GB_EXTRA_PERM);
     floor.get_grid({ y_height + 6, x_right - 18 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(*player_ptr, y_depth - 4, x_right - 18, GB_EXTRA_PERM);
+    place_bold(player, y_depth - 4, x_right - 18, GB_EXTRA_PERM);
     floor.get_grid({ y_depth - 4, x_right - 18 }).info |= CAVE_GLOW | CAVE_MARK;
 
     for (auto y = y_height + 1; y <= y_height + 5; y++) {
@@ -251,14 +247,13 @@ static Pos2D build_battle(CreatureEntity &creature)
  */
 static void generate_gambling_arena(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
+    auto &player = creature;
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *player.current_floor_ptr;
     for (auto y = 0; y < MAX_HGT; y++) {
         for (auto x = 0; x < MAX_WID; x++) {
             const Pos2D pos(y, x);
-            place_bold(*player_ptr, y, x, GB_SOLID_PERM);
+            place_bold(player, y, x, GB_SOLID_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -270,16 +265,16 @@ static void generate_gambling_arena(CreatureEntity &creature)
     }
 
     const auto pos = build_battle(creature);
-    if (!player_ptr->try_set_position(pos)) {
+    if (!player.try_set_position(pos)) {
         return;
     }
 
     const auto &melee_arena = MeleeArena::get_instance();
     for (auto i = 0; i < NUM_GLADIATORS; i++) {
         const auto &gladiator = melee_arena.get_gladiator(i);
-        const Pos2D m_pos(player_ptr->y + 8 + (i / 2) * 4, player_ptr->x - 2 + (i % 2) * 4);
+        const Pos2D m_pos(player.y + 8 + (i / 2) * 4, player.x - 2 + (i % 2) * 4);
         constexpr auto mode = PM_NO_KAGE | PM_NO_PET;
-        const auto m_idx = place_specific_monster(*player_ptr, m_pos.y, m_pos.x, gladiator.monrace_id, mode);
+        const auto m_idx = place_specific_monster(player, m_pos.y, m_pos.x, gladiator.monrace_id, mode);
         if (m_idx > 0) {
             floor.get_monster(*m_idx).set_friendly();
         }
@@ -292,7 +287,7 @@ static void generate_gambling_arena(CreatureEntity &creature)
         }
 
         monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-        update_monster(*player_ptr, i, false);
+        update_monster(player, i, false);
     }
 }
 
@@ -302,12 +297,11 @@ static void generate_gambling_arena(CreatureEntity &creature)
  */
 static void generate_fixed_floor(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
+    auto &player = creature;
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *player.current_floor_ptr;
     for (const auto &pos : floor.get_area()) {
-        place_bold(*player_ptr, pos.y, pos.x, GB_SOLID_PERM);
+        place_bold(player, pos.y, pos.x, GB_SOLID_PERM);
     }
 
     const auto &quests = QuestList::get_instance();
@@ -316,10 +310,10 @@ static void generate_fixed_floor(CreatureEntity &creature)
     floor.object_level = floor.base_level;
     floor.monster_level = floor.base_level;
     if (record_stair) {
-        exe_write_diary_quest(*player_ptr, DiaryKind::TO_QUEST, floor.quest_number);
+        exe_write_diary_quest(player, DiaryKind::TO_QUEST, floor.quest_number);
     }
 
-    get_mon_num_prep_enum(*player_ptr, floor.get_monrace_hook());
+    get_mon_num_prep_enum(player, floor.get_monrace_hook());
     init_flags = INIT_CREATE_DUNGEON;
     parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, MAX_HGT, MAX_WID);
 }
@@ -332,8 +326,7 @@ static void generate_fixed_floor(CreatureEntity &creature)
  */
 static tl::optional<std::string> level_gen(CreatureEntity &creature, tl::optional<uint32_t> seed = tl::nullopt)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
+    auto &player = creature;
 
     // 乱数種の保存と復元用
     Xoshiro128StarStar::state_type original_state{};
@@ -345,13 +338,13 @@ static tl::optional<std::string> level_gen(CreatureEntity &creature, tl::optiona
         original_state = rng.get_state(); // 現在の乱数状態を保存
         rng = Xoshiro128StarStar(*seed); // 指定された種で乱数を初期化
         seed_was_fixed = true;
-        msg_format_wizard(*player_ptr, CHEAT_DUNGEON,
+        msg_format_wizard(player, CHEAT_DUNGEON,
             _("乱数種を固定してフロア生成: 0x%08X", "Generating floor with fixed seed: 0x%08X"),
             *seed);
     }
 
     constexpr auto chance_small_floor = 10;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *player.current_floor_ptr;
     const auto &dungeon = floor.get_generated_dungeon_definition();
     int level_height, level_width;
     if (dungeon.flags.has(DungeonFeatureType::ALWAY_MAX_SIZE)) {
@@ -388,7 +381,7 @@ static tl::optional<std::string> level_gen(CreatureEntity &creature, tl::optiona
     panel_row_min = floor.height;
     panel_col_min = floor.width;
 
-    auto result = cave_gen(*player_ptr, seed);
+    auto result = cave_gen(player, seed);
 
     // 乱数状態を復元
     if (seed_was_fixed) {
@@ -447,10 +440,9 @@ void wipe_generate_random_floor_flags(FloorType &floor)
  */
 void clear_cave(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
+    auto &player = creature;
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *player.current_floor_ptr;
     floor.o_list.clear();
     floor.o_list.push_back(std::make_shared<ItemEntity>()); // 0番にダミーアイテムを用意
 
@@ -581,15 +573,14 @@ static bool floor_is_connected(const FloorType &floor, const IsWallFunc is_wall)
  */
 void generate_floor(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
+    auto &player = creature;
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *player.current_floor_ptr;
     const auto is_wild_mode = AngbandWorld::get_instance().is_wild_mode();
     for (int num = 0; true; num++) {
         tl::optional<std::string> why;
         clear_cave(creature);
-        player_ptr->x = player_ptr->y = 0;
+        player.x = player.y = 0;
         if (floor.inside_arena) {
             generate_challenge_arena(creature);
         } else if (AngbandSystem::get_instance().is_phase_out()) {
@@ -606,8 +597,8 @@ void generate_floor(CreatureEntity &creature)
             why = level_gen(creature);
         }
 
-        if (player_ptr->is_sushi_eater()) {
-            alloc_object(*player_ptr, ALLOC_SET_BOTH, ALLOC_TYP_SUSHI, randnor(floor.width * floor.height / 20, 3));
+        if (player.is_sushi_eater()) {
+            alloc_object(player, ALLOC_SET_BOTH, ALLOC_TYP_SUSHI, randnor(floor.width * floor.height / 20, 3));
         }
 
         if (floor.o_list.size() >= MAX_FLOOR_ITEMS) {
@@ -636,10 +627,10 @@ void generate_floor(CreatureEntity &creature)
 
         msg_format(_("生成やり直し(%s)", "Generation restarted (%s)"), why->data());
         wipe_o_list(floor);
-        wipe_monsters_list(*player_ptr);
+        wipe_monsters_list(player);
     }
 
-    glow_deep_lava_and_bldg(*player_ptr);
+    glow_deep_lava_and_bldg(player);
     floor.enter_dungeon(false);
     wipe_generate_random_floor_flags(floor);
 }
