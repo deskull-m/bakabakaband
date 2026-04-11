@@ -126,7 +126,7 @@ static MonraceDefinition &set_pet_params(CreatureEntity &creature, const int cur
     monster = party_monsters[current_monster].clone();
     monster.y = cy;
     monster.x = cx;
-    monster.current_floor_ptr = creature.get_floor();
+    monster.set_floor(creature.get_floor());
     monster.get_monster_profile().ml = true;
     monster.get_monster_profile().mtimed[MonsterTimedEffect::SLEEP] = 0;
     monster.get_monster_profile().hold_o_idx_list.clear();

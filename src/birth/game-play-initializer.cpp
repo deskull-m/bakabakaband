@@ -47,7 +47,7 @@ void player_wipe_without_name(CreatureEntity &creature)
     static_cast<PlayerType &>(creature) = {};
 
     // TODO: キャラ作成からゲーム開始までに  current_floor_ptr を参照しなければならない処理は今後整理して外す。
-    creature.current_floor_ptr = &FloorList::get_instance().get_floor(0);
+    creature.set_floor(&FloorList::get_instance().get_floor(0));
     for (int i = 0; i < 4; i++) {
         creature.history[i][0] = '\0';
     }

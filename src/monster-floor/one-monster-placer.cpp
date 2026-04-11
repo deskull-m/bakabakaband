@@ -263,7 +263,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     m_ptr->get_monster_profile().mflag.clear();
     m_ptr->get_monster_profile().mflag2.clear();
-    m_ptr->current_floor_ptr = player.get_floor();
+    m_ptr->set_floor(player.get_floor());
 
     if (monrace.misc_flags.has(MonsterMiscType::CHAMELEON)) {
         m_ptr->r_idx = r_idx;
@@ -374,7 +374,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     m_ptr->y = y;
     m_ptr->x = x;
-    m_ptr->current_floor_ptr = &floor;
+    m_ptr->set_floor(&floor);
 
     for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
         m_ptr->get_monster_profile().mtimed[mte] = 0;

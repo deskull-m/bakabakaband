@@ -322,6 +322,19 @@ public:
     }
 
     /*!
+     * @brief クリーチャーが所属するフロアを設定
+     * @param floor フロアへのポインタ
+     * @note
+     * プレイヤー初期化、フロア遷移、モンスター配置時などに
+     * 生成・伝播処理から呼び出される。通常ゲームロジックから
+     * 呼んではならない（current_floor_ptr の所有権管理のため）。
+     */
+    void set_floor(FloorType *floor)
+    {
+        this->current_floor_ptr = floor;
+    }
+
+    /*!
      * @brief クリーチャーの実種族定義を取得する
      * @return 実種族定義への参照（r_idx が MonraceId::PLAYER の場合はプレイヤー種族エントリを返す）
      */
@@ -974,9 +987,6 @@ public:
     // 死亡履歴
     std::vector<DeathRecord> death_history{}; /*!< 死亡履歴リスト */
 
-    // フロア情報
-    FloorType *current_floor_ptr{}; /*!< 現在所属しているフロアへのポインタ / Current floor pointer */
-
     /*!<
      * @brief 時限効果管理オブジェクトを取得
      * @return 時限効果管理オブジェクトへの共有ポインタ
@@ -1162,6 +1172,11 @@ protected:
     std::shared_ptr<TimedEffects> timed_effects; /*!< 時限効果管理オブジェクト */
 
 private:
+    // フロア情報
+    // 所属フロアへのポインタ。初期化・伝播時のみ set_floor() から書き込まれる。
+    // 外部からの読み取りは get_floor() を使用すること。
+    FloorType *current_floor_ptr{}; /*!< 現在所属しているフロアへのポインタ / Current floor pointer */
+
     std::string build_damage_description() const;
     std::string build_attitude_description() const;
     tl::optional<bool> order_pet_named(const CreatureEntity &other) const;
