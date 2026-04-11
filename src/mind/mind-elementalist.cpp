@@ -50,7 +50,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/grid-selector.h"
 #include "target/target-getter.h"
@@ -314,7 +313,7 @@ AttributeType get_element_type(ElementRealmType realm, int n)
  */
 static AttributeType get_element_spells_type(CreatureEntity &creature, int n)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &realm = element_types.at(player.element_realm);
     const auto t = realm.type.at(n);
     if (realm.extra.find(t) != realm.extra.end()) {
@@ -354,7 +353,7 @@ const std::string &get_element_name(ElementRealmType realm, int n)
  */
 static std::string get_element_tip(CreatureEntity &creature, int spell_idx)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto realm = player.element_realm;
     auto spell = i2enum<ElementSpells>(spell_idx);
     auto elem = element_powers.at(spell).elem;
@@ -395,7 +394,7 @@ static mind_type get_elemental_info(CreatureEntity &creature, int spell_idx)
  */
 static std::string get_element_effect_info(CreatureEntity &creature, int spell_idx)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     PLAYER_LEVEL plev = player.level;
     auto spell = i2enum<ElementSpells>(spell_idx);
     int dam = 0;
@@ -443,7 +442,7 @@ static std::string get_element_effect_info(CreatureEntity &creature, int spell_i
  */
 static bool cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &floor = *creature.current_floor_ptr;
     const auto spell = i2enum<ElementSpells>(spell_idx);
     const auto &power = element_powers.at(spell);
@@ -646,7 +645,7 @@ static bool cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx)
  */
 static PERCENTAGE decide_element_chance(CreatureEntity &creature, mind_type spell)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     PERCENTAGE chance = spell.fail;
 
     chance -= 3 * (player.level - spell.min_lev);
@@ -699,7 +698,7 @@ static MANA_POINT decide_element_mana_cost(CreatureEntity &creature, mind_type s
  */
 bool get_element_power(CreatureEntity &creature, SPELL_IDX *sn, bool only_browse)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     SPELL_IDX i;
     int num = 0;
     TERM_LEN y = 1;
@@ -844,7 +843,7 @@ bool get_element_power(CreatureEntity &creature, SPELL_IDX *sn, bool only_browse
  */
 static bool check_element_mp_sufficiency(CreatureEntity &creature, int mana_cost)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (mana_cost <= player.csp) {
         return true;
     }
@@ -866,7 +865,7 @@ static bool check_element_mp_sufficiency(CreatureEntity &creature, int mana_cost
  */
 static bool try_cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx, PERCENTAGE chance)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (!evaluate_percent(chance)) {
         sound(SoundKind::ZAP);
         return cast_element_spell(creature, spell_idx);
@@ -907,7 +906,7 @@ static bool try_cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx
  */
 void do_cmd_element(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     SPELL_IDX i;
     if (cmd_limit_confused(player) || !get_element_power(creature, &i, false)) {
         return;
@@ -984,7 +983,7 @@ void do_cmd_element_browse(CreatureEntity &creature)
  */
 void display_element_spell_list(CreatureEntity &creature, int y, int x)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     prt("", y, x);
     put_str(_("名前", "Name"), y, x + 5);
     put_str(_("Lv   MP 失率 効果", "Lv Mana Fail Info"), y, x + 35);
@@ -1076,7 +1075,7 @@ static bool is_elemental_genocide_effective(const MonraceDefinition &monrace, At
  */
 ProcessResult effect_monster_elemental_genocide(CreatureEntity &creature, EffectMonster *em_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &name = get_element_name(player.element_realm, 0);
     if (em_ptr->seen_msg) {
         msg_format(_("%sが%sを包み込んだ。", "The %s surrounds %s."), name.data(), em_ptr->m_name);
@@ -1120,7 +1119,7 @@ ProcessResult effect_monster_elemental_genocide(CreatureEntity &creature, Effect
  */
 bool has_element_resist(CreatureEntity &creature, ElementRealmType realm, PLAYER_LEVEL lev)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (!CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST)) {
         return false;
     }
@@ -1198,7 +1197,7 @@ static int interpret_realm_select_key(int cs, int n, char c)
  */
 static tl::optional<ElementRealmType> get_element_realm(CreatureEntity &creature, ElementRealmType realm, int n)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     int cs = std::max(0, enum2i(realm) - 1);
     int os = cs;
     int k;
@@ -1266,7 +1265,7 @@ static tl::optional<ElementRealmType> get_element_realm(CreatureEntity &creature
  */
 tl::optional<ElementRealmType> select_element_realm(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     clear_from(10);
 
     constexpr auto realm_max = enum2i(ElementRealmType::MAX);
@@ -1306,7 +1305,7 @@ tl::optional<ElementRealmType> select_element_realm(CreatureEntity &creature)
  */
 void switch_element_racial(CreatureEntity &creature, rc_type *rc_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto plev = player.level;
     rpi_type rpi;
     switch (player.element_realm) {
@@ -1449,7 +1448,7 @@ static bool is_target_grid_dark(const FloorType &floor, const Pos2D &pos)
  */
 static bool door_to_darkness(CreatureEntity &creature, int distance)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto p_pos_orig = creature.get_position();
     auto p_pos = tl::make_optional(creature.get_position());
     const auto &floor = *creature.current_floor_ptr;
@@ -1489,7 +1488,7 @@ static bool door_to_darkness(CreatureEntity &creature, int distance)
  */
 bool switch_element_execution(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     PLAYER_LEVEL plev = player.level;
 
     switch (player.element_realm) {
