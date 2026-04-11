@@ -89,10 +89,9 @@ void init_saved_floors(bool force)
  */
 void clear_saved_floor_files(CreatureEntity &creature)
 {
-    auto &player = creature;
     for (int i = 0; i < MAX_SAVED_FLOORS; i++) {
         saved_floor_type *sf_ptr = &saved_floors[i];
-        if (!is_saved_floor(sf_ptr) || (sf_ptr->floor_id == player.floor_id)) {
+        if (!is_saved_floor(sf_ptr) || (sf_ptr->floor_id == creature.floor_id)) {
             continue;
         }
 
@@ -130,13 +129,12 @@ saved_floor_type *get_sf_ptr(FLOOR_IDX floor_id)
  */
 void kill_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
 {
-    auto &player = creature;
     if (!sf_ptr || !is_saved_floor(sf_ptr)) {
         return;
     }
 
-    if (sf_ptr->floor_id == player.floor_id) {
-        player.floor_id = 0;
+    if (sf_ptr->floor_id == creature.floor_id) {
+        creature.floor_id = 0;
         sf_ptr->floor_id = 0;
         return;
     }
@@ -149,13 +147,12 @@ void kill_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
 
 static FLOOR_IDX find_oldest_floor_idx(CreatureEntity &creature)
 {
-    auto &player = creature;
     FLOOR_IDX oldest_floor_idx = 0;
     uint32_t oldest_visit = 0xffffffffL;
 
     for (FLOOR_IDX fl_idx = 0; fl_idx < MAX_SAVED_FLOORS; fl_idx++) {
         const saved_floor_type *sf_ptr = &saved_floors[fl_idx];
-        if ((sf_ptr->floor_id == player.floor_id) || (sf_ptr->visit_mark > oldest_visit)) {
+        if ((sf_ptr->floor_id == creature.floor_id) || (sf_ptr->visit_mark > oldest_visit)) {
             continue;
         }
 
@@ -175,7 +172,6 @@ static FLOOR_IDX find_oldest_floor_idx(CreatureEntity &creature)
  */
 FLOOR_IDX get_unused_floor_id(CreatureEntity &creature)
 {
-    auto &player = creature;
     saved_floor_type *sf_ptr = nullptr;
     FLOOR_IDX fl_idx;
     for (fl_idx = 0; fl_idx < MAX_SAVED_FLOORS; fl_idx++) {
@@ -197,7 +193,7 @@ FLOOR_IDX get_unused_floor_id(CreatureEntity &creature)
     sf_ptr->upper_floor_id = 0;
     sf_ptr->lower_floor_id = 0;
     sf_ptr->visit_mark = latest_visit_mark++;
-    sf_ptr->dun_level = player.current_floor_ptr->dun_level;
+    sf_ptr->dun_level = creature.current_floor_ptr->dun_level;
     if (max_floor_id < MAX_SHORT) {
         max_floor_id++;
     } else {

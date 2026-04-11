@@ -23,13 +23,12 @@ bool rustproof(CreatureEntity &creature)
     constexpr auto s = _("錆止めできるものがありません。", "You have nothing to rustproof.");
     short i_idx;
     const auto options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    auto &player = creature;
-    auto *o_ptr = choose_object(player, &i_idx, q, s, options, FuncItemTester(&ItemEntity::is_protector));
+    auto *o_ptr = choose_object(creature, &i_idx, q, s, options, FuncItemTester(&ItemEntity::is_protector));
     if (o_ptr == nullptr) {
         return false;
     }
 
-    const auto item_name = describe_flavor(player, *o_ptr, OD_OMIT_PREFIX | OD_NAME_ONLY);
+    const auto item_name = describe_flavor(creature, *o_ptr, OD_OMIT_PREFIX | OD_NAME_ONLY);
     o_ptr->art_flags.set(TR_IGNORE_ACID);
     if ((o_ptr->to_a < 0) && !o_ptr->is_cursed()) {
 #ifdef JP

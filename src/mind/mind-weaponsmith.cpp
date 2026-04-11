@@ -120,7 +120,6 @@ static void set_smith_redrawing_flags()
  */
 static void drain_essence(CreatureEntity &creature)
 {
-    auto &player = creature;
     auto q = _("どのアイテムから抽出しますか？", "Extract from which item? ");
     auto s = _("抽出できるアイテムがありません。", "You have nothing you can extract from.");
 
@@ -132,13 +131,13 @@ static void drain_essence(CreatureEntity &creature)
     }
 
     if (o_ptr->is_known() && !o_ptr->is_nameless()) {
-        const auto item_name = describe_flavor(player, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+        const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
         if (!input_check(format(_("本当に%sから抽出してよろしいですか？", "Really extract from %s? "), item_name.data()))) {
             return;
         }
     }
 
-    PlayerEnergy(player).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
 
     auto drain_result = Smith(creature).drain_essence(o_ptr);
 
@@ -155,7 +154,7 @@ static void drain_essence(CreatureEntity &creature)
     }
 
     /* Apply autodestroy/inscription to the drained item */
-    autopick_alter_item(player, i_idx, true);
+    autopick_alter_item(creature, i_idx, true);
     set_smith_redrawing_flags();
 }
 
@@ -316,7 +315,6 @@ static void add_essence(CreatureEntity &creature, SmithCategoryType mode)
 {
     int menu_line = (use_menu ? 1 : 0);
 
-    auto &player = creature;
     Smith smith(creature);
 
     auto smith_effect_list = Smith::get_effect_list(mode);
@@ -450,7 +448,7 @@ static void add_essence(CreatureEntity &creature, SmithCategoryType mode)
         return;
     }
 
-    const auto item_name = describe_flavor(player, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     const auto use_essence = Smith::get_essence_consumption(effect, o_ptr);
     if (o_ptr->number > 1) {
         msg_format(_("%d個あるのでエッセンスは%d必要です。", "For %d items, it will take %d essences."), o_ptr->number, use_essence);
@@ -485,7 +483,7 @@ static void add_essence(CreatureEntity &creature, SmithCategoryType mode)
 
         add_essence_count = o_ptr->pval;
     } else if (effect == SmithEffectType::SLAY_GLOVE) {
-        const auto max_val = player.level / 7 + 3;
+        const auto max_val = creature.level / 7 + 3;
         const auto num_enchants = input_numerics(prompt, 1, max_val, 1);
         if (!num_enchants.has_value()) {
             return;
@@ -501,7 +499,7 @@ static void add_essence(CreatureEntity &creature, SmithCategoryType mode)
         return;
     }
 
-    PlayerEnergy(player).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
 
     if (!smith.add_essence(effect, o_ptr, add_essence_count)) {
         msg_print(_("改良に失敗した。", "You failed to enchant."));
@@ -519,7 +517,6 @@ static void add_essence(CreatureEntity &creature, SmithCategoryType mode)
  */
 static void erase_essence(CreatureEntity &creature)
 {
-    auto &player = creature;
     constexpr auto q = _("どのアイテムのエッセンスを消去しますか？", "Remove from which item? ");
     constexpr auto s = _("エッセンスを付加したアイテムがありません。", "You have nothing with added essence to remove.");
     short i_idx;
@@ -528,12 +525,12 @@ static void erase_essence(CreatureEntity &creature)
         return;
     }
 
-    const auto item_name = describe_flavor(player, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     if (!input_check(format(_("よろしいですか？ [%s]", "Are you sure? [%s]"), item_name.data()))) {
         return;
     }
 
-    PlayerEnergy(player).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
 
     Smith(creature).erase_essence(o_ptr);
 
@@ -547,10 +544,9 @@ static void erase_essence(CreatureEntity &creature)
  */
 void do_cmd_kaji(CreatureEntity &creature, bool only_browse)
 {
-    auto &player = creature;
     COMMAND_CODE menu_line = (use_menu ? 1 : 0);
     if (!only_browse) {
-        if (cmd_limit_confused(player)) {
+        if (cmd_limit_confused(creature)) {
             return;
         }
 
@@ -558,7 +554,7 @@ void do_cmd_kaji(CreatureEntity &creature, bool only_browse)
             return;
         }
 
-        if (cmd_limit_image(player)) {
+        if (cmd_limit_image(creature)) {
             return;
         }
     }

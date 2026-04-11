@@ -246,7 +246,6 @@ void display_snipe_list(CreatureEntity &creature)
  */
 static int get_snipe_power(CreatureEntity &creature, COMMAND_CODE *sn, bool only_browse)
 {
-    auto &player = creature;
     COMMAND_CODE i;
     int num = 0;
     TERM_LEN y = 1;
@@ -383,7 +382,7 @@ static int get_snipe_power(CreatureEntity &creature, COMMAND_CODE *sn, bool only
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
-    handle_stuff(player);
+    handle_stuff(creature);
 
     /* Abort if needed */
     if (!flag) {
@@ -409,8 +408,7 @@ static int get_snipe_power(CreatureEntity &creature, COMMAND_CODE *sn, bool only
 MULTIPLY calc_snipe_damage_with_slay(CreatureEntity &creature, MULTIPLY mult, const CreatureEntity &target, SPELL_IDX snipe_type)
 {
     auto &monrace = target.get_monrace();
-    auto &player = creature;
-    bool seen = is_seen(player, target);
+    bool seen = is_seen(creature, target);
 
     auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
     const auto sniper_concent = sniper_data ? sniper_data->concent : 0;
@@ -536,14 +534,13 @@ MULTIPLY calc_snipe_damage_with_slay(CreatureEntity &creature, MULTIPLY mult, co
 
 /*!
  * @brief スナイパー技能の発動 /
- * do_cmd_cast calls this function if the player's class is 'snipe'.
+ * do_cmd_cast calls this function if the creature's class is 'snipe'.
  * @param spell 発動する特殊技能のID
  * @return 処理を実行したらTRUE、キャンセルした場合FALSEを返す。
  */
 static bool cast_sniper_spell(CreatureEntity &creature, int spell)
 {
-    auto &player = creature;
-    auto *o_ptr = player.inventory[INVEN_BOW].get();
+    auto *o_ptr = creature.inventory[INVEN_BOW].get();
     if (o_ptr->bi_key.tval() != ItemKindType::BOW) {
         msg_print(_("弓を装備していない！", "You wield no bow!"));
         return false;
@@ -556,7 +553,7 @@ static bool cast_sniper_spell(CreatureEntity &creature, int spell)
         if (!snipe_concentrate(creature)) {
             return false;
         }
-        PlayerEnergy(player).set_player_turn_energy(100);
+        PlayerEnergy(creature).set_player_turn_energy(100);
         return true;
     case 1:
         snipe_type = SP_LITE;
@@ -608,9 +605,9 @@ static bool cast_sniper_spell(CreatureEntity &creature, int spell)
     }
 
     command_cmd = 'f';
-    do_cmd_fire(player, snipe_type);
+    do_cmd_fire(creature, snipe_type);
 
-    return player.is_fired;
+    return creature.is_fired;
 }
 
 /*!
@@ -618,16 +615,15 @@ static bool cast_sniper_spell(CreatureEntity &creature, int spell)
  */
 void do_cmd_snipe(CreatureEntity &creature)
 {
-    auto &player = creature;
-    if (cmd_limit_confused(player)) {
+    if (cmd_limit_confused(creature)) {
         return;
     }
 
-    if (cmd_limit_image(player)) {
+    if (cmd_limit_image(creature)) {
         return;
     }
 
-    if (cmd_limit_stun(player)) {
+    if (cmd_limit_stun(creature)) {
         return;
     }
 

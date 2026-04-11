@@ -91,8 +91,7 @@ static int interpret_patron_select_key_move(char key, int initial_patron)
 
 static bool select_patron(CreatureEntity &creature, int *k, concptr sym)
 {
-    auto &player = creature;
-    int cs = player.patron;
+    int cs = creature.patron;
     int os = MAX_PATRON;
     std::string cur = birth_patron_label(os, sym);
     while (true) {
@@ -151,11 +150,10 @@ static bool select_patron(CreatureEntity &creature, int *k, concptr sym)
 }
 
 /*!
- * @brief プレイヤーのパトロン選択を行う / Select player's patron
+ * @brief プレイヤーのパトロン選択を行う / Select creature's patron
  */
 bool get_player_patron(CreatureEntity &creature)
 {
-    auto &player = creature;
 
     clear_from(10);
     put_str(_("注意：《パトロン》によってキャラクターが得る加護が変化します。", "Note: Your patron determines the divine protection you receive."),
@@ -169,7 +167,7 @@ bool get_player_patron(CreatureEntity &creature)
         return false;
     }
 
-    player.patron = k;
+    creature.patron = k;
     display_player_name(creature);
     return true;
 }

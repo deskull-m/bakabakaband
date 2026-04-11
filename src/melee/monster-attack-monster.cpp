@@ -80,14 +80,13 @@ static void process_blow_effect(CreatureEntity &creature, mam_type *mam_ptr)
 
 static void aura_fire_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
 {
-    auto &player = creature;
     auto &monrace = mam_ptr->m_ptr->get_monrace();
     auto &monrace_target = mam_ptr->t_ptr->get_monrace();
     if (monrace_target.aura_flags.has_not(MonsterAuraType::FIRE) || !mam_ptr->m_ptr->is_valid()) {
         return;
     }
 
-    if (monrace.resistance_flags.has_any_of(RFR_EFF_IM_FIRE_MASK) && is_original_ap_and_seen(player, *mam_ptr->m_ptr)) {
+    if (monrace.resistance_flags.has_any_of(RFR_EFF_IM_FIRE_MASK) && is_original_ap_and_seen(creature, *mam_ptr->m_ptr)) {
         monrace.r_resistance_flags.set(monrace.resistance_flags & RFR_EFF_IM_FIRE_MASK);
         return;
     }
@@ -96,7 +95,7 @@ static void aura_fire_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
         msg_format(_("%s^は突然熱くなった！", "%s^ is suddenly very hot!"), mam_ptr->m_name);
     }
 
-    if (mam_ptr->m_ptr->get_monster_profile().ml && is_original_ap_and_seen(player, *mam_ptr->t_ptr)) {
+    if (mam_ptr->m_ptr->get_monster_profile().ml && is_original_ap_and_seen(creature, *mam_ptr->t_ptr)) {
         monrace_target.aura_flags.set(MonsterAuraType::FIRE);
     }
 
@@ -107,7 +106,6 @@ static void aura_fire_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
 
 static void aura_cold_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
 {
-    auto &player = creature;
     const auto &monster = *mam_ptr->m_ptr;
     auto &monrace = monster.get_monrace();
     auto &monrace_target = mam_ptr->t_ptr->get_monrace();
@@ -115,7 +113,7 @@ static void aura_cold_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
         return;
     }
 
-    if (monrace.resistance_flags.has_any_of(RFR_EFF_IM_COLD_MASK) && is_original_ap_and_seen(player, monster)) {
+    if (monrace.resistance_flags.has_any_of(RFR_EFF_IM_COLD_MASK) && is_original_ap_and_seen(creature, monster)) {
         monrace.r_resistance_flags.set(monrace.resistance_flags & RFR_EFF_IM_COLD_MASK);
         return;
     }
@@ -124,7 +122,7 @@ static void aura_cold_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
         msg_format(_("%s^は突然寒くなった！", "%s^ is suddenly very cold!"), mam_ptr->m_name);
     }
 
-    if (monster.get_monster_profile().ml && is_original_ap_and_seen(player, *mam_ptr->t_ptr)) {
+    if (monster.get_monster_profile().ml && is_original_ap_and_seen(creature, *mam_ptr->t_ptr)) {
         monrace_target.aura_flags.set(MonsterAuraType::COLD);
     }
 
@@ -135,7 +133,6 @@ static void aura_cold_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
 
 static void aura_elec_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
 {
-    auto &player = creature;
     const auto &monster = *mam_ptr->m_ptr;
     auto &monrace = monster.get_monrace();
     auto &monrace_target = mam_ptr->t_ptr->get_monrace();
@@ -143,7 +140,7 @@ static void aura_elec_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
         return;
     }
 
-    if (monrace.resistance_flags.has_any_of(RFR_EFF_IM_ELEC_MASK) && is_original_ap_and_seen(player, monster)) {
+    if (monrace.resistance_flags.has_any_of(RFR_EFF_IM_ELEC_MASK) && is_original_ap_and_seen(creature, monster)) {
         monrace.r_resistance_flags.set(monrace.resistance_flags & RFR_EFF_IM_ELEC_MASK);
         return;
     }
@@ -152,7 +149,7 @@ static void aura_elec_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
         msg_format(_("%s^は電撃を食らった！", "%s^ gets zapped!"), mam_ptr->m_name);
     }
 
-    if (monster.get_monster_profile().ml && is_original_ap_and_seen(player, *mam_ptr->t_ptr)) {
+    if (monster.get_monster_profile().ml && is_original_ap_and_seen(creature, *mam_ptr->t_ptr)) {
         monrace_target.aura_flags.set(MonsterAuraType::ELEC);
     }
 
@@ -261,8 +258,7 @@ static void process_melee(CreatureEntity &creature, mam_type *mam_ptr)
 static void thief_runaway_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
 {
     if (creature.is_player()) {
-        auto &player = creature;
-        if (SpellHex(player).check_hex_barrier(mam_ptr->m_idx, HEX_ANTI_TELE)) {
+        if (SpellHex(creature).check_hex_barrier(mam_ptr->m_idx, HEX_ANTI_TELE)) {
             if (mam_ptr->see_m) {
                 msg_print(_("泥棒は笑って逃げ...ようとしたがバリアに防がれた。", "The thief flees laughing...? But a magic barrier obstructs it."));
             } else if (mam_ptr->known) {
@@ -289,11 +285,10 @@ static void explode_monster_by_melee(CreatureEntity &creature, mam_type *mam_ptr
     if (!creature.is_player()) {
         return;
     }
-    auto &player = creature;
 
     sound(SoundKind::EXPLODE);
     (void)set_monster_invulner(*creature.current_floor_ptr, mam_ptr->m_idx, 0, false);
-    mon_take_hit_mon(player, mam_ptr->m_idx, mam_ptr->m_ptr->hp + 1, &mam_ptr->dead, &mam_ptr->fear,
+    mon_take_hit_mon(creature, mam_ptr->m_idx, mam_ptr->m_ptr->hp + 1, &mam_ptr->dead, &mam_ptr->fear,
         _("は爆発して粉々になった。", " explodes into tiny shreds."), mam_ptr->m_idx);
     mam_ptr->blinked = false;
 }
@@ -328,8 +323,7 @@ static void repeat_melee(CreatureEntity &creature, mam_type *mam_ptr)
         if (!creature.is_player() || mam_ptr->do_silly_attack) {
             continue;
         }
-        auto &player = creature;
-        if (!is_original_ap_and_seen(player, *mam_ptr->m_ptr)) {
+        if (!is_original_ap_and_seen(creature, *mam_ptr->m_ptr)) {
             continue;
         }
 
@@ -369,8 +363,7 @@ bool monst_attack_monst(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX
     }
 
     if (creature.is_player() && mam_ptr->m_ptr->is_riding()) {
-        auto &player = creature;
-        disturb(player, true, true);
+        disturb(creature, true, true);
     }
 
     repeat_melee(creature, mam_ptr);

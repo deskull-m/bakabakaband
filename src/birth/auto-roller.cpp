@@ -119,9 +119,8 @@ static int32_t get_autoroller_prob(int *minval)
  */
 static void decide_initial_stat(CreatureEntity &creature, int *cval)
 {
-    auto &player = creature;
-    auto &player_class = class_info.at(player.pclass);
-    auto &class_magic = class_magics_info[enum2i(player.pclass)];
+    auto &player_class = class_info.at(creature.pclass);
+    auto &class_magic = class_magics_info[enum2i(creature.pclass)];
     auto is_magic_user = class_magic.spell_stat == A_INT || class_magic.spell_stat == A_WIS || class_magic.spell_stat == A_CHR;
     auto is_attacker = player_class.num > 3;
 
@@ -172,15 +171,14 @@ static void decide_initial_stat(CreatureEntity &creature, int *cval)
  */
 static std::string cursor_of_adjusted_stat(CreatureEntity &creature, const int *cval, int cs)
 {
-    auto &player = creature;
-    auto j = player.race->r_adj[cs] + (*player.pclass_ref).c_adj[cs] + (*player.personality).a_adj[cs];
+    auto j = creature.race->r_adj[cs] + (*creature.pclass_ref).c_adj[cs] + (*creature.personality).a_adj[cs];
     auto m = adjust_stat(170, j); // 17.0 の新形式
     auto maxv = format("%4.1f", m / 10.0);
 
     m = adjust_stat(cval[cs], j);
     auto inp = format("%4.1f", m / 10.0);
 
-    return format("%6s     %4.1f   %+3d  %+3d  %+3d  =  %6s  %6s", stat_names[cs], cval[cs] / 10.0, player.race->r_adj[cs], (*player.pclass_ref).c_adj[cs], (*player.personality).a_adj[cs], inp.data(), maxv.data());
+    return format("%6s     %4.1f   %+3d  %+3d  %+3d  =  %6s  %6s", stat_names[cs], cval[cs] / 10.0, creature.race->r_adj[cs], (*creature.pclass_ref).c_adj[cs], (*creature.personality).a_adj[cs], inp.data(), maxv.data());
 }
 
 /*!
@@ -207,7 +205,6 @@ static void display_autoroller_chance(int *cval)
  */
 bool get_stat_limits(CreatureEntity &creature)
 {
-    auto &player = creature;
 
     clear_from(10);
     put_str(_("能力値を抽選します。最低限得たい能力値を設定して下さい。", "Set minimum stats for picking up your charactor."), 10, 10);
@@ -325,7 +322,7 @@ bool get_stat_limits(CreatureEntity &creature)
             break;
         case '=':
             screen_save();
-            do_cmd_options_aux(player, GameOptionPage::BIRTH, _("初期オプション((*)はスコアに影響)", "Birth Options ((*)) affect score"));
+            do_cmd_options_aux(creature, GameOptionPage::BIRTH, _("初期オプション((*)はスコアに影響)", "Birth Options ((*)) affect score"));
             screen_load();
             break;
         default:
@@ -362,7 +359,6 @@ void initialize_chara_limit(chara_limit_type *chara_limit_ptr)
  */
 bool get_chara_limits(CreatureEntity &creature, chara_limit_type *chara_limit_ptr)
 {
-    auto &player = creature;
 
     static const std::vector<std::string> item_names = { _("年齢", "age"), _("身長(cm)", "height"), _("体重(kg)", "weight"), _("威信", "prestige") };
     clear_from(10);
@@ -371,12 +367,12 @@ bool get_chara_limits(CreatureEntity &creature, chara_limit_type *chara_limit_pt
         _("注意：身長と体重の最大値/最小値ぎりぎりの値は非常に出現確率が低くなります。", "Caution: Values near minimum or maximum are extremely rare."), 23, 2);
 
     int max_percent, min_percent;
-    if (player.psex == SEX_MALE) {
-        max_percent = (int)(player.race->m_b_ht + player.race->m_m_ht * 4 - 1) * 100 / (int)(player.race->m_b_ht);
-        min_percent = (int)(player.race->m_b_ht - player.race->m_m_ht * 4 + 1) * 100 / (int)(player.race->m_b_ht);
+    if (creature.psex == SEX_MALE) {
+        max_percent = (int)(creature.race->m_b_ht + creature.race->m_m_ht * 4 - 1) * 100 / (int)(creature.race->m_b_ht);
+        min_percent = (int)(creature.race->m_b_ht - creature.race->m_m_ht * 4 + 1) * 100 / (int)(creature.race->m_b_ht);
     } else {
-        max_percent = (int)(player.race->f_b_ht + player.race->f_m_ht * 4 - 1) * 100 / (int)(player.race->f_b_ht);
-        min_percent = (int)(player.race->f_b_ht - player.race->f_m_ht * 4 + 1) * 100 / (int)(player.race->f_b_ht);
+        max_percent = (int)(creature.race->f_b_ht + creature.race->f_m_ht * 4 - 1) * 100 / (int)(creature.race->f_b_ht);
+        min_percent = (int)(creature.race->f_b_ht - creature.race->f_m_ht * 4 + 1) * 100 / (int)(creature.race->f_b_ht);
     }
 
     put_str(_("体格/地位の最小値/最大値を設定して下さい。", "Set minimum/maximum attribute."), 10, 10);
@@ -388,38 +384,38 @@ bool get_chara_limits(CreatureEntity &creature, chara_limit_type *chara_limit_pt
         int m;
         switch (i) {
         case 0: /* Minimum age */
-            m = player.race->b_age + 1;
+            m = creature.race->b_age + 1;
             break;
         case 1: /* Maximum age */
-            m = player.race->b_age + player.race->m_age;
+            m = creature.race->b_age + creature.race->m_age;
             break;
 
         case 2: /* Minimum height */
-            if (player.psex == SEX_MALE) {
-                m = player.race->m_b_ht - player.race->m_m_ht * 4 + 1;
+            if (creature.psex == SEX_MALE) {
+                m = creature.race->m_b_ht - creature.race->m_m_ht * 4 + 1;
             } else {
-                m = player.race->f_b_ht - player.race->f_m_ht * 4 + 1;
+                m = creature.race->f_b_ht - creature.race->f_m_ht * 4 + 1;
             }
             break;
         case 3: /* Maximum height */
-            if (player.psex == SEX_MALE) {
-                m = player.race->m_b_ht + player.race->m_m_ht * 4 - 1;
+            if (creature.psex == SEX_MALE) {
+                m = creature.race->m_b_ht + creature.race->m_m_ht * 4 - 1;
             } else {
-                m = player.race->f_b_ht + player.race->f_m_ht * 4 - 1;
+                m = creature.race->f_b_ht + creature.race->f_m_ht * 4 - 1;
             }
             break;
         case 4: /* Minimum weight */
-            if (player.psex == SEX_MALE) {
-                m = (player.race->m_b_wt * min_percent / 100) - (player.race->m_m_wt * min_percent / 75) + 1;
+            if (creature.psex == SEX_MALE) {
+                m = (creature.race->m_b_wt * min_percent / 100) - (creature.race->m_m_wt * min_percent / 75) + 1;
             } else {
-                m = (player.race->f_b_wt * min_percent / 100) - (player.race->f_m_wt * min_percent / 75) + 1;
+                m = (creature.race->f_b_wt * min_percent / 100) - (creature.race->f_m_wt * min_percent / 75) + 1;
             }
             break;
         case 5: /* Maximum weight */
-            if (player.psex == SEX_MALE) {
-                m = (player.race->m_b_wt * max_percent / 100) + (player.race->m_m_wt * max_percent / 75) - 1;
+            if (creature.psex == SEX_MALE) {
+                m = (creature.race->m_b_wt * max_percent / 100) + (creature.race->m_m_wt * max_percent / 75) - 1;
             } else {
-                m = (player.race->f_b_wt * max_percent / 100) + (player.race->f_m_wt * max_percent / 75) - 1;
+                m = (creature.race->f_b_wt * max_percent / 100) + (creature.race->f_m_wt * max_percent / 75) - 1;
             }
             break;
         case 6: /* Minimum prestige */
@@ -597,7 +593,7 @@ bool get_chara_limits(CreatureEntity &creature, chara_limit_type *chara_limit_pt
             break;
         case '=':
             screen_save();
-            do_cmd_options_aux(player, GameOptionPage::BIRTH, _("初期オプション((*)はスコアに影響)", "Birth Options ((*)) affect score"));
+            do_cmd_options_aux(creature, GameOptionPage::BIRTH, _("初期オプション((*)はスコアに影響)", "Birth Options ((*)) affect score"));
             screen_load();
             break;
         default:

@@ -44,7 +44,6 @@
  */
 bool teleport_swap(CreatureEntity &creature, const Direction &dir)
 {
-    auto &player = creature;
     const auto pos = dir.get_target_position(creature.get_position());
     if (creature.anti_tele) {
         msg_print(_("不思議な力がテレポートを防いだ！", "A mysterious force prevents you from teleporting!"));
@@ -69,14 +68,14 @@ bool teleport_swap(CreatureEntity &creature, const Direction &dir)
 
     if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT)) {
         msg_print(_("テレポートを邪魔された！", "Your teleportation is blocked!"));
-        if (is_original_ap_and_seen(player, monster)) {
+        if (is_original_ap_and_seen(creature, monster)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
         }
         return false;
     }
 
     sound(SoundKind::TELEPORT);
-    (void)move_player_effect(player, pos.y, pos.x, MPE_FORGET_FLOW | MPE_HANDLE_STUFF | MPE_DONT_PICKUP);
+    (void)move_player_effect(creature, pos.y, pos.x, MPE_FORGET_FLOW | MPE_HANDLE_STUFF | MPE_DONT_PICKUP);
     return true;
 }
 
@@ -255,7 +254,7 @@ void teleport_monster_to(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION t
 
 /*!
  * @brief プレイヤーのテレポート先選定と移動処理 /
- * Teleport the player to a location up to "dis" grids away.
+ * Teleport the creature to a location up to "dis" grids away.
  * @param creature クリーチャーへの参照
  * @param dis 基本移動距離
  * @param is_quantum_effect 量子的効果 (反テレポ無効)によるテレポートアウェイならばTRUE
@@ -264,10 +263,10 @@ void teleport_monster_to(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION t
  * @details
  * <pre>
  * If no such spaces are readily available, the distance may increase.
- * Try very hard to move the player at least a quarter that distance.
+ * Try very hard to move the creature at least a quarter that distance.
  *
  * There was a nasty tendency for a long time; which was causing the
- * player to "bounce" between two or three different spots because
+ * creature to "bounce" between two or three different spots because
  * these are the only spots that are "far enough" way to satisfy the
  * algorithm.
  *
@@ -283,7 +282,6 @@ bool teleport_player_aux(CreatureEntity &creature, POSITION dis, bool is_quantum
         return false;
     }
 
-    auto &player = creature;
     if (!is_quantum_effect && creature.anti_tele && !(mode & TELEPORT_NONMAGICAL)) {
         msg_print(_("不思議な力がテレポートを防いだ！", "A mysterious force prevents you from teleporting!"));
         return false;
@@ -367,11 +365,11 @@ bool teleport_player_aux(CreatureEntity &creature, POSITION dis, bool is_quantum
 
     sound(SoundKind::TELEPORT);
 #ifdef JP
-    if (player.is_echizen()) {
-        msg_format("『こっちだぁ、%s』", player.name.data());
+    if (creature.is_echizen()) {
+        msg_format("『こっちだぁ、%s』", creature.name.data());
     }
 #endif
-    (void)move_player_effect(player, pos.y, pos.x, MPE_FORGET_FLOW | MPE_HANDLE_STUFF | MPE_DONT_PICKUP);
+    (void)move_player_effect(creature, pos.y, pos.x, MPE_FORGET_FLOW | MPE_HANDLE_STUFF | MPE_DONT_PICKUP);
     return true;
 }
 
@@ -390,7 +388,7 @@ void teleport_player(CreatureEntity &creature, POSITION dis, BIT_FLAGS mode)
         return;
     }
 
-    /* Monsters with teleport ability may follow the player */
+    /* Monsters with teleport ability may follow the creature */
     for (POSITION xx = -1; xx < 2; xx++) {
         for (POSITION yy = -1; yy < 2; yy++) {
             MONSTER_IDX tmp_m_idx = creature.current_floor_ptr->grid_array[oy + yy][ox + xx].m_idx;
@@ -433,7 +431,7 @@ void teleport_player_away(MONSTER_IDX m_idx, CreatureEntity &creature, POSITION 
     }
     const auto &floor = *creature.current_floor_ptr;
 
-    /* Monsters with teleport ability may follow the player */
+    /* Monsters with teleport ability may follow the creature */
     for (POSITION xx = -1; xx < 2; xx++) {
         for (POSITION yy = -1; yy < 2; yy++) {
             const auto tmp_m_idx = floor.grid_array[oy + yy][ox + xx].m_idx;
@@ -470,7 +468,6 @@ void teleport_player_away(MONSTER_IDX m_idx, CreatureEntity &creature, POSITION 
  */
 void teleport_player_to(CreatureEntity &creature, POSITION ny, POSITION nx, teleport_flags mode)
 {
-    auto &player = creature;
     if (creature.anti_tele && !(mode & TELEPORT_NONMAGICAL)) {
         msg_print(_("不思議な力がテレポートを防いだ！", "A mysterious force prevents you from teleporting!"));
         return;
@@ -509,12 +506,11 @@ void teleport_player_to(CreatureEntity &creature, POSITION ny, POSITION nx, tele
     }
 
     sound(SoundKind::TELEPORT);
-    (void)move_player_effect(player, pos.y, pos.x, MPE_FORGET_FLOW | MPE_HANDLE_STUFF | MPE_DONT_PICKUP);
+    (void)move_player_effect(creature, pos.y, pos.x, MPE_FORGET_FLOW | MPE_HANDLE_STUFF | MPE_DONT_PICKUP);
 }
 
 void teleport_away_followable(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    auto &player = creature;
     const auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.get_monster(m_idx);
     const auto old_m_pos = monster.get_position();
@@ -533,7 +529,7 @@ void teleport_away_followable(CreatureEntity &creature, MONSTER_IDX m_idx)
     }
 
     bool follow = false;
-    if (creature.muta.has(PlayerMutationType::VTELEPORT) || CreatureClass(player).equals(PlayerClassType::IMITATOR)) {
+    if (creature.muta.has(PlayerMutationType::VTELEPORT) || CreatureClass(creature).equals(PlayerClassType::IMITATOR)) {
         follow = true;
     } else {
         ItemEntity *o_ptr;
@@ -551,7 +547,7 @@ void teleport_away_followable(CreatureEntity &creature, MONSTER_IDX m_idx)
     if (!follow) {
         return;
     }
-    if (!input_check_strict(player, _("ついていきますか？", "Do you follow it? "), UserCheck::OKAY_CANCEL)) {
+    if (!input_check_strict(creature, _("ついていきますか？", "Do you follow it? "), UserCheck::OKAY_CANCEL)) {
         return;
     }
 

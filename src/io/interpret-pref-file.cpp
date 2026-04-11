@@ -337,7 +337,6 @@ static bool interpret_v_token(char *buf)
  */
 static void interpret_xy_token(CreatureEntity &creature, char *buf)
 {
-    auto &player = creature;
     const auto &world = AngbandWorld::get_instance();
     for (auto &option : option_info) {
         if (option.text != buf + 2) {
@@ -346,7 +345,7 @@ static void interpret_xy_token(CreatureEntity &creature, char *buf)
 
         int os = option.flag_position;
         int ob = option.offset;
-        if ((player.playing || world.character_xtra) && (GameOptionPage::BIRTH == option.page) && !world.wizard) {
+        if ((creature.playing || world.character_xtra) && (GameOptionPage::BIRTH == option.page) && !world.wizard) {
             msg_format(_("初期オプションは変更できません! '%s'", "Birth options can not be changed! '%s'"), buf);
             msg_erase();
             return;
@@ -510,7 +509,7 @@ static bool interpret_t_token(char *buf)
  * may contain any characters including "delimiters".
  * Note the use of "strtol()" to allow all "integers" to be encoded
  * in decimal, hexidecimal, or octal form.
- * Note that "monster zero" is used for the "player" attr/char, "object
+ * Note that "monster zero" is used for the "creature" attr/char, "object
  * zero" will be used for the "stack" attr/char, and "feature zero" is
  * used for the "nothing" attr/char.
  * </pre>

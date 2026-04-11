@@ -37,8 +37,7 @@
  */
 void pattern_teleport(CreatureEntity &creature)
 {
-    auto &player = creature;
-    auto *player_ptr = &player;
+    auto *player_ptr = &creature;
     auto min_level = 0;
     auto max_level = 99;
     auto &floor = *player_ptr->current_floor_ptr;
@@ -105,8 +104,7 @@ void pattern_teleport(CreatureEntity &creature)
  */
 bool pattern_effect(CreatureEntity &creature)
 {
-    auto &player = creature;
-    auto *player_ptr = &player;
+    auto *player_ptr = &creature;
     const auto &floor = *player_ptr->current_floor_ptr;
     const auto p_pos = player_ptr->get_position();
     const auto &grid = floor.get_grid(p_pos);
@@ -171,8 +169,7 @@ bool pattern_effect(CreatureEntity &creature)
  */
 bool pattern_seq(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &player = creature;
-    auto *player_ptr = &player;
+    auto *player_ptr = &creature;
     const auto &floor = *player_ptr->current_floor_ptr;
     const auto &grid_current = floor.get_grid(player_ptr->get_position());
     const auto &grid_new = floor.get_grid(pos);

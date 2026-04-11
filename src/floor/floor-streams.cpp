@@ -237,7 +237,6 @@ void add_river(FloorType &floor, DungeonData *dd_ptr)
  */
 void build_streamer(CreatureEntity &creature, FEAT_IDX feat, int chance)
 {
-    auto &player = creature;
     const auto &streamer = TerrainList::get_instance().get_terrain(feat);
     bool streamer_is_wall = streamer.flags.has(TerrainCharacteristics::WALL) && streamer.flags.has_not(TerrainCharacteristics::PERMANENT);
     bool streamer_may_have_gold = streamer.flags.has(TerrainCharacteristics::MAY_HAVE_GOLD);
@@ -295,7 +294,7 @@ void build_streamer(CreatureEntity &creature, FEAT_IDX feat, int chance)
             const auto &monrace = floor.get_monster(grid.m_idx).get_monrace();
             if (grid.has_monster() && !(streamer.flags.has(TerrainCharacteristics::PLACE) && monster_can_cross_terrain(&creature, feat, monrace, 0))) {
                 /* Delete the monster (if any) */
-                delete_monster(player, pos);
+                delete_monster(creature, pos);
             }
 
             if (!grid.o_idx_list.empty() && streamer.flags.has_not(TerrainCharacteristics::DROP)) {
@@ -308,7 +307,7 @@ void build_streamer(CreatureEntity &creature, FEAT_IDX feat, int chance)
                     if (item.is_fixed_artifact()) {
                         item.get_fixed_artifact().is_generated = false;
                         if (cheat_peek) {
-                            const auto item_name = describe_flavor(player, item, (OD_NAME_ONLY | OD_STORE));
+                            const auto item_name = describe_flavor(creature, item, (OD_NAME_ONLY | OD_STORE));
                             msg_format(_("伝説のアイテム (%s) はストリーマーにより削除された。", "Artifact (%s) was deleted by streamer."), item_name.data());
                         }
                     } else if (cheat_peek && item.is_random_artifact()) {
@@ -316,7 +315,7 @@ void build_streamer(CreatureEntity &creature, FEAT_IDX feat, int chance)
                     }
                 }
 
-                delete_all_items_from_floor(player, pos);
+                delete_all_items_from_floor(creature, pos);
             }
 
             /* Clear previous contents, add proper vein type */
@@ -340,7 +339,7 @@ void build_streamer(CreatureEntity &creature, FEAT_IDX feat, int chance)
         }
 
         if (dummy >= SAFE_MAX_ATTEMPTS) {
-            msg_print_wizard(player, CHEAT_DUNGEON, _("地形のストリーマー処理に失敗しました。", "Failed to place streamer."));
+            msg_print_wizard(creature, CHEAT_DUNGEON, _("地形のストリーマー処理に失敗しました。", "Failed to place streamer."));
             return;
         }
 
@@ -417,8 +416,7 @@ void place_trees(CreatureEntity &creature, const Pos2D &pos)
  */
 void destroy_level(CreatureEntity &creature)
 {
-    auto &player = creature;
-    msg_print_wizard(player, CHEAT_DUNGEON, _("階に*破壊*の痕跡を生成しました。", "Destroyed Level."));
+    msg_print_wizard(creature, CHEAT_DUNGEON, _("階に*破壊*の痕跡を生成しました。", "Destroyed Level."));
 
     /* Drop a few epi-centers (usually about two) */
     POSITION y1, x1;
@@ -428,6 +426,6 @@ void destroy_level(CreatureEntity &creature)
         x1 = rand_range(5, floor.width - 1 - 5);
         y1 = rand_range(5, floor.height - 1 - 5);
 
-        (void)destroy_area(player, y1, x1, 15, true);
+        (void)destroy_area(creature, y1, x1, 15, true);
     }
 }

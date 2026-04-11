@@ -22,7 +22,6 @@ int total_friends = 0;
  */
 bool can_player_ride_pet(CreatureEntity &creature, const Grid &grid, bool now_riding)
 {
-    auto &player = creature;
     auto &world = AngbandWorld::get_instance();
     const auto old_character_xtra = world.character_xtra;
     const auto old_riding = creature.riding;
@@ -32,9 +31,9 @@ bool can_player_ride_pet(CreatureEntity &creature, const Grid &grid, bool now_ri
     world.character_xtra = true;
 
     if (now_riding) {
-        player.ride_monster(grid.m_idx);
+        creature.ride_monster(grid.m_idx);
     } else {
-        player.ride_monster(0);
+        creature.ride_monster(0);
         creature.pet_extra_flags &= ~(PF_TWO_HANDS);
         creature.riding_ryoute = creature.old_riding_ryoute = false;
     }
@@ -44,7 +43,7 @@ bool can_player_ride_pet(CreatureEntity &creature, const Grid &grid, bool now_ri
     handle_stuff(creature);
 
     bool p_can_enter = player_can_enter(creature, grid.feat, CEM_P_CAN_ENTER_PATTERN);
-    player.ride_monster(old_riding);
+    creature.ride_monster(old_riding);
     if (old_pf_two_hands) {
         creature.pet_extra_flags |= (PF_TWO_HANDS);
     } else {

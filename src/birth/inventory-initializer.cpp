@@ -41,12 +41,11 @@
  */
 void wield_all(CreatureEntity &creature)
 {
-    auto &player = creature;
 
     ItemEntity ObjectType_body;
     for (INVENTORY_IDX i_idx = INVEN_PACK - 1; i_idx >= 0; i_idx--) {
         ItemEntity *o_ptr;
-        o_ptr = player.inventory[i_idx].get();
+        o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
@@ -59,7 +58,7 @@ void wield_all(CreatureEntity &creature)
             continue;
         }
 
-        auto &wield_slot_item = *player.inventory[slot];
+        auto &wield_slot_item = *creature.inventory[slot];
         if (wield_slot_item.is_valid()) {
             continue;
         }
@@ -68,14 +67,14 @@ void wield_all(CreatureEntity &creature)
         wield_slot_item.number = 1;
 
         if (i_idx >= 0) {
-            inven_item_increase(player, i_idx, -1);
-            inven_item_optimize(player, i_idx);
+            inven_item_increase(creature, i_idx, -1);
+            inven_item_optimize(creature, i_idx);
         } else {
             floor_item_increase(creature, 0 - i_idx, -1);
             floor_item_optimize(creature, 0 - i_idx);
         }
 
-        player.equip_cnt++;
+        creature.equip_cnt++;
     }
 }
 
@@ -86,18 +85,16 @@ void wield_all(CreatureEntity &creature)
  */
 static void add_outfit(CreatureEntity &creature, ItemEntity &item)
 {
-    auto &player = creature;
     object_aware(creature, item);
     item.mark_as_known();
-    const auto slot = store_item_to_inventory(player, &item);
-    autopick_alter_item(player, slot, false);
+    const auto slot = store_item_to_inventory(creature, &item);
+    autopick_alter_item(creature, slot, false);
     wield_all(creature);
 }
 
 static void decide_initial_items(CreatureEntity &creature)
 {
-    auto &player = creature;
-    switch (player.prace) {
+    switch (creature.prace) {
     case PlayerRaceType::VAMPIRE:
         /* Nothing! */
         /* Vampires can drain blood of creatures */
@@ -152,11 +149,10 @@ static void decide_initial_items(CreatureEntity &creature)
 
 /*!
  * @brief 種族/職業/性格などに基づき初期所持アイテムを設定するメインセット関数。 / Init players with some belongings
- * @details Having an item makes the player "aware" of its purpose.
+ * @details Having an item makes the creature "aware" of its purpose.
  */
 void player_outfit(CreatureEntity &creature)
 {
-    auto &player = creature;
 
     const auto &baseitems = BaseitemList::get_instance();
     ItemEntity item;
@@ -216,7 +212,7 @@ void player_outfit(CreatureEntity &creature)
             add_outfit(creature, item);
         }
     } else if (pc.equals(PlayerClassType::TOURIST)) {
-        if (player.ppersonality != PERSONALITY_SEXY) {
+        if (creature.ppersonality != PERSONALITY_SEXY) {
             ItemEntity item({ ItemKindType::SHOT, SV_AMMO_LIGHT });
             item.number = rand_range(15, 20);
             add_outfit(creature, item);
@@ -254,8 +250,8 @@ void player_outfit(CreatureEntity &creature)
     // @todo 本来read-onlyであるべきプリセットテーブルを書き換えている. 良くないパターン.
     // 「状況によって特別に持たせたいアイテム」は別途定義すべき.
     if (!pc.equals(PlayerClassType::SORCERER)) {
-        auto short_pclass = enum2i(player.pclass);
-        if (player.ppersonality == PERSONALITY_SEXY) {
+        auto short_pclass = enum2i(creature.pclass);
+        if (creature.ppersonality == PERSONALITY_SEXY) {
             player_init[short_pclass][2] = std::make_tuple(ItemKindType::HAFTED, SV_WHIP);
         } else if (pr.equals(PlayerRaceType::MERFOLK)) {
             player_init[short_pclass][2] = std::make_tuple(ItemKindType::POLEARM, SV_TRIDENT);
@@ -263,12 +259,12 @@ void player_outfit(CreatureEntity &creature)
     }
 
     for (auto i = 0; i < 3; i++) {
-        auto &[tval, sval] = player_init[enum2i(player.pclass)][i];
+        auto &[tval, sval] = player_init[enum2i(creature.pclass)][i];
         if (pr.equals(PlayerRaceType::ANDROID) && ((tval == ItemKindType::SOFT_ARMOR) || (tval == ItemKindType::HARD_ARMOR))) {
             continue;
         }
 
-        PlayerRealm prealm(player);
+        PlayerRealm prealm(creature);
         if (tval == ItemKindType::SORCERY_BOOK) {
             tval = prealm.realm1().get_book();
         } else if (tval == ItemKindType::DEATH_BOOK) {

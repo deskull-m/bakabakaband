@@ -42,17 +42,16 @@ void AllianceFangFamily::panishment(CreatureEntity &creature)
     if (!creature.is_player()) {
         return;
     }
-    auto &player = creature;
     if (one_in_(25)) {
         Pos2D m_pos(creature.get_position());
-        m_pos = scatter(*player.current_floor_ptr, m_pos, 10, PROJECT_NONE);
+        m_pos = scatter(*creature.current_floor_ptr, m_pos, 10, PROJECT_NONE);
         MonraceId avenger_id;
         if (impression < -200) {
             avenger_id = MonraceId::KING_FANG_FAMILY;
         } else {
             avenger_id = MonraceId::FANG_FAMILY;
         }
-        const auto m_idx = place_monster_one(player, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP);
+        const auto m_idx = place_monster_one(creature, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP);
         if (m_idx) {
             if (avenger_id == MonraceId::KING_FANG_FAMILY) {
                 msg_print(_("「一族の復讐を受けよ！」族長があなたを始末しに現れた！",
@@ -62,9 +61,9 @@ void AllianceFangFamily::panishment(CreatureEntity &creature)
                     "\"For the honor of Fang Family!\" A Fang family member is chasing you for revenge!"));
             }
 
-            disturb(player, true, true);
+            disturb(creature, true, true);
             for (int k = 0; k < 4; k++) {
-                summon_specific(player, m_pos.y, m_pos.x, std::max(player.current_floor_ptr->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
+                summon_specific(creature, m_pos.y, m_pos.x, std::max(creature.current_floor_ptr->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }
     }

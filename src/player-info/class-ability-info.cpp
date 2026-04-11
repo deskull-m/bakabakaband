@@ -6,7 +6,6 @@
 
 void set_class_ability_info(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    auto &player = creature;
     switch (creature.pclass) {
     case PlayerClassType::WARRIOR:
         if (creature.level > 39) {
@@ -15,7 +14,7 @@ void set_class_ability_info(CreatureEntity &creature, self_info_type *self_ptr)
 
         break;
     case PlayerClassType::HIGH_MAGE:
-        if (PlayerRealm(player).is_realm_hex()) {
+        if (PlayerRealm(creature).is_realm_hex()) {
             break;
         }
         [[fallthrough]];
@@ -27,7 +26,7 @@ void set_class_ability_info(CreatureEntity &creature, self_info_type *self_ptr)
 
         break;
     case PlayerClassType::PRIEST:
-        if (PlayerRealm(player).realm1().is_good_attribute()) {
+        if (PlayerRealm(creature).realm1().is_good_attribute()) {
             if (creature.level > 34) {
                 self_ptr->info_list.emplace_back(_("あなたは武器を祝福することができる。(70 MP)", "You can bless a weapon (cost 70)."));
             }
@@ -53,7 +52,7 @@ void set_class_ability_info(CreatureEntity &creature, self_info_type *self_ptr)
 
         break;
     case PlayerClassType::PALADIN:
-        if (PlayerRealm(player).realm1().is_good_attribute()) {
+        if (PlayerRealm(creature).realm1().is_good_attribute()) {
             if (creature.level > 29) {
                 self_ptr->info_list.emplace_back(_("あなたは聖なる槍を放つことができる。(30 MP)", "You can fire a holy spear (cost 30)."));
             }

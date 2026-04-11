@@ -33,17 +33,16 @@
 #include "world/world.h"
 
 /*!
- * @brief セーブデータから領域情報を読み込む / Read player realms
+ * @brief セーブデータから領域情報を読み込む / Read creature realms
  * @param creature クリーチャーへの参照
  */
 static void rd_realms(CreatureEntity &creature)
 {
-    auto &player = creature;
-    PlayerRealm pr(player);
+    PlayerRealm pr(creature);
     pr.reset();
 
     if (CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST)) {
-        player.element_realm = i2enum<ElementRealmType>(rd_byte());
+        creature.element_realm = i2enum<ElementRealmType>(rd_byte());
         (void)rd_byte();
         return;
     }
@@ -60,25 +59,24 @@ static void rd_realms(CreatureEntity &creature)
 }
 
 /*!
- * @brief セーブデータからプレイヤー基本情報を読み込む / Read player's basic info
+ * @brief セーブデータからプレイヤー基本情報を読み込む / Read creature's basic info
  * @param creature クリーチャーへの参照
  */
 void rd_base_info(CreatureEntity &creature)
 {
-    auto &player = creature;
     creature.name = rd_string();
     if (creature.name.length() > 40) {
         creature.name.resize(40);
     }
     creature.died_from = rd_string();
-    player.last_message = rd_string();
+    creature.last_message = rd_string();
 
     load_quick_start();
     const int max_history_lines = 4;
     for (int i = 0; i < max_history_lines; i++) {
         const auto history = rd_string();
-        const auto history_len = history.copy(player.history[i], sizeof(player.history[i]) - 1);
-        player.history[i][history_len] = '\0';
+        const auto history_len = history.copy(creature.history[i], sizeof(creature.history[i]) - 1);
+        creature.history[i][history_len] = '\0';
     }
 
     creature.prace = i2enum<PlayerRaceType>(rd_byte());
@@ -90,8 +88,8 @@ void rd_base_info(CreatureEntity &creature)
 
     strip_bytes(1);
 
-    player.hit_dice = Dice(1, rd_byte());
-    player.expfact = rd_u16b();
+    creature.hit_dice = Dice(1, rd_byte());
+    creature.expfact = rd_u16b();
 
     creature.death_count = rd_s32b();
     creature.age = rd_s16b();
@@ -167,11 +165,10 @@ void rd_skills(CreatureEntity &creature)
 
 static void set_race(CreatureEntity &creature)
 {
-    auto &player = creature;
     InnerGameData::get_instance().set_start_race(i2enum<PlayerRaceType>(rd_byte()));
-    player.old_race1 = rd_u32b();
-    player.old_race2 = rd_u32b();
-    player.old_realm = rd_s16b();
+    creature.old_race1 = rd_u32b();
+    creature.old_race2 = rd_u32b();
+    creature.old_realm = rd_s16b();
 }
 
 void rd_bounty_uniques()
@@ -339,9 +336,8 @@ static void rd_bad_status(CreatureEntity &creature)
 
 static void rd_energy(CreatureEntity &creature)
 {
-    auto &player = creature;
     creature.energy_need = rd_s16b();
-    player.enchant_energy_need = rd_s16b();
+    creature.enchant_energy_need = rd_s16b();
 }
 
 /*!
@@ -446,7 +442,6 @@ static void rd_timed_effects(CreatureEntity &creature)
 
 static void rd_player_status(CreatureEntity &creature)
 {
-    auto &player = creature;
     rd_base_status(creature);
     strip_bytes(24);
     creature.au = rd_s32b();
@@ -459,7 +454,7 @@ static void rd_player_status(CreatureEntity &creature)
     rd_dummy1();
     rd_hp(creature);
     rd_mana(creature);
-    player.max_plv = rd_s16b();
+    creature.max_plv = rd_s16b();
     rd_dungeons(creature);
     strip_bytes(8);
     creature.prestige = rd_s16b();
@@ -480,9 +475,9 @@ static void rd_player_status(CreatureEntity &creature)
     creature.shield = rd_s16b();
     creature.blessed = rd_s16b();
     creature.tim_invis = rd_s16b();
-    player.word_recall = rd_s16b();
-    player.recall_dungeon = i2enum<DungeonId>(rd_s16b());
-    player.alter_reality = rd_s16b();
+    creature.word_recall = rd_s16b();
+    creature.recall_dungeon = i2enum<DungeonId>(rd_s16b());
+    creature.alter_reality = rd_s16b();
     creature.see_infra = rd_s16b();
     creature.tim_infra = rd_s16b();
     creature.oppose_fire = rd_s16b();
@@ -492,7 +487,7 @@ static void rd_player_status(CreatureEntity &creature)
     creature.oppose_pois = rd_s16b();
     creature.tsuyoshi = rd_s16b();
     rd_timed_effects(creature);
-    player.mutant_regenerate_mod = calc_mutant_regenerate_mod(creature);
+    creature.mutant_regenerate_mod = calc_mutant_regenerate_mod(creature);
 
     if (!loading_savefile_version_is_older_than(6)) {
         int32_t num = rd_s32b();
@@ -500,7 +495,7 @@ static void rd_player_status(CreatureEntity &creature)
             int32_t id, count;
             id = rd_s32b();
             count = rd_s32b();
-            player.incident[(INCIDENT)id] = count;
+            creature.incident[(INCIDENT)id] = count;
         }
     }
 
@@ -517,12 +512,11 @@ static void rd_player_status(CreatureEntity &creature)
 
 void rd_player_info(CreatureEntity &creature)
 {
-    auto &player = creature;
     rd_player_status(creature);
     rd_special_attack(creature);
     rd_special_action(creature);
     rd_special_defense(creature);
-    player.knowledge = rd_byte();
+    creature.knowledge = rd_byte();
     rd_autopick(creature);
     rd_action(creature);
 }

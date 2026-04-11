@@ -23,7 +23,6 @@
  */
 bool alchemy(CreatureEntity &creature)
 {
-    auto &player = creature;
     bool force = false;
     if (command_arg > 0) {
         force = true;
@@ -32,7 +31,7 @@ bool alchemy(CreatureEntity &creature)
     constexpr auto q = _("どのアイテムを金に変えますか？", "Turn which item to gold? ");
     constexpr auto s = _("金に変えられる物がありません。", "You have nothing to turn to gold.");
     short i_idx;
-    auto *o_ptr = choose_object(player, &i_idx, q, s, (USE_INVEN | USE_FLOOR));
+    auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_FLOOR));
     if (o_ptr == nullptr) {
         return false;
     }
@@ -47,7 +46,7 @@ bool alchemy(CreatureEntity &creature)
 
     const auto old_number = o_ptr->number;
     o_ptr->number = amt;
-    const auto item_name = describe_flavor(player, *o_ptr, 0);
+    const auto item_name = describe_flavor(creature, *o_ptr, 0);
     o_ptr->number = old_number;
 
     if (!force) {
@@ -67,7 +66,7 @@ bool alchemy(CreatureEntity &creature)
     auto price = object_value_real(o_ptr);
     if (price <= 0) {
         msg_format(_("%sをニセの金に変えた。", "You turn %s to fool's gold."), item_name.data());
-        vary_item(player, i_idx, -amt);
+        vary_item(creature, i_idx, -amt);
         return true;
     }
 
@@ -82,10 +81,10 @@ bool alchemy(CreatureEntity &creature)
     }
 
     msg_format(_("%sを＄%d の金に変えた。", "You turn %s to %d coins worth of gold."), item_name.data(), price);
-    player.au += price;
+    creature.au += price;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::GOLD);
     rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
-    vary_item(player, i_idx, -amt);
+    vary_item(creature, i_idx, -amt);
     return true;
 }

@@ -83,7 +83,7 @@ void regenmana(CreatureEntity &creature, MANA_POINT upkeep_factor, MANA_POINT re
         }
     }
 
-    /* Regenerating mana (unless the player has excess mana) */
+    /* Regenerating mana (unless the creature has excess mana) */
     else if (regen_rate > 0) {
         MANA_POINT new_mana = 0;
         uint32_t new_mana_frac = (creature.msp * regen_rate / 100 + PY_REGEN_MNBASE);
@@ -95,7 +95,7 @@ void regenmana(CreatureEntity &creature, MANA_POINT upkeep_factor, MANA_POINT re
         }
     }
 
-    /* Reduce mana (even when the player has excess mana) */
+    /* Reduce mana (even when the creature has excess mana) */
     if (regen_rate < 0) {
         int32_t reduce_mana = 0;
         uint32_t reduce_mana_frac = (creature.msp * (-1) * regen_rate / 100 + PY_REGEN_MNBASE);
@@ -224,10 +224,9 @@ void regenerate_monsters(CreatureEntity &creature)
  */
 void regenerate_captured_monsters(CreatureEntity &creature)
 {
-    auto &player = creature;
     bool heal = false;
     for (int i = 0; i < INVEN_TOTAL; i++) {
-        auto *o_ptr = player.inventory[i].get();
+        auto *o_ptr = creature.inventory[i].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
@@ -252,8 +251,8 @@ void regenerate_captured_monsters(CreatureEntity &creature)
                 frac *= 2;
             }
 
-            // Apply hygiene-based regeneration modifier (based on player's current terrain)
-            const auto &grid = player.current_floor_ptr->get_grid(player.get_position());
+            // Apply hygiene-based regeneration modifier (based on creature's current terrain)
+            const auto &grid = creature.current_floor_ptr->get_grid(creature.get_position());
             const auto &terrain = grid.get_terrain();
             if (terrain.hygiene != 0) {
                 const int hygiene_modifier = 100 + terrain.hygiene;

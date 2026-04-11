@@ -46,27 +46,26 @@
  */
 int rod_effect(CreatureEntity &creature, int sval, const Direction &dir, bool *use_charge, bool powerful)
 {
-    auto &player = creature;
     int ident = false;
-    PLAYER_LEVEL lev = powerful ? player.level * 2 : player.level;
+    PLAYER_LEVEL lev = powerful ? creature.level * 2 : creature.level;
     POSITION detect_rad = powerful ? DETECT_RAD_DEFAULT * 3 / 2 : DETECT_RAD_DEFAULT;
     POSITION rad = powerful ? 3 : 2;
 
-    player.plus_incident_tree("ZAP_ROD", 1);
+    creature.plus_incident_tree("ZAP_ROD", 1);
 
     switch (sval) {
     case SV_ROD_DETECT_TRAP: {
-        if (detect_traps(player, detect_rad, !dir)) {
+        if (detect_traps(creature, detect_rad, !dir)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_DETECT_DOOR: {
-        if (detect_doors(player, detect_rad)) {
+        if (detect_doors(creature, detect_rad)) {
             ident = true;
         }
-        if (detect_stairs(player, detect_rad)) {
+        if (detect_stairs(creature, detect_rad)) {
             ident = true;
         }
         break;
@@ -74,11 +73,11 @@ int rod_effect(CreatureEntity &creature, int sval, const Direction &dir, bool *u
 
     case SV_ROD_IDENTIFY: {
         if (powerful) {
-            if (!identify_fully(player, false)) {
+            if (!identify_fully(creature, false)) {
                 *use_charge = false;
             }
         } else {
-            if (!ident_spell(player, false)) {
+            if (!ident_spell(creature, false)) {
                 *use_charge = false;
             }
         }
@@ -87,7 +86,7 @@ int rod_effect(CreatureEntity &creature, int sval, const Direction &dir, bool *u
     }
 
     case SV_ROD_RECALL: {
-        if (!recall_player(player, randint0(21) + 15)) {
+        if (!recall_player(creature, randint0(21) + 15)) {
             *use_charge = false;
         }
         ident = true;
@@ -95,42 +94,42 @@ int rod_effect(CreatureEntity &creature, int sval, const Direction &dir, bool *u
     }
 
     case SV_ROD_ILLUMINATION: {
-        if (lite_area(player, Dice::roll(2, 8), (powerful ? 4 : 2))) {
+        if (lite_area(creature, Dice::roll(2, 8), (powerful ? 4 : 2))) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_MAPPING: {
-        map_area(player, powerful ? DETECT_RAD_MAP * 3 / 2 : DETECT_RAD_MAP);
+        map_area(creature, powerful ? DETECT_RAD_MAP * 3 / 2 : DETECT_RAD_MAP);
         ident = true;
         break;
     }
 
     case SV_ROD_DETECTION: {
-        detect_all(player, detect_rad);
+        detect_all(creature, detect_rad);
         ident = true;
         break;
     }
 
     case SV_ROD_PROBING: {
-        probing(player);
+        probing(creature);
         ident = true;
         break;
     }
 
     case SV_ROD_CURING: {
-        if (true_healing(player, 0)) {
+        if (true_healing(creature, 0)) {
             ident = true;
         }
-        if (set_berserk(player, 0, true)) {
+        if (set_berserk(creature, 0, true)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_HEALING: {
-        if (cure_critical_wounds(player, powerful ? 750 : 500)) {
+        if (cure_critical_wounds(creature, powerful ? 750 : 500)) {
             ident = true;
         }
         break;
@@ -140,21 +139,21 @@ int rod_effect(CreatureEntity &creature, int sval, const Direction &dir, bool *u
         if (restore_level(creature)) {
             ident = true;
         }
-        if (restore_all_status(player)) {
+        if (restore_all_status(creature)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_SPEED: {
-        if (set_acceleration(player, randint1(30) + (powerful ? 30 : 15), false)) {
+        if (set_acceleration(creature, randint1(30) + (powerful ? 30 : 15), false)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_PESTICIDE: {
-        if (dispel_monsters(player, powerful ? 8 : 4)) {
+        if (dispel_monsters(creature, powerful ? 8 : 4)) {
             ident = true;
         }
         break;
@@ -162,17 +161,17 @@ int rod_effect(CreatureEntity &creature, int sval, const Direction &dir, bool *u
 
     case SV_ROD_TELEPORT_AWAY: {
         int distance = MAX_PLAYER_SIGHT * (powerful ? 8 : 5);
-        if (teleport_monster(player, dir, distance)) {
+        if (teleport_monster(creature, dir, distance)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_DISARMING: {
-        if (disarm_trap(player, dir)) {
+        if (disarm_trap(creature, dir)) {
             ident = true;
         }
-        if (powerful && disarm_traps_touch(player)) {
+        if (powerful && disarm_traps_touch(creature)) {
             ident = true;
         }
         break;
@@ -181,103 +180,103 @@ int rod_effect(CreatureEntity &creature, int sval, const Direction &dir, bool *u
     case SV_ROD_LITE: {
         int dam = Dice::roll((powerful ? 12 : 6), 8);
         msg_print(_("青く輝く光線が放たれた。", "A line of blue shimmering light appears."));
-        (void)lite_line(player, dir, dam);
+        (void)lite_line(creature, dir, dam);
         ident = true;
         break;
     }
 
     case SV_ROD_SLEEP_MONSTER: {
-        if (sleep_monster(player, dir, lev)) {
+        if (sleep_monster(creature, dir, lev)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_SLOW_MONSTER: {
-        if (slow_monster(player, dir, lev)) {
+        if (slow_monster(creature, dir, lev)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_HYPODYNAMIA: {
-        if (hypodynamic_bolt(player, dir, 70 + 3 * lev / 2)) {
+        if (hypodynamic_bolt(creature, dir, 70 + 3 * lev / 2)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_POLYMORPH: {
-        if (poly_monster(player, dir, lev)) {
+        if (poly_monster(creature, dir, lev)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_ACID_BOLT: {
-        fire_bolt_or_beam(player, 10, AttributeType::ACID, dir, Dice::roll(6 + lev / 7, 8));
+        fire_bolt_or_beam(creature, 10, AttributeType::ACID, dir, Dice::roll(6 + lev / 7, 8));
         ident = true;
         break;
     }
 
     case SV_ROD_ELEC_BOLT: {
-        fire_bolt_or_beam(player, 10, AttributeType::ELEC, dir, Dice::roll(4 + lev / 9, 8));
+        fire_bolt_or_beam(creature, 10, AttributeType::ELEC, dir, Dice::roll(4 + lev / 9, 8));
         ident = true;
         break;
     }
 
     case SV_ROD_FIRE_BOLT: {
-        fire_bolt_or_beam(player, 10, AttributeType::FIRE, dir, Dice::roll(7 + lev / 6, 8));
+        fire_bolt_or_beam(creature, 10, AttributeType::FIRE, dir, Dice::roll(7 + lev / 6, 8));
         ident = true;
         break;
     }
 
     case SV_ROD_COLD_BOLT: {
-        fire_bolt_or_beam(player, 10, AttributeType::COLD, dir, Dice::roll(5 + lev / 8, 8));
+        fire_bolt_or_beam(creature, 10, AttributeType::COLD, dir, Dice::roll(5 + lev / 8, 8));
         ident = true;
         break;
     }
 
     case SV_ROD_ACID_BALL: {
-        fire_ball(player, AttributeType::ACID, dir, 60 + lev, rad);
+        fire_ball(creature, AttributeType::ACID, dir, 60 + lev, rad);
         ident = true;
         break;
     }
 
     case SV_ROD_ELEC_BALL: {
-        fire_ball(player, AttributeType::ELEC, dir, 40 + lev, rad);
+        fire_ball(creature, AttributeType::ELEC, dir, 40 + lev, rad);
         ident = true;
         break;
     }
 
     case SV_ROD_FIRE_BALL: {
-        fire_ball(player, AttributeType::FIRE, dir, 70 + lev, rad);
+        fire_ball(creature, AttributeType::FIRE, dir, 70 + lev, rad);
         ident = true;
         break;
     }
 
     case SV_ROD_COLD_BALL: {
-        fire_ball(player, AttributeType::COLD, dir, 50 + lev, rad);
+        fire_ball(creature, AttributeType::COLD, dir, 50 + lev, rad);
         ident = true;
         break;
     }
 
     case SV_ROD_HAVOC: {
-        call_chaos(player);
+        call_chaos(creature);
         ident = true;
         break;
     }
 
     case SV_ROD_STONE_TO_MUD: {
         int dam = powerful ? 40 + randint1(60) : 20 + randint1(30);
-        if (wall_to_mud(player, dir, dam)) {
+        if (wall_to_mud(creature, dir, dam)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_AGGRAVATE: {
-        aggravate_monsters(player, 0);
+        aggravate_monsters(creature, 0);
         ident = true;
         break;
     }
@@ -291,7 +290,6 @@ int rod_effect(CreatureEntity &creature, int sval, const Direction &dir, bool *u
  */
 void do_cmd_zap_rod(CreatureEntity &creature)
 {
-    auto &player = creature;
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
@@ -305,9 +303,9 @@ void do_cmd_zap_rod(CreatureEntity &creature)
     constexpr auto q = _("どのロッドを振りますか? ", "Zap which rod? ");
     constexpr auto s = _("使えるロッドがない。", "You have no rod to zap.");
     short i_idx;
-    if (!choose_object(player, &i_idx, q, s, (USE_INVEN | USE_FLOOR), TvalItemTester(ItemKindType::ROD))) {
+    if (!choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_FLOOR), TvalItemTester(ItemKindType::ROD))) {
         return;
     }
 
-    ObjectZapRodEntity(player).execute(i_idx);
+    ObjectZapRodEntity(creature).execute(i_idx);
 }

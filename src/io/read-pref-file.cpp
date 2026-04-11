@@ -192,7 +192,7 @@ errr process_autopick_file(CreatureEntity &creature, std::string_view name)
 
 /*!
  * @brief プレイヤーの生い立ちファイルを読み込む /
- * Process file for player's history editor.
+ * Process file for creature's history editor.
  * @param creature クリーチャーへの参照
  * @param name ファイル名
  * @return エラーコード
@@ -276,15 +276,14 @@ void close_auto_dump(FILE **fpp, std::string_view mark)
  */
 void load_all_pref_files(CreatureEntity &creature)
 {
-    auto &player = creature;
 
     process_pref_file(creature, "user.prf");
     process_pref_file(creature, format("user-%s.prf", ANGBAND_SYS));
     constexpr auto fmt = "%s.prf";
-    process_pref_file(creature, format(fmt, player.race->title.data()));
-    process_pref_file(creature, format(fmt, (*player.pclass_ref).title.data()));
-    process_pref_file(creature, format(fmt, player.base_name.data()));
-    PlayerRealm pr(player);
+    process_pref_file(creature, format(fmt, creature.race->title.data()));
+    process_pref_file(creature, format(fmt, (*creature.pclass_ref).title.data()));
+    process_pref_file(creature, format(fmt, creature.base_name.data()));
+    PlayerRealm pr(creature);
     if (pr.realm1().is_available()) {
         process_pref_file(creature, format(fmt, pr.realm1().get_name().data()));
     }
@@ -305,11 +304,10 @@ bool read_histpref(CreatureEntity &creature)
         return false;
     }
 
-    auto &player = creature;
 
     histpref_buf = "";
     std::stringstream ss;
-    ss << _("histedit-", "histpref-") << player.base_name << ".prf";
+    ss << _("histedit-", "histpref-") << creature.base_name << ".prf";
     auto err = process_histpref_file(creature, ss.str());
     if (0 > err) {
         err = process_histpref_file(creature, _("histedit.prf", "histpref.prf"));
@@ -329,28 +327,28 @@ bool read_histpref(CreatureEntity &creature)
     }
 
     for (auto i = 0; i < 4; i++) {
-        player.history[i][0] = '\0';
+        creature.history[i][0] = '\0';
     }
 
     histpref_buf = str_trim(*histpref_buf);
-    constexpr auto max_line_len = sizeof(player.history[0]);
+    constexpr auto max_line_len = sizeof(creature.history[0]);
     const auto history_lines = shape_buffer(*histpref_buf, max_line_len);
     const auto max_lines = std::min<int>(4, history_lines.size());
     for (auto l = 0; l < max_lines; ++l) {
-        angband_strcpy(player.history[l], history_lines[l], max_line_len);
+        angband_strcpy(creature.history[l], history_lines[l], max_line_len);
     }
 
     for (auto i = 0; i < 4; i++) {
         /* loop */
         int j;
-        for (j = 0; player.history[i][j]; j++) {
+        for (j = 0; creature.history[i][j]; j++) {
             ;
         }
 
         for (; j < 59; j++) {
-            player.history[i][j] = ' ';
+            creature.history[i][j] = ' ';
         }
-        player.history[i][59] = '\0';
+        creature.history[i][59] = '\0';
     }
 
     return true;

@@ -168,7 +168,6 @@ static bool enter_debug_mode(const FloorType &floor)
  */
 void process_command(CreatureEntity &creature)
 {
-    auto &player = creature;
     COMMAND_CODE old_now_message = now_message;
     repeat_check();
     now_message = 0;
@@ -179,7 +178,7 @@ void process_command(CreatureEntity &creature)
 
     auto &world = AngbandWorld::get_instance();
     const auto is_wild_mode = world.is_wild_mode();
-    const auto &floor = *player.current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     switch (command_cmd) {
     case ESCAPE:
     case ' ':
@@ -204,53 +203,53 @@ void process_command(CreatureEntity &creature)
     }
     case KTRL('A'): {
         if (enter_debug_mode(floor)) {
-            do_cmd_debug(player);
+            do_cmd_debug(creature);
         }
 
         break;
     }
     case KTRL('Y'): {
         if (enter_debug_mode(floor)) {
-            wiz_mutation_menu(player);
+            wiz_mutation_menu(creature);
         }
 
         break;
     }
     case 'w': {
         if (!is_wild_mode) {
-            do_cmd_wield(player);
+            do_cmd_wield(creature);
         }
 
         break;
     }
     case 't': {
         if (!is_wild_mode) {
-            do_cmd_takeoff(player);
+            do_cmd_takeoff(creature);
         }
 
         break;
     }
     case 'd': {
         if (!is_wild_mode) {
-            do_cmd_drop(player);
+            do_cmd_drop(creature);
         }
 
         break;
     }
     case 'k': {
-        do_cmd_destroy(player);
+        do_cmd_destroy(creature);
         break;
     }
     case 'e': {
-        do_cmd_equip(player);
+        do_cmd_equip(creature);
         break;
     }
     case 'i': {
-        do_cmd_inven(player);
+        do_cmd_inven(creature);
         break;
     }
     case 'I': {
-        do_cmd_observe(player);
+        do_cmd_observe(creature);
         break;
     }
 
@@ -260,68 +259,68 @@ void process_command(CreatureEntity &creature)
     }
     case '+': {
         if (!is_wild_mode) {
-            do_cmd_alter(player);
+            do_cmd_alter(creature);
         }
 
         break;
     }
     case 'T': {
         if (!is_wild_mode) {
-            do_cmd_tunnel(player);
+            do_cmd_tunnel(creature);
         }
 
         break;
     }
     case ';': {
-        do_cmd_walk(player, false);
+        do_cmd_walk(creature, false);
         break;
     }
     case '-': {
-        do_cmd_walk(player, true);
+        do_cmd_walk(creature, true);
         break;
     }
     case '.': {
         if (!is_wild_mode) {
-            do_cmd_run(player);
+            do_cmd_run(creature);
         }
 
         break;
     }
     case ',': {
-        do_cmd_stay(player, always_pickup);
+        do_cmd_stay(creature, always_pickup);
         break;
     }
     case 'g': {
-        do_cmd_stay(player, !always_pickup);
+        do_cmd_stay(creature, !always_pickup);
         break;
     }
     case 'R': {
-        do_cmd_rest(player);
+        do_cmd_rest(creature);
         break;
     }
     case 's': {
-        do_cmd_search(player);
+        do_cmd_search(creature);
         break;
     }
     case 'S': {
-        if (player.action == ACTION_SEARCH) {
-            set_action(player, ACTION_NONE);
+        if (creature.action == ACTION_SEARCH) {
+            set_action(creature, ACTION_NONE);
         } else {
-            set_action(player, ACTION_SEARCH);
+            set_action(creature, ACTION_SEARCH);
         }
 
         break;
     }
     case SPECIAL_KEY_STORE: {
-        do_cmd_store(player);
+        do_cmd_store(creature);
         break;
     }
     case SPECIAL_KEY_BUILDING: {
-        do_cmd_building(player);
+        do_cmd_building(creature);
         break;
     }
     case SPECIAL_KEY_QUEST: {
-        do_cmd_quest(player);
+        do_cmd_quest(creature);
         break;
     }
     case '<': {
@@ -335,79 +334,79 @@ void process_command(CreatureEntity &creature)
                 break;
             }
 
-            if (player.food < PY_FOOD_WEAK) {
+            if (creature.food < PY_FOOD_WEAK) {
                 msg_print(_("その前に食事をとらないと。", "You must eat something here."));
                 break;
             }
 
-            change_wild_mode(player, false);
+            change_wild_mode(creature, false);
         } else {
-            do_cmd_go_up(player);
+            do_cmd_go_up(creature);
         }
 
         break;
     }
     case '>': {
         if (is_wild_mode) {
-            change_wild_mode(player, false);
+            change_wild_mode(creature, false);
         } else {
-            do_cmd_go_down(player);
+            do_cmd_go_down(creature);
         }
 
         break;
     }
     case 'o': {
-        do_cmd_open(player);
+        do_cmd_open(creature);
         break;
     }
     case 'c': {
-        do_cmd_close(player);
+        do_cmd_close(creature);
         break;
     }
     case 'j': {
-        do_cmd_spike(player);
+        do_cmd_spike(creature);
         break;
     }
     case 'B': {
-        do_cmd_bash(player);
+        do_cmd_bash(creature);
         break;
     }
     case 'D': {
-        do_cmd_disarm(player);
+        do_cmd_disarm(creature);
         break;
     }
     case 'G': {
-        CreatureClass pc(player);
+        CreatureClass pc(creature);
         if (pc.is_every_magic() || pc.equals(PlayerClassType::ELEMENTALIST)) {
             msg_print(_("呪文を学習する必要はない！", "You don't have to learn spells!"));
         } else if (pc.equals(PlayerClassType::SAMURAI)) {
-            do_cmd_gain_hissatsu(player);
+            do_cmd_gain_hissatsu(creature);
         } else if (pc.equals(PlayerClassType::MAGIC_EATER)) {
             import_magic_device(creature);
         } else {
-            do_cmd_study(player);
+            do_cmd_study(creature);
         }
 
         break;
     }
     case 'X': {
-        do_cmd_martial_arts_style(player);
+        do_cmd_martial_arts_style(creature);
         break;
     }
     case 'b': {
-        CreatureClass pc(player);
+        CreatureClass pc(creature);
         if (pc.can_browse()) {
-            do_cmd_mind_browse(player);
+            do_cmd_mind_browse(creature);
         } else if (pc.equals(PlayerClassType::ELEMENTALIST)) {
-            do_cmd_element_browse(player);
+            do_cmd_element_browse(creature);
         } else if (pc.equals(PlayerClassType::SMITH)) {
             do_cmd_kaji(creature, true);
         } else if (pc.equals(PlayerClassType::MAGIC_EATER)) {
-            do_cmd_magic_eater(player, true, false);
+            do_cmd_magic_eater(creature, true, false);
         } else if (pc.equals(PlayerClassType::SNIPER)) {
-            do_cmd_snipe_browse(player);
+            do_cmd_snipe_browse(creature);
         } else {
-            do_cmd_browse(player);
+            do_cmd_browse(creature);
         }
 
         break;
@@ -417,7 +416,7 @@ void process_command(CreatureEntity &creature)
             break;
         }
 
-        CreatureClass pc(player);
+        CreatureClass pc(creature);
         if (pc.equals(PlayerClassType::WARRIOR) || pc.equals(PlayerClassType::ARCHER) || pc.equals(PlayerClassType::CAVALRY)) {
             msg_print(_("呪文を唱えられない！", "You cannot cast spells!"));
             break;
@@ -432,9 +431,9 @@ void process_command(CreatureEntity &creature)
             break;
         }
 
-        if (player.anti_magic && !non_magic_class) {
+        if (creature.anti_magic && !non_magic_class) {
             concptr which_power = _("魔法", "magic");
-            switch (player.pclass) {
+            switch (creature.pclass) {
             case PlayerClassType::MINDCRAFTER:
                 which_power = _("超能力", "psionic powers");
                 break;
@@ -461,130 +460,130 @@ void process_command(CreatureEntity &creature)
             }
 
             msg_format(_("反魔法バリアが%sを邪魔した！", "An anti-magic shell disrupts your %s!"), which_power);
-            PlayerEnergy(player).reset_player_turn();
+            PlayerEnergy(creature).reset_player_turn();
             break;
         }
 
-        if (player.is_shero() && !pc.equals(PlayerClassType::BERSERKER)) {
+        if (creature.is_shero() && !pc.equals(PlayerClassType::BERSERKER)) {
             msg_format(_("狂戦士化していて頭が回らない！", "You cannot think directly!"));
-            PlayerEnergy(player).reset_player_turn();
+            PlayerEnergy(creature).reset_player_turn();
             break;
         }
 
         if (pc.can_browse()) {
-            do_cmd_mind(player);
+            do_cmd_mind(creature);
         } else if (pc.equals(PlayerClassType::ELEMENTALIST)) {
-            do_cmd_element(player);
+            do_cmd_element(creature);
         } else if (pc.equals(PlayerClassType::IMITATOR)) {
-            do_cmd_mane(player, false);
+            do_cmd_mane(creature, false);
         } else if (pc.equals(PlayerClassType::MAGIC_EATER)) {
-            do_cmd_magic_eater(player, false, false);
+            do_cmd_magic_eater(creature, false, false);
         } else if (pc.equals(PlayerClassType::SAMURAI)) {
-            do_cmd_hissatsu(player);
+            do_cmd_hissatsu(creature);
         } else if (pc.equals(PlayerClassType::BLUE_MAGE)) {
             do_cmd_cast_learned(creature);
         } else if (pc.equals(PlayerClassType::SMITH)) {
             do_cmd_kaji(creature, false);
         } else if (pc.equals(PlayerClassType::SNIPER)) {
-            do_cmd_snipe(player);
+            do_cmd_snipe(creature);
         } else {
-            (void)do_cmd_cast(player);
+            (void)do_cmd_cast(creature);
         }
 
         break;
     }
     case 'p': {
-        do_cmd_pet(player);
+        do_cmd_pet(creature);
         break;
     }
     case '{': {
-        do_cmd_inscribe(player);
+        do_cmd_inscribe(creature);
         break;
     }
     case '}': {
-        do_cmd_uninscribe(player);
+        do_cmd_uninscribe(creature);
         break;
     }
     case 'A': {
-        do_cmd_activate(player);
+        do_cmd_activate(creature);
         break;
     }
     case 'E': {
-        do_cmd_eat_food(player);
+        do_cmd_eat_food(creature);
         break;
     }
     case 'F': {
-        do_cmd_refill(player);
+        do_cmd_refill(creature);
         break;
     }
     case 'f': {
-        do_cmd_fire(player, SP_NONE);
+        do_cmd_fire(creature, SP_NONE);
         break;
     }
     case 'v': {
-        (void)ThrowCommand(player).do_cmd_throw(1, false, -1);
+        (void)ThrowCommand(creature).do_cmd_throw(1, false, -1);
         break;
     }
     case 'a': {
-        do_cmd_aim_wand(player);
+        do_cmd_aim_wand(creature);
         break;
     }
     case 'z': {
         if (use_command && rogue_like_commands) {
-            do_cmd_use(player);
+            do_cmd_use(creature);
         } else {
-            do_cmd_zap_rod(player);
+            do_cmd_zap_rod(creature);
         }
 
         break;
     }
     case 'q': {
-        do_cmd_quaff_potion(player);
+        do_cmd_quaff_potion(creature);
         break;
     }
     case KTRL('Z'): {
-        do_cmd_rectal_absorption(player);
+        do_cmd_rectal_absorption(creature);
         break;
     }
     case 'r': {
-        do_cmd_read_scroll(player);
+        do_cmd_read_scroll(creature);
         break;
     }
     case 'u': {
         if (use_command && !rogue_like_commands) {
-            do_cmd_use(player);
+            do_cmd_use(creature);
         } else {
-            do_cmd_use_staff(player);
+            do_cmd_use_staff(creature);
         }
 
         break;
     }
     case 'U': {
-        do_cmd_racial_power(player);
+        do_cmd_racial_power(creature);
         break;
     }
     case 'M': {
-        do_cmd_view_map(player);
+        do_cmd_view_map(creature);
         break;
     }
     case 'L': {
-        do_cmd_locate(player);
+        do_cmd_locate(creature);
         break;
     }
     case 'l': {
-        do_cmd_look(player);
+        do_cmd_look(creature);
         break;
     }
     case '*': {
-        do_cmd_target(player);
+        do_cmd_target(creature);
         break;
     }
     case '?': {
-        do_cmd_help(player);
+        do_cmd_help(creature);
         break;
     }
     case '/': {
-        do_cmd_query_symbol(player);
+        do_cmd_query_symbol(creature);
         break;
     }
     case 'C': {
@@ -595,34 +594,34 @@ void process_command(CreatureEntity &creature)
         term_user();
         break;
     case '"': {
-        do_cmd_pref(player);
+        do_cmd_pref(creature);
         break;
     }
     case '$': {
-        do_cmd_reload_autopick(player);
+        do_cmd_reload_autopick(creature);
         break;
     }
     case '_': {
-        do_cmd_edit_autopick(player);
+        do_cmd_edit_autopick(creature);
         break;
     }
     case '@': {
-        do_cmd_macros(player);
+        do_cmd_macros(creature);
         break;
     }
     case '%': {
-        do_cmd_visuals(player);
+        do_cmd_visuals(creature);
         do_cmd_redraw(creature);
         break;
     }
     case '&': {
-        do_cmd_colors(player);
+        do_cmd_colors(creature);
         do_cmd_redraw(creature);
         break;
     }
     case '=': {
-        do_cmd_options(player);
-        (void)combine_and_reorder_home(player, StoreSaleType::HOME);
+        do_cmd_options(creature);
+        (void)combine_and_reorder_home(creature, StoreSaleType::HOME);
         do_cmd_redraw(creature);
         break;
     }
@@ -635,7 +634,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case KTRL('F'): {
-        do_cmd_feeling(player);
+        do_cmd_feeling(creature);
         break;
     }
     case KTRL('O'): {
@@ -647,7 +646,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case KTRL('Q'): {
-        do_cmd_checkquest(player);
+        do_cmd_checkquest(creature);
         break;
     }
     case KTRL('R'): {
@@ -656,28 +655,28 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case KTRL('S'): {
-        do_cmd_save_game(player, false);
+        do_cmd_save_game(creature, false);
         break;
     }
     case KTRL('T'): {
-        do_cmd_time(player);
+        do_cmd_time(creature);
         break;
     }
     case KTRL('X'):
     case SPECIAL_KEY_QUIT: {
-        do_cmd_save_and_exit(player);
+        do_cmd_save_and_exit(creature);
         break;
     }
     case 'Q': {
-        do_cmd_suicide(player);
+        do_cmd_suicide(creature);
         break;
     }
     case '|': {
-        do_cmd_diary(player);
+        do_cmd_diary(creature);
         break;
     }
     case '~': {
-        do_cmd_knowledge(player);
+        do_cmd_knowledge(creature);
         break;
     }
     case '(': {
@@ -685,7 +684,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case ')': {
-        do_cmd_save_screen(player);
+        do_cmd_save_screen(creature);
         break;
     }
     case ']': {
@@ -693,22 +692,22 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case KTRL('V'): {
-        spoil_random_artifact(player);
+        spoil_random_artifact(creature);
         break;
     }
     case KTRL('C'): {
-        do_cmd_inscribe_terrain(player);
+        do_cmd_inscribe_terrain(creature);
         break;
     }
     case KTRL('E'): {
-        do_cmd_text_command(player);
+        do_cmd_text_command(creature);
         break;
     }
     case '`': {
         if (!is_wild_mode) {
-            do_cmd_travel(player);
+            do_cmd_travel(creature);
         }
-        CreatureClass(player).break_samurai_stance({ SamuraiStanceType::MUSOU });
+        CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
         break;
     }
@@ -722,7 +721,7 @@ void process_command(CreatureEntity &creature)
     }
     }
 
-    if (!player.energy_use && !now_message) {
+    if (!creature.energy_use && !now_message) {
         now_message = old_now_message;
     }
 }

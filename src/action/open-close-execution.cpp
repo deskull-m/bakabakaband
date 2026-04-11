@@ -44,11 +44,10 @@
  */
 bool exe_open(CreatureEntity &creature, POSITION y, POSITION x)
 {
-    auto &player = creature;
     const Pos2D pos(y, x);
     const auto &grid = creature.current_floor_ptr->get_grid(pos);
     auto &terrain = grid.get_terrain();
-    PlayerEnergy(player).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
     if (terrain.flags.has_not(TerrainCharacteristics::OPEN)) {
         constexpr auto fmt = _("%sはがっちりと閉じられているようだ。", "The %s appears to be stuck.");
         msg_format(fmt, grid.get_terrain(TerrainKind::MIMIC).name.data());
@@ -58,12 +57,12 @@ bool exe_open(CreatureEntity &creature, POSITION y, POSITION x)
     if (!terrain.power) {
         cave_alter_feat(creature, y, x, TerrainCharacteristics::OPEN);
         sound(SoundKind::OPENDOOR);
-        player.plus_incident_tree("OPEN_DOOR", 1);
+        creature.plus_incident_tree("OPEN_DOOR", 1);
         return false;
     }
 
-    int i = player.skill_dis;
-    const auto effects = player.effects();
+    int i = creature.skill_dis;
+    const auto effects = creature.effects();
     if (effects->blindness().is_blind() || no_lite(creature)) {
         i = i / 10;
     }
@@ -90,7 +89,7 @@ bool exe_open(CreatureEntity &creature, POSITION y, POSITION x)
     msg_print(_("鍵をはずした。", "You have picked the lock."));
     cave_alter_feat(creature, y, x, TerrainCharacteristics::OPEN);
     sound(SoundKind::OPENDOOR);
-    player.plus_incident_tree("OPEN_DOOR", 1);
+    creature.plus_incident_tree("OPEN_DOOR", 1);
     gain_exp(creature, 1);
     return false;
 }
@@ -109,12 +108,11 @@ bool exe_open(CreatureEntity &creature, POSITION y, POSITION x)
  */
 bool exe_close(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &player = creature;
     const auto &floor = *creature.current_floor_ptr;
     const auto &grid = floor.get_grid(pos);
     const auto terrain_id = grid.feat;
     auto more = false;
-    PlayerEnergy(player).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
     if (grid.get_terrain().flags.has_not(TerrainCharacteristics::CLOSE)) {
         return more;
     }
@@ -133,7 +131,7 @@ bool exe_close(CreatureEntity &creature, const Pos2D &pos)
         msg_print(_("ドアは壊れてしまっている。", "The door appears to be broken."));
     } else {
         sound(SoundKind::SHUTDOOR);
-        player.plus_incident_tree("CLOSE_DOOR", 1);
+        creature.plus_incident_tree("CLOSE_DOOR", 1);
     }
 
     return more;
@@ -155,7 +153,6 @@ bool exe_close(CreatureEntity &creature, const Pos2D &pos)
  */
 bool easy_open_door(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &player = creature;
     const auto &floor = *creature.current_floor_ptr;
     if (!floor.has_closed_door_at(pos)) {
         return false;
@@ -167,8 +164,8 @@ bool easy_open_door(CreatureEntity &creature, const Pos2D &pos)
         constexpr auto fmt = _("%sはがっちりと閉じられているようだ。", "The %s appears to be stuck.");
         msg_format(fmt, grid.get_terrain(TerrainKind::MIMIC).name.data());
     } else if (terrain.power) {
-        auto power_disarm = player.skill_dis;
-        const auto effects = player.effects();
+        auto power_disarm = creature.skill_dis;
+        const auto effects = creature.effects();
         if (effects->blindness().is_blind() || no_lite(creature)) {
             power_disarm = power_disarm / 10;
         }
@@ -219,12 +216,11 @@ bool easy_open_door(CreatureEntity &creature, const Pos2D &pos)
  */
 bool exe_disarm_chest(CreatureEntity &creature, POSITION y, POSITION x, OBJECT_IDX o_idx)
 {
-    auto &player = creature;
     const Pos2D pos(y, x);
     auto *o_ptr = creature.current_floor_ptr->o_list[o_idx].get();
-    PlayerEnergy(player).set_player_turn_energy(100);
-    int i = player.skill_dis;
-    const auto effects = player.effects();
+    PlayerEnergy(creature).set_player_turn_energy(100);
+    int i = creature.skill_dis;
+    const auto effects = creature.effects();
     if (effects->blindness().is_blind() || no_lite(creature)) {
         i = i / 10;
     }
@@ -282,16 +278,15 @@ bool exe_disarm_chest(CreatureEntity &creature, POSITION y, POSITION x, OBJECT_I
 
 bool exe_disarm(CreatureEntity &creature, POSITION y, POSITION x, const Direction &dir)
 {
-    auto &player = creature;
     const auto &baseitems = BaseitemList::get_instance();
     const Pos2D pos(y, x);
     const auto &grid = creature.current_floor_ptr->get_grid(pos);
     const auto &terrain = grid.get_terrain();
     const auto &name = terrain.name;
     int power = terrain.power;
-    int i = player.skill_dis;
-    PlayerEnergy(player).set_player_turn_energy(100);
-    auto effects = player.effects();
+    int i = creature.skill_dis;
+    PlayerEnergy(creature).set_player_turn_energy(100);
+    auto effects = creature.effects();
     if (effects->blindness().is_blind() || no_lite(creature)) {
         i = i / 10;
     }
@@ -313,9 +308,9 @@ bool exe_disarm(CreatureEntity &creature, POSITION y, POSITION x, const Directio
         msg_format(_("%sを解除した。", "You have disarmed the %s."), name.data());
         gain_exp(creature, power);
         cave_alter_feat(creature, y, x, TerrainCharacteristics::DISARM);
-        exe_movement(player, dir, easy_disarm, false);
+        exe_movement(creature, dir, easy_disarm, false);
 
-        (void)drop_near(player, item, pos);
+        (void)drop_near(creature, item, pos);
 
     } else if ((i > 5) && (randint1(i) > 5)) {
         if (flush_failure) {
@@ -326,7 +321,7 @@ bool exe_disarm(CreatureEntity &creature, POSITION y, POSITION x, const Directio
         more = true;
     } else {
         msg_format(_("%sを作動させてしまった！", "You set off the %s!"), name.data());
-        exe_movement(player, dir, easy_disarm, false);
+        exe_movement(creature, dir, easy_disarm, false);
     }
 
     return more;
@@ -348,18 +343,17 @@ bool exe_disarm(CreatureEntity &creature, POSITION y, POSITION x, const Directio
  */
 bool exe_bash(CreatureEntity &creature, POSITION y, POSITION x, const Direction &dir)
 {
-    auto &player = creature;
     const auto &floor = *creature.current_floor_ptr;
     const Pos2D pos(y, x);
     const auto &grid = floor.get_grid(pos);
     const auto &terrain = grid.get_terrain();
-    int bash = adj_str_blow[player.stat_index[A_STR]];
+    int bash = adj_str_blow[creature.stat_index[A_STR]];
     int power = terrain.power;
     const auto &name = grid.get_terrain(TerrainKind::MIMIC).name;
-    PlayerEnergy(player).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
     msg_format(_("%sに体当たりをした！", "You smash into the %s!"), name.data());
     power = (bash - (power * 10));
-    if (CreatureClass(player).equals(PlayerClassType::BERSERKER)) {
+    if (CreatureClass(creature).equals(PlayerClassType::BERSERKER)) {
         power *= 2;
     }
 
@@ -378,13 +372,13 @@ bool exe_bash(CreatureEntity &creature, POSITION y, POSITION x, const Direction 
             cave_alter_feat(creature, y, x, TerrainCharacteristics::OPEN);
         }
 
-        exe_movement(player, dir, false, false);
-    } else if (evaluate_percent(adj_dex_safe[player.stat_index[A_DEX]] + player.level)) {
+        exe_movement(creature, dir, false, false);
+    } else if (evaluate_percent(adj_dex_safe[creature.stat_index[A_DEX]] + creature.level)) {
         msg_format(_("この%sは頑丈だ。", "The %s holds firm."), name.data());
         more = true;
     } else {
         msg_print(_("体のバランスをくずしてしまった。", "You are off-balance."));
-        (void)BadStatusSetter(player).mod_paralysis(2 + randint0(2));
+        (void)BadStatusSetter(creature).mod_paralysis(2 + randint0(2));
     }
 
     return more;

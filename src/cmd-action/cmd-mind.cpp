@@ -124,25 +124,24 @@ static void decide_mind_ki_chance(CreatureEntity &creature, cm_type *cm_ptr)
         return;
     }
 
-    auto &player = creature;
     if (heavy_armor(creature)) {
         cm_ptr->chance += 20;
     }
 
-    if (player.is_icky_wield[0]) {
+    if (creature.is_icky_wield[0]) {
         cm_ptr->chance += 20;
     } else if (has_melee_weapon(creature, INVEN_MAIN_HAND)) {
         cm_ptr->chance += 10;
     }
 
-    if (player.is_icky_wield[1]) {
+    if (creature.is_icky_wield[1]) {
         cm_ptr->chance += 20;
     } else if (has_melee_weapon(creature, INVEN_SUB_HAND)) {
         cm_ptr->chance += 10;
     }
 
     if (cm_ptr->n == 5) {
-        for (int j = 0; j < get_current_ki(player) / 50; j++) {
+        for (int j = 0; j < get_current_ki(creature) / 50; j++) {
             cm_ptr->mana_cost += (j + 1) * 3 / 2;
         }
     }
@@ -194,16 +193,15 @@ static void decide_mind_chance(CreatureEntity &creature, cm_type *cm_ptr)
         return;
     }
 
-    auto &player = creature;
     if (heavy_armor(creature)) {
         cm_ptr->chance += 5;
     }
 
-    if (player.is_icky_wield[0]) {
+    if (creature.is_icky_wield[0]) {
         cm_ptr->chance += 5;
     }
 
-    if (player.is_icky_wield[1]) {
+    if (creature.is_icky_wield[1]) {
         cm_ptr->chance += 5;
     }
 }
@@ -294,26 +292,25 @@ static void check_mind_class(CreatureEntity &creature, cm_type *cm_ptr)
 
 static bool switch_mind_class(CreatureEntity &creature, cm_type *cm_ptr)
 {
-    auto &player = creature;
     switch (cm_ptr->use_mind) {
     case MindKindType::MINDCRAFTER:
         cm_ptr->cast = cast_mindcrafter_spell(creature, i2enum<MindMindcrafterType>(cm_ptr->n));
         return true;
     case MindKindType::KI:
-        cm_ptr->cast = cast_force_spell(player, i2enum<MindForceTrainerType>(cm_ptr->n));
+        cm_ptr->cast = cast_force_spell(creature, i2enum<MindForceTrainerType>(cm_ptr->n));
         return true;
     case MindKindType::BERSERKER:
-        cm_ptr->cast = cast_berserk_spell(player, i2enum<MindBerserkerType>(cm_ptr->n));
+        cm_ptr->cast = cast_berserk_spell(creature, i2enum<MindBerserkerType>(cm_ptr->n));
         return true;
     case MindKindType::MIRROR_MASTER:
-        if (player.current_floor_ptr->grid_array[player.y][player.x].is_mirror()) {
+        if (creature.current_floor_ptr->grid_array[creature.y][creature.x].is_mirror()) {
             cm_ptr->on_mirror = true;
         }
 
-        cm_ptr->cast = cast_mirror_spell(player, i2enum<MindMirrorMasterType>(cm_ptr->n));
+        cm_ptr->cast = cast_mirror_spell(creature, i2enum<MindMirrorMasterType>(cm_ptr->n));
         return true;
     case MindKindType::NINJUTSU:
-        cm_ptr->cast = cast_ninja_spell(player, i2enum<MindNinjaType>(cm_ptr->n));
+        cm_ptr->cast = cast_ninja_spell(creature, i2enum<MindNinjaType>(cm_ptr->n));
         return true;
     default:
         msg_format(_("謎の能力:%d, %d", "Mystery power:%d, %d"), cm_ptr->use_mind, cm_ptr->n);
@@ -400,9 +397,8 @@ static void process_hard_concentration(CreatureEntity &creature, cm_type *cm_ptr
 void do_cmd_mind(CreatureEntity &creature)
 {
     cm_type tmp_cm;
-    auto &player = creature;
     cm_type *cm_ptr = initialize_cm_type(creature, &tmp_cm);
-    if (cmd_limit_confused(player) || !MindPowerGetter(player).get_mind_power(&cm_ptr->n, false)) {
+    if (cmd_limit_confused(creature) || !MindPowerGetter(creature).get_mind_power(&cm_ptr->n, false)) {
         return;
     }
 
@@ -460,11 +456,10 @@ static MindKindType decide_use_mind_browse(CreatureEntity &creature)
 void do_cmd_mind_browse(CreatureEntity &creature)
 {
     SPELL_IDX n = 0;
-    auto &player = creature;
     MindKindType use_mind = decide_use_mind_browse(creature);
     screen_save();
     while (true) {
-        if (!MindPowerGetter(player).get_mind_power(&n, true)) {
+        if (!MindPowerGetter(creature).get_mind_power(&n, true)) {
             screen_load();
             return;
         }

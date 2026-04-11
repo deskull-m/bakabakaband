@@ -56,24 +56,23 @@
  */
 static void build_dead_end(CreatureEntity &creature, saved_floor_type *sf_ptr)
 {
-    auto &player = creature;
 
 
     msg_print(_("階段は行き止まりだった。", "The staircases come to a dead end..."));
     clear_cave(creature);
-    player.x = player.y = 0;
-    player.current_floor_ptr->height = SCREEN_HGT;
-    player.current_floor_ptr->width = SCREEN_WID;
+    creature.x = creature.y = 0;
+    creature.current_floor_ptr->height = SCREEN_HGT;
+    creature.current_floor_ptr->width = SCREEN_WID;
     for (POSITION y = 0; y < MAX_HGT; y++) {
         for (POSITION x = 0; x < MAX_WID; x++) {
-            place_bold(player, y, x, GB_SOLID_PERM);
+            place_bold(creature, y, x, GB_SOLID_PERM);
         }
     }
 
-    player.y = player.current_floor_ptr->height / 2;
-    player.x = player.current_floor_ptr->width / 2;
-    place_bold(player, player.y, player.x, GB_FLOOR);
-    wipe_generate_random_floor_flags(*player.current_floor_ptr);
+    creature.y = creature.current_floor_ptr->height / 2;
+    creature.x = creature.current_floor_ptr->width / 2;
+    place_bold(creature, creature.y, creature.x, GB_FLOOR);
+    wipe_generate_random_floor_flags(*creature.current_floor_ptr);
     const auto &fcms = FloorChangeModesStore::get_instace();
     if (fcms->has(FloorChangeMode::UP)) {
         sf_ptr->upper_floor_id = 0;
@@ -84,15 +83,14 @@ static void build_dead_end(CreatureEntity &creature, saved_floor_type *sf_ptr)
 
 static std::pair<short, Pos2D> decide_pet_index(CreatureEntity &creature, const int current_monster)
 {
-    auto &player = creature;
 
 
-    auto &floor = *player.current_floor_ptr;
-    const auto p_pos = player.get_position();
+    auto &floor = *creature.current_floor_ptr;
+    const auto p_pos = creature.get_position();
     Pos2D pos(0, 0);
     if (current_monster == 0) {
         const auto m_idx = floor.pop_empty_index_monster();
-        player.riding = m_idx;
+        creature.riding = m_idx;
         if (m_idx) {
             pos = p_pos;
         }
@@ -105,7 +103,7 @@ static std::pair<short, Pos2D> decide_pet_index(CreatureEntity &creature, const 
         int j;
         for (j = 1000; j > 0; j--) {
             pos = scatter(floor, p_pos, d, PROJECT_NONE);
-            if (monster_can_enter(&player, pos.y, pos.x, party_monsters[current_monster].get_monrace(), 0)) {
+            if (monster_can_enter(&creature, pos.y, pos.x, party_monsters[current_monster].get_monrace(), 0)) {
                 break;
             }
         }
@@ -121,15 +119,14 @@ static std::pair<short, Pos2D> decide_pet_index(CreatureEntity &creature, const 
 
 static MonraceDefinition &set_pet_params(CreatureEntity &creature, const int current_monster, MONSTER_IDX m_idx, const POSITION cy, const POSITION cx)
 {
-    auto &player = creature;
 
 
-    player.current_floor_ptr->grid_array[cy][cx].m_idx = m_idx;
-    auto &monster = player.current_floor_ptr->m_list[m_idx];
+    creature.current_floor_ptr->grid_array[cy][cx].m_idx = m_idx;
+    auto &monster = creature.current_floor_ptr->m_list[m_idx];
     monster = party_monsters[current_monster].clone();
     monster.y = cy;
     monster.x = cx;
-    monster.current_floor_ptr = player.current_floor_ptr;
+    monster.current_floor_ptr = creature.current_floor_ptr;
     monster.get_monster_profile().ml = true;
     monster.get_monster_profile().mtimed[MonsterTimedEffect::SLEEP] = 0;
     monster.get_monster_profile().hold_o_idx_list.clear();
@@ -148,11 +145,10 @@ static MonraceDefinition &set_pet_params(CreatureEntity &creature, const int cur
  */
 static void place_pet(CreatureEntity &creature)
 {
-    auto &player = creature;
 
 
     const auto max_num = AngbandWorld::get_instance().is_wild_mode() ? 1 : PartyMonsters::MAX_SIZE;
-    auto &floor = *player.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     for (int current_monster = 0; current_monster < max_num; current_monster++) {
         if (!MonraceList::is_valid(party_monsters[current_monster].r_idx)) {
             continue;
@@ -161,17 +157,17 @@ static void place_pet(CreatureEntity &creature)
         const auto &[m_idx, pos] = decide_pet_index(creature, current_monster);
         if (m_idx != 0) {
             const auto &monrace = set_pet_params(creature, current_monster, m_idx, pos.y, pos.x);
-            update_monster(player, m_idx, true);
-            lite_spot(player, pos);
+            update_monster(creature, m_idx, true);
+            lite_spot(creature, pos);
             if (monrace.misc_flags.has(MonsterMiscType::MULTIPLY)) {
                 floor.num_repro++;
             }
         } else {
             const auto &monster = party_monsters[current_monster];
             auto &monrace = monster.get_real_monrace();
-            msg_format(_("%sとはぐれてしまった。", "You have lost sight of %s."), monster_desc(player, monster, 0).data());
+            msg_format(_("%sとはぐれてしまった。", "You have lost sight of %s."), monster_desc(creature, monster, 0).data());
             if (record_named_pet && monster.is_named()) {
-                exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_LOST_SIGHT, monster_desc(player, monster, MD_INDEF_VISIBLE));
+                exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_LOST_SIGHT, monster_desc(creature, monster, MD_INDEF_VISIBLE));
             }
 
             if (monrace.has_entity()) {
@@ -224,13 +220,12 @@ static bool is_visited_floor(saved_floor_type *sf_ptr)
 
 static void update_floor_id(CreatureEntity &creature, saved_floor_type *sf_ptr)
 {
-    auto &player = creature;
 
 
     const auto &fcms = FloorChangeModesStore::get_instace();
     const auto is_up = fcms->has(FloorChangeMode::UP);
     const auto is_down = fcms->has(FloorChangeMode::DOWN);
-    if (!player.in_saved_floor()) {
+    if (!creature.in_saved_floor()) {
         if (is_up) {
             sf_ptr->lower_floor_id = 0;
         } else if (is_down) {
@@ -240,26 +235,25 @@ static void update_floor_id(CreatureEntity &creature, saved_floor_type *sf_ptr)
         return;
     }
 
-    saved_floor_type *cur_sf_ptr = get_sf_ptr(player.floor_id);
+    saved_floor_type *cur_sf_ptr = get_sf_ptr(creature.floor_id);
     if (is_up) {
         if (cur_sf_ptr->upper_floor_id == new_floor_id) {
-            sf_ptr->lower_floor_id = player.floor_id;
+            sf_ptr->lower_floor_id = creature.floor_id;
         }
 
         return;
     }
 
     if (is_down && (cur_sf_ptr->lower_floor_id == new_floor_id)) {
-        sf_ptr->upper_floor_id = player.floor_id;
+        sf_ptr->upper_floor_id = creature.floor_id;
     }
 }
 
 static void reset_unique_by_floor_change(CreatureEntity &creature)
 {
-    auto &player = creature;
 
 
-    auto &floor = *player.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     for (short i = 1; i < floor.m_max; i++) {
         auto &monster = floor.m_list[i];
         if (!monster.is_valid()) {
@@ -282,18 +276,17 @@ static void reset_unique_by_floor_change(CreatureEntity &creature)
         }
 
         if (monrace.floor_id != new_floor_id) {
-            delete_monster_idx(player, i);
+            delete_monster_idx(creature, i);
         }
     }
 }
 
 static void new_floor_allocation(CreatureEntity &creature, saved_floor_type *sf_ptr)
 {
-    auto &player = creature;
 
 
     GAME_TURN tmp_last_visit = sf_ptr->last_visit;
-    const auto &floor = *player.current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     auto alloc_chance = floor.get_dungeon_definition().max_m_alloc_chance;
     const auto &world = AngbandWorld::get_instance();
     while (tmp_last_visit > world.game_turn) {
@@ -315,16 +308,16 @@ static void new_floor_allocation(CreatureEntity &creature, saved_floor_type *sf_
             delete_i_idx_list.push_back(static_cast<OBJECT_IDX>(i_idx));
         }
     }
-    delete_items(player, std::move(delete_i_idx_list));
+    delete_items(creature, std::move(delete_i_idx_list));
 
-    (void)place_quest_monsters(player);
+    (void)place_quest_monsters(creature);
     GAME_TURN alloc_times = absence_ticks / alloc_chance;
     if (randint0(alloc_chance) < (absence_ticks % alloc_chance)) {
         alloc_times++;
     }
 
     for (MONSTER_IDX i = 0; i < alloc_times; i++) {
-        (void)alloc_monster(player, 0, 0, summon_specific);
+        (void)alloc_monster(creature, 0, 0, summon_specific);
     }
 }
 
@@ -334,11 +327,10 @@ static void new_floor_allocation(CreatureEntity &creature, saved_floor_type *sf_
  */
 static void set_stairs(CreatureEntity &creature)
 {
-    auto &player = creature;
 
 
-    auto &floor = *player.current_floor_ptr;
-    auto &grid = floor.grid_array[player.y][player.x];
+    auto &floor = *creature.current_floor_ptr;
+    auto &grid = floor.grid_array[creature.y][creature.x];
     const auto &fcms = FloorChangeModesStore::get_instace();
     const auto &dungeon = floor.get_dungeon_definition();
     const auto &terrains = TerrainList::get_instance();
@@ -355,12 +347,11 @@ static void set_stairs(CreatureEntity &creature)
     }
 
     grid.mimic = 0;
-    grid.special = player.floor_id;
+    grid.special = creature.floor_id;
 }
 
 static void update_new_floor_feature(CreatureEntity &creature, saved_floor_type *sf_ptr, const bool loaded)
 {
-    auto &player = creature;
 
 
     if (loaded) {
@@ -375,7 +366,7 @@ static void update_new_floor_feature(CreatureEntity &creature, saved_floor_type 
     }
 
     sf_ptr->last_visit = AngbandWorld::get_instance().game_turn;
-    auto &floor = *player.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     sf_ptr->dun_level = floor.dun_level;
     if (FloorChangeModesStore::get_instace()->has(FloorChangeMode::NO_RETURN)) {
         return;
@@ -386,13 +377,12 @@ static void update_new_floor_feature(CreatureEntity &creature, saved_floor_type 
 
 static void cut_off_the_upstair(CreatureEntity &creature)
 {
-    auto &player = creature;
 
 
     const auto &fcms = FloorChangeModesStore::get_instace();
     if (fcms->has(FloorChangeMode::RANDOM_PLACE)) {
-        if (const auto p_pos = new_player_spot(player); p_pos) {
-            player.set_position(*p_pos);
+        if (const auto p_pos = new_player_spot(creature); p_pos) {
+            creature.set_position(*p_pos);
         }
 
         return;
@@ -402,7 +392,7 @@ static void cut_off_the_upstair(CreatureEntity &creature)
         return;
     }
 
-    const auto is_blind = player.is_blind();
+    const auto is_blind = creature.is_blind();
     const auto mes = is_blind
                          ? _("ゴトゴトと何か音がした。", "You hear some noises.")
                          : _("突然階段が塞がれてしまった！", "Suddenly the stairs is blocked!");
@@ -441,12 +431,11 @@ static void update_floor(CreatureEntity &creature)
  */
 void change_floor(CreatureEntity &creature)
 {
-    auto &player = creature;
 
 
     auto &world = AngbandWorld::get_instance();
     world.character_dungeon = false;
-    player.dtrap = false;
+    creature.dtrap = false;
     panel_row_min = 0;
     panel_row_max = 0;
     panel_col_min = 0;
@@ -455,11 +444,11 @@ void change_floor(CreatureEntity &creature)
     update_floor(creature);
     place_pet(creature);
     Travel::get_instance().reset_goal();
-    auto &floor = *player.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     update_unique_artifact(floor, new_floor_id);
-    player.floor_id = new_floor_id;
+    creature.floor_id = new_floor_id;
     world.character_dungeon = true;
-    if (player.ppersonality == PERSONALITY_MUNCHKIN) {
+    if (creature.ppersonality == PERSONALITY_MUNCHKIN) {
         wiz_lite(creature, CreatureClass(creature).equals(PlayerClassType::NINJA));
     }
 
@@ -469,22 +458,22 @@ void change_floor(CreatureEntity &creature)
     df.set_feeling(0);
     auto &fcms = FloorChangeModesStore::get_instace();
     fcms->clear();
-    select_floor_music(player);
+    select_floor_music(creature);
     fcms->clear();
 
     // 移動後のフロアで階段を消去する処理
-    if (player.vanish_stairs_flag) {
-        player.vanish_stairs_flag = false;
+    if (creature.vanish_stairs_flag) {
+        creature.vanish_stairs_flag = false;
         const auto &dungeon = floor.get_dungeon_definition();
         if (dungeon.flags.has(DungeonFeatureType::VANISH_STAIRS) && floor.is_underground()) {
-            const auto p_pos = player.get_position();
+            const auto p_pos = creature.get_position();
             auto &grid = floor.grid_array[p_pos.y][p_pos.x];
             const auto &terrain = grid.get_terrain();
 
             // 階段かどうかをチェック
             if (terrain.flags.has_any_of({ TerrainCharacteristics::LESS, TerrainCharacteristics::MORE })) {
                 const auto floor_terrain_id = dungeon.select_floor_terrain_id();
-                set_terrain_id_to_grid(player, p_pos, floor_terrain_id);
+                set_terrain_id_to_grid(creature, p_pos, floor_terrain_id);
                 msg_print(_("階段が消え去った。", "The staircase vanishes."));
             }
         }

@@ -125,7 +125,6 @@ static void interpret_race_select_key_move(char c, int *cs)
 
 static bool select_race(CreatureEntity &creature, char *sym, int *k)
 {
-    auto &player = creature;
     auto cs = enum2i(creature.prace);
     int os = MAX_RACES;
     std::string cur = birth_race_label(os, sym);
@@ -178,7 +177,7 @@ static bool select_race(CreatureEntity &creature, char *sym, int *k)
             *k = -1;
         }
 
-        birth_help_option(player, c, BirthKind::RACE);
+        birth_help_option(creature, c, BirthKind::RACE);
     }
 
     return true;

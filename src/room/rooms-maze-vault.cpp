@@ -99,8 +99,7 @@ void r_visit(CreatureEntity &creature, POSITION y1, POSITION x1, POSITION y2, PO
 
 void build_maze_vault(CreatureEntity &creature, const Pos2D &center, const Pos2DVec &vec, bool is_vault)
 {
-    auto &player = creature;
-    msg_print_wizard(player, CHEAT_DUNGEON, _("迷路ランダムVaultを生成しました。", "Maze Vault."));
+    msg_print_wizard(creature, CHEAT_DUNGEON, _("迷路ランダムVaultを生成しました。", "Maze Vault."));
     auto &floor = *creature.current_floor_ptr;
     bool light = ((floor.dun_level <= randint1(25)) && is_vault && floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::DARKNESS));
     const auto dy = vec.y / 2 - 1;
@@ -136,6 +135,6 @@ void build_maze_vault(CreatureEntity &creature, const Pos2D &center, const Pos2D
     std::vector<int> visited(num_vertices);
     r_visit(creature, y1, x1, y2, x2, randint0(num_vertices), 0, visited.data());
     if (is_vault) {
-        fill_treasure(player, { y1, x1, y2, x2 }, randint1(5));
+        fill_treasure(creature, { y1, x1, y2, x2 }, randint1(5));
     }
 }

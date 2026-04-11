@@ -185,47 +185,46 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
     if (!creature.is_player()) {
         return false;
     }
-    auto &player = creature;
 
-    const auto dir = get_direction(player);
+    const auto dir = get_direction(creature);
     if (!dir) {
         return false;
     }
 
-    const auto pos = player.get_neighbor(dir);
-    auto &grid = player.current_floor_ptr->get_grid(pos);
+    const auto pos = creature.get_neighbor(dir);
+    auto &grid = creature.current_floor_ptr->get_grid(pos);
 
-    CreatureClass(player).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     if (creature.riding) {
         /* Skip non-empty grids */
-        if (!can_player_ride_pet(player, grid, false)) {
+        if (!can_player_ride_pet(creature, grid, false)) {
             msg_print(_("そちらには降りられません。", "You cannot go that direction."));
             return false;
         }
 
-        if (!pattern_seq(player, pos)) {
+        if (!pattern_seq(creature, pos)) {
             return false;
         }
 
         if (grid.has_monster()) {
-            PlayerEnergy(player).set_player_turn_energy(100);
+            PlayerEnergy(creature).set_player_turn_energy(100);
 
             msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
 
-            do_cmd_attack(player, pos.y, pos.x, HISSATSU_NONE);
+            do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
             return false;
         }
 
-        player.ride_monster(0);
-        player.pet_extra_flags &= ~(PF_TWO_HANDS);
-        player.riding_ryoute = player.old_riding_ryoute = false;
+        creature.ride_monster(0);
+        creature.pet_extra_flags &= ~(PF_TWO_HANDS);
+        creature.riding_ryoute = creature.old_riding_ryoute = false;
     } else {
-        if (cmd_limit_confused(player)) {
+        if (cmd_limit_confused(creature)) {
             return false;
         }
 
-        const auto &monster = player.current_floor_ptr->get_monster(grid.m_idx);
+        const auto &monster = creature.current_floor_ptr->get_monster(grid.m_idx);
 
         if (!grid.has_monster() || !monster.get_monster_profile().ml) {
             msg_print(_("その場所にはモンスターはいません。", "There is no monster here."));
@@ -240,11 +239,11 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
             return false;
         }
 
-        if (!pattern_seq(player, pos)) {
+        if (!pattern_seq(creature, pos)) {
             return false;
         }
 
-        if (!can_player_ride_pet(player, grid, true)) {
+        if (!can_player_ride_pet(creature, grid, true)) {
             /* Feature code (applying "mimic" field) */
             const auto &terrain = grid.get_terrain(TerrainKind::MIMIC);
             using Tc = TerrainCharacteristics;
@@ -258,29 +257,29 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
 
             return false;
         }
-        if (monster.get_monrace().level > randint1((player.skill_exp[PlayerSkillKindType::RIDING] / 50 + player.level / 2 + 20))) {
+        if (monster.get_monrace().level > randint1((creature.skill_exp[PlayerSkillKindType::RIDING] / 50 + creature.level / 2 + 20))) {
             msg_print(_("うまく乗れなかった。", "You failed to ride."));
-            PlayerEnergy(player).set_player_turn_energy(100);
+            PlayerEnergy(creature).set_player_turn_energy(100);
             return false;
         }
 
         if (monster.is_asleep()) {
-            const auto m_name = monster_desc(player, monster, 0);
-            (void)set_monster_csleep(*player.current_floor_ptr, grid.m_idx, 0);
+            const auto m_name = monster_desc(creature, monster, 0);
+            (void)set_monster_csleep(*creature.current_floor_ptr, grid.m_idx, 0);
             msg_format(_("%sを起こした。", "You have woken %s up."), m_name.data());
         }
 
-        if (player.action == ACTION_MONK_STANCE) {
+        if (creature.action == ACTION_MONK_STANCE) {
             set_action(creature, ACTION_NONE);
         }
 
-        player.ride_monster(grid.m_idx);
-        if (HealthBarTracker::get_instance().is_tracking(player.riding)) {
-            health_track(player, 0);
+        creature.ride_monster(grid.m_idx);
+        if (HealthBarTracker::get_instance().is_tracking(creature.riding)) {
+            health_track(creature, 0);
         }
     }
 
-    PlayerEnergy(player).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags_srf = {
@@ -295,7 +294,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
         MainWindowRedrawingFlag::UHEALTH,
     };
     rfu.set_flags(flags_mwrf);
-    (void)move_player_effect(player, pos.y, pos.x, MPE_HANDLE_STUFF | MPE_ENERGY_USE | MPE_DONT_PICKUP | MPE_DONT_SWAP_MON);
+    (void)move_player_effect(creature, pos.y, pos.x, MPE_HANDLE_STUFF | MPE_ENERGY_USE | MPE_DONT_PICKUP | MPE_DONT_SWAP_MON);
     return true;
 }
 
@@ -457,9 +456,9 @@ void do_cmd_pet(CreatureEntity &creature)
     powers[num++] = PET_SUMMON_SPELL;
 
     if (creature.pet_extra_flags & PF_BALL_SPELL) {
-        power_desc[num] = _("プレイヤーを巻き込む範囲魔法を使う (現在:ON)", "allow involve player in area spell (now On)");
+        power_desc[num] = _("プレイヤーを巻き込む範囲魔法を使う (現在:ON)", "allow involve creature in area spell (now On)");
     } else {
-        power_desc[num] = _("プレイヤーを巻き込む範囲魔法を使う (現在:OFF)", "allow involve player in area spell (now Off)");
+        power_desc[num] = _("プレイヤーを巻き込む範囲魔法を使う (現在:OFF)", "allow involve creature in area spell (now Off)");
     }
     powers[num++] = PET_BALL_SPELL;
 

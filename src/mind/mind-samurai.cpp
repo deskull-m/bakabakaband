@@ -271,8 +271,7 @@ static void hissatsu_lightning_eagle(CreatureEntity &creature, samurai_slaying_t
  */
 static void hissatsu_bloody_maelstroem(CreatureEntity &creature, samurai_slaying_type *samurai_slaying_ptr)
 {
-    auto &player = creature;
-    const auto &player_cut = player.effects()->cut();
+    const auto &player_cut = creature.effects()->cut();
     if ((samurai_slaying_ptr->mode == HISSATSU_SEKIRYUKA) && player_cut.is_cut() && samurai_slaying_ptr->m_ptr->has_living_flag()) {
         auto tmp = std::min<short>(100, std::max<short>(10, player_cut.current() / 10));
         if (samurai_slaying_ptr->mult < tmp) {
@@ -343,8 +342,7 @@ MULTIPLY mult_hissatsu(CreatureEntity &creature, MULTIPLY mult, const TrFlags &f
 
 void concentration(CreatureEntity &creature)
 {
-    auto &player = creature;
-    int max_csp = std::max(player.msp * 4, player.level * 5 + 5);
+    int max_csp = std::max(creature.msp * 4, creature.level * 5 + 5);
 
     if (total_friends) {
         msg_print(_("今はペットを操ることに集中していないと。", "Your pets demand all of your attention."));
@@ -358,10 +356,10 @@ void concentration(CreatureEntity &creature)
 
     msg_print(_("精神を集中して気合いを溜めた。", "You concentrate to charge your power."));
 
-    player.csp += player.msp / 2;
-    if (player.csp >= max_csp) {
-        player.csp = max_csp;
-        player.csp_frac = 0;
+    creature.csp += creature.msp / 2;
+    if (creature.csp >= max_csp) {
+        creature.csp = max_csp;
+        creature.csp_frac = 0;
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
@@ -373,14 +371,13 @@ void concentration(CreatureEntity &creature)
  */
 bool choose_samurai_stance(CreatureEntity &creature)
 {
-    auto &player = creature;
     char choice;
 
-    if (cmd_limit_confused(player)) {
+    if (cmd_limit_confused(creature)) {
         return false;
     }
 
-    const auto effects = player.effects();
+    const auto effects = creature.effects();
     if (effects->stun().is_stunned()) {
         msg_print(_("意識がはっきりとしない。", "You are not clear-headed"));
         return false;
@@ -394,7 +391,7 @@ bool choose_samurai_stance(CreatureEntity &creature)
     screen_save();
     prt(_(" a) 型を崩す", " a) No Form"), 2, 20);
     for (auto i = 0U; i < samurai_stances.size(); i++) {
-        if (player.level >= samurai_stances[i].min_level) {
+        if (creature.level >= samurai_stances[i].min_level) {
             const auto buf = format(_(" %c) %sの型    %s", " %c) Stance of %-12s  %s"), I2A(i + 1), samurai_stances[i].desc, samurai_stances[i].info);
             prt(buf, 3 + i, 20);
         }
@@ -411,8 +408,8 @@ bool choose_samurai_stance(CreatureEntity &creature)
             screen_load();
             return false;
         } else if ((choice == 'a') || (choice == 'A')) {
-            if (player.action == ACTION_SAMURAI_STANCE) {
-                set_action(player, ACTION_NONE);
+            if (creature.action == ACTION_SAMURAI_STANCE) {
+                set_action(creature, ACTION_NONE);
             } else {
                 msg_print(_("もともと構えていない。", "You are not in a special stance."));
             }
@@ -421,19 +418,19 @@ bool choose_samurai_stance(CreatureEntity &creature)
         } else if ((choice == 'b') || (choice == 'B')) {
             new_stance = SamuraiStanceType::IAI;
             break;
-        } else if (((choice == 'c') || (choice == 'C')) && (player.level > 29)) {
+        } else if (((choice == 'c') || (choice == 'C')) && (creature.level > 29)) {
             new_stance = SamuraiStanceType::FUUJIN;
             break;
-        } else if (((choice == 'd') || (choice == 'D')) && (player.level > 34)) {
+        } else if (((choice == 'd') || (choice == 'D')) && (creature.level > 34)) {
             new_stance = SamuraiStanceType::KOUKIJIN;
             break;
-        } else if (((choice == 'e') || (choice == 'E')) && (player.level > 39)) {
+        } else if (((choice == 'e') || (choice == 'E')) && (creature.level > 39)) {
             new_stance = SamuraiStanceType::MUSOU;
             break;
         }
     }
 
-    set_action(player, ACTION_SAMURAI_STANCE);
+    set_action(creature, ACTION_SAMURAI_STANCE);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (CreatureClass(creature).samurai_stance_is(new_stance)) {
         msg_print(_("構え直した。", "You reassume a stance."));
@@ -464,10 +461,9 @@ bool choose_samurai_stance(CreatureEntity &creature)
  */
 int calc_attack_quality(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto &player = creature;
-    auto *o_ptr = player.inventory[INVEN_MAIN_HAND + pa_ptr->hand].get();
-    int bonus = player.to_h[pa_ptr->hand] + o_ptr->to_h;
-    int chance = (player.skill_thn + (bonus * BTH_PLUS_ADJ));
+    auto *o_ptr = creature.inventory[INVEN_MAIN_HAND + pa_ptr->hand].get();
+    int bonus = creature.to_h[pa_ptr->hand] + o_ptr->to_h;
+    int chance = (creature.skill_thn + (bonus * BTH_PLUS_ADJ));
     if (pa_ptr->mode == HISSATSU_IAI) {
         chance += 60;
     }
@@ -476,12 +472,12 @@ int calc_attack_quality(CreatureEntity &creature, player_attack_type *pa_ptr)
         chance += 150;
     }
 
-    if (player.sutemi) {
+    if (creature.sutemi) {
         chance = std::max(chance * 3 / 2, chance + 60);
     }
 
-    auto it = player.virtues.find(Virtue::VALOUR);
-    if (it != player.virtues.end()) {
+    auto it = creature.virtues.find(Virtue::VALOUR);
+    if (it != creature.virtues.end()) {
         chance += (it->second / 10);
     }
 
@@ -495,13 +491,12 @@ int calc_attack_quality(CreatureEntity &creature, player_attack_type *pa_ptr)
  */
 void mineuchi(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto &player = creature;
     if (pa_ptr->mode != HISSATSU_MINEUCHI) {
         return;
     }
 
     pa_ptr->attack_damage = 0;
-    anger_monster(player, *pa_ptr->m_ptr);
+    anger_monster(creature, *pa_ptr->m_ptr);
 
     const auto &monrace = pa_ptr->m_ptr->get_monrace();
     if (monrace.resistance_flags.has(MonsterResistanceType::NO_STUN)) {
@@ -527,16 +522,15 @@ void mineuchi(CreatureEntity &creature, player_attack_type *pa_ptr)
  */
 void musou_counterattack(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    auto &player = creature;
     const auto is_musou = CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU);
-    if ((!player.counter && !is_musou) || !monap_ptr->alive || player.is_dead() || !monap_ptr->m_ptr->get_monster_profile().ml || (player.csp <= 7)) {
+    if ((!creature.counter && !is_musou) || !monap_ptr->alive || creature.is_dead() || !monap_ptr->m_ptr->get_monster_profile().ml || (creature.csp <= 7)) {
         return;
     }
 
     const auto m_target_name = monster_desc(creature, *monap_ptr->m_ptr, 0);
-    player.csp -= 7;
+    creature.csp -= 7;
     msg_format(_("%s^に反撃した！", "You counterattacked %s!"), m_target_name.data());
-    do_cmd_attack(player, monap_ptr->m_ptr->y, monap_ptr->m_ptr->x, HISSATSU_COUNTER);
+    do_cmd_attack(creature, monap_ptr->m_ptr->y, monap_ptr->m_ptr->x, HISSATSU_COUNTER);
     monap_ptr->fear = false;
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
 }

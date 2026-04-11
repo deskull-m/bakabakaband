@@ -17,10 +17,9 @@ mam_type *initialize_mam_type(CreatureEntity &creature, mam_type *mam_ptr, MONST
     mam_ptr->t_ptr = &creature.current_floor_ptr->get_monster(t_idx);
     mam_ptr->damage = 0;
     if (creature.is_player()) {
-        auto &player = creature;
-        mam_ptr->see_m = is_seen(player, *mam_ptr->m_ptr);
-        mam_ptr->see_t = is_seen(player, *mam_ptr->t_ptr);
-        mam_ptr->do_silly_attack = one_in_(2) && player.effects()->hallucination().is_hallucinated();
+        mam_ptr->see_m = is_seen(creature, *mam_ptr->m_ptr);
+        mam_ptr->see_t = is_seen(creature, *mam_ptr->t_ptr);
+        mam_ptr->do_silly_attack = one_in_(2) && creature.effects()->hallucination().is_hallucinated();
     } else {
         mam_ptr->see_m = false;
         mam_ptr->see_t = false;

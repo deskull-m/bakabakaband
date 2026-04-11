@@ -24,9 +24,8 @@
  */
 bool enchant_item(CreatureEntity &creature, PRICE cost, HIT_PROB to_hit, int to_dam, ARMOUR_CLASS to_ac, const ItemTester &item_tester)
 {
-    auto &player = creature;
     clear_bldg(4, 18);
-    int maxenchant = (player.level / 5);
+    int maxenchant = (creature.level / 5);
     prt(format(_("現在のあなたの技量だと、+%d まで改良できます。", "  Based on your skill, we can improve up to +%d."), maxenchant), 5, 0);
     prt(format(_(" 改良の料金は一個につき＄%d です。", "  The price for the service is %d gold per item."), cost), 7, 0);
 
@@ -34,14 +33,14 @@ bool enchant_item(CreatureEntity &creature, PRICE cost, HIT_PROB to_hit, int to_
     constexpr auto s = _("改良できるものがありません。", "You have nothing to improve.");
 
     short i_idx;
-    auto *o_ptr = choose_object(player, &i_idx, q, s, (USE_INVEN | USE_EQUIP | IGNORE_BOTHHAND_SLOT), item_tester);
+    auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_EQUIP | IGNORE_BOTHHAND_SLOT), item_tester);
     if (!o_ptr) {
         return false;
     }
 
     const PRICE total_cost = cost * o_ptr->number;
-    if (player.au < total_cost) {
-        const auto item_name = describe_flavor(player, *o_ptr, OD_NAME_ONLY);
+    if (creature.au < total_cost) {
+        const auto item_name = describe_flavor(creature, *o_ptr, OD_NAME_ONLY);
         msg_format(_("%sを改良するだけのゴールドがありません！", "You do not have the gold to improve %s!"), item_name.data());
         return false;
     }
@@ -76,14 +75,14 @@ bool enchant_item(CreatureEntity &creature, PRICE cost, HIT_PROB to_hit, int to_
         return false;
     }
 
-    const auto item_name = describe_flavor(player, *o_ptr, OD_NAME_AND_ENCHANT);
+    const auto item_name = describe_flavor(creature, *o_ptr, OD_NAME_AND_ENCHANT);
 #ifdef JP
     msg_format("＄%dで%sに改良しました。", total_cost, item_name.data());
 #else
     msg_format("Improved into %s for %d gold.", item_name.data(), total_cost);
 #endif
 
-    player.au -= total_cost;
+    creature.au -= total_cost;
     if (i_idx >= INVEN_MAIN_HAND) {
         calc_android_exp(creature);
     }

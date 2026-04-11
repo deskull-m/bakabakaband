@@ -80,12 +80,11 @@ static bool confirm_leave_level(CreatureEntity &creature, bool down_stair)
  */
 void do_cmd_go_up(CreatureEntity &creature)
 {
-    auto &player = creature;
     auto &quests = QuestList::get_instance();
     auto &floor = *creature.current_floor_ptr;
     const auto &grid = floor.get_grid({ creature.y, creature.x });
     const auto &terrain = grid.get_terrain();
-    CreatureClass(player).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     if (terrain.flags.has(TerrainCharacteristics::PORTAL)) {
         do_cmd_go_portal(creature);
@@ -102,7 +101,7 @@ void do_cmd_go_up(CreatureEntity &creature)
             return;
         }
 
-        if (player.is_echizen()) {
+        if (creature.is_echizen()) {
             msg_print(_("なんだこの階段は！", "What's this STAIRWAY!"));
         } else {
             msg_print(_("上の階に登った。", "You enter the up staircase."));
@@ -110,14 +109,14 @@ void do_cmd_go_up(CreatureEntity &creature)
 
         sound(SoundKind::STAIRWAY);
 
-        leave_quest_check(player);
+        leave_quest_check(creature);
         floor.quest_number = i2enum<QuestId>(grid.special);
         const auto quest_id = floor.quest_number;
         auto &quest = quests.get_quest(quest_id);
         if (quest.status == QuestStatusType::UNTAKEN) {
             if (quest.type != QuestKindType::RANDOM) {
                 init_flags = INIT_ASSIGN;
-                parse_fixed_map(player, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+                parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
             }
 
             quest.status = QuestStatusType::TAKEN;
@@ -125,13 +124,13 @@ void do_cmd_go_up(CreatureEntity &creature)
 
         if (!inside_quest(quest_id)) {
             floor.dun_level = 0;
-            player.word_recall = 0;
+            creature.word_recall = 0;
         }
 
-        player.leaving = true;
+        creature.leaving = true;
         creature.oldpx = 0;
         creature.oldpy = 0;
-        PlayerEnergy(player).set_player_turn_energy(100);
+        PlayerEnergy(creature).set_player_turn_energy(100);
         return;
     }
 
@@ -146,23 +145,23 @@ void do_cmd_go_up(CreatureEntity &creature)
         return;
     }
 
-    PlayerEnergy(player).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
 
     if (autosave_l) {
-        do_cmd_save_game(player, true);
+        do_cmd_save_game(creature, true);
     }
 
     const auto quest_number = floor.quest_number;
     auto &quest = quests.get_quest(quest_number);
 
     if (inside_quest(quest_number) && quest.type == QuestKindType::RANDOM) {
-        leave_quest_check(player);
+        leave_quest_check(creature);
         floor.quest_number = QuestId::NONE;
     }
 
     auto up_num = 0;
     if (inside_quest(quest_number) && quest.type != QuestKindType::RANDOM) {
-        leave_quest_check(player);
+        leave_quest_check(creature);
         floor.quest_number = i2enum<QuestId>(grid.special);
         floor.dun_level = 0;
         up_num = 0;
@@ -190,18 +189,18 @@ void do_cmd_go_up(CreatureEntity &creature)
         const auto p_pos = creature.get_position();
         const auto floor_terrain_id = dungeon.select_floor_terrain_id();
         set_terrain_id_to_grid(creature, p_pos, floor_terrain_id);
-        player.vanish_stairs_flag = true; // 移動後のフロアでも階段を消す
+        creature.vanish_stairs_flag = true; // 移動後のフロアでも階段を消す
     }
 
     if (up_num == floor.dun_level) {
-        if (player.is_echizen()) {
+        if (creature.is_echizen()) {
             msg_print(_("なんだこの階段は！", "What's this STAIRWAY!"));
         } else {
             msg_print(_("地上に戻った。", "You go back to the surface."));
         }
-        player.word_recall = 0;
+        creature.word_recall = 0;
     } else {
-        if (player.is_echizen()) {
+        if (creature.is_echizen()) {
             msg_print(_("なんだこの階段は！", "What's this STAIRWAY!"));
         } else {
             msg_print(_("階段を上って新たなる迷宮へと足を踏み入れた。", "You enter a maze of up staircases."));
@@ -210,7 +209,7 @@ void do_cmd_go_up(CreatureEntity &creature)
 
     sound(SoundKind::STAIRWAY);
 
-    player.leaving = true;
+    creature.leaving = true;
 }
 
 /*!
@@ -219,8 +218,7 @@ void do_cmd_go_up(CreatureEntity &creature)
  */
 void do_cmd_go_down(CreatureEntity &creature)
 {
-    auto &player = creature;
-    CreatureClass(player).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     auto &floor = *creature.current_floor_ptr;
     auto &grid = floor.grid_array[creature.y][creature.x];
@@ -238,7 +236,7 @@ void do_cmd_go_down(CreatureEntity &creature)
 
     const auto is_fall_trap = terrain.flags.has(TerrainCharacteristics::TRAP);
     if (terrain.flags.has(TerrainCharacteristics::QUEST_ENTER)) {
-        do_cmd_quest(player);
+        do_cmd_quest(creature);
         return;
     }
 
@@ -247,7 +245,7 @@ void do_cmd_go_down(CreatureEntity &creature)
             return;
         }
 
-        if (player.is_echizen()) {
+        if (creature.is_echizen()) {
             msg_print(_("なんだこの階段は！", "What's this STAIRWAY!"));
         } else {
             msg_print(_("下の階に降りた。", "You enter the down staircase."));
@@ -255,8 +253,8 @@ void do_cmd_go_down(CreatureEntity &creature)
 
         sound(SoundKind::STAIRWAY);
 
-        leave_quest_check(player);
-        leave_tower_check(player);
+        leave_quest_check(creature);
+        leave_tower_check(creature);
         floor.quest_number = i2enum<QuestId>(grid.special);
 
         auto &quests = QuestList::get_instance();
@@ -264,7 +262,7 @@ void do_cmd_go_down(CreatureEntity &creature)
         if (quest.status == QuestStatusType::UNTAKEN) {
             if (quest.type != QuestKindType::RANDOM) {
                 init_flags = INIT_ASSIGN;
-                parse_fixed_map(player, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+                parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
             }
 
             quest.status = QuestStatusType::TAKEN;
@@ -272,13 +270,13 @@ void do_cmd_go_down(CreatureEntity &creature)
 
         if (!floor.is_in_quest()) {
             floor.dun_level = 0;
-            player.word_recall = 0;
+            creature.word_recall = 0;
         }
 
-        player.leaving = true;
+        creature.leaving = true;
         creature.oldpx = 0;
         creature.oldpy = 0;
-        PlayerEnergy(player).set_player_turn_energy(100);
+        PlayerEnergy(creature).set_player_turn_energy(100);
         return;
     }
 
@@ -311,9 +309,9 @@ void do_cmd_go_down(CreatureEntity &creature)
         fcms->set(FloorChangeMode::FIRST_FLOOR);
     }
 
-    PlayerEnergy(player).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
     if (autosave_l) {
-        do_cmd_save_game(player, true);
+        do_cmd_save_game(creature, true);
     }
 
     auto down_num = 0;
@@ -346,7 +344,7 @@ void do_cmd_go_down(CreatureEntity &creature)
         const auto p_pos = creature.get_position();
         const auto floor_terrain_id = dungeon.select_floor_terrain_id();
         set_terrain_id_to_grid(creature, p_pos, floor_terrain_id);
-        player.vanish_stairs_flag = true; // 移動後のフロアでも階段を消す
+        creature.vanish_stairs_flag = true; // 移動後のフロアでも階段を消す
     }
 
     if (is_fall_trap) {
@@ -359,7 +357,7 @@ void do_cmd_go_down(CreatureEntity &creature)
         if (dungeon_id > DungeonId::WILDERNESS) {
             msg_format(_("%sへ入った。", "You entered %s."), dungeon.text.data());
         } else {
-            if (player.is_echizen()) {
+            if (creature.is_echizen()) {
                 msg_print(_("なんだこの階段は！", "What's this STAIRWAY!"));
             } else {
                 msg_print(_("階段を下りて新たなる迷宮へと足を踏み入れた。", "You enter a maze of down staircases."));
@@ -369,7 +367,7 @@ void do_cmd_go_down(CreatureEntity &creature)
         sound(SoundKind::STAIRWAY);
     }
 
-    player.leaving = true;
+    creature.leaving = true;
     if (is_fall_trap) {
         fcms->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::DOWN, FloorChangeMode::RANDOM_PLACE, FloorChangeMode::RANDOM_CONNECT });
         return;
@@ -449,16 +447,15 @@ void do_cmd_walk(CreatureEntity &creature, bool pickup)
  */
 void do_cmd_run(CreatureEntity &creature)
 {
-    auto &player = creature;
-    if (cmd_limit_confused(player)) {
+    if (cmd_limit_confused(creature)) {
         return;
     }
 
-    CreatureClass(player).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
-    if (const auto dir = get_rep_dir(player)) {
+    if (const auto dir = get_rep_dir(creature)) {
         creature.running = (command_arg ? command_arg : 1000);
-        run_step(player, dir);
+        run_step(creature, dir);
     }
 }
 
@@ -478,8 +475,7 @@ void do_cmd_stay(CreatureEntity &creature, bool pickup)
         command_arg = 0;
     }
 
-    auto &player = creature;
-    PlayerEnergy(player).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
     if (pickup) {
         mpe_mode |= MPE_DO_PICKUP;
     }
@@ -521,18 +517,17 @@ static bool input_rest_turns()
 
 /*!
  * @brief 「休む」動作コマンドのメインルーチン /
- * Resting allows a player to safely restore his hp	-RAK-
+ * Resting allows a creature to safely restore his hp	-RAK-
  * @param creature クリーチャーへの参照
  */
 void do_cmd_rest(CreatureEntity &creature)
 {
-    auto &player = creature;
     set_action(creature, ACTION_NONE);
-    if (CreatureClass(player).equals(PlayerClassType::BARD)) {
-        auto is_singing = get_singing_song_effect(player) != 0;
-        is_singing |= get_interrupting_song_effect(player) != 0;
+    if (CreatureClass(creature).equals(PlayerClassType::BARD)) {
+        auto is_singing = get_singing_song_effect(creature) != 0;
+        is_singing |= get_interrupting_song_effect(creature) != 0;
         if (is_singing) {
-            stop_singing(player);
+            stop_singing(creature);
         }
     }
 
@@ -545,23 +540,23 @@ void do_cmd_rest(CreatureEntity &creature)
         return;
     }
 
-    set_superstealth(player, false);
-    PlayerEnergy(player).set_player_turn_energy(100);
+    set_superstealth(creature, false);
+    PlayerEnergy(creature).set_player_turn_energy(100);
     if (command_arg > 100) {
         chg_virtue(creature, Virtue::DILIGENCE, -1);
     }
 
-    if (player.is_fully_healthy()) {
+    if (creature.is_fully_healthy()) {
         chg_virtue(creature, Virtue::DILIGENCE, -1);
     }
 
     creature.plus_incident_tree("REST", 1);
-    player.resting = command_arg;
-    player.action = ACTION_REST;
+    creature.resting = command_arg;
+    creature.action = ACTION_REST;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     rfu.set_flag(MainWindowRedrawingFlag::ACTION);
-    handle_stuff(player);
+    handle_stuff(creature);
     term_fresh();
 }
 
@@ -571,7 +566,6 @@ void do_cmd_rest(CreatureEntity &creature)
  */
 void do_cmd_go_portal(CreatureEntity &creature)
 {
-    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     const auto &grid = floor.get_grid({ creature.y, creature.x });
     const auto &terrain = grid.get_terrain();
@@ -581,7 +575,7 @@ void do_cmd_go_portal(CreatureEntity &creature)
         return;
     }
 
-    CreatureClass(player).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     if (!confirm_leave_level(creature, false)) {
         return;
@@ -619,15 +613,15 @@ void do_cmd_go_portal(CreatureEntity &creature)
     const auto target_dungeon = available_dungeons[randint0(available_dungeons.size())];
 
     // エネルギー消費
-    PlayerEnergy(player).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
 
     // オートセーブ
     if (autosave_l) {
-        do_cmd_save_game(player, true);
+        do_cmd_save_game(creature, true);
     }
 
     // 階層移動処理
-    player.leaving = true;
+    creature.leaving = true;
     floor.set_dungeon_index(target_dungeon);
 
     const auto &target_dungeon_info = dungeons.get_dungeon(target_dungeon);

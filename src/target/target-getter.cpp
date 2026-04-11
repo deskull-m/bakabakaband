@@ -29,7 +29,7 @@
  */
 Direction get_aim_dir(CreatureEntity &subject, bool enable_repeat)
 {
-    auto &player = subject;
+    auto &creature = subject;
     auto dir = Direction::none();
     auto target = Target::get_last_target();
     if (enable_repeat) {
@@ -72,7 +72,7 @@ Direction get_aim_dir(CreatureEntity &subject, bool enable_repeat)
         static const std::unordered_set target_commands = { '*', ' ', '\r', 'T', 't', '.', '5', '0', '*' };
         if (target_commands.contains(command)) {
             if (select_new_target_commands.contains(command)) {
-                target = target_set(player, TARGET_KILL);
+                target = target_set(creature, TARGET_KILL);
             }
             if (target.is_okay()) {
                 dir = Direction::targetting(target);
@@ -87,7 +87,7 @@ Direction get_aim_dir(CreatureEntity &subject, bool enable_repeat)
     }
 
     command_dir = dir;
-    if (player.is_confused()) {
+    if (creature.is_confused()) {
         dir = rand_choice(Direction::directions_8());
     }
 
@@ -108,7 +108,6 @@ Direction get_aim_dir(CreatureEntity &subject, bool enable_repeat)
  */
 Direction get_direction(CreatureEntity &creature)
 {
-    auto &player = creature;
     Direction dir = command_dir;
     const auto code = repeat_pull();
     if (code && Direction::is_valid_dir(*code)) {
@@ -146,7 +145,7 @@ Direction get_direction(CreatureEntity &creature)
         return dir;
     }
 
-    const auto &monster = creature.current_floor_ptr->get_monster(player.riding);
+    const auto &monster = creature.current_floor_ptr->get_monster(creature.riding);
     const auto m_name = monster_desc(creature, monster, 0);
     const auto fmt = monster.is_confused()
                          ? _("%sは混乱している。", "%s^ is confused.")
@@ -167,7 +166,6 @@ Direction get_direction(CreatureEntity &creature)
  */
 Direction get_rep_dir(CreatureEntity &creature, bool under)
 {
-    auto &player = creature;
     Direction dir = command_dir;
     const auto code = repeat_pull();
     if (code && Direction::is_valid_dir(*code)) {
@@ -203,8 +201,8 @@ Direction get_rep_dir(CreatureEntity &creature, bool under)
         if (evaluate_percent(75)) {
             dir = rand_choice(Direction::directions_8());
         }
-    } else if (player.riding) {
-        const auto &monster = creature.current_floor_ptr->get_monster(player.riding);
+    } else if (creature.riding) {
+        const auto &monster = creature.current_floor_ptr->get_monster(creature.riding);
         const auto &monrace = monster.get_monrace();
         if (monster.is_confused()) {
             if (evaluate_percent(75)) {
@@ -221,7 +219,7 @@ Direction get_rep_dir(CreatureEntity &creature, bool under)
         if (is_confused) {
             msg_print(_("あなたは混乱している。", "You are confused."));
         } else {
-            const auto &monster = creature.current_floor_ptr->get_monster(player.riding);
+            const auto &monster = creature.current_floor_ptr->get_monster(creature.riding);
             const auto m_name = monster_desc(creature, monster, 0);
             if (monster.is_confused()) {
                 msg_format(_("%sは混乱している。", "%s^ is confused."), m_name.data());

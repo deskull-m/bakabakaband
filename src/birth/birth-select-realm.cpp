@@ -227,13 +227,12 @@ static void cleanup_realm_selection_window(void)
  */
 static bool check_realm_selection(CreatureEntity &creature, int count)
 {
-    auto &player = creature;
     if (count < 2) {
         prt(_("何かキーを押してください", "Hit any key."), 0, 0);
         (void)inkey();
         prt("", 0, 0);
         return true;
-    } else if (input_check_strict(player, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
+    } else if (input_check_strict(creature, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
         return true;
     }
 
@@ -263,8 +262,7 @@ static void print_choosed_realms(CreatureEntity &creature)
 {
     put_str(_("魔法        :", "Magic       :"), 6, 1);
 
-    auto &player = creature;
-    PlayerRealm pr(player);
+    PlayerRealm pr(creature);
     std::string choosed_realms;
     if (pr.realm2().is_available()) {
         choosed_realms = format("%s, %s", pr.realm1().get_name().data(), pr.realm2().get_name().data());
@@ -287,8 +285,7 @@ bool get_player_realms(CreatureEntity &creature)
     put_str("                                   ", 5, 40);
     put_str("                                   ", 6, 40);
 
-    auto &player = creature;
-    PlayerRealm pr(player);
+    PlayerRealm pr(creature);
     pr.reset();
 
     if (CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST)) {
@@ -296,10 +293,10 @@ bool get_player_realms(CreatureEntity &creature)
         if (!realm) {
             return false;
         }
-        player.element_realm = *realm;
+        creature.element_realm = *realm;
 
         put_str(_("魔法        :", "Magic       :"), 6, 1);
-        c_put_str(TERM_L_BLUE, get_element_title(player.element_realm), 6, 15);
+        c_put_str(TERM_L_BLUE, get_element_title(creature.element_realm), 6, 15);
         return true;
     }
 

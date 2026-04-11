@@ -21,9 +21,8 @@ void AllianceTurbanKids::panishment(CreatureEntity &creature)
     if (!creature.is_player()) {
         return;
     }
-    auto &player = creature;
     if (one_in_(19)) {
-        summon_specific(player, player.y, player.x, 100, SUMMON_TURBAN_KID, PM_AMBUSH);
+        summon_specific(creature, creature.y, creature.x, 100, SUMMON_TURBAN_KID, PM_AMBUSH);
     }
     return;
 }

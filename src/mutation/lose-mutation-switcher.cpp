@@ -5,7 +5,6 @@
 
 void switch_lose_mutation(CreatureEntity &creature, glm_type *glm_ptr)
 {
-    auto &player = creature;
     switch ((glm_ptr->choose_mut != 0) ? glm_ptr->choose_mut : randint1(205)) {
     case 1:
     case 2:
@@ -491,7 +490,7 @@ void switch_lose_mutation(CreatureEntity &creature, glm_type *glm_ptr)
         glm_ptr->muta_desc = _("動作の正確さがなくなった。", "You move with less assurance.");
         break;
     case 193:
-        if (player.ppersonality == PERSONALITY_LUCKY) {
+        if (creature.ppersonality == PERSONALITY_LUCKY) {
             break;
         }
 
@@ -529,7 +528,7 @@ void switch_lose_mutation(CreatureEntity &creature, glm_type *glm_ptr)
         break;
     case 208:
         glm_ptr->muta_which = PlayerMutationType::ATT_PERVERT;
-        if (player.ppersonality == PERSONALITY_MESUGAKI) {
+        if (creature.ppersonality == PERSONALITY_MESUGAKI) {
             glm_ptr->muta_desc = _("メスガキの変質者引きつけは治療対象外だ。", "Mesugaki's pervert attraction is not curable.");
             glm_ptr->muta_which = PlayerMutationType::MAX;
             break;

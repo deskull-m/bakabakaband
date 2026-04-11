@@ -25,7 +25,6 @@
  */
 bool bless_weapon(CreatureEntity &creature)
 {
-    auto &player = creature;
     constexpr auto q = _("どのアイテムを祝福しますか？", "Bless which weapon? ");
     constexpr auto s = _("祝福できる武器がありません。", "You have no weapon to bless.");
 
@@ -36,7 +35,7 @@ bool bless_weapon(CreatureEntity &creature)
         return false;
     }
 
-    const auto item_name = describe_flavor(player, *o_ptr, OD_OMIT_PREFIX | OD_NAME_ONLY);
+    const auto item_name = describe_flavor(creature, *o_ptr, OD_OMIT_PREFIX | OD_NAME_ONLY);
     const auto item_flags = o_ptr->get_flags();
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (o_ptr->is_cursed()) {
@@ -150,6 +149,6 @@ bool bless_weapon(CreatureEntity &creature)
         SubWindowRedrawingFlag::FOUND_ITEMS,
     };
     rfu.set_flags(flags_swrf);
-    calc_android_exp(player);
+    calc_android_exp(creature);
     return true;
 }

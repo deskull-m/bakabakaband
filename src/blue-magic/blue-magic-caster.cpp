@@ -190,7 +190,6 @@ static bool cast_blue_make_trap(CreatureEntity &creature)
 
 static bool switch_cast_blue_magic(CreatureEntity &creature, bmc_type *bmc_ptr)
 {
-    auto &player = creature;
     switch (bmc_ptr->spell) {
     case MonsterAbilityType::SHRIEK:
         msg_print(_("かん高い金切り声をあげた。", "You make a high pitched shriek."));
@@ -291,7 +290,7 @@ static bool switch_cast_blue_magic(CreatureEntity &creature, bmc_type *bmc_ptr)
         return cast_blue_hand_doom(creature, bmc_ptr);
     case MonsterAbilityType::HEAL: {
         msg_print(_("自分の傷に念を集中した。", "You concentrate on your wounds!"));
-        (void)hp_player(player, bmc_ptr->plev * 4);
+        (void)hp_player(creature, bmc_ptr->plev * 4);
         BadStatusSetter bss(creature);
         (void)bss.set_stun(0);
         (void)bss.set_cut(0);
@@ -401,7 +400,7 @@ static bool switch_cast_blue_magic(CreatureEntity &creature, bmc_type *bmc_ptr)
 
 /*!
  * @brief 青魔法の発動 /
- * do_cmd_cast calls this function if the player's class is 'blue-mage'.
+ * do_cmd_cast calls this function if the creature's class is 'blue-mage'.
  * @param spell 発動するモンスター攻撃のID
  * @param success TRUEは成功時、FALSEは失敗時の処理を行う
  * @return 処理を実行したらTRUE、キャンセルした場合FALSEを返す。

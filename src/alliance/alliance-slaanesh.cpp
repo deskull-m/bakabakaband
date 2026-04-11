@@ -26,7 +26,7 @@ int AllianceSlaanesh::calcImpressionPoint(const CreatureEntity &creature) const
     impression += (creature.stat_use[A_CHR] - 10) * 5;
 
     // 魔法使用による好感度向上（コーンとは逆）
-    // if (player.realm1 != REALM_NONE || player.realm2 != REALM_NONE) {
+    // if (creature.realm1 != REALM_NONE || creature.realm2 != REALM_NONE) {
     //     impression += 50;
     // }
 
@@ -57,7 +57,6 @@ bool AllianceSlaanesh::isAnnihilated()
 
 void AllianceSlaanesh::panishment(CreatureEntity &creature)
 {
-    auto &player = creature;
     auto impression = calcImpressionPoint(creature);
     if (isAnnihilated() || impression > -40) {
         return;
@@ -106,13 +105,13 @@ void AllianceSlaanesh::panishment(CreatureEntity &creature)
 
     if (one_in_(25)) {
         Pos2D m_pos(creature.get_position());
-        m_pos = scatter(*player.current_floor_ptr, m_pos, 10, PROJECT_NONE);
-        const auto m_idx = place_monster_one(player, m_pos.y, m_pos.x, MonraceId::SLAANESH_CHOSEN, PM_ALLOW_GROUP);
+        m_pos = scatter(*creature.current_floor_ptr, m_pos, 10, PROJECT_NONE);
+        const auto m_idx = place_monster_one(creature, m_pos.y, m_pos.x, MonraceId::SLAANESH_CHOSEN, PM_ALLOW_GROUP);
         if (m_idx) {
             msg_print(_("スラーネッシュの選ばれし者があなたを誘惑すべく現れた！", "Slaanesh's Chosen appears to seduce you!"));
             disturb(creature, true, true);
             for (int k = 0; k < 2; k++) {
-                summon_specific(player, m_pos.y, m_pos.x, std::max(player.current_floor_ptr->monster_level, 3), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
+                summon_specific(creature, m_pos.y, m_pos.x, std::max(creature.current_floor_ptr->monster_level, 3), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }
     }

@@ -139,9 +139,8 @@ Direction decide_travel_step_dir(CreatureEntity &creature, const Direction &prev
     auto &floor = *creature.current_floor_ptr;
     const auto &p_grid = floor.get_grid(p_pos);
     if (creature.is_player()) {
-        auto &player = creature;
-        if ((disturb_trap_detect || alert_trap_detect) && player.dtrap && none_bits(p_grid.info, CAVE_IN_DETECT)) {
-            player.dtrap = false;
+        if ((disturb_trap_detect || alert_trap_detect) && creature.dtrap && none_bits(p_grid.info, CAVE_IN_DETECT)) {
+            creature.dtrap = false;
             if (none_bits(p_grid.info, CAVE_UNSAFE)) {
                 if (alert_trap_detect) {
                     msg_print(_("* 注意:この先はトラップの感知範囲外です！ *", "*Leaving trap detect region!*"));
@@ -279,8 +278,7 @@ void Travel::step(CreatureEntity &creature)
         return;
     }
 
-    auto &player = creature;
-    PlayerEnergy(player).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
     exe_movement(creature, this->dir, always_pickup, false);
 
     if (creature.get_position() == this->get_goal()) {

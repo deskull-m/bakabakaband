@@ -49,8 +49,7 @@ static void check_riding_preservation(CreatureEntity &creature)
 
     const auto &monster = creature.current_floor_ptr->m_list[creature.riding];
     if (monster.has_parent()) {
-        auto &player = creature;
-        player.ride_monster(0);
+        creature.ride_monster(0);
         creature.pet_extra_flags &= ~(PF_TWO_HANDS);
         creature.riding_ryoute = creature.old_riding_ryoute = false;
     } else {
@@ -61,14 +60,13 @@ static void check_riding_preservation(CreatureEntity &creature)
 
 static bool check_pet_preservation_conditions(CreatureEntity &creature, const CreatureEntity &monster)
 {
-    auto &player = creature;
 
 
     if (reinit_wilderness) {
         return false;
     }
 
-    const auto p_pos = player.get_position();
+    const auto p_pos = creature.get_position();
     const auto m_pos = monster.get_position();
     const auto dis = Grid::calc_distance(p_pos, m_pos);
     if (monster.is_confused() || monster.is_stunned() || monster.is_asleep() || monster.has_parent()) {
@@ -76,7 +74,7 @@ static bool check_pet_preservation_conditions(CreatureEntity &creature, const Cr
     }
 
     const auto should_preserve = monster.is_named();
-    const auto &floor = *player.current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     auto sight_from_player = floor.has_los_at(m_pos);
     sight_from_player &= projectable(floor, p_pos, m_pos);
     auto sight_from_monster = los(floor, m_pos, p_pos);
@@ -90,20 +88,19 @@ static bool check_pet_preservation_conditions(CreatureEntity &creature, const Cr
 
 static void sweep_preserving_pet(CreatureEntity &creature)
 {
-    auto &player = creature;
 
 
-    if (AngbandWorld::get_instance().is_wild_mode() || player.current_floor_ptr->inside_arena || AngbandSystem::get_instance().is_phase_out()) {
+    if (AngbandWorld::get_instance().is_wild_mode() || creature.current_floor_ptr->inside_arena || AngbandSystem::get_instance().is_phase_out()) {
         return;
     }
 
-    for (MONSTER_IDX i = player.current_floor_ptr->m_max - 1, party_monster_num = 1; (i >= 1) && (party_monster_num < PartyMonsters::MAX_SIZE); i--) {
-        const auto &monster = player.current_floor_ptr->m_list[i];
+    for (MONSTER_IDX i = creature.current_floor_ptr->m_max - 1, party_monster_num = 1; (i >= 1) && (party_monster_num < PartyMonsters::MAX_SIZE); i--) {
+        const auto &monster = creature.current_floor_ptr->m_list[i];
         if (!monster.is_valid() || !monster.is_pet() || monster.is_riding() || check_pet_preservation_conditions(creature, monster)) {
             continue;
         }
 
-        party_monsters[party_monster_num] = player.current_floor_ptr->m_list[i].clone();
+        party_monsters[party_monster_num] = creature.current_floor_ptr->m_list[i].clone();
         party_monster_num++;
         delete_monster_idx(creature, i);
     }
@@ -111,14 +108,13 @@ static void sweep_preserving_pet(CreatureEntity &creature)
 
 static void record_pet_diary(CreatureEntity &creature)
 {
-    auto &player = creature;
 
 
     if (!record_named_pet) {
         return;
     }
 
-    const auto &floor = *player.current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     for (MONSTER_IDX i = floor.m_max - 1; i >= 1; i--) {
         const auto &monster = floor.m_list[i];
         if (!monster.is_valid() || !monster.is_named_pet() || monster.is_riding()) {
@@ -135,7 +131,6 @@ static void record_pet_diary(CreatureEntity &creature)
  */
 static void preserve_pet(CreatureEntity &creature)
 {
-    auto &player = creature;
 
 
     party_monsters.invalidate_all();
@@ -143,9 +138,9 @@ static void preserve_pet(CreatureEntity &creature)
     check_riding_preservation(creature);
     sweep_preserving_pet(creature);
     record_pet_diary(creature);
-    for (MONSTER_IDX i = player.current_floor_ptr->m_max - 1; i >= 1; i--) {
-        const auto &monster = player.current_floor_ptr->m_list[i];
-        const auto parent_r_idx = player.current_floor_ptr->m_list[monster.get_monster_profile().parent_m_idx].r_idx;
+    for (MONSTER_IDX i = creature.current_floor_ptr->m_max - 1; i >= 1; i--) {
+        const auto &monster = creature.current_floor_ptr->m_list[i];
+        const auto parent_r_idx = creature.current_floor_ptr->m_list[monster.get_monster_profile().parent_m_idx].r_idx;
         if (!monster.has_parent() || MonraceList::is_valid(parent_r_idx)) {
             continue;
         }
@@ -165,7 +160,6 @@ static void preserve_pet(CreatureEntity &creature)
  */
 static void locate_connected_stairs(CreatureEntity &creature, FloorType &floor, saved_floor_type *sf_ptr)
 {
-    auto &player = creature;
 
 
     auto sx = 0;
@@ -208,14 +202,14 @@ static void locate_connected_stairs(CreatureEntity &creature, FloorType &floor, 
     }
 
     if (sx) {
-        player.y = sy;
-        player.x = sx;
+        creature.y = sy;
+        creature.x = sx;
         return;
     }
 
     if (num == 0) {
         FloorChangeModesStore::get_instace()->set({ FloorChangeMode::RANDOM_PLACE, FloorChangeMode::NO_RETURN });
-        auto &grid = floor.get_grid(player.get_position());
+        auto &grid = floor.get_grid(creature.get_position());
         if (!grid.has_special_terrain()) {
             grid.special = 0;
         }
@@ -224,22 +218,21 @@ static void locate_connected_stairs(CreatureEntity &creature, FloorType &floor, 
     }
 
     int i = randint0(num);
-    player.y = y_table[i];
-    player.x = x_table[i];
+    creature.y = y_table[i];
+    creature.x = x_table[i];
 }
 
 /*!
- * @brief フロア移動時、プレイヤーの移動先モンスターが既にいた場合ランダムな近隣に移動させる / When a monster is at a place where player will return,
+ * @brief フロア移動時、プレイヤーの移動先モンスターが既にいた場合ランダムな近隣に移動させる / When a monster is at a place where creature will return,
  */
 static void get_out_monster(CreatureEntity &creature)
 {
-    auto &player = creature;
 
 
     auto tries = 0;
     auto dis = 1;
-    const auto p_pos = player.get_position();
-    auto &floor = *player.current_floor_ptr;
+    const auto p_pos = creature.get_position();
+    auto &floor = *creature.current_floor_ptr;
     auto &p_grid = floor.get_grid(p_pos);
     const auto m_idx = p_grid.m_idx;
     if (m_idx == 0) {
@@ -278,12 +271,11 @@ static void get_out_monster(CreatureEntity &creature)
  */
 static void preserve_info(CreatureEntity &creature)
 {
-    auto &player = creature;
 
 
     auto quest_monrace_id = MonraceList::empty_id();
     const auto &quests = QuestList::get_instance();
-    const auto &floor = *player.current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     for (const auto &[quest_id, quest] : quests) {
         auto quest_relating_monster = (quest.status == QuestStatusType::TAKEN);
         quest_relating_monster &= ((quest.type == QuestKindType::KILL_LEVEL) || (quest.type == QuestKindType::RANDOM));
@@ -310,7 +302,7 @@ static void preserve_info(CreatureEntity &creature)
     }
 
     for (short i = 0; i < INVEN_PACK; i++) {
-        auto *o_ptr = player.inventory[i].get();
+        auto *o_ptr = creature.inventory[i].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
@@ -323,14 +315,13 @@ static void preserve_info(CreatureEntity &creature)
 
 static Grid *set_grid_by_leaving_floor(CreatureEntity &creature)
 {
-    auto &player = creature;
 
 
     if (FloorChangeModesStore::get_instace()->has_not(FloorChangeMode::SAVE_FLOORS)) {
         return nullptr;
     }
-    auto &floor = *player.current_floor_ptr;
-    auto &grid = floor.get_grid(player.get_position());
+    auto &floor = *creature.current_floor_ptr;
+    auto &grid = floor.get_grid(creature.get_position());
     const auto &terrain = grid.get_terrain();
     if (grid.special && terrain.flags.has_not(TerrainCharacteristics::SPECIAL) && get_sf_ptr(grid.special)) {
         new_floor_id = grid.special;
@@ -345,7 +336,6 @@ static Grid *set_grid_by_leaving_floor(CreatureEntity &creature)
 
 static void jump_floors(CreatureEntity &creature)
 {
-    auto &player = creature;
 
 
     const auto &fcms = FloorChangeModesStore::get_instace();
@@ -364,7 +354,7 @@ static void jump_floors(CreatureEntity &creature)
         move_num *= 2;
     }
 
-    auto &floor = *player.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     const auto &dungeon = floor.get_dungeon_definition();
     if (fcms->has(FloorChangeMode::DOWN)) {
         if (!floor.is_underground()) {
@@ -382,10 +372,9 @@ static void jump_floors(CreatureEntity &creature)
 //!< @details SAVE_FLOORS フラグを抜く箇所に「TODO」のコメントがあった、何をするかは書いておらず詳細不明
 static void exit_to_wilderness(CreatureEntity &creature)
 {
-    auto &player = creature;
 
 
-    auto &floor = *player.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     if (floor.is_underground() || (floor.dungeon_id == DungeonId::WILDERNESS)) {
         return;
     }
@@ -396,8 +385,8 @@ static void exit_to_wilderness(CreatureEntity &creature)
         WildernessGrids::get_instance().set_player_position(dungeon.get_position());
     }
 
-    player.recall_dungeon = floor.dungeon_id;
-    player.word_recall = 0;
+    creature.recall_dungeon = floor.dungeon_id;
+    creature.word_recall = 0;
     floor.reset_dungeon_index();
     FloorChangeModesStore::get_instace()->reset(FloorChangeMode::SAVE_FLOORS);
 }
@@ -482,7 +471,6 @@ static void exe_leave_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
  */
 void leave_floor(CreatureEntity &creature)
 {
-    auto &player = creature;
 
 
     preserve_pet(creature);
@@ -492,9 +480,9 @@ void leave_floor(CreatureEntity &creature)
     new_floor_id = 0;
 
     preserve_info(creature);
-    saved_floor_type *sf_ptr = get_sf_ptr(player.floor_id);
+    saved_floor_type *sf_ptr = get_sf_ptr(creature.floor_id);
     if (FloorChangeModesStore::get_instace()->has(FloorChangeMode::RANDOM_CONNECT)) {
-        locate_connected_stairs(creature, *player.current_floor_ptr, sf_ptr);
+        locate_connected_stairs(creature, *creature.current_floor_ptr, sf_ptr);
     }
 
     exe_leave_floor(creature, sf_ptr);
@@ -506,10 +494,9 @@ void leave_floor(CreatureEntity &creature)
  */
 void jump_floor(CreatureEntity &creature, DungeonId dun_idx, DEPTH depth)
 {
-    auto &player = creature;
 
 
-    auto &floor = *player.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     floor.set_dungeon_index(dun_idx);
     floor.dun_level = depth;
     auto &fcms = FloorChangeModesStore::get_instace();
@@ -526,8 +513,8 @@ void jump_floor(CreatureEntity &creature, DungeonId dun_idx, DEPTH depth)
     constexpr auto mes = _("%sへとウィザード・テレポートで移動した。\n", "You wizard-teleported to %s.\n");
     msg_print_wizard(creature, 2, format(mes, to.data()));
     floor.quest_number = QuestId::NONE;
-    PlayerEnergy(player).reset_player_turn();
-    player.energy_need = 0;
+    PlayerEnergy(creature).reset_player_turn();
+    creature.energy_need = 0;
     fcms->set(FloorChangeMode::FIRST_FLOOR);
-    player.leaving = true;
+    creature.leaving = true;
 }

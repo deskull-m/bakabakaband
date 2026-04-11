@@ -314,22 +314,21 @@ static bool activate_raygun(CreatureEntity &creature, ae_type *ae_ptr)
  */
 void exe_activate(CreatureEntity &creature, INVENTORY_IDX i_idx)
 {
-    auto &player = creature;
     bool activated = false;
-    if (i_idx <= INVEN_PACK && BaseitemList::get_instance().get_baseitem(player.inventory[i_idx]->bi_id).flags.has_not(TR_INVEN_ACTIVATE)) {
+    if (i_idx <= INVEN_PACK && BaseitemList::get_instance().get_baseitem(creature.inventory[i_idx]->bi_id).flags.has_not(TR_INVEN_ACTIVATE)) {
         msg_print(_("このアイテムは装備しないと始動できない。", "That object must be activated by equipment."));
         return;
     }
 
     ae_type tmp_ae;
-    ae_type *ae_ptr = initialize_ae_type(player, &tmp_ae, i_idx);
+    ae_type *ae_ptr = initialize_ae_type(creature, &tmp_ae, i_idx);
 
     if (ae_ptr->o_ptr->ego_idx == EgoType::SHATTERED || ae_ptr->o_ptr->ego_idx == EgoType::BLASTED) {
         msg_print(_("このアイテムはもう壊れていて始動できない。", "That broken object can't be activated."));
         return;
     }
 
-    PlayerEnergy(player).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
     decide_activation_level(ae_ptr);
     decide_chance_fail(creature, ae_ptr);
     if (cmd_limit_time_walk(creature)) {
@@ -357,7 +356,7 @@ void exe_activate(CreatureEntity &creature, INVENTORY_IDX i_idx)
         activated = true;
     } else if (scouter_probing(creature, ae_ptr)) {
         activated = true;
-    } else if (exe_monster_capture(player, *ae_ptr->o_ptr)) {
+    } else if (exe_monster_capture(creature, *ae_ptr->o_ptr)) {
         activated = true;
     } else if (activate_firethrowing(creature, ae_ptr)) {
         activated = true;
@@ -375,8 +374,8 @@ void exe_activate(CreatureEntity &creature, INVENTORY_IDX i_idx)
     }
 
     if (randint1(100) <= ae_ptr->broken) {
-        std::string o_name = describe_flavor(player, *ae_ptr->o_ptr, OD_OMIT_PREFIX);
+        std::string o_name = describe_flavor(creature, *ae_ptr->o_ptr, OD_OMIT_PREFIX);
         msg_format(_("%sは壊れた！", "%s is destroyed!"), o_name.data());
-        curse_weapon_object(player, true, ae_ptr->o_ptr);
+        curse_weapon_object(creature, true, ae_ptr->o_ptr);
     }
 }

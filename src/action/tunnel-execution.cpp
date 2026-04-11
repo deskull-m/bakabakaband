@@ -61,8 +61,7 @@ bool exe_tunnel(CreatureEntity &creature, POSITION y, POSITION x)
         return false;
     }
 
-    auto &player = creature;
-    PlayerEnergy(player).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
     const auto &terrain = grid.get_terrain();
     const auto power = terrain.power;
     const auto &terrain_mimic = grid.get_terrain(TerrainKind::MIMIC);
@@ -78,11 +77,11 @@ bool exe_tunnel(CreatureEntity &creature, POSITION y, POSITION x)
             msg_print(_("そこは掘れない!", "You can't tunnel through that!"));
         }
     } else if (terrain.flags.has(TerrainCharacteristics::CAN_DIG)) {
-        if (player.skill_dig > randint0(20 * power)) {
+        if (creature.skill_dig > randint0(20 * power)) {
             sound(SoundKind::DIG_THROUGH);
             msg_format(_("%sをくずした。", "You have removed the %s."), name.data());
             cave_alter_feat(creature, y, x, TerrainCharacteristics::TUNNEL);
-            player.plus_incident_tree("TUNNEL", 1);
+            creature.plus_incident_tree("TUNNEL", 1);
             RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         } else {
             msg_format(_("%sをくずしている。", "You dig into the %s."), name.data());
@@ -90,7 +89,7 @@ bool exe_tunnel(CreatureEntity &creature, POSITION y, POSITION x)
         }
     } else {
         bool tree = terrain_mimic.flags.has(TerrainCharacteristics::TREE);
-        if (player.skill_dig > power + randint0(40 * power)) {
+        if (creature.skill_dig > power + randint0(40 * power)) {
             sound(SoundKind::DIG_THROUGH);
             if (tree) {
                 msg_format(_("%sを切り払った。", "You have cleared away the %s."), name.data());
@@ -104,7 +103,7 @@ bool exe_tunnel(CreatureEntity &creature, POSITION y, POSITION x)
             }
 
             cave_alter_feat(creature, y, x, TerrainCharacteristics::TUNNEL);
-            player.plus_incident_tree("TUNNEL", 1);
+            creature.plus_incident_tree("TUNNEL", 1);
             chg_virtue(creature, Virtue::DILIGENCE, 1);
             chg_virtue(creature, Virtue::NATURE, -1);
         } else {

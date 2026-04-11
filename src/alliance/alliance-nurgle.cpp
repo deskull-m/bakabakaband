@@ -104,7 +104,7 @@ int AllianceNurgle::calcImpressionPoint(const CreatureEntity &creature) const
 
     // 現在のHP状況（傷ついているほど好まれる）
     /*
-    int hp_ratio = (player.hp * 100) / player.maxhp;
+    int hp_ratio = (creature.hp * 100) / creature.maxhp;
     if (hp_ratio <= 25)
         impression += 60;
     else if (hp_ratio <= 50)
@@ -138,7 +138,6 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
     if (!creature.is_player()) {
         return;
     }
-    auto &player = creature;
 
     // 印象に応じて段階的な制裁
     if (this->calcImpressionPoint(creature) <= -50) {
@@ -191,8 +190,8 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
 
         if (one_in_(2)) {
             msg_print("あなたの体が腐敗し始めた...");
-            project(player, 0, 3, player.y, player.x,
-                player.level * 2, AttributeType::POIS,
+            project(creature, 0, 3, creature.y, creature.x,
+                creature.level * 2, AttributeType::POIS,
                 PROJECT_KILL | PROJECT_ITEM);
         }
 
@@ -227,8 +226,8 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
         (void)BadStatusSetter(creature).set_stun(randint1(100) + 50);
 
         // 大ダメージ（腐敗エリア放撃）
-        project(player, 0, 5, player.y, player.x,
-            player.level * 4, AttributeType::POIS,
+        project(creature, 0, 5, creature.y, creature.x,
+            creature.level * 4, AttributeType::POIS,
             PROJECT_KILL | PROJECT_ITEM | PROJECT_GRID);
 
         if (one_in_(2)) {

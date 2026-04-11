@@ -22,7 +22,6 @@
  */
 bool build_type14(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto &player = creature;
     /* Pick a room size */
     const auto room_seed_y1 = randint1(4);
     const auto room_seed_x1 = randint1(11);
@@ -38,7 +37,7 @@ bool build_type14(CreatureEntity &creature, DungeonData *dd_ptr)
     }
 
     /* Choose lite or dark */
-    auto &floor = *player.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     const auto light = ((floor.dun_level <= randint1(25)) && floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::DARKNESS));
 
     /* Get corner values */
@@ -77,6 +76,6 @@ bool build_type14(CreatureEntity &creature, DungeonData *dd_ptr)
     grid.mimic = grid.feat;
     grid.set_terrain_id(trap);
     constexpr auto fmt = _("%sの部屋が生成されました。", "Room of %s was generated.");
-    msg_format_wizard(player, CHEAT_DUNGEON, fmt, TerrainList::get_instance().get_terrain(trap).name.data());
+    msg_format_wizard(creature, CHEAT_DUNGEON, fmt, TerrainList::get_instance().get_terrain(trap).name.data());
     return true;
 }
