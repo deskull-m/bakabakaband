@@ -6,7 +6,6 @@
 #include "system/artifact-type-definition.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 
 /*!

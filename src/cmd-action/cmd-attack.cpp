@@ -50,7 +50,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "timed-effect/timed-effects.h"
 #include "tracking/lore-tracker.h"

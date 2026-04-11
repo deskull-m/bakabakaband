@@ -28,6 +28,7 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
+#include "system/player-type-definition.h"
 #include "util/enum-range.h"
 #include "util/string-processor.h"
 #include "world/world.h"

@@ -3,7 +3,6 @@
 #include "market/arena-entry.h"
 #include "player-info/race-types.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "term/term-color-types.h"
 #include "term/z-util.h"
 #include "util/bit-flags-calculator.h"

@@ -9,7 +9,6 @@
 #include "status/bad-status-setter.h"
 #include "status/body-improvement.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 

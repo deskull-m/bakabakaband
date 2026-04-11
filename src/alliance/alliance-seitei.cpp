@@ -3,7 +3,6 @@
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 int AllianceSEITEI::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     int impression = 0;

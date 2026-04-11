@@ -2,7 +2,6 @@
 
 #include "object-enchant/tr-flags.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include <initializer_list>
 #include <memory>
 #include <span>

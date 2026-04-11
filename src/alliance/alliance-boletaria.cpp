@@ -5,7 +5,6 @@
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief ボーレタリアのアライアンス印象値を計算する

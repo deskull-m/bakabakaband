@@ -12,7 +12,6 @@
 #include "realm/realm-hex-numbers.h"
 #include "spell-realm/spells-hex.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 
 PlayerDexterity::PlayerDexterity(CreatureEntity &creature)

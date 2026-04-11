@@ -8,7 +8,6 @@
 #include "main/scene-table-monster.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 #include "term/z-term.h"
 
 int interrupt_scene_type;

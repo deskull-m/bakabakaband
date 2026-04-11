@@ -10,7 +10,6 @@
 #include "system/floor/floor-info.h"
 #include "system/inner-game-data.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "world/world.h"
 #include <ctime>

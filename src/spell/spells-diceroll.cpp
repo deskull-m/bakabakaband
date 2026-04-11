@@ -10,7 +10,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief モンスター魅了用セービングスロー共通部(汎用系)

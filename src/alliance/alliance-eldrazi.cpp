@@ -1,7 +1,6 @@
 #include "alliance/alliance-eldrazi.h"
 #include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 
 int AllianceEldrazi::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {

@@ -4,7 +4,6 @@
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 AllianceUngoliant::AllianceUngoliant(AllianceType id, std::string tag, std::string name, int64_t base_power)
     : Alliance(id, tag, name, base_power)
 {

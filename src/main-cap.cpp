@@ -4,6 +4,7 @@
 
 #include "io/exit-panic.h"
 #include "system/angband.h"
+#include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/z-form.h"
 
