@@ -44,7 +44,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
@@ -92,7 +91,7 @@ bool kawarimi(CreatureEntity &creature, bool success)
     }
 
     const auto p_pos_orig = creature.get_position(); //!< @details 元の位置に変わり身を置く.
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     teleport_player(player, 10 + randint1(90), TELEPORT_SPONTANEOUS);
     constexpr auto sv_wooden_statue = 0;
     ItemEntity item({ ItemKindType::STATUE, sv_wooden_statue });
@@ -143,7 +142,7 @@ bool rush_attack(CreatureEntity &creature, bool *mdeath)
         return true;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto *player_ptr = &player;
     auto p_pos_new = p_pos;
     auto tmp_mdeath = false;
@@ -205,7 +204,7 @@ bool rush_attack(CreatureEntity &creature, bool *mdeath)
  */
 void process_surprise_attack(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto *player_ptr = &player;
 
     const auto &monrace = pa_ptr->m_ptr->get_monrace();
@@ -281,7 +280,7 @@ void calc_surprise_attack_damage(CreatureEntity &creature, player_attack_type *p
  */
 bool hayagake(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto *player_ptr = &player;
     PlayerEnergy energy(creature);
     if (player_ptr->action == ACTION_HAYAGAKE) {
@@ -312,7 +311,7 @@ bool set_superstealth(CreatureEntity &creature, bool set)
 {
     bool notice = false;
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto *player_ptr = &player;
 
     auto ninja_data = CreatureClass(creature).get_specific_data<ninja_data_type>();
@@ -362,7 +361,7 @@ bool set_superstealth(CreatureEntity &creature, bool set)
  */
 bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto *player_ptr = &player;
     PLAYER_LEVEL plev = creature.level;
     auto ninja_data = CreatureClass(creature).get_specific_data<ninja_data_type>();

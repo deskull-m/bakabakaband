@@ -35,7 +35,6 @@
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -51,7 +50,7 @@
  */
 MonsterSpellResult spell_RF4_SHRIEK(MONSTER_IDX m_idx, CreatureEntity &creature, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
+    auto &player_ptr = creature;
     mspell_cast_msg_simple msg(_("%s^がかん高い金切り声をあげた。", "%s^ makes a high pitched shriek."),
         _("%s^が%sに向かって叫んだ。", "%s^ shrieks at %s."));
 
@@ -82,7 +81,7 @@ MonsterSpellResult spell_RF4_SHRIEK(MONSTER_IDX m_idx, CreatureEntity &creature,
  */
 MonsterSpellResult spell_RF6_WORLD(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
+    auto &player_ptr = creature;
     disturb(player_ptr, true, true);
     (void)set_monster_timewalk(player_ptr, m_idx, randint1(2) + 2, true);
 
@@ -100,7 +99,7 @@ MonsterSpellResult spell_RF6_WORLD(CreatureEntity &creature, MONSTER_IDX m_idx)
  */
 MonsterSpellResult spell_RF6_BLINK(CreatureEntity &creature, MONSTER_IDX m_idx, int target_type, bool is_quantum_effect)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
+    auto &player_ptr = creature;
     const auto res = MonsterSpellResult::make_valid();
     const auto m_name = monster_name(player_ptr, m_idx);
 
@@ -138,7 +137,7 @@ MonsterSpellResult spell_RF6_BLINK(CreatureEntity &creature, MONSTER_IDX m_idx, 
  */
 MonsterSpellResult spell_RF6_TPORT(CreatureEntity &creature, MONSTER_IDX m_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
+    auto &player_ptr = creature;
     const auto res = MonsterSpellResult::make_valid();
     const auto m_name = monster_name(player_ptr, m_idx);
 
@@ -172,7 +171,7 @@ MonsterSpellResult spell_RF6_TPORT(CreatureEntity &creature, MONSTER_IDX m_idx, 
  */
 MonsterSpellResult spell_RF6_TELE_TO(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
+    auto &player_ptr = creature;
     auto res = MonsterSpellResult::make_valid();
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
@@ -244,7 +243,7 @@ MonsterSpellResult spell_RF6_TELE_TO(CreatureEntity &creature, MONSTER_IDX m_idx
  */
 MonsterSpellResult spell_RF6_TELE_AWAY(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
+    auto &player_ptr = creature;
     auto res = MonsterSpellResult::make_valid();
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
@@ -327,7 +326,7 @@ MonsterSpellResult spell_RF6_TELE_AWAY(CreatureEntity &creature, MONSTER_IDX m_i
  */
 MonsterSpellResult spell_RF6_TELE_LEVEL(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
+    auto &player_ptr = creature;
     const auto res = MonsterSpellResult::make_valid();
 
     const auto &floor = *player_ptr.current_floor_ptr;
@@ -386,7 +385,7 @@ MonsterSpellResult spell_RF6_TELE_LEVEL(CreatureEntity &creature, MONSTER_IDX m_
  */
 MonsterSpellResult spell_RF6_DARKNESS(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
+    auto &player_ptr = creature;
     const Pos2D pos(y, x);
     mspell_cast_msg_blind msg;
     concptr msg_done;
@@ -463,7 +462,7 @@ MonsterSpellResult spell_RF6_DARKNESS(CreatureEntity &creature, POSITION y, POSI
  */
 MonsterSpellResult spell_RF6_TRAPS(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
+    auto &player_ptr = creature;
     const auto m_name = monster_name(player_ptr, m_idx);
     disturb(player_ptr, true, true);
 
@@ -492,7 +491,7 @@ MonsterSpellResult spell_RF6_TRAPS(CreatureEntity &creature, POSITION y, POSITIO
  */
 MonsterSpellResult spell_RF6_RAISE_DEAD(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
+    auto &player_ptr = creature;
     const auto &monster = player_ptr.current_floor_ptr->get_monster(m_idx);
     mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
         _("%s^が死者復活の呪文を唱えた。", "%s^ casts a spell to revive corpses."), _("%s^が死者復活の呪文を唱えた。", "%s^ casts a spell to revive corpses."));

@@ -12,9 +12,7 @@ public:
     void ride_monster(MONSTER_IDX m_idx);
     bool is_fully_healthy() const;
     bool is_located_at_running_destination() const;
-    bool try_set_position(const Pos2D &pos);
     void set_position(const Pos2D &pos);
-    bool in_saved_floor() const;
     bool try_resist_eldritch_horror() const;
 
     bool is_valid() const override;

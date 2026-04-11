@@ -31,7 +31,6 @@
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/string-processor.h"
@@ -81,7 +80,7 @@ static void process_blow_effect(CreatureEntity &creature, mam_type *mam_ptr)
 
 static void aura_fire_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &monrace = mam_ptr->m_ptr->get_monrace();
     auto &monrace_target = mam_ptr->t_ptr->get_monrace();
     if (monrace_target.aura_flags.has_not(MonsterAuraType::FIRE) || !mam_ptr->m_ptr->is_valid()) {
@@ -108,7 +107,7 @@ static void aura_fire_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
 
 static void aura_cold_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &monster = *mam_ptr->m_ptr;
     auto &monrace = monster.get_monrace();
     auto &monrace_target = mam_ptr->t_ptr->get_monrace();
@@ -136,7 +135,7 @@ static void aura_cold_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
 
 static void aura_elec_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &monster = *mam_ptr->m_ptr;
     auto &monrace = monster.get_monrace();
     auto &monrace_target = mam_ptr->t_ptr->get_monrace();
@@ -262,7 +261,7 @@ static void process_melee(CreatureEntity &creature, mam_type *mam_ptr)
 static void thief_runaway_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
 {
     if (creature.is_player()) {
-        auto &player = static_cast<PlayerType &>(creature);
+        auto &player = creature;
         if (SpellHex(player).check_hex_barrier(mam_ptr->m_idx, HEX_ANTI_TELE)) {
             if (mam_ptr->see_m) {
                 msg_print(_("泥棒は笑って逃げ...ようとしたがバリアに防がれた。", "The thief flees laughing...? But a magic barrier obstructs it."));
@@ -290,7 +289,7 @@ static void explode_monster_by_melee(CreatureEntity &creature, mam_type *mam_ptr
     if (!creature.is_player()) {
         return;
     }
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     sound(SoundKind::EXPLODE);
     (void)set_monster_invulner(*creature.current_floor_ptr, mam_ptr->m_idx, 0, false);
@@ -329,7 +328,7 @@ static void repeat_melee(CreatureEntity &creature, mam_type *mam_ptr)
         if (!creature.is_player() || mam_ptr->do_silly_attack) {
             continue;
         }
-        auto &player = static_cast<PlayerType &>(creature);
+        auto &player = creature;
         if (!is_original_ap_and_seen(player, *mam_ptr->m_ptr)) {
             continue;
         }
@@ -370,7 +369,7 @@ bool monst_attack_monst(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX
     }
 
     if (creature.is_player() && mam_ptr->m_ptr->is_riding()) {
-        auto &player = static_cast<PlayerType &>(creature);
+        auto &player = creature;
         disturb(player, true, true);
     }
 

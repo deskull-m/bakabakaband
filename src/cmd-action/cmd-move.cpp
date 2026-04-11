@@ -81,7 +81,7 @@ static bool confirm_leave_level(CreatureEntity &creature, bool down_stair)
  */
 void do_cmd_go_up(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &quests = QuestList::get_instance();
     auto &floor = *creature.current_floor_ptr;
     const auto &grid = floor.get_grid({ creature.y, creature.x });
@@ -220,7 +220,7 @@ void do_cmd_go_up(CreatureEntity &creature)
  */
 void do_cmd_go_down(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     CreatureClass(player).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     auto &floor = *creature.current_floor_ptr;
@@ -450,7 +450,7 @@ void do_cmd_walk(CreatureEntity &creature, bool pickup)
  */
 void do_cmd_run(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (cmd_limit_confused(player)) {
         return;
     }
@@ -479,7 +479,7 @@ void do_cmd_stay(CreatureEntity &creature, bool pickup)
         command_arg = 0;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     PlayerEnergy(player).set_player_turn_energy(100);
     if (pickup) {
         mpe_mode |= MPE_DO_PICKUP;
@@ -527,7 +527,7 @@ static bool input_rest_turns()
  */
 void do_cmd_rest(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     set_action(creature, ACTION_NONE);
     if (CreatureClass(player).equals(PlayerClassType::BARD)) {
         auto is_singing = get_singing_song_effect(player) != 0;
@@ -552,7 +552,7 @@ void do_cmd_rest(CreatureEntity &creature)
         chg_virtue(creature, Virtue::DILIGENCE, -1);
     }
 
-    if (player.is_fully_healthy()) {
+    if (static_cast<PlayerType &>(player).is_fully_healthy()) {
         chg_virtue(creature, Virtue::DILIGENCE, -1);
     }
 
@@ -572,7 +572,7 @@ void do_cmd_rest(CreatureEntity &creature)
  */
 void do_cmd_go_portal(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     const auto &grid = floor.get_grid({ creature.y, creature.x });
     const auto &terrain = grid.get_terrain();

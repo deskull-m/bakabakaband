@@ -33,7 +33,6 @@
 #include "system/baseitem/baseitem-key.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
@@ -46,7 +45,7 @@ using SelectionResult = std::tuple<ItemEntity *, short, int>;
 
 static bool check_destory_item(CreatureEntity &creature, const ItemEntity &destroying_item, short i_idx)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (!confirm_destroy && (destroying_item.calc_price() <= 0)) {
         return true;
     }
@@ -84,7 +83,7 @@ static bool check_destory_item(CreatureEntity &creature, const ItemEntity &destr
 
 static tl::optional<SelectionResult> select_destroying_item(CreatureEntity &creature, bool force_destroy)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     short i_idx;
     constexpr auto q = _("どのアイテムを壊しますか? ", "Destroy which item? ");
     constexpr auto s = _("壊せるアイテムを持っていない。", "You have nothing to destroy.");
@@ -117,7 +116,7 @@ static tl::optional<SelectionResult> select_destroying_item(CreatureEntity &crea
  */
 static bool decide_magic_book_exp(CreatureEntity &creature, const ItemEntity &destroyed_item)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
         return false;
     }
@@ -142,7 +141,7 @@ static bool decide_magic_book_exp(CreatureEntity &creature, const ItemEntity &de
 
 static void gain_exp_by_destroying_magic_book(CreatureEntity &creature, const ItemEntity &destroyed_item)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto gain_expr = decide_magic_book_exp(creature, destroyed_item);
     if (!gain_expr || (player.exp >= PY_MAX_EXP)) {
         return;
@@ -195,7 +194,7 @@ static void process_destroy_magic_book(CreatureEntity &creature, const ItemEntit
 
 static void exe_destroy_item(CreatureEntity &creature, ItemEntity &destroying_item, short i_idx, int amount)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto destroyed_item = destroying_item.clone();
     destroyed_item.number = amount;
     const auto item_name = describe_flavor(player, destroyed_item, 0);
@@ -219,7 +218,7 @@ static void exe_destroy_item(CreatureEntity &creature, ItemEntity &destroying_it
  */
 void do_cmd_destroy(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     const auto selection_result = select_destroying_item(creature, (command_arg > 0));

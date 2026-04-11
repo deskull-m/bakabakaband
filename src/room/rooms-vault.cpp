@@ -30,7 +30,6 @@
 #include "system/floor/town-list.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "wizard/wizard-messages.h"
 
 /*
@@ -101,7 +100,7 @@ void set_boundaries(CreatureEntity &creature, const Pos2D &pos)
  */
 static void build_bubble_vault(CreatureEntity &creature, const Pos2D &pos0, const Pos2DVec &vec)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     msg_print_wizard(player, CHEAT_DUNGEON, _("泡型ランダムVaultを生成しました。", "Bubble-shaped Vault."));
     auto center_points = create_bubbles_center(vec);
 
@@ -172,7 +171,7 @@ static void build_bubble_vault(CreatureEntity &creature, const Pos2D &pos0, cons
 /* Create a random vault that looks like a collection of overlapping rooms */
 static void build_room_vault(CreatureEntity &creature, const Pos2D &center, const Pos2DVec &vec)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const Pos2DVec vec_half(vec.y / 2, vec.x / 2);
     msg_print_wizard(player, CHEAT_DUNGEON, _("部屋型ランダムVaultを生成しました。", "Room Vault."));
 
@@ -212,7 +211,7 @@ static void build_room_vault(CreatureEntity &creature, const Pos2D &center, cons
 /* Create a random vault out of a fractal grid */
 static void build_cave_vault(CreatureEntity &creature, const Pos2D &center, const Pos2DVec &vec)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     /* round to make sizes even */
     const Pos2DVec vec_half(vec.y / 2, vec.x / 2);
     const auto xsize = vec_half.x * 2;
@@ -302,7 +301,7 @@ static Pos2D coord_trans(const Pos2D &pos_initial, const Pos2DVec &offset, int t
  */
 void build_vault(vault_type &vault, CreatureEntity &creature, POSITION yval, POSITION xval, POSITION ymax, POSITION xmax, concptr data, POSITION xoffset, POSITION yoffset, int transno)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     /* Place dungeon features and objects */
     auto &floor = *creature.current_floor_ptr;
     auto t = data;
@@ -567,7 +566,7 @@ void build_vault(vault_type &vault, CreatureEntity &creature, POSITION yval, POS
  */
 static void build_target_vault(CreatureEntity &creature, const Pos2D &center, const Pos2DVec &vec)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     /* Make a random metric */
     const auto h1 = randint1(32) - 16;
     const auto h2 = randint1(16);
@@ -664,7 +663,7 @@ static void build_target_vault(CreatureEntity &creature, const Pos2D &center, co
  */
 static void build_elemental_vault(CreatureEntity &creature, const Pos2D &center, const Pos2DVec &vec)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     msg_print_wizard(player, CHEAT_DUNGEON, _("精霊界ランダムVaultを生成しました。", "Elemental Vault"));
 
     /* round to make sizes even */
@@ -737,7 +736,7 @@ static void build_elemental_vault(CreatureEntity &creature, const Pos2D &center,
  */
 static void build_mini_c_vault(CreatureEntity &creature, const Pos2D &center, const Pos2DVec &vec)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     msg_print_wizard(player, CHEAT_DUNGEON, _("小型チェッカーランダムVaultを生成しました。", "Mini Checker Board Vault."));
 
     /* Pick a random room size */
@@ -847,7 +846,7 @@ static void build_mini_c_vault(CreatureEntity &creature, const Pos2D &center, co
  */
 static void build_castle_vault(CreatureEntity &creature, const Pos2D &center, const Pos2DVec &vec)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     /* Pick a random room size */
     const Pos2DVec vec_half(vec.y / 2 - 1, vec.x / 2 - 1);
     const Rect2D area(center, vec_half);
@@ -874,7 +873,7 @@ static void build_castle_vault(CreatureEntity &creature, const Pos2D &center, co
  */
 bool build_type10(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &floor = *creature.current_floor_ptr;
     const auto xsize = randint1(22) + 22;
     const auto ysize = randint1(11) + 11;
@@ -932,7 +931,7 @@ bool build_type10(CreatureEntity &creature, DungeonData *dd_ptr)
  */
 bool build_fixed_room(CreatureEntity &creature, DungeonData *dd_ptr, int typ, bool more_space, int id = -1)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     int result;
 
     ProbabilityTable<int> prob_table;
