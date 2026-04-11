@@ -6,6 +6,7 @@
 
 #include "spell-kind/spells-random.h"
 #include "avatar/avatar.h"
+#include "combat/damage-dispatcher.h"
 #include "effect/attribute-types.h"
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
@@ -120,7 +121,7 @@ bool activate_ty_curse(CreatureEntity &creature, bool stop_ty, int *count)
                 int dam = Dice::roll(10, 10);
                 msg_print(_("純粋な魔力の次元への扉が開いた！", "A portal opens to a plane of raw mana!"));
                 project(creature, 0, 8, creature.y, creature.x, dam, AttributeType::MANA, flg);
-                take_hit(creature, DAMAGE_NOESCAPE, dam, _("純粋な魔力の解放", "released pure mana"));
+                apply_damage_to_creature(creature, DAMAGE_NOESCAPE, dam, _("純粋な魔力の解放", "released pure mana"));
                 if (!one_in_(6)) {
                     break;
                 }
@@ -144,7 +145,7 @@ bool activate_ty_curse(CreatureEntity &creature, bool stop_ty, int *count)
             wall_breaker(creature);
             if (!randint0(7)) {
                 project(creature, 0, 7, creature.y, creature.x, 50, AttributeType::KILL_WALL, flg);
-                take_hit(creature, DAMAGE_NOESCAPE, 50, _("エネルギーのうねり", "surge of energy"));
+                apply_damage_to_creature(creature, DAMAGE_NOESCAPE, 50, _("エネルギーのうねり", "surge of energy"));
             }
 
             if (!one_in_(6)) {

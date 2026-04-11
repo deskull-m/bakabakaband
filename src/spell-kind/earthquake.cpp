@@ -1,4 +1,5 @@
 #include "spell-kind/earthquake.h"
+#include "combat/damage-dispatcher.h"
 #include "dungeon/quest.h"
 #include "floor/floor-object.h"
 #include "game-option/play-record-options.h"
@@ -107,7 +108,7 @@ void process_player_damage_undodged(CreatureEntity &creature, int m_idx)
     constexpr auto direct_hit_damage = 200;
     msg_print(_("あなたはひどい怪我を負った！", "You are severely crushed!"));
     /// FIXME: 避けた時はスタン値が増加するのに直撃時は増加していない。バグ？
-    take_hit(creature, DAMAGE_ATTACK, direct_hit_damage, killer);
+    apply_damage_to_creature(creature, DAMAGE_ATTACK, direct_hit_damage, killer);
 }
 
 void process_player_damage_dodged(CreatureEntity &creature, int m_idx)
@@ -126,7 +127,7 @@ void process_player_damage_dodged(CreatureEntity &creature, int m_idx)
 
     const auto killer = build_killer_on_earthquake(creature, m_idx);
     BadStatusSetter(creature).mod_stun(randnum1<short>(50));
-    take_hit(creature, DAMAGE_ATTACK, Dice::roll(10, 4), killer);
+    apply_damage_to_creature(creature, DAMAGE_ATTACK, Dice::roll(10, 4), killer);
 }
 
 void process_hit_to_player(CreatureEntity &creature, std::span<const Pos2D> pos_collapses, int m_idx)

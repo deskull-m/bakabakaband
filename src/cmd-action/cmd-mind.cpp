@@ -12,6 +12,7 @@
 
 #include "cmd-action/cmd-mind.h"
 #include "action/action-limited.h"
+#include "combat/damage-dispatcher.h"
 #include "core/asking-player.h"
 #include "core/window-redrawer.h"
 #include "effect/attribute-types.h"
@@ -370,7 +371,7 @@ static void mind_reflection(CreatureEntity &creature, cm_type *cm_ptr)
 static void process_hard_concentration(CreatureEntity &creature, cm_type *cm_ptr)
 {
     if ((cm_ptr->use_mind == MindKindType::BERSERKER) || (cm_ptr->use_mind == MindKindType::NINJUTSU)) {
-        take_hit(creature, DAMAGE_USELIFE, cm_ptr->mana_cost, _("過度の集中", "concentrating too hard"));
+        apply_damage_to_creature(creature, DAMAGE_USELIFE, cm_ptr->mana_cost, _("過度の集中", "concentrating too hard"));
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::HP);
         return;
     }

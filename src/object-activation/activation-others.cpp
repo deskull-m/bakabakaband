@@ -8,6 +8,7 @@
 #include "artifact/fixed-art-types.h"
 #include "avatar/avatar.h"
 #include "cmd-io/cmd-save.h"
+#include "combat/damage-dispatcher.h"
 #include "core/asking-player.h"
 #include "effect/attribute-types.h"
 #include "effect/effect-characteristics.h"
@@ -136,7 +137,7 @@ bool activate_judgement(CreatureEntity &creature, std::string_view name)
     wiz_lite(creature, false);
 
     msg_format(_("%sはあなたの体力を奪った...", "The %s drains your vitality..."), name.data());
-    take_hit(creature, DAMAGE_LOSELIFE, Dice::roll(3, 8), _("審判の宝石", "the Jewel of Judgement"));
+    apply_damage_to_creature(creature, DAMAGE_LOSELIFE, Dice::roll(3, 8), _("審判の宝石", "the Jewel of Judgement"));
 
     (void)detect_traps(creature, DETECT_RAD_DEFAULT, true);
     (void)detect_doors(creature, DETECT_RAD_DEFAULT);
