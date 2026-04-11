@@ -46,7 +46,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
 #include "target/target-getter.h"
@@ -82,7 +81,7 @@ ObjectThrowEntity::ObjectThrowEntity(CreatureEntity &creature, ItemEntity *q_ptr
 
 bool ObjectThrowEntity::check_can_throw()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     if (!this->check_what_throw()) {
         return false;
     }
@@ -104,7 +103,7 @@ bool ObjectThrowEntity::check_can_throw()
 
 void ObjectThrowEntity::calc_throw_range()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     *this->q_ptr = this->o_ptr->clone();
     this->obj_flags = this->q_ptr->get_flags();
     torch_flags(this->q_ptr, this->obj_flags);
@@ -129,7 +128,7 @@ void ObjectThrowEntity::calc_throw_range()
 
 bool ObjectThrowEntity::calc_throw_grid()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     if (this->shuriken >= 0) {
         this->ty = randint0(101) - 50 + player.y;
         this->tx = randint0(101) - 50 + player.x;
@@ -152,7 +151,7 @@ bool ObjectThrowEntity::calc_throw_grid()
 
 void ObjectThrowEntity::reflect_inventory_by_throw()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     if (this->q_ptr->is_specific_artifact(FixedArtifactId::MJOLLNIR) || this->q_ptr->is_specific_artifact(FixedArtifactId::AEGISFANG) || this->boomerang) {
         this->return_when_thrown = true;
     }
@@ -173,7 +172,7 @@ void ObjectThrowEntity::reflect_inventory_by_throw()
 
 void ObjectThrowEntity::set_class_specific_throw_params()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     PlayerEnergy energy(player);
     energy.set_player_turn_energy(100);
     CreatureClass pc(player);
@@ -192,7 +191,7 @@ void ObjectThrowEntity::set_class_specific_throw_params()
 
 void ObjectThrowEntity::set_racial_chance()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     auto compensation = this->obj_flags.has(TR_THROW) ? this->q_ptr->to_h : 0;
     this->chance = player.skill_tht + (player.to_h_b + compensation) * BTH_PLUS_ADJ;
     if (this->shuriken != 0) {
@@ -202,7 +201,7 @@ void ObjectThrowEntity::set_racial_chance()
 
 void ObjectThrowEntity::exe_throw()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     this->cur_dis = 0;
     while (this->cur_dis <= this->tdis) {
         if ((this->y == this->ty) && (this->x == this->tx)) {
@@ -226,7 +225,7 @@ void ObjectThrowEntity::exe_throw()
 
 void ObjectThrowEntity::display_figurine_throw()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     if ((this->q_ptr->bi_key.tval() != ItemKindType::FIGURINE) || player.current_floor_ptr->inside_arena) {
         return;
     }
@@ -245,7 +244,7 @@ void ObjectThrowEntity::display_figurine_throw()
 
 void ObjectThrowEntity::display_potion_throw()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     if (!this->q_ptr->is_potion()) {
         return;
     }
@@ -277,7 +276,7 @@ void ObjectThrowEntity::display_potion_throw()
 
 void ObjectThrowEntity::check_boomerang_throw()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     if (!this->return_when_thrown) {
         return;
     }
@@ -299,7 +298,7 @@ void ObjectThrowEntity::check_boomerang_throw()
 
 void ObjectThrowEntity::process_boomerang_back()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     if (this->come_back) {
         if ((this->i_idx != INVEN_MAIN_HAND) && (this->i_idx != INVEN_SUB_HAND)) {
             store_item_to_inventory(player, this->q_ptr);
@@ -330,7 +329,7 @@ void ObjectThrowEntity::process_boomerang_back()
 
 void ObjectThrowEntity::drop_thrown_item()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     if (!this->do_drop) {
         return;
     }
@@ -349,7 +348,7 @@ bool ObjectThrowEntity::has_hit_monster() const
 
 bool ObjectThrowEntity::check_what_throw()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     if (this->shuriken >= 0) {
         this->i_idx = this->shuriken;
         this->o_ptr = player.inventory[this->i_idx].get();
@@ -373,7 +372,7 @@ bool ObjectThrowEntity::check_what_throw()
 
 bool ObjectThrowEntity::check_throw_boomerang()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     if (has_melee_weapon(player, INVEN_MAIN_HAND) && has_melee_weapon(player, INVEN_SUB_HAND)) {
         concptr q, s;
         q = _("どの武器を投げますか? ", "Throw which item? ");
@@ -400,7 +399,7 @@ bool ObjectThrowEntity::check_throw_boomerang()
 
 bool ObjectThrowEntity::check_racial_target_bold()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     const auto pos = mmove2({ this->y, this->x }, player.get_position(), { this->ty, this->tx });
     this->ny[this->cur_dis] = pos.y;
     this->nx[this->cur_dis] = pos.x;
@@ -416,7 +415,7 @@ bool ObjectThrowEntity::check_racial_target_bold()
 
 void ObjectThrowEntity::check_racial_target_seen()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     if (!panel_contains({ this->ny[this->cur_dis], this->nx[this->cur_dis] }) || !player_can_see_bold(player, this->ny[this->cur_dis], this->nx[this->cur_dis])) {
         term_xtra(TERM_XTRA_DELAY, this->msec);
         return;
@@ -437,7 +436,7 @@ void ObjectThrowEntity::check_racial_target_seen()
 
 bool ObjectThrowEntity::check_racial_target_monster()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     this->prev_y = this->y;
     this->prev_x = this->x;
     this->x = this->nx[this->cur_dis];
@@ -448,7 +447,7 @@ bool ObjectThrowEntity::check_racial_target_monster()
 
 void ObjectThrowEntity::attack_racial_power()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     if (!this->hit_monster) {
         return;
     }
@@ -491,7 +490,7 @@ void ObjectThrowEntity::attack_racial_power()
 
 void ObjectThrowEntity::display_attack_racial_power()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     if (!this->hit_monster) {
         return;
     }
@@ -512,7 +511,7 @@ void ObjectThrowEntity::display_attack_racial_power()
 
 void ObjectThrowEntity::calc_racial_power_damage()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     if (!this->hit_monster) {
         return;
     }
@@ -545,7 +544,7 @@ void ObjectThrowEntity::calc_racial_power_damage()
 
 void ObjectThrowEntity::process_boomerang_throw()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     if ((this->back_chance <= 30) || (one_in_(100) && !this->super_boomerang)) {
         msg_format(_("%sが返ってこなかった！", "%s doesn't come back!"), this->o2_name.data());
         return;
