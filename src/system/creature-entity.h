@@ -35,13 +35,8 @@ class TimedEffects;
 struct player_race_info;
 struct player_personality;
 struct player_class_info;
-enum class MonraceId : int16_t;
-enum class Virtue : short;
-enum player_sex : byte;
-enum class PlayerRaceType;
-enum class PlayerClassType : short;
-enum class MimicKindType;
 
+enum player_sex : byte;
 enum class DungeonId;
 enum class ElementRealmType;
 enum class FixedArtifactId : short;
@@ -49,13 +44,11 @@ enum class ItemKindType : short;
 enum class MimicKindType;
 enum class MonraceId : int16_t;
 enum class MonsterAbilityType;
+enum class PlayerClassType : short;
+enum class PlayerRaceType;
 enum class PlayerSkillKindType;
 enum class RealmType;
 enum class Virtue : short;
-class Direction;
-class FloorType;
-class ItemEntity;
-class TimedEffects;
 
 enum class INCIDENT {
     WALK = 0,
