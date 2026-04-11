@@ -11,6 +11,8 @@
 int apply_damage_to_creature(CreatureEntity &victim, int damage, const DamageContext &ctx)
 {
     if (victim.is_player()) {
+        // プレイヤー経路は無敵・多重影分身・幽体化等の mitigation 後の
+        // 実適用ダメージ量を返す。
         return apply_damage_to_player_impl(victim, ctx.damage_type, damage, ctx.cause, ctx.killer_monrace_id);
     }
 
@@ -20,8 +22,13 @@ int apply_damage_to_creature(CreatureEntity &victim, int damage, const DamageCon
         return 0;
     }
 
+    // モンスター経路でも「適用したダメージ量」を返すことでプレイヤー経路と
+    // 戻り値セマンティクスを統一する。mon_take_hit() は呼び出し時点で
+    // 既に耐性・防御計算が済んだ damage を受け取る設計のため、そのまま
+    // damage を返してよい（生死判定が必要な場合は victim.is_dead() を参照）。
     MonsterDamageProcessor mdp(*ctx.attacker, ctx.victim_m_idx, damage, ctx.fear, ctx.attribute_flags);
-    return mdp.mon_take_hit(ctx.cause) ? 1 : 0;
+    mdp.mon_take_hit(ctx.cause);
+    return damage;
 }
 
 int apply_damage_to_creature(CreatureEntity &victim, int damage_type, int damage, std::string_view cause, MonraceId killer_monrace_id)

@@ -44,11 +44,19 @@ struct DamageContext {
  * @param victim 被害者
  * @param damage 与えるダメージ量
  * @param ctx 追加コンテキスト
- * @return プレイヤー経路: 実際に適用されたダメージ量 / モンスター経路: 死亡したら 1、さもなくば 0
+ * @return 実際に適用されたダメージ量（0 以上の整数）
  * @note
- * 過渡的な薄いラッパー。プレイヤー経路では ctx.damage_type / cause / killer_monrace_id を使用し、
+ * プレイヤー経路では ctx.damage_type / cause / killer_monrace_id を使用し、
  * モンスター経路では ctx.attacker / victim_m_idx / attribute_flags / fear / cause を使用する。
- * 将来的に両者が完全統合されたら本関数の戻り値型・引数を整理する。
+ *
+ * 戻り値セマンティクスはプレイヤー・モンスター両経路で統一されている:
+ *   「実際に適用されたダメージ量」
+ * - プレイヤー経路: 無敵・多重影分身・幽体化等の mitigation 後の適用量
+ *   （無敵等で完全回避の場合は 0）
+ * - モンスター経路: 入力 damage と同値を返す（事前に耐性・防御計算済みの
+ *   damage を受け取る設計のため）。attacker が nullptr の場合は 0 を返す
+ *
+ * 生死情報が必要な場合は呼び出し後に victim.is_dead() を参照すること。
  */
 int apply_damage_to_creature(CreatureEntity &victim, int damage, const DamageContext &ctx);
 
@@ -59,11 +67,12 @@ int apply_damage_to_creature(CreatureEntity &victim, int damage, const DamageCon
  * @param damage 与えるダメージ量
  * @param cause 死亡原因の説明文
  * @param killer_monrace_id プレイヤー死因となったモンスター種族（環境ダメージなら省略可）
- * @return プレイヤー経路: 実際に適用されたダメージ量 / モンスター経路: 死亡したら 1、さもなくば 0
+ * @return 実際に適用されたダメージ量（0 以上の整数）
  * @note
  * トラップ・飢餓・呪い装備等の環境ダメージからの呼び出しに適したショートカット。
  * 旧 take_hit() との移行互換性のためのシグネチャでもある。
- * モンスター経路では加害者が無いため、現状は 0 を返すのみ（環境効果が直接モンスターを殺すケースは未実装）。
+ * モンスター経路では加害者が無いため 0 を返す（環境効果が直接モンスターを殺す
+ * ケースは現状未実装）。
  */
 int apply_damage_to_creature(CreatureEntity &victim, int damage_type, int damage, std::string_view cause,
     MonraceId killer_monrace_id = static_cast<MonraceId>(0));
