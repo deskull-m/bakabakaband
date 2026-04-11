@@ -1,6 +1,7 @@
 #include "player/patron.h"
 #include "cmd-action/cmd-pet.h"
 #include "cmd-io/cmd-dump.h"
+#include "combat/damage-dispatcher.h"
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
 #include "inventory/inventory-slot-types.h"
@@ -339,7 +340,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「苦しむがよい、無能な愚か者よ！」", "'Suffer, pathetic fool!'"));
             fire_ball(creature, AttributeType::DISINTEGRATE, Direction::self(), creature.level * 4, 4);
-            take_hit(creature, DAMAGE_NOESCAPE, creature.level * 4, wrath_reason);
+            apply_damage_to_creature(creature, DAMAGE_NOESCAPE, creature.level * 4, wrath_reason);
             reward = _("分解の球が発生した。", "generating disintegration ball");
             break;
         case REW_HEAL_FUL:
@@ -435,7 +436,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
         case REW_WRATH:
             msg_format(_("%sの声が轟き渡った:", "The voice of %s thunders:"), this->name.data());
             msg_print(_("「死ぬがよい、下僕よ！」", "'Die, mortal!'"));
-            take_hit(creature, DAMAGE_LOSELIFE, creature.level * 4, wrath_reason);
+            apply_damage_to_creature(creature, DAMAGE_LOSELIFE, creature.level * 4, wrath_reason);
             for (int stat = 0; stat < A_MAX; stat++) {
                 (void)dec_stat(creature, stat, 10 + randint1(15), false);
             }

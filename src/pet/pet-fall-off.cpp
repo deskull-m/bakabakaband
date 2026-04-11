@@ -5,6 +5,7 @@
  */
 
 #include "pet/pet-fall-off.h"
+#include "combat/damage-dispatcher.h"
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
 #include "floor/geometry.h"
@@ -135,7 +136,7 @@ bool process_fall_off_horse(CreatureEntity &creature, int dam, bool force)
         if (!pos_fall_off) {
             const auto m_name = monster_desc(creature, monster, 0);
             msg_format(_("%sから振り落とされそうになって、壁にぶつかった。", "You have nearly fallen from %s but bumped into a wall."), m_name.data());
-            take_hit(creature, DAMAGE_NOESCAPE, monrace.level + 3, _("壁への衝突", "bumping into a wall"));
+            apply_damage_to_creature(creature, DAMAGE_NOESCAPE, monrace.level + 3, _("壁への衝突", "bumping into a wall"));
             return false;
         }
 
@@ -174,7 +175,7 @@ bool process_fall_off_horse(CreatureEntity &creature, int dam, bool force)
         const auto m_name = monster_desc(creature, monster, 0);
         msg_format(_("%sから落ちたが、空中でうまく体勢を立て直して着地した。", "You are thrown from %s but make a good landing."), m_name.data());
     } else {
-        take_hit(creature, DAMAGE_NOESCAPE, monrace.level + 3, _("落馬", "Falling from riding"));
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, monrace.level + 3, _("落馬", "Falling from riding"));
         fall_dam = true;
     }
 

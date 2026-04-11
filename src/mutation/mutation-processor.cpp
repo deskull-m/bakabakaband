@@ -1,4 +1,5 @@
 #include "mutation/mutation-processor.h"
+#include "combat/damage-dispatcher.h"
 #include "core/asking-player.h"
 #include "core/disturbance.h"
 #include "effect/attribute-types.h"
@@ -519,14 +520,14 @@ void process_world_aux_mutation(CreatureEntity &creature)
 
             creature.csp += healing;
             RedrawingFlagsUpdater::get_instance().set_flags(flags);
-            take_hit(creature, DAMAGE_LOSELIFE, healing, _("頭に昇った血", "blood rushing to the head"));
+            apply_damage_to_creature(creature, DAMAGE_LOSELIFE, healing, _("頭に昇った血", "blood rushing to the head"));
         }
     }
 
     if (creature.muta.has(PlayerMutationType::DISARM) && one_in_(10000)) {
         disturb(creature, false, true);
         msg_print(_("足がもつれて転んだ！", "You trip over your own feet!"));
-        take_hit(creature, DAMAGE_NOESCAPE, randint1(creature.wt / 6), _("転倒", "tripping"));
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, randint1(creature.wt / 6), _("転倒", "tripping"));
         drop_weapons(creature);
     }
 }

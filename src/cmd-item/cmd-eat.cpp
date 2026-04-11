@@ -6,6 +6,7 @@
 
 #include "cmd-item/cmd-eat.h"
 #include "avatar/avatar.h"
+#include "combat/damage-dispatcher.h"
 #include "core/window-redrawer.h"
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
@@ -325,27 +326,27 @@ static bool exe_eat_food_type_object(CreatureEntity &creature, const BaseitemKey
         }
         break;
     case SV_FOOD_WEAKNESS:
-        take_hit(creature, DAMAGE_NOESCAPE, Dice::roll(6, 6), _("毒入り食料", "poisonous food"));
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, Dice::roll(6, 6), _("毒入り食料", "poisonous food"));
         (void)do_dec_stat(creature, A_STR);
         return true;
     case SV_FOOD_SICKNESS:
-        take_hit(creature, DAMAGE_NOESCAPE, Dice::roll(6, 6), _("毒入り食料", "poisonous food"));
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, Dice::roll(6, 6), _("毒入り食料", "poisonous food"));
         (void)do_dec_stat(creature, A_CON);
         return true;
     case SV_FOOD_STUPIDITY:
-        take_hit(creature, DAMAGE_NOESCAPE, Dice::roll(8, 8), _("毒入り食料", "poisonous food"));
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, Dice::roll(8, 8), _("毒入り食料", "poisonous food"));
         (void)do_dec_stat(creature, A_INT);
         return true;
     case SV_FOOD_NAIVETY:
-        take_hit(creature, DAMAGE_NOESCAPE, Dice::roll(8, 8), _("毒入り食料", "poisonous food"));
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, Dice::roll(8, 8), _("毒入り食料", "poisonous food"));
         (void)do_dec_stat(creature, A_WIS);
         return true;
     case SV_FOOD_UNHEALTH:
-        take_hit(creature, DAMAGE_NOESCAPE, Dice::roll(10, 10), _("毒入り食料", "poisonous food"));
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, Dice::roll(10, 10), _("毒入り食料", "poisonous food"));
         (void)do_dec_stat(creature, A_CON);
         return true;
     case SV_FOOD_DISEASE:
-        take_hit(creature, DAMAGE_NOESCAPE, Dice::roll(10, 10), _("毒入り食料", "poisonous food"));
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, Dice::roll(10, 10), _("毒入り食料", "poisonous food"));
         (void)do_dec_stat(creature, A_STR);
         return true;
     case SV_FOOD_CURE_POISON:
