@@ -8,6 +8,7 @@
 #include "cmd-io/cmd-dump.h"
 #include "cmd-item/cmd-magiceat.h"
 #include "combat/attack-power-table.h"
+#include "combat/damage-dispatcher.h"
 #include "core/asking-player.h"
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
@@ -2750,7 +2751,7 @@ void wreck_the_pattern(CreatureEntity &creature)
     msg_print(_("パターンを血で汚してしまった！", "You bleed on the Pattern!"));
     msg_print(_("何か恐ろしい事が起こった！", "Something terrible happens!"));
     if (!creature.is_invulnerable()) {
-        take_hit(creature, DAMAGE_NOESCAPE, Dice::roll(10, 8), _("パターン損壊", "corrupting the Pattern"));
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, Dice::roll(10, 8), _("パターン損壊", "corrupting the Pattern"));
     }
 
     auto to_ruin = randint1(45) + 35;

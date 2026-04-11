@@ -6,6 +6,7 @@
 
 #include "object-activation/activation-switcher.h"
 #include "artifact/random-art-effects.h"
+#include "combat/damage-dispatcher.h"
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/place-monster-types.h"
 #include "object-activation/activation-bolt-ball.h"
@@ -363,7 +364,7 @@ bool switch_activation(CreatureEntity &creature, ItemEntity **o_ptr_ptr, const R
         return activate_teleport_level(creature);
     case RandomArtActType::STRAIN_HASTE:
         msg_format(_("%sはあなたの体力を奪った...", "The %s drains your vitality..."), name.data());
-        take_hit(creature, DAMAGE_LOSELIFE, Dice::roll(3, 8), _("加速した疲労", "the strain of haste"));
+        apply_damage_to_creature(creature, DAMAGE_LOSELIFE, Dice::roll(3, 8), _("加速した疲労", "the strain of haste"));
         (void)mod_acceleration(creature, 25 + randint1(25), false);
         return true;
     case RandomArtActType::FISHING:

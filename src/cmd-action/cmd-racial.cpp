@@ -8,6 +8,7 @@
 #include "action/action-limited.h"
 #include "action/mutation-execution.h"
 #include "action/racial-execution.h"
+#include "combat/damage-dispatcher.h"
 #include "core/asking-player.h"
 #include "core/window-redrawer.h"
 #include "game-option/text-display-options.h"
@@ -452,7 +453,7 @@ static bool racial_power_reduce_mana(CreatureEntity &creature, rc_type *rc_ptr)
     } else {
         actual_racial_cost -= creature.csp;
         creature.csp = 0;
-        take_hit(creature, DAMAGE_USELIFE, actual_racial_cost, _("過度の集中", "concentrating too hard"));
+        apply_damage_to_creature(creature, DAMAGE_USELIFE, actual_racial_cost, _("過度の集中", "concentrating too hard"));
     }
 
     return true;

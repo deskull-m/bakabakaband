@@ -11,6 +11,7 @@
 #include "avatar/avatar.h"
 #include "cmd-action/cmd-mind.h"
 #include "cmd-io/cmd-dump.h"
+#include "combat/damage-dispatcher.h"
 #include "core/asking-player.h"
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
@@ -1099,7 +1100,7 @@ bool do_cmd_cast(CreatureEntity &creature)
                 sanity_blast(creature, tl::nullopt, true);
             } else {
                 msg_print(_("痛い！", "It hurts!"));
-                take_hit(creature, DAMAGE_LOSELIFE, Dice::roll(sval + 1, 6), _("暗黒魔法の逆流", "a miscast Death spell"));
+                apply_damage_to_creature(creature, DAMAGE_LOSELIFE, Dice::roll(sval + 1, 6), _("暗黒魔法の逆流", "a miscast Death spell"));
 
                 if ((spell_id > 15) && one_in_(6) && !creature.hold_exp) {
                     lose_exp(creature, spell_id * 250);

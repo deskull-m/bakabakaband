@@ -1,4 +1,5 @@
 #include "specific-object/chest.h"
+#include "combat/damage-dispatcher.h"
 #include "effect/attribute-types.h"
 #include "floor/floor-object.h"
 #include "grid/grid.h"
@@ -129,14 +130,14 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
     /* Lose strength */
     if (trap.has(ChestTrapType::LOSE_STR)) {
         msg_print(_("仕掛けられていた小さな針に刺されてしまった！", "A small needle has pricked you!"));
-        take_hit(*this->creature_ptr, DAMAGE_NOESCAPE, Dice::roll(1, 4), _("毒針", "a poison needle"));
+        apply_damage_to_creature(*this->creature_ptr, DAMAGE_NOESCAPE, Dice::roll(1, 4), _("毒針", "a poison needle"));
         (void)do_dec_stat(*this->creature_ptr, A_STR);
     }
 
     /* Lose constitution */
     if (trap.has(ChestTrapType::LOSE_CON)) {
         msg_print(_("仕掛けられていた小さな針に刺されてしまった！", "A small needle has pricked you!"));
-        take_hit(*this->creature_ptr, DAMAGE_NOESCAPE, Dice::roll(1, 4), _("毒針", "a poison needle"));
+        apply_damage_to_creature(*this->creature_ptr, DAMAGE_NOESCAPE, Dice::roll(1, 4), _("毒針", "a poison needle"));
         (void)do_dec_stat(*this->creature_ptr, A_CON);
     }
 
@@ -230,7 +231,7 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
     if (trap.has(ChestTrapType::NUKE)) {
         msg_print(_("放射性廃棄物の嵐が巻き起こった！", "A storm of radioactive waste erupts!"));
         (void)fire_ball(*this->creature_ptr, AttributeType::NUKE, Direction::self(), 150, 2);
-        take_hit(*this->creature_ptr, DAMAGE_NOESCAPE, (150 + randint1(50)) * calc_nuke_damage_rate(*this->creature_ptr) / 100, _("放射性廃棄物の罠", "a Huge Nuke Trap"));
+        apply_damage_to_creature(*this->creature_ptr, DAMAGE_NOESCAPE, (150 + randint1(50)) * calc_nuke_damage_rate(*this->creature_ptr) / 100, _("放射性廃棄物の罠", "a Huge Nuke Trap"));
     }
 
     /* Dispel player. */
@@ -242,7 +243,7 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
             }
 
             if (one_in_(6)) {
-                take_hit(*this->creature_ptr, DAMAGE_NOESCAPE, Dice::roll(5, 20), _("破滅のトラップの宝箱", "a chest dispel-player trap"));
+                apply_damage_to_creature(*this->creature_ptr, DAMAGE_NOESCAPE, Dice::roll(5, 20), _("破滅のトラップの宝箱", "a chest dispel-player trap"));
                 continue;
             }
 
@@ -293,7 +294,7 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
         msg_print(_("箱の中の物はすべて粉々に砕け散った！", "Everything inside the chest is destroyed!"));
         o_ptr->pval = 0;
         sound(SoundKind::EXPLODE);
-        take_hit(*this->creature_ptr, DAMAGE_ATTACK, Dice::roll(5, 8), _("爆発する箱", "an exploding chest"));
+        apply_damage_to_creature(*this->creature_ptr, DAMAGE_ATTACK, Dice::roll(5, 8), _("爆発する箱", "an exploding chest"));
     }
     /* Scatter contents. */
     if ((trap.has(ChestTrapType::SCATTER)) && o_ptr->is_valid()) {

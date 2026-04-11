@@ -5,6 +5,7 @@
  */
 
 #include "mspell/mspell-special.h"
+#include "combat/damage-dispatcher.h"
 #include "core/disturbance.h"
 #include "effect/attribute-types.h"
 #include "effect/effect-characteristics.h"
@@ -227,7 +228,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(CreatureEntity &creature, POSITION
     dam += Dice::roll(6, 8);
 
     if (monster_to_player || (monster_to_monster && monster_target.is_riding())) {
-        int get_damage = take_hit(creature, DAMAGE_NOESCAPE, dam, m_name);
+        int get_damage = apply_damage_to_creature(creature, DAMAGE_NOESCAPE, dam, m_name);
         if (creature.tim_eyeeye && get_damage > 0 && !creature.is_dead()) {
             const auto m_name_self = monster_desc(creature, monster, MD_PRON_VISIBLE | MD_POSSESSIVE | MD_OBJECTIVE);
             msg_print(_(format("攻撃が%s自身を傷つけた！", m_name.data()), format("The attack of %s has wounded %s!", m_name.data(), m_name_self.data())));

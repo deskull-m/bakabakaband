@@ -3,6 +3,7 @@
 #include "avatar/avatar.h"
 #include "birth/birth-body-spec.h"
 #include "birth/birth-stat.h"
+#include "combat/damage-dispatcher.h"
 #include "core/disturbance.h"
 #include "core/stuff-handler.h"
 #include "game-option/disturbance-options.h"
@@ -46,7 +47,7 @@ void do_poly_wounds(CreatureEntity &creature)
     }
 
     msg_print(_("新たな傷ができた！", "A new wound was created!"));
-    take_hit(creature, DAMAGE_LOSELIFE, change / 2, _("変化した傷", "a polymorphed wound"));
+    apply_damage_to_creature(creature, DAMAGE_LOSELIFE, change / 2, _("変化した傷", "a polymorphed wound"));
     (void)bss.set_cut(change);
 }
 
@@ -177,7 +178,7 @@ void do_poly_self(CreatureEntity &creature)
         }
         if (one_in_(6)) {
             msg_print(_("現在の姿で生きていくのは困難なようだ！", "You find living difficult in your present form!"));
-            take_hit(creature, DAMAGE_LOSELIFE, Dice::roll(randint1(10), creature.level), _("致命的な突然変異", "a lethal mutation"));
+            apply_damage_to_creature(creature, DAMAGE_LOSELIFE, Dice::roll(randint1(10), creature.level), _("致命的な突然変異", "a lethal mutation"));
 
             power -= 10;
         }

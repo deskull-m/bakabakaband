@@ -1,4 +1,5 @@
 #include "monster-attack/monster-attack-lose.h"
+#include "combat/damage-dispatcher.h"
 #include "mind/mind-mirror-master.h"
 #include "monster-attack/monster-attack-player.h"
 #include "monster-attack/monster-attack-status.h"
@@ -28,7 +29,7 @@ void calc_blow_disease(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 4) / 9;
     }
 
-    monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
+    monap_ptr->get_damage += apply_damage_to_creature(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
     if (creature.is_dead() || check_multishadow(creature)) {
         return;
     }
@@ -60,7 +61,7 @@ void calc_blow_lose_strength(CreatureEntity &creature, MonsterAttackPlayer *mona
         monap_ptr->get_damage = monap_ptr->get_damage * (randint1(4) + 4) / 9;
     }
 
-    monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
+    monap_ptr->get_damage += apply_damage_to_creature(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
     if (creature.is_dead() || check_multishadow(creature)) {
         return;
     }
@@ -81,7 +82,7 @@ void calc_blow_lose_intelligence(CreatureEntity &creature, MonsterAttackPlayer *
         monap_ptr->get_damage = monap_ptr->get_damage * (randint1(4) + 4) / 9;
     }
 
-    monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
+    monap_ptr->get_damage += apply_damage_to_creature(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
     if (creature.is_dead() || check_multishadow(creature)) {
         return;
     }
@@ -102,7 +103,7 @@ void calc_blow_lose_wisdom(CreatureEntity &creature, MonsterAttackPlayer *monap_
         monap_ptr->get_damage = monap_ptr->get_damage * (randint1(4) + 4) / 9;
     }
 
-    monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
+    monap_ptr->get_damage += apply_damage_to_creature(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
     if (creature.is_dead() || check_multishadow(creature)) {
         return;
     }
@@ -123,7 +124,7 @@ void calc_blow_lose_dexterity(CreatureEntity &creature, MonsterAttackPlayer *mon
         monap_ptr->get_damage = monap_ptr->get_damage * (randint1(4) + 4) / 9;
     }
 
-    monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
+    monap_ptr->get_damage += apply_damage_to_creature(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
     if (creature.is_dead() || check_multishadow(creature)) {
         return;
     }
@@ -144,7 +145,7 @@ void calc_blow_lose_constitution(CreatureEntity &creature, MonsterAttackPlayer *
         monap_ptr->get_damage = monap_ptr->get_damage * (randint1(4) + 4) / 9;
     }
 
-    monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
+    monap_ptr->get_damage += apply_damage_to_creature(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
     if (creature.is_dead() || check_multishadow(creature)) {
         return;
     }
@@ -165,7 +166,7 @@ void calc_blow_lose_charisma(CreatureEntity &creature, MonsterAttackPlayer *mona
         monap_ptr->get_damage = monap_ptr->get_damage * (randint1(4) + 4) / 9;
     }
 
-    monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
+    monap_ptr->get_damage += apply_damage_to_creature(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
     if (creature.is_dead() || check_multishadow(creature)) {
         return;
     }
@@ -208,7 +209,7 @@ void calc_blow_lose_all(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr
     }
 
     monap_ptr->damage = monap_ptr->damage * damage_ratio / 100;
-    monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
+    monap_ptr->get_damage += apply_damage_to_creature(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
     if (creature.is_dead() || check_multishadow(creature)) {
         return;
     }

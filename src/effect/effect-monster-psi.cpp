@@ -1,4 +1,5 @@
 #include "effect/effect-monster-psi.h"
+#include "combat/damage-dispatcher.h"
 #include "core/window-redrawer.h"
 #include "effect/effect-monster-util.h"
 #include "floor/line-of-sight.h"
@@ -158,7 +159,7 @@ static void effect_monster_psi_resist(CreatureEntity &creature, EffectMonster *e
 
     /* Injure +/- confusion */
     angband_strcpy(em_ptr->killer, monster_desc(creature, *em_ptr->m_ptr, MD_WRONGDOER_NAME), sizeof(em_ptr->killer));
-    take_hit(creature, DAMAGE_ATTACK, em_ptr->dam, em_ptr->killer);
+    apply_damage_to_creature(creature, DAMAGE_ATTACK, em_ptr->dam, em_ptr->killer);
     effect_monster_psi_reflect_extra_effect(creature, em_ptr);
     em_ptr->dam = 0;
 }
@@ -251,7 +252,7 @@ static void effect_monster_psi_drain_resist(CreatureEntity &creature, EffectMons
 
     angband_strcpy(em_ptr->killer, monster_desc(creature, *em_ptr->m_ptr, MD_WRONGDOER_NAME), sizeof(em_ptr->killer));
     if (check_multishadow(creature)) {
-        take_hit(creature, DAMAGE_ATTACK, em_ptr->dam, em_ptr->killer);
+        apply_damage_to_creature(creature, DAMAGE_ATTACK, em_ptr->dam, em_ptr->killer);
         em_ptr->dam = 0;
         return;
     }
@@ -265,7 +266,7 @@ static void effect_monster_psi_drain_resist(CreatureEntity &creature, EffectMons
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
     rfu.set_flag(SubWindowRedrawingFlag::SPELL);
-    take_hit(creature, DAMAGE_ATTACK, em_ptr->dam, em_ptr->killer);
+    apply_damage_to_creature(creature, DAMAGE_ATTACK, em_ptr->dam, em_ptr->killer);
     em_ptr->dam = 0;
 }
 

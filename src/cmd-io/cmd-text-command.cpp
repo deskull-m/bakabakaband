@@ -6,6 +6,7 @@
 #include "cmd-io/cmd-text-command.h"
 #include "cmd-action/cmd-attack.h"
 #include "cmd-action/cmd-others.h"
+#include "combat/damage-dispatcher.h"
 #include "core/asking-player.h"
 #include "core/stuff-handler.h"
 #include "floor/floor-object.h"
@@ -250,7 +251,7 @@ static std::vector<TextCommand> get_text_commands()
                 damage = std::max(damage, 50);
                 damage = std::min(damage, creature.hp - 1);
 
-                take_hit(creature, DAMAGE_NOESCAPE, damage, _("ひでぶ", "Hidebu"));
+                apply_damage_to_creature(creature, DAMAGE_NOESCAPE, damage, _("ひでぶ", "Hidebu"));
 
                 // HPが1未満にならないようにする
                 if (creature.hp < 1) {

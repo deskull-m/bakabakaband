@@ -7,6 +7,7 @@
 
 #include "specific-object/death-scythe.h"
 #include "combat/attack-criticality.h"
+#include "combat/damage-dispatcher.h"
 #include "core/stuff-handler.h"
 #include "inventory/inventory-slot-types.h"
 #include "main/sound-definitions-table.h"
@@ -163,6 +164,6 @@ void process_death_scythe_reflection(CreatureEntity &creature, player_attack_typ
         pa_ptr->attack_damage = 0;
     }
 
-    take_hit(creature, DAMAGE_FORCE, pa_ptr->attack_damage, _("死の大鎌", "Death scythe"));
+    apply_damage_to_creature(creature, DAMAGE_FORCE, pa_ptr->attack_damage, _("死の大鎌", "Death scythe"));
     handle_stuff(creature);
 }

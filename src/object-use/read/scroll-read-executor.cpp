@@ -5,6 +5,7 @@
  */
 
 #include "object-use/read/scroll-read-executor.h"
+#include "combat/damage-dispatcher.h"
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/place-monster-types.h"
 #include "player-base/player-class.h"
@@ -380,7 +381,7 @@ bool ScrollReadExecutor::read()
     case SV_SCROLL_FIRE:
         fire_ball(this->creature, AttributeType::FIRE, Direction::self(), 666, 4);
         if (!(is_oppose_fire(this->creature) || has_resist_fire(this->creature) || has_immune_fire(this->creature))) {
-            take_hit(this->creature, DAMAGE_NOESCAPE, 50 + randint1(50), _("炎の巻物", "a Scroll of Fire"));
+            apply_damage_to_creature(this->creature, DAMAGE_NOESCAPE, 50 + randint1(50), _("炎の巻物", "a Scroll of Fire"));
         }
 
         this->ident = true;
@@ -388,7 +389,7 @@ bool ScrollReadExecutor::read()
     case SV_SCROLL_ICE:
         fire_ball(this->creature, AttributeType::ICE, Direction::self(), 777, 4);
         if (!(is_oppose_cold(this->creature) || has_resist_cold(this->creature) || has_immune_cold(this->creature))) {
-            take_hit(this->creature, DAMAGE_NOESCAPE, 100 + randint1(100), _("氷の巻物", "a Scroll of Ice"));
+            apply_damage_to_creature(this->creature, DAMAGE_NOESCAPE, 100 + randint1(100), _("氷の巻物", "a Scroll of Ice"));
         }
 
         this->ident = true;
@@ -396,7 +397,7 @@ bool ScrollReadExecutor::read()
     case SV_SCROLL_CHAOS:
         fire_ball(this->creature, AttributeType::CHAOS, Direction::self(), 1000, 4);
         if (!has_resist_chaos(this->creature)) {
-            take_hit(this->creature, DAMAGE_NOESCAPE, 111 + randint1(111), _("ログルスの巻物", "a Scroll of Logrus"));
+            apply_damage_to_creature(this->creature, DAMAGE_NOESCAPE, 111 + randint1(111), _("ログルスの巻物", "a Scroll of Logrus"));
         }
 
         this->ident = true;
@@ -444,7 +445,7 @@ bool ScrollReadExecutor::read()
     case SV_SCROLL_THUNDER: {
         fire_ball(this->creature, AttributeType::ELEC, Direction::self(), 888, 4);
         if (!(is_oppose_elec(this->creature) || has_resist_elec(this->creature) || has_immune_elec(this->creature))) {
-            take_hit(this->creature, DAMAGE_NOESCAPE, 100 + randint1(100), _("雷の巻物", "a Scroll of Thunder"));
+            apply_damage_to_creature(this->creature, DAMAGE_NOESCAPE, 100 + randint1(100), _("雷の巻物", "a Scroll of Thunder"));
         }
         this->ident = true;
         break;

@@ -5,6 +5,7 @@
  */
 
 #include "specific-object/stone-of-lore.h"
+#include "combat/damage-dispatcher.h"
 #include "player/player-damage.h"
 #include "spell-kind/spells-perception.h"
 #include "status/bad-status-setter.h"
@@ -35,13 +36,13 @@ bool StoneOfLore::perilous_secrets()
 
     this->consume_mp();
     auto dam_source = _("危険な秘密", "perilous secrets");
-    take_hit(*this->creature_ptr, DAMAGE_LOSELIFE, Dice::roll(1, 12), dam_source);
+    apply_damage_to_creature(*this->creature_ptr, DAMAGE_LOSELIFE, Dice::roll(1, 12), dam_source);
     if (one_in_(5)) {
         (void)BadStatusSetter(*this->creature_ptr).mod_confusion(randnum1<short>(10));
     }
 
     if (one_in_(20)) {
-        take_hit(*this->creature_ptr, DAMAGE_LOSELIFE, Dice::roll(4, 10), dam_source);
+        apply_damage_to_creature(*this->creature_ptr, DAMAGE_LOSELIFE, Dice::roll(4, 10), dam_source);
     }
 
     return true;
