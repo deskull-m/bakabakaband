@@ -28,7 +28,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/grid-selector.h"
 #include "target/target-checker.h"
@@ -45,7 +44,7 @@
  */
 bool teleport_swap(CreatureEntity &creature, const Direction &dir)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto pos = dir.get_target_position(creature.get_position());
     if (creature.anti_tele) {
         msg_print(_("不思議な力がテレポートを防いだ！", "A mysterious force prevents you from teleporting!"));
@@ -284,7 +283,7 @@ bool teleport_player_aux(CreatureEntity &creature, POSITION dis, bool is_quantum
         return false;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (!is_quantum_effect && creature.anti_tele && !(mode & TELEPORT_NONMAGICAL)) {
         msg_print(_("不思議な力がテレポートを防いだ！", "A mysterious force prevents you from teleporting!"));
         return false;
@@ -471,7 +470,7 @@ void teleport_player_away(MONSTER_IDX m_idx, CreatureEntity &creature, POSITION 
  */
 void teleport_player_to(CreatureEntity &creature, POSITION ny, POSITION nx, teleport_flags mode)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (creature.anti_tele && !(mode & TELEPORT_NONMAGICAL)) {
         msg_print(_("不思議な力がテレポートを防いだ！", "A mysterious force prevents you from teleporting!"));
         return;
@@ -515,7 +514,7 @@ void teleport_player_to(CreatureEntity &creature, POSITION ny, POSITION nx, tele
 
 void teleport_away_followable(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.get_monster(m_idx);
     const auto old_m_pos = monster.get_position();

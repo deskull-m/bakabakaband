@@ -43,6 +43,25 @@ bool CreatureEntity::try_set_position(const Pos2D &pos)
     return true;
 }
 
+bool CreatureEntity::is_fully_healthy() const
+{
+    auto effects = this->effects();
+    auto is_healthy = this->hp == this->maxhp;
+    is_healthy &= this->csp >= this->msp;
+    is_healthy &= !effects->blindness().is_blind();
+    is_healthy &= !effects->confusion().is_confused();
+    is_healthy &= !effects->poison().is_poisoned();
+    is_healthy &= !effects->fear().is_fearful();
+    is_healthy &= !effects->stun().is_stunned();
+    is_healthy &= !effects->cut().is_cut();
+    is_healthy &= !effects->deceleration().is_slow();
+    is_healthy &= !effects->paralysis().is_paralyzed();
+    is_healthy &= !effects->hallucination().is_hallucinated();
+    is_healthy &= !this->word_recall;
+    is_healthy &= !this->alter_reality;
+    return is_healthy;
+}
+
 bool CreatureEntity::check_sub_alignments(const byte sub_align1, const byte sub_align2)
 {
     if (sub_align1 == sub_align2) {

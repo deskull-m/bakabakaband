@@ -21,7 +21,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "util/probability-table.h"
@@ -125,7 +124,7 @@ void process_player_damage_dodged(CreatureEntity &creature, int m_idx)
         return;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto killer = build_killer_on_earthquake(creature, m_idx);
     BadStatusSetter(player).mod_stun(randnum1<short>(50));
     take_hit(creature, DAMAGE_ATTACK, Dice::roll(10, 4), killer);
@@ -133,7 +132,7 @@ void process_player_damage_dodged(CreatureEntity &creature, int m_idx)
 
 void process_hit_to_player(CreatureEntity &creature, std::span<const Pos2D> pos_collapses, int m_idx)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto has_hit = ranges::contains(pos_collapses, creature.get_position());
     if (!has_hit || has_pass_wall(creature) || has_kill_wall(creature)) {
         return;
@@ -257,7 +256,7 @@ void process_hit_to_monsters(CreatureEntity &creature, std::span<const Pos2D> po
 
 void destruct_earthquake_area(CreatureEntity &creature, std::span<const Pos2D> pos_collapses)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     floor.forget_mon_lite();
     const auto &dungeon = floor.get_dungeon_definition();
@@ -351,7 +350,7 @@ bool earthquake(CreatureEntity &creature, const Pos2D &center, int radius, MONST
 {
     const int earthquake_max = 80;
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     if ((floor.is_in_quest() && QuestType::is_fixed(floor.quest_number)) || !floor.is_underground()) {
         return false;

@@ -23,7 +23,6 @@
 #include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
@@ -88,7 +87,7 @@ static void give_one_ability_of_object(ItemEntity *to_ptr, ItemEntity *from_ptr)
 
 static std::pair<short, ItemEntity *> select_repairing_broken_weapon(CreatureEntity &creature, const int row)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     prt(_("修復には材料となるもう1つの武器が必要です。", "Hand one material weapon to repair a broken weapon."), row, 2);
     prt(_("材料に使用した武器はなくなります！", "The material weapon will disappear after repairing!!"), row + 1, 2);
     constexpr auto q = _("どの折れた武器を修復しますか？", "Repair which broken weapon? ");
@@ -114,14 +113,14 @@ static std::pair<short, ItemEntity *> select_repairing_broken_weapon(CreatureEnt
 
 static void display_reparing_weapon(CreatureEntity &creature, const ItemEntity &item, const int row)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto item_name = describe_flavor(player, item, OD_NAME_ONLY);
     prt(format(_("修復する武器　： %s", "Repairing: %s"), item_name.data()), row + 3, 2);
 }
 
 static void display_repair_success_message(CreatureEntity &creature, const ItemEntity &item, const int cost)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto item_name = describe_flavor(player, item, OD_NAME_ONLY);
 #ifdef JP
     msg_format("＄%dで%sに修復しました。", cost, item_name.data());
@@ -139,7 +138,7 @@ static void display_repair_success_message(CreatureEntity &creature, const ItemE
  */
 static PRICE repair_broken_weapon_aux(CreatureEntity &creature, PRICE bcost)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     clear_bldg(0, 22);
     auto row = 7;
     const auto &[i_idx, o_ptr] = select_repairing_broken_weapon(creature, row);

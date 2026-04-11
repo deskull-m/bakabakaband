@@ -10,7 +10,6 @@ public:
     bool is_true_winner() const;
 
     void ride_monster(MONSTER_IDX m_idx);
-    bool is_fully_healthy() const;
     bool is_located_at_running_destination() const;
     void set_position(const Pos2D &pos);
     bool try_resist_eldritch_horror() const;

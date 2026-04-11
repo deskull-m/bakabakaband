@@ -37,7 +37,6 @@
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
@@ -200,7 +199,7 @@ void acquirement(CreatureEntity &creature, POSITION y1, POSITION x1, int num, bo
  */
 bool curse_armor(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     /* Curse the body armor */
     auto &item = *player.inventory[INVEN_BODY];
@@ -261,7 +260,7 @@ bool curse_weapon_object(CreatureEntity &creature, bool force, ItemEntity *o_ptr
         return false;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto item_name = describe_flavor(player, *o_ptr, OD_OMIT_PREFIX);
     if (o_ptr->is_fixed_or_random_artifact() && one_in_(2) && !force) {
 #ifdef JP
@@ -309,7 +308,7 @@ bool curse_weapon_object(CreatureEntity &creature, bool force, ItemEntity *o_ptr
  */
 void brand_bolts(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     for (auto i = 0; i < INVEN_PACK; i++) {
         auto *o_ptr = player.inventory[i].get();
@@ -473,7 +472,7 @@ bool enchant_equipment(ItemEntity *o_ptr, int n, int eflag)
  */
 bool enchant_spell(CreatureEntity &creature, HIT_PROB num_hit, int num_dam, ARMOUR_CLASS num_ac)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     FuncItemTester item_tester(&ItemEntity::allow_enchant_weapon);
     if (num_ac) {
@@ -532,7 +531,7 @@ bool enchant_spell(CreatureEntity &creature, HIT_PROB num_hit, int num_dam, ARMO
  */
 void brand_weapon(CreatureEntity &creature, int brand_type)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     constexpr auto q = _("どの武器を強化しますか? ", "Enchant which weapon? ");
     constexpr auto s = _("強化できる武器がない。", "You have nothing to enchant.");

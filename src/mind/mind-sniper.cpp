@@ -28,7 +28,6 @@
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -247,7 +246,7 @@ void display_snipe_list(CreatureEntity &creature)
  */
 static int get_snipe_power(CreatureEntity &creature, COMMAND_CODE *sn, bool only_browse)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     COMMAND_CODE i;
     int num = 0;
     TERM_LEN y = 1;
@@ -410,7 +409,7 @@ static int get_snipe_power(CreatureEntity &creature, COMMAND_CODE *sn, bool only
 MULTIPLY calc_snipe_damage_with_slay(CreatureEntity &creature, MULTIPLY mult, const CreatureEntity &target, SPELL_IDX snipe_type)
 {
     auto &monrace = target.get_monrace();
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     bool seen = is_seen(player, target);
 
     auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
@@ -543,7 +542,7 @@ MULTIPLY calc_snipe_damage_with_slay(CreatureEntity &creature, MULTIPLY mult, co
  */
 static bool cast_sniper_spell(CreatureEntity &creature, int spell)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto *o_ptr = player.inventory[INVEN_BOW].get();
     if (o_ptr->bi_key.tval() != ItemKindType::BOW) {
         msg_print(_("弓を装備していない！", "You wield no bow!"));
@@ -619,7 +618,7 @@ static bool cast_sniper_spell(CreatureEntity &creature, int spell)
  */
 void do_cmd_snipe(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (cmd_limit_confused(player)) {
         return;
     }

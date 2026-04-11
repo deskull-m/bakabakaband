@@ -20,7 +20,6 @@
 #include "smith/smith-types.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -121,7 +120,7 @@ static void set_smith_redrawing_flags()
  */
 static void drain_essence(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto q = _("どのアイテムから抽出しますか？", "Extract from which item? ");
     auto s = _("抽出できるアイテムがありません。", "You have nothing you can extract from.");
 
@@ -317,7 +316,7 @@ static void add_essence(CreatureEntity &creature, SmithCategoryType mode)
 {
     int menu_line = (use_menu ? 1 : 0);
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     Smith smith(creature);
 
     auto smith_effect_list = Smith::get_effect_list(mode);
@@ -520,7 +519,7 @@ static void add_essence(CreatureEntity &creature, SmithCategoryType mode)
  */
 static void erase_essence(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     constexpr auto q = _("どのアイテムのエッセンスを消去しますか？", "Remove from which item? ");
     constexpr auto s = _("エッセンスを付加したアイテムがありません。", "You have nothing with added essence to remove.");
     short i_idx;
@@ -548,7 +547,7 @@ static void erase_essence(CreatureEntity &creature)
  */
 void do_cmd_kaji(CreatureEntity &creature, bool only_browse)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     COMMAND_CODE menu_line = (use_menu ? 1 : 0);
     if (!only_browse) {
         if (cmd_limit_confused(player)) {
