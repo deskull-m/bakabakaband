@@ -82,7 +82,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/system-variables.h"
 #include "target/target-checker.h"
@@ -223,7 +222,7 @@ static void restore_world_floor_info(CreatureEntity &creature)
         return;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     player.ride_monster(0);
     for (short i = floor.m_max; i > 0; i--) {
         const auto &monster = floor.get_monster(i);

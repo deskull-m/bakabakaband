@@ -48,7 +48,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/target-checker.h"
@@ -143,7 +142,7 @@ void do_cmd_pet_dismiss(CreatureEntity &creature)
 
             if (monster.is_riding()) {
                 msg_format(_("%sから降りた。", "You dismount from %s. "), friend_name.data());
-                static_cast<PlayerType &>(creature).ride_monster(0);
+                creature.ride_monster(0);
                 rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
                 static constexpr auto flags = {
                     MainWindowRedrawingFlag::EXTRA,
@@ -186,7 +185,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
     if (!creature.is_player()) {
         return false;
     }
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     const auto dir = get_direction(player);
     if (!dir) {

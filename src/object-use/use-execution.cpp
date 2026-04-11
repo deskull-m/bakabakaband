@@ -22,7 +22,6 @@
 #include "status/experience.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
@@ -45,7 +44,7 @@ ObjectUseEntity::ObjectUseEntity(CreatureEntity &creature, INVENTORY_IDX i_idx)
  */
 void ObjectUseEntity::execute()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     auto use_charge = true;
     auto *o_ptr = ref_item(player, this->i_idx);
     if ((this->i_idx < 0) && (o_ptr->number > 1)) {
@@ -154,7 +153,7 @@ void ObjectUseEntity::execute()
 
 bool ObjectUseEntity::check_can_use()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     if (cmd_limit_time_walk(player)) {
         return false;
     }

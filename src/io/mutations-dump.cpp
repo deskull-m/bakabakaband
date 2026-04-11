@@ -8,7 +8,6 @@
 #include "mutation/mutation-flag-types.h"
 #include "player/player-status-flags.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief ファイルポインタを通じて突然変異の一覧を出力する
@@ -20,7 +19,7 @@ void dump_mutations(CreatureEntity &creature, FILE *out_file)
         return;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (player.muta.any() || has_good_luck(creature) || has_pervert_attraction(creature)) {
         if (player.muta.has(PlayerMutationType::SPIT_ACID)) {
             fprintf(out_file, _(" あなたは酸を吹きかけることができる。(ダメージ レベルX1)\n", " You can spit acid (dam lvl).\n"));

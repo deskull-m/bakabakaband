@@ -16,7 +16,6 @@
 #include "sv-definition/sv-lite-types.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -27,7 +26,7 @@
  */
 static void do_cmd_refill_lamp(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     constexpr auto q = _("どの油つぼから注ぎますか? ", "Refill with which flask? ");
     constexpr auto s = _("油つぼがない。", "You have no flasks of oil.");
     short i_idx;
@@ -64,7 +63,7 @@ static void do_cmd_refill_lamp(CreatureEntity &creature)
  */
 static void do_cmd_refill_torch(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     constexpr auto q = _("どの松明で明かりを強めますか? ", "Refuel with which torch? ");
     constexpr auto s = _("他に松明がない。", "You have no extra torches.");
     short i_idx;
@@ -103,7 +102,7 @@ static void do_cmd_refill_torch(CreatureEntity &creature)
  */
 void do_cmd_refill(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     CreatureClass(player).break_samurai_stance({ SamuraiStanceType::MUSOU });
     const auto *o_ptr = player.inventory[INVEN_LITE].get();
     const auto &bi_key = o_ptr->bi_key;

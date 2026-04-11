@@ -14,7 +14,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "tracking/health-bar-tracker.h"
@@ -225,7 +224,7 @@ void regenerate_monsters(CreatureEntity &creature)
  */
 void regenerate_captured_monsters(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     bool heal = false;
     for (int i = 0; i < INVEN_TOTAL; i++) {
         auto *o_ptr = player.inventory[i].get();

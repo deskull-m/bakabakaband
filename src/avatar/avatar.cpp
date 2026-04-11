@@ -18,7 +18,6 @@
 #include "player-info/race-types.h"
 #include "player/player-realm.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/enum-converter.h"
 #include "util/probability-table.h"
@@ -178,7 +177,7 @@ void initialize_virtues(CreatureEntity &creature)
     if (!creature.is_player()) {
         return;
     }
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     auto add_virtue = [&](Virtue v) {
         if (v != Virtue::NONE && creature.virtues.find(v) == creature.virtues.end()) {

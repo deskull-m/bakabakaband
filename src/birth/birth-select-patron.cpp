@@ -3,7 +3,6 @@
 #include "io/input-key-acceptor.h"
 #include "player/patron.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
@@ -92,7 +91,7 @@ static int interpret_patron_select_key_move(char key, int initial_patron)
 
 static bool select_patron(CreatureEntity &creature, int *k, concptr sym)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     int cs = player.patron;
     int os = MAX_PATRON;
     std::string cur = birth_patron_label(os, sym);
@@ -156,7 +155,7 @@ static bool select_patron(CreatureEntity &creature, int *k, concptr sym)
  */
 bool get_player_patron(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     clear_from(10);
     put_str(_("注意：《パトロン》によってキャラクターが得る加護が変化します。", "Note: Your patron determines the divine protection you receive."),

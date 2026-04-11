@@ -27,7 +27,6 @@
 #include "status/temporary-resistance.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 
@@ -36,7 +35,7 @@
  */
 static void dispel_player(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     (void)set_acceleration(creature, 0, true);
     set_lightspeed(creature, 0, true);
     (void)BadStatusSetter(creature).set_deceleration(0, true);
@@ -136,7 +135,7 @@ static void dispel_player(CreatureEntity &creature)
  */
 MonsterSpellResult spell_RF4_DISPEL(MONSTER_IDX m_idx, CreatureEntity &creature, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto res = MonsterSpellResult::make_valid();
     res.learnable = target_type == MONSTER_TO_PLAYER;
 

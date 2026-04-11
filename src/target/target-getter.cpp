@@ -11,7 +11,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "target/target-checker.h"
 #include "target/target-setter.h"
 #include "target/target-types.h"
@@ -30,7 +29,7 @@
  */
 Direction get_aim_dir(CreatureEntity &subject, bool enable_repeat)
 {
-    auto &player = static_cast<PlayerType &>(subject);
+    auto &player = subject;
     auto dir = Direction::none();
     auto target = Target::get_last_target();
     if (enable_repeat) {
@@ -109,7 +108,7 @@ Direction get_aim_dir(CreatureEntity &subject, bool enable_repeat)
  */
 Direction get_direction(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     Direction dir = command_dir;
     const auto code = repeat_pull();
     if (code && Direction::is_valid_dir(*code)) {
@@ -168,7 +167,7 @@ Direction get_direction(CreatureEntity &creature)
  */
 Direction get_rep_dir(CreatureEntity &creature, bool under)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     Direction dir = command_dir;
     const auto code = repeat_pull();
     if (code && Direction::is_valid_dir(*code)) {

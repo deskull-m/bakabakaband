@@ -16,7 +16,6 @@
 #include "status/action-setter.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -26,7 +25,7 @@
  */
 void check_music(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (!CreatureClass(player).equals(PlayerClassType::BARD)) {
         return;
     }
@@ -137,7 +136,7 @@ bool set_tim_stealth(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
  */
 void stop_singing(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (!CreatureClass(player).equals(PlayerClassType::BARD)) {
         return;
     }

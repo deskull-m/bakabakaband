@@ -8,7 +8,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "world/world.h"
@@ -23,7 +22,7 @@ int total_friends = 0;
  */
 bool can_player_ride_pet(CreatureEntity &creature, const Grid &grid, bool now_riding)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &world = AngbandWorld::get_instance();
     const auto old_character_xtra = world.character_xtra;
     const auto old_riding = creature.riding;

@@ -1,7 +1,6 @@
 #include "system/player-type-definition.h"
 #include "floor/geometry.h"
 #include "inventory/inventory-slot-types.h"
-#include "market/arena-entry.h"
 #include "monster/monster-util.h"
 #include "system/angband-exceptions.h"
 #include "system/creature-entity.h"
@@ -30,13 +29,6 @@ PlayerType::PlayerType()
     this->timed_effects = std::make_shared<TimedEffects>();
 }
 
-bool PlayerType::is_true_winner() const
-{
-    const auto &world = AngbandWorld::get_instance();
-    const auto &entries = ArenaEntryList::get_instance();
-    return (world.total_winner > 0) && (entries.is_player_true_victor());
-}
-
 /*!
  * @brief インシデント数加算
  * @param incident_id 加算したいインシデント
@@ -51,29 +43,6 @@ void PlayerType::plus_incident(INCIDENT incidentID, int num)
 }
 
 /*!
- * @brief モンスターに乗る
- * @param m_idx 乗るモンスターのID（0で降りる）
- */
-void PlayerType::ride_monster(MONSTER_IDX m_idx)
-{
-    if (is_monster(this->riding)) {
-        this->current_floor_ptr->get_monster(this->riding).get_monster_profile().mflag2.reset(MonsterConstantFlagType::RIDING);
-    }
-
-    this->riding = m_idx;
-
-    if (is_monster(m_idx)) {
-        this->current_floor_ptr->get_monster(m_idx).get_monster_profile().mflag2.set(MonsterConstantFlagType::RIDING);
-    }
-}
-
-
-bool PlayerType::is_located_at_running_destination() const
-{
-    return (this->y == this->run_py) && (this->x == this->run_px);
-}
-
-/*!
  * @brief プレイヤーを指定座標に配置する
  * @param pos 配置先座標
  * @return 配置に成功したらTRUE
@@ -82,11 +51,6 @@ void PlayerType::set_position(const Pos2D &pos)
 {
     this->y = pos.y;
     this->x = pos.x;
-}
-
-bool PlayerType::try_resist_eldritch_horror() const
-{
-    return evaluate_percent(this->skill_sav) || one_in_(2);
 }
 
 bool PlayerType::is_valid() const

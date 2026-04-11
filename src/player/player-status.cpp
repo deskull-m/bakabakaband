@@ -2773,7 +2773,7 @@ void check_experience(CreatureEntity &creature)
     if (!creature.is_player()) {
         return;
     }
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (creature.exp < 0) {
         creature.exp = 0;
     }

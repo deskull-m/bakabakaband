@@ -5,7 +5,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "view/display-messages.h"
 
@@ -16,7 +15,7 @@
  */
 bool hit_and_away(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto dir = get_direction(player);
     if (!dir) {
         return false;

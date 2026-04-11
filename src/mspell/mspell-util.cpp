@@ -6,7 +6,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 mspell_cast_msg_blind::mspell_cast_msg_blind(concptr blind, concptr to_player, concptr to_mons)
@@ -62,7 +61,7 @@ bool monster_near_player(const CreatureEntity &creature, MONSTER_IDX m_idx, MONS
  */
 bool monspell_message_base(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, const mspell_cast_msg &msgs, bool msg_flag_aux, int target_type)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     bool notice = false;
     auto &floor = *creature.current_floor_ptr;
     bool known = monster_near_player(creature, m_idx, t_idx);
@@ -112,7 +111,7 @@ bool monspell_message_base(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_
  */
 bool monspell_message(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, const mspell_cast_msg_blind &msgs, int target_type)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     mspell_cast_msg mcm(msgs.blind, msgs.blind, msgs.to_player, msgs.to_mons);
     const auto is_blind = player.is_blind();
     return monspell_message_base(creature, m_idx, t_idx, mcm, is_blind, target_type);
@@ -128,7 +127,7 @@ bool monspell_message(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t
  */
 void simple_monspell_message(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, const mspell_cast_msg_simple &msgs, int target_type)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     mspell_cast_msg mcm(msgs.to_player, msgs.to_mons, msgs.to_player, msgs.to_mons);
     const auto is_blind = player.is_blind();
     monspell_message_base(creature, m_idx, t_idx, mcm, is_blind, target_type);

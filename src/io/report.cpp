@@ -26,7 +26,6 @@
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
 #include "system/inner-game-data.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/system-variables.h"
 #include "term/gameterm.h"
@@ -237,7 +236,7 @@ std::string make_screen_dump(CreatureEntity &creature)
  */
 bool report_score(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     std::stringstream score_ss;
     std::string personality_desc = (*player.personality).title.string();
     personality_desc.append(_((*player.personality).no ? "の" : "", " "));

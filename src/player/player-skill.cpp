@@ -43,7 +43,7 @@ using GainAmountList = std::array<int, enum2i(PlayerSkillRank::MASTER)>;
 
 void gain_attack_skill_exp(CreatureEntity &creature, short &exp, const GainAmountList &gain_amount_list)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto gain_amount = 0;
     auto calc_gain_amount = [&gain_amount_list, exp](PlayerSkillRank rank, int next_rank_exp) {
         return std::min(gain_amount_list[enum2i(rank)], next_rank_exp - exp);
@@ -65,7 +65,7 @@ void gain_attack_skill_exp(CreatureEntity &creature, short &exp, const GainAmoun
 
 void gain_spell_skill_exp_aux(CreatureEntity &creature, short &exp, const GainAmountList &gain_amount_list, int spell_level)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto dlev = player.current_floor_ptr->dun_level;
     const auto plev = player.level;
 

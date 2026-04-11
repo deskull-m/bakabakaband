@@ -9,7 +9,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
@@ -57,7 +56,7 @@ void print_title(CreatureEntity &creature)
  */
 void print_level(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto tmp = format("%5d", creature.level);
     if (creature.level >= player.max_plv) {
         put_str(_("レベル ", "LEVEL "), ROW_LEVEL, 0);
@@ -73,7 +72,7 @@ void print_level(CreatureEntity &creature)
  */
 void print_exp(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     std::string out_val;
 
     CreatureRace pr(&creature);

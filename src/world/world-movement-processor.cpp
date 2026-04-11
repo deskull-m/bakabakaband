@@ -17,7 +17,6 @@
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/enum-range.h"
 #include "view/display-messages.h"
@@ -64,7 +63,7 @@ void check_random_quest_auto_failure(CreatureEntity &creature)
  */
 void execute_recall(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (player.word_recall == 0) {
         return;
     }
@@ -148,7 +147,7 @@ void execute_recall(CreatureEntity &creature)
  */
 void execute_floor_reset(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &floor = *creature.current_floor_ptr;
     if (player.alter_reality == 0) {
         return;

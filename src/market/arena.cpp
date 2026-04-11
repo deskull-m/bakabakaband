@@ -52,7 +52,7 @@ static tl::optional<int> process_ostensible_arena_victory()
 
 static bool check_battle_metal_babble(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     msg_print(_("最強の挑戦者が君に決闘を申し込んできた。", "The strongest challenger throws down the gauntlet to your feet."));
     msg_erase();
     if (!input_check(_("受けて立つかね？", "Do you take up the gauntlet? "))) {
@@ -78,7 +78,7 @@ static bool check_battle_metal_babble(CreatureEntity &creature)
  */
 static bool go_to_arena(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto prize_money = process_ostensible_arena_victory();
     if (prize_money) {
         player.au += *prize_money;
@@ -117,7 +117,7 @@ static bool go_to_arena(CreatureEntity &creature)
  */
 bool arena_comm(CreatureEntity &creature, int cmd)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     switch (cmd) {
     case BACT_ARENA:
         return go_to_arena(creature);

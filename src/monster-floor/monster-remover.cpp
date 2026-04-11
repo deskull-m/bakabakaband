@@ -10,7 +10,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
 #include "tracking/health-bar-tracker.h"
@@ -69,7 +68,7 @@ void delete_monster_idx(CreatureEntity &creature, short m_idx)
         creature.riding_t_m_idx = 0;
     }
     if (monster.is_riding()) { // creature.riding == m_idx のままの方がいい？
-        static_cast<PlayerType &>(creature).ride_monster(0);
+        creature.ride_monster(0);
     }
 
     floor.get_grid(m_pos).m_idx = 0;

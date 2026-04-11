@@ -19,7 +19,6 @@
 #include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/gameterm.h"
@@ -338,7 +337,7 @@ static bool interpret_v_token(char *buf)
  */
 static void interpret_xy_token(CreatureEntity &creature, char *buf)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &world = AngbandWorld::get_instance();
     for (auto &option : option_info) {
         if (option.text != buf + 2) {

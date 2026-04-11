@@ -23,7 +23,6 @@
 #include "player/player-status-flags.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 
@@ -35,7 +34,7 @@
  */
 static void sense_inventory_aux(CreatureEntity &creature, INVENTORY_IDX slot, bool heavy)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &item = *player.inventory[slot];
     if (any_bits(item.ident, IDENT_SENSE) || item.is_known()) {
         return;
@@ -146,7 +145,7 @@ static void sense_inventory_aux(CreatureEntity &creature, INVENTORY_IDX slot, bo
  */
 void sense_inventory1(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     PLAYER_LEVEL plev = player.level;
     bool heavy = false;
     ItemEntity *o_ptr;
@@ -335,7 +334,7 @@ void sense_inventory1(CreatureEntity &creature)
  */
 void sense_inventory2(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     PLAYER_LEVEL plev = player.level;
     ItemEntity *o_ptr;
 

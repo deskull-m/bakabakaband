@@ -11,7 +11,6 @@
 #include "object/object-value.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/z-form.h"
 #include "view/display-messages.h"
@@ -24,7 +23,7 @@
  */
 bool alchemy(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     bool force = false;
     if (command_arg > 0) {
         force = true;

@@ -11,7 +11,6 @@
 #include "spell-kind/spells-perception.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
@@ -29,7 +28,7 @@
  */
 void building_recharge(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     msg_flag = false;
     clear_bldg(4, 18);
     prt(_("  再充填の費用はアイテムの種類によります。", "  The prices of recharge depend on the type."), 6, 0);
@@ -173,7 +172,7 @@ void building_recharge(CreatureEntity &creature)
  */
 void building_recharge_all(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     msg_flag = false;
     clear_bldg(4, 18);
     prt(_("  再充填の費用はアイテムの種類によります。", "  The prices of recharge depend on the type."), 6, 0);

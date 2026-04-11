@@ -5,7 +5,6 @@
 #include "player/player-status-table.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief 所持/装備オブジェクトIDの部位表現を返す /
@@ -16,7 +15,7 @@
  */
 concptr mention_use(CreatureEntity &creature, int i)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     concptr p;
 
     /* Examine the location */
@@ -96,7 +95,7 @@ concptr mention_use(CreatureEntity &creature, int i)
  */
 concptr describe_use(CreatureEntity &creature, int i)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     concptr p;
     switch (i) {
 #ifdef JP

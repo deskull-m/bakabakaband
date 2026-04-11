@@ -32,7 +32,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "util/bit-flags-calculator.h"
@@ -309,7 +308,7 @@ void update_dungeon_feeling(CreatureEntity &creature)
     }
 
     df.set_feeling(new_feeling);
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     do_cmd_feeling(player);
     select_floor_music(player);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::DEPTH);

@@ -10,7 +10,6 @@
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "wizard/wizard-messages.h"
@@ -23,7 +22,7 @@
  */
 bool build_type14(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     /* Pick a room size */
     const auto room_seed_y1 = randint1(4);
     const auto room_seed_x1 = randint1(11);

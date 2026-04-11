@@ -12,7 +12,6 @@
 #include "io/signal-handlers.h"
 #include "locale/japanese.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/z-form.h"
 #include "util/angband-files.h"
@@ -331,7 +330,7 @@ void prepare_chuukei_hooks(void)
  */
 void prepare_movie_hooks(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     TermCenteredOffsetSetter tcos(tl::nullopt, tl::nullopt);
 
     if (movie_mode) {

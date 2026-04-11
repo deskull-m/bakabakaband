@@ -21,7 +21,6 @@
 #include "sv-definition/sv-rod-types.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
@@ -43,7 +42,7 @@ ObjectZapRodEntity::ObjectZapRodEntity(CreatureEntity &creature)
  */
 void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     auto use_charge = true;
     auto *o_ptr = ref_item(player, i_idx);
     if ((i_idx < 0) && (o_ptr->number > 1)) {
@@ -157,7 +156,7 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
 
 bool ObjectZapRodEntity::check_can_zap()
 {
-    auto &player = static_cast<PlayerType &>(*this->creature_ptr);
+    auto &player = *this->creature_ptr;
     if (cmd_limit_time_walk(player)) {
         return false;
     }

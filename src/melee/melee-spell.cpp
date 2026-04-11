@@ -15,7 +15,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -45,7 +44,7 @@ static bool try_melee_spell(CreatureEntity &creature, melee_spell_type *ms_ptr)
 
 static bool disturb_melee_spell(CreatureEntity &creature, melee_spell_type *ms_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (spell_is_inate(ms_ptr->thrown_spell) || !SpellHex(player).check_hex_barrier(ms_ptr->m_idx, HEX_ANTI_MAGIC)) {
         return false;
     }
@@ -59,7 +58,7 @@ static bool disturb_melee_spell(CreatureEntity &creature, melee_spell_type *ms_p
 
 static void process_special_melee_spell(CreatureEntity &creature, melee_spell_type *ms_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     CreatureClass pc(player);
     bool is_special_magic = ms_ptr->m_ptr->get_monster_profile().ml;
     is_special_magic &= ms_ptr->maneable;
@@ -122,7 +121,7 @@ bool monst_spell_monst(CreatureEntity &creature, MONSTER_IDX m_idx)
         return true;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     ms_ptr->can_remember = is_original_ap_and_seen(player, *ms_ptr->m_ptr);
     const auto res = monspell_to_monster(creature, ms_ptr->thrown_spell, ms_ptr->y, ms_ptr->x, m_idx, ms_ptr->target_idx, false);
     if (!res.valid) {

@@ -13,7 +13,6 @@
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
@@ -28,7 +27,7 @@
  */
 void call_the_void(CreatureEntity &creature)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
+    auto &player_ptr = creature;
     auto do_call = true;
     const auto &floor = *player_ptr.current_floor_ptr;
     /* 虚無招来そのものを唱えることによる時空崩壊度進行(*破壊*とは別) */

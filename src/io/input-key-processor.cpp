@@ -90,7 +90,6 @@
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/int-char-converter.h"
@@ -169,7 +168,7 @@ static bool enter_debug_mode(const FloorType &floor)
  */
 void process_command(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     COMMAND_CODE old_now_message = now_message;
     repeat_check();
     now_message = 0;

@@ -12,7 +12,6 @@
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
@@ -40,7 +39,7 @@ void AllianceLegendOfSavior::panishment(CreatureEntity &creature)
     if (!creature.is_player()) {
         return;
     }
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (one_in_(30)) {
         Pos2D m_pos(player.get_position());
         m_pos = scatter(*player.current_floor_ptr, m_pos, 6, PROJECT_NONE);

@@ -14,7 +14,6 @@
 #include "system/dungeon/dungeon-record.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 #include "util/enum-converter.h"
 #include "world/world.h"
 #include <sstream>
@@ -49,7 +48,7 @@ static std::string localized_to_utf8_safe(const LocalizedString &ls)
  * @param j JSON オブジェクト
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-static void add_basic_info_to_json(nlohmann::json &j, PlayerType &player)
+static void add_basic_info_to_json(nlohmann::json &j, CreatureEntity &player)
 {
     j["basic"]["name"] = to_utf8_safe(player.name);
     j["basic"]["sex"] = localized_to_utf8_safe(sex_info[player.psex].title);
@@ -86,7 +85,7 @@ static void add_basic_info_to_json(nlohmann::json &j, PlayerType &player)
  * @param j JSON オブジェクト
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-static void add_stats_to_json(nlohmann::json &j, PlayerType &player)
+static void add_stats_to_json(nlohmann::json &j, CreatureEntity &player)
 {
     nlohmann::json stats = nlohmann::json::array();
 
@@ -109,7 +108,7 @@ static void add_stats_to_json(nlohmann::json &j, PlayerType &player)
  * @param j JSON オブジェクト
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-static void add_status_to_json(nlohmann::json &j, PlayerType &player)
+static void add_status_to_json(nlohmann::json &j, CreatureEntity &player)
 {
     j["status"]["hitpoints"] = player.hp;
     j["status"]["max_hitpoints"] = player.maxhp;
@@ -136,7 +135,7 @@ static void add_status_to_json(nlohmann::json &j, PlayerType &player)
  * @param j JSON オブジェクト
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-static void add_combat_to_json(nlohmann::json &j, PlayerType &player)
+static void add_combat_to_json(nlohmann::json &j, CreatureEntity &player)
 {
     j["combat"]["base_to_hit"] = player.to_h_b;
     j["combat"]["melee_to_hit"] = player.to_h_m;
@@ -153,7 +152,7 @@ static void add_combat_to_json(nlohmann::json &j, PlayerType &player)
  * @param j JSON オブジェクト
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-static void add_skills_to_json(nlohmann::json &j, PlayerType &player)
+static void add_skills_to_json(nlohmann::json &j, CreatureEntity &player)
 {
     j["skills"]["fighting"] = player.skill_thn;
     j["skills"]["shooting"] = player.skill_thb;
@@ -172,7 +171,7 @@ static void add_skills_to_json(nlohmann::json &j, PlayerType &player)
  * @param j JSON オブジェクト
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-static void add_death_info_to_json(nlohmann::json &j, PlayerType &player)
+static void add_death_info_to_json(nlohmann::json &j, CreatureEntity &player)
 {
     if (player.is_dead()) {
         j["death"]["is_dead"] = true;
@@ -195,7 +194,7 @@ static void add_death_info_to_json(nlohmann::json &j, PlayerType &player)
  * @param j JSON オブジェクト
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-static void add_history_to_json(nlohmann::json &j, PlayerType &player)
+static void add_history_to_json(nlohmann::json &j, CreatureEntity &player)
 {
     nlohmann::json history = nlohmann::json::array();
     for (int i = 0; i < 4; i++) {
@@ -213,7 +212,7 @@ static void add_history_to_json(nlohmann::json &j, PlayerType &player)
  */
 std::string dump_player_status_json(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     nlohmann::json j;
 
     // バージョン情報

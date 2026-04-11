@@ -16,7 +16,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 /*!
@@ -62,7 +61,7 @@ bool rodeo(CreatureEntity &creature)
         process_fall_off_horse(creature, 1, true);
 
         /* 落馬処理に失敗してもとにかく乗馬解除 */
-        static_cast<PlayerType &>(creature).ride_monster(0);
+        creature.ride_monster(0);
     }
 
     return true;

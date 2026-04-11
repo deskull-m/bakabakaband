@@ -2,7 +2,6 @@
 #include "birth/history.h"
 #include "player-info/race-types.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "util/buffer-shaper.h"
 #include "util/string-processor.h"
 #include <algorithm>
@@ -14,7 +13,7 @@ static int get_history_chart(CreatureEntity &creature)
     if (!creature.is_player()) {
         return 0;
     }
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     switch (player.prace) {
     case PlayerRaceType::AMBERITE:
@@ -104,7 +103,7 @@ static std::string decide_social_class(CreatureEntity &creature)
     if (!creature.is_player()) {
         return "";
     }
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     auto social_class = randnum1<short>(4);
     auto chart = get_history_chart(creature);
@@ -140,7 +139,7 @@ void get_history(CreatureEntity &creature)
     if (!creature.is_player()) {
         return;
     }
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     constexpr auto lines = 4;
     for (int i = 0; i < lines; i++) {

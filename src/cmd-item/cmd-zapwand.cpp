@@ -35,7 +35,6 @@
 #include "system/baseitem/baseitem-key.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
@@ -54,7 +53,7 @@
  */
 bool wand_effect(CreatureEntity &creature, int sval, const Direction &dir, bool powerful, bool magic)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     bool ident = false;
     PLAYER_LEVEL lev = powerful ? player.level * 2 : player.level;
     POSITION rad = powerful ? 3 : 2;
@@ -333,7 +332,7 @@ bool wand_effect(CreatureEntity &creature, int sval, const Direction &dir, bool 
  */
 void do_cmd_aim_wand(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }

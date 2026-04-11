@@ -4,7 +4,6 @@
 #include "monster-floor/place-monster-types.h"
 #include "spell/summon-types.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 
 /**
  * @note ターバンのガキ共は印象値の正負を一切持たない。
@@ -22,7 +21,7 @@ void AllianceTurbanKids::panishment(CreatureEntity &creature)
     if (!creature.is_player()) {
         return;
     }
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (one_in_(19)) {
         summon_specific(player, player.y, player.x, 100, SUMMON_TURBAN_KID, PM_AMBUSH);
     }

@@ -12,7 +12,6 @@
 #include "player/special-defense-types.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 
 /*!
@@ -23,7 +22,7 @@
  */
 static void add_mutation_flags(CreatureEntity &creature, TrFlags &flags)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (player.muta.none()) {
         return;
     }
@@ -67,7 +66,7 @@ static void add_mutation_flags(CreatureEntity &creature, TrFlags &flags)
  */
 static void add_personality_flags(CreatureEntity &creature, TrFlags &flags)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (player.ppersonality == PERSONALITY_SEXY) {
         flags.set(TR_AGGRAVATE);
     }
@@ -123,7 +122,7 @@ void riding_flags(CreatureEntity &creature, TrFlags &flags, TrFlags &negative_fl
     if (!creature.is_player()) {
         return;
     }
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     if (any_bits(has_levitation(player), FLAG_CAUSE_RIDING)) {
         flags.set(TR_LEVITATION);

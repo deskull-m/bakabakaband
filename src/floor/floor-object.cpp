@@ -31,7 +31,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "util/finalizer.h"
@@ -469,7 +468,7 @@ short drop_near(CreatureEntity &subject, ItemEntity &drop_item, const Pos2D &pos
     }
 
     if (drop_item.is_fixed_artifact() && world.character_dungeon && subject.is_player()) {
-        auto &player = static_cast<PlayerType &>(subject);
+        auto &player = subject;
         auto &artifact = drop_item.get_fixed_artifact();
         artifact.floor_id = player.floor_id;
     }

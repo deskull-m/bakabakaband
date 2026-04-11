@@ -32,7 +32,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-checker.h"
 #include "target/target-getter.h"
@@ -191,7 +190,7 @@ static bool cast_blue_make_trap(CreatureEntity &creature)
 
 static bool switch_cast_blue_magic(CreatureEntity &creature, bmc_type *bmc_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     switch (bmc_ptr->spell) {
     case MonsterAbilityType::SHRIEK:
         msg_print(_("かん高い金切り声をあげた。", "You make a high pitched shriek."));

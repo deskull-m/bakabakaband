@@ -25,7 +25,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -41,7 +40,7 @@
 namespace {
 auto collect_known_fixed_artifacts(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &artifacts = ArtifactList::get_instance();
     const auto comparer = [&artifacts](auto id1, auto id2) { return artifacts.order(id1, id2); };
     std::set<FixedArtifactId, decltype(comparer)> fa_ids(comparer);
@@ -93,7 +92,7 @@ auto collect_known_fixed_artifacts(CreatureEntity &creature)
  */
 void do_cmd_knowledge_artifacts(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
     if (!open_temporary_file(&fff, file_name)) {

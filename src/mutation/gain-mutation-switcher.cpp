@@ -4,11 +4,10 @@
 #include "mutation/mutation-util.h"
 #include "player-base/player-class.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 
 void switch_gain_mutation(CreatureEntity &creature, glm_type *glm_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     CreatureClass pc(creature);
 
     // 変異の決定

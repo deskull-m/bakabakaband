@@ -24,7 +24,6 @@
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
@@ -38,7 +37,7 @@
  */
 void pattern_teleport(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto *player_ptr = &player;
     auto min_level = 0;
     auto max_level = 99;
@@ -106,7 +105,7 @@ void pattern_teleport(CreatureEntity &creature)
  */
 bool pattern_effect(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto *player_ptr = &player;
     const auto &floor = *player_ptr->current_floor_ptr;
     const auto p_pos = player_ptr->get_position();
@@ -172,7 +171,7 @@ bool pattern_effect(CreatureEntity &creature)
  */
 bool pattern_seq(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto *player_ptr = &player;
     const auto &floor = *player_ptr->current_floor_ptr;
     const auto &grid_current = floor.get_grid(player_ptr->get_position());

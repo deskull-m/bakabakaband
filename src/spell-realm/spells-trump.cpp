@@ -20,7 +20,6 @@
 #include "status/experience.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "view/display-messages.h"
 
@@ -30,7 +29,7 @@
  */
 void cast_shuffle(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     PLAYER_LEVEL plev = player.level;
     int die;
     int vir = virtue_number(creature, Virtue::CHANCE);
@@ -235,7 +234,7 @@ void cast_shuffle(CreatureEntity &creature)
 
 void become_living_trump(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     /* 1/7 Teleport control and 6/7 Random teleportation (uncontrolled) */
     MUTATION_IDX mutation = one_in_(7) ? 12 : 77;
     if (gain_mutation(player, mutation)) {

@@ -31,7 +31,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/system-variables.h"
 #include "term/screen-processor.h"
@@ -245,7 +244,7 @@ void wiz_restore_aware_flag_of_fixed_arfifact(FixedArtifactId reset_artifact_idx
  */
 void wiz_modify_item_activation(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto *player_ptr = &player;
     constexpr auto q = _("どのアイテムの発動を変更しますか？ ", "Which item? ");
     constexpr auto s = _("発動を変更するアイテムがない。", "Nothing to do with.");
@@ -736,7 +735,7 @@ static void wiz_quantity_item(ItemEntity *o_ptr)
  */
 void wiz_modify_item(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto *player_ptr = &player;
     constexpr auto q = "Play with which object? ";
     constexpr auto s = "You have nothing to play with.";

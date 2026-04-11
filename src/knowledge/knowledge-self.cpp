@@ -23,7 +23,6 @@
 #include "system/floor/town-list.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/angband-files.h"
 #include "util/buffer-shaper.h"
 #include "util/enum-converter.h"
@@ -66,7 +65,7 @@ static void dump_explanation(std::string_view explanation, FILE *fff)
  */
 static void dump_yourself(CreatureEntity &creature, FILE *fff)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (!fff) {
         return;
     }
@@ -148,7 +147,7 @@ static void dump_winner_classes(FILE *fff)
  */
 void do_cmd_knowledge_stat(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
     if (!open_temporary_file(&fff, file_name)) {
@@ -192,7 +191,7 @@ void do_cmd_knowledge_stat(CreatureEntity &creature)
  */
 void do_cmd_knowledge_home(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &area = WildernessGrids::get_instance().get_area();
     parse_fixed_map(creature, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
 
