@@ -117,7 +117,7 @@ void AllianceTzeentch::panishment(CreatureEntity &creature)
 
             for (int k = 0; k < summon_count; k++) {
                 summon_specific(&player_ptr, m_pos.y, m_pos.x,
-                    std::max(player_ptr.current_floor_ptr->monster_level, 12),
+                    std::max(player_ptr.get_floor()->monster_level, 12),
                     SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }

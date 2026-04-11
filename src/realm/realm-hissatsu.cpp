@@ -88,7 +88,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
             const auto attack_to = [&creature](const Direction &dir) {
                 const auto pos = creature.get_neighbor(dir);
-                const auto &grid = creature.current_floor_ptr->get_grid(pos);
+                const auto &grid = creature.get_floor()->get_grid(pos);
 
                 if (grid.has_monster()) {
                     do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
@@ -119,7 +119,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             }
 
             const auto pos = creature.get_neighbor(dir);
-            if (creature.current_floor_ptr->get_grid(pos).has_monster()) {
+            if (creature.get_floor()->get_grid(pos).has_monster()) {
                 do_cmd_attack(creature, pos.y, pos.x, HISSATSU_FIRE);
             } else {
                 msg_print(_("その方向にはモンスターはいません。", "There is no monster."));
@@ -142,7 +142,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             }
 
             const auto pos = creature.get_neighbor(dir);
-            if (creature.current_floor_ptr->get_grid(pos).has_monster()) {
+            if (creature.get_floor()->get_grid(pos).has_monster()) {
                 do_cmd_attack(creature, pos.y, pos.x, HISSATSU_MINEUCHI);
             } else {
                 msg_print(_("その方向にはモンスターはいません。", "There is no monster."));
@@ -677,7 +677,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             }
 
             const auto pos = creature.get_neighbor(dir);
-            const auto &grid = creature.current_floor_ptr->get_grid(pos);
+            const auto &grid = creature.get_floor()->get_grid(pos);
             if (grid.has_monster()) {
                 do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
                 if (grid.has_monster()) {

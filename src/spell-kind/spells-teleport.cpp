@@ -50,8 +50,8 @@ bool teleport_swap(CreatureEntity &creature, const Direction &dir)
         return false;
     }
 
-    const auto &grid = creature.current_floor_ptr->get_grid(pos);
-    if (!grid.has_monster() || creature.current_floor_ptr->get_monster(grid.m_idx).is_riding()) {
+    const auto &grid = creature.get_floor()->get_grid(pos);
+    if (!grid.has_monster() || creature.get_floor()->get_monster(grid.m_idx).is_riding()) {
         msg_print(_("それとは場所を交換できません。", "You can't trade places with that!"));
         return false;
     }
@@ -61,7 +61,7 @@ bool teleport_swap(CreatureEntity &creature, const Direction &dir)
         return false;
     }
 
-    const auto &monster = creature.current_floor_ptr->get_monster(grid.m_idx);
+    const auto &monster = creature.get_floor()->get_monster(grid.m_idx);
     auto &monrace = monster.get_monrace();
 
     (void)set_monster_csleep(*creature.current_floor_ptr, grid.m_idx, 0);
@@ -391,11 +391,11 @@ void teleport_player(CreatureEntity &creature, POSITION dis, BIT_FLAGS mode)
     /* Monsters with teleport ability may follow the creature */
     for (POSITION xx = -1; xx < 2; xx++) {
         for (POSITION yy = -1; yy < 2; yy++) {
-            MONSTER_IDX tmp_m_idx = creature.current_floor_ptr->grid_array[oy + yy][ox + xx].m_idx;
+            MONSTER_IDX tmp_m_idx = creature.get_floor()->grid_array[oy + yy][ox + xx].m_idx;
             if (!is_monster(tmp_m_idx)) {
                 continue;
             }
-            const auto &monster = creature.current_floor_ptr->get_monster(tmp_m_idx);
+            const auto &monster = creature.get_floor()->get_monster(tmp_m_idx);
             if (!monster.is_riding()) {
                 const auto &monrace = monster.get_monrace();
 
@@ -441,7 +441,7 @@ void teleport_player_away(MONSTER_IDX m_idx, CreatureEntity &creature, POSITION 
                 continue;
             }
 
-            const auto &monster = creature.current_floor_ptr->get_monster(tmp_m_idx);
+            const auto &monster = creature.get_floor()->get_monster(tmp_m_idx);
             const auto &monrace = monster.get_monrace();
 
             bool can_follow = monrace.ability_flags.has(MonsterAbilityType::TPORT);

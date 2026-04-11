@@ -56,7 +56,7 @@ MonsterSpellResult spell_RF4_SHRIEK(MONSTER_IDX m_idx, CreatureEntity &creature,
 
     simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
 
-    const auto &monster = player_ptr.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = player_ptr.get_floor()->get_monster(m_idx);
     auto result = MonsterSpellResult::make_valid();
     if (monster.r_idx == MonraceId::LEE_QIEZI) {
         msg_print(_("しかし、その声は誰の心にも響かなかった…。", "However, that voice didn't touch anyone's heart..."));
@@ -492,7 +492,7 @@ MonsterSpellResult spell_RF6_TRAPS(CreatureEntity &creature, POSITION y, POSITIO
 MonsterSpellResult spell_RF6_RAISE_DEAD(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     auto &player_ptr = creature;
-    const auto &monster = player_ptr.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = player_ptr.get_floor()->get_monster(m_idx);
     mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
         _("%s^が死者復活の呪文を唱えた。", "%s^ casts a spell to revive corpses."), _("%s^が死者復活の呪文を唱えた。", "%s^ casts a spell to revive corpses."));
 

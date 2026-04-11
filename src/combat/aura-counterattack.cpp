@@ -125,7 +125,7 @@ static void aura_shards_by_monster_attack(CreatureEntity &creature, MonsterAttac
         }
     }
 
-    if (creature.current_floor_ptr->grid_array[creature.y][creature.x].is_mirror()) {
+    if (creature.get_floor()->grid_array[creature.y][creature.x].is_mirror()) {
         teleport_player(creature, 10, TELEPORT_SPONTANEOUS);
     }
 }

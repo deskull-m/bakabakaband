@@ -52,7 +52,7 @@ static void update_sun_light(CreatureEntity &creature)
         SubWindowRedrawingFlag::DUNGEON,
     };
     rfu.set_flags(flags);
-    if ((creature.current_floor_ptr->grid_array[creature.y][creature.x].info & CAVE_GLOW) != 0) {
+    if ((creature.get_floor()->grid_array[creature.y][creature.x].info & CAVE_GLOW) != 0) {
         set_superstealth(creature, false);
     }
 }

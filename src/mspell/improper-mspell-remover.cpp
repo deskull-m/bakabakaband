@@ -38,7 +38,7 @@ void remove_bad_spells(MONSTER_IDX m_idx, CreatureEntity &creature, EnumClassFla
         return;
     }
 
-    auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    auto &monster = creature.get_floor()->get_monster(m_idx);
     if (smart_learn) {
         /* 時々学習情報を忘れる */
         if (one_in_(100)) {

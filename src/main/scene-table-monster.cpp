@@ -124,7 +124,7 @@ static void update_target_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
         }
 
         if (do_dwap) {
-            const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+            const auto &monster = creature.get_floor()->get_monster(m_idx);
             auto *ap_r_ptr = &monster.get_appearance_monrace();
             scene_target_monster.m_idx = m_idx;
             scene_target_monster.ap_r_ptr = ap_r_ptr;
@@ -137,7 +137,7 @@ using scene_monster_func = bool (*)(CreatureEntity &creature, scene_type *value)
 
 static bool scene_monster(CreatureEntity &creature, scene_type *value)
 {
-    const auto &monster = creature.current_floor_ptr->get_monster(scene_target_monster.m_idx);
+    const auto &monster = creature.get_floor()->get_monster(scene_target_monster.m_idx);
 
     if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE)) {
         value->type = TERM_XTRA_MUSIC_BASIC;
@@ -229,7 +229,7 @@ void refresh_scene_monster(CreatureEntity &creature, const std::vector<MONSTER_I
                 // 最後に見かけてから一定のゲームターンが経過した場合、BGM対象から外す
                 clear_scene_target_monster();
             } else {
-                const auto &monster = creature.current_floor_ptr->get_monster(scene_target_monster.m_idx);
+                const auto &monster = creature.get_floor()->get_monster(scene_target_monster.m_idx);
                 auto *ap_r_ptr = &monster.get_appearance_monrace();
                 if (ap_r_ptr != scene_target_monster.ap_r_ptr) {
                     // 死亡、チェンジモンスター、etc.

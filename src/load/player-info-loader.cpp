@@ -260,8 +260,8 @@ static void set_imitation(CreatureEntity &creature)
 static void rd_phase_out(CreatureEntity &creature)
 {
     auto &system = AngbandSystem::get_instance();
-    creature.current_floor_ptr->inside_arena = rd_s16b() != 0;
-    creature.current_floor_ptr->quest_number = i2enum<QuestId>(rd_s16b());
+    creature.get_floor()->inside_arena = rd_s16b() != 0;
+    creature.get_floor()->quest_number = i2enum<QuestId>(rd_s16b());
     system.set_phase_out(rd_s16b() != 0);
 }
 

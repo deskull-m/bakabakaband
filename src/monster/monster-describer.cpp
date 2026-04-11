@@ -249,10 +249,10 @@ std::string monster_desc(CreatureEntity &subject, const CreatureEntity &monster,
     std::stringstream ss;
 
     if (monster.get_monster_profile().parent_m_idx > 0) {
-        const auto &parent_monster = subject.current_floor_ptr->get_monster(monster.get_monster_profile().parent_m_idx);
+        const auto &parent_monster = subject.get_floor()->get_monster(monster.get_monster_profile().parent_m_idx);
         // 親ID＝自身のIDでは主を失った状態なのでスキップ
         if (parent_monster.r_idx != monster.r_idx) {
-            auto parent_name = subject.current_floor_ptr->get_monster(monster.get_monster_profile().parent_m_idx).get_monrace().name;
+            auto parent_name = subject.get_floor()->get_monster(monster.get_monster_profile().parent_m_idx).get_monrace().name;
             if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::QUYLTHLUG_BORN)) {
                 ss << parent_name << _("が産んだ", "-born ");
             } else if (monrace.misc_flags.has(MonsterMiscType::BREAK_DOWN)) {

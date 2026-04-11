@@ -455,9 +455,9 @@ static void curse_megaton_coin(CreatureEntity &creature)
     if (!get_player_flags(creature, TR_MEGATON_COIN)) {
         return;
     }
-    const auto &dungeon = creature.current_floor_ptr->get_dungeon_definition();
-    if (!one_in_(364) || creature.current_floor_ptr->dun_level == 0 || creature.current_floor_ptr->dun_level == dungeon.maxdepth ||
-        inside_quest(creature.current_floor_ptr->quest_number) || creature.current_floor_ptr->inside_arena) {
+    const auto &dungeon = creature.get_floor()->get_dungeon_definition();
+    if (!one_in_(364) || creature.get_floor()->dun_level == 0 || creature.get_floor()->dun_level == dungeon.maxdepth ||
+        inside_quest(creature.get_floor()->quest_number) || creature.get_floor()->inside_arena) {
         return;
     }
 

@@ -181,7 +181,7 @@ void wiz_create_item(CreatureEntity &creature)
 
     ItemEntity item;
     item.generate(*bi_id);
-    ItemMagicApplier(creature, &item, creature.current_floor_ptr->dun_level, AM_NO_FIXED_ART).execute();
+    ItemMagicApplier(creature, &item, creature.get_floor()->dun_level, AM_NO_FIXED_ART).execute();
     (void)drop_near(creature, item, creature.get_position());
     msg_print("Allocated.");
 }
@@ -407,7 +407,7 @@ void wiz_create_feature(CreatureEntity &creature)
         return;
     }
 
-    auto &grid = creature.current_floor_ptr->get_grid(*pos);
+    auto &grid = creature.get_floor()->get_grid(*pos);
     const int max = TerrainList::get_instance().size() - 1;
     const auto f_val1 = input_numerics(_("実地形ID", "FeatureID"), 0, max, grid.feat);
     if (!f_val1.has_value()) {

@@ -142,7 +142,7 @@ void wall_breaker(CreatureEntity &creature)
         Pos2D pos(0, 0);
         while (attempts--) {
             pos = scatter(*creature.current_floor_ptr, p_pos, 4, PROJECT_NONE);
-            if (!creature.current_floor_ptr->has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION)) {
+            if (!creature.get_floor()->has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION)) {
                 continue;
             }
 

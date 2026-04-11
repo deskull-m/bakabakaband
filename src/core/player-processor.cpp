@@ -122,8 +122,8 @@ void process_player(CreatureEntity &creature)
 
     const auto &system = AngbandSystem::get_instance();
     if (system.is_phase_out()) {
-        for (MONSTER_IDX m_idx = 1; m_idx < creature.current_floor_ptr->m_max; m_idx++) {
-            auto &monster = creature.current_floor_ptr->m_list[m_idx];
+        for (MONSTER_IDX m_idx = 1; m_idx < creature.get_floor()->m_max; m_idx++) {
+            auto &monster = creature.get_floor()->m_list[m_idx];
             if (!monster.is_valid()) {
                 continue;
             }
@@ -182,7 +182,7 @@ void process_player(CreatureEntity &creature)
 
     const auto effects = creature.effects();
     if (creature.riding && !effects->confusion().is_confused() && !effects->blindness().is_blind()) {
-        const auto &monster = creature.current_floor_ptr->m_list[creature.riding];
+        const auto &monster = creature.get_floor()->m_list[creature.riding];
         const auto &monrace = monster.get_monrace();
         if (monster.is_asleep()) {
             const auto m_name = monster_desc(creature, monster, 0);
@@ -339,8 +339,8 @@ void process_player(CreatureEntity &creature)
                 rfu.set_flag(MainWindowRedrawingFlag::MAP);
             }
 
-            for (MONSTER_IDX m_idx = 1; m_idx < creature.current_floor_ptr->m_max; m_idx++) {
-                auto &monster = creature.current_floor_ptr->m_list[m_idx];
+            for (MONSTER_IDX m_idx = 1; m_idx < creature.get_floor()->m_max; m_idx++) {
+                auto &monster = creature.get_floor()->m_list[m_idx];
                 if (!monster.is_valid()) {
                     continue;
                 }

@@ -85,7 +85,7 @@ void pattern_teleport(CreatureEntity &creature)
         exe_write_diary(floor, DiaryKind::PAT_TELE, 0);
     }
 
-    player_ptr->current_floor_ptr->quest_number = QuestId::NONE;
+    player_ptr->get_floor()->quest_number = QuestId::NONE;
     PlayerEnergy(*player_ptr).reset_player_turn();
 
     /*

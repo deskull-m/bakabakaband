@@ -64,7 +64,7 @@ void gain_attack_skill_exp(CreatureEntity &creature, short &exp, const GainAmoun
 
 void gain_spell_skill_exp_aux(CreatureEntity &creature, short &exp, const GainAmountList &gain_amount_list, int spell_level)
 {
-    const auto dlev = creature.current_floor_ptr->dun_level;
+    const auto dlev = creature.get_floor()->dun_level;
     const auto plev = creature.level;
 
     auto gain_amount = 0;
@@ -337,7 +337,7 @@ void PlayerSkill::gain_riding_skill_exp_on_melee_attack(const MonraceDefinition 
         return;
     }
 
-    auto riding_level = this->creature_ptr->current_floor_ptr->get_monster(this->creature_ptr->riding).get_monrace().level;
+    auto riding_level = this->creature_ptr->get_floor()->get_monster(this->creature_ptr->riding).get_monrace().level;
     int inc = 0;
 
     if ((now_exp / 200 - 5) < monrace.level) {
@@ -381,7 +381,7 @@ void PlayerSkill::gain_riding_skill_exp_on_fall_off_check(int dam)
         return;
     }
 
-    auto riding_level = this->creature_ptr->current_floor_ptr->get_monster(this->creature_ptr->riding).get_monrace().level;
+    auto riding_level = this->creature_ptr->get_floor()->get_monster(this->creature_ptr->riding).get_monrace().level;
 
     if ((dam / 2 + riding_level) <= (now_exp / 30 + 10)) {
         return;

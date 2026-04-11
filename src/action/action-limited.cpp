@@ -75,7 +75,7 @@ bool cmd_limit_stun(const CreatureEntity &creature)
 
 bool cmd_limit_arena(const CreatureEntity &creature)
 {
-    if (creature.current_floor_ptr->inside_arena) {
+    if (creature.get_floor()->inside_arena) {
         msg_print(_("アリーナが魔法を吸収した！", "The arena absorbs all attempted magic!"));
         msg_erase();
         return true;

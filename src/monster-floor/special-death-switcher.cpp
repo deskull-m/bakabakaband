@@ -167,27 +167,27 @@ static void on_dead_drop_kind_item(CreatureEntity &killer, MonsterDeath *md_ptr)
             switch (grade) {
             /* Apply bad magic, but first clear object */
             case -2:
-                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT | AM_CURSED).execute();
+                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT | AM_CURSED).execute();
                 break;
             /* Apply bad magic, but first clear object */
             case -1:
-                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_CURSED).execute();
+                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_CURSED).execute();
                 break;
             /* Apply normal magic, but first clear object */
             case 0:
-                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART).execute();
+                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART).execute();
                 break;
             /* Apply good magic, but first clear object */
             case 1:
-                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD).execute();
+                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD).execute();
                 break;
             /* Apply great magic, but first clear object */
             case 2:
-                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT).execute();
+                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT).execute();
                 break;
             /* Apply special magic, but first clear object */
             case 3:
-                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
+                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
                 if (!item.is_fixed_artifact()) {
                     become_random_artifact(killer, &item, false);
                 }
@@ -226,27 +226,27 @@ static void on_dead_drop_tval_item(CreatureEntity &killer, MonsterDeath *md_ptr)
             switch (grade) {
             /* Apply bad magic, but first clear object */
             case -2:
-                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT | AM_CURSED).execute();
+                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT | AM_CURSED).execute();
                 break;
             /* Apply bad magic, but first clear object */
             case -1:
-                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_CURSED).execute();
+                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_CURSED).execute();
                 break;
             /* Apply normal magic, but first clear object */
             case 0:
-                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART).execute();
+                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART).execute();
                 break;
             /* Apply good magic, but first clear object */
             case 1:
-                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD).execute();
+                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD).execute();
                 break;
             /* Apply great magic, but first clear object */
             case 2:
-                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT).execute();
+                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT).execute();
                 break;
             /* Apply special magic, but first clear object */
             case 3:
-                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
+                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
                 if (!item.is_fixed_artifact()) {
                     if (killer.is_player()) {
                         become_random_artifact(killer, &item, false);
@@ -277,7 +277,7 @@ static void on_dead_bloodletter(CreatureEntity &killer, MonsterDeath *md_ptr)
 
     ItemEntity item;
     item.generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::SWORD, SV_BLADE_OF_CHAOS }));
-    ItemMagicApplier(killer, &item, killer.current_floor_ptr->object_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
+    ItemMagicApplier(killer, &item, killer.get_floor()->object_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
     (void)drop_near(killer, item, md_ptr->get_position());
 }
 
@@ -286,7 +286,7 @@ static void on_dead_inariman1_2(CreatureEntity &killer, MonsterDeath *md_ptr)
     ItemEntity forge;
     ItemEntity *q_ptr = &forge;
     q_ptr->generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::FOOD, SV_FOOD_SUSHI2 }));
-    ItemMagicApplier(killer, q_ptr, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
+    ItemMagicApplier(killer, q_ptr, killer.get_floor()->dun_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
     (void)drop_near(killer, *q_ptr, md_ptr->get_position());
 }
 
@@ -295,7 +295,7 @@ static void on_dead_inariman3(CreatureEntity &killer, MonsterDeath *md_ptr)
     ItemEntity forge;
     ItemEntity *q_ptr = &forge;
     q_ptr->generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::FOOD, SV_FOOD_SUSHI3 }));
-    ItemMagicApplier(killer, q_ptr, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
+    ItemMagicApplier(killer, q_ptr, killer.get_floor()->dun_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
     (void)drop_near(killer, *q_ptr, md_ptr->get_position());
 }
 
@@ -409,7 +409,7 @@ static void on_dead_can_angel(CreatureEntity &killer, MonsterDeath *md_ptr)
 
     ItemEntity item;
     item.generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::CHEST, SV_CHEST_KANDUME }));
-    ItemMagicApplier(killer, &item, killer.current_floor_ptr->object_level, AM_NO_FIXED_ART).execute();
+    ItemMagicApplier(killer, &item, killer.get_floor()->object_level, AM_NO_FIXED_ART).execute();
     (void)drop_near(killer, item, md_ptr->get_position());
 }
 
@@ -505,28 +505,28 @@ static void on_dead_mimics(CreatureEntity &killer, MonsterDeath *md_ptr)
 
     switch (md_ptr->r_ptr->symbol_definition.character) {
     case '(':
-        if (killer.current_floor_ptr->dun_level <= 0) {
+        if (killer.get_floor()->dun_level <= 0) {
             return;
         }
 
         drop_specific_item_on_dead(killer, md_ptr, kind_is_cloak);
         return;
     case '/':
-        if (killer.current_floor_ptr->dun_level <= 4) {
+        if (killer.get_floor()->dun_level <= 4) {
             return;
         }
 
         drop_specific_item_on_dead(killer, md_ptr, kind_is_polearm);
         return;
     case '[':
-        if (killer.current_floor_ptr->dun_level <= 19) {
+        if (killer.get_floor()->dun_level <= 19) {
             return;
         }
 
         drop_specific_item_on_dead(killer, md_ptr, kind_is_armor);
         return;
     case '\\':
-        if (killer.current_floor_ptr->dun_level <= 4) {
+        if (killer.get_floor()->dun_level <= 4) {
             return;
         }
 
@@ -540,7 +540,7 @@ static void on_dead_mimics(CreatureEntity &killer, MonsterDeath *md_ptr)
         drop_specific_item_on_dead(killer, md_ptr, kind_is_sword);
         return;
     case ']':
-        if (killer.current_floor_ptr->dun_level <= 19) {
+        if (killer.get_floor()->dun_level <= 19) {
             return;
         }
 
@@ -629,7 +629,7 @@ void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, Attrib
         (void)project(creature, md_ptr->m_idx, 3, md_ptr->md_y, md_ptr->md_x, Dice::roll(20, 10), AttributeType::FIRE, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
         return;
     case MonraceId::CAIT_SITH:
-        if (creature.current_floor_ptr->dun_level <= 0 || md_ptr->is_chameleon) {
+        if (creature.get_floor()->dun_level <= 0 || md_ptr->is_chameleon) {
             return;
         }
         drop_specific_item_on_dead(creature, md_ptr, kind_is_boots);
@@ -641,7 +641,7 @@ void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, Attrib
         on_dead_random_artifact(creature, md_ptr, kind_is_amulet);
         return;
     case MonraceId::YENDOR_WIZARD_2:
-        if (creature.current_floor_ptr->dun_level <= 0 || md_ptr->is_chameleon) {
+        if (creature.get_floor()->dun_level <= 0 || md_ptr->is_chameleon) {
             return;
         }
         drop_specific_item_on_dead(creature, md_ptr, kind_is_amulet);

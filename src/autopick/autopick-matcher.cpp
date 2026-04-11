@@ -155,7 +155,7 @@ bool is_autopick_match(CreatureEntity &creature, const ItemEntity *o_ptr, const 
             return false;
         }
 
-        if (!o_ptr->is_known() && o_ptr->is_target_of(creature.current_floor_ptr->quest_number)) {
+        if (!o_ptr->is_known() && o_ptr->is_target_of(creature.get_floor()->quest_number)) {
             return false;
         }
     }

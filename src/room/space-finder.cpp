@@ -204,7 +204,7 @@ tl::optional<Pos2D> find_space(CreatureEntity &creature, DungeonData *dd_ptr, in
 
     auto block_y = 0;
     auto block_x = 0;
-    const auto &dungeon = creature.current_floor_ptr->get_dungeon_definition();
+    const auto &dungeon = creature.get_floor()->get_dungeon_definition();
     const auto has_cave = dungeon.flags.has_not(DungeonFeatureType::NO_CAVE);
     auto pick = has_cave ? randint1(candidates) : candidates / 2 + 1;
     for (block_y = dd_ptr->row_rooms - blocks_high; block_y >= 0; block_y--) {

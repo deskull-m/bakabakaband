@@ -90,7 +90,7 @@ void process_world_aux_sudden_attack(CreatureEntity &creature)
                 break;
             }
             if (one_in_(5)) {
-                summon_specific(creature, creature.y, creature.x, creature.current_floor_ptr->dun_level, SUMMON_KACHO, PM_IGNORE_LEVEL | PM_NO_KAGE);
+                summon_specific(creature, creature.y, creature.x, creature.get_floor()->dun_level, SUMMON_KACHO, PM_IGNORE_LEVEL | PM_NO_KAGE);
             }
         }
     }
@@ -226,7 +226,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
             mode |= (PM_ALLOW_UNIQUE | PM_NO_PET);
         }
 
-        if (summon_specific(creature, creature.y, creature.x, creature.current_floor_ptr->dun_level, SUMMON_DEMON, mode)) {
+        if (summon_specific(creature, creature.y, creature.x, creature.get_floor()->dun_level, SUMMON_DEMON, mode)) {
             msg_print(_("あなたはデーモンを引き寄せた！", "You have attracted a demon!"));
             disturb(creature, false, true);
         }
@@ -242,7 +242,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
             mode |= (PM_ALLOW_UNIQUE | PM_NO_PET);
         }
 
-        if (summon_specific(creature, creature.y, creature.x, creature.current_floor_ptr->dun_level, SUMMON_NASTY, mode)) {
+        if (summon_specific(creature, creature.y, creature.x, creature.get_floor()->dun_level, SUMMON_NASTY, mode)) {
             msg_print(_("あなたはクッソ汚い輩を引き寄せた！", "You have attracted nasty creatures!"));
             disturb(creature, false, true);
         }
@@ -258,7 +258,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
             mode |= (PM_ALLOW_UNIQUE | PM_NO_PET);
         }
 
-        if (summon_specific(creature, creature.y, creature.x, creature.current_floor_ptr->dun_level, SUMMON_PERVERTS, mode)) {
+        if (summon_specific(creature, creature.y, creature.x, creature.get_floor()->dun_level, SUMMON_PERVERTS, mode)) {
             msg_print(_("あなたは変質者を引き寄せた！", "You have attracted perverts!"));
             disturb(creature, false, true);
         }
@@ -297,7 +297,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
         msg_print(_("影につつまれた。", "A shadow passes over you."));
         msg_erase();
 
-        if ((creature.current_floor_ptr->grid_array[creature.y][creature.x].info & (CAVE_GLOW | CAVE_MNDK)) == CAVE_GLOW) {
+        if ((creature.get_floor()->grid_array[creature.y][creature.x].info & (CAVE_GLOW | CAVE_MNDK)) == CAVE_GLOW) {
             hp_player(creature, 10);
         }
 
@@ -334,7 +334,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
             mode |= (PM_ALLOW_UNIQUE | PM_NO_PET);
         }
 
-        if (summon_specific(creature, creature.y, creature.x, creature.current_floor_ptr->dun_level, SUMMON_ANIMAL, mode)) {
+        if (summon_specific(creature, creature.y, creature.x, creature.get_floor()->dun_level, SUMMON_ANIMAL, mode)) {
             msg_print(_("動物を引き寄せた！", "You have attracted an animal!"));
             disturb(creature, false, true);
         }
@@ -421,7 +421,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
             mode |= (PM_ALLOW_UNIQUE | PM_NO_PET);
         }
 
-        if (summon_specific(creature, creature.y, creature.x, creature.current_floor_ptr->dun_level, SUMMON_DRAGON, mode)) {
+        if (summon_specific(creature, creature.y, creature.x, creature.get_floor()->dun_level, SUMMON_DRAGON, mode)) {
             msg_print(_("ドラゴンを引き寄せた！", "You have attracted a dragon!"));
             disturb(creature, false, true);
         }
@@ -452,14 +452,14 @@ void process_world_aux_mutation(CreatureEntity &creature)
         }
     }
 
-    if (creature.muta.has(PlayerMutationType::WALK_SHAD) && !creature.anti_magic && one_in_(12000) && !creature.current_floor_ptr->inside_arena) {
+    if (creature.muta.has(PlayerMutationType::WALK_SHAD) && !creature.anti_magic && one_in_(12000) && !creature.get_floor()->inside_arena) {
         reserve_alter_reality(creature, randint0(21) + 15);
     }
 
     if (creature.muta.has(PlayerMutationType::WARNING) && one_in_(1000)) {
         int danger_amount = 0;
-        for (auto m_idx = 0; m_idx < creature.current_floor_ptr->m_max; m_idx++) {
-            const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+        for (auto m_idx = 0; m_idx < creature.get_floor()->m_max; m_idx++) {
+            const auto &monster = creature.get_floor()->get_monster(m_idx);
             const auto &monrace = monster.get_monrace();
             if (!monster.is_valid()) {
                 continue;

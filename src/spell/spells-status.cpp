@@ -638,7 +638,7 @@ bool cosmic_cast_off(CreatureEntity &creature, ItemEntity **o_ptr_ptr)
     inven_item_optimize(creature, slot);
 
     const auto old_o_idx = drop_near(creature, item, creature.get_position());
-    *o_ptr_ptr = creature.current_floor_ptr->o_list[old_o_idx].get();
+    *o_ptr_ptr = creature.get_floor()->o_list[old_o_idx].get();
 
     const auto item_name = describe_flavor(creature, item, OD_NAME_ONLY);
     msg_format(_("%sを脱ぎ捨てた。", "You cast off %s."), item_name.data());

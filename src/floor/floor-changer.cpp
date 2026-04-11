@@ -61,16 +61,16 @@ static void build_dead_end(CreatureEntity &creature, saved_floor_type *sf_ptr)
     msg_print(_("階段は行き止まりだった。", "The staircases come to a dead end..."));
     clear_cave(creature);
     creature.x = creature.y = 0;
-    creature.current_floor_ptr->height = SCREEN_HGT;
-    creature.current_floor_ptr->width = SCREEN_WID;
+    creature.get_floor()->height = SCREEN_HGT;
+    creature.get_floor()->width = SCREEN_WID;
     for (POSITION y = 0; y < MAX_HGT; y++) {
         for (POSITION x = 0; x < MAX_WID; x++) {
             place_bold(creature, y, x, GB_SOLID_PERM);
         }
     }
 
-    creature.y = creature.current_floor_ptr->height / 2;
-    creature.x = creature.current_floor_ptr->width / 2;
+    creature.y = creature.get_floor()->height / 2;
+    creature.x = creature.get_floor()->width / 2;
     place_bold(creature, creature.y, creature.x, GB_FLOOR);
     wipe_generate_random_floor_flags(*creature.current_floor_ptr);
     const auto &fcms = FloorChangeModesStore::get_instace();
@@ -121,8 +121,8 @@ static MonraceDefinition &set_pet_params(CreatureEntity &creature, const int cur
 {
 
 
-    creature.current_floor_ptr->grid_array[cy][cx].m_idx = m_idx;
-    auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    creature.get_floor()->grid_array[cy][cx].m_idx = m_idx;
+    auto &monster = creature.get_floor()->m_list[m_idx];
     monster = party_monsters[current_monster].clone();
     monster.y = cy;
     monster.x = cx;

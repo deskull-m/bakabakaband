@@ -80,7 +80,7 @@ void wr_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
     }
 
     wr_u16b((uint16_t)floor.base_level);
-    wr_u16b((int16_t)creature.current_floor_ptr->num_repro);
+    wr_u16b((int16_t)creature.get_floor()->num_repro);
     wr_u16b((uint16_t)creature.y);
     wr_u16b((uint16_t)creature.x);
     wr_u16b((uint16_t)floor.height);

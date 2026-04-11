@@ -406,8 +406,8 @@ static void generate_wild_monsters(CreatureEntity &creature)
             if (!ambush_monsters.empty()) {
                 for (const auto &monster_id : ambush_monsters) {
                     for (int i = 0; i < 3; i++) { // 各モンスターを3体ずつ配置
-                        auto y = randint0(creature.current_floor_ptr->height);
-                        auto x = randint0(creature.current_floor_ptr->width);
+                        auto y = randint0(creature.get_floor()->height);
+                        auto x = randint0(creature.get_floor()->width);
                         (void)place_monster_one(creature, y, x, monster_id, PM_ALLOW_GROUP);
                     }
                 }
@@ -861,8 +861,8 @@ bool change_wild_mode(CreatureEntity &creature, bool encount)
 
     bool has_pet = false;
     PlayerEnergy energy(creature);
-    for (int i = 1; i < creature.current_floor_ptr->m_max; i++) {
-        const auto &monster = creature.current_floor_ptr->get_monster(i);
+    for (int i = 1; i < creature.get_floor()->m_max; i++) {
+        const auto &monster = creature.get_floor()->get_monster(i);
         if (!monster.is_valid()) {
             continue;
         }

@@ -150,7 +150,7 @@ bool SpellsMirrorMaster::mirror_concentration()
         return false;
     }
 
-    if (!this->creature_ptr->current_floor_ptr->grid_array[this->creature_ptr->y][this->creature_ptr->x].is_mirror()) {
+    if (!this->creature_ptr->get_floor()->grid_array[this->creature_ptr->y][this->creature_ptr->x].is_mirror()) {
         msg_print(_("鏡の上でないと集中できない！", "There's no mirror here!"));
         return true;
     }

@@ -305,7 +305,7 @@ bool starlight(CreatureEntity &creature, bool magic)
         auto attempts = 1000;
         while (attempts--) {
             pos = scatter(*creature.current_floor_ptr, p_pos, 4, PROJECT_LOS);
-            if (!creature.current_floor_ptr->has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION)) {
+            if (!creature.get_floor()->has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION)) {
                 continue;
             }
 
@@ -330,7 +330,7 @@ bool starlight(CreatureEntity &creature, bool magic)
  */
 bool lite_area(CreatureEntity &creature, int dam, int rad)
 {
-    if (creature.current_floor_ptr->get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
+    if (creature.get_floor()->get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         msg_print(_("ダンジョンが光を吸収した。", "The darkness of this dungeon absorbs your light."));
         return false;
     }

@@ -245,7 +245,7 @@ static void print_pet_list_oneline(CreatureEntity &creature, const CreatureEntit
 static void print_pet_list(CreatureEntity &creature, const std::vector<MONSTER_IDX> &pets, TERM_LEN x, TERM_LEN y, TERM_LEN width, TERM_LEN height)
 {
     for (auto n = 0U; n < pets.size(); ++n) {
-        const auto &monster = creature.current_floor_ptr->get_monster(pets[n]);
+        const auto &monster = creature.get_floor()->get_monster(pets[n]);
         const int line = y + n;
 
         print_pet_list_oneline(creature, monster, x, line, width);

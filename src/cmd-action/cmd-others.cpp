@@ -69,7 +69,7 @@ static bool exe_alter(CreatureEntity &creature)
     }
 
     const auto pos = creature.get_neighbor(dir);
-    const auto &grid = creature.current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto &terrain = grid.get_terrain(TerrainKind::MIMIC);
     PlayerEnergy(creature).set_player_turn_energy(100);
     if (grid.has_monster()) {

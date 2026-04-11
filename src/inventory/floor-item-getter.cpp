@@ -658,7 +658,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
         case '\n':
         case '\r':
         case '+': {
-            auto &grid = creature.current_floor_ptr->grid_array[creature.y][creature.x];
+            auto &grid = creature.get_floor()->grid_array[creature.y][creature.x];
             if (command_wrk != (USE_FLOOR)) {
                 break;
             }

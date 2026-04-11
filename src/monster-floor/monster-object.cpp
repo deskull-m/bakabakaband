@@ -180,15 +180,15 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
  */
 void update_object_by_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx, POSITION ny, POSITION nx)
 {
-    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
-    const auto &grid = creature.current_floor_ptr->grid_array[ny][nx];
+    const auto &grid = creature.get_floor()->grid_array[ny][nx];
     turn_flags_ptr->do_take = monrace.behavior_flags.has(MonsterBehaviorType::TAKE_ITEM);
     for (auto it = grid.o_idx_list.begin(); it != grid.o_idx_list.end();) {
         EnumClassFlagGroup<MonsterKindType> flg_monster_kind;
         EnumClassFlagGroup<MonsterResistanceType> flgr;
         OBJECT_IDX this_o_idx = *it++;
-        auto &item = *creature.current_floor_ptr->o_list[this_o_idx];
+        auto &item = *creature.get_floor()->o_list[this_o_idx];
         if (turn_flags_ptr->do_take) {
             const auto tval = item.bi_key.tval();
             if (tval == ItemKindType::GOLD || (tval == ItemKindType::MONSTER_REMAINS) || (tval == ItemKindType::STATUE)) {
@@ -222,7 +222,7 @@ void monster_drop_carried_objects(CreatureEntity &creature, CreatureEntity &targ
     auto &profile = target.get_monster_profile();
     for (auto it = profile.hold_o_idx_list.begin(); it != profile.hold_o_idx_list.end();) {
         const auto this_o_idx = *it++;
-        auto drop_item = creature.current_floor_ptr->o_list[this_o_idx]->clone();
+        auto drop_item = creature.get_floor()->o_list[this_o_idx]->clone();
         drop_item.held_m_idx = 0;
         delete_object_idx(creature, this_o_idx);
         (void)drop_near(creature, drop_item, target.get_position());

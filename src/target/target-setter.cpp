@@ -258,7 +258,7 @@ Direction TargetSetter::switch_target_input()
     case '.':
     case '5':
     case '0': {
-        const auto &grid = this->player.current_floor_ptr->get_grid(this->pos_target);
+        const auto &grid = this->player.get_floor()->get_grid(this->pos_target);
         if (!target_able(this->player, grid.m_idx)) {
             bell();
             return Direction::none();

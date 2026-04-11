@@ -128,7 +128,7 @@ void wiz_summon_specific_monster_common(CreatureEntity &creature, MonraceId monr
 
     const auto p_pos = creature.get_position();
     const auto index_to_monster = [&creature](auto index) -> CreatureEntity & {
-        return creature.current_floor_ptr->get_monster(index);
+        return creature.get_floor()->get_monster(index);
     };
     auto monster =
         summon_named_creature(creature, 0, p_pos.y, p_pos.x, *summon_monrace_id, mode)
@@ -299,7 +299,7 @@ void wiz_generate_random_monster(CreatureEntity &creature, int num)
  */
 void wiz_summon_random_monster(CreatureEntity &creature, int num)
 {
-    const auto level = creature.current_floor_ptr->dun_level;
+    const auto level = creature.get_floor()->dun_level;
     constexpr auto flags = PM_ALLOW_GROUP | PM_ALLOW_UNIQUE;
     const auto p_pos = creature.get_position();
     for (auto i = 0; i < num; i++) {

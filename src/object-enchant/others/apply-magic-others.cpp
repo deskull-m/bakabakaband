@@ -197,7 +197,7 @@ void OtherItemsEnchanter::generate_chest()
         this->o_ptr->pval = 6;
     }
 
-    this->o_ptr->chest_level = this->creature.current_floor_ptr->dun_level + 5;
+    this->o_ptr->chest_level = this->creature.get_floor()->dun_level + 5;
     if (this->o_ptr->pval > 55) {
         this->o_ptr->pval = 55 + randint0(5);
     }
@@ -205,5 +205,5 @@ void OtherItemsEnchanter::generate_chest()
 
 void OtherItemsEnchanter::generate_disarmed_trap()
 {
-    this->o_ptr->pval = static_cast<PARAMETER_VALUE>(this->creature.current_floor_ptr->select_random_trap());
+    this->o_ptr->pval = static_cast<PARAMETER_VALUE>(this->creature.get_floor()->select_random_trap());
 }

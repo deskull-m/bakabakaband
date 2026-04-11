@@ -1503,8 +1503,8 @@ bool switch_element_execution(CreatureEntity &creature)
         (void)earthquake(creature, creature.get_position(), 10);
         return true;
     case ElementRealmType::DEATH:
-        if (creature.current_floor_ptr->num_repro <= MAX_REPRODUCTION) {
-            creature.current_floor_ptr->num_repro += MAX_REPRODUCTION;
+        if (creature.get_floor()->num_repro <= MAX_REPRODUCTION) {
+            creature.get_floor()->num_repro += MAX_REPRODUCTION;
         }
 
         return true;

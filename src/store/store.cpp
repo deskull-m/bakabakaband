@@ -287,7 +287,7 @@ static void store_create(CreatureEntity &creature, short fix_k_idx, StoreSaleTyp
         if (store_num == StoreSaleType::BLACK) {
             level = bm_boost + randint0(25);
             level = std::min(128, level);
-            bi_id = creature.current_floor_ptr->select_baseitem_id(level, 0x00000000);
+            bi_id = creature.get_floor()->select_baseitem_id(level, 0x00000000);
             if (bi_id == 0) {
                 continue;
             }

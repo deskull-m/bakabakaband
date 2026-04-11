@@ -69,7 +69,7 @@ void autopick_delayed_alter(CreatureEntity &creature)
     }
 
     const auto p_pos = creature.get_position();
-    auto &grid = creature.current_floor_ptr->get_grid(p_pos);
+    auto &grid = creature.get_floor()->get_grid(p_pos);
     for (auto it = grid.o_idx_list.begin(); it != grid.o_idx_list.end();) {
         INVENTORY_IDX i_idx = *it++;
         autopick_delayed_alter_aux(creature, -i_idx);
@@ -103,7 +103,7 @@ void autopick_pickup_items(CreatureEntity &creature, const Grid &grid)
 {
     for (auto it = grid.o_idx_list.begin(); it != grid.o_idx_list.end();) {
         OBJECT_IDX this_o_idx = *it++;
-        auto &item = *creature.current_floor_ptr->o_list[this_o_idx];
+        auto &item = *creature.get_floor()->o_list[this_o_idx];
         int idx = find_autopick_list(creature, &item);
         auto_inscribe_item(&item, idx);
         if ((idx < 0) || (autopick_list[idx].action & (DO_AUTOPICK | DO_QUERY_AUTOPICK)) == 0) {

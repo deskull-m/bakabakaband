@@ -165,8 +165,8 @@ bool activate_telekinesis(CreatureEntity &creature, std::string_view name)
 bool activate_unique_detection(CreatureEntity &creature)
 {
     msg_print(_("奇妙な場所が頭の中に浮かんだ．．．", "Some strange places show up in your mind. And you see ..."));
-    for (int i = creature.current_floor_ptr->m_max - 1; i >= 1; i--) {
-        const auto &monster = creature.current_floor_ptr->get_monster(i);
+    for (int i = creature.get_floor()->m_max - 1; i >= 1; i--) {
+        const auto &monster = creature.get_floor()->get_monster(i);
         if (!monster.is_valid()) {
             continue;
         }

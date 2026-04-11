@@ -169,7 +169,7 @@ bool switch_activation(CreatureEntity &creature, ItemEntity **o_ptr_ptr, const R
         return true;
     case RandomArtActType::SUMMON_PHANTOM:
         msg_print(_("幻霊を召喚した。", "You summon a phantasmal servant."));
-        (void)summon_specific(creature, creature.y, creature.x, creature.current_floor_ptr->dun_level, SUMMON_PHANTOM, PM_ALLOW_GROUP | PM_FORCE_PET);
+        (void)summon_specific(creature, creature.y, creature.x, creature.get_floor()->dun_level, SUMMON_PHANTOM, PM_ALLOW_GROUP | PM_FORCE_PET);
         return true;
     case RandomArtActType::SUMMON_ELEMENTAL:
         return cast_summon_elemental(creature, (creature.level * 3) / 2);
@@ -182,7 +182,7 @@ bool switch_activation(CreatureEntity &creature, ItemEntity **o_ptr_ptr, const R
         return cast_summon_hound(creature, (creature.level * 3) / 2);
     case RandomArtActType::SUMMON_DAWN:
         msg_print(_("暁の師団を召喚した。", "You summon the Legion of the Dawn."));
-        (void)summon_specific(creature, creature.y, creature.x, creature.current_floor_ptr->dun_level, SUMMON_DAWN, PM_ALLOW_GROUP | PM_FORCE_PET);
+        (void)summon_specific(creature, creature.y, creature.x, creature.get_floor()->dun_level, SUMMON_DAWN, PM_ALLOW_GROUP | PM_FORCE_PET);
         return true;
     case RandomArtActType::SUMMON_OCTOPUS:
         return cast_summon_octopus(creature);

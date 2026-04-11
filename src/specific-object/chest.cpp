@@ -116,7 +116,7 @@ void Chest::open(bool scatter, const Pos2D &pos, short item_idx)
  */
 void Chest::fire_trap(const Pos2D &pos, short item_idx)
 {
-    auto *o_ptr = this->creature_ptr->current_floor_ptr->o_list[item_idx].get();
+    auto *o_ptr = this->creature_ptr->get_floor()->o_list[item_idx].get();
 
     int mon_level = o_ptr->chest_level;
 
@@ -162,7 +162,7 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
         int num = 2 + randint1(3);
         msg_print(_("突如吹き出した煙に包み込まれた！", "You are enveloped in a cloud of smoke!"));
         for (auto i = 0; i < num; i++) {
-            if (randint1(100) < this->creature_ptr->current_floor_ptr->dun_level) {
+            if (randint1(100) < this->creature_ptr->get_floor()->dun_level) {
                 activate_hi_summon(*this->creature_ptr, this->creature_ptr->y, this->creature_ptr->x, false);
             } else {
                 (void)summon_specific(*this->creature_ptr, pos.y, pos.x, mon_level, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));

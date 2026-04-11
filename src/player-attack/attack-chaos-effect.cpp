@@ -242,7 +242,7 @@ static void attack_polymorph(CreatureEntity &creature, player_attack_type *pa_pt
         msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
     }
 
-    pa_ptr->m_ptr = &creature.current_floor_ptr->get_monster(pa_ptr->m_idx);
+    pa_ptr->m_ptr = &creature.get_floor()->get_monster(pa_ptr->m_idx);
     angband_strcpy(pa_ptr->m_name, monster_desc(creature, *pa_ptr->m_ptr, 0), sizeof(pa_ptr->m_name));
 }
 

@@ -104,7 +104,7 @@ void print_stun(CreatureEntity &creature)
  */
 void print_hunger(CreatureEntity &creature)
 {
-    if (AngbandWorld::get_instance().wizard && creature.current_floor_ptr->inside_arena) {
+    if (AngbandWorld::get_instance().wizard && creature.get_floor()->inside_arena) {
         return;
     }
 

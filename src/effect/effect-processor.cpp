@@ -37,7 +37,7 @@ Pos2D decide_source_position(CreatureEntity &creature, MONSTER_IDX src_idx, cons
         return pos_target;
     }
     if (is_monster(src_idx)) {
-        return creature.current_floor_ptr->get_monster(src_idx).get_position();
+        return creature.get_floor()->get_monster(src_idx).get_position();
     }
     return creature.get_position();
 }

@@ -200,7 +200,7 @@ static int calc_temporary_speed(CreatureEntity &creature)
             tmp_speed = 99;
         }
     } else {
-        const auto &m_ref = creature.current_floor_ptr->get_monster(creature.riding);
+        const auto &m_ref = creature.get_floor()->get_monster(creature.riding);
         if (m_ref.is_accelerated()) {
             tmp_speed += 10;
         }

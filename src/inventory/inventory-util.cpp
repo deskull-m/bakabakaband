@@ -163,7 +163,7 @@ bool get_item_allow(CreatureEntity &creature, INVENTORY_IDX i_idx)
     if (i_idx >= 0) {
         o_ptr = creature.inventory[i_idx].get();
     } else {
-        o_ptr = creature.current_floor_ptr->o_list[0 - i_idx].get();
+        o_ptr = creature.get_floor()->o_list[0 - i_idx].get();
     }
 
     if (!o_ptr->is_inscribed()) {
@@ -237,7 +237,7 @@ INVENTORY_IDX label_to_inventory(CreatureEntity &creature, int c)
  */
 bool verify(CreatureEntity &creature, concptr prompt, INVENTORY_IDX i_idx)
 {
-    const auto &item = i_idx >= 0 ? *creature.inventory[i_idx] : *creature.current_floor_ptr->o_list[0 - i_idx];
+    const auto &item = i_idx >= 0 ? *creature.inventory[i_idx] : *creature.get_floor()->o_list[0 - i_idx];
     const auto item_name = describe_flavor(creature, item, 0);
     std::stringstream ss;
     ss << prompt;

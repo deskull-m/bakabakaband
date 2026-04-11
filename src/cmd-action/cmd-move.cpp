@@ -58,7 +58,7 @@
 static bool confirm_leave_level(CreatureEntity &creature, bool down_stair)
 {
     const auto &quests = QuestList::get_instance();
-    const auto &quest = quests.get_quest(creature.current_floor_ptr->quest_number);
+    const auto &quest = quests.get_quest(creature.get_floor()->quest_number);
 
     auto caution_in_tower = any_bits(quest.flags, QUEST_FLAG_TOWER);
     caution_in_tower &= quest.status != QuestStatusType::STAGE_COMPLETED || (down_stair && (quests.get_quest(QuestId::TOWER1).status != QuestStatusType::COMPLETED));
@@ -67,7 +67,7 @@ static bool confirm_leave_level(CreatureEntity &creature, bool down_stair)
     caution_in_quest |= quest.flags & QUEST_FLAG_ONCE && quest.status != QuestStatusType::COMPLETED;
     caution_in_quest |= caution_in_tower;
 
-    if (confirm_quest && creature.current_floor_ptr->is_in_quest() && caution_in_quest) {
+    if (confirm_quest && creature.get_floor()->is_in_quest() && caution_in_quest) {
         msg_print(_("この階を一度去ると二度と戻って来られません。", "You can't come back here once you leave this floor."));
         return input_check(_("本当にこの階を去りますか？", "Really leave this floor? "));
     }

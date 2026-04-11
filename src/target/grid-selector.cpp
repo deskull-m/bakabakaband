@@ -164,7 +164,7 @@ void tgt_pt_info::move_to_symbol(CreatureEntity &creature)
     } else {
         for (; this->n < this->positions.size(); ++this->n) {
             const auto &pos_cur = this->positions.at(this->n);
-            const auto &grid = creature.current_floor_ptr->get_grid(pos_cur);
+            const auto &grid = creature.get_floor()->get_grid(pos_cur);
             if (this->callback(grid)) {
                 this->pos = this->positions.at(this->n);
                 break;

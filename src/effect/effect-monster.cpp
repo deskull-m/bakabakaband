@@ -186,7 +186,7 @@ static void effect_damage_killed_pet(CreatureEntity &creature, EffectMonster *em
         if (em_ptr->see_s_msg) {
             msg_format("%s^%s", em_ptr->m_name, em_ptr->note.data());
         } else {
-            creature.current_floor_ptr->monster_noise = true;
+            creature.get_floor()->monster_noise = true;
         }
     }
 
@@ -217,7 +217,7 @@ static void effect_damage_makes_sleep(CreatureEntity &creature, EffectMonster *e
             msg_print(*pain_message);
         }
     } else {
-        creature.current_floor_ptr->monster_noise = true;
+        creature.get_floor()->monster_noise = true;
     }
 
     if (em_ptr->do_sleep) {
@@ -528,7 +528,7 @@ static void effect_damage_makes_polymorph(CreatureEntity &creature, EffectMonste
         em_ptr->dam = 0;
     }
 
-    em_ptr->m_ptr = &creature.current_floor_ptr->get_monster(em_ptr->g_ptr->m_idx);
+    em_ptr->m_ptr = &creature.get_floor()->get_monster(em_ptr->g_ptr->m_idx);
     em_ptr->r_ptr = &em_ptr->m_ptr->get_monrace();
 }
 
@@ -558,7 +558,7 @@ static void effect_damage_makes_teleport(CreatureEntity &creature, EffectMonster
 
     em_ptr->y = em_ptr->m_ptr->y;
     em_ptr->x = em_ptr->m_ptr->x;
-    em_ptr->g_ptr = &creature.current_floor_ptr->grid_array[em_ptr->y][em_ptr->x];
+    em_ptr->g_ptr = &creature.get_floor()->grid_array[em_ptr->y][em_ptr->x];
 }
 
 /*!

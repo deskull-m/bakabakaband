@@ -518,7 +518,7 @@ static void cause_earthquake(CreatureEntity &creature, player_attack_type *pa_pt
     }
 
     earthquake(creature, creature.get_position(), 10);
-    if (!creature.current_floor_ptr->grid_array[y][x].has_monster()) {
+    if (!creature.get_floor()->grid_array[y][x].has_monster()) {
         *(pa_ptr->mdeath) = true;
     }
 }

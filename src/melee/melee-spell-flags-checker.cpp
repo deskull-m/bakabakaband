@@ -120,7 +120,7 @@ static void check_darkness(CreatureEntity &creature, melee_spell_type *ms_ptr)
         return;
     }
 
-    if (creature.current_floor_ptr->get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
+    if (creature.get_floor()->get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         ms_ptr->ability_flags.reset(MonsterAbilityType::DARKNESS);
         return;
     }

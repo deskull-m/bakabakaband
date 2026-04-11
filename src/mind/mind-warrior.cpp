@@ -21,7 +21,7 @@ bool hit_and_away(CreatureEntity &creature)
     }
 
     const auto pos = creature.get_neighbor(dir);
-    if (creature.current_floor_ptr->get_grid(pos).has_monster()) {
+    if (creature.get_floor()->get_grid(pos).has_monster()) {
         do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
         if (randint0(creature.skill_dis) < 7) {
             msg_print(_("うまく逃げられなかった。", "You failed to run away."));
@@ -46,7 +46,7 @@ bool sword_dancing(CreatureEntity &creature)
     for (auto i = 0; i < 6; i++) {
         const auto d = rand_choice(Direction::directions_8());
         const auto pos = creature.get_neighbor(d);
-        const auto &grid = creature.current_floor_ptr->get_grid(pos);
+        const auto &grid = creature.get_floor()->get_grid(pos);
         if (grid.has_monster()) {
             do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
         } else {

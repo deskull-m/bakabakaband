@@ -109,7 +109,7 @@ bool create_ammo(CreatureEntity &creature)
         }
 
         const auto pos = creature.get_neighbor(dir);
-        const auto &grid = creature.current_floor_ptr->get_grid(pos);
+        const auto &grid = creature.get_floor()->get_grid(pos);
         if (grid.get_terrain(TerrainKind::MIMIC).flags.has_not(TerrainCharacteristics::CAN_DIG)) {
             msg_print(_("そこには岩石がない。", "You need a pile of rubble."));
             return false;

@@ -174,8 +174,8 @@ void regenerate_monsters(CreatureEntity &creature)
 {
     auto &tracker = HealthBarTracker::get_instance();
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    for (short i = 1; i < creature.current_floor_ptr->m_max; i++) {
-        auto &monster = creature.current_floor_ptr->get_monster(i);
+    for (short i = 1; i < creature.get_floor()->m_max; i++) {
+        auto &monster = creature.get_floor()->get_monster(i);
         const auto &monrace = monster.get_monrace();
         if (!monster.is_valid()) {
             continue;
@@ -194,7 +194,7 @@ void regenerate_monsters(CreatureEntity &creature)
             }
 
             // Apply hygiene-based regeneration modifier
-            const auto &grid = creature.current_floor_ptr->get_grid(monster.get_position());
+            const auto &grid = creature.get_floor()->get_grid(monster.get_position());
             const auto &terrain = grid.get_terrain();
             if (terrain.hygiene != 0) {
                 const int hygiene_modifier = 100 + terrain.hygiene;
@@ -252,7 +252,7 @@ void regenerate_captured_monsters(CreatureEntity &creature)
             }
 
             // Apply hygiene-based regeneration modifier (based on creature's current terrain)
-            const auto &grid = creature.current_floor_ptr->get_grid(creature.get_position());
+            const auto &grid = creature.get_floor()->get_grid(creature.get_position());
             const auto &terrain = grid.get_terrain();
             if (terrain.hygiene != 0) {
                 const int hygiene_modifier = 100 + terrain.hygiene;

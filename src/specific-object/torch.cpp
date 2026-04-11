@@ -109,7 +109,7 @@ void update_lite_radius(CreatureEntity &creature)
         creature.cur_lite += creature.level / 5;
     }
 
-    if (creature.current_floor_ptr->get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS) && creature.cur_lite > 1) {
+    if (creature.get_floor()->get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS) && creature.cur_lite > 1) {
         creature.cur_lite = 1;
     }
 

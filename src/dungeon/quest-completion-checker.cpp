@@ -161,7 +161,7 @@ std::tuple<bool, bool> QuestCompletionChecker::complete_random()
     auto create_stairs = false;
     if (none_bits(this->q_ptr->flags, QUEST_FLAG_PRESET)) {
         create_stairs = true;
-        this->creature_ptr->current_floor_ptr->quest_number = QuestId::NONE;
+        this->creature_ptr->get_floor()->quest_number = QuestId::NONE;
     }
 
     if (this->quest_idx == QuestId::MELKO) {
@@ -243,7 +243,7 @@ Pos2D QuestCompletionChecker::make_stairs(const bool create_stairs)
 
 void QuestCompletionChecker::make_reward(const Pos2D pos)
 {
-    const auto drop_num = this->creature_ptr->current_floor_ptr->dun_level / 15 + 1;
+    const auto drop_num = this->creature_ptr->get_floor()->dun_level / 15 + 1;
     const auto &monrace = this->m_ptr->get_monrace();
     for (auto i = 0; i < drop_num; i++) {
         while (auto item = make_object(*this->creature_ptr, AM_GOOD | AM_GREAT, nullptr, monrace.level)) {

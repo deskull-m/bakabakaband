@@ -61,7 +61,7 @@ struct mam_pp_type {
 
 mam_pp_type::mam_pp_type(CreatureEntity &creature, MONSTER_IDX m_idx, int dam, bool *dead, bool *fear, std::string_view note, MONSTER_IDX src_idx)
     : m_idx(m_idx)
-    , m_ptr(&creature.current_floor_ptr->get_monster(m_idx))
+    , m_ptr(&creature.get_floor()->get_monster(m_idx))
     , dam(dam)
     , dead(dead)
     , fear(fear)
@@ -149,7 +149,7 @@ static void print_monster_dead_by_monster(CreatureEntity &creature, mam_pp_type 
 
     mam_pp_ptr->m_name = monster_desc(creature, *mam_pp_ptr->m_ptr, MD_TRUE_NAME);
     if (!mam_pp_ptr->seen) {
-        creature.current_floor_ptr->monster_noise = true;
+        creature.get_floor()->monster_noise = true;
         return;
     }
 

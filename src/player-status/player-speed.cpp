@@ -275,7 +275,7 @@ int16_t PlayerSpeed::mutation_bonus()
  */
 int16_t PlayerSpeed::riding_bonus()
 {
-    const auto &monster = (&this->creature)->current_floor_ptr->get_monster(this->creature.riding);
+    const auto &monster = (&this->creature)->get_floor()->get_monster(this->creature.riding);
     int16_t speed = monster.speed;
     int16_t bonus = 0;
     if (!this->creature.riding) {
@@ -315,7 +315,7 @@ int16_t PlayerSpeed::inventory_weight_bonus()
     int16_t bonus = 0;
     auto weight = calc_inventory_weight(this->creature);
     if (this->creature.riding) {
-        const auto &monster = this->creature.current_floor_ptr->get_monster(this->creature.riding);
+        const auto &monster = this->creature.get_floor()->get_monster(this->creature.riding);
         const auto &monrace = monster.get_monrace();
         auto count = 1500 + monrace.level * 25;
         if (weight > count) {

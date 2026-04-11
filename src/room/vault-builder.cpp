@@ -16,7 +16,7 @@
  */
 static bool player_grid(const CreatureEntity &creature, const Grid &grid)
 {
-    return &grid == &creature.current_floor_ptr->grid_array[creature.y][creature.x];
+    return &grid == &creature.get_floor()->grid_array[creature.y][creature.x];
 }
 
 /*

@@ -95,7 +95,7 @@ static bool deal_damege_by_feat(CreatureEntity &creature, const Grid &grid, conc
         }
     } else {
         const auto p_pos = creature.get_position();
-        const auto &name = creature.current_floor_ptr->get_grid(p_pos).get_terrain(TerrainKind::MIMIC).name;
+        const auto &name = creature.get_floor()->get_grid(p_pos).get_terrain(TerrainKind::MIMIC).name;
         msg_format(_("%%s%%s\uff01", "The %%s %%s!"), name.data(), msg_normal);
         apply_damage_to_creature(creature, DAMAGE_NOESCAPE, damage, name);
 

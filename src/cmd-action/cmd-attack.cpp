@@ -69,7 +69,7 @@
 static void natural_attack(CreatureEntity &creature, MONSTER_IDX m_idx, PlayerMutationType attack, bool *fear, bool *mdeath)
 {
     WEIGHT n_weight = 0;
-    auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
 
     Dice dice{};
@@ -161,7 +161,7 @@ static void natural_attack(CreatureEntity &creature, MONSTER_IDX m_idx, PlayerMu
  */
 static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear, bool *mdeath)
 {
-    auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
 
     // 頭突きの基本パラメータ
@@ -245,7 +245,7 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
  */
 static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear, bool *mdeath)
 {
-    auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
 
     // 体当たりの基本パラメータ（プレイヤーの体重や筋力に依存）
@@ -662,7 +662,7 @@ void do_cmd_body_slam(CreatureEntity &creature)
  */
 static void enema_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear, bool *mdeath)
 {
-    auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
 
     // 浣腸の基本パラメータ（プレイヤーの体重や筋力に依存）

@@ -156,7 +156,7 @@ static bool check_quest_placeable(const FloorType &floor, MonraceId r_idx)
  */
 static bool check_procection_rune(CreatureEntity &creature, MonraceId monrace_id, const Pos2D &pos)
 {
-    auto &grid = creature.current_floor_ptr->get_grid(pos);
+    auto &grid = creature.get_floor()->get_grid(pos);
     if (!grid.is_rune_protection()) {
         return true;
     }

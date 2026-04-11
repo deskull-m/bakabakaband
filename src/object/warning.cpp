@@ -243,7 +243,7 @@ static void spell_damcalc(CreatureEntity &creature, const CreatureEntity &monste
  */
 static void spell_damcalc_by_spellnum(CreatureEntity &creature, MonsterAbilityType ms_type, AttributeType typ, MONSTER_IDX m_idx, int *max)
 {
-    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     int dam = monspell_damage(creature, ms_type, m_idx, DAM_MAX);
     spell_damcalc(creature, monster, typ, dam, max);
 }

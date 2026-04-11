@@ -396,7 +396,7 @@ int activate_hi_summon(CreatureEntity &creature, POSITION y, POSITION x, bool ca
         mode |= PM_NO_PET;
     }
 
-    DEPTH dungeon_level = creature.current_floor_ptr->dun_level;
+    DEPTH dungeon_level = creature.get_floor()->dun_level;
     DEPTH summon_lev = (pet ? creature.level * 2 / 3 + randint1(creature.level / 2) : dungeon_level);
     int count = 0;
     for (int i = 0; i < (randint1(7) + (dungeon_level / 40)); i++) {
@@ -513,7 +513,7 @@ void cast_invoke_spirits(CreatureEntity &creature, const Direction &dir)
     if (die < 8) {
         msg_print(_("なんてこった！あなたの周りの地面から朽ちた人影が立ち上がってきた！", "Oh no! Mouldering forms rise from the earth around you!"));
 
-        (void)summon_specific(creature, creature.y, creature.x, creature.current_floor_ptr->dun_level, SUMMON_UNDEAD,
+        (void)summon_specific(creature, creature.y, creature.x, creature.get_floor()->dun_level, SUMMON_UNDEAD,
             (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
         chg_virtue(creature, Virtue::UNLIFE, 1);
     } else if (die < 14) {

@@ -108,7 +108,7 @@ void AllianceDiabolique::panishment(CreatureEntity &creature)
             // 復讐者の仲間を呼ぶ（低確率）
             for (int k = 0; k < 2; k++) {
                 summon_specific(&player_ptr, m_pos.y, m_pos.x,
-                    std::max(player_ptr.current_floor_ptr->monster_level, 3),
+                    std::max(player_ptr.get_floor()->monster_level, 3),
                     SUMMON_DEMON, PM_ALLOW_GROUP, m_idx);
             }
         }

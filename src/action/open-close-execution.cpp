@@ -45,7 +45,7 @@
 bool exe_open(CreatureEntity &creature, POSITION y, POSITION x)
 {
     const Pos2D pos(y, x);
-    const auto &grid = creature.current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     auto &terrain = grid.get_terrain();
     PlayerEnergy(creature).set_player_turn_energy(100);
     if (terrain.flags.has_not(TerrainCharacteristics::OPEN)) {
@@ -217,7 +217,7 @@ bool easy_open_door(CreatureEntity &creature, const Pos2D &pos)
 bool exe_disarm_chest(CreatureEntity &creature, POSITION y, POSITION x, OBJECT_IDX o_idx)
 {
     const Pos2D pos(y, x);
-    auto *o_ptr = creature.current_floor_ptr->o_list[o_idx].get();
+    auto *o_ptr = creature.get_floor()->o_list[o_idx].get();
     PlayerEnergy(creature).set_player_turn_energy(100);
     int i = creature.skill_dis;
     const auto effects = creature.effects();
@@ -280,7 +280,7 @@ bool exe_disarm(CreatureEntity &creature, POSITION y, POSITION x, const Directio
 {
     const auto &baseitems = BaseitemList::get_instance();
     const Pos2D pos(y, x);
-    const auto &grid = creature.current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto &terrain = grid.get_terrain();
     const auto &name = terrain.name;
     int power = terrain.power;

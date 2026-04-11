@@ -39,7 +39,7 @@ void check_fall_off_horse(CreatureEntity &creature, MonsterAttackPlayer *monap_p
         return;
     }
 
-    const auto m_steed_name = monster_desc(creature, creature.current_floor_ptr->get_monster(creature.riding), 0);
+    const auto m_steed_name = monster_desc(creature, creature.get_floor()->get_monster(creature.riding), 0);
     if (process_fall_off_horse(creature, (monap_ptr->damage > 200) ? 200 : monap_ptr->damage, false)) {
         msg_format(_("%s^から落ちてしまった！", "You have fallen from %s."), m_steed_name.data());
     }
@@ -88,7 +88,7 @@ static bool calc_fall_off_possibility(CreatureEntity &creature, const int dam, c
  */
 bool process_fall_off_horse(CreatureEntity &creature, int dam, bool force)
 {
-    const auto &monster = creature.current_floor_ptr->get_monster(creature.riding);
+    const auto &monster = creature.get_floor()->get_monster(creature.riding);
     const auto &monrace = monster.get_monrace();
 
     if (!creature.riding || AngbandWorld::get_instance().is_wild_mode()) {
@@ -106,7 +106,7 @@ bool process_fall_off_horse(CreatureEntity &creature, int dam, bool force)
         for (const auto &d : Direction::directions_8()) {
             const auto pos = creature.get_neighbor(d);
 
-            const auto &grid = creature.current_floor_ptr->get_grid(pos);
+            const auto &grid = creature.get_floor()->get_grid(pos);
 
             if (grid.has_monster()) {
                 continue;

@@ -270,7 +270,7 @@ tl::optional<MONSTER_IDX> place_specific_monster(CreatureEntity &creature, POSIT
             continue;
         }
 
-        get_mon_num_prep_escort(creature, r_idx, *m_idx, creature.current_floor_ptr->get_monrace_hook_terrain_at(pos_neighbor));
+        get_mon_num_prep_escort(creature, r_idx, *m_idx, creature.get_floor()->get_monrace_hook_terrain_at(pos_neighbor));
         const auto monrace_id = get_mon_num(creature, 0, monrace.level, 0);
         if (!MonraceList::is_valid(monrace_id)) {
             break;

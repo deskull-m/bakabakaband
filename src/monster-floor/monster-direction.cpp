@@ -191,7 +191,7 @@ static bool random_walk(CreatureEntity &creature, const CreatureEntity &monster)
  */
 static tl::optional<MonsterMovementDirectionList> decide_pet_movement_direction(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     if (!monster.is_pet()) {
         return tl::nullopt;
     }
@@ -229,7 +229,7 @@ static tl::optional<MonsterMovementDirectionList> decide_pet_movement_direction(
  */
 tl::optional<MonsterMovementDirectionList> decide_monster_movement_direction(CreatureEntity &creature, MONSTER_IDX m_idx, bool aware)
 {
-    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
 
     if (monster.is_confused() || !aware) {

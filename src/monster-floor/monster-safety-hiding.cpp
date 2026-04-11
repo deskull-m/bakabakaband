@@ -28,7 +28,7 @@ static coordinate_candidate sweep_safe_coordinate(CreatureEntity &creature, MONS
 {
     coordinate_candidate candidate;
     const auto &floor = *creature.current_floor_ptr;
-    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto p_pos = creature.get_position();
     const auto m_pos = monster.get_position();
     for (const auto &vec : offsets) {
@@ -145,7 +145,7 @@ static void sweep_hiding_candidate(
  */
 tl::optional<Pos2D> find_hiding(CreatureEntity &creature, short m_idx)
 {
-    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     coordinate_candidate candidate;
     candidate.gdis = 999;
     for (auto d = 1; d < 10; d++) {

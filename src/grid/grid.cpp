@@ -238,7 +238,7 @@ static void update_local_illumination_aux(CreatureEntity &creature, const Pos2D 
  */
 void update_local_illumination(CreatureEntity &creature, const Pos2D &pos)
 {
-    if (!creature.current_floor_ptr->contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
+    if (!creature.get_floor()->contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         return;
     }
 
@@ -440,7 +440,7 @@ void note_spot(CreatureEntity &creature, const Pos2D &pos)
  */
 void lite_spot(CreatureEntity &creature, const Pos2D &pos)
 {
-    if (panel_contains(pos) && creature.current_floor_ptr->contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
+    if (panel_contains(pos) && creature.get_floor()->contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
         auto symbol_pair = map_info(creature, pos);
         symbol_pair.symbol_foreground.color = get_monochrome_display_color(creature).value_or(symbol_pair.symbol_foreground.color);
 
@@ -880,7 +880,7 @@ bool cave_monster_teleportable_bold(CreatureEntity &creature, MONSTER_IDX m_idx,
 bool cave_player_teleportable_bold(CreatureEntity &creature, POSITION y, POSITION x, teleport_flags mode)
 {
     const Pos2D pos(y, x);
-    const auto &grid = creature.current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto &terrain = grid.get_terrain();
 
     /* Require "teleportable" space */
@@ -940,7 +940,7 @@ bool player_can_enter(CreatureEntity &creature, FEAT_IDX feature, BIT_FLAGS16 mo
     const auto &terrain = TerrainList::get_instance().get_terrain(feature);
     if (creature.riding) {
         return monster_can_cross_terrain(
-            &creature, feature, creature.current_floor_ptr->get_monster(creature.riding).get_monrace(), mode | CEM_RIDING);
+            &creature, feature, creature.get_floor()->get_monster(creature.riding).get_monrace(), mode | CEM_RIDING);
     }
 
     if (terrain.flags.has(TerrainCharacteristics::PATTERN)) {
@@ -968,7 +968,7 @@ bool player_can_enter(CreatureEntity &creature, FEAT_IDX feature, BIT_FLAGS16 mo
 
 void place_grid(CreatureEntity &creature, Grid &grid, grid_bold_type gb_type)
 {
-    const auto &dungeon = creature.current_floor_ptr->get_generated_dungeon_definition();
+    const auto &dungeon = creature.get_floor()->get_generated_dungeon_definition();
     switch (gb_type) {
     case GB_FLOOR: {
         grid.set_terrain_id(dungeon.select_floor_terrain_id());
@@ -1061,6 +1061,6 @@ void place_grid(CreatureEntity &creature, Grid &grid, grid_bold_type gb_type)
 
 void place_bold(CreatureEntity &creature, POSITION y, POSITION x, grid_bold_type gb_type)
 {
-    auto &grid = creature.current_floor_ptr->grid_array[y][x];
+    auto &grid = creature.get_floor()->grid_array[y][x];
     place_grid(creature, grid, gb_type);
 }

@@ -256,7 +256,7 @@ static void describe_monster_person(GridExamination *ge_ptr)
 static short describe_monster_item(CreatureEntity &creature, GridExamination *ge_ptr)
 {
     for (const auto this_o_idx : ge_ptr->m_ptr->get_monster_profile().hold_o_idx_list) {
-        const auto &item = *creature.current_floor_ptr->o_list[this_o_idx];
+        const auto &item = *creature.get_floor()->o_list[this_o_idx];
         const auto item_name = describe_flavor(creature, item, 0);
 #ifdef JP
         const auto out_val = format("%s%s%s%s[%s]", ge_ptr->s1, item_name.data(), ge_ptr->s2, ge_ptr->s3, ge_ptr->info);
@@ -287,7 +287,7 @@ static bool within_char_util(const short input)
 
 static short describe_grid(CreatureEntity &creature, GridExamination *ge_ptr)
 {
-    if (!ge_ptr->g_ptr->has_monster() || !creature.current_floor_ptr->get_monster(ge_ptr->g_ptr->m_idx).get_monster_profile().ml) {
+    if (!ge_ptr->g_ptr->has_monster() || !creature.get_floor()->get_monster(ge_ptr->g_ptr->m_idx).get_monster_profile().ml) {
         return CONTINUOUS_DESCRIPTION;
     }
 
@@ -325,7 +325,7 @@ static short describe_footing(CreatureEntity &creature, GridExamination *ge_ptr)
         return CONTINUOUS_DESCRIPTION;
     }
 
-    const auto &item = *creature.current_floor_ptr->o_list[ge_ptr->floor_item_index[0]];
+    const auto &item = *creature.get_floor()->o_list[ge_ptr->floor_item_index[0]];
     const auto item_name = describe_flavor(creature, item, 0);
 #ifdef JP
     const auto out_val = format("%s%s%s%s[%s]", ge_ptr->s1, item_name.data(), ge_ptr->s2, ge_ptr->s3, ge_ptr->info);
@@ -448,7 +448,7 @@ static short describe_footing_sight(CreatureEntity &creature, GridExamination *g
 static int16_t sweep_footing_items(CreatureEntity &creature, GridExamination *ge_ptr)
 {
     for (const auto this_o_idx : ge_ptr->g_ptr->o_idx_list) {
-        const auto &item = *creature.current_floor_ptr->o_list[this_o_idx];
+        const auto &item = *creature.get_floor()->o_list[this_o_idx];
         const auto ret = describe_footing_sight(creature, ge_ptr, item);
         if (within_char_util(ret)) {
             return (char)ret;
@@ -591,7 +591,7 @@ char examine_grid(CreatureEntity &creature, const POSITION y, const POSITION x, 
 
     auto is_entrance = ge_ptr->terrain_ptr->flags.has(TerrainCharacteristics::STORE);
     is_entrance |= ge_ptr->terrain_ptr->flags.has(TerrainCharacteristics::QUEST_ENTER);
-    is_entrance |= ge_ptr->terrain_ptr->flags.has(TerrainCharacteristics::BLDG) && !creature.current_floor_ptr->inside_arena;
+    is_entrance |= ge_ptr->terrain_ptr->flags.has(TerrainCharacteristics::BLDG) && !creature.get_floor()->inside_arena;
     is_entrance |= ge_ptr->terrain_ptr->flags.has(TerrainCharacteristics::ENTRANCE);
     if (is_entrance) {
         ge_ptr->s2 = _("の入口", "");

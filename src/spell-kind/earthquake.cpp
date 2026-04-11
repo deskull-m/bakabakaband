@@ -84,7 +84,7 @@ tl::optional<Pos2D> decide_player_dodge_posistion(CreatureEntity &creature, std:
     const auto pos_candidates =
         Direction::directions_8() |
         ranges::views::transform([&](const auto &d) { return creature.get_neighbor(d); }) |
-        ranges::views::filter([&](const auto &pos) { return creature.current_floor_ptr->is_empty_at(pos) && (pos != creature.get_position()); }) |
+        ranges::views::filter([&](const auto &pos) { return creature.get_floor()->is_empty_at(pos) && (pos != creature.get_position()); }) |
         ranges::views::filter(std::not_fn(is_collapsed_pos)) |
         ranges::to<std::vector<Pos2D>>();
 
@@ -97,7 +97,7 @@ std::string build_killer_on_earthquake(CreatureEntity &creature, int m_idx)
         return _("地震", "an earthquake");
     }
 
-    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto m_name = monster_desc(creature, monster, MD_WRONGDOER_NAME);
     return format(_("%sの起こした地震", "an earthquake caused by %s"), m_name.data());
 }

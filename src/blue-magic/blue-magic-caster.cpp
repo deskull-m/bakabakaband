@@ -148,7 +148,7 @@ static bool cast_blue_teleport_back(CreatureEntity &creature)
 
     msg_format(_("%sを引き戻した。", "You command %s to return."), m_name->data());
     teleport_monster_to(
-        creature, creature.current_floor_ptr->get_grid(*pos).m_idx, creature.y, creature.x, 100, TELEPORT_PASSIVE);
+        creature, creature.get_floor()->get_grid(*pos).m_idx, creature.y, creature.x, 100, TELEPORT_PASSIVE);
     return true;
 }
 

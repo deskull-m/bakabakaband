@@ -98,7 +98,7 @@ MonsterDamageProcessor::MonsterDamageProcessor(CreatureEntity &creature, MONSTER
  */
 bool MonsterDamageProcessor::mon_take_hit(std::string_view note)
 {
-    auto &monster = this->creature.current_floor_ptr->m_list[this->m_idx];
+    auto &monster = this->creature.get_floor()->m_list[this->m_idx];
     const auto exp_mon = monster.clone();
     auto exp_dam = (monster.hp > this->dam) ? this->dam : monster.hp;
     this->get_exp_from_mon(exp_mon, exp_dam);
@@ -130,7 +130,7 @@ bool MonsterDamageProcessor::mon_take_hit(std::string_view note)
 bool MonsterDamageProcessor::genocide_patron()
 {
     auto &creature = this->creature;
-    const auto &monster = creature.current_floor_ptr->get_monster(this->m_idx);
+    const auto &monster = creature.get_floor()->get_monster(this->m_idx);
     if (!monster.is_valid()) {
         this->m_idx = 0;
     }
@@ -145,7 +145,7 @@ bool MonsterDamageProcessor::genocide_patron()
 bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, const CreatureEntity &exp_target)
 {
     auto &creature = this->creature;
-    auto &monster = creature.current_floor_ptr->get_monster(this->m_idx);
+    auto &monster = creature.get_floor()->get_monster(this->m_idx);
     auto &monrace = monster.get_real_monrace();
     if (monster.hp >= 0) {
         return false;
@@ -182,7 +182,7 @@ bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, cons
 void MonsterDamageProcessor::death_special_flag_monster()
 {
     auto &creature = this->creature;
-    auto &monster = creature.current_floor_ptr->get_monster(this->m_idx);
+    auto &monster = creature.get_floor()->get_monster(this->m_idx);
     auto monrace_id = monster.r_idx;
     auto &monrace = monster.get_monrace();
     if (monrace.misc_flags.has(MonsterMiscType::TANUKI)) {
@@ -218,7 +218,7 @@ void MonsterDamageProcessor::death_special_flag_monster()
 void MonsterDamageProcessor::increase_kill_numbers()
 {
     auto &creature = this->creature;
-    auto &monster = creature.current_floor_ptr->get_monster(this->m_idx);
+    auto &monster = creature.get_floor()->get_monster(this->m_idx);
     auto &monrace = monster.get_real_monrace();
     monrace.increment_akills();
     creature.plus_incident_tree("KILL", 1);
@@ -262,7 +262,7 @@ void MonsterDamageProcessor::increase_kill_numbers()
 
 void MonsterDamageProcessor::death_amberites(std::string_view m_name)
 {
-    const auto &monster = this->creature.current_floor_ptr->get_monster(this->m_idx);
+    const auto &monster = this->creature.get_floor()->get_monster(this->m_idx);
     const auto &r_ref = monster.get_real_monrace();
     if (r_ref.kind_flags.has_not(MonsterKindType::AMBERITE) || one_in_(2)) {
         return;
@@ -280,7 +280,7 @@ void MonsterDamageProcessor::death_amberites(std::string_view m_name)
 
 void MonsterDamageProcessor::death_choasians(std::string_view m_name)
 {
-    const auto &monster = this->creature.current_floor_ptr->get_monster(this->m_idx);
+    const auto &monster = this->creature.get_floor()->get_monster(this->m_idx);
     const auto &r_ref = monster.get_real_monrace();
     if (r_ref.kind_flags.has_not(MonsterKindType::CHOASIAN) || one_in_(3)) {
         return;
@@ -322,7 +322,7 @@ void MonsterDamageProcessor::death_choasians(std::string_view m_name)
 void MonsterDamageProcessor::dying_scream(std::string_view m_name)
 {
     auto &creature = this->creature;
-    const auto &monster = creature.current_floor_ptr->get_monster(this->m_idx);
+    const auto &monster = creature.get_floor()->get_monster(this->m_idx);
     const auto &r_ref = monster.get_real_monrace();
     if (r_ref.speak_flags.has_none_of({ MonsterSpeakType::SPEAK_ALL, MonsterSpeakType::SPEAK_DEATH })) {
         return;
@@ -443,7 +443,7 @@ void MonsterDamageProcessor::get_exp_from_mon(const CreatureEntity &target, int 
     s64b_mul(&div_h, &div_l, 0, (ironman_nightmare ? 2 : 1) * compensation);
 
     /* Special penalty in the wilderness */
-    if (!this->creature.current_floor_ptr->is_underground()) {
+    if (!this->creature.get_floor()->is_underground()) {
         auto is_dungeon_monster = monrace.wilderness_flags.has_not(MonsterWildernessType::WILD_ONLY);
         is_dungeon_monster |= monrace.kind_flags.has_not(MonsterKindType::UNIQUE);
         if (is_dungeon_monster) {
@@ -488,7 +488,7 @@ void MonsterDamageProcessor::get_exp_from_mon(const CreatureEntity &target, int 
 void MonsterDamageProcessor::set_redraw()
 {
     auto &creature = this->creature;
-    auto &monster = creature.current_floor_ptr->get_monster(this->m_idx);
+    auto &monster = creature.get_floor()->get_monster(this->m_idx);
     HealthBarTracker::get_instance().set_flag_if_tracking(this->m_idx);
     if (monster.is_riding()) {
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
@@ -498,7 +498,7 @@ void MonsterDamageProcessor::set_redraw()
 void MonsterDamageProcessor::add_monster_fear()
 {
     auto &creature = this->creature;
-    const auto &monster = creature.current_floor_ptr->get_monster(this->m_idx);
+    const auto &monster = creature.get_floor()->get_monster(this->m_idx);
     if (monster.is_fearful() && (this->dam > 0)) {
         auto fear_remining = monster.get_remaining_fear() - randint1(this->dam);
         if (set_monster_monfear(*creature.current_floor_ptr, this->m_idx, fear_remining)) {
@@ -530,7 +530,7 @@ void MonsterDamageProcessor::add_monster_fear()
 void MonsterDamageProcessor::process_masochist_reaction()
 {
     auto &creature = this->creature;
-    auto &monster = creature.current_floor_ptr->get_monster(this->m_idx);
+    auto &monster = creature.get_floor()->get_monster(this->m_idx);
     const auto &monrace = monster.get_monrace();
 
     if (!monrace.misc_flags.has(MonsterMiscType::MASOCHIST)) {
@@ -560,7 +560,7 @@ void MonsterDamageProcessor::process_masochist_reaction()
 void MonsterDamageProcessor::process_sadist_reaction()
 {
     auto &creature = this->creature;
-    auto &monster = creature.current_floor_ptr->get_monster(this->m_idx);
+    auto &monster = creature.get_floor()->get_monster(this->m_idx);
     const auto &monrace = monster.get_monrace();
 
     if (!monrace.misc_flags.has(MonsterMiscType::SADIST)) {
@@ -588,7 +588,7 @@ void MonsterDamageProcessor::process_sadist_reaction()
 bool MonsterDamageProcessor::check_and_process_hp_transform()
 {
     auto &creature = this->creature;
-    auto &monster = creature.current_floor_ptr->get_monster(this->m_idx);
+    auto &monster = creature.get_floor()->get_monster(this->m_idx);
 
     // 変身条件のチェック
     if (monster.get_monster_profile().has_transformed) {

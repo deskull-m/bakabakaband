@@ -150,7 +150,7 @@ void player_birth(CreatureEntity &creature, std::optional<QuestId> initial_quest
 
         // クエストの初期化処理（ウィザードモードのwiz_enter_quest関数を参考）
         init_flags = i2enum<init_flags_type>(INIT_SHOW_TEXT | INIT_ASSIGN);
-        creature.current_floor_ptr->quest_number = *initial_quest_id;
+        creature.get_floor()->quest_number = *initial_quest_id;
         parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
         quest.status = QuestStatusType::TAKEN;
 

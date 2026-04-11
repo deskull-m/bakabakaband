@@ -28,7 +28,7 @@ static bool scene_basic(CreatureEntity &creature, scene_type *value)
         return true;
     }
 
-    if (creature.current_floor_ptr->inside_arena) {
+    if (creature.get_floor()->inside_arena) {
         value->type = TERM_XTRA_MUSIC_BASIC;
         value->val = MUSIC_BASIC_ARENA;
         return true;
@@ -71,7 +71,7 @@ static bool scene_quest_basic(CreatureEntity &creature, scene_type *value)
 
 static bool scene_town(CreatureEntity &creature, scene_type *value)
 {
-    const auto enable = !creature.current_floor_ptr->is_underground() && (creature.town_num > 0);
+    const auto enable = !creature.get_floor()->is_underground() && (creature.town_num > 0);
     if (enable) {
         value->type = TERM_XTRA_MUSIC_TOWN;
         value->val = creature.town_num;
@@ -81,7 +81,7 @@ static bool scene_town(CreatureEntity &creature, scene_type *value)
 
 static bool scene_town_basic(CreatureEntity &creature, scene_type *value)
 {
-    const auto enable = !creature.current_floor_ptr->is_underground() && (creature.town_num > 0);
+    const auto enable = !creature.get_floor()->is_underground() && (creature.town_num > 0);
     if (enable) {
         value->type = TERM_XTRA_MUSIC_BASIC;
         value->val = MUSIC_BASIC_TOWN;
@@ -91,7 +91,7 @@ static bool scene_town_basic(CreatureEntity &creature, scene_type *value)
 
 static bool scene_field(CreatureEntity &creature, scene_type *value)
 {
-    const auto enable = !creature.current_floor_ptr->is_underground();
+    const auto enable = !creature.get_floor()->is_underground();
     if (enable) {
         value->type = TERM_XTRA_MUSIC_BASIC;
 
@@ -137,11 +137,11 @@ static bool scene_dungeon(CreatureEntity &creature, scene_type *value)
 
 static bool scene_dungeon_basic(CreatureEntity &creature, scene_type *value)
 {
-    const auto enable = creature.current_floor_ptr->is_underground();
+    const auto enable = creature.get_floor()->is_underground();
     if (enable) {
         value->type = TERM_XTRA_MUSIC_BASIC;
 
-        const auto dun_level = creature.current_floor_ptr->dun_level;
+        const auto dun_level = creature.get_floor()->dun_level;
         if (dun_level >= 80) {
             value->val = MUSIC_BASIC_DUN_HIGH;
         } else if (dun_level >= 40) {

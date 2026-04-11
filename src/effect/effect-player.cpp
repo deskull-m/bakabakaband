@@ -155,7 +155,7 @@ static ProcessResult check_continue_player_effect(CreatureEntity &creature, Effe
 static void describe_effect_source(CreatureEntity &creature, EffectPlayerType *ep_ptr, concptr src_name)
 {
     if (ep_ptr->is_monster()) {
-        ep_ptr->m_ptr = &creature.current_floor_ptr->get_monster(ep_ptr->src_idx);
+        ep_ptr->m_ptr = &creature.get_floor()->get_monster(ep_ptr->src_idx);
         ep_ptr->rlev = ep_ptr->m_ptr->get_monrace().level >= 1 ? ep_ptr->m_ptr->get_monrace().level : 1;
         ep_ptr->m_name = monster_desc(creature, *ep_ptr->m_ptr, 0);
         ep_ptr->killer = src_name;

@@ -168,7 +168,7 @@ void execute_floor_reset(CreatureEntity &creature)
         /* 時空崩壊度進行 */
         if (creature.prace != PlayerRaceType::AMBERITE) {
             msg_print(_("乱暴な現実の変容で時空崩壊が進んだ！", "World collapsion has progressed due to the violent transformation of reality!"));
-            wc_ptr->plus_perm_collapsion(20 + creature.current_floor_ptr->dun_level / 2);
+            wc_ptr->plus_perm_collapsion(20 + creature.get_floor()->dun_level / 2);
         }
 
         FloorChangeModesStore::get_instace()->set(FloorChangeMode::FIRST_FLOOR);

@@ -207,7 +207,7 @@ bool drop_single_artifact(CreatureEntity &creature, MonsterDeath *md_ptr, FixedA
 
 static tl::optional<short> drop_dungeon_final_artifact(CreatureEntity &creature, MonsterDeath *md_ptr)
 {
-    const auto &dungeon = creature.current_floor_ptr->get_dungeon_definition();
+    const auto &dungeon = creature.get_floor()->get_dungeon_definition();
     const auto has_reward = dungeon.final_object > 0;
     const auto bi_id = has_reward ? dungeon.final_object : BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::SCROLL, SV_SCROLL_ACQUIREMENT });
     if (dungeon.final_artifact == FixedArtifactId::NONE) {
@@ -295,7 +295,7 @@ static int decide_drop_numbers(CreatureEntity &creature, MonsterDeath *md_ptr, c
     }
 
     // クローンは、クローン地獄内のユニークモンスター以外はドロップしない
-    if (md_ptr->cloned && !(md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) && (creature.current_floor_ptr->quest_number == QuestId::CLONE))) {
+    if (md_ptr->cloned && !(md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) && (creature.get_floor()->quest_number == QuestId::CLONE))) {
         drop_numbers = 0;
     }
 

@@ -108,7 +108,7 @@ static void move_item_to_monster(CreatureEntity &creature, MonsterAttackPlayer *
         return;
     }
 
-    auto &item = *creature.current_floor_ptr->o_list[o_idx];
+    auto &item = *creature.get_floor()->o_list[o_idx];
     item = monap_ptr->o_ptr->clone();
     item.number = 1;
     if (monap_ptr->o_ptr->is_wand_rod()) {
@@ -147,7 +147,7 @@ void process_eat_item(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
         msg_format("%sour %s (%c) was stolen!", ((monap_ptr->o_ptr->number > 1) ? "One of y" : "Y"), item_name.data(), index_to_label(i_idx));
 #endif
         chg_virtue(creature, Virtue::SACRIFICE, 1);
-        const auto item_idx = creature.current_floor_ptr->pop_empty_index_item();
+        const auto item_idx = creature.get_floor()->pop_empty_index_item();
         move_item_to_monster(creature, monap_ptr, item_idx);
         inven_item_increase(creature, i_idx, -1);
         inven_item_optimize(creature, i_idx);

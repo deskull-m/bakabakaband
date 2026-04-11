@@ -44,7 +44,7 @@ ProcessResult effect_monster_old_clone(CreatureEntity &creature, EffectMonster *
         em_ptr->obvious = true;
     }
 
-    auto has_resistance = (creature.current_floor_ptr->inside_arena);
+    auto has_resistance = (creature.get_floor()->inside_arena);
     has_resistance |= em_ptr->m_ptr->is_pet();
     has_resistance |= em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE);
     has_resistance |= em_ptr->r_ptr->misc_flags.has(MonsterMiscType::QUESTOR);

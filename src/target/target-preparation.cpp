@@ -177,8 +177,8 @@ void target_sensing_monsters_prepare(CreatureEntity &creature, std::vector<MONST
         return;
     }
 
-    for (MONSTER_IDX i = 1; i < creature.current_floor_ptr->m_max; i++) {
-        const auto &monster = creature.current_floor_ptr->m_list[i];
+    for (MONSTER_IDX i = 1; i < creature.get_floor()->m_max; i++) {
+        const auto &monster = creature.get_floor()->m_list[i];
         if (!monster.is_valid() || !monster.get_monster_profile().ml || monster.is_pet()) {
             continue;
         }

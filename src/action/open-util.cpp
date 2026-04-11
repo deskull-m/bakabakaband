@@ -51,7 +51,7 @@ std::pair<int, Direction> count_chests(CreatureEntity &creature, bool trapped)
             continue;
         }
 
-        const auto &item = *creature.current_floor_ptr->o_list[o_idx];
+        const auto &item = *creature.get_floor()->o_list[o_idx];
         if (item.pval == 0) {
             continue;
         }

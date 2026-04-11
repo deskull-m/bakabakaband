@@ -47,7 +47,7 @@ static void check_riding_preservation(CreatureEntity &creature)
         return;
     }
 
-    const auto &monster = creature.current_floor_ptr->m_list[creature.riding];
+    const auto &monster = creature.get_floor()->m_list[creature.riding];
     if (monster.has_parent()) {
         creature.ride_monster(0);
         creature.pet_extra_flags &= ~(PF_TWO_HANDS);
@@ -90,17 +90,17 @@ static void sweep_preserving_pet(CreatureEntity &creature)
 {
 
 
-    if (AngbandWorld::get_instance().is_wild_mode() || creature.current_floor_ptr->inside_arena || AngbandSystem::get_instance().is_phase_out()) {
+    if (AngbandWorld::get_instance().is_wild_mode() || creature.get_floor()->inside_arena || AngbandSystem::get_instance().is_phase_out()) {
         return;
     }
 
-    for (MONSTER_IDX i = creature.current_floor_ptr->m_max - 1, party_monster_num = 1; (i >= 1) && (party_monster_num < PartyMonsters::MAX_SIZE); i--) {
-        const auto &monster = creature.current_floor_ptr->m_list[i];
+    for (MONSTER_IDX i = creature.get_floor()->m_max - 1, party_monster_num = 1; (i >= 1) && (party_monster_num < PartyMonsters::MAX_SIZE); i--) {
+        const auto &monster = creature.get_floor()->m_list[i];
         if (!monster.is_valid() || !monster.is_pet() || monster.is_riding() || check_pet_preservation_conditions(creature, monster)) {
             continue;
         }
 
-        party_monsters[party_monster_num] = creature.current_floor_ptr->m_list[i].clone();
+        party_monsters[party_monster_num] = creature.get_floor()->m_list[i].clone();
         party_monster_num++;
         delete_monster_idx(creature, i);
     }
@@ -138,9 +138,9 @@ static void preserve_pet(CreatureEntity &creature)
     check_riding_preservation(creature);
     sweep_preserving_pet(creature);
     record_pet_diary(creature);
-    for (MONSTER_IDX i = creature.current_floor_ptr->m_max - 1; i >= 1; i--) {
-        const auto &monster = creature.current_floor_ptr->m_list[i];
-        const auto parent_r_idx = creature.current_floor_ptr->m_list[monster.get_monster_profile().parent_m_idx].r_idx;
+    for (MONSTER_IDX i = creature.get_floor()->m_max - 1; i >= 1; i--) {
+        const auto &monster = creature.get_floor()->m_list[i];
+        const auto parent_r_idx = creature.get_floor()->m_list[monster.get_monster_profile().parent_m_idx].r_idx;
         if (!monster.has_parent() || MonraceList::is_valid(parent_r_idx)) {
             continue;
         }

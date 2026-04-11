@@ -57,7 +57,7 @@ public:
     }
     tl::optional<Pos2D> operator()(const TargetMonster &target_monster) const
     {
-        const auto &monster = this->creature_ptr->current_floor_ptr->get_monster(target_monster.m_idx);
+        const auto &monster = this->creature_ptr->get_floor()->get_monster(target_monster.m_idx);
         return monster.get_position();
     }
 

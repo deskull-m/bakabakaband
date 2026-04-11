@@ -268,12 +268,12 @@ bool tele_town(CreatureEntity &creature)
         return false;
     }
 
-    if (creature.current_floor_ptr->is_underground()) {
+    if (creature.get_floor()->is_underground()) {
         msg_print(_("この魔法は地上でしか使えない！", "This spell can only be used on the surface!"));
         return false;
     }
 
-    if (creature.current_floor_ptr->inside_arena || AngbandSystem::get_instance().is_phase_out()) {
+    if (creature.get_floor()->inside_arena || AngbandSystem::get_instance().is_phase_out()) {
         msg_print(_("この魔法は外でしか使えない！", "This spell can only be used outside!"));
         return false;
     }
@@ -345,7 +345,7 @@ void reserve_alter_reality(CreatureEntity &creature, TIME_EFFECT turns)
         return;
     }
 
-    if (creature.current_floor_ptr->inside_arena || ironman_downward) {
+    if (creature.get_floor()->inside_arena || ironman_downward) {
         msg_print(_("何も起こらなかった。", "Nothing happens."));
         return;
     }

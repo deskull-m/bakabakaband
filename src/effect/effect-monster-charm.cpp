@@ -344,7 +344,7 @@ ProcessResult effect_monster_domination(CreatureEntity &creature, EffectMonster 
 
 static bool effect_monster_crusade_domination(CreatureEntity &creature, EffectMonster *em_ptr)
 {
-    if ((em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::GOOD)) || creature.current_floor_ptr->inside_arena) {
+    if ((em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::GOOD)) || creature.get_floor()->inside_arena) {
         return false;
     }
 

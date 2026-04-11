@@ -285,7 +285,7 @@ bool hayagake(CreatureEntity &creature)
         return true;
     }
 
-    const auto &grid = creature.current_floor_ptr->get_grid(creature.get_position());
+    const auto &grid = creature.get_floor()->get_grid(creature.get_position());
     const auto &terrain = grid.get_terrain();
     if (terrain.flags.has_not(TerrainCharacteristics::PROJECTION) || (!player_ptr->levitation && terrain.flags.has(TerrainCharacteristics::DEEP))) {
         msg_print(_("ここでは素早く動けない。", "You cannot run in here."));
@@ -316,7 +316,7 @@ bool set_superstealth(CreatureEntity &creature, bool set)
 
     if (set) {
         if (!ninja_data->s_stealth) {
-            if (creature.current_floor_ptr->grid_array[creature.y][creature.x].info & CAVE_MNLT) {
+            if (creature.get_floor()->grid_array[creature.y][creature.x].info & CAVE_MNLT) {
                 msg_print(_("敵の目から薄い影の中に覆い隠された。", "You are mantled in weak shadow from ordinary eyes."));
                 player_ptr->monlite = player_ptr->old_monlite = true;
             } else {

@@ -33,7 +33,7 @@ constexpr auto TRAVEL_UNABLE = 9999;
 int travel_flow_cost(CreatureEntity &creature, const Pos2D &pos)
 {
     int cost = 1;
-    const auto &grid = creature.current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto &terrain = grid.get_terrain();
     if (terrain.flags.has(TerrainCharacteristics::AVOID_RUN)) {
         cost += 1;
@@ -302,7 +302,7 @@ void Travel::update_flow(CreatureEntity &creature)
         return;
     }
 
-    const auto &terrain = creature.current_floor_ptr->get_grid(creature.get_position()).get_terrain();
+    const auto &terrain = creature.get_floor()->get_grid(creature.get_position()).get_terrain();
     const auto wall = terrain.flags.has(TerrainCharacteristics::MOVE);
 
     using CostAndPos = std::pair<int, Pos2D>;

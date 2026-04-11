@@ -132,7 +132,7 @@ static void handle_item_disappearance(CreatureEntity &creature, ItemEntity &disa
 tl::optional<ItemEntity> make_object(CreatureEntity &subject, BIT_FLAGS mode, BaseitemRestrict restrict, tl::optional<int> rq_mon_level)
 {
     const auto apply_magic_to = [&subject, mode](ItemEntity &item) {
-        ItemMagicApplier(subject, &item, subject.current_floor_ptr->object_level, mode).execute();
+        ItemMagicApplier(subject, &item, subject.get_floor()->object_level, mode).execute();
         set_ammo_quantity(&item);
         if (cheat_peek) {
             object_mention(subject, item);
@@ -232,7 +232,7 @@ void floor_item_increase(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUM
  */
 void floor_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
 {
-    auto *o_ptr = creature.current_floor_ptr->o_list[i_idx].get();
+    auto *o_ptr = creature.get_floor()->o_list[i_idx].get();
     if (!o_ptr->is_valid()) {
         return;
     }
@@ -544,7 +544,7 @@ void floor_item_charges(const FloorType &floor, INVENTORY_IDX i_idx)
  */
 void floor_item_describe(CreatureEntity &creature, INVENTORY_IDX i_idx)
 {
-    const auto &item = *creature.current_floor_ptr->o_list[i_idx];
+    const auto &item = *creature.get_floor()->o_list[i_idx];
     const auto item_name = describe_flavor(creature, item, 0);
 #ifdef JP
     if (item.number <= 0) {
@@ -567,7 +567,7 @@ ItemEntity *choose_object(CreatureEntity &creature, short *initial_i_idx, concpt
         *initial_i_idx = INVEN_NONE;
     }
 
-    const auto enable_repeat = util::make_finalizer([&] { creature.current_floor_ptr->prevent_repeat_floor_item_idx = false; });
+    const auto enable_repeat = util::make_finalizer([&] { creature.get_floor()->prevent_repeat_floor_item_idx = false; });
 
     FixItemTesterSetter setter(item_tester);
     short i_idx;

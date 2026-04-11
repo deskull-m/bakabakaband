@@ -99,7 +99,7 @@ if (one_in_(18)) {
 
         for (int k = 0; k < retainer_count; k++) {
             summon_specific(&player_ptr, m_pos.y, m_pos.x,
-                std::max(player_ptr.current_floor_ptr->monster_level, 10),
+                std::max(player_ptr.get_floor()->monster_level, 10),
                 SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
         }
     }

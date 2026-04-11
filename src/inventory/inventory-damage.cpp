@@ -28,7 +28,7 @@
 void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, int perc)
 {
     int j, amt;
-    if (check_multishadow(creature) || creature.current_floor_ptr->inside_arena) {
+    if (check_multishadow(creature) || creature.get_floor()->inside_arena) {
         return;
     }
 

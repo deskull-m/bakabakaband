@@ -150,8 +150,8 @@ void wr_player(CreatureEntity &creature)
     wr_s16b(static_cast<int16_t>(entries.get_current_entry()));
     const auto defeated_entry = entries.get_defeated_entry();
     wr_s16b(static_cast<int16_t>(defeated_entry.value_or(-1)));
-    wr_s16b(creature.current_floor_ptr->inside_arena);
-    wr_s16b(enum2i(creature.current_floor_ptr->quest_number));
+    wr_s16b(creature.get_floor()->inside_arena);
+    wr_s16b(enum2i(creature.get_floor()->quest_number));
     wr_s16b(AngbandSystem::get_instance().is_phase_out());
     wr_byte(world.get_arena());
     wr_byte(0); /* Unused */
@@ -321,7 +321,7 @@ void wr_player(CreatureEntity &creature)
     wr_bool(creature.is_dead());
     const auto &df = DungeonFeeling::get_instance();
     wr_byte(static_cast<uint8_t>(df.get_feeling()));
-    wr_s32b(creature.current_floor_ptr->generated_turn);
+    wr_s32b(creature.get_floor()->generated_turn);
     wr_s32b(df.get_turns());
     wr_s32b(world.game_turn);
     wr_s32b(world.dungeon_turn);

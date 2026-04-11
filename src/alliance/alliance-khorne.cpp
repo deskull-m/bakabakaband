@@ -86,7 +86,7 @@ void AllianceKhorne::panishment(CreatureEntity &creature)
             // 追加の配下召喚（血と戦いの混沌）
             for (int k = 0; k < 3 + (impression < -300 ? 2 : 0); k++) {
                 summon_specific(&player_ptr, m_pos.y, m_pos.x,
-                    std::max(player_ptr.current_floor_ptr->monster_level, 10),
+                    std::max(player_ptr.get_floor()->monster_level, 10),
                     SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }
@@ -108,7 +108,7 @@ void AllianceKhorne::panishment(CreatureEntity &creature)
             msg_print(_("コーンの選ばれし者があなたを誅すべく追跡してきた！", "Khorne's Chosen is chasing you for revenge!"));
             disturb(creature, true, true);
             for (int k = 0; k < 3; k++) {
-                summon_specific(creature, m_pos.y, m_pos.x, std::max(creature.current_floor_ptr->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
+                summon_specific(creature, m_pos.y, m_pos.x, std::max(creature.get_floor()->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }
     }

@@ -34,7 +34,7 @@ bool rodeo(CreatureEntity &creature)
         return true;
     }
 
-    auto &monster = creature.current_floor_ptr->get_monster(creature.riding);
+    auto &monster = creature.get_floor()->get_monster(creature.riding);
     const auto &monrace = monster.get_monrace();
     const auto m_name = monster_desc(creature, monster, 0);
     msg_format(_("%sに乗った。", "You ride on %s."), m_name.data());
@@ -52,7 +52,7 @@ bool rodeo(CreatureEntity &creature)
         rlev = 60 + (rlev - 60) / 2;
     }
     if ((randint1(creature.skill_exp[PlayerSkillKindType::RIDING] / 120 + creature.level * 2 / 3) > rlev) && one_in_(2) &&
-        !creature.current_floor_ptr->inside_arena && !AngbandSystem::get_instance().is_phase_out() && monrace.misc_flags.has_not(MonsterMiscType::GUARDIAN) && monrace.misc_flags.has_not(MonsterMiscType::QUESTOR) &&
+        !creature.get_floor()->inside_arena && !AngbandSystem::get_instance().is_phase_out() && monrace.misc_flags.has_not(MonsterMiscType::GUARDIAN) && monrace.misc_flags.has_not(MonsterMiscType::QUESTOR) &&
         (rlev < creature.level * 3 / 2 + randint0(creature.level / 5))) {
         msg_format(_("%sを手なずけた。", "You tame %s."), m_name.data());
         set_pet(creature, monster);

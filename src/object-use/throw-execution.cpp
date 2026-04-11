@@ -92,7 +92,7 @@ bool ObjectThrowEntity::check_can_throw()
     }
 
     const auto is_spike = this->o_ptr->bi_key.tval() == ItemKindType::SPIKE;
-    if (creature.current_floor_ptr->inside_arena && !this->boomerang && !is_spike) {
+    if (creature.get_floor()->inside_arena && !this->boomerang && !is_spike) {
         msg_print(_("アリーナではアイテムを使えない！", "You're in the arena now. This is hand-to-hand!"));
         msg_erase();
         return false;
@@ -226,7 +226,7 @@ void ObjectThrowEntity::exe_throw()
 void ObjectThrowEntity::display_figurine_throw()
 {
     auto &creature = *this->creature_ptr;
-    if ((this->q_ptr->bi_key.tval() != ItemKindType::FIGURINE) || creature.current_floor_ptr->inside_arena) {
+    if ((this->q_ptr->bi_key.tval() != ItemKindType::FIGURINE) || creature.get_floor()->inside_arena) {
         return;
     }
 
@@ -442,7 +442,7 @@ bool ObjectThrowEntity::check_racial_target_monster()
     this->x = this->nx[this->cur_dis];
     this->y = this->ny[this->cur_dis];
     this->cur_dis++;
-    return creature.current_floor_ptr->grid_array[this->y][this->x].m_idx == 0;
+    return creature.get_floor()->grid_array[this->y][this->x].m_idx == 0;
 }
 
 void ObjectThrowEntity::attack_racial_power()

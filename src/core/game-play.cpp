@@ -324,7 +324,7 @@ static void init_riding_pet(CreatureEntity &creature, bool new_game)
     const auto pet_id = pc.equals(PlayerClassType::CAVALRY) ? MonraceId::HORSE : MonraceId::YASE_HORSE;
     const auto &monrace = MonraceList::get_instance().get_monrace(pet_id);
     const auto m_idx = place_specific_monster(creature, creature.y, creature.x - 1, pet_id, (PM_FORCE_PET | PM_NO_KAGE));
-    auto &monster = creature.current_floor_ptr->get_monster(*m_idx);
+    auto &monster = creature.get_floor()->get_monster(*m_idx);
     monster.speed = monrace.speed;
     monster.maxhp = monrace.hit_dice.floored_expected_value();
     monster.max_maxhp = monster.maxhp;

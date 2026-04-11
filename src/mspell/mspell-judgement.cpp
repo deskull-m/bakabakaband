@@ -195,7 +195,7 @@ Pos2D get_project_point(const FloorType &floor, const Pos2D &p_pos, const Pos2D 
  */
 bool dispel_check_monster(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx)
 {
-    const auto &t_ref = creature.current_floor_ptr->get_monster(t_idx);
+    const auto &t_ref = creature.get_floor()->get_monster(t_idx);
     if (t_ref.is_invulnerable()) {
         return true;
     }
@@ -349,8 +349,8 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
         return true;
     }
 
-    const auto &m_ref = creature.current_floor_ptr->get_monster(creature.riding);
-    if (creature.riding && (creature.current_floor_ptr->get_monster(creature.riding).speed < 135) && m_ref.is_accelerated()) {
+    const auto &m_ref = creature.get_floor()->get_monster(creature.riding);
+    if (creature.riding && (creature.get_floor()->get_monster(creature.riding).speed < 135) && m_ref.is_accelerated()) {
         return true;
     }
 

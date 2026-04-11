@@ -2292,7 +2292,7 @@ static short calc_to_hit(CreatureEntity &creature, INVENTORY_IDX slot, bool is_r
                 if (CreatureClass(creature).is_tamer()) {
                     penalty = 5;
                 } else {
-                    penalty = creature.current_floor_ptr->get_monster(creature.riding).get_monrace().level - creature.skill_exp[PlayerSkillKindType::RIDING] / 80;
+                    penalty = creature.get_floor()->get_monster(creature.riding).get_monrace().level - creature.skill_exp[PlayerSkillKindType::RIDING] / 80;
                     penalty += 30;
                     if (penalty < 30) {
                         penalty = 30;

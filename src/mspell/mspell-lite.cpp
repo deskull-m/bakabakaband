@@ -244,7 +244,7 @@ void decide_lite_area(CreatureEntity &creature, msa_type *msa_ptr)
         return;
     }
 
-    if (creature.current_floor_ptr->get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
+    if (creature.get_floor()->get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         msa_ptr->ability_flags.reset(MonsterAbilityType::DARKNESS);
         return;
     }

@@ -205,7 +205,7 @@ void WorldTurnProcessor::process_monster_arena()
 
 void WorldTurnProcessor::process_monster_arena_winner(int win_m_idx)
 {
-    const auto &monster = this->creature.current_floor_ptr->get_monster(win_m_idx);
+    const auto &monster = this->creature.get_floor()->get_monster(win_m_idx);
     const auto m_name = monster_desc(this->creature, monster, 0);
     msg_format(_("%sが勝利した！", "%s won!"), m_name.data());
     msg_erase();
@@ -227,7 +227,7 @@ void WorldTurnProcessor::process_monster_arena_winner(int win_m_idx)
 
 void WorldTurnProcessor::process_monster_arena_draw()
 {
-    auto turn = this->creature.current_floor_ptr->generated_turn;
+    auto turn = this->creature.get_floor()->generated_turn;
     if (AngbandWorld::get_instance().game_turn - turn != 150 * TURNS_PER_TICK) {
         return;
     }
@@ -300,7 +300,7 @@ void WorldTurnProcessor::process_world_monsters()
     }
 
     for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
-        if (this->creature.current_floor_ptr->mproc_max[mte] > 0) {
+        if (this->creature.get_floor()->mproc_max[mte] > 0) {
             process_monsters_mtimed(this->creature, mte);
         }
     }

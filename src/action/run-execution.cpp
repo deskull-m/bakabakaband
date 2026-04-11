@@ -99,7 +99,7 @@ static void run_init(CreatureEntity &creature, const Direction &dir)
     creature.run_py = pos.y;
     creature.run_px = pos.x;
     const auto pos_neighbor = creature.get_neighbor(dir);
-    ignore_avoid_run = creature.current_floor_ptr->has_terrain_characteristics(pos_neighbor, TerrainCharacteristics::AVOID_RUN);
+    ignore_avoid_run = creature.get_floor()->has_terrain_characteristics(pos_neighbor, TerrainCharacteristics::AVOID_RUN);
     const auto dir_left45 = dir.rotated_45degree(1);
     const auto dir_right45 = dir.rotated_45degree(-1);
     auto deepleft = false;

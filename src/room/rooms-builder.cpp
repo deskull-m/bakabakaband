@@ -77,7 +77,7 @@ void build_small_room(CreatureEntity &creature, POSITION x0, POSITION y0)
     const auto d = rand_choice(Direction::directions_4());
     place_secret_door(creature, pos + d.vec());
 
-    creature.current_floor_ptr->set_terrain_id_at(pos, TerrainTag::NONE, TerrainKind::MIMIC);
+    creature.get_floor()->set_terrain_id_at(pos, TerrainTag::NONE, TerrainKind::MIMIC);
     place_bold(creature, pos.y, pos.x, GB_FLOOR);
 }
 

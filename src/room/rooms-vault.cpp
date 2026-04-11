@@ -88,7 +88,7 @@ std::array<Pos2D, NUM_BUBBLES> create_bubbles_center(const Pos2DVec &vec)
 void set_boundaries(CreatureEntity &creature, const Pos2D &pos)
 {
     place_bold(creature, pos.y, pos.x, GB_OUTER_NOPERM);
-    creature.current_floor_ptr->get_grid(pos).add_info(CAVE_ROOM | CAVE_ICKY);
+    creature.get_floor()->get_grid(pos).add_info(CAVE_ROOM | CAVE_ICKY);
 }
 }
 

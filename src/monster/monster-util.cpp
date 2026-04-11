@@ -313,8 +313,8 @@ void get_mon_num_prep_enum(CreatureEntity &creature, MonraceHook hook1, MonraceH
         mfdi.update(entry.prob2, entry.level);
 
         // フロアの現在所属アライアンスに応じた生成率修正
-        if (creature.current_floor_ptr->allianceID != AllianceType::NONE) {
-            if (entry.is_same_alliance(creature.current_floor_ptr->allianceID)) {
+        if (creature.get_floor()->allianceID != AllianceType::NONE) {
+            if (entry.is_same_alliance(creature.get_floor()->allianceID)) {
                 entry.prob2 *= ALLIANCE_GENERATE_RATE;
             } else {
                 entry.prob2 /= ALLIANCE_GENERATE_RATE;

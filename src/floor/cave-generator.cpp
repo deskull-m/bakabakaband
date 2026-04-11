@@ -179,7 +179,7 @@ static bool decide_tunnel_planned_site(CreatureEntity &creature, DungeonData *dd
     if (dungeon.flags.has(DungeonFeatureType::NO_TUNNEL)) {
         return true;
     }
-    if (randint1(creature.current_floor_ptr->dun_level) > dungeon.tunnel_percent) {
+    if (randint1(creature.get_floor()->dun_level) > dungeon.tunnel_percent) {
         (void)build_tunnel2(creature, dd_ptr, dd_ptr->centers[i], dd_ptr->tunnel_pos, 2, 2);
     } else if (!build_tunnel(creature, dd_ptr, dt_ptr, dd_ptr->centers[i], dd_ptr->tunnel_pos)) {
         dd_ptr->tunnel_fail_count++;
@@ -198,7 +198,7 @@ static void make_tunnels(CreatureEntity &creature, DungeonData *dd_ptr)
 {
     for (size_t i = 0; i < dd_ptr->tunn_n; i++) {
         dd_ptr->tunnel_pos = dd_ptr->tunnels[i];
-        auto &grid = creature.current_floor_ptr->get_grid(dd_ptr->tunnel_pos);
+        auto &grid = creature.get_floor()->get_grid(dd_ptr->tunnel_pos);
         const auto &terrain = grid.get_terrain();
         if (terrain.flags.has_not(TerrainCharacteristics::MOVE) || terrain.flags.has_none_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::LAVA })) {
             grid.mimic = 0;
@@ -211,7 +211,7 @@ static void make_walls(CreatureEntity &creature, DungeonData *dd_ptr, const Dung
 {
     for (size_t j = 0; j < dd_ptr->wall_n; j++) {
         dd_ptr->tunnel_pos = dd_ptr->walls[j];
-        auto &grid = creature.current_floor_ptr->get_grid(dd_ptr->tunnel_pos);
+        auto &grid = creature.get_floor()->get_grid(dd_ptr->tunnel_pos);
         grid.mimic = 0;
         place_grid(creature, grid, GB_FLOOR);
         if (evaluate_percent(dt_ptr->dun_tun_pen) && dungeon.flags.has_not(DungeonFeatureType::NO_DOORS)) {
@@ -395,7 +395,7 @@ static void place_bound_perm_wall(CreatureEntity &creature, Grid &grid)
 
     const auto &terrain = grid.get_terrain();
     if (terrain.flags.has_any_of({ TerrainCharacteristics::HAS_GOLD, TerrainCharacteristics::HAS_ITEM }) && terrain.flags.has_not(TerrainCharacteristics::SECRET)) {
-        grid.feat = creature.current_floor_ptr->get_dungeon_definition().convert_terrain_id(grid.feat, TerrainCharacteristics::ENSECRET);
+        grid.feat = creature.get_floor()->get_dungeon_definition().convert_terrain_id(grid.feat, TerrainCharacteristics::ENSECRET);
     }
 
     grid.mimic = grid.feat;
