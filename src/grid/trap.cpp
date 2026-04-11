@@ -1,5 +1,6 @@
 #include "grid/trap.h"
 #include "cmd-io/cmd-save.h"
+#include "combat/damage-dispatcher.h"
 #include "core/disturbance.h"
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
@@ -215,7 +216,7 @@ static void hit_trap_pit(CreatureEntity &creature, TrapType trap_feat_type)
     msg_format(_("%sに落ちてしまった！", "You have fallen into %s!"), trap_name);
     dam = Dice::roll(2, 6);
     if (((trap_feat_type != TrapType::SPIKED_PIT) && (trap_feat_type != TrapType::POISON_PIT)) || one_in_(2)) {
-        take_hit(creature, DAMAGE_NOESCAPE, dam, trap_name);
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, dam, trap_name);
         return;
     }
 
@@ -224,19 +225,19 @@ static void hit_trap_pit(CreatureEntity &creature, TrapType trap_feat_type)
     BadStatusSetter bss(creature);
     (void)bss.mod_cut(randnum1<short>(dam));
     if (trap_feat_type != TrapType::POISON_PIT) {
-        take_hit(creature, DAMAGE_NOESCAPE, dam, trap_name);
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, dam, trap_name);
         return;
     }
 
     if (has_resist_pois(creature) || is_oppose_pois(creature)) {
         msg_print(_("しかし毒の影響はなかった！", "The poison does not affect you!"));
-        take_hit(creature, DAMAGE_NOESCAPE, dam, trap_name);
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, dam, trap_name);
         return;
     }
 
     dam = dam * 2;
     (void)bss.mod_poison(randnum1<short>(dam));
-    take_hit(creature, DAMAGE_NOESCAPE, dam, trap_name);
+    apply_damage_to_creature(creature, DAMAGE_NOESCAPE, dam, trap_name);
 }
 
 /*!
@@ -249,7 +250,7 @@ static bool hit_trap_dart(CreatureEntity &creature)
 
     if (check_hit_from_monster_to_player(creature, 125)) {
         msg_print(_("小さなダーツが飛んできて刺さった！", "A small dart hits you!"));
-        take_hit(creature, DAMAGE_ATTACK, Dice::roll(1, 4), _("ダーツの罠", "a dart trap"));
+        apply_damage_to_creature(creature, DAMAGE_ATTACK, Dice::roll(1, 4), _("ダーツの罠", "a dart trap"));
         if (!check_multishadow(creature)) {
             hit = true;
         }
@@ -320,7 +321,7 @@ void hit_trap(CreatureEntity &creature, bool break_trap)
         const auto dam = Dice::roll(2, 8);
         constexpr auto name = _("落とし戸", "a trap door");
 
-        take_hit(creature, DAMAGE_NOESCAPE, dam, name);
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, dam, name);
 
         if (floor.is_in_quest()) {
             return;
@@ -504,27 +505,27 @@ void hit_trap(CreatureEntity &creature, bool break_trap)
     case TrapType::FIRE_STORM: {
         msg_print(_("火炎の嵐に包まれた！", "You ware filled with huge fire storm!"));
         fire_ball(creature, AttributeType::FIRE, Direction::self(), 600, 4);
-        take_hit(creature, DAMAGE_NOESCAPE, (600 + randint1(50)) * calc_fire_damage_rate(creature) / 100, _("火炎嵐の罠", "a Hige Fire Trap"));
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, (600 + randint1(50)) * calc_fire_damage_rate(creature) / 100, _("火炎嵐の罠", "a Hige Fire Trap"));
 
         break;
     }
     case TrapType::ICE_STORM: {
         msg_print(_("冷気の嵐に包まれた！", "You ware filled with huge ice storm!"));
         fire_ball(creature, AttributeType::ICE, Direction::self(), 600, 4);
-        take_hit(creature, DAMAGE_NOESCAPE, (600 + randint1(50)) * calc_cold_damage_rate(creature) / 100, _("極寒嵐の罠", "a Hige Ice Trap"));
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, (600 + randint1(50)) * calc_cold_damage_rate(creature) / 100, _("極寒嵐の罠", "a Hige Ice Trap"));
         break;
     }
     case TrapType::CHAOS_STORM: {
         msg_print(_("混沌の嵐に包まれた！", "You ware filled with huge chaos storm!"));
         fire_ball(creature, AttributeType::CHAOS, Direction::self(), 600, 4);
-        take_hit(creature, DAMAGE_NOESCAPE, (600 + randint1(50)) * calc_chaos_damage_rate(creature, CALC_RAND) / 100, _("混沌嵐の罠", "a Hige Chaos Trap"));
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, (600 + randint1(50)) * calc_chaos_damage_rate(creature, CALC_RAND) / 100, _("混沌嵐の罠", "a Hige Chaos Trap"));
         break;
     }
 
     case TrapType::MINE: {
         msg_print(_("地雷を踏んだ！", "You stepped on a land mine!"));
         fire_ball(creature, AttributeType::MANA, Direction::self(), 200, 4);
-        take_hit(creature, DAMAGE_NOESCAPE, (200 + randint1(50)), _("地雷", "a Land Mine"));
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, (200 + randint1(50)), _("地雷", "a Land Mine"));
         break;
     }
 

@@ -1,5 +1,6 @@
 #include "floor/pattern-walk.h"
 #include "cmd-io/cmd-save.h"
+#include "combat/damage-dispatcher.h"
 #include "core/asking-player.h"
 #include "dungeon/quest.h"
 #include "floor/floor-mode-changer.h"
@@ -145,7 +146,7 @@ bool pattern_effect(CreatureEntity &creature)
 
     case PATTERN_TILE_WRECKED:
         if (!player_ptr->is_invulnerable()) {
-            take_hit(*player_ptr, DAMAGE_NOESCAPE, 200, _("壊れた「パターン」を歩いたダメージ", "walking the corrupted Pattern"));
+            apply_damage_to_creature(*player_ptr, DAMAGE_NOESCAPE, 200, _("壊れた「パターン」を歩いたダメージ", "walking the corrupted Pattern"));
         }
         break;
 
@@ -153,7 +154,7 @@ bool pattern_effect(CreatureEntity &creature)
         if (CreatureRace(player_ptr).equals(PlayerRaceType::AMBERITE) && !one_in_(2)) {
             return true;
         } else if (!player_ptr->is_invulnerable()) {
-            take_hit(*player_ptr, DAMAGE_NOESCAPE, Dice::roll(1, 3), _("「パターン」を歩いたダメージ", "walking the Pattern"));
+            apply_damage_to_creature(*player_ptr, DAMAGE_NOESCAPE, Dice::roll(1, 3), _("「パターン」を歩いたダメージ", "walking the Pattern"));
         }
         break;
     }

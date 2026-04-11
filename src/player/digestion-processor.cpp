@@ -1,5 +1,6 @@
 #include "player/digestion-processor.h"
 #include "avatar/avatar.h"
+#include "combat/damage-dispatcher.h"
 #include "core/disturbance.h"
 #include "core/speed-table.h"
 #include "core/stuff-handler.h"
@@ -76,7 +77,7 @@ void starve_player(CreatureEntity &creature)
     if (creature.food < PY_FOOD_STARVE) {
         int dam = (PY_FOOD_STARVE - creature.food) / 10;
         if (!creature.is_invulnerable()) {
-            take_hit(creature, DAMAGE_LOSELIFE, dam, _("空腹", "starvation"));
+            apply_damage_to_creature(creature, DAMAGE_LOSELIFE, dam, _("空腹", "starvation"));
         }
     }
 }

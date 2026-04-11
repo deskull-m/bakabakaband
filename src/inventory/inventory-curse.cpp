@@ -1,6 +1,7 @@
 #include "inventory/inventory-curse.h"
 #include "artifact/fixed-art-types.h"
 #include "cmd-io/cmd-save.h"
+#include "combat/damage-dispatcher.h"
 #include "core/asking-player.h"
 #include "core/disturbance.h"
 #include "flavor/flavor-describer.h"
@@ -428,7 +429,7 @@ static void curse_drain_hp(CreatureEntity &creature)
     const auto *item_ptr = choose_cursed_obj_name(creature, CurseTraitType::DRAIN_HP);
     const auto item_name = describe_flavor(creature, *item_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     msg_format(_("%sはあなたの体力を吸収した！", "Your %s drains HP from you!"), item_name.data());
-    take_hit(creature, DAMAGE_LOSELIFE, std::min(creature.level * 2, 100), item_name);
+    apply_damage_to_creature(creature, DAMAGE_LOSELIFE, std::min(creature.level * 2, 100), item_name);
 }
 
 static void curse_drain_mp(CreatureEntity &creature)
@@ -463,7 +464,7 @@ static void curse_megaton_coin(CreatureEntity &creature)
     msg_print(_("メガトンコインで床が抜けた！ンアアアアアアァァァ！", "The floor came off with the Megaton Coin!AAAAaaaaaa!"));
 
     auto dam = Dice::roll(2, 8);
-    take_hit(creature, DAMAGE_NOESCAPE, dam, _("メガトンコイン", "the Megaton Coin"));
+    apply_damage_to_creature(creature, DAMAGE_NOESCAPE, dam, _("メガトンコイン", "the Megaton Coin"));
 
     if (autosave_l && (creature.hp >= 0)) {
         do_cmd_save_game(creature, true);
@@ -535,5 +536,5 @@ void execute_cursed_items_effect(CreatureEntity &creature)
         msg_print(_("なにかがあなたの体力を吸収した！", "Something drains life from you!"));
     }
 
-    take_hit(creature, DAMAGE_LOSELIFE, std::min<short>(creature.level, 50), _("審判の宝石", "the Jewel of Judgement"));
+    apply_damage_to_creature(creature, DAMAGE_LOSELIFE, std::min<short>(creature.level, 50), _("審判の宝石", "the Jewel of Judgement"));
 }

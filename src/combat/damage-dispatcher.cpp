@@ -23,3 +23,12 @@ int apply_damage_to_creature(CreatureEntity &victim, int damage, const DamageCon
     MonsterDamageProcessor mdp(*ctx.attacker, ctx.victim_m_idx, damage, ctx.fear, ctx.attribute_flags);
     return mdp.mon_take_hit(ctx.cause) ? 1 : 0;
 }
+
+int apply_damage_to_creature(CreatureEntity &victim, int damage_type, int damage, std::string_view cause, MonraceId killer_monrace_id)
+{
+    DamageContext ctx;
+    ctx.cause = cause;
+    ctx.damage_type = damage_type;
+    ctx.killer_monrace_id = killer_monrace_id;
+    return apply_damage_to_creature(victim, damage, ctx);
+}
