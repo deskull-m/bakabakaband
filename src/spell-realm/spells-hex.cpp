@@ -30,9 +30,9 @@
 /*!< 呪術の最大詠唱数 */
 constexpr int MAX_KEEP = 4;
 
-SpellHex::SpellHex(CreatureEntity &player)
-    : player(player)
-    , spell_hex_data(CreatureClass(player).get_specific_data<spell_hex_data_type>())
+SpellHex::SpellHex(CreatureEntity &creature)
+    : creature(creature)
+    , spell_hex_data(CreatureClass(creature).get_specific_data<spell_hex_data_type>())
 {
     if (!this->spell_hex_data) {
         return;
@@ -51,12 +51,12 @@ SpellHex::SpellHex(CreatureEntity &player)
 void SpellHex::stop_all_spells()
 {
     for (auto spell : this->casting_spells) {
-        exe_spell(this->player, RealmType::HEX, spell, SpellProcessType::STOP);
+        exe_spell(this->creature, RealmType::HEX, spell, SpellProcessType::STOP);
     }
 
     this->spell_hex_data->casting_spells.clear();
-    if (this->player.action == ACTION_SPELL) {
-        set_action(this->player, ACTION_NONE);
+    if (this->creature.action == ACTION_SPELL) {
+        set_action(this->creature, ACTION_NONE);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -87,7 +87,7 @@ bool SpellHex::stop_spells_with_selection()
     }
 
     auto casting_num = this->get_casting_num();
-    if ((casting_num == 1) || (this->player.level < 35)) {
+    if ((casting_num == 1) || (this->creature.level < 35)) {
         this->stop_all_spells();
         return true;
     }
@@ -103,7 +103,7 @@ bool SpellHex::stop_spells_with_selection()
     screen_load();
     if (choice) {
         auto n = this->casting_spells[A2I(*choice)];
-        exe_spell(this->player, RealmType::HEX, n, SpellProcessType::STOP);
+        exe_spell(this->creature, RealmType::HEX, n, SpellProcessType::STOP);
         this->reset_casting_flag(i2enum<spell_hex_type>(n));
     }
 
@@ -189,7 +189,7 @@ void SpellHex::decrease_mana()
     }
 
     auto need_restart = this->check_restart();
-    if (this->player.anti_magic) {
+    if (this->creature.anti_magic) {
         this->stop_all_spells();
         return;
     }
@@ -200,7 +200,7 @@ void SpellHex::decrease_mana()
 
     this->gain_exp();
     for (auto spell : this->casting_spells) {
-        exe_spell(this->player, RealmType::HEX, spell, SpellProcessType::CONTNUATION);
+        exe_spell(this->creature, RealmType::HEX, spell, SpellProcessType::CONTNUATION);
     }
 }
 
@@ -217,13 +217,13 @@ bool SpellHex::process_mana_cost(const bool need_restart)
     s64b_div(&need_mana, &need_mana_frac, 0, 3); /* Divide by 3 */
     need_mana += this->get_casting_num() - 1;
 
-    auto enough_mana = s64b_cmp(this->player.csp, this->player.csp_frac, need_mana, need_mana_frac) >= 0;
+    auto enough_mana = s64b_cmp(this->creature.csp, this->creature.csp_frac, need_mana, need_mana_frac) >= 0;
     if (!enough_mana) {
         this->stop_all_spells();
         return false;
     }
 
-    s64b_sub(&(this->player.csp), &(this->player.csp_frac), need_mana, need_mana_frac);
+    s64b_sub(&(this->creature.csp), &(this->creature.csp_frac), need_mana, need_mana_frac);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
     if (!need_restart) {
@@ -231,7 +231,7 @@ bool SpellHex::process_mana_cost(const bool need_restart)
     }
 
     msg_print(_("詠唱を再開した。", "You restart casting."));
-    this->player.action = ACTION_SPELL;
+    this->creature.action = ACTION_SPELL;
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
         StatusRecalculatingFlag::HP,
@@ -268,7 +268,7 @@ int SpellHex::calc_need_mana()
     auto need_mana = 0;
     for (auto spell_id : this->casting_spells) {
         const auto &spell = PlayerRealm::get_spell_info(RealmType::HEX, spell_id);
-        need_mana += mod_need_mana(this->player, spell.smana, spell_id, RealmType::HEX);
+        need_mana += mod_need_mana(this->creature, spell.smana, spell_id, RealmType::HEX);
     }
 
     return need_mana;
@@ -276,7 +276,7 @@ int SpellHex::calc_need_mana()
 
 void SpellHex::gain_exp()
 {
-    PlayerSkill ps(this->player);
+    PlayerSkill ps(this->creature);
     for (auto spell : this->casting_spells) {
         if (!this->is_spelling_specific(spell)) {
             continue;
@@ -292,7 +292,7 @@ void SpellHex::gain_exp()
  */
 bool SpellHex::is_casting_full_capacity() const
 {
-    auto k_max = (this->player.level / 15) + 1;
+    auto k_max = (this->creature.level / 15) + 1;
     k_max = std::min(k_max, MAX_KEEP);
     return this->get_casting_num() >= k_max;
 }
@@ -308,10 +308,10 @@ void SpellHex::continue_revenge()
 
     switch (this->get_revenge_type()) {
     case SpellHexRevengeType::PATIENCE:
-        exe_spell(this->player, RealmType::HEX, HEX_PATIENCE, SpellProcessType::CONTNUATION);
+        exe_spell(this->creature, RealmType::HEX, HEX_PATIENCE, SpellProcessType::CONTNUATION);
         return;
     case SpellHexRevengeType::REVENGE:
-        exe_spell(this->player, RealmType::HEX, HEX_REVENGE, SpellProcessType::CONTNUATION);
+        exe_spell(this->creature, RealmType::HEX, HEX_REVENGE, SpellProcessType::CONTNUATION);
         return;
     default:
         return;
@@ -339,9 +339,9 @@ void SpellHex::store_vengeful_damage(int dam)
  */
 bool SpellHex::check_hex_barrier(MONSTER_IDX m_idx, spell_hex_type type) const
 {
-    const auto &monster = this->player.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = this->creature.current_floor_ptr->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
-    return this->is_spelling_specific(type) && ((this->player.level * 3 / 2) >= randint1(monrace.level));
+    return this->is_spelling_specific(type) && ((this->creature.level * 3 / 2) >= randint1(monrace.level));
 }
 
 bool SpellHex::is_spelling_specific(int hex) const
@@ -367,25 +367,25 @@ void SpellHex::interrupt_spelling()
  */
 void SpellHex::eyes_on_eyes(MONSTER_IDX m_idx, int dam)
 {
-    auto &player = this->player;
-    const auto is_eyeeye_finished = (this->player.tim_eyeeye == 0) && !this->is_spelling_specific(HEX_EYE_FOR_EYE);
-    if (is_eyeeye_finished || (dam == 0) || this->player.is_dead()) {
+    auto &creature = this->creature;
+    const auto is_eyeeye_finished = (this->creature.tim_eyeeye == 0) && !this->is_spelling_specific(HEX_EYE_FOR_EYE);
+    if (is_eyeeye_finished || (dam == 0) || this->creature.is_dead()) {
         return;
     }
 
-    const auto &monster = this->player.current_floor_ptr->get_monster(m_idx);
-    const auto m_name = monster_desc(player, monster, 0);
+    const auto &monster = this->creature.current_floor_ptr->get_monster(m_idx);
+    const auto m_name = monster_desc(creature, monster, 0);
 #ifdef JP
     msg_format("攻撃が%s自身を傷つけた！", m_name.data());
 #else
-    const auto m_name_self = monster_desc(player, monster, MD_PRON_VISIBLE | MD_POSSESSIVE | MD_OBJECTIVE);
+    const auto m_name_self = monster_desc(creature, monster, MD_PRON_VISIBLE | MD_POSSESSIVE | MD_OBJECTIVE);
     msg_format("The attack of %s has wounded %s!", m_name.data(), m_name_self.data());
 #endif
     const auto y = monster.y;
     const auto x = monster.x;
-    project(player, 0, 0, y, x, dam, AttributeType::MISSILE, PROJECT_KILL);
-    if (this->player.tim_eyeeye) {
-        set_tim_eyeeye(player, this->player.tim_eyeeye - 5, true);
+    project(creature, 0, 0, y, x, dam, AttributeType::MISSILE, PROJECT_KILL);
+    if (this->creature.tim_eyeeye) {
+        set_tim_eyeeye(creature, this->creature.tim_eyeeye - 5, true);
     }
 }
 
