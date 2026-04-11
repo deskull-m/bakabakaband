@@ -1,6 +1,7 @@
 #include "hpmp/hp-mp-processor.h"
 #include "avatar/avatar.h"
 #include "cmd-action/cmd-pet.h"
+#include "combat/damage-dispatcher.h"
 #include "core/window-redrawer.h"
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
@@ -87,7 +88,7 @@ static bool deal_damege_by_feat(CreatureEntity &creature, const Grid &grid, conc
     if (creature.levitation) {
         msg_print(msg_levitation);
         constexpr auto mes = _("%%s\u306e\u4e0a\u306b\u6d6e\u904a\u3057\u305f\u30c0\u30e1\u30fc\u30b8", "flying over %%s");
-        take_hit(creature, DAMAGE_NOESCAPE, damage, format(mes, grid.get_terrain(TerrainKind::MIMIC).name.data()));
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, damage, format(mes, grid.get_terrain(TerrainKind::MIMIC).name.data()));
 
         if (additional_effect != nullptr) {
             additional_effect(creature, damage);
@@ -96,7 +97,7 @@ static bool deal_damege_by_feat(CreatureEntity &creature, const Grid &grid, conc
         const auto p_pos = creature.get_position();
         const auto &name = creature.current_floor_ptr->get_grid(p_pos).get_terrain(TerrainKind::MIMIC).name;
         msg_format(_("%%s%%s\uff01", "The %%s %%s!"), name.data(), msg_normal);
-        take_hit(creature, DAMAGE_NOESCAPE, damage, name);
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, damage, name);
 
         if (additional_effect != nullptr) {
             additional_effect(creature, damage);
@@ -125,7 +126,7 @@ void process_player_hp_mp(CreatureEntity &creature)
 
     const auto &player_poison = effects->poison();
     if (player_poison.is_poisoned() && !creature.is_invulnerable()) {
-        if (take_hit(creature, DAMAGE_NOESCAPE, 1, _("毒", "poison")) > 0) {
+        if (apply_damage_to_creature(creature, DAMAGE_NOESCAPE, 1, _("毒", "poison")) > 0) {
             sound(SoundKind::DAMAGE_OVER_TIME);
         }
     }
@@ -133,7 +134,7 @@ void process_player_hp_mp(CreatureEntity &creature)
     const auto &player_cut = effects->cut();
     if (player_cut.is_cut() && !creature.is_invulnerable()) {
         const auto dam = player_cut.get_damage();
-        if (take_hit(creature, DAMAGE_NOESCAPE, dam, _("致命傷", "a mortal wound")) > 0) {
+        if (apply_damage_to_creature(creature, DAMAGE_NOESCAPE, dam, _("致命傷", "a mortal wound")) > 0) {
             sound(SoundKind::DAMAGE_OVER_TIME);
         }
     }
@@ -143,7 +144,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         if (!floor.is_underground() && !has_resist_lite(creature) && !creature.is_invulnerable() && AngbandWorld::get_instance().is_daytime()) {
             if ((floor.grid_array[creature.y][creature.x].info & (CAVE_GLOW | CAVE_MNDK)) == CAVE_GLOW) {
                 msg_print(_("日光があなたのアンデッドの肉体を焼き焦がした！", "The sun's rays scorch your undead flesh!"));
-                take_hit(creature, DAMAGE_NOESCAPE, 1, _("日光", "sunlight"));
+                apply_damage_to_creature(creature, DAMAGE_NOESCAPE, 1, _("日光", "sunlight"));
                 cave_no_regen = true;
             }
         }
@@ -158,7 +159,7 @@ void process_player_hp_mp(CreatureEntity &creature)
                 const auto wielding_item_name = describe_flavor(creature, item, OD_NAME_ONLY);
                 std::stringstream ss;
                 ss << _(wielding_item_name, "wielding ") << _("を装備したダメージ", wielding_item_name);
-                take_hit(creature, DAMAGE_NOESCAPE, 1, ss.str());
+                apply_damage_to_creature(creature, DAMAGE_NOESCAPE, 1, ss.str());
             }
         }
     }
@@ -226,7 +227,7 @@ void process_player_hp_mp(CreatureEntity &creature)
     if (can_drown && !creature.levitation && !creature.can_swim && !has_resist_water(creature)) {
         if (calc_inventory_weight(creature) > calc_weight_limit(creature)) {
             msg_print(_("溺れている！", "You are drowning!"));
-            take_hit(creature, DAMAGE_NOESCAPE, randint1(creature.level), _("溺れ", "drowning"));
+            apply_damage_to_creature(creature, DAMAGE_NOESCAPE, randint1(creature.level), _("溺れ", "drowning"));
             cave_no_regen = true;
             sound(SoundKind::TERRAIN_DAMAGE);
         }
@@ -241,7 +242,7 @@ void process_player_hp_mp(CreatureEntity &creature)
             damage = (randint1(creature.level) + 1) / 2;
         }
         cave_no_regen = true;
-        take_hit(creature, DAMAGE_NOESCAPE, damage, _("突起物", "Protrusions"));
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, damage, _("突起物", "Protrusions"));
         sound(SoundKind::TERRAIN_DAMAGE);
     }
 
@@ -277,7 +278,7 @@ void process_player_hp_mp(CreatureEntity &creature)
 
         damage = std::max(damage, 1);
         msg_print(_("熱い！", "It's hot!"));
-        take_hit(creature, DAMAGE_NOESCAPE, damage, _("炎のオーラ", "Fire aura"));
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, damage, _("炎のオーラ", "Fire aura"));
     }
 
     if (get_player_flags(creature, TR_SELF_ELEC) && !has_immune_elec(creature)) {
@@ -295,7 +296,7 @@ void process_player_hp_mp(CreatureEntity &creature)
 
         damage = std::max(damage, 1);
         msg_print(_("痛い！", "It hurts!"));
-        take_hit(creature, DAMAGE_NOESCAPE, damage, _("電気のオーラ", "Elec aura"));
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, damage, _("電気のオーラ", "Elec aura"));
     }
 
     if (get_player_flags(creature, TR_SELF_COLD) && !has_immune_cold(creature)) {
@@ -313,7 +314,7 @@ void process_player_hp_mp(CreatureEntity &creature)
 
         damage = std::max(damage, 1);
         msg_print(_("冷たい！", "It's cold!"));
-        take_hit(creature, DAMAGE_NOESCAPE, damage, _("冷気のオーラ", "Cold aura"));
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, damage, _("冷気のオーラ", "Cold aura"));
     }
 
     if (creature.riding) {
@@ -333,7 +334,7 @@ void process_player_hp_mp(CreatureEntity &creature)
 
             damage = std::max(damage, 1);
             msg_print(_("熱い！", "It's hot!"));
-            take_hit(creature, DAMAGE_NOESCAPE, damage, _("炎のオーラ", "Fire aura"));
+            apply_damage_to_creature(creature, DAMAGE_NOESCAPE, damage, _("炎のオーラ", "Fire aura"));
         }
 
         if (auras.has(MonsterAuraType::ELEC) && !has_immune_elec(creature)) {
@@ -350,7 +351,7 @@ void process_player_hp_mp(CreatureEntity &creature)
 
             damage = std::max(damage, 1);
             msg_print(_("痛い！", "It hurts!"));
-            take_hit(creature, DAMAGE_NOESCAPE, damage, _("電気のオーラ", "Elec aura"));
+            apply_damage_to_creature(creature, DAMAGE_NOESCAPE, damage, _("電気のオーラ", "Elec aura"));
         }
 
         if (auras.has(MonsterAuraType::COLD) && !has_immune_cold(creature)) {
@@ -367,7 +368,7 @@ void process_player_hp_mp(CreatureEntity &creature)
 
             damage = std::max(damage, 1);
             msg_print(_("冷たい！", "It's cold!"));
-            take_hit(creature, DAMAGE_NOESCAPE, damage, _("冷気のオーラ", "Cold aura"));
+            apply_damage_to_creature(creature, DAMAGE_NOESCAPE, damage, _("冷気のオーラ", "Cold aura"));
         }
     }
 
@@ -395,7 +396,7 @@ void process_player_hp_mp(CreatureEntity &creature)
                 dam_desc = _("硬い岩", "solid rock");
             }
 
-            take_hit(creature, DAMAGE_NOESCAPE, 1 + (creature.level / 5), dam_desc);
+            apply_damage_to_creature(creature, DAMAGE_NOESCAPE, 1 + (creature.level / 5), dam_desc);
         }
     }
 

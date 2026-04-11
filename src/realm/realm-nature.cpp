@@ -1,6 +1,7 @@
 #include "realm/realm-nature.h"
 #include "avatar/avatar.h"
 #include "cmd-action/cmd-spell.h"
+#include "combat/damage-dispatcher.h"
 #include "effect/attribute-types.h"
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
@@ -125,7 +126,7 @@ tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX sp
             CreatureRace race(&creature);
             if (race.life() == PlayerRaceLifeType::UNDEAD && race.tr_flags().has(TR_VUL_LITE) && !has_resist_lite(creature)) {
                 msg_print(_("日の光があなたの肉体を焦がした！", "The daylight scorches your flesh!"));
-                take_hit(creature, DAMAGE_NOESCAPE, Dice::roll(2, 2), _("日の光", "daylight"));
+                apply_damage_to_creature(creature, DAMAGE_NOESCAPE, Dice::roll(2, 2), _("日の光", "daylight"));
             }
         }
     } break;
@@ -452,7 +453,7 @@ tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX sp
             CreatureRace race(&creature);
             if (race.life() == PlayerRaceLifeType::UNDEAD && race.tr_flags().has(TR_VUL_LITE) && !has_resist_lite(creature)) {
                 msg_print(_("日光があなたの肉体を焦がした！", "The sunlight scorches your flesh!"));
-                take_hit(creature, DAMAGE_NOESCAPE, 50, _("日光", "sunlight"));
+                apply_damage_to_creature(creature, DAMAGE_NOESCAPE, 50, _("日光", "sunlight"));
             }
         }
     } break;

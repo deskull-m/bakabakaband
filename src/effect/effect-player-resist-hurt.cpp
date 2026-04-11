@@ -1,6 +1,7 @@
 #include "effect/effect-player-resist-hurt.h"
 #include "artifact/fixed-art-types.h"
 #include "blue-magic/blue-magic-checker.h"
+#include "combat/damage-dispatcher.h"
 #include "core/window-redrawer.h"
 #include "effect/effect-player.h"
 #include "hpmp/hp-mp-processor.h"
@@ -56,7 +57,7 @@ void effect_player_poison(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         do_dec_stat(creature, A_CON);
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 
     if (!(double_resist || has_resist_pois(creature)) && !check_multishadow(creature)) {
         (void)BadStatusSetter(creature).mod_poison(randint0(ep_ptr->dam) + 10);
@@ -72,7 +73,7 @@ void effect_player_nuke(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_pois_damage_rate(creature) / 100;
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
     if ((double_resist || has_resist_pois(creature)) || check_multishadow(creature)) {
         return;
     }
@@ -98,7 +99,7 @@ void effect_player_missile(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         msg_print(_("何かで攻撃された！", "You are hit by something!"));
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_holy_fire(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -109,7 +110,7 @@ void effect_player_holy_fire(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_holy_fire_damage_rate(creature, CALC_RAND) / 100;
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_hell_fire(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -120,7 +121,7 @@ void effect_player_hell_fire(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_hell_fire_damage_rate(creature, CALC_RAND) / 100;
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_arrow(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -128,7 +129,7 @@ void effect_player_arrow(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     if (creature.is_blind()) {
         sound(SoundKind::SHOOT_HIT);
         msg_print(_("何か鋭いもので攻撃された！", "You are hit by something sharp!"));
-        ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+        ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
         return;
     }
 
@@ -143,7 +144,7 @@ void effect_player_arrow(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     }
 
     sound(SoundKind::SHOOT_HIT);
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_plasma(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -152,7 +153,7 @@ void effect_player_plasma(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         msg_print(_("何かとても熱いもので攻撃された！", "You are hit by something *HOT*!"));
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 
     if (!has_resist_sound(creature) && !check_multishadow(creature)) {
         const auto plus_stun = randnum1<short>((ep_ptr->dam > 40) ? 35 : (ep_ptr->dam * 3 / 4 + 5));
@@ -194,7 +195,7 @@ void effect_player_nether(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         drain_exp(creature, 200 + (creature.exp / 100), 200 + (creature.exp / 1000), 75);
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 /*!
@@ -211,7 +212,7 @@ void effect_player_water(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     }
 
     if (check_multishadow(creature)) {
-        ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+        ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
         return;
     }
 
@@ -233,7 +234,7 @@ void effect_player_water(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         }
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_chaos(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -244,7 +245,7 @@ void effect_player_chaos(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_chaos_damage_rate(creature, CALC_RAND) / 100;
     if (check_multishadow(creature)) {
-        ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+        ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
         return;
     }
 
@@ -269,7 +270,7 @@ void effect_player_chaos(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         inventory_damage(creature, BreakerFire(), 2);
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_shards(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -288,7 +289,7 @@ void effect_player_shards(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         inventory_damage(creature, BreakerCold(), 2);
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_sound(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -308,7 +309,7 @@ void effect_player_sound(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         inventory_damage(creature, BreakerCold(), 2);
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_confusion(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -323,7 +324,7 @@ void effect_player_confusion(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         (void)bss.mod_confusion(randint1(20) + 10);
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_disenchant(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -338,7 +339,7 @@ void effect_player_disenchant(CreatureEntity &creature, EffectPlayerType *ep_ptr
         (void)apply_disenchant(creature, 0);
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_nexus(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -353,7 +354,7 @@ void effect_player_nexus(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         apply_nexus(*ep_ptr->m_ptr, creature);
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_force(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -365,7 +366,7 @@ void effect_player_force(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         (void)BadStatusSetter(creature).mod_stun(randnum1<short>(20));
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_rocket(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -388,7 +389,7 @@ void effect_player_rocket(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         inventory_damage(creature, BreakerCold(), 3);
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_inertial(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -401,7 +402,7 @@ void effect_player_inertial(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         (void)BadStatusSetter(creature).mod_deceleration(randint0(4) + 4, false);
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_lite(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -424,7 +425,7 @@ void effect_player_lite(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         }
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 
     if (!creature.wraith_form || check_multishadow(creature)) {
         return;
@@ -465,7 +466,7 @@ void effect_player_dark(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         (void)BadStatusSetter(creature).mod_blindness(randint1(5) + 2);
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 static void effect_player_time_addition(CreatureEntity &creature)
@@ -515,7 +516,7 @@ void effect_player_time(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         msg_print(_("時間が通り過ぎていく気がする。", "You feel as if time is passing you by."));
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 
     if (!has_resist_time(creature) && !evaded) {
         effect_player_time_addition(creature);
@@ -548,7 +549,7 @@ void effect_player_gravity(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         inventory_damage(creature, BreakerCold(), 2);
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_disintegration(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -557,7 +558,7 @@ void effect_player_disintegration(CreatureEntity &creature, EffectPlayerType *ep
         msg_print(_("純粋なエネルギーで攻撃された！", "You are hit by pure energy!"));
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_death_ray(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -567,7 +568,7 @@ void effect_player_death_ray(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     }
 
     ep_ptr->dam = ep_ptr->dam * calc_deathray_damage_rate(creature, CALC_RAND) / 100;
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_mana(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -576,7 +577,7 @@ void effect_player_mana(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         msg_print(_("魔法のオーラで攻撃された！", "You are hit by an aura of magic!"));
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_psy_spear(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -585,7 +586,7 @@ void effect_player_psy_spear(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         msg_print(_("エネルギーの塊で攻撃された！", "You are hit by an energy!"));
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_FORCE, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_FORCE, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_meteor(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -594,7 +595,7 @@ void effect_player_meteor(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         msg_print(_("何かが空からあなたの頭上に落ちてきた！", "Something falls from the sky on you!"));
     }
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
     if (!has_resist_shard(creature) || one_in_(13)) {
         if (!has_immune_fire(creature)) {
             inventory_damage(creature, BreakerFire(), 2);
@@ -640,7 +641,7 @@ void effect_player_hand_doom(CreatureEntity &creature, EffectPlayerType *ep_ptr)
             curse_equipment(creature, 40, 20);
         }
 
-        ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->m_name);
+        ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->m_name);
 
         if (creature.hp < 1) {
             creature.hp = 1;
@@ -661,7 +662,7 @@ void effect_player_void(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     if (!creature.levitation || one_in_(13)) {
         inventory_damage(creature, BreakerCold(), 2);
     }
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_abyss(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -696,7 +697,7 @@ void effect_player_abyss(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     if (!has_resist_fear(creature)) {
         (void)bss.mod_fear(randnum1<short>(10));
     }
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_spider_string(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -733,5 +734,5 @@ void effect_player_spider_string(CreatureEntity &creature, EffectPlayerType *ep_
     // 装備品に影響（糸で汚れる）
     inventory_damage(creature, BreakerAcid(), 5);
 
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = apply_damage_to_creature(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }

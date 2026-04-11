@@ -4,6 +4,7 @@
 #include "cmd-action/cmd-spell.h"
 #include "cmd-item/cmd-throw.h"
 #include "combat/combat-options-type.h"
+#include "combat/damage-dispatcher.h"
 #include "core/asking-player.h"
 #include "core/stuff-handler.h"
 #include "dungeon/dungeon-flag-types.h"
@@ -752,7 +753,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
                 msg_print(_("その方向にはモンスターはいません。", "There is no monster."));
                 return tl::nullopt;
             }
-            take_hit(creature, DAMAGE_NOESCAPE, 100 + randint1(100), _("慶雲鬼忍剣を使った衝撃", "exhaustion on using Keiun-Kininken"));
+            apply_damage_to_creature(creature, DAMAGE_NOESCAPE, 100 + randint1(100), _("慶雲鬼忍剣を使った衝撃", "exhaustion on using Keiun-Kininken"));
         }
         break;
 
@@ -774,11 +775,11 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
             auto &world = AngbandWorld::get_instance();
             if (world.total_winner) {
-                take_hit(creature, DAMAGE_FORCE, 9999, "Seppuku");
+                apply_damage_to_creature(creature, DAMAGE_FORCE, 9999, "Seppuku");
                 world.total_winner = true;
             } else {
                 msg_print(_("武士道とは、死ぬことと見つけたり。", "The meaning of bushido is found in death."));
-                take_hit(creature, DAMAGE_FORCE, 9999, "Seppuku");
+                apply_damage_to_creature(creature, DAMAGE_FORCE, 9999, "Seppuku");
             }
         }
         break;

@@ -1,6 +1,7 @@
 #include "realm/realm-death.h"
 #include "avatar/avatar.h"
 #include "cmd-action/cmd-spell.h"
+#include "combat/damage-dispatcher.h"
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
 #include "hpmp/hp-mp-processor.h"
@@ -531,7 +532,7 @@ tl::optional<std::string> do_death_spell(CreatureEntity &creature, SPELL_IDX spe
             }
 
             fire_ball(creature, AttributeType::HELL_FIRE, dir, dam, rad);
-            take_hit(creature, DAMAGE_USELIFE, 20 + randint1(30), _("地獄の劫火の呪文を唱えた疲労", "the strain of casting Hellfire"));
+            apply_damage_to_creature(creature, DAMAGE_USELIFE, 20 + randint1(30), _("地獄の劫火の呪文を唱えた疲労", "the strain of casting Hellfire"));
         }
     } break;
 
