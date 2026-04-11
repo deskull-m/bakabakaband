@@ -72,7 +72,7 @@ static void build_dead_end(CreatureEntity &creature, saved_floor_type *sf_ptr)
     creature.y = creature.get_floor()->height / 2;
     creature.x = creature.get_floor()->width / 2;
     place_bold(creature, creature.y, creature.x, GB_FLOOR);
-    wipe_generate_random_floor_flags(*creature.current_floor_ptr);
+    wipe_generate_random_floor_flags(*creature.get_floor());
     const auto &fcms = FloorChangeModesStore::get_instace();
     if (fcms->has(FloorChangeMode::UP)) {
         sf_ptr->upper_floor_id = 0;
@@ -85,7 +85,7 @@ static std::pair<short, Pos2D> decide_pet_index(CreatureEntity &creature, const 
 {
 
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     Pos2D pos(0, 0);
     if (current_monster == 0) {
@@ -126,7 +126,7 @@ static MonraceDefinition &set_pet_params(CreatureEntity &creature, const int cur
     monster = party_monsters[current_monster].clone();
     monster.y = cy;
     monster.x = cx;
-    monster.current_floor_ptr = creature.current_floor_ptr;
+    monster.current_floor_ptr = creature.get_floor();
     monster.get_monster_profile().ml = true;
     monster.get_monster_profile().mtimed[MonsterTimedEffect::SLEEP] = 0;
     monster.get_monster_profile().hold_o_idx_list.clear();
@@ -148,7 +148,7 @@ static void place_pet(CreatureEntity &creature)
 
 
     const auto max_num = AngbandWorld::get_instance().is_wild_mode() ? 1 : PartyMonsters::MAX_SIZE;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (int current_monster = 0; current_monster < max_num; current_monster++) {
         if (!MonraceList::is_valid(party_monsters[current_monster].r_idx)) {
             continue;
@@ -253,7 +253,7 @@ static void reset_unique_by_floor_change(CreatureEntity &creature)
 {
 
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (short i = 1; i < floor.m_max; i++) {
         auto &monster = floor.m_list[i];
         if (!monster.is_valid()) {
@@ -286,7 +286,7 @@ static void new_floor_allocation(CreatureEntity &creature, saved_floor_type *sf_
 
 
     GAME_TURN tmp_last_visit = sf_ptr->last_visit;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     auto alloc_chance = floor.get_dungeon_definition().max_m_alloc_chance;
     const auto &world = AngbandWorld::get_instance();
     while (tmp_last_visit > world.game_turn) {
@@ -329,7 +329,7 @@ static void set_stairs(CreatureEntity &creature)
 {
 
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &grid = floor.grid_array[creature.y][creature.x];
     const auto &fcms = FloorChangeModesStore::get_instace();
     const auto &dungeon = floor.get_dungeon_definition();
@@ -366,7 +366,7 @@ static void update_new_floor_feature(CreatureEntity &creature, saved_floor_type 
     }
 
     sf_ptr->last_visit = AngbandWorld::get_instance().game_turn;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     sf_ptr->dun_level = floor.dun_level;
     if (FloorChangeModesStore::get_instace()->has(FloorChangeMode::NO_RETURN)) {
         return;
@@ -444,7 +444,7 @@ void change_floor(CreatureEntity &creature)
     update_floor(creature);
     place_pet(creature);
     Travel::get_instance().reset_goal();
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     update_unique_artifact(floor, new_floor_id);
     creature.floor_id = new_floor_id;
     world.character_dungeon = true;

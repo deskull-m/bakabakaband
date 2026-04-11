@@ -30,7 +30,7 @@
 void check_random_quest_auto_failure(CreatureEntity &creature)
 {
     auto &quests = QuestList::get_instance();
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (floor.dungeon_id != DungeonId::ANGBAND) {
         return;
     }
@@ -78,7 +78,7 @@ void execute_recall(CreatureEntity &creature)
     }
 
     disturb(creature, false, true);
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.is_underground() || floor.is_in_quest() || floor.is_entering_dungeon()) {
         msg_print(_("上に引っ張りあげられる感じがする！", "You feel yourself yanked upwards!"));
         if (floor.is_underground()) {
@@ -146,7 +146,7 @@ void execute_recall(CreatureEntity &creature)
  */
 void execute_floor_reset(CreatureEntity &creature)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (creature.alter_reality == 0) {
         return;
     }

@@ -101,7 +101,7 @@ bool activate_ty_curse(CreatureEntity &creature, bool stop_ty, int *count)
 {
     BIT_FLAGS flg = (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP);
     bool is_first_curse = true;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     while (is_first_curse || (one_in_(3) && !stop_ty)) {
         is_first_curse = false;
         switch (randint1(34)) {
@@ -260,7 +260,7 @@ void wild_magic(CreatureEntity &creature, int spell)
         type = SUMMON_MIMIC;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     switch (randint1(spell) + randint1(8) + 1) {
     case 1:
     case 2:

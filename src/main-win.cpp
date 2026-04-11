@@ -1645,7 +1645,7 @@ static void process_menus(CreatureEntity &creature, WORD wCmd)
             }
 
             msg_flag = false;
-            auto &floor = *creature.current_floor_ptr;
+            auto &floor = *creature.get_floor();
             floor.forget_lite();
             floor.forget_view();
             floor.forget_mon_lite();
@@ -2441,7 +2441,7 @@ static LRESULT PASCAL angband_window_procedure(HWND hWnd, UINT uMsg, WPARAM wPar
         }
 
         msg_flag = false;
-        auto &floor = *p_ptr->current_floor_ptr;
+        auto &floor = *p_ptr->get_floor();
         floor.forget_lite();
         floor.forget_view();
         floor.forget_mon_lite();
@@ -2458,7 +2458,7 @@ static LRESULT PASCAL angband_window_procedure(HWND hWnd, UINT uMsg, WPARAM wPar
         if (p_ptr->hp < 0) {
             p_ptr->is_dead_ = false;
         }
-        exe_write_diary(*p_ptr->current_floor_ptr, DiaryKind::GAMESTART, 0, _("----ゲーム中断----", "---- Save and Exit Game ----"));
+        exe_write_diary(*p_ptr->get_floor(), DiaryKind::GAMESTART, 0, _("----ゲーム中断----", "---- Save and Exit Game ----"));
         AngbandSystem::get_instance().set_panic_save(true);
         signals_ignore_tstp();
         p_ptr->died_from = _("(緊急セーブ)", "(panic save)");

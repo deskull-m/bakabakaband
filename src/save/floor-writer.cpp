@@ -66,7 +66,7 @@ std::vector<GridTemplate> generate_sorted_grid_templates(const FloorType &floor)
  */
 void wr_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (!sf_ptr) {
         wr_s16b((int16_t)floor.dun_level);
     } else {
@@ -160,7 +160,7 @@ void wr_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
  */
 bool wr_dungeon(CreatureEntity &creature)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     floor.forget_lite();
     floor.forget_view();
     floor.forget_mon_lite();

@@ -289,7 +289,7 @@ static void hit_trap_slow(CreatureEntity &creature)
  */
 void hit_trap(CreatureEntity &creature, bool break_trap)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     const auto &grid = floor.get_grid(p_pos);
     const auto &terrain = grid.get_terrain();

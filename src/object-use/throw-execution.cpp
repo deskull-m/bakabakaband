@@ -58,7 +58,7 @@
 
 ObjectThrowHitMonster::ObjectThrowHitMonster(CreatureEntity &creature, POSITION y, POSITION x)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid({ y, x });
     if (!grid.has_monster() || std::cmp_greater_equal(grid.m_idx, floor.m_list.size())) {
         THROW_EXCEPTION(std::logic_error, "Invalid monster index");
@@ -334,7 +334,7 @@ void ObjectThrowEntity::drop_thrown_item()
         return;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto has_terrain_projection = floor.has_terrain_characteristics({ this->y, this->x }, TerrainCharacteristics::PROJECTION);
     const auto drop_y = has_terrain_projection ? this->y : this->prev_y;
     const auto drop_x = has_terrain_projection ? this->x : this->prev_x;
@@ -403,7 +403,7 @@ bool ObjectThrowEntity::check_racial_target_bold()
     const auto pos = mmove2({ this->y, this->x }, creature.get_position(), { this->ty, this->tx });
     this->ny[this->cur_dis] = pos.y;
     this->nx[this->cur_dis] = pos.x;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (floor.has_terrain_characteristics({ this->ny[this->cur_dis], this->nx[this->cur_dis] }, TerrainCharacteristics::PROJECTION)) {
         return false;
     }

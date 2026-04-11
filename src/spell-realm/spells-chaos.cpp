@@ -30,7 +30,7 @@ void call_the_void(CreatureEntity &creature)
 {
     auto &player_ptr = creature;
     auto do_call = true;
-    const auto &floor = *player_ptr.current_floor_ptr;
+    const auto &floor = *player_ptr.get_floor();
     /* 虚無招来そのものを唱えることによる時空崩壊度進行(*破壊*とは別) */
     wc_ptr->plus_perm_collapsion(150);
     for (const auto &d : Direction::directions()) {
@@ -131,7 +131,7 @@ static void erase_all_walls(FloorType &floor)
  */
 bool vanish_dungeon(CreatureEntity &creature)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto is_special_floor = floor.is_in_quest() && QuestType::is_fixed(floor.quest_number);
     is_special_floor |= !floor.is_underground();
     if (is_special_floor) {
@@ -189,7 +189,7 @@ void cast_meteor(CreatureEntity &creature, int dam, POSITION rad)
 {
     const auto b = 10 + randint1(10);
     const auto p_pos = creature.get_position();
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     for (auto i = 0; i < b; i++) {
         Pos2D pos(0, 0);
         int count;

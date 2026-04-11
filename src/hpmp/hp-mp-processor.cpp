@@ -113,7 +113,7 @@ static bool deal_damege_by_feat(CreatureEntity &creature, const Grid &grid, conc
  */
 void process_player_hp_mp(CreatureEntity &creature)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(creature.get_position());
     const auto &terrain = grid.get_terrain();
     bool cave_no_regen = false;

@@ -31,7 +31,7 @@ static bool get_is_floor(const FloorType &floor, const Pos2D &pos)
  */
 static void set_floor(CreatureEntity &creature, const Pos2D &pos)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         return;
     }
@@ -54,7 +54,7 @@ static void set_floor(CreatureEntity &creature, const Pos2D &pos)
  */
 static void check_room_boundary(CreatureEntity &creature, const Pos2D &pos1, const Pos2D &pos2)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto count = 0;
     auto old_is_floor = get_is_floor(floor, { pos1.y, pos1.x - 1 });
     bool new_is_floor;

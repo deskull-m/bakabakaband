@@ -21,7 +21,7 @@
  */
 void delete_monster_idx(CreatureEntity &creature, short m_idx)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &monster = floor.get_monster(m_idx);
     auto &monrace = monster.get_monrace();
     const auto m_pos = monster.get_position();
@@ -99,7 +99,7 @@ void delete_monster_idx(CreatureEntity &creature, short m_idx)
 void wipe_monsters_list(CreatureEntity &creature)
 {
     auto &monraces = MonraceList::get_instance();
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (auto i = floor.m_max - 1; i >= 1; i--) {
         auto &monster = floor.get_monster(i);
         if (!monster.is_valid()) {
@@ -128,7 +128,7 @@ void wipe_monsters_list(CreatureEntity &creature)
  */
 void delete_monster(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         return;
     }

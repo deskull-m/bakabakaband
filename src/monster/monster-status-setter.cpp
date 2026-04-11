@@ -339,7 +339,7 @@ bool set_monster_invulner(FloorType &floor, MONSTER_IDX m_idx, int v, bool energ
  */
 bool set_monster_timewalk(CreatureEntity &creature, MONSTER_IDX m_idx, int num, bool vs_player)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &monster = floor.get_monster(m_idx);
     auto &world = AngbandWorld::get_instance();
     const auto &monrace = monster.get_real_monrace();

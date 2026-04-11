@@ -44,7 +44,7 @@
  */
 bool project_all_los(CreatureEntity &creature, AttributeType typ, int dam)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     for (short i = 1; i < floor.m_max; i++) {
         auto &monster = floor.get_monster(i);
@@ -214,7 +214,7 @@ void aggravate_monsters(CreatureEntity &creature, MONSTER_IDX src_idx)
 {
     auto sleep = false;
     auto speed = false;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (short i = 1; i < floor.m_max; i++) {
         auto &monster = floor.get_monster(i);
         if (!monster.is_valid()) {
@@ -438,7 +438,7 @@ bool probing(CreatureEntity &creature)
     game_term->scr->cu = 0;
     game_term->scr->cv = 1;
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     auto probe = false;
     for (short i = 1; i < floor.m_max; i++) {

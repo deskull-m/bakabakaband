@@ -160,7 +160,7 @@ void update_lite_radius(CreatureEntity &creature)
 void update_lite(CreatureEntity &creature)
 {
     POSITION p = creature.cur_lite;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto points = floor.reset_lite();
     const auto p_pos = creature.get_position();
     if (p >= 1) {

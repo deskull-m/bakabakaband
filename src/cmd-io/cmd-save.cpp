@@ -52,5 +52,5 @@ void do_cmd_save_and_exit(CreatureEntity &creature)
 {
     creature.playing = false;
     creature.leaving = true;
-    exe_write_diary(*creature.current_floor_ptr, DiaryKind::GAMESTART, 0, _("----ゲーム中断----", "--- Saved and Exited Game ---"));
+    exe_write_diary(*creature.get_floor(), DiaryKind::GAMESTART, 0, _("----ゲーム中断----", "--- Saved and Exited Game ---"));
 }

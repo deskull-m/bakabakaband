@@ -30,7 +30,7 @@
  */
 void exe_monster_attack_to_player(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx, const Pos2D &pos)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     auto &monrace = monster.get_monrace();
     if (!turn_flags_ptr->do_move || !creature.is_located_at(pos)) {
@@ -72,7 +72,7 @@ void exe_monster_attack_to_player(CreatureEntity &creature, turn_flags *turn_fla
  */
 static bool exe_monster_attack_to_monster(CreatureEntity &creature, MONSTER_IDX m_idx, const Grid &grid)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     auto &monrace = monster.get_monrace();
     const auto &monster_target = creature.get_floor()->get_monster(grid.m_idx);
@@ -146,7 +146,7 @@ bool process_monster_attack_to_monster(CreatureEntity &creature, turn_flags *tur
     if (do_move_body) {
         turn_flags_ptr->do_move = true;
         turn_flags_ptr->did_move_body = true;
-        (void)set_monster_csleep(*creature.current_floor_ptr, grid.m_idx, 0);
+        (void)set_monster_csleep(*creature.get_floor(), grid.m_idx, 0);
     }
 
     return false;

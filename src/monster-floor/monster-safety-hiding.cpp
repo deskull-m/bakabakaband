@@ -27,7 +27,7 @@
 static coordinate_candidate sweep_safe_coordinate(CreatureEntity &creature, MONSTER_IDX m_idx, std::span<const Pos2DVec> offsets, int d)
 {
     coordinate_candidate candidate;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto p_pos = creature.get_position();
     const auto m_pos = monster.get_position();
@@ -113,7 +113,7 @@ tl::optional<Pos2D> find_safety(CreatureEntity &creature, short m_idx)
 static void sweep_hiding_candidate(
     CreatureEntity &creature, const CreatureEntity &monster, std::span<const Pos2DVec> offsets, coordinate_candidate &candidate)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monrace = monster.get_monrace();
     const auto p_pos = creature.get_position();
     const auto m_pos = monster.get_position();

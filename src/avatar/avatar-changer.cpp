@@ -56,7 +56,7 @@ void AvatarChanger::change_virtue()
  */
 void AvatarChanger::change_virtue_non_beginner()
 {
-    const auto &floor = *this->creature.current_floor_ptr;
+    const auto &floor = *this->creature.get_floor();
     const auto &monrace = this->m_ptr->get_monrace();
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::BEGINNER)) {
         return;
@@ -109,7 +109,7 @@ void AvatarChanger::change_virtue_unique()
  */
 void AvatarChanger::change_virtue_good_evil()
 {
-    const auto &floor = *this->creature.current_floor_ptr;
+    const auto &floor = *this->creature.get_floor();
     const auto &monrace = this->m_ptr->get_monrace();
     if (monrace.kind_flags.has(MonsterKindType::GOOD) && ((monrace.level) / 10 + (3 * floor.dun_level) >= randint1(100))) {
         chg_virtue(this->creature, Virtue::UNLIFE, 1);
@@ -140,7 +140,7 @@ void AvatarChanger::change_virtue_good_evil()
  */
 void AvatarChanger::change_virtue_revenge()
 {
-    const auto &floor = *this->creature.current_floor_ptr;
+    const auto &floor = *this->creature.get_floor();
     const auto &monrace = this->m_ptr->get_monrace();
     if (monrace.r_deaths == 0) {
         return;
@@ -161,7 +161,7 @@ void AvatarChanger::change_virtue_revenge()
  */
 void AvatarChanger::change_virtue_wild_thief()
 {
-    const auto &floor = *this->creature.current_floor_ptr;
+    const auto &floor = *this->creature.get_floor();
     const auto &monrace = this->m_ptr->get_monrace();
     auto innocent = true;
     auto thief = false;

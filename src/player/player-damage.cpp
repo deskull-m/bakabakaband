@@ -383,7 +383,7 @@ int apply_damage_to_player_impl(CreatureEntity &creature, int damage_type, int d
         chg_virtue(creature, Virtue::CHANCE, 2);
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     auto &world = AngbandWorld::get_instance();
     if (creature.hp < 0 && !cheat_immortal) {
         creature.killer_monrace_id = killer_monrace_id;
@@ -452,7 +452,7 @@ void PlayerType::on_death(std::string_view cause)
     this->leaving = true;
     this->is_dead_ = true;
 
-    const auto &floor = *this->current_floor_ptr;
+    const auto &floor = *this->get_floor();
     auto &world = AngbandWorld::get_instance();
     if (floor.inside_arena) {
         auto &entries = ArenaEntryList::get_instance();

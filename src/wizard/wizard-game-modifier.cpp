@@ -129,7 +129,7 @@ void wiz_enter_quest(CreatureEntity &creature)
  */
 void wiz_complete_quest(CreatureEntity &creature)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.is_in_quest()) {
         msg_print("No current quest");
         msg_erase();

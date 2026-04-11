@@ -128,7 +128,7 @@ static void update_object_flags(const TrFlags &flags, EnumClassFlagGroup<Monster
 static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_flags_ptr, const MONSTER_IDX m_idx, ItemEntity *o_ptr, const bool is_unpickable_object,
     const POSITION ny, const POSITION nx, std::string_view m_name, std::string_view o_name, const OBJECT_IDX this_o_idx)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     if (is_unpickable_object) {
@@ -148,12 +148,12 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
             msg_format(_("%s^が%sを拾った。", "%s^ picks up %s."), m_name.data(), o_name.data());
         }
 
-        excise_object_idx(*creature.current_floor_ptr, this_o_idx);
+        excise_object_idx(*creature.get_floor(), this_o_idx);
         // 意図としては OmType::TOUCHED を維持しつつ OmType::FOUND を消す事と思われるが一応元のロジックを維持しておく
         o_ptr->marked &= { OmType::TOUCHED };
         o_ptr->iy = o_ptr->ix = 0;
         o_ptr->held_m_idx = m_idx;
-        monster.get_monster_profile().hold_o_idx_list.add(*creature.current_floor_ptr, this_o_idx);
+        monster.get_monster_profile().hold_o_idx_list.add(*creature.get_floor(), this_o_idx);
         RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::FOUND_ITEMS);
         return;
     }

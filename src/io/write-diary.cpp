@@ -158,7 +158,7 @@ int exe_write_diary_quest(CreatureEntity &creature, DiaryKind dk, QuestId quest_
         return -1;
     }
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto old_quest = floor.quest_number;
     const auto &quests = QuestList::get_instance();
     const auto &quest = quests.get_quest(quest_id);

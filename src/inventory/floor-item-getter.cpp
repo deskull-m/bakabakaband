@@ -149,7 +149,7 @@ static std::pair<tl::optional<short>, char> check_floor_item_tag(CreatureEntity 
         return { *code, prev_tag };
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     const auto &[floor_item_indice, tag_floor] = check_floor_item_tag_aux(floor, p_pos, fis, *code, prev_tag, item_tester);
     if (floor_item_indice) {
@@ -266,7 +266,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
     }
 
     if (fis.floor) {
-        const auto &floor = *creature.current_floor_ptr;
+        const auto &floor = *creature.get_floor();
         fis.floor_item_index = scan_floor_items(floor, creature.get_position(), { ScanFloorMode::ITEM_TESTER, ScanFloorMode::ONLY_MARKED }, item_tester);
     }
 
@@ -669,12 +669,12 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
 
             const auto next_o_idx = fis.floor_item_index[1];
             while (grid.o_idx_list.front() != next_o_idx) {
-                grid.o_idx_list.rotate(*creature.current_floor_ptr);
+                grid.o_idx_list.rotate(*creature.get_floor());
             }
 
             rfu.set_flag(SubWindowRedrawingFlag::FLOOR_ITEMS);
             window_stuff(creature);
-            const auto &floor = *creature.current_floor_ptr;
+            const auto &floor = *creature.get_floor();
             fis.floor_item_index = scan_floor_items(floor, creature.get_position(), { ScanFloorMode::ITEM_TESTER, ScanFloorMode::ONLY_MARKED }, item_tester);
             if (command_see) {
                 screen_load();
@@ -771,7 +771,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
                     break;
                 }
             } else {
-                const auto floor_item_idx = get_tag_floor(*creature.current_floor_ptr, fis.which, fis.floor_item_index);
+                const auto floor_item_idx = get_tag_floor(*creature.get_floor(), fis.which, fis.floor_item_index);
                 if (floor_item_idx) {
                     fis.k = -fis.floor_item_index[*floor_item_idx];
                 } else {
@@ -818,7 +818,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
                     fis.cur_tag = fis.which;
                 }
             } else {
-                const auto floor_item_idx = get_tag_floor(*creature.current_floor_ptr, fis.which, fis.floor_item_index);
+                const auto floor_item_idx = get_tag_floor(*creature.get_floor(), fis.which, fis.floor_item_index);
                 if (floor_item_idx) {
                     fis.k = -fis.floor_item_index[*floor_item_idx];
                     fis.cur_tag = fis.which;

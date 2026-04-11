@@ -45,7 +45,7 @@ static bool scene_basic(CreatureEntity &creature, scene_type *value)
 
 static bool scene_quest(CreatureEntity &creature, scene_type *value)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto quest_id = floor.get_quest_id();
     const bool enable = (inside_quest(quest_id));
     if (enable) {
@@ -58,7 +58,7 @@ static bool scene_quest(CreatureEntity &creature, scene_type *value)
 
 static bool scene_quest_basic(CreatureEntity &creature, scene_type *value)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto quest_id = floor.get_quest_id();
     const bool enable = (inside_quest(quest_id));
     if (enable) {
@@ -126,7 +126,7 @@ static bool scene_dungeon_feeling(CreatureEntity & /*creature*/, scene_type *val
 
 static bool scene_dungeon(CreatureEntity &creature, scene_type *value)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto enable = floor.is_underground();
     if (enable) {
         value->type = TERM_XTRA_MUSIC_DUNGEON;

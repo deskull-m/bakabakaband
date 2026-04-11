@@ -46,7 +46,7 @@ std::pair<int, Direction> count_chests(CreatureEntity &creature, bool trapped)
     auto count = 0;
     for (const auto &d : Direction::directions()) {
         const auto pos_neighbor = creature.get_neighbor(d);
-        const auto o_idx = chest_check(*creature.current_floor_ptr, pos_neighbor, false);
+        const auto o_idx = chest_check(*creature.get_floor(), pos_neighbor, false);
         if (o_idx == 0) {
             continue;
         }

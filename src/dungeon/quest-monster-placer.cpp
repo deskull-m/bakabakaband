@@ -18,7 +18,7 @@
  */
 bool place_quest_monsters(CreatureEntity &creature)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &quests = QuestList::get_instance();
     for (const auto &[quest_id, quest] : quests) {
         auto no_quest_monsters = quest.status != QuestStatusType::TAKEN;

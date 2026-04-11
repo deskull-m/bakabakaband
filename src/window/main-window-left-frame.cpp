@@ -191,7 +191,7 @@ void print_depth(CreatureEntity &creature)
     const auto &[wid, hgt] = term_get_size();
     const auto col_depth = wid + COL_DEPTH;
     const auto row_depth = hgt + ROW_DEPTH;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.is_underground()) {
         c_prt(attr, format("%7s", _("地上", "Surf.")), row_depth, col_depth);
         return;

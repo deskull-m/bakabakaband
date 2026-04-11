@@ -136,7 +136,7 @@ bool MonsterDamageProcessor::genocide_patron()
     }
 
     this->set_redraw();
-    (void)set_monster_csleep(*creature.current_floor_ptr, this->m_idx, 0);
+    (void)set_monster_csleep(*creature.get_floor(), this->m_idx, 0);
     set_superstealth(this->creature, false);
 
     return this->m_idx == 0;
@@ -162,7 +162,7 @@ bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, cons
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE) && record_destroy_uniq) {
         std::stringstream ss;
         ss << monrace.name << (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CLONED) ? _("(クローン)", "(Clone)") : "");
-        exe_write_diary(*creature.current_floor_ptr, DiaryKind::UNIQUE, 0, ss.str());
+        exe_write_diary(*creature.get_floor(), DiaryKind::UNIQUE, 0, ss.str());
     }
 
     sound(SoundKind::KILL);
@@ -342,7 +342,7 @@ void MonsterDamageProcessor::dying_scream(std::string_view m_name)
 
 void MonsterDamageProcessor::show_kill_message(std::string_view note, std::string_view m_name)
 {
-    const auto &floor = *this->creature.current_floor_ptr;
+    const auto &floor = *this->creature.get_floor();
     const auto &monster = floor.get_monster(this->m_idx);
     if (!note.empty()) {
         msg_format("%s^%s", m_name.data(), note.data());
@@ -392,7 +392,7 @@ void MonsterDamageProcessor::show_explosion_message(std::string_view died_mes, s
 void MonsterDamageProcessor::show_bounty_message(std::string_view m_name)
 {
     auto &creature = this->creature;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &monster = floor.get_monster(this->m_idx);
     const auto &monrace = monster.get_real_monrace();
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) || monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CLONED) || vanilla_town) {
@@ -501,7 +501,7 @@ void MonsterDamageProcessor::add_monster_fear()
     const auto &monster = creature.get_floor()->get_monster(this->m_idx);
     if (monster.is_fearful() && (this->dam > 0)) {
         auto fear_remining = monster.get_remaining_fear() - randint1(this->dam);
-        if (set_monster_monfear(*creature.current_floor_ptr, this->m_idx, fear_remining)) {
+        if (set_monster_monfear(*creature.get_floor(), this->m_idx, fear_remining)) {
             *this->fear = false;
         }
     }
@@ -520,7 +520,7 @@ void MonsterDamageProcessor::add_monster_fear()
     *this->fear = true;
     auto fear_condition = (this->dam >= monster.hp) && (percentage > 7);
     auto fear_value = randint1(10) + (fear_condition ? 20 : (11 - percentage) * 5);
-    (void)set_monster_monfear(*creature.current_floor_ptr, this->m_idx, fear_value);
+    (void)set_monster_monfear(*creature.get_floor(), this->m_idx, fear_value);
 }
 
 /*!
@@ -538,7 +538,7 @@ void MonsterDamageProcessor::process_masochist_reaction()
     }
 
     if (one_in_(3) && this->dam < std::min(monster.maxhp / 10, 40)) {
-        (void)set_monster_monfear(*creature.current_floor_ptr, this->m_idx, 0);
+        (void)set_monster_monfear(*creature.get_floor(), this->m_idx, 0);
         *this->fear = false;
 
         // 一定確率で少量回復
@@ -569,11 +569,11 @@ void MonsterDamageProcessor::process_sadist_reaction()
 
     // SADISTモンスターがプレイヤーにダメージを与えた場合の興奮状態
     if (this->dam > 0 && one_in_(4)) {
-        (void)set_monster_monfear(*creature.current_floor_ptr, this->m_idx, 0);
+        (void)set_monster_monfear(*creature.get_floor(), this->m_idx, 0);
         *this->fear = false;
 
         // 一時的な加速効果付与（興奮状態）
-        (void)set_monster_fast(*creature.current_floor_ptr, this->m_idx, monster.get_remaining_acceleration() + 100);
+        (void)set_monster_fast(*creature.get_floor(), this->m_idx, monster.get_remaining_acceleration() + 100);
 
         if (monster.get_monster_profile().ml) {
             msg_format(_("%s^は他者の苦痛に興奮している！", "%s^ gets excited by others' pain!"), monster.get_monrace().name.data());

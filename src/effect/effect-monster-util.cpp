@@ -39,7 +39,7 @@ EffectMonster::EffectMonster(CreatureEntity &creature, MONSTER_IDX src_idx, POSI
     , flag(flag)
     , see_s_msg(see_s_msg)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     this->g_ptr = &floor.grid_array[this->y][this->x];
     this->m_ptr = &floor.get_monster(this->g_ptr->m_idx);
     this->m_caster_ptr = this->is_monster() ? &floor.get_monster(this->src_idx) : nullptr;

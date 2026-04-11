@@ -333,7 +333,7 @@ static void curse_call_monster(CreatureEntity &creature)
 {
     const int call_type = PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET;
     const int obj_desc_type = OD_OMIT_PREFIX | OD_NAME_ONLY;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (creature.cursed.has(CurseTraitType::CALL_ANIMAL) && one_in_(2500)) {
         if (summon_specific(creature, creature.y, creature.x, floor.dun_level, SUMMON_ANIMAL, call_type)) {
             const auto item_name = describe_flavor(creature, *choose_cursed_obj_name(creature, CurseTraitType::CALL_ANIMAL), obj_desc_type);
@@ -470,7 +470,7 @@ static void curse_megaton_coin(CreatureEntity &creature)
         do_cmd_save_game(creature, true);
     }
 
-    exe_write_diary(*(creature.current_floor_ptr), DiaryKind::DESCRIPTION, 0, _("メガトンコインで落ちた!", "fell through the Megaton Coin"));
+    exe_write_diary(*(creature.get_floor()), DiaryKind::DESCRIPTION, 0, _("メガトンコインで落ちた!", "fell through the Megaton Coin"));
     auto &fcms = FloorChangeModesStore::get_instace();
     fcms->set({ FloorChangeMode::SAVE_FLOORS,
         FloorChangeMode::DOWN,

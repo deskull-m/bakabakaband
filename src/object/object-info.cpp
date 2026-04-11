@@ -182,6 +182,6 @@ bool check_book_realm(CreatureEntity &creature, const BaseitemKey &bi_key)
 
 ItemEntity *ref_item(CreatureEntity &creature, INVENTORY_IDX i_idx)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     return i_idx >= 0 ? creature.inventory[i_idx].get() : floor.o_list[0 - i_idx].get();
 }

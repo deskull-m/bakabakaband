@@ -46,7 +46,7 @@ bool cast_blue_dispel(CreatureEntity &creature)
         return false;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(*pos);
     const auto m_idx = grid.m_idx;
     const auto p_pos = creature.get_position();
@@ -99,7 +99,7 @@ static bool cast_blue_hand_doom(CreatureEntity &creature, bmc_type *bmc_ptr)
 /* 効果が抵抗された場合、返される tl::optional には値がありません。*/
 static tl::optional<std::string> exe_blue_teleport_back(CreatureEntity &creature, const Pos2D &pos)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(pos);
     const auto p_pos = creature.get_position();
     if (!grid.has_monster() || !grid.has_los() || !projectable(floor, p_pos, pos)) {

@@ -81,7 +81,7 @@ static bool confirm_leave_level(CreatureEntity &creature, bool down_stair)
 void do_cmd_go_up(CreatureEntity &creature)
 {
     auto &quests = QuestList::get_instance();
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid({ creature.y, creature.x });
     const auto &terrain = grid.get_terrain();
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
@@ -220,7 +220,7 @@ void do_cmd_go_down(CreatureEntity &creature)
 {
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &grid = floor.grid_array[creature.y][creature.x];
     auto &terrain = grid.get_terrain();
 
@@ -415,7 +415,7 @@ void do_cmd_walk(CreatureEntity &creature, bool pickup)
         more = true;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     if (is_wild_mode && !floor.has_terrain_characteristics(p_pos, TerrainCharacteristics::TOWN)) {
         const auto wild_level = WildernessGrids::get_instance().get_player_grid().get_level();
@@ -566,7 +566,7 @@ void do_cmd_rest(CreatureEntity &creature)
  */
 void do_cmd_go_portal(CreatureEntity &creature)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid({ creature.y, creature.x });
     const auto &terrain = grid.get_terrain();
 

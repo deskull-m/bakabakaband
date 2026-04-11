@@ -90,7 +90,7 @@ static bool check_death(CreatureEntity &creature)
 static void kingly(CreatureEntity &creature)
 {
     bool seppuku = streq(creature.died_from, "Seppuku");
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     floor.dun_level = 0;
     if (!seppuku) {
         /* 引退したときの識別文字 */

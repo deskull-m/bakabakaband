@@ -382,7 +382,7 @@ static char describe_footing_many_items(CreatureEntity &creature, GridExaminatio
             continue;
         }
 
-        ge_ptr->g_ptr->o_idx_list.rotate(*creature.current_floor_ptr);
+        ge_ptr->g_ptr->o_idx_list.rotate(*creature.get_floor());
 
         // ターゲットしている床の座標を渡す必要があるので、window_stuff経由ではなく直接呼び出す
         fix_floor_item_list(creature, { ge_ptr->y, ge_ptr->x });
@@ -460,7 +460,7 @@ static int16_t sweep_footing_items(CreatureEntity &creature, GridExamination *ge
 
 static std::string decide_target_floor(CreatureEntity &creature, GridExamination *ge_ptr)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (ge_ptr->terrain_ptr->flags.has(TerrainCharacteristics::QUEST_ENTER)) {
         const auto old_quest = floor.quest_number;
         const auto &quests = QuestList::get_instance();
@@ -537,7 +537,7 @@ static std::string describe_grid_monster_all(GridExamination *ge_ptr)
  */
 char examine_grid(CreatureEntity &creature, const POSITION y, const POSITION x, target_type mode, concptr info)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     GridExamination tmp_eg(floor, y, x, mode, info);
     GridExamination *ge_ptr = &tmp_eg;
     describe_scan_result(floor, ge_ptr);

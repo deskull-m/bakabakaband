@@ -47,7 +47,7 @@
  */
 static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     auto dummy_y = monster.y;
     auto dummy_x = monster.x;
@@ -177,7 +177,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_ROLENTO(CreatureEntity &creature, PO
 static MonsterSpellResult spell_RF6_SPECIAL_B(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     mspell_cast_msg_simple msg{};
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     const auto &monster_target = floor.get_monster(t_idx);
     const auto &monrace_target = monster_target.get_monrace();
@@ -262,7 +262,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(CreatureEntity &creature, POSITION
  */
 MonsterSpellResult spell_RF6_SPECIAL(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     const auto r_idx = monster.r_idx;

@@ -106,7 +106,7 @@ static void build_bubble_vault(CreatureEntity &creature, const Pos2D &pos0, cons
     const Pos2DVec vec_half(vec.y / 2, vec.x / 2);
 
     /* Top and bottom boundaries */
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (auto i = 0; i < vec.x; i++) {
         const auto side_x = pos0.x - vec_half.x + i;
         set_boundaries(creature, { pos0.y - vec_half.y, side_x });
@@ -174,7 +174,7 @@ static void build_room_vault(CreatureEntity &creature, const Pos2D &center, cons
     msg_print_wizard(creature, CHEAT_DUNGEON, _("部屋型ランダムVaultを生成しました。", "Room Vault."));
 
     /* fill area so don't get problems with on_defeat_arena_monster levels */
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (auto x1 = 0; x1 < vec.x; x1++) {
         const auto x = center.x - vec_half.x + x1;
         for (auto y1 = 0; y1 < vec.y; y1++) {
@@ -220,7 +220,7 @@ static void build_cave_vault(CreatureEntity &creature, const Pos2D &center, cons
     auto done = false;
     auto room = true;
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     while (!done) {
         /* testing values for these parameters feel free to adjust */
         const auto grd = 1 << randint0(4);
@@ -299,7 +299,7 @@ static Pos2D coord_trans(const Pos2D &pos_initial, const Pos2DVec &offset, int t
 void build_vault(vault_type &vault, CreatureEntity &creature, POSITION yval, POSITION xval, POSITION ymax, POSITION xmax, concptr data, POSITION xoffset, POSITION yoffset, int transno)
 {
     /* Place dungeon features and objects */
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto t = data;
     for (auto dy = 0; dy < ymax; dy++) {
         for (auto dx = 0; dx < xmax; dx++, t++) {
@@ -573,7 +573,7 @@ static void build_target_vault(CreatureEntity &creature, const Pos2D &center, co
     const auto rad = vec.x > vec.y ? vec.y / 2 : vec.x / 2;
 
     /* Make floor */
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (auto x = center.x - rad; x <= center.x + rad; x++) {
         for (auto y = center.y - rad; y <= center.y + rad; y++) {
             const Pos2D pos(y, x);
@@ -665,7 +665,7 @@ static void build_elemental_vault(CreatureEntity &creature, const Pos2D &center,
     const auto xsize = vec_half.x * 2;
     const auto ysize = vec_half.y * 2;
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     lake_type type;
     if (floor.dun_level < 25) {
         /* Earth vault  (Rubble) */
@@ -741,7 +741,7 @@ static void build_mini_c_vault(CreatureEntity &creature, const Pos2D &center, co
     const auto x2 = center.x + dx;
 
     /* generate the room */
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (auto x = x1 - 2; x <= x2 + 2; x++) {
         const Pos2D pos(y1 - 2, x);
         if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
@@ -845,7 +845,7 @@ static void build_castle_vault(CreatureEntity &creature, const Pos2D &center, co
     msg_print_wizard(creature, CHEAT_DUNGEON, _("城型ランダムVaultを生成しました。", "Castle Vault"));
 
     /* generate the room */
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (const auto &pos : area.resized(1)) {
         floor.get_grid(pos).info |= (CAVE_ROOM | CAVE_ICKY);
         /* Make everything a floor */
@@ -865,7 +865,7 @@ static void build_castle_vault(CreatureEntity &creature, const Pos2D &center, co
  */
 bool build_type10(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto xsize = randint1(22) + 22;
     const auto ysize = randint1(11) + 11;
     const auto center = find_space(creature, dd_ptr, ysize + 1, xsize + 1);
@@ -949,7 +949,7 @@ bool build_fixed_room(CreatureEntity &creature, DungeonData *dd_ptr, int typ, bo
     auto y = vault.hgt;
 
     /* Some huge vault cannot be ratated to fit in the dungeon */
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (x + 2 > floor.height - 2) {
         /* Forbid 90 or 270 degree ratation */
         num_transformation &= ~1;

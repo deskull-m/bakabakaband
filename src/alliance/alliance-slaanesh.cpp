@@ -65,7 +65,7 @@ void AllianceSlaanesh::panishment(CreatureEntity &creature)
     /*
     if (one_in_(20)) {
         Pos2D m_pos(player_ptr.get_position());
-        m_pos = scatter(*player_ptr.current_floor_ptr, m_pos, 12, PROJECT_NONE);
+        m_pos = scatter(*player_ptr.get_floor(), m_pos, 12, PROJECT_NONE);
 
         // スラーネッシュの怒りレベルに応じて異なる復讐者を派遣
         MonraceId avenger_id;
@@ -105,7 +105,7 @@ void AllianceSlaanesh::panishment(CreatureEntity &creature)
 
     if (one_in_(25)) {
         Pos2D m_pos(creature.get_position());
-        m_pos = scatter(*creature.current_floor_ptr, m_pos, 10, PROJECT_NONE);
+        m_pos = scatter(*creature.get_floor(), m_pos, 10, PROJECT_NONE);
         const auto m_idx = place_monster_one(creature, m_pos.y, m_pos.x, MonraceId::SLAANESH_CHOSEN, PM_ALLOW_GROUP);
         if (m_idx) {
             msg_print(_("スラーネッシュの選ばれし者があなたを誘惑すべく現れた！", "Slaanesh's Chosen appears to seduce you!"));

@@ -357,7 +357,7 @@ static bool effect_monster_crusade_domination(CreatureEntity &creature, EffectMo
 
     if (em_ptr->m_ptr->is_pet()) {
         em_ptr->note = _("の動きが速くなった。", " starts moving faster.");
-        (void)set_monster_fast(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_acceleration() + 100);
+        (void)set_monster_fast(*creature.get_floor(), em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_acceleration() + 100);
         return true;
     }
 
@@ -378,7 +378,7 @@ static bool effect_monster_crusade_domination(CreatureEntity &creature, EffectMo
 
     em_ptr->note = _("を支配した。", " is tamed!");
     set_pet(creature, *em_ptr->m_ptr);
-    (void)set_monster_fast(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_acceleration() + 100);
+    (void)set_monster_fast(*creature.get_floor(), em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_acceleration() + 100);
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::GOOD);
     }
@@ -463,7 +463,7 @@ static void effect_monster_captured(CreatureEntity &creature, EffectMonster *em_
 ProcessResult effect_monster_capture(CreatureEntity &creature, EffectMonster *em_ptr, tl::optional<CapturedMonsterType *> cap_mon_ptr)
 {
     const auto &quests = QuestList::get_instance();
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
 
     auto quest_monster = floor.is_in_quest();
     quest_monster &= (quests.get_quest(floor.quest_number).type == QuestKindType::KILL_ALL);

@@ -209,7 +209,7 @@ ProcessResult effect_monster_psi(CreatureEntity &creature, EffectMonster *em_ptr
     if (em_ptr->seen) {
         em_ptr->obvious = true;
     }
-    if (!los(*creature.current_floor_ptr, em_ptr->m_ptr->get_position(), creature.get_position())) {
+    if (!los(*creature.get_floor(), em_ptr->m_ptr->get_position(), creature.get_position())) {
         if (em_ptr->seen_msg) {
             msg_format(_("%sはあなたが見えないので影響されない！", "%s^ can't see you, and isn't affected!"), em_ptr->m_name);
         }

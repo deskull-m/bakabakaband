@@ -41,7 +41,7 @@ void print_path(CreatureEntity &creature, POSITION y, POSITION x)
         return;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     const auto range = project_length != 0 ? project_length : AngbandSystem::get_instance().get_max_range();
     ProjectionPath path_g(floor, range, p_pos, p_pos, pos, PROJECT_PATH | PROJECT_THRU);
@@ -94,7 +94,7 @@ bool change_panel(CreatureEntity &creature, POSITION dy, POSITION dx)
     POSITION y = panel_row_min + dy * hgt / 2;
     POSITION x = panel_col_min + dx * wid / 2;
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (y > floor.height - hgt) {
         y = floor.height - hgt;
     }

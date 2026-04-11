@@ -337,7 +337,7 @@ bool activate_ball_lite(CreatureEntity &creature, std::string_view name)
     const auto num = Dice::roll(5, 3);
     msg_format(_("% sが稲妻で覆われた...", "The %s is surrounded by lightning..."), name.data());
     const auto p_pos = creature.get_position();
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     for (auto k = 0; k < num; k++) {
         auto attempts = 1000;
         Pos2D pos(0, 0);

@@ -59,7 +59,7 @@ static bool decide_pet_approch_direction(CreatureEntity &creature, const Creatur
  */
 static void decide_enemy_approch_direction(CreatureEntity &creature, MONSTER_IDX m_idx, int start, int plus, POSITION *y, POSITION *x)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &monster_from = floor.get_monster(m_idx);
     const auto &monrace = monster_from.get_monrace();
     for (int i = start; ((i < start + floor.m_max) && (i > start - floor.m_max)); i += plus) {
@@ -112,7 +112,7 @@ static void decide_enemy_approch_direction(CreatureEntity &creature, MONSTER_IDX
  */
 static tl::optional<MonsterMovementDirectionList> get_enemy_dir(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
 
     POSITION x = 0, y = 0;

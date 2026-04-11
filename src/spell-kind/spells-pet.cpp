@@ -21,7 +21,7 @@
 void discharge_minion(CreatureEntity &creature)
 {
     bool okay = true;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
         const auto &monster = floor.get_monster(i);
         if (!monster.is_valid() || !monster.is_pet()) {

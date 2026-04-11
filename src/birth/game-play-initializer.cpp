@@ -150,7 +150,7 @@ void player_wipe_without_name(CreatureEntity &creature)
 void init_dungeon_quests(CreatureEntity &creature)
 {
     init_flags = INIT_ASSIGN;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &quests = QuestList::get_instance();
     floor.quest_number = QuestId::RANDOM_QUEST1;
     parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);

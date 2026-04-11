@@ -146,7 +146,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
 
     decide_drop_from_monster(creature, m_idx, turn_flags_ptr->is_riding_mon);
     if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CHAMELEON) && one_in_(13) && !monster.is_asleep()) {
-        const auto &floor = *creature.current_floor_ptr;
+        const auto &floor = *creature.get_floor();
         const auto old_m_name = monster_desc(creature, monster, 0);
         const auto &monrace = monster.get_monrace();
         const auto m_pos = monster.get_position();
@@ -372,7 +372,7 @@ void decide_drop_from_monster(CreatureEntity &creature, MONSTER_IDX m_idx, bool 
 bool vanish_summoned_children(CreatureEntity &creature, MONSTER_IDX m_idx, bool see_m)
 {
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
 
@@ -434,7 +434,7 @@ bool awake_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
         return false;
     }
 
-    (void)set_monster_csleep(*creature.current_floor_ptr, m_idx, 0);
+    (void)set_monster_csleep(*creature.get_floor(), m_idx, 0);
     if (monster.get_monster_profile().ml) {
         const auto m_name = monster_desc(creature, monster, 0);
         msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
@@ -577,7 +577,7 @@ void process_special(CreatureEntity &creature, MONSTER_IDX m_idx)
 bool decide_monster_multiplication(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION oy, POSITION ox)
 {
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     auto &monrace = monster.get_monrace();
     if (monrace.misc_flags.has_not(MonsterMiscType::MULTIPLY) || (floor.num_repro >= MAX_REPRODUCTION)) {
@@ -747,7 +747,7 @@ bool process_monster_spawn_monster(CreatureEntity &creature, MONSTER_IDX m_idx, 
 bool cast_spell(CreatureEntity &creature, MONSTER_IDX m_idx, bool aware)
 {
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster_from = floor.get_monster(m_idx);
     const auto &monrace = monster_from.get_monrace();
 
@@ -826,7 +826,7 @@ bool process_monster_fear(CreatureEntity &creature, turn_flags *turn_flags_ptr, 
         return false;
     }
 
-    (void)set_monster_monfear(*creature.current_floor_ptr, m_idx, 0);
+    (void)set_monster_monfear(*creature.get_floor(), m_idx, 0);
     if (!turn_flags_ptr->see_m) {
         return true;
     }
@@ -889,7 +889,7 @@ void process_monsters(CreatureEntity &creature)
 void sweep_monster_process(CreatureEntity &creature)
 {
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
 
     // 処理中の召喚などで生成されたモンスターが即座に行動しないようにするため、
     // 先に現在存在するモンスターをリストアップしておく
@@ -956,11 +956,11 @@ void sweep_monster_process(CreatureEntity &creature)
                     switch (randint1(3)) {
                     case 1:
                         msg_format(_("%s「んほぉ！」", "%s 'Nnhor!'"), m_name.data());
-                        (void)set_monster_stunned(*creature.current_floor_ptr, 0, monster.get_remaining_stun() + 10 + randint0(creature.level) / 5);
+                        (void)set_monster_stunned(*creature.get_floor(), 0, monster.get_remaining_stun() + 10 + randint0(creature.level) / 5);
                         break;
                     case 2:
                         msg_format(_("%s「アへぇ！」", "%s 'Aherr!'"), m_name.data());
-                        (void)set_monster_slow(*creature.current_floor_ptr, 0, monster.get_remaining_deceleration() + 10 + randint0(creature.level) / 5);
+                        (void)set_monster_slow(*creature.get_floor(), 0, monster.get_remaining_deceleration() + 10 + randint0(creature.level) / 5);
                         break;
                     case 3: {
                         bool fear = false;

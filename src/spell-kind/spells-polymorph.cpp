@@ -74,7 +74,7 @@ static MonraceId select_polymorph_monrace_id(CreatureEntity &creature, MonraceId
  */
 bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &grid = floor.grid_array[y][x];
     auto &monster = floor.get_monster(grid.m_idx);
     MonraceId new_r_idx;

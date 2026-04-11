@@ -68,7 +68,7 @@ static void handle_signal_simple(int sig)
     }
 
     signal_count++;
-    auto &floor = *p_ptr->current_floor_ptr;
+    auto &floor = *p_ptr->get_floor();
     if (p_ptr->is_dead()) {
         p_ptr->died_from = _("強制終了", "Abortion");
         floor.forget_lite();
@@ -126,7 +126,7 @@ static void handle_signal_abort(int sig)
         quit("");
     }
 
-    auto &floor = *p_ptr->current_floor_ptr;
+    auto &floor = *p_ptr->get_floor();
     floor.forget_lite();
     floor.forget_view();
     floor.forget_mon_lite();

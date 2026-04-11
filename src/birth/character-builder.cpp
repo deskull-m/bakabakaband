@@ -64,7 +64,7 @@ static void write_birth_diary(CreatureEntity &creature)
     message_add("====================");
     message_add(" ");
     message_add("  ");
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     exe_write_diary(floor, DiaryKind::GAMESTART, 1, _("-------- 新規ゲーム開始 --------", "------- Started New Game -------"));
     exe_write_diary(floor, DiaryKind::DIALY, 0);
     const auto mes_sex = format(_("%s性別に%sを選択した。", "%schose %s gender."), indent, sex_info[creature.psex].title.data());

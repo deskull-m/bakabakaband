@@ -62,7 +62,7 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
 
     std::string m_name;
     auto see_m = true;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &monster = floor.get_monster(m_idx);
     if (m_idx <= 0) {
         m_name = _("あなた", "you");
@@ -230,7 +230,7 @@ bool teleport_level_other(CreatureEntity &creature)
         return false;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(*pos);
     const auto target_m_idx = grid.m_idx;
     if ((target_m_idx == 0) || !grid.has_los()) {
@@ -428,7 +428,7 @@ bool recall_player(CreatureEntity &creature, TIME_EFFECT turns)
         return true;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (floor.inside_arena || ironman_downward) {
         msg_print(_("何も起こらなかった。", "Nothing happens."));
         return true;
@@ -510,7 +510,7 @@ bool free_level_recall(CreatureEntity &creature)
     auto &dungeon_record = DungeonRecords::get_instance().get_record(creature.recall_dungeon);
     dungeon_record.set_max_level(dun_level);
     if (record_maxdepth) {
-        exe_write_diary(*creature.current_floor_ptr, DiaryKind::TRUMP, enum2i(*select_dungeon), _("トランプタワーで", "at Trump Tower"));
+        exe_write_diary(*creature.get_floor(), DiaryKind::TRUMP, enum2i(*select_dungeon), _("トランプタワーで", "at Trump Tower"));
     }
 
     msg_print(_("回りの大気が張りつめてきた...", "The air about you becomes charged..."));
@@ -552,7 +552,7 @@ bool reset_recall(CreatureEntity &creature)
     dungeon_record.set_max_level(*reset_level);
     if (record_maxdepth) {
         constexpr auto note = _("フロア・リセットで", "using a scroll of reset recall");
-        exe_write_diary(*creature.current_floor_ptr, DiaryKind::TRUMP, enum2i(*select_dungeon), note);
+        exe_write_diary(*creature.get_floor(), DiaryKind::TRUMP, enum2i(*select_dungeon), note);
     }
 #ifdef JP
     msg_format("%sの帰還レベルを %d 階にセット。", dungeon.name.data(), *reset_level);

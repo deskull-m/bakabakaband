@@ -99,7 +99,7 @@ static void move_prob_list(RoomType dst, RoomType src, std::map<RoomType, int> &
  */
 bool generate_rooms(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto *floor_ptr = creature.current_floor_ptr;
+    auto *floor_ptr = creature.get_floor();
     auto &dungeon = floor_ptr->get_generated_dungeon_definition();
 
     // 特定階層でのVault生成チェック

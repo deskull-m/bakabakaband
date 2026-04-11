@@ -196,7 +196,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
         (void)gain_mutation(creature, 0);
         reward = _("変異した。", "mutation");
     } else {
-        const auto &floor = *creature.current_floor_ptr;
+        const auto &floor = *creature.get_floor();
         switch (chosen_reward ? chosen_reward : effect) {
         case REW_POLY_SLF:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
@@ -530,7 +530,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
 
     if (!reward.empty()) {
         const auto note = format(_("パトロンの報酬で%s", "The patron rewarded you with %s."), reward.data());
-        exe_write_diary(*creature.current_floor_ptr, DiaryKind::DESCRIPTION, 0, note);
+        exe_write_diary(*creature.get_floor(), DiaryKind::DESCRIPTION, 0, note);
     }
 }
 

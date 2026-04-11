@@ -125,7 +125,7 @@ tl::optional<Pos2D> mon_scatter(CreatureEntity &creature, MonraceId monrace_id, 
  */
 tl::optional<MONSTER_IDX> multiply_monster(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId r_idx, bool clone, BIT_FLAGS mode)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &monster = floor.get_monster(m_idx);
     const auto pos = mon_scatter(creature, monster.r_idx, monster.get_position(), 1);
     if (!pos) {
@@ -158,7 +158,7 @@ tl::optional<MONSTER_IDX> multiply_monster(CreatureEntity &creature, MONSTER_IDX
 static void place_monster_group(CreatureEntity &creature, const Pos2D &pos_center, MonraceId monrace_id, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
 {
     const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto floor_level = floor.dun_level;
     auto extra = 0;
     if (monrace.level > floor_level) {
@@ -217,7 +217,7 @@ static void place_monster_group(CreatureEntity &creature, const Pos2D &pos_cente
 tl::optional<MONSTER_IDX> place_specific_monster(CreatureEntity &creature, POSITION y, POSITION x, MonraceId r_idx, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
 {
     const Pos2D pos(y, x);
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
     if (!(mode & PM_NO_KAGE) && one_in_(333)) {
         mode |= PM_KAGE;
@@ -295,7 +295,7 @@ tl::optional<MONSTER_IDX> place_specific_monster(CreatureEntity &creature, POSIT
 tl::optional<MONSTER_IDX> place_random_monster(CreatureEntity &creature, POSITION y, POSITION x, BIT_FLAGS mode)
 {
     const Pos2D pos(y, x);
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     get_mon_num_prep_enum(creature, floor.get_monrace_hook(), floor.get_monrace_hook_terrain_at(pos));
     const auto &monraces = MonraceList::get_instance();
     MonraceId monrace_id;
@@ -319,7 +319,7 @@ tl::optional<MONSTER_IDX> place_random_monster(CreatureEntity &creature, POSITIO
 
 static tl::optional<MonraceId> select_horde_leader_r_idx(CreatureEntity &creature)
 {
-    const auto *floor_ptr = creature.current_floor_ptr;
+    const auto *floor_ptr = creature.get_floor();
 
     for (auto attempts = 1000; attempts > 0; --attempts) {
         const auto monrace_id = get_mon_num(creature, 0, floor_ptr->monster_level, PM_NONE);
@@ -351,7 +351,7 @@ static tl::optional<MonraceId> select_horde_leader_r_idx(CreatureEntity &creatur
 bool alloc_horde(CreatureEntity &creature, POSITION y, POSITION x, summon_specific_pf summon_specific)
 {
     Pos2D pos(y, x);
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     get_mon_num_prep_enum(creature, floor.get_monrace_hook(), floor.get_monrace_hook_terrain_at(pos));
     const auto monrace_id = select_horde_leader_r_idx(creature);
     if (!monrace_id) {
@@ -393,7 +393,7 @@ bool alloc_horde(CreatureEntity &creature, POSITION y, POSITION x, summon_specif
  */
 bool alloc_guardian(CreatureEntity &creature, bool def_val)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
     if (!dungeon.has_guardian()) {
         return def_val;
@@ -446,7 +446,7 @@ bool alloc_monster(CreatureEntity &creature, int min_dis, BIT_FLAGS mode, summon
     }
 
     const auto p_pos = creature.get_position();
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     Pos2D pos(0, 0);
     auto attempts_left = 10000;
     while (attempts_left--) {

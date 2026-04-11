@@ -434,7 +434,7 @@ bool activate_dispel_magic(CreatureEntity &creature)
         return false;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto m_idx = floor.get_grid(*pos).m_idx;
     if (m_idx == 0) {
         return true;
@@ -463,7 +463,7 @@ bool activate_whistle(CreatureEntity &creature, const ItemEntity &item)
         (void)SpellHex(creature).stop_all_spells();
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     std::vector<short> pet_index;
     for (short pet_indice = floor.m_max - 1; pet_indice >= 1; pet_indice--) {
         const auto &monster = floor.get_monster(pet_indice);

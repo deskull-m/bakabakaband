@@ -55,7 +55,7 @@ bool can_get_item(CreatureEntity &creature, const ItemTester &item_tester)
         }
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto floor_item_index = scan_floor_items(floor, creature.get_position(), { ScanFloorMode::ITEM_TESTER, ScanFloorMode::ONLY_MARKED }, item_tester);
     return !floor_item_index.empty();
 }
@@ -128,7 +128,7 @@ static void py_pickup_single_item(CreatureEntity &creature, short i_idx, bool pi
 
 static void py_pickup_multiple_items(CreatureEntity &creature, bool pickup)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(creature.get_position());
 
     if (!pickup) {

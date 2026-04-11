@@ -221,7 +221,7 @@ static void effect_damage_makes_sleep(CreatureEntity &creature, EffectMonster *e
     }
 
     if (em_ptr->do_sleep) {
-        (void)set_monster_csleep(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, em_ptr->do_sleep);
+        (void)set_monster_csleep(*creature.get_floor(), em_ptr->g_ptr->m_idx, em_ptr->do_sleep);
     }
 }
 
@@ -244,7 +244,7 @@ static bool deal_effect_damage_from_monster(CreatureEntity &creature, EffectMons
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 
-    (void)set_monster_csleep(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, 0);
+    (void)set_monster_csleep(*creature.get_floor(), em_ptr->g_ptr->m_idx, 0);
     em_ptr->m_ptr->hp -= em_ptr->dam;
     if (em_ptr->m_ptr->hp < 0) {
         effect_damage_killed_pet(creature, em_ptr);
@@ -273,7 +273,7 @@ static bool heal_leaper(CreatureEntity &creature, EffectMonster *em_ptr)
 
     if (record_named_pet && em_ptr->m_ptr->is_named_pet()) {
         const auto m2_name = monster_desc(creature, *em_ptr->m_ptr, MD_INDEF_VISIBLE);
-        exe_write_diary(*creature.current_floor_ptr, DiaryKind::NAMED_PET, RECORD_NAMED_PET_HEAL_LEPER, m2_name);
+        exe_write_diary(*creature.get_floor(), DiaryKind::NAMED_PET, RECORD_NAMED_PET_HEAL_LEPER, m2_name);
     }
 
     delete_monster_idx(creature, em_ptr->g_ptr->m_idx);
@@ -353,7 +353,7 @@ static void deal_effect_damage_to_monster(CreatureEntity &creature, EffectMonste
     }
 
     if (em_ptr->do_sleep) {
-        (void)set_monster_csleep(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, em_ptr->do_sleep);
+        (void)set_monster_csleep(*creature.get_floor(), em_ptr->g_ptr->m_idx, em_ptr->do_sleep);
     }
 }
 
@@ -427,7 +427,7 @@ static void effect_damage_piles_stun(CreatureEntity &creature, EffectMonster *em
         turns = em_ptr->do_stun;
     }
 
-    (void)set_monster_stunned(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, turns);
+    (void)set_monster_stunned(*creature.get_floor(), em_ptr->g_ptr->m_idx, turns);
     em_ptr->get_angry = true;
 }
 
@@ -456,7 +456,7 @@ static void effect_damage_piles_confusion(CreatureEntity &creature, EffectMonste
         turns = em_ptr->do_conf;
     }
 
-    (void)set_monster_confused(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, turns);
+    (void)set_monster_confused(*creature.get_floor(), em_ptr->g_ptr->m_idx, turns);
     em_ptr->get_angry = true;
 }
 
@@ -475,7 +475,7 @@ static void effect_damage_piles_fear(CreatureEntity &creature, EffectMonster *em
         return;
     }
 
-    (void)set_monster_monfear(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_fear() + em_ptr->do_fear);
+    (void)set_monster_monfear(*creature.get_floor(), em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_fear() + em_ptr->do_fear);
     em_ptr->get_angry = true;
 }
 

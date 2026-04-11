@@ -646,7 +646,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
                 }
 
                 flag = false;
-                const auto &floor = *creature.current_floor_ptr;
+                const auto &floor = *creature.get_floor();
                 for (const auto &d : Direction::directions_8()) {
                     const auto pos_neighbor = *pos_target + d.vec();
                     if (floor.get_grid(pos_neighbor).has_monster()) {

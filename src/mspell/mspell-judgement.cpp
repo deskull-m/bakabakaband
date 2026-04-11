@@ -44,7 +44,7 @@
  */
 bool direct_beam(CreatureEntity &creature, const CreatureEntity &caster, const Pos2D &pos_target)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto pos_source = caster.get_position();
     ProjectionPath grid_g(floor, AngbandSystem::get_instance().get_max_range(), creature.get_position(), pos_source, pos_target, PROJECT_THRU);
     if (grid_g.path_num()) {
@@ -99,7 +99,7 @@ bool breath_direct(CreatureEntity &creature, const Pos2D &pos_source, const Pos2
         break;
     }
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     ProjectionPath grid_g(floor, AngbandSystem::get_instance().get_max_range(), creature.get_position(), pos_source, pos_target, flg);
     auto path_n = 0;
     Pos2D pos_breath = pos_source;
@@ -256,7 +256,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
         return true;
     }
 
-    const auto &floor_ref = *creature.current_floor_ptr;
+    const auto &floor_ref = *creature.get_floor();
     const auto &monster = floor_ref.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     if (monrace.ability_flags.has(MonsterAbilityType::BR_ACID)) {

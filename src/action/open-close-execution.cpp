@@ -108,7 +108,7 @@ bool exe_open(CreatureEntity &creature, POSITION y, POSITION x)
  */
 bool exe_close(CreatureEntity &creature, const Pos2D &pos)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(pos);
     const auto terrain_id = grid.feat;
     auto more = false;
@@ -153,7 +153,7 @@ bool exe_close(CreatureEntity &creature, const Pos2D &pos)
  */
 bool easy_open_door(CreatureEntity &creature, const Pos2D &pos)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.has_closed_door_at(pos)) {
         return false;
     }
@@ -343,7 +343,7 @@ bool exe_disarm(CreatureEntity &creature, POSITION y, POSITION x, const Directio
  */
 bool exe_bash(CreatureEntity &creature, POSITION y, POSITION x, const Direction &dir)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const Pos2D pos(y, x);
     const auto &grid = floor.get_grid(pos);
     const auto &terrain = grid.get_terrain();

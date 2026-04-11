@@ -47,7 +47,7 @@ static bool spell_RF4_BREATH_special_message(MonraceId r_idx, AttributeType GF_T
 
 static void message_breath(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type, std::string_view type_s, AttributeType GF_TYPE)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     auto see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     auto known = monster_near_player(creature, m_idx, t_idx);

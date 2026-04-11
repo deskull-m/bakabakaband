@@ -66,7 +66,7 @@ MonsterSpellResult spell_RF4_SHRIEK(MONSTER_IDX m_idx, CreatureEntity &creature,
     if (target_type == MONSTER_TO_PLAYER) {
         aggravate_monsters(player_ptr, m_idx);
     } else if (target_type == MONSTER_TO_MONSTER) {
-        set_monster_csleep(*player_ptr.current_floor_ptr, t_idx, 0);
+        set_monster_csleep(*player_ptr.get_floor(), t_idx, 0);
     }
 
     return result;
@@ -175,7 +175,7 @@ MonsterSpellResult spell_RF6_TELE_TO(CreatureEntity &creature, MONSTER_IDX m_idx
     auto res = MonsterSpellResult::make_valid();
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
-    const auto &floor = *player_ptr.current_floor_ptr;
+    const auto &floor = *player_ptr.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     const auto &monster_target = floor.get_monster(t_idx);
     auto &monrace_target = monster_target.get_monrace();
@@ -218,7 +218,7 @@ MonsterSpellResult spell_RF6_TELE_TO(CreatureEntity &creature, MONSTER_IDX m_idx
     }
 
     if (resists_tele) {
-        set_monster_csleep(*player_ptr.current_floor_ptr, t_idx, 0);
+        set_monster_csleep(*player_ptr.get_floor(), t_idx, 0);
         return res;
     }
 
@@ -227,7 +227,7 @@ MonsterSpellResult spell_RF6_TELE_TO(CreatureEntity &creature, MONSTER_IDX m_idx
     } else {
         teleport_monster_to(player_ptr, t_idx, monster.y, monster.x, 100, TELEPORT_PASSIVE);
     }
-    set_monster_csleep(*player_ptr.current_floor_ptr, t_idx, 0);
+    set_monster_csleep(*player_ptr.get_floor(), t_idx, 0);
 
     return res;
 }
@@ -247,7 +247,7 @@ MonsterSpellResult spell_RF6_TELE_AWAY(CreatureEntity &creature, MONSTER_IDX m_i
     auto res = MonsterSpellResult::make_valid();
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
-    const auto &floor = *player_ptr.current_floor_ptr;
+    const auto &floor = *player_ptr.get_floor();
     const auto &monster_target = floor.get_monster(t_idx);
     auto &monrace_target = monster_target.get_monrace();
 
@@ -301,7 +301,7 @@ MonsterSpellResult spell_RF6_TELE_AWAY(CreatureEntity &creature, MONSTER_IDX m_i
     }
 
     if (resists_tele) {
-        set_monster_csleep(*player_ptr.current_floor_ptr, t_idx, 0);
+        set_monster_csleep(*player_ptr.get_floor(), t_idx, 0);
         return res;
     }
 
@@ -310,7 +310,7 @@ MonsterSpellResult spell_RF6_TELE_AWAY(CreatureEntity &creature, MONSTER_IDX m_i
     } else {
         teleport_away(player_ptr, t_idx, MAX_PLAYER_SIGHT * 2 + 5, TELEPORT_PASSIVE);
     }
-    set_monster_csleep(*player_ptr.current_floor_ptr, t_idx, 0);
+    set_monster_csleep(*player_ptr.get_floor(), t_idx, 0);
 
     return res;
 }
@@ -329,7 +329,7 @@ MonsterSpellResult spell_RF6_TELE_LEVEL(CreatureEntity &creature, MONSTER_IDX m_
     auto &player_ptr = creature;
     const auto res = MonsterSpellResult::make_valid();
 
-    const auto &floor = *player_ptr.current_floor_ptr;
+    const auto &floor = *player_ptr.get_floor();
     const auto &monster_target = floor.get_monster(t_idx);
     const auto &monrace_target = monster_target.get_monrace();
     DEPTH rlev = monster_level_idx(floor, m_idx);
@@ -389,7 +389,7 @@ MonsterSpellResult spell_RF6_DARKNESS(CreatureEntity &creature, POSITION y, POSI
     const Pos2D pos(y, x);
     mspell_cast_msg_blind msg;
     concptr msg_done;
-    const auto &floor = *player_ptr.current_floor_ptr;
+    const auto &floor = *player_ptr.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     bool can_use_lite_area = false;

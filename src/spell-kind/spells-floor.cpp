@@ -46,7 +46,7 @@
 void wiz_lite(CreatureEntity &creature, bool ninja)
 {
     /* Memorize objects */
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (auto &item_ptr : floor.o_list) {
         if (!item_ptr->is_valid()) {
             continue;
@@ -115,7 +115,7 @@ void wiz_lite(CreatureEntity &creature, bool ninja)
  */
 void wiz_dark(CreatureEntity &creature)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     /* Forget every grid */
     for (const auto &pos : floor.get_area(FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         auto &grid = floor.get_grid(pos);
@@ -171,7 +171,7 @@ void wiz_dark(CreatureEntity &creature)
  */
 void map_area(CreatureEntity &creature, POSITION range)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
     }
@@ -243,7 +243,7 @@ bool destroy_area(CreatureEntity &creature, const POSITION y1, const POSITION x1
     const Pos2D pos1(y1, x1);
 
     /* Prevent destruction of quest levels and town */
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if ((floor.is_in_quest() && QuestType::is_fixed(floor.quest_number)) || !floor.is_underground()) {
         if (!in_generate) {
             msg_print(_("破壊の力はかき消された…", "The power of destruction has been drowned out ..."));

@@ -293,7 +293,7 @@ int summon_cyber(CreatureEntity &creature, POSITION y, POSITION x, tl::optional<
 {
     /* Summoned by a monster */
     BIT_FLAGS mode = PM_ALLOW_GROUP;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (summoner_m_idx) {
         const auto &monster = floor.get_monster(*summoner_m_idx);
         if (monster.is_pet()) {
@@ -331,7 +331,7 @@ void mitokohmon(CreatureEntity &creature)
     }
 
     if (!count) {
-        const auto &floor = *creature.current_floor_ptr;
+        const auto &floor = *creature.get_floor();
         const auto p_pos = creature.get_position();
         for (auto i = floor.m_max - 1; i > 0; i--) {
             const auto &monster = floor.get_monster(i);

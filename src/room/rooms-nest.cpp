@@ -70,7 +70,7 @@ tl::optional<std::array<NestMonsterInfo, NUM_NEST_MON_TYPE>> pick_nest_monraces(
 
 Rect2D generate_large_room(CreatureEntity &creature, const Pos2D &center)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     constexpr Vector2D vec(4, 11);
     const Rect2D rectangle(center, vec);
     for (const auto &pos : rectangle.resized(1)) {
@@ -88,7 +88,7 @@ Rect2D generate_large_room(CreatureEntity &creature, const Pos2D &center)
 
 void generate_inner_room(CreatureEntity &creature, const Pos2D &center, Rect2D &rectangle)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto inner_rectangle = rectangle.resized(-2);
 
     inner_rectangle.resized(1).each_edge([&creature, &floor](const Pos2D &pos) {
@@ -199,7 +199,7 @@ const MonraceDefinition &NestMonsterInfo::get_monrace() const
  */
 bool build_type5(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto nest_type = pick_nest_type(floor, nest_types);
     if (!nest_type) {
         return false;

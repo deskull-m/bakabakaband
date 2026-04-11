@@ -31,7 +31,7 @@ static void decide_melee_spell_target(CreatureEntity &creature, melee_spell_type
     }
 
     ms_ptr->target_idx = creature.pet_t_m_idx;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     ms_ptr->t_ptr = &floor.get_monster(ms_ptr->target_idx);
     if ((ms_ptr->m_idx == ms_ptr->target_idx) || !projectable(floor, ms_ptr->m_ptr->get_position(), ms_ptr->t_ptr->get_position())) {
         ms_ptr->target_idx = 0;
@@ -46,7 +46,7 @@ static void decide_indirection_melee_spell(CreatureEntity &creature, melee_spell
         return;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     ms_ptr->target_idx = floor.get_grid(target_pos).m_idx;
     if (ms_ptr->target_idx == 0) {
         return;
@@ -74,7 +74,7 @@ static bool check_melee_spell_projection(CreatureEntity &creature, melee_spell_t
 
     int start;
     auto plus = 1;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (AngbandSystem::get_instance().is_phase_out()) {
         start = randint1(floor.m_max - 1) + floor.m_max;
         if (randint0(2)) {
@@ -159,14 +159,14 @@ static void check_melee_spell_distance(CreatureEntity &creature, melee_spell_typ
         return;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     const auto m_pos = ms_ptr->m_ptr->get_position();
     const auto pos_real = get_project_point(floor, p_pos, m_pos, ms_ptr->get_position(), 0L);
     auto should_preserve = !projectable(floor, pos_real, p_pos);
     should_preserve &= ms_ptr->ability_flags.has(MonsterAbilityType::BA_LITE);
     should_preserve &= Grid::calc_distance(pos_real, p_pos) <= 4;
-    should_preserve &= los(*creature.current_floor_ptr, pos_real, p_pos);
+    should_preserve &= los(*creature.get_floor(), pos_real, p_pos);
     if (should_preserve) {
         ms_ptr->ability_flags.reset(MonsterAbilityType::BA_LITE);
         return;
@@ -202,7 +202,7 @@ static void check_melee_spell_rocket(CreatureEntity &creature, melee_spell_type 
         return;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     const auto m_pos = ms_ptr->m_ptr->get_position();
     const auto pos_real = get_project_point(floor, p_pos, m_pos, ms_ptr->get_position(), PROJECT_STOP);
@@ -344,7 +344,7 @@ static void check_smart(CreatureEntity &creature, melee_spell_type *ms_ptr)
         ms_ptr->ability_flags &= RF_ABILITY_INT_MASK;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (ms_ptr->ability_flags.has(MonsterAbilityType::TELE_LEVEL) && floor.can_teleport_level(!ms_ptr->t_ptr->is_riding() ? ms_ptr->target_idx != 0 : false)) {
         ms_ptr->ability_flags.reset(MonsterAbilityType::TELE_LEVEL);
     }
@@ -378,7 +378,7 @@ bool check_melee_spell_set(CreatureEntity &creature, melee_spell_type *ms_ptr)
     ms_ptr->x = ms_ptr->t_ptr->x;
     ms_ptr->m_ptr->reset_target();
     ms_ptr->ability_flags.reset({ MonsterAbilityType::WORLD, MonsterAbilityType::TRAPS, MonsterAbilityType::FORGET });
-    if (ms_ptr->ability_flags.has(MonsterAbilityType::BR_LITE) && !los(*creature.current_floor_ptr, ms_ptr->m_ptr->get_position(), ms_ptr->t_ptr->get_position())) {
+    if (ms_ptr->ability_flags.has(MonsterAbilityType::BR_LITE) && !los(*creature.get_floor(), ms_ptr->m_ptr->get_position(), ms_ptr->t_ptr->get_position())) {
         ms_ptr->ability_flags.reset(MonsterAbilityType::BR_LITE);
     }
 
@@ -388,7 +388,7 @@ bool check_melee_spell_set(CreatureEntity &creature, melee_spell_type *ms_ptr)
 
     check_darkness(creature, ms_ptr);
     check_stupid(ms_ptr);
-    check_arena(*creature.current_floor_ptr, ms_ptr);
+    check_arena(*creature.get_floor(), ms_ptr);
     if (AngbandSystem::get_instance().is_phase_out() && !one_in_(3)) {
         ms_ptr->ability_flags.reset(MonsterAbilityType::HEAL);
     }

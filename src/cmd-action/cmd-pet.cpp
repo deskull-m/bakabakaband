@@ -73,7 +73,7 @@ void do_cmd_pet_dismiss(CreatureEntity &creature)
     auto cv = game_term->scr->cv;
     game_term->scr->cu = false;
     game_term->scr->cv = true;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     std::vector<short> pet_index;
     for (short pet_indice = floor.m_max - 1; pet_indice >= 1; pet_indice--) {
         const auto &monster = floor.get_monster(pet_indice);
@@ -265,7 +265,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
 
         if (monster.is_asleep()) {
             const auto m_name = monster_desc(creature, monster, 0);
-            (void)set_monster_csleep(*creature.current_floor_ptr, grid.m_idx, 0);
+            (void)set_monster_csleep(*creature.get_floor(), grid.m_idx, 0);
             msg_format(_("%sを起こした。", "You have woken %s up."), m_name.data());
         }
 
@@ -312,7 +312,7 @@ static void do_name_pet(CreatureEntity &creature)
     }
 
     target_pet = old_target_pet;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(*pos);
     if (!grid.has_monster()) {
         return;

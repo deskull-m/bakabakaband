@@ -71,7 +71,7 @@ ProcessResult effect_monster_star_heal(CreatureEntity &creature, EffectMonster *
         em_ptr->obvious = true;
     }
 
-    (void)set_monster_csleep(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, 0);
+    (void)set_monster_csleep(*creature.get_floor(), em_ptr->g_ptr->m_idx, 0);
 
     if (em_ptr->m_ptr->maxhp < em_ptr->m_ptr->max_maxhp) {
         if (em_ptr->seen_msg) {
@@ -127,7 +127,7 @@ static void effect_monster_old_heal_recovery(CreatureEntity &creature, EffectMon
             msg_format(_("%s^は朦朧状態から立ち直った。", "%s^ is no longer stunned."), em_ptr->m_name);
         }
 
-        (void)set_monster_stunned(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, 0);
+        (void)set_monster_stunned(*creature.get_floor(), em_ptr->g_ptr->m_idx, 0);
     }
 
     if (em_ptr->m_ptr->is_confused()) {
@@ -135,7 +135,7 @@ static void effect_monster_old_heal_recovery(CreatureEntity &creature, EffectMon
             msg_format(_("%s^は混乱から立ち直った。", "%s^ is no longer confused."), em_ptr->m_name);
         }
 
-        (void)set_monster_confused(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, 0);
+        (void)set_monster_confused(*creature.get_floor(), em_ptr->g_ptr->m_idx, 0);
     }
 
     if (em_ptr->m_ptr->is_fearful()) {
@@ -143,7 +143,7 @@ static void effect_monster_old_heal_recovery(CreatureEntity &creature, EffectMon
             msg_format(_("%s^は勇気を取り戻した。", "%s^ recovers %s courage."), em_ptr->m_name, em_ptr->m_poss);
         }
 
-        (void)set_monster_monfear(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, 0);
+        (void)set_monster_monfear(*creature.get_floor(), em_ptr->g_ptr->m_idx, 0);
     }
 }
 
@@ -154,7 +154,7 @@ ProcessResult effect_monster_old_heal(CreatureEntity &creature, EffectMonster *e
     }
 
     /* Wake up */
-    (void)set_monster_csleep(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, 0);
+    (void)set_monster_csleep(*creature.get_floor(), em_ptr->g_ptr->m_idx, 0);
     effect_monster_old_heal_recovery(creature, em_ptr);
     if (em_ptr->m_ptr->hp < MONSTER_MAXHP) {
         em_ptr->m_ptr->hp += em_ptr->dam;
@@ -187,7 +187,7 @@ ProcessResult effect_monster_old_speed(CreatureEntity &creature, EffectMonster *
         em_ptr->obvious = true;
     }
 
-    if (set_monster_fast(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_acceleration() + 100)) {
+    if (set_monster_fast(*creature.get_floor(), em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_acceleration() + 100)) {
         em_ptr->note = _("の動きが速くなった。", " starts moving faster.");
     }
 
@@ -221,7 +221,7 @@ ProcessResult effect_monster_old_slow(CreatureEntity &creature, EffectMonster *e
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    if (set_monster_slow(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_deceleration() + 50)) {
+    if (set_monster_slow(*creature.get_floor(), em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_deceleration() + 50)) {
         em_ptr->note = _("の動きが遅くなった。", " starts moving slower.");
     }
 

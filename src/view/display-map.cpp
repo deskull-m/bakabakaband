@@ -131,7 +131,7 @@ static bool is_revealed_wall(const FloorType &floor, const Pos2D &pos)
  */
 DisplaySymbolPair map_info(CreatureEntity &creature, const Pos2D &pos)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(pos);
     const auto &terrains = TerrainList::get_instance();
     const auto &world = AngbandWorld::get_instance();

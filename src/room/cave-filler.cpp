@@ -179,7 +179,7 @@ void generate_hmap(FloorType &floor, POSITION y0, POSITION x0, POSITION xsiz, PO
 static bool hack_isnt_wall(CreatureEntity &creature, POSITION y, POSITION x, int c1, int c2, int c3, FEAT_IDX feat1, FEAT_IDX feat2, FEAT_IDX feat3,
     BIT_FLAGS info1, BIT_FLAGS info2, BIT_FLAGS info3)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.grid_array[y][x].info & CAVE_ICKY) {
         return false;
     }
@@ -230,7 +230,7 @@ static bool hack_isnt_wall(CreatureEntity &creature, POSITION y, POSITION x, int
  */
 static void cave_fill(CreatureEntity &creature, const Pos2D &initial_pos)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
 
     // 幅優先探索用のキュー。
     std::queue<Pos2D> que;
@@ -266,7 +266,7 @@ static void cave_fill(CreatureEntity &creature, const Pos2D &initial_pos)
 
 bool generate_fracave(CreatureEntity &creature, POSITION y0, POSITION x0, POSITION xsize, POSITION ysize, int cutoff, bool light, bool room)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
     POSITION xhsize = xsize / 2;
     POSITION yhsize = ysize / 2;
@@ -397,7 +397,7 @@ bool generate_fracave(CreatureEntity &creature, POSITION y0, POSITION x0, POSITI
 
 bool generate_lake(CreatureEntity &creature, POSITION y0, POSITION x0, POSITION xsize, POSITION ysize, int c1, int c2, int c3, int type)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
     const auto &terrains = TerrainList::get_instance();
     const auto terrain_id_rubble = terrains.get_terrain_id(TerrainTag::RUBBLE);

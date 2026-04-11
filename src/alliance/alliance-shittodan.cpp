@@ -37,7 +37,7 @@ void AllianceShittoDan::panishment(CreatureEntity &creature)
     }
     if (one_in_(20)) {
         Pos2D m_pos(creature.get_position());
-        m_pos = scatter(*creature.current_floor_ptr, m_pos, 8, PROJECT_NONE);
+        m_pos = scatter(*creature.get_floor(), m_pos, 8, PROJECT_NONE);
 
         const auto m_idx = place_monster_one(creature, m_pos.y, m_pos.x, MonraceId::SHITTO_MASK, PM_ALLOW_GROUP);
         if (m_idx) {

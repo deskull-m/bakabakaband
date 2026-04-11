@@ -74,7 +74,7 @@ static bool check_pet_preservation_conditions(CreatureEntity &creature, const Cr
     }
 
     const auto should_preserve = monster.is_named();
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     auto sight_from_player = floor.has_los_at(m_pos);
     sight_from_player &= projectable(floor, p_pos, m_pos);
     auto sight_from_monster = los(floor, m_pos, p_pos);
@@ -114,7 +114,7 @@ static void record_pet_diary(CreatureEntity &creature)
         return;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     for (MONSTER_IDX i = floor.m_max - 1; i >= 1; i--) {
         const auto &monster = floor.m_list[i];
         if (!monster.is_valid() || !monster.is_named_pet() || monster.is_riding()) {
@@ -232,7 +232,7 @@ static void get_out_monster(CreatureEntity &creature)
     auto tries = 0;
     auto dis = 1;
     const auto p_pos = creature.get_position();
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &p_grid = floor.get_grid(p_pos);
     const auto m_idx = p_grid.m_idx;
     if (m_idx == 0) {
@@ -275,7 +275,7 @@ static void preserve_info(CreatureEntity &creature)
 
     auto quest_monrace_id = MonraceList::empty_id();
     const auto &quests = QuestList::get_instance();
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     for (const auto &[quest_id, quest] : quests) {
         auto quest_relating_monster = (quest.status == QuestStatusType::TAKEN);
         quest_relating_monster &= ((quest.type == QuestKindType::KILL_LEVEL) || (quest.type == QuestKindType::RANDOM));
@@ -320,7 +320,7 @@ static Grid *set_grid_by_leaving_floor(CreatureEntity &creature)
     if (FloorChangeModesStore::get_instace()->has_not(FloorChangeMode::SAVE_FLOORS)) {
         return nullptr;
     }
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &grid = floor.get_grid(creature.get_position());
     const auto &terrain = grid.get_terrain();
     if (grid.special && terrain.flags.has_not(TerrainCharacteristics::SPECIAL) && get_sf_ptr(grid.special)) {
@@ -354,7 +354,7 @@ static void jump_floors(CreatureEntity &creature)
         move_num *= 2;
     }
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
     if (fcms->has(FloorChangeMode::DOWN)) {
         if (!floor.is_underground()) {
@@ -374,7 +374,7 @@ static void exit_to_wilderness(CreatureEntity &creature)
 {
 
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.is_underground() || (floor.dungeon_id == DungeonId::WILDERNESS)) {
         return;
     }
@@ -435,7 +435,7 @@ static void update_upper_lower_or_floor_id(saved_floor_type *sf_ptr)
 
 static void exe_leave_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto *grid_ptr = set_grid_by_leaving_floor(creature);
     jump_floors(creature);
     exit_to_wilderness(creature);
@@ -482,7 +482,7 @@ void leave_floor(CreatureEntity &creature)
     preserve_info(creature);
     saved_floor_type *sf_ptr = get_sf_ptr(creature.floor_id);
     if (FloorChangeModesStore::get_instace()->has(FloorChangeMode::RANDOM_CONNECT)) {
-        locate_connected_stairs(creature, *creature.current_floor_ptr, sf_ptr);
+        locate_connected_stairs(creature, *creature.get_floor(), sf_ptr);
     }
 
     exe_leave_floor(creature, sf_ptr);
@@ -496,7 +496,7 @@ void jump_floor(CreatureEntity &creature, DungeonId dun_idx, DEPTH depth)
 {
 
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     floor.set_dungeon_index(dun_idx);
     floor.dun_level = depth;
     auto &fcms = FloorChangeModesStore::get_instace();

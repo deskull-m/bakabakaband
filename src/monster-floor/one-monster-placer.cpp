@@ -64,7 +64,7 @@ static MonraceId initial_r_appearance(CreatureEntity &creature, MonraceId r_idx,
 
     get_mon_num_prep_enum(creature, MonraceHook::TANUKI);
     auto attempts = 1000;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     auto min = std::min(floor.base_level - 5, 50);
     while (--attempts) {
         auto ap_r_idx = get_mon_num(creature, 0, floor.base_level + 10, PM_NONE);
@@ -224,7 +224,7 @@ static void warn_unique_generation(CreatureEntity &creature, MonraceId r_idx)
  */
 tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, POSITION x, MonraceId r_idx, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
 {
-    auto &floor = *player.current_floor_ptr;
+    auto &floor = *player.get_floor();
     auto pos = Pos2D(y, x);
     auto *g_ptr = &floor.grid_array[y][x];
     auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
@@ -263,7 +263,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     m_ptr->get_monster_profile().mflag.clear();
     m_ptr->get_monster_profile().mflag2.clear();
-    m_ptr->current_floor_ptr = player.current_floor_ptr;
+    m_ptr->current_floor_ptr = player.get_floor();
 
     if (monrace.misc_flags.has(MonsterMiscType::CHAMELEON)) {
         m_ptr->r_idx = r_idx;

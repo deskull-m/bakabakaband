@@ -52,7 +52,7 @@ static void set_no_magic_mask(msa_type *msa_ptr)
 
 static void check_mspell_stupid(CreatureEntity &creature, msa_type *msa_ptr)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     auto is_in_no_magic_dungeon = floor.get_dungeon_definition().flags.has(DungeonFeatureType::NO_MAGIC);
     is_in_no_magic_dungeon &= floor.is_underground();
     is_in_no_magic_dungeon &= !floor.is_in_quest() || QuestType::is_fixed(floor.quest_number);
@@ -163,7 +163,7 @@ static bool check_mspell_continuation(CreatureEntity &creature, msa_type *msa_pt
     }
 
     remove_bad_spells(msa_ptr->m_idx, creature, msa_ptr->ability_flags);
-    check_mspell_arena(*creature.current_floor_ptr, msa_ptr);
+    check_mspell_arena(*creature.get_floor(), msa_ptr);
     if (msa_ptr->ability_flags.none() || !check_mspell_non_stupid(creature, msa_ptr)) {
         return false;
     }
@@ -331,7 +331,7 @@ bool make_attack_spell(CreatureEntity &creature, MONSTER_IDX m_idx)
     set_no_magic_mask(msa_ptr);
     decide_lite_area(creature, msa_ptr);
     check_mspell_stupid(creature, msa_ptr);
-    check_mspell_smart(*creature.current_floor_ptr, msa_ptr);
+    check_mspell_smart(*creature.get_floor(), msa_ptr);
     if (!check_mspell_continuation(creature, msa_ptr)) {
         return false;
     }

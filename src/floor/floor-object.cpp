@@ -138,7 +138,7 @@ tl::optional<ItemEntity> make_object(CreatureEntity &subject, BIT_FLAGS mode, Ba
             object_mention(subject, item);
         }
     };
-    const auto &floor = *subject.current_floor_ptr;
+    const auto &floor = *subject.get_floor();
     const auto prob = any_bits(mode, AM_GOOD) ? 10 : 1000;
     const auto base = get_base_floor(floor, mode, rq_mon_level);
     if (!restrict && one_in_(prob)) {
@@ -185,7 +185,7 @@ tl::optional<ItemEntity> make_object(CreatureEntity &subject, BIT_FLAGS mode, Ba
  */
 void delete_all_items_from_floor(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         return;
     }
@@ -205,7 +205,7 @@ void delete_all_items_from_floor(CreatureEntity &creature, const Pos2D &pos)
  */
 void floor_item_increase(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUMBER num)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
 
     auto *o_ptr = floor.o_list[i_idx].get();
     num += o_ptr->number;
@@ -258,7 +258,7 @@ void floor_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
  */
 void delete_object_idx(CreatureEntity &creature, OBJECT_IDX o_idx)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     excise_object_idx(floor, o_idx);
     auto &item_ptr = floor.o_list[o_idx];
     if (!item_ptr->is_held_by_monster()) {
@@ -348,7 +348,7 @@ short drop_near(CreatureEntity &subject, ItemEntity &drop_item, const Pos2D &pos
     Pos2D pos_drop = pos; //!< @details 実際に落ちる座標.
     auto bs = -1;
     auto bn = 0;
-    auto &floor = *subject.current_floor_ptr;
+    auto &floor = *subject.get_floor();
     auto has_floor_space = false;
     for (auto dy = -3; dy <= 3; dy++) {
         for (auto dx = -3; dx <= 3; dx++) {

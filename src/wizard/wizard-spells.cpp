@@ -213,7 +213,7 @@ void wiz_dimension_door(CreatureEntity &creature)
  */
 void wiz_summon_horde(CreatureEntity &creature)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     auto pos = p_pos;
     auto attempts = 1000;

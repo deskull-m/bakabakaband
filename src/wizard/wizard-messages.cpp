@@ -39,7 +39,7 @@ void msg_print_wizard(CreatureEntity &creature, int cheat_type, std::string_view
     const auto mes = ss.str();
     msg_print(mes);
     if (cheat_diary_output) {
-        exe_write_diary(*creature.current_floor_ptr, DiaryKind::WIZARD_LOG, 0, mes);
+        exe_write_diary(*creature.get_floor(), DiaryKind::WIZARD_LOG, 0, mes);
     }
 }
 

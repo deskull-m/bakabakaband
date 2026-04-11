@@ -56,7 +56,7 @@ static tl::optional<Pos2D> adjacent_grid_check(CreatureEntity &creature, const C
         next = 3;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto m_pos = monster.get_position();
     for (const auto direction : directions.at(next)) {
         const auto pos_next = pos + Direction(direction).vec();
@@ -92,7 +92,7 @@ void decide_lite_range(CreatureEntity &creature, msa_type *msa_ptr)
 
     msa_ptr->y_br_lite = msa_ptr->y;
     msa_ptr->x_br_lite = msa_ptr->x;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto pos_lite = msa_ptr->get_position_lite();
     if (los(floor, msa_ptr->m_ptr->get_position(), pos_lite)) {
         const auto &terrain = floor.get_grid(pos_lite).get_terrain();
@@ -143,7 +143,7 @@ static void check_lite_area_by_mspell(CreatureEntity &creature, msa_type *msa_pt
     const auto m_pos = msa_ptr->m_ptr->get_position();
     const auto cdis = Grid::calc_distance(p_pos, m_pos);
     light_by_disintegration &= cdis < system.get_max_range() / 2;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     light_by_disintegration &= in_disintegration_range(floor, m_pos, pos);
     light_by_disintegration &= one_in_(10) || (projectable(floor, pos, m_pos) && one_in_(2));
     if (light_by_disintegration) {
@@ -208,7 +208,7 @@ static void decide_lite_breath(CreatureEntity &creature, msa_type *msa_ptr)
 
 bool decide_lite_projection(CreatureEntity &creature, msa_type *msa_ptr)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (projectable(floor, msa_ptr->m_ptr->get_position(), msa_ptr->get_position())) {
         feature_projection(floor, msa_ptr);
         return true;

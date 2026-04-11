@@ -21,7 +21,7 @@
  */
 bool build_type1(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
     const auto is_curtain = dungeon.flags.has(DungeonFeatureType::CURTAIN) && one_in_(dungeon.flags.has(DungeonFeatureType::NO_CAVE) ? 48 : 512);
 
@@ -173,7 +173,7 @@ bool build_type1(CreatureEntity &creature, DungeonData *dd_ptr)
  */
 bool build_type2(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto center = find_space(creature, dd_ptr, 25, 25);
     if (!center) {
         return false;
@@ -270,7 +270,7 @@ bool build_type2(CreatureEntity &creature, DungeonData *dd_ptr)
  */
 bool build_type3(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto center = find_space(creature, dd_ptr, 11, 25);
     if (!center) {
         return false;
@@ -478,7 +478,7 @@ bool build_type3(CreatureEntity &creature, DungeonData *dd_ptr)
 bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr)
 {
     /* Find and reserve some space in the dungeon.  Get center of room. */
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
     const auto center = find_space(creature, dd_ptr, 11, 25);
     if (!center) {
@@ -791,7 +791,7 @@ bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr)
 bool build_type11(CreatureEntity &creature, DungeonData *dd_ptr)
 {
     /* Occasional light */
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto should_brighten = (randint1(floor.dun_level) <= 15) && floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::DARKNESS);
     const auto rad = randint0(9);
     const auto center = find_space(creature, dd_ptr, rad * 2 + 1, rad * 2 + 1);
@@ -835,7 +835,7 @@ bool build_type12(CreatureEntity &creature, DungeonData *dd_ptr)
     const auto h4 = randint1(32) - 16;
 
     /* Occasional light */
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto should_brighten = (randint1(floor.dun_level) <= 5) && floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::DARKNESS);
     const auto rad = randint1(9);
 

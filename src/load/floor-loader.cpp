@@ -46,7 +46,7 @@
  */
 errr rd_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     clear_cave(creature);
     creature.x = creature.y = 0;
 
@@ -182,7 +182,7 @@ errr rd_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
 
         auto &monster = floor.m_list[m_idx];
         monster_loader->rd_monster(monster);
-        monster.current_floor_ptr = creature.current_floor_ptr;
+        monster.current_floor_ptr = creature.get_floor();
         auto &grid = floor.get_grid(monster.get_position());
         grid.m_idx = m_idx;
         monster.get_real_monrace().increment_current_numbers();

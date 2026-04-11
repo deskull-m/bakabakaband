@@ -38,5 +38,5 @@ void object_aware(CreatureEntity &creature, const ItemEntity &item)
 
     // playrecordに識別したアイテムを記録
     const auto item_name = describe_flavor(creature, item, OD_NAME_ONLY | OD_OMIT_PREFIX);
-    exe_write_diary(*creature.current_floor_ptr, DiaryKind::FOUND, 0, item_name);
+    exe_write_diary(*creature.get_floor(), DiaryKind::FOUND, 0, item_name);
 }

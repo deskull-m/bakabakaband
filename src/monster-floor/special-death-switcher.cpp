@@ -69,7 +69,7 @@ static BIT_FLAGS dead_mode(MonsterDeath *md_ptr)
  */
 static tl::optional<bool> final_summon(CreatureEntity &creature, MonsterDeath *md_ptr, const MonsterSummon &summon_data)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (floor.inside_arena || AngbandSystem::get_instance().is_phase_out() || !evaluate_percent(summon_data.probability)) {
         return tl::nullopt;
     }
@@ -301,7 +301,7 @@ static void on_dead_inariman3(CreatureEntity &killer, MonsterDeath *md_ptr)
 
 static void on_dead_raal(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
-    const auto &floor = *killer.current_floor_ptr;
+    const auto &floor = *killer.get_floor();
     if (!md_ptr->drop_chosen_item || (floor.dun_level <= 9)) {
         return;
     }

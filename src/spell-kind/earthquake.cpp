@@ -179,7 +179,7 @@ tl::optional<Pos2D> decide_monster_dodge_position(const FloorType &floor, const 
 
 void move_monster_to(CreatureEntity &creature, CreatureEntity &monster, const Pos2D &pos_to)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto pos_from = monster.get_position();
     auto &grid_from = floor.get_grid(pos_from);
     auto &grid_to = floor.get_grid(pos_to);
@@ -192,7 +192,7 @@ void move_monster_to(CreatureEntity &creature, CreatureEntity &monster, const Po
 
 bool process_monster_damage(CreatureEntity &creature, CreatureEntity &monster, bool has_dodged)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &grid = floor.get_grid(monster.get_position());
     const auto damage = (has_dodged ? Dice::roll(4, 8) : (monster.hp + 1));
     (void)set_monster_csleep(floor, grid.m_idx, 0);
@@ -217,7 +217,7 @@ bool process_monster_damage(CreatureEntity &creature, CreatureEntity &monster, b
 
 void process_hit_to_monster(CreatureEntity &creature, CreatureEntity &monster, std::span<const Pos2D> pos_collapses)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto pos_dodge = decide_monster_dodge_position(floor, creature.get_position(), monster, pos_collapses);
     const auto m_name = monster_desc(creature, monster, 0);
     if (!ignore_unview || is_seen(creature, monster)) {
@@ -235,7 +235,7 @@ void process_hit_to_monster(CreatureEntity &creature, CreatureEntity &monster, s
 
 void process_hit_to_monsters(CreatureEntity &creature, std::span<const Pos2D> pos_collapses)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto has_monster = [&](const auto &pos) { return floor.get_grid(pos).has_monster(); };
     for (const auto &pos : pos_collapses | ranges::views::filter(has_monster)) {
         auto &grid = floor.get_grid(pos);
@@ -255,7 +255,7 @@ void process_hit_to_monsters(CreatureEntity &creature, std::span<const Pos2D> po
 
 void destruct_earthquake_area(CreatureEntity &creature, std::span<const Pos2D> pos_collapses)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     floor.forget_mon_lite();
     const auto &dungeon = floor.get_dungeon_definition();
     const auto is_changeable = [&](const auto &pos) { return floor.is_grid_changeable(pos); };
@@ -348,7 +348,7 @@ bool earthquake(CreatureEntity &creature, const Pos2D &center, int radius, MONST
 {
     const int earthquake_max = 80;
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if ((floor.is_in_quest() && QuestType::is_fixed(floor.quest_number)) || !floor.is_underground()) {
         return false;
     }

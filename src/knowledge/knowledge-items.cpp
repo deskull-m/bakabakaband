@@ -51,7 +51,7 @@ auto collect_known_fixed_artifacts(CreatureEntity &creature)
         fa_ids.insert(fa_id);
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     for (const auto &pos : floor.get_area()) {
         const auto &grid = floor.get_grid(pos);
         for (const auto this_o_idx : grid.o_idx_list) {

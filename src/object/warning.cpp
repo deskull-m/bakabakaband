@@ -339,7 +339,7 @@ bool process_warning(CreatureEntity &creature, POSITION xx, POSITION yy)
     int dam_max = 0;
     static int old_damage = 0;
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
     for (auto mx = xx - warning_aware_range; mx < xx + warning_aware_range + 1; mx++) {
         for (auto my = yy - warning_aware_range; my < yy + warning_aware_range + 1; my++) {

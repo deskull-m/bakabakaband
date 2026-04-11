@@ -37,7 +37,7 @@ void do_cmd_travel(CreatureEntity &creature)
         return;
     }
 
-    if (!Travel::can_travel_to(*creature.current_floor_ptr, *pos)) {
+    if (!Travel::can_travel_to(*creature.get_floor(), *pos)) {
         msg_print(_("そこには行くことができません！", "You cannot travel there!"));
         return;
     }

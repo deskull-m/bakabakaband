@@ -152,7 +152,7 @@ static player_hand main_attack_hand(CreatureEntity &creature);
  */
 static void delayed_visual_update(CreatureEntity &creature)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto points = floor.collect_redraw_points();
     for (const auto &pos : points) {
         auto &grid = floor.get_grid(pos);
@@ -1921,7 +1921,7 @@ static bool is_riding_two_hands(CreatureEntity &creature)
 
 static int16_t calc_riding_bow_penalty(CreatureEntity &creature)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!creature.riding) {
         return 0;
     }
@@ -2616,7 +2616,7 @@ void update_creature(CreatureEntity &creature)
         return;
     }
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (rfu.has(StatusRecalculatingFlag::AUTO_DESTRUCTION)) {
         rfu.reset_flag(StatusRecalculatingFlag::AUTO_DESTRUCTION);
         autopick_delayed_alter(creature);
@@ -2725,7 +2725,7 @@ bool player_has_no_spellbooks(CreatureEntity &creature)
         }
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     for (const auto this_o_idx : floor.grid_array[creature.y][creature.x].o_idx_list) {
         const auto *o_ptr = floor.o_list[this_o_idx].get();
         if (o_ptr->is_valid() && o_ptr->marked.has(OmType::FOUND) && check_book_realm(creature, o_ptr->bi_key)) {
@@ -2741,7 +2741,7 @@ bool player_has_no_spellbooks(CreatureEntity &creature)
  */
 void wreck_the_pattern(CreatureEntity &creature)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     const auto &terrain = floor.get_grid(p_pos).get_terrain();
     if (terrain.subtype == PATTERN_TILE_WRECKED) {
@@ -2844,7 +2844,7 @@ void check_experience(CreatureEntity &creature)
             }
             level_inc_stat = true;
 
-            exe_write_diary(*creature.current_floor_ptr, DiaryKind::LEVELUP, creature.level);
+            exe_write_diary(*creature.get_floor(), DiaryKind::LEVELUP, creature.level);
         }
 
         sound(SoundKind::LEVEL);

@@ -21,7 +21,7 @@
  */
 bool create_rune_protection_one(CreatureEntity &creature)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     auto &grid = floor.get_grid(p_pos);
     if (!grid.is_clean()) {
@@ -47,7 +47,7 @@ bool create_rune_protection_one(CreatureEntity &creature)
 bool create_rune_explosion(CreatureEntity &creature, POSITION y, POSITION x)
 {
     const Pos2D pos(y, x);
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &grid = floor.get_grid(pos);
     if (!grid.is_clean()) {
         msg_print(_("床上のアイテムが呪文を跳ね返した。", "The object resists the spell."));
@@ -68,7 +68,7 @@ bool create_rune_explosion(CreatureEntity &creature, POSITION y, POSITION x)
 void stair_creation(CreatureEntity &creature)
 {
     auto up = !ironman_downward;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto down = !inside_quest(floor.get_quest_id()) && (floor.dun_level < floor.get_dungeon_definition().maxdepth);
     if (!floor.is_underground() || (!up && !down) || (floor.is_in_quest() && QuestType::is_fixed(floor.quest_number)) || floor.inside_arena || AngbandSystem::get_instance().is_phase_out()) {
         msg_print(_("効果がありません！", "There is no effect!"));

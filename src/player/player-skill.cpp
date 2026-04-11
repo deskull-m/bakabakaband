@@ -364,7 +364,7 @@ void PlayerSkill::gain_riding_skill_exp_on_range_attack()
         return;
     }
 
-    const auto &floor = *this->creature_ptr->current_floor_ptr;
+    const auto &floor = *this->creature_ptr->get_floor();
     const auto &monster = floor.get_monster(this->creature_ptr->riding);
     const auto &monrace = monster.get_monrace();
     if (((this->creature_ptr->skill_exp[PlayerSkillKindType::RIDING] - (RIDING_EXP_BEGINNER * 2)) / 200 < monrace.level) && one_in_(2)) {

@@ -12,7 +12,7 @@ melee_spell_type::melee_spell_type(CreatureEntity &creature, MONSTER_IDX m_idx)
     : m_idx(m_idx)
     , thrown_spell(MonsterAbilityType::MAX)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     this->m_ptr = &floor.get_monster(m_idx);
     this->t_ptr = nullptr;
     this->r_ptr = &this->m_ptr->get_monrace();

@@ -52,7 +52,7 @@
 bool affect_feature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, POSITION y, POSITION x, int dam, AttributeType typ)
 {
     const Pos2D pos(y, x);
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &grid = floor.get_grid(pos);
     const auto &terrain = grid.get_terrain();
 

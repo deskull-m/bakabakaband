@@ -177,7 +177,7 @@ void update_monster_race_flags(CreatureEntity &creature, turn_flags *turn_flags_
 
 static um_type *initialize_um_type(CreatureEntity &creature, um_type *um_ptr, MONSTER_IDX m_idx, bool full)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     um_ptr->m_ptr = &floor.get_monster(m_idx);
     um_ptr->do_disturb = disturb_move;
     um_ptr->fy = um_ptr->m_ptr->y;
@@ -530,7 +530,7 @@ static void update_invisible_monster(CreatureEntity &creature, um_type *um_ptr, 
         monster.get_monster_profile().mflag.set(MonsterTemporaryFlagType::SANITY_BLAST);
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     const auto m_pos = monster.get_position();
     const auto projectable_from_monster = projectable(floor, m_pos, p_pos);
@@ -622,7 +622,7 @@ void update_monster(CreatureEntity &creature, MONSTER_IDX m_idx, bool full)
  */
 void update_monsters(CreatureEntity &creature, bool full)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
         const auto &monster = floor.get_monster(i);
         if (!monster.is_valid()) {

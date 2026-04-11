@@ -79,7 +79,7 @@ bool binding_field(CreatureEntity &creature, int dam)
     monster_target_x = creature.x;
 
     const auto max_range = AngbandSystem::get_instance().get_max_range();
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     for (const auto &pos : floor.get_area()) {
         const auto &grid = floor.get_grid(pos);
@@ -381,7 +381,7 @@ bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
         }
         break;
     case MindMirrorMasterType::MAKE_MIRROR:
-        if (number_of_mirrors(*creature.current_floor_ptr) < 4 + plev / 10) {
+        if (number_of_mirrors(*creature.get_floor()) < 4 + plev / 10) {
             const auto error = SpellsMirrorMaster(creature).place_mirror();
             if (error) {
                 msg_print(*error);

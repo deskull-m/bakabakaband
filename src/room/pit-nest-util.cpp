@@ -107,7 +107,7 @@ tl::optional<PitKind> pick_pit_type(const FloorType &floor, const std::map<PitKi
  */
 tl::optional<MonraceId> select_pit_nest_monrace_id(CreatureEntity &creature, uint8_t &sub_align, int boost)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monraces = MonraceList::get_instance();
     for (auto attempts = 100; attempts > 0; attempts--) {
         const auto monrace_id = get_mon_num(creature, 0, floor.dun_level + boost, PM_NONE);

@@ -118,7 +118,7 @@ static void move_item_to_monster(CreatureEntity &creature, MonsterAttackPlayer *
 
     item.marked.clear().set(OmType::TOUCHED);
     item.held_m_idx = monap_ptr->m_idx;
-    monap_ptr->m_ptr->get_monster_profile().hold_o_idx_list.add(*creature.current_floor_ptr, o_idx);
+    monap_ptr->m_ptr->get_monster_profile().hold_o_idx_list.add(*creature.get_floor(), o_idx);
 }
 
 /*!

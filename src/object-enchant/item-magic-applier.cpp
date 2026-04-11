@@ -79,7 +79,7 @@ void ItemMagicApplier::execute()
 std::tuple<int, int> ItemMagicApplier::calculate_chances()
 {
     auto chance_good = this->lev + 10;
-    const auto &floor = *this->creature.current_floor_ptr;
+    const auto &floor = *this->creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
     if (chance_good > dungeon.obj_good) {
         chance_good = dungeon.obj_good;
@@ -166,7 +166,7 @@ int ItemMagicApplier::calculate_rolls(const int power)
  */
 void ItemMagicApplier::try_make_artifact(const int rolls)
 {
-    const auto &floor = *this->creature.current_floor_ptr;
+    const auto &floor = *this->creature.get_floor();
     if (!floor.is_underground()) {
         return;
     }

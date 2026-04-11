@@ -586,7 +586,7 @@ bool fishing(CreatureEntity &creature)
 
     const auto pos = creature.get_neighbor(dir);
     creature.fishing_dir = dir.dir();
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.has_terrain_characteristics(pos, TerrainCharacteristics::WATER)) {
         msg_print(_("そこは水辺ではない。", "You can't fish here."));
         return false;

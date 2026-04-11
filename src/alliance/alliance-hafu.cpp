@@ -65,7 +65,7 @@ void AllianceHafu::panishment(CreatureEntity &creature)
     /*
 if (one_in_(18)) {
     Pos2D m_pos(player_ptr.get_position());
-    m_pos = scatter(*player_ptr.current_floor_ptr, m_pos, 12, PROJECT_NONE);
+    m_pos = scatter(*player_ptr.get_floor(), m_pos, 12, PROJECT_NONE);
 
     // 覇府の威信レベルに応じて異なる討伐隊を派遣
     MonraceId avenger_id;

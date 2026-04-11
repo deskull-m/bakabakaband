@@ -26,7 +26,7 @@ static void get_questinfo(CreatureEntity &creature, QuestId quest_id, bool do_in
 {
     quest_text_lines.clear();
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto old_quest = floor.quest_number;
     floor.quest_number = quest_id;
 
@@ -66,7 +66,7 @@ static void print_questinfo(CreatureEntity &creature, QuestId quest_id, bool do_
 void castle_quest(CreatureEntity &creature)
 {
     clear_bldg(4, 18);
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto quest_id = i2enum<QuestId>(floor.get_grid(creature.get_position()).special);
     if (!inside_quest(quest_id)) {
         put_str(_("今のところクエストはありません。", "I don't have a quest for you at the moment."), 8, 0);

@@ -103,7 +103,7 @@ void do_cmd_open(CreatureEntity &creature)
     }
 
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (easy_open) {
         const auto &[num_doors, dir_door] = floor.count_doors_traps(creature.get_position(), GridCountKind::CLOSED_DOOR, false);
         const auto &[num_chests, dir_chest] = count_chests(creature, false);
@@ -155,7 +155,7 @@ void do_cmd_close(CreatureEntity &creature)
         return;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
     if (easy_open) {
         const auto &[num_doors, dir] = floor.count_doors_traps(creature.get_position(), GridCountKind::OPEN, false);
@@ -200,7 +200,7 @@ void do_cmd_disarm(CreatureEntity &creature)
         return;
     }
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
     if (easy_disarm) {
         const auto &[num_traps, dir_trap] = floor.count_doors_traps(creature.get_position(), GridCountKind::TRAP, true);

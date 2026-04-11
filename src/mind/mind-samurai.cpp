@@ -512,7 +512,7 @@ void mineuchi(CreatureEntity &creature, player_attack_type *pa_ptr)
         msg_format(_("%s はもうろうとした。", "%s is dazed."), pa_ptr->m_name);
     }
 
-    (void)set_monster_stunned(*creature.current_floor_ptr, pa_ptr->g_ptr->m_idx, pa_ptr->m_ptr->get_remaining_stun() + tmp);
+    (void)set_monster_stunned(*creature.get_floor(), pa_ptr->g_ptr->m_idx, pa_ptr->m_ptr->get_remaining_stun() + tmp);
 }
 
 /*!

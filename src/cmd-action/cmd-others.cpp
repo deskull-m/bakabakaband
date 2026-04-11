@@ -195,7 +195,7 @@ void do_cmd_suicide(CreatureEntity &creature)
         world.add_retired_class(creature.pclass);
     } else {
         play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_GAMEOVER);
-        const auto &floor = *creature.current_floor_ptr;
+        const auto &floor = *creature.get_floor();
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, _("ダンジョンの探索に飽きて自殺した。", "got tired to commit suicide."));
         exe_write_diary(floor, DiaryKind::GAMESTART, 1, _("-------- ゲームオーバー --------", "--------   Game  Over   --------"));
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, "\n\n\n\n");
@@ -209,7 +209,7 @@ void do_cmd_suicide(CreatureEntity &creature)
  */
 void do_cmd_inscribe_terrain(CreatureEntity &creature)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &grid = floor.get_grid(creature.get_position());
 
     // 現在の説明を表示

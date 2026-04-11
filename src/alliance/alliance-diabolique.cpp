@@ -81,7 +81,7 @@ void AllianceDiabolique::panishment(CreatureEntity &creature)
 
         /*
         auto m_pos = player_ptr.get_position();
-        m_pos = scatter(*player_ptr.current_floor_ptr, m_pos, 10, PROJECT_NONE);
+        m_pos = scatter(*player_ptr.get_floor(), m_pos, 10, PROJECT_NONE);
         MonraceId avenger_id;
         if (impression < -400) {
             // 極度に嫌われている場合：強力なデーモン

@@ -100,7 +100,7 @@ void r_visit(CreatureEntity &creature, POSITION y1, POSITION x1, POSITION y2, PO
 void build_maze_vault(CreatureEntity &creature, const Pos2D &center, const Pos2DVec &vec, bool is_vault)
 {
     msg_print_wizard(creature, CHEAT_DUNGEON, _("迷路ランダムVaultを生成しました。", "Maze Vault."));
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     bool light = ((floor.dun_level <= randint1(25)) && is_vault && floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::DARKNESS));
     const auto dy = vec.y / 2 - 1;
     const auto dx = vec.x / 2 - 1;

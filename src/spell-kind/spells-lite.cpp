@@ -42,7 +42,7 @@
 /*!< @todo 並び順の都合で連番を付ける。まとめても良いならまとめてしまう予定 */
 static void cave_temp_room_lite(CreatureEntity &creature, const std::vector<Pos2D> &positions)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (const auto &pos : positions) {
         auto &grid = floor.get_grid(pos);
         grid.info &= ~(CAVE_TEMP);
@@ -60,7 +60,7 @@ static void cave_temp_room_lite(CreatureEntity &creature, const std::vector<Pos2
             }
 
             if (monster.is_asleep() && evaluate_percent(chance)) {
-                (void)set_monster_csleep(*creature.current_floor_ptr, grid.m_idx, 0);
+                (void)set_monster_csleep(*creature.get_floor(), grid.m_idx, 0);
                 if (monster.get_monster_profile().ml) {
                     const auto m_name = monster_desc(creature, monster, 0);
                     msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
@@ -82,7 +82,7 @@ static void cave_temp_room_lite(CreatureEntity &creature, const std::vector<Pos2
 /*!< @todo 並び順の都合で連番を付ける。まとめても良いならまとめてしまう予定 */
 static void cave_temp_room_unlite(CreatureEntity &creature, const std::vector<Pos2D> &positions)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &world = AngbandWorld::get_instance();
     for (const auto &pos : positions) {
         auto &grid = floor.get_grid(pos);
@@ -224,7 +224,7 @@ static bool cave_temp_room_aux(const FloorType &floor, const Pos2D &pos, const P
 void lite_room(CreatureEntity &creature, const Pos2D &pos_start)
 {
     std::vector<Pos2D> positions;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     if (cave_temp_room_aux(floor, pos_start, p_pos, TerrainCharacteristics::LOS)) {
         floor.get_grid(pos_start).info |= CAVE_TEMP;
@@ -261,7 +261,7 @@ void lite_room(CreatureEntity &creature, const Pos2D &pos_start)
 void unlite_room(CreatureEntity &creature, const Pos2D &pos_start)
 {
     std::vector<Pos2D> positions;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     if (cave_temp_room_aux(floor, pos_start, p_pos, TerrainCharacteristics::PROJECTION)) {
         floor.get_grid(pos_start).info |= CAVE_TEMP;
@@ -304,7 +304,7 @@ bool starlight(CreatureEntity &creature, bool magic)
         Pos2D pos(0, 0);
         auto attempts = 1000;
         while (attempts--) {
-            pos = scatter(*creature.current_floor_ptr, p_pos, 4, PROJECT_LOS);
+            pos = scatter(*creature.get_floor(), p_pos, 4, PROJECT_LOS);
             if (!creature.get_floor()->has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION)) {
                 continue;
             }

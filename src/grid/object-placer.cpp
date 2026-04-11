@@ -14,7 +14,7 @@
  */
 void place_gold(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &grid = floor.get_grid(pos);
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         return;
@@ -50,7 +50,7 @@ void place_gold(CreatureEntity &creature, const Pos2D &pos)
  */
 void place_object(CreatureEntity &creature, const Pos2D &pos, uint32_t mode, BaseitemRestrict restrict)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &grid = floor.get_grid(pos);
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE) || !floor.can_drop_item_at(pos) || !grid.o_idx_list.empty()) {
         return;

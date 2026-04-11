@@ -275,7 +275,7 @@ void fix_monster_list(CreatureEntity &creature)
         [&creature, &once] {
             const auto &[wid, hgt] = term_get_size();
             std::call_once(once, target_sensing_monsters_prepare, std::ref(creature), std::ref(monster_list));
-            print_monster_list(*creature.current_floor_ptr, monster_list, 0, 0, hgt);
+            print_monster_list(*creature.get_floor(), monster_list, 0, 0, hgt);
         });
 
     if (use_music && has_monster_music) {
@@ -460,7 +460,7 @@ void fix_overhead(CreatureEntity &creature)
  */
 static void display_dungeon(CreatureEntity &creature)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     for (auto x = p_pos.x - game_term->wid / 2 + 1; x <= p_pos.x + game_term->wid / 2; x++) {
         for (auto y = p_pos.y - game_term->hgt / 2 + 1; y <= p_pos.y + game_term->hgt / 2; y++) {
@@ -555,7 +555,7 @@ static void display_floor_item_list(CreatureEntity &creature, const Pos2D &pos)
     term_clear();
     term_gotoxy(0, 0);
 
-    const auto floor_ptr = creature.current_floor_ptr;
+    const auto floor_ptr = creature.get_floor();
     const auto *g_ptr = &floor_ptr->get_grid(pos);
     std::string line;
 
@@ -637,7 +637,7 @@ static void display_found_item_list(CreatureEntity &creature)
         return;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
 
     // 所持品一覧と同じ順にソートする
     // あらかじめfloor.o_list から↓項目を取り除く

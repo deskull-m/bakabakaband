@@ -32,7 +32,7 @@
  */
 bool target_able(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     if (!monster.is_valid()) {
         return false;
@@ -63,7 +63,7 @@ bool target_able(CreatureEntity &creature, MONSTER_IDX m_idx)
  */
 static bool target_set_accept(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         return false;
     }
@@ -110,7 +110,7 @@ static bool target_set_accept(CreatureEntity &creature, const Pos2D &pos)
 std::vector<Pos2D> target_set_prepare(CreatureEntity &creature, target_type mode)
 {
     POSITION min_hgt, max_hgt, min_wid, max_wid;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto is_killable = any_bits(mode, TARGET_KILL);
     if (is_killable) {
         const auto max_range = AngbandSystem::get_instance().get_max_range();
@@ -191,7 +191,7 @@ void target_sensing_monsters_prepare(CreatureEntity &creature, std::vector<MONST
         monster_list.push_back(i);
     }
 
-    auto comp_importance = [&floor = *creature.current_floor_ptr](MONSTER_IDX idx1, MONSTER_IDX idx2) {
+    auto comp_importance = [&floor = *creature.get_floor()](MONSTER_IDX idx1, MONSTER_IDX idx2) {
         const auto &monster1 = floor.get_monster(idx1);
         const auto &monster2 = floor.get_monster(idx2);
         const auto &monrace1 = monster1.get_appearance_monrace();
@@ -241,7 +241,7 @@ void target_sensing_monsters_prepare(CreatureEntity &creature, std::vector<MONST
 std::vector<MONSTER_IDX> target_pets_prepare(CreatureEntity &creature)
 {
     std::vector<MONSTER_IDX> pets;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
 
     for (short i = 1; i < floor.m_max; ++i) {
         const auto &monster = floor.get_monster(i);

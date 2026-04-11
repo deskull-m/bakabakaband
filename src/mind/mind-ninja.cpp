@@ -130,7 +130,7 @@ bool rush_attack(CreatureEntity &creature, bool *mdeath)
     const auto pos_target = dir.get_target_position(p_pos, project_length);
 
     auto tm_idx = 0;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.contains(pos_target, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         tm_idx = floor.get_grid(pos_target).m_idx;
     }
@@ -492,7 +492,7 @@ bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
             auto attempts = 1000;
             Pos2D pos(0, 0);
             while (attempts--) {
-                pos = scatter(*creature.current_floor_ptr, creature.get_position(), 4, PROJECT_NONE);
+                pos = scatter(*creature.get_floor(), creature.get_position(), 4, PROJECT_NONE);
                 if (!creature.is_located_at(pos)) {
                     break;
                 }

@@ -540,7 +540,7 @@ void exe_player_attack_to_monster(CreatureEntity &creature, POSITION y, POSITION
     bool do_quake = false;
     bool drain_msg = true;
 
-    player_attack_type tmp_attack(*creature.current_floor_ptr, y, x, hand, mode, fear, mdeath);
+    player_attack_type tmp_attack(*creature.get_floor(), y, x, hand, mode, fear, mdeath);
     auto pa_ptr = &tmp_attack;
 
     const auto is_human = pa_ptr->r_ptr->symbol_char_is_any_of("p");
@@ -550,7 +550,7 @@ void exe_player_attack_to_monster(CreatureEntity &creature, POSITION y, POSITION
     get_attack_exp(creature, pa_ptr);
 
     /* Disturb the monster */
-    (void)set_monster_csleep(*creature.current_floor_ptr, pa_ptr->m_idx, 0);
+    (void)set_monster_csleep(*creature.get_floor(), pa_ptr->m_idx, 0);
     angband_strcpy(pa_ptr->m_name, monster_desc(creature, *pa_ptr->m_ptr, 0), sizeof(pa_ptr->m_name));
 
     int chance = calc_attack_quality(creature, pa_ptr);
@@ -607,7 +607,7 @@ void exe_player_attack_to_monster(CreatureEntity &creature, POSITION y, POSITION
  */
 void massacre(CreatureEntity &creature)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     for (const auto &d : Direction::directions_8()) {
         const auto pos = creature.get_neighbor(d);
         const auto &grid = floor.get_grid(pos);

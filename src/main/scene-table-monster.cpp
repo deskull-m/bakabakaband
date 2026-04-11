@@ -70,7 +70,7 @@ inline static bool can_mute_scene_monster()
 static bool is_high_rate(CreatureEntity &creature, MONSTER_IDX m_idx1, MONSTER_IDX m_idx2)
 {
     // FIXME 視界内モンスターリストの比較関数と同じ処理
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster1 = floor.get_monster(m_idx1);
     const auto &monster2 = floor.get_monster(m_idx2);
     auto ap_r_ptr1 = &monster1.get_appearance_monrace();

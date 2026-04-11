@@ -63,7 +63,7 @@ void set_terrain_id_to_grid(CreatureEntity &creature, const Pos2D &pos, TerrainT
  */
 void set_terrain_id_to_grid(CreatureEntity &creature, const Pos2D &pos, short terrain_id)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &grid = floor.get_grid(pos);
     const auto &terrain = TerrainList::get_instance().get_terrain(terrain_id);
     const auto &dungeon = floor.get_dungeon_definition();
@@ -154,7 +154,7 @@ void set_terrain_id_to_grid(CreatureEntity &creature, const Pos2D &pos, short te
  */
 tl::optional<Pos2D> new_player_spot(CreatureEntity &creature)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     auto max_attempts = 10000;
     Pos2D pos(0, 0);
     while (max_attempts--) {
@@ -217,7 +217,7 @@ tl::optional<Pos2D> new_player_spot(CreatureEntity &creature)
  */
 static void update_local_illumination_aux(CreatureEntity &creature, const Pos2D &pos)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(pos);
     if (!grid.has_los()) {
         return;
@@ -359,7 +359,7 @@ void print_bolt_pict(CreatureEntity &creature, const Pos2D &pos_src, const Pos2D
  */
 void note_spot(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &grid = floor.get_grid(pos);
 
     /* Blind players see nothing */
@@ -682,7 +682,7 @@ static POSITION flow_y = 0;
  */
 void update_flow(CreatureEntity &creature)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
 
     /* The last way-point is on the map */
     const Pos2D flow(flow_y, flow_x);
@@ -780,7 +780,7 @@ void update_flow(CreatureEntity &creature)
 void cave_alter_feat(CreatureEntity &creature, POSITION y, POSITION x, TerrainCharacteristics action)
 {
     const Pos2D pos(y, x);
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto old_terrain_id = floor.get_grid(pos).feat;
     const auto &dungeon = floor.get_dungeon_definition();
     const auto new_terrain_id = dungeon.convert_terrain_id(old_terrain_id, action);
@@ -837,7 +837,7 @@ void cave_alter_feat(CreatureEntity &creature, POSITION y, POSITION x, TerrainCh
 bool cave_monster_teleportable_bold(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION y, POSITION x, teleport_flags mode)
 {
     const Pos2D pos(y, x);
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(pos);
     const auto &terrain = grid.get_terrain();
 
@@ -892,7 +892,7 @@ bool cave_player_teleportable_bold(CreatureEntity &creature, POSITION y, POSITIO
     if (!(mode & TELEPORT_NONMAGICAL) && grid.is_icky()) {
         return false;
     }
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (grid.has_monster() && !floor.get_monster(grid.m_idx).is_riding()) {
         return false;
     }

@@ -177,7 +177,7 @@ static void display_player_stats(CreatureEntity &creature)
  */
 static tl::optional<std::string> search_death_cause(CreatureEntity &creature)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!creature.is_dead()) {
         return tl::nullopt;
     }
@@ -229,7 +229,7 @@ static tl::optional<std::string> search_death_cause(CreatureEntity &creature)
  */
 static tl::optional<std::string> decide_death_in_quest(CreatureEntity &creature)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.is_in_quest() || !QuestType::is_fixed(floor.quest_number)) {
         return tl::nullopt;
     }
@@ -254,7 +254,7 @@ static std::string decide_current_floor(CreatureEntity &creature)
         return death_cause.value_or("");
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.is_underground()) {
         return format(_("…あなたは現在、 %s にいる。", "...Now, you are in %s."), map_name(creature).data());
     }

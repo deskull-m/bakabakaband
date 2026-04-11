@@ -44,7 +44,7 @@ std::string PlayerAlignment::get_alignment_description(bool with_value)
 void PlayerAlignment::update_alignment()
 {
     this->reset_alignment();
-    const auto &floor = *this->creature_ptr->current_floor_ptr;
+    const auto &floor = *this->creature_ptr->get_floor();
     for (MONSTER_IDX m_idx = floor.m_max - 1; m_idx >= 1; m_idx--) {
         const auto &monster = floor.get_monster(m_idx);
         if (!monster.is_valid()) {
