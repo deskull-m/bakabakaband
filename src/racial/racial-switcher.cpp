@@ -78,7 +78,6 @@
 #include "status/buff-setter.h"
 #include "status/experience.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
 #include "timed-effect/timed-effects.h"
@@ -88,7 +87,7 @@
 
 bool switch_class_racial_execution(CreatureEntity &creature, const int32_t command)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     switch (player.pclass) {
     case PlayerClassType::WARRIOR:
         return sword_dancing(creature);
@@ -313,7 +312,7 @@ bool switch_mimic_racial_execution(CreatureEntity &creature)
 
 bool switch_race_racial_execution(CreatureEntity &creature, const int32_t command)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     // 性格ベースのレイシャル能力をチェック
     if (player.ppersonality == PERSONALITY_MESUGAKI) {
         const auto dir = get_aim_dir(player);

@@ -9,13 +9,12 @@
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "util/enum-converter.h"
 #include "util/probability-table.h"
 
 void nest_pit_type::prepare_filter(CreatureEntity &creature) const
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &filter = PitNestFilter::get_instance();
     switch (this->pn_hook) {
     case PitNestHook::NONE:
@@ -109,7 +108,7 @@ tl::optional<PitKind> pick_pit_type(const FloorType &floor, const std::map<PitKi
  */
 tl::optional<MonraceId> select_pit_nest_monrace_id(CreatureEntity &creature, uint8_t &sub_align, int boost)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &floor = *creature.current_floor_ptr;
     const auto &monraces = MonraceList::get_instance();
     for (auto attempts = 100; attempts > 0; attempts--) {

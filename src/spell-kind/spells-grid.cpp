@@ -10,7 +10,6 @@
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "view/display-messages.h"
@@ -68,7 +67,7 @@ bool create_rune_explosion(CreatureEntity &creature, POSITION y, POSITION x)
  */
 void stair_creation(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto up = !ironman_downward;
     auto &floor = *creature.current_floor_ptr;
     auto down = !inside_quest(floor.get_quest_id()) && (floor.dun_level < floor.get_dungeon_definition().maxdepth);

@@ -3,9 +3,11 @@
 #include "floor/geometry.h"
 #include "game-option/birth-options.h"
 #include "inventory/inventory-slot-types.h"
+#include "market/arena-entry.h"
 #include "monster-race/race-kind-flags.h"
 #include "monster/monster-flag-types.h"
 #include "monster/monster-pain-describer.h"
+#include "monster/monster-util.h"
 #include "player-ability/player-ability-types.h"
 #include "player-info/bard-data-type.h"
 #include "player-info/class-info.h"
@@ -30,6 +32,7 @@
 #include "tracking/lore-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
+#include "world/world.h"
 #include <range/v3/algorithm.hpp>
 
 bool CreatureEntity::try_set_position(const Pos2D &pos)
@@ -41,6 +44,55 @@ bool CreatureEntity::try_set_position(const Pos2D &pos)
     this->y = pos.y;
     this->x = pos.x;
     return true;
+}
+
+bool CreatureEntity::is_fully_healthy() const
+{
+    auto effects = this->effects();
+    auto is_healthy = this->hp == this->maxhp;
+    is_healthy &= this->csp >= this->msp;
+    is_healthy &= !effects->blindness().is_blind();
+    is_healthy &= !effects->confusion().is_confused();
+    is_healthy &= !effects->poison().is_poisoned();
+    is_healthy &= !effects->fear().is_fearful();
+    is_healthy &= !effects->stun().is_stunned();
+    is_healthy &= !effects->cut().is_cut();
+    is_healthy &= !effects->deceleration().is_slow();
+    is_healthy &= !effects->paralysis().is_paralyzed();
+    is_healthy &= !effects->hallucination().is_hallucinated();
+    is_healthy &= !this->word_recall;
+    is_healthy &= !this->alter_reality;
+    return is_healthy;
+}
+
+bool CreatureEntity::is_true_winner() const
+{
+    const auto &world = AngbandWorld::get_instance();
+    const auto &entries = ArenaEntryList::get_instance();
+    return (world.total_winner > 0) && (entries.is_player_true_victor());
+}
+
+bool CreatureEntity::is_located_at_running_destination() const
+{
+    return (this->y == this->run_py) && (this->x == this->run_px);
+}
+
+bool CreatureEntity::try_resist_eldritch_horror() const
+{
+    return evaluate_percent(this->skill_sav) || one_in_(2);
+}
+
+void CreatureEntity::ride_monster(MONSTER_IDX m_idx)
+{
+    if (is_monster(this->riding)) {
+        this->current_floor_ptr->get_monster(this->riding).get_monster_profile().mflag2.reset(MonsterConstantFlagType::RIDING);
+    }
+
+    this->riding = m_idx;
+
+    if (is_monster(m_idx)) {
+        this->current_floor_ptr->get_monster(m_idx).get_monster_profile().mflag2.set(MonsterConstantFlagType::RIDING);
+    }
 }
 
 bool CreatureEntity::check_sub_alignments(const byte sub_align1, const byte sub_align2)

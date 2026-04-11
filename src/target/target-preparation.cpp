@@ -5,7 +5,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-sorter.h"
@@ -110,7 +109,7 @@ static bool target_set_accept(CreatureEntity &creature, const Pos2D &pos)
  */
 std::vector<Pos2D> target_set_prepare(CreatureEntity &creature, target_type mode)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     POSITION min_hgt, max_hgt, min_wid, max_wid;
     const auto &floor = *creature.current_floor_ptr;
     const auto is_killable = any_bits(mode, TARGET_KILL);

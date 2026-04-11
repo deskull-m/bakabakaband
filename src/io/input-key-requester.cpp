@@ -19,7 +19,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h" //!< @todo 相互依存している、後で何とかする.
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
@@ -307,7 +306,7 @@ void InputKeyRequestor::sweep_confirmation_equipments()
 {
     auto caret_command = this->get_caret_command();
     for (auto i = enum2i(INVEN_MAIN_HAND); i < INVEN_TOTAL; i++) {
-        auto &item = *static_cast<PlayerType &>(*this->creature_ptr).inventory[i];
+        auto &item = *this->creature_ptr->inventory[i];
         if (!item.is_valid() || !item.is_inscribed()) {
             continue;
         }

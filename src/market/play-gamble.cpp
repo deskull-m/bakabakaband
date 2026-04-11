@@ -7,7 +7,6 @@
 #include "market/building-util.h"
 #include "market/poker.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "view/display-fruit.h"
@@ -20,7 +19,7 @@
  */
 void gamble_comm(CreatureEntity &creature, int cmd)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     screen_save();
     if (cmd == BACT_GAMBLE_RULES) {
         FileDisplayer(player.name).display(true, _("jgambling.txt", "gambling.txt"), 0, 0);

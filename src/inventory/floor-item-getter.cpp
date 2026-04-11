@@ -27,7 +27,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
@@ -140,7 +139,7 @@ static std::pair<tl::optional<short>, char> check_floor_item_tag_inventory(Creat
  */
 static std::pair<tl::optional<short>, char> check_floor_item_tag(CreatureEntity &creature, FloorItemSelection &fis, char prev_tag, const ItemTester &item_tester)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto code = repeat_pull();
     if (!code) {
         return { tl::nullopt, prev_tag };
@@ -168,7 +167,7 @@ static std::pair<tl::optional<short>, char> check_floor_item_tag(CreatureEntity 
  */
 static void test_inventory_floor(CreatureEntity &creature, FloorItemSelection *fis_ptr, const ItemTester &item_tester)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (!fis_ptr->inven) {
         fis_ptr->i2 = -1;
         return;
@@ -192,7 +191,7 @@ static void test_inventory_floor(CreatureEntity &creature, FloorItemSelection *f
  */
 static void test_equipment_floor(CreatureEntity &creature, FloorItemSelection *fis_ptr, const ItemTester &item_tester)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (!fis_ptr->equip) {
         fis_ptr->e2 = -1;
         return;
@@ -221,7 +220,7 @@ static void test_equipment_floor(CreatureEntity &creature, FloorItemSelection *f
  */
 tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pmt, std::string_view str, BIT_FLAGS mode, const ItemTester &item_tester)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     FloorItemSelection fis(mode);
     static char prev_tag = '\0';
     const auto &[i_idx, tag] = check_floor_item_tag(creature, fis, prev_tag, item_tester);

@@ -12,7 +12,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 /*!
@@ -28,7 +27,7 @@
  */
 void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, int perc)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     int j, amt;
     if (check_multishadow(creature) || creature.current_floor_ptr->inside_arena) {
         return;

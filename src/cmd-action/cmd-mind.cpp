@@ -46,7 +46,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "timed-effect/timed-effects.h"
@@ -125,7 +124,7 @@ static void decide_mind_ki_chance(CreatureEntity &creature, cm_type *cm_ptr)
         return;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (heavy_armor(creature)) {
         cm_ptr->chance += 20;
     }
@@ -195,7 +194,7 @@ static void decide_mind_chance(CreatureEntity &creature, cm_type *cm_ptr)
         return;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (heavy_armor(creature)) {
         cm_ptr->chance += 5;
     }
@@ -295,7 +294,7 @@ static void check_mind_class(CreatureEntity &creature, cm_type *cm_ptr)
 
 static bool switch_mind_class(CreatureEntity &creature, cm_type *cm_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     switch (cm_ptr->use_mind) {
     case MindKindType::MINDCRAFTER:
         cm_ptr->cast = cast_mindcrafter_spell(creature, i2enum<MindMindcrafterType>(cm_ptr->n));
@@ -401,7 +400,7 @@ static void process_hard_concentration(CreatureEntity &creature, cm_type *cm_ptr
 void do_cmd_mind(CreatureEntity &creature)
 {
     cm_type tmp_cm;
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     cm_type *cm_ptr = initialize_cm_type(creature, &tmp_cm);
     if (cmd_limit_confused(player) || !MindPowerGetter(player).get_mind_power(&cm_ptr->n, false)) {
         return;
@@ -461,7 +460,7 @@ static MindKindType decide_use_mind_browse(CreatureEntity &creature)
 void do_cmd_mind_browse(CreatureEntity &creature)
 {
     SPELL_IDX n = 0;
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     MindKindType use_mind = decide_use_mind_browse(creature);
     screen_save();
     while (true) {

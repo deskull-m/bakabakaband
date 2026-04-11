@@ -7,7 +7,6 @@
 #include "player-status/player-hand-types.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 
 /*!
@@ -38,7 +37,7 @@ BIT_FLAGS16 empty_hands(CreatureEntity &creature, bool riding_control)
         status |= EMPTY_HAND_SUB;
     }
 
-    if (riding_control && (status != EMPTY_HAND_NONE) && creature.riding && none_bits(static_cast<PlayerType &>(creature).pet_extra_flags, PF_TWO_HANDS)) {
+    if (riding_control && (status != EMPTY_HAND_NONE) && creature.riding && none_bits(creature.pet_extra_flags, PF_TWO_HANDS)) {
         if (any_bits(status, EMPTY_HAND_SUB)) {
             reset_bits(status, EMPTY_HAND_SUB);
         } else if (any_bits(status, EMPTY_HAND_MAIN)) {
@@ -51,7 +50,7 @@ BIT_FLAGS16 empty_hands(CreatureEntity &creature, bool riding_control)
 
 bool can_two_hands_wielding(CreatureEntity &creature)
 {
-    return !creature.riding || any_bits(static_cast<PlayerType &>(creature).pet_extra_flags, PF_TWO_HANDS);
+    return !creature.riding || any_bits(creature.pet_extra_flags, PF_TWO_HANDS);
 }
 
 /*!

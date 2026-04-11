@@ -4,7 +4,6 @@
 #include "player-info/race-info.h"
 #include "player/race-info-table.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
@@ -126,7 +125,7 @@ static void interpret_race_select_key_move(char c, int *cs)
 
 static bool select_race(CreatureEntity &creature, char *sym, int *k)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto cs = enum2i(creature.prace);
     int os = MAX_RACES;
     std::string cur = birth_race_label(os, sym);

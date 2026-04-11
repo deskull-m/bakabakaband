@@ -23,7 +23,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "term/screen-processor.h"
@@ -434,7 +433,7 @@ std::string probed_monster_info(CreatureEntity &creature, CreatureEntity &target
  */
 bool probing(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     bool cu = game_term->scr->cu;
     bool cv = game_term->scr->cv;
     game_term->scr->cu = 0;

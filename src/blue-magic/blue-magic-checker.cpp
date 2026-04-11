@@ -21,7 +21,6 @@
 #include "status/experience.h"
 #include "system/angband.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
@@ -32,7 +31,7 @@
  */
 void learn_spell(CreatureEntity &creature, MonsterAbilityType monspell)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (player.action != ACTION_LEARN) {
         return;
     }

@@ -15,7 +15,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-setter.h"
@@ -104,7 +103,7 @@ void fetch_item(CreatureEntity &creature, const Direction &dir, WEIGHT wgt, bool
     floor.get_grid(p_pos).o_idx_list.add(floor, item_idx); /* 'move' it */
     item.set_position(p_pos);
 
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto item_name = describe_flavor(player, item, OD_NAME_ONLY);
     msg_format(_("%s^があなたの足元に飛んできた。", "%s^ flies through the air to your feet."), item_name.data());
     note_spot(player, p_pos);
@@ -113,7 +112,7 @@ void fetch_item(CreatureEntity &creature, const Direction &dir, WEIGHT wgt, bool
 
 bool fetch_monster(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto pos = target_set(player, TARGET_KILL).get_position();
     if (!pos) {
         return false;

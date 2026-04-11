@@ -9,7 +9,6 @@
 #include "monster-race/race-ability-flags.h"
 #include "mspell/mspell-damage-calculator.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "term/z-form.h"
 
 /*!
@@ -19,7 +18,7 @@
  */
 PLAYER_LEVEL get_pseudo_monstetr_level(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     PLAYER_LEVEL monster_level = player.level + 40;
     return (monster_level * monster_level - 1550) / 130;
 }

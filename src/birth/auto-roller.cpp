@@ -12,7 +12,6 @@
 #include "player/player-sex.h"
 #include "player/player-status-table.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
@@ -120,7 +119,7 @@ static int32_t get_autoroller_prob(int *minval)
  */
 static void decide_initial_stat(CreatureEntity &creature, int *cval)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &player_class = class_info.at(player.pclass);
     auto &class_magic = class_magics_info[enum2i(player.pclass)];
     auto is_magic_user = class_magic.spell_stat == A_INT || class_magic.spell_stat == A_WIS || class_magic.spell_stat == A_CHR;
@@ -173,7 +172,7 @@ static void decide_initial_stat(CreatureEntity &creature, int *cval)
  */
 static std::string cursor_of_adjusted_stat(CreatureEntity &creature, const int *cval, int cs)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto j = player.race->r_adj[cs] + (*player.pclass_ref).c_adj[cs] + (*player.personality).a_adj[cs];
     auto m = adjust_stat(170, j); // 17.0 の新形式
     auto maxv = format("%4.1f", m / 10.0);
@@ -208,7 +207,7 @@ static void display_autoroller_chance(int *cval)
  */
 bool get_stat_limits(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     clear_from(10);
     put_str(_("能力値を抽選します。最低限得たい能力値を設定して下さい。", "Set minimum stats for picking up your charactor."), 10, 10);
@@ -363,7 +362,7 @@ void initialize_chara_limit(chara_limit_type *chara_limit_ptr)
  */
 bool get_chara_limits(CreatureEntity &creature, chara_limit_type *chara_limit_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     static const std::vector<std::string> item_names = { _("年齢", "age"), _("身長(cm)", "height"), _("体重(kg)", "weight"), _("威信", "prestige") };
     clear_from(10);

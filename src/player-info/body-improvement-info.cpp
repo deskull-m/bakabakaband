@@ -3,7 +3,6 @@
 #include "player/player-status-flags.h"
 #include "spell-realm/spells-crusade.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "timed-effect/timed-effects.h"
 
 /*!< @todo 並び順の都合で連番を付ける。まとめても良いならまとめてしまう予定 */
@@ -42,7 +41,7 @@ void set_body_improvement_info_1(CreatureEntity &creature, self_info_type *self_
 /*!< @todo 並び順の都合で連番を付ける。まとめても良いならまとめてしまう予定 */
 void set_body_improvement_info_2(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (player.new_spells) {
         self_ptr->info_list.emplace_back(_("あなたは呪文や祈りを学ぶことができる。", "You can learn some spells/prayers."));
     }

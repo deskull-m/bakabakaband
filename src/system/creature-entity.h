@@ -298,6 +298,12 @@ public:
         return this->floor_id != 0;
     }
 
+    bool is_fully_healthy() const;
+    bool is_located_at_running_destination() const;
+    bool is_true_winner() const;
+    bool try_resist_eldritch_horror() const;
+    void ride_monster(MONSTER_IDX m_idx);
+
     /*!
      * @brief モンスターがいない場合にのみ位置を設定する
      * @return 設定できた場合 true

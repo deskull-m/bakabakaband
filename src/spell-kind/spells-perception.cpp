@@ -23,7 +23,6 @@
 #include "perception/object-perception.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
@@ -39,7 +38,7 @@
  */
 void identify_pack(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     for (INVENTORY_IDX i = 0; i < INVEN_TOTAL; i++) {
         auto *o_ptr = player.inventory[i].get();
         if (!o_ptr->is_valid()) {
@@ -60,7 +59,7 @@ void identify_pack(CreatureEntity &creature)
  */
 bool identify_item(CreatureEntity &creature, ItemEntity *o_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto known_item_name = describe_flavor(player, *o_ptr, 0);
     const auto old_known = any_bits(o_ptr->ident, IDENT_KNOWN);
     if (!o_ptr->is_fully_known()) {
@@ -116,7 +115,7 @@ bool identify_item(CreatureEntity &creature, ItemEntity *o_ptr)
  */
 bool ident_spell(CreatureEntity &creature, bool only_equip)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     std::unique_ptr<ItemTester> item_tester = std::make_unique<FuncItemTester>(only_equip ? object_is_not_identified_weapon_armor : object_is_not_identified);
 
     concptr q;
@@ -164,7 +163,7 @@ bool ident_spell(CreatureEntity &creature, bool only_equip)
  */
 bool identify_fully(CreatureEntity &creature, bool only_equip)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     std::unique_ptr<ItemTester> item_tester = std::make_unique<FuncItemTester>(only_equip ? object_is_not_fully_identified_weapon_armour : object_is_not_fully_identified);
 
     concptr q;

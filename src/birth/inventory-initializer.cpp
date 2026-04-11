@@ -33,7 +33,6 @@
 #include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/enum-converter.h"
 #include <tuple>
 
@@ -42,7 +41,7 @@
  */
 void wield_all(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     ItemEntity ObjectType_body;
     for (INVENTORY_IDX i_idx = INVEN_PACK - 1; i_idx >= 0; i_idx--) {
@@ -87,7 +86,7 @@ void wield_all(CreatureEntity &creature)
  */
 static void add_outfit(CreatureEntity &creature, ItemEntity &item)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     object_aware(creature, item);
     item.mark_as_known();
     const auto slot = store_item_to_inventory(player, &item);
@@ -97,7 +96,7 @@ static void add_outfit(CreatureEntity &creature, ItemEntity &item)
 
 static void decide_initial_items(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     switch (player.prace) {
     case PlayerRaceType::VAMPIRE:
         /* Nothing! */
@@ -157,7 +156,7 @@ static void decide_initial_items(CreatureEntity &creature)
  */
 void player_outfit(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     const auto &baseitems = BaseitemList::get_instance();
     ItemEntity item;

@@ -53,7 +53,6 @@
 #include "system/floor/wilderness-grid.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "timed-effect/timed-effects.h"
@@ -160,7 +159,7 @@ void process_player(CreatureEntity &creature)
                 set_action(creature, ACTION_NONE);
             }
         } else if (creature.resting == COMMAND_ARG_REST_UNTIL_DONE) {
-            if (static_cast<PlayerType &>(creature).is_fully_healthy()) {
+            if (creature.is_fully_healthy()) {
                 set_action(creature, ACTION_NONE);
             }
         }

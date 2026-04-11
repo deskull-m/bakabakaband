@@ -17,7 +17,6 @@
 #include "system/floor/town-list.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -196,7 +195,7 @@ public:
         this->print_rumor(town_name);
 
         const uint32_t visit = (1U << (town_rumor.t_idx - 1));
-        auto &player = static_cast<PlayerType &>(this->creature);
+        auto &player = this->creature;
         if ((town_rumor.t_idx != SECRET_TOWN) && !(player.visit & visit)) {
             player.visit |= visit;
             msg_erase();

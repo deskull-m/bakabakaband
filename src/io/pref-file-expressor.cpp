@@ -4,7 +4,6 @@
 #include "player-info/race-info.h"
 #include "player/player-realm.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "system/system-variables.h"
 #include "term/z-form.h"
 #include "util/string-processor.h"
@@ -28,7 +27,7 @@
  */
 std::string process_pref_file_expr(CreatureEntity &creature, char **sp, char *fp)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     char *s = (*sp);
     while (iswspace(*s)) {
         s++;

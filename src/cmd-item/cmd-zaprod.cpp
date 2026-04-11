@@ -32,7 +32,6 @@
 #include "sv-definition/sv-rod-types.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
@@ -47,7 +46,7 @@
  */
 int rod_effect(CreatureEntity &creature, int sval, const Direction &dir, bool *use_charge, bool powerful)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     int ident = false;
     PLAYER_LEVEL lev = powerful ? player.level * 2 : player.level;
     POSITION detect_rad = powerful ? DETECT_RAD_DEFAULT * 3 / 2 : DETECT_RAD_DEFAULT;
@@ -292,7 +291,7 @@ int rod_effect(CreatureEntity &creature, int sval, const Direction &dir, bool *u
  */
 void do_cmd_zap_rod(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }

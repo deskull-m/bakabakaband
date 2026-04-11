@@ -17,7 +17,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "view/display-messages.h"
 
@@ -186,7 +185,7 @@ static bool see_nothing(CreatureEntity &creature, const Direction &dir, const Po
  */
 static bool run_test(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto prev_dir = find_prevdir;
     const auto &floor = *creature.current_floor_ptr;
     const auto p_pos = creature.get_position();
@@ -364,7 +363,7 @@ static bool run_test(CreatureEntity &creature)
  */
 void run_step(CreatureEntity &creature, const Direction &dir)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (dir) {
         ignore_avoid_run = true;
         if (see_wall(creature, dir, creature.get_position())) {

@@ -32,7 +32,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
@@ -230,7 +229,7 @@ static void attack_teleport_away(CreatureEntity &creature, player_attack_type *p
  */
 static void attack_polymorph(CreatureEntity &creature, player_attack_type *pa_ptr, POSITION y, POSITION x)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &monrace = *pa_ptr->r_ptr;
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE) || monrace.misc_flags.has(MonsterMiscType::QUESTOR) || monrace.resistance_flags.has_any_of(RFR_EFF_RESIST_CHAOS_MASK)) {
         return;
@@ -255,7 +254,7 @@ static void attack_polymorph(CreatureEntity &creature, player_attack_type *pa_pt
  */
 static void attack_golden_hammer(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     auto &monster = floor.get_monster(pa_ptr->m_idx);
     if (monster.get_monster_profile().hold_o_idx_list.empty()) {

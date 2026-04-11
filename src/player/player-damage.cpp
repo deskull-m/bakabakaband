@@ -63,7 +63,6 @@
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -91,7 +90,7 @@ using dam_func = int (*)(CreatureEntity &creature, int dam, std::string_view kb_
  */
 static bool acid_minus_ac(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     constexpr static auto candidates = {
         INVEN_MAIN_HAND,
         INVEN_SUB_HAND,
@@ -300,7 +299,7 @@ static void death_save(CreatureEntity &creature)
  */
 int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_view hit_from, MonraceId killer_monrace_id)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto old_chp = player.hp;
     const auto hp_warning_threshold = (player.maxhp * hitpoint_warn / 10);
     if (player.is_dead()) {
@@ -725,7 +724,7 @@ void touch_zap_player(const CreatureEntity &source, CreatureEntity &creature)
  */
 void player_defecate(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &baseitems = BaseitemList::get_instance();
     ItemEntity item;
     disturb(creature, false, true);

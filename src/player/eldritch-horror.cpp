@@ -27,7 +27,6 @@
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
@@ -37,7 +36,7 @@
 
 static bool process_mod_hallucination(CreatureEntity &creature, std::string_view m_name, const MonraceDefinition &monrace)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (!player.effects()->hallucination().is_hallucinated()) {
         return false;
     }
@@ -58,7 +57,7 @@ static bool process_mod_hallucination(CreatureEntity &creature, std::string_view
  */
 void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necro)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &world = AngbandWorld::get_instance();
     if (AngbandSystem::get_instance().is_phase_out() || !world.character_dungeon) {
         return;

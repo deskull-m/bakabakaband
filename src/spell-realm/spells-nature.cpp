@@ -9,7 +9,6 @@
 #include "racial/racial-android.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
@@ -24,7 +23,7 @@ bool rustproof(CreatureEntity &creature)
     constexpr auto s = _("錆止めできるものがありません。", "You have nothing to rustproof.");
     short i_idx;
     const auto options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto *o_ptr = choose_object(player, &i_idx, q, s, options, FuncItemTester(&ItemEntity::is_protector));
     if (o_ptr == nullptr) {
         return false;

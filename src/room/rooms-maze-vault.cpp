@@ -7,7 +7,6 @@
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "wizard/wizard-messages.h"
 
 /*
@@ -100,7 +99,7 @@ void r_visit(CreatureEntity &creature, POSITION y1, POSITION x1, POSITION y2, PO
 
 void build_maze_vault(CreatureEntity &creature, const Pos2D &center, const Pos2DVec &vec, bool is_vault)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     msg_print_wizard(player, CHEAT_DUNGEON, _("迷路ランダムVaultを生成しました。", "Maze Vault."));
     auto &floor = *creature.current_floor_ptr;
     bool light = ((floor.dun_level <= randint1(25)) && is_vault && floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::DARKNESS));

@@ -44,7 +44,6 @@
 #include "status/shape-changer.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
@@ -59,7 +58,7 @@
  */
 static void do_curse_on_equip(OBJECT_IDX slot, ItemEntity &item, CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (set_anubis_and_chariot(player) && ((slot == INVEN_MAIN_HAND) || (slot == INVEN_SUB_HAND))) {
 
@@ -132,7 +131,7 @@ void do_cmd_equip(CreatureEntity &creature)
  */
 void do_cmd_wield(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     concptr act;
     OBJECT_IDX need_switch_wielding = 0;
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
@@ -376,7 +375,7 @@ void do_cmd_wield(CreatureEntity &creature)
  */
 void do_cmd_takeoff(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     CreatureClass pc(creature);
     pc.break_samurai_stance({ SamuraiStanceType::MUSOU });
 

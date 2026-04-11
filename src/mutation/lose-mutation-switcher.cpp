@@ -2,11 +2,10 @@
 #include "mutation/mutation-flag-types.h"
 #include "mutation/mutation-util.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 
 void switch_lose_mutation(CreatureEntity &creature, glm_type *glm_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     switch ((glm_ptr->choose_mut != 0) ? glm_ptr->choose_mut : randint1(205)) {
     case 1:
     case 2:

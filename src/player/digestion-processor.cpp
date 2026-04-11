@@ -16,7 +16,6 @@
 #include "status/bad-status-setter.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -27,7 +26,7 @@
  */
 void starve_player(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (AngbandSystem::get_instance().is_phase_out()) {
         return;
     }
@@ -114,7 +113,7 @@ bool set_food(CreatureEntity &creature, TIME_EFFECT v)
     if (!creature.is_player()) {
         return false;
     }
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     int old_aux, new_aux;
 

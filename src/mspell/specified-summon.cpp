@@ -18,7 +18,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 /*!
@@ -74,7 +73,7 @@ MONSTER_NUMBER summon_EDGE(CreatureEntity &creature, POSITION y, POSITION x, int
  */
 MONSTER_NUMBER summon_guardian(CreatureEntity &creature, POSITION y, POSITION x, int rlev, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
+    auto &player_ptr = creature;
     int num = 2 + randint1(3);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
@@ -180,7 +179,7 @@ MONSTER_NUMBER summon_DEMON_SLAYER(CreatureEntity &creature, POSITION y, POSITIO
  */
 MONSTER_NUMBER summon_NAZGUL(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
+    auto &player_ptr = creature;
     BIT_FLAGS mode = 0L;
     Pos2D pos_initial(y, x);
     auto pos = pos_initial;
@@ -351,7 +350,7 @@ MONSTER_NUMBER summon_PLASMA(CreatureEntity &creature, POSITION y, POSITION x, i
  */
 MONSTER_NUMBER summon_LAFFEY_II(CreatureEntity &creature, const Pos2D &position, MONSTER_IDX m_idx)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
+    auto &player_ptr = creature;
     auto &floor = *player_ptr.current_floor_ptr;
     auto count = 0;
     constexpr auto summon_num = 2;

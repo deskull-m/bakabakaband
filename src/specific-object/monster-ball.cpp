@@ -14,7 +14,6 @@
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "util/flag-group.h"
 #include "util/string-processor.h"
@@ -95,7 +94,7 @@ static void restore_monster_nickname(CreatureEntity &monster, ItemEntity &item)
 
 static bool release_monster(CreatureEntity &creature, ItemEntity &item, const Direction &dir)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const auto &monrace = item.get_monrace();
     const auto pos = creature.get_neighbor(dir);
     if (!monster_can_enter(&creature, pos.y, pos.x, monrace, 0)) {
@@ -132,7 +131,7 @@ static bool release_monster(CreatureEntity &creature, ItemEntity &item, const Di
 
 bool exe_monster_capture(CreatureEntity &creature, ItemEntity &item)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     if (item.bi_key.tval() != ItemKindType::CAPTURE) {
         return false;
     }

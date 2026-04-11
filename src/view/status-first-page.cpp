@@ -34,7 +34,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
@@ -252,7 +251,7 @@ static void calc_two_hands(CreatureEntity &creature, int *damage, int *to_h)
             damage[i] += o_ptr->to_d * 100;
             to_h[i] += o_ptr->to_h;
         }
-        auto player_ptr = static_cast<PlayerType &>(creature);
+        auto &player_ptr = creature;
         const auto mindice = (o_ptr->damage_dice.num + player_ptr.damage_dice_bonus[i].num);
         const auto maxdice = mindice * (o_ptr->damage_dice.sides + player_ptr.damage_dice_bonus[i].sides);
 
@@ -336,7 +335,7 @@ static int calculate_hp_regen_rate(CreatureEntity &creature)
     }
 
     // ミュータント補正
-    regen_amount = (regen_amount * static_cast<PlayerType &>(creature).mutant_regenerate_mod) / 100;
+    regen_amount = (regen_amount * creature.mutant_regenerate_mod) / 100;
 
     // 実際の回復量を計算 (10ターンごとに処理されるので1ターンあたりの量に変換)
     // percent = regen_amount は 1/2^16 単位なので、実際のHP回復量は:

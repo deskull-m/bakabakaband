@@ -14,7 +14,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-checker.h"
@@ -54,7 +53,7 @@ private:
     tl::optional<std::pair<Direction, bool>> switch_next_grid_command();
     void decide_change_panel(const Direction &dir, bool move_fast);
 
-    PlayerType &player;
+    CreatureEntity &player;
     target_type mode;
     Pos2D pos_target;
     bool done = false;
@@ -64,7 +63,7 @@ private:
 };
 
 TargetSetter::TargetSetter(CreatureEntity &creature, target_type mode)
-    : player(static_cast<PlayerType &>(creature))
+    : player(creature)
     , mode(mode)
     , pos_target(creature.get_position())
     , pos_interests(target_set_prepare(creature, mode))

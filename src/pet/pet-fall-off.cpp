@@ -20,7 +20,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/target-checker.h"
@@ -145,7 +144,7 @@ bool process_fall_off_horse(CreatureEntity &creature, int dam, bool force)
         verify_panel(creature);
     }
 
-    static_cast<PlayerType &>(creature).ride_monster(0);
+    creature.ride_monster(0);
     creature.pet_extra_flags &= ~(PF_TWO_HANDS);
     creature.riding_ryoute = creature.old_riding_ryoute = false;
 

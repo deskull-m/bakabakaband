@@ -23,7 +23,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 /*!
@@ -34,7 +33,7 @@ static bool monster_has_chaos_resist(CreatureEntity &creature, const CreatureEnt
     auto &monrace = monster.get_monrace();
     if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_CHAOS)) {
         if (creature.is_player()) {
-            auto &player = static_cast<PlayerType &>(creature);
+            auto &player = creature;
             if (is_original_ap_and_seen(player, monster)) {
                 monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_CHAOS);
             }
@@ -42,7 +41,7 @@ static bool monster_has_chaos_resist(CreatureEntity &creature, const CreatureEnt
         return true;
     } else if (monrace.kind_flags.has(MonsterKindType::DEMON) && one_in_(3)) {
         if (creature.is_player()) {
-            auto &player = static_cast<PlayerType &>(creature);
+            auto &player = creature;
             if (is_original_ap_and_seen(player, monster)) {
                 monrace.r_kind_flags.set(MonsterKindType::DEMON);
             }

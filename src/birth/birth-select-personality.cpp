@@ -3,7 +3,6 @@
 #include "io/input-key-acceptor.h"
 #include "player/player-personality.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
@@ -26,7 +25,7 @@ static std::string birth_personality_label(int cs, concptr sym)
 
 static void enumerate_personality_list(CreatureEntity &creature, char *sym)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     for (int n = 0; n < MAX_PERSONALITIES; n++) {
         if (personality_info[n].sex && (personality_info[n].sex != (player.psex + 1))) {
             continue;
@@ -85,7 +84,7 @@ static bool check_selected_sex(int pp_idx, player_sex psex)
 
 static int interpret_personality_select_key_move(CreatureEntity &creature, char key, int initial_personality)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto pp_idx = initial_personality;
     switch (key) {
     case '8':
@@ -159,7 +158,7 @@ static int interpret_personality_select_key_move(CreatureEntity &creature, char 
 
 static bool select_personality(CreatureEntity &creature, int *k, concptr sym)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     int cs = player.ppersonality;
     int os = MAX_PERSONALITIES;
     std::string cur = birth_personality_label(os, sym);
@@ -239,7 +238,7 @@ static bool select_personality(CreatureEntity &creature, int *k, concptr sym)
  */
 bool get_player_personality(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     clear_from(10);
     put_str(_("注意：《性格》によってキャラクターの能力やボーナスが変化します。", "Note: Your personality determines various intrinsic abilities and bonuses."),

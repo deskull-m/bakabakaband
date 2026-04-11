@@ -39,7 +39,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 /*!
@@ -250,7 +249,7 @@ static void on_dead_drop_tval_item(CreatureEntity &killer, MonsterDeath *md_ptr)
                 ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
                 if (!item.is_fixed_artifact()) {
                     if (killer.is_player()) {
-                        auto &player = static_cast<PlayerType &>(killer);
+                        auto &player = killer;
                         become_random_artifact(player, &item, false);
                     }
                 }
@@ -338,7 +337,7 @@ static void on_dead_earth_destroyer(CreatureEntity &killer, MonsterDeath *md_ptr
     if (!killer.is_player()) {
         return;
     }
-    auto &player = static_cast<PlayerType &>(killer);
+    auto &player = killer;
     msg_print(_("ワーオ！22世紀の文明の叡知が今炸裂した！", "Wow! The wisdom of 22nd century civilization has now exploded!"));
     (void)project(player, md_ptr->m_idx, 10, md_ptr->md_y, md_ptr->md_x, 10000, AttributeType::DISINTEGRATE, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
 }
@@ -348,7 +347,7 @@ static void on_dead_sacred_treasures(CreatureEntity &killer, MonsterDeath *md_pt
     if (!killer.is_player()) {
         return;
     }
-    auto &player = static_cast<PlayerType &>(killer);
+    auto &player = killer;
     if ((player.ppersonality != PERSONALITY_LAZY) || !md_ptr->drop_chosen_item) {
         return;
     }
@@ -467,7 +466,7 @@ static void on_dead_random_artifact(CreatureEntity &killer, MonsterDeath *md_ptr
         }
 
         if (killer.is_player()) {
-            auto &player = static_cast<PlayerType &>(killer);
+            auto &player = killer;
             (void)become_random_artifact(player, &*item, false);
         }
         auto is_good_random_art = !item->is_cursed();

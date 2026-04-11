@@ -16,7 +16,6 @@
 #include "system/floor/floor-info.h"
 #include "system/inner-game-data.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "term/z-form.h"
 #include "util/angband-files.h"
 #include "util/bit-flags-calculator.h"
@@ -153,7 +152,7 @@ static void write_diary_pet(FILE *fff, int num, std::string_view note)
  */
 int exe_write_diary_quest(CreatureEntity &creature, DiaryKind dk, QuestId quest_id)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     static auto disable_diary = false;
     const auto &[day, hour, min] = AngbandWorld::get_instance().extract_date_time(InnerGameData::get_instance().get_start_race());
     if (disable_diary) {

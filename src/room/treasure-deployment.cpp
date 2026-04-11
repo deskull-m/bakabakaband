@@ -13,13 +13,12 @@
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include <cstdlib>
 
 namespace {
 static void deploy_treasure(CreatureEntity &creature, FloorType &floor, const Pos2D &center, const Pos2D &pos, int size, int difficulty)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     auto value = Grid::calc_distance(center, pos) * 100 / size + randint1(10) - difficulty;
 
     /// @note

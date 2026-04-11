@@ -40,7 +40,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
@@ -124,7 +123,7 @@ void search(CreatureEntity &creature)
  */
 bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_FLAGS mpe_mode)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     const Pos2D pos_new(ny, nx);
     const Pos2D pos_old(creature.y, creature.x);
     auto &floor = *creature.current_floor_ptr;

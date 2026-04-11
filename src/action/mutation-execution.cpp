@@ -49,7 +49,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -64,7 +63,7 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
 {
     PLAYER_LEVEL lvl = creature.level;
     auto &floor = *creature.current_floor_ptr;
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     switch (power) {
     case PlayerMutationType::SPIT_ACID: {
         const auto dir = get_aim_dir(creature);

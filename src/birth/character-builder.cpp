@@ -44,7 +44,6 @@
 #include "system/floor/town-list.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/gamevalue.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/z-form.h"
@@ -58,7 +57,7 @@
  */
 static void write_birth_diary(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     concptr indent = "                            ";
 
     message_add(" ");
@@ -106,7 +105,7 @@ static void write_birth_diary(CreatureEntity &creature)
  */
 void player_birth(CreatureEntity &creature, std::optional<QuestId> initial_quest_id)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
 
     TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
 

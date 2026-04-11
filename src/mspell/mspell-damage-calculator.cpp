@@ -9,7 +9,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 
 /*!
@@ -483,7 +482,7 @@ int monspell_race_damage(CreatureEntity &creature, MonsterAbilityType ms_type, M
  */
 int monspell_bluemage_damage(CreatureEntity &creature, MonsterAbilityType ms_type, PLAYER_LEVEL plev, int TYPE)
 {
-    auto &player = static_cast<PlayerType &>(creature);
+    auto &player = creature;
     ItemEntity *weapon_ptr = nullptr;
 
     if (has_melee_weapon(creature, INVEN_MAIN_HAND)) {
