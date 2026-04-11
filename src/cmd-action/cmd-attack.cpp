@@ -10,6 +10,7 @@
 #include "avatar/avatar.h"
 #include "combat/attack-accuracy.h"
 #include "combat/attack-criticality.h"
+#include "combat/damage-dispatcher.h"
 #include "core/asking-player.h"
 #include "core/disturbance.h"
 #include "core/stuff-handler.h"
@@ -229,7 +230,7 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     // 頭突き後の反動処理
     if (!*mdeath && one_in_(6)) {
         msg_print(_("頭突きの反動で少しダメージを受けた。", "You take some damage from the headbutt recoil."));
-        take_hit(creature, DAMAGE_NOESCAPE, randint1(3), _("頭突きの反動", "headbutt recoil"));
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, randint1(3), _("頭突きの反動", "headbutt recoil"));
     }
 
     touch_zap_player(monster, creature);
@@ -330,7 +331,7 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     if (!*mdeath && one_in_(8)) {
         int self_damage = randint1(4);
         msg_print(_("体当たりの反動で体が痛んだ。", "You feel the recoil from your body slam."));
-        take_hit(creature, DAMAGE_NOESCAPE, self_damage, _("体当たりの反動", "body slam recoil"));
+        apply_damage_to_creature(creature, DAMAGE_NOESCAPE, self_damage, _("体当たりの反動", "body slam recoil"));
     }
 
     touch_zap_player(monster, creature);
