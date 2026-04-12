@@ -14,7 +14,7 @@
  *
  * Note that "string comparisons" are thus valid on "pts".
  */
-class PlayerType;
+class CreatureEntity;
 struct high_score {
     GAME_TEXT what[8]{}; /* Version info (string) */
     GAME_TEXT pts[10]{}; /* Total Score (number) */
@@ -35,7 +35,7 @@ struct high_score {
 
     GAME_TEXT how[40]{}; /* Method of death (string) */
 
-    void copy_info(const PlayerType &player);
+    void copy_info(const CreatureEntity &creature);
 };
 
 extern int highscore_fd;
