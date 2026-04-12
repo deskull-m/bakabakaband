@@ -218,6 +218,7 @@ hengband_SOURCES = \
 	cmd-visual/cmd-visuals.cpp cmd-visual/cmd-visuals.h \
 	\
 	combat/attack-power-table.cpp combat/attack-power-table.h \
+	combat/damage-dispatcher.cpp combat/damage-dispatcher.h \
 	combat/aura-counterattack.cpp combat/aura-counterattack.h \
 	combat/hallucination-attacks-table.cpp combat/hallucination-attacks-table.h \
 	combat/martial-arts-table.cpp combat/martial-arts-table.h \
