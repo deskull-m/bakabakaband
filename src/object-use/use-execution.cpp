@@ -44,15 +44,15 @@ ObjectUseEntity::ObjectUseEntity(CreatureEntity &creature, INVENTORY_IDX i_idx)
  */
 void ObjectUseEntity::execute()
 {
-    auto &player = *this->creature_ptr;
+    auto &creature = *this->creature_ptr;
     auto use_charge = true;
-    auto *o_ptr = ref_item(player, this->i_idx);
+    auto *o_ptr = ref_item(creature, this->i_idx);
     if ((this->i_idx < 0) && (o_ptr->number > 1)) {
         msg_print(_("まずは杖を拾わなければ。", "You must first pick up the staffs."));
         return;
     }
 
-    PlayerEnergy(player).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
     if (!this->check_can_use()) {
         return;
     }
@@ -62,8 +62,8 @@ void ObjectUseEntity::execute()
         item_level = 50 + (item_level - 50) / 2;
     }
 
-    auto chance = player.skill_dev;
-    if (player.is_confused()) {
+    auto chance = creature.skill_dev;
+    if (creature.is_confused()) {
         chance = chance / 2;
     }
 
@@ -72,7 +72,7 @@ void ObjectUseEntity::execute()
         chance = USE_DEVICE;
     }
 
-    if ((chance < USE_DEVICE) || (randint1(chance) < USE_DEVICE) || CreatureClass(player).equals(PlayerClassType::BERSERKER)) {
+    if ((chance < USE_DEVICE) || (randint1(chance) < USE_DEVICE) || CreatureClass(creature).equals(PlayerClassType::BERSERKER)) {
         if (flush_failure) {
             flush();
         }
@@ -100,11 +100,11 @@ void ObjectUseEntity::execute()
     }
 
     sound(SoundKind::ZAP);
-    auto ident = staff_effect(player, *o_ptr->bi_key.sval(), &use_charge, false, false, o_ptr->is_aware());
+    auto ident = staff_effect(creature, *o_ptr->bi_key.sval(), &use_charge, false, false, o_ptr->is_aware());
     if (!(o_ptr->is_aware())) {
-        chg_virtue(player, Virtue::PATIENCE, -1);
-        chg_virtue(player, Virtue::CHANCE, 1);
-        chg_virtue(player, Virtue::KNOWLEDGE, -1);
+        chg_virtue(creature, Virtue::PATIENCE, -1);
+        chg_virtue(creature, Virtue::CHANCE, 1);
+        chg_virtue(creature, Virtue::KNOWLEDGE, -1);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -117,8 +117,8 @@ void ObjectUseEntity::execute()
     rfu.reset_flags(flags_srf);
     o_ptr->mark_as_tried();
     if (ident && !o_ptr->is_aware()) {
-        object_aware(player, *o_ptr);
-        gain_exp(player, (item_level + (player.level >> 1)) / player.level);
+        object_aware(creature, *o_ptr);
+        gain_exp(creature, (item_level + (creature.level >> 1)) / creature.level);
     }
 
     static constexpr auto flags_swrf = {
@@ -140,23 +140,23 @@ void ObjectUseEntity::execute()
         used_item.number = 1;
         o_ptr->pval++;
         o_ptr->number--;
-        this->i_idx = store_item_to_inventory(player, &used_item);
+        this->i_idx = store_item_to_inventory(creature, &used_item);
         msg_print(_("杖をまとめなおした。", "You unstack your staff."));
     }
 
     if (this->i_idx >= 0) {
-        inven_item_charges(*player.inventory[this->i_idx]);
+        inven_item_charges(*creature.inventory[this->i_idx]);
     } else {
-        floor_item_charges(*player.current_floor_ptr, 0 - this->i_idx);
+        floor_item_charges(*creature.current_floor_ptr, 0 - this->i_idx);
     }
 }
 
 bool ObjectUseEntity::check_can_use()
 {
-    auto &player = *this->creature_ptr;
-    if (cmd_limit_time_walk(player)) {
+    auto &creature = *this->creature_ptr;
+    if (cmd_limit_time_walk(creature)) {
         return false;
     }
 
-    return ItemUseChecker(player).check_stun(_("朦朧としていて杖を振れなかった！", "You are too stunned to use it!"));
+    return ItemUseChecker(creature).check_stun(_("朦朧としていて杖を振れなかった！", "You are too stunned to use it!"));
 }

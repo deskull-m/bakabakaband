@@ -311,9 +311,8 @@ static const std::vector<std::string> report_magic_durations = { _("ごく短い
  */
 void report_magics(CreatureEntity &subject)
 {
-    auto &player = subject;
     std::vector<std::pair<int, std::string>> info;
-    const auto effects = player.effects();
+    const auto effects = subject.effects();
     const auto &blindness = effects->blindness();
     if (blindness.is_blind()) {
         info.emplace_back(report_magics_aux(blindness.current()),
@@ -344,18 +343,18 @@ void report_magics(CreatureEntity &subject)
             _("あなたは幻覚を見ている", "You are hallucinating"));
     }
 
-    if (player.blessed) {
-        info.emplace_back(report_magics_aux(player.blessed),
+    if (subject.blessed) {
+        info.emplace_back(report_magics_aux(subject.blessed),
             _("あなたは高潔さを感じている", "You feel rightous"));
     }
 
-    if (player.hero) {
-        info.emplace_back(report_magics_aux(player.hero),
+    if (subject.hero) {
+        info.emplace_back(report_magics_aux(subject.hero),
             _("あなたはヒーロー気分だ", "You feel heroic"));
     }
 
-    if (player.is_shero()) {
-        info.emplace_back(report_magics_aux(player.berserk),
+    if (subject.is_shero()) {
+        info.emplace_back(report_magics_aux(subject.berserk),
             _("あなたは戦闘狂だ", "You are in a battle rage"));
     }
 
@@ -365,57 +364,57 @@ void report_magics(CreatureEntity &subject)
             _("あなたは邪悪なる存在から守られている", "You are protected from evil"));
     }
 
-    if (player.shield) {
-        info.emplace_back(report_magics_aux(player.shield),
+    if (subject.shield) {
+        info.emplace_back(report_magics_aux(subject.shield),
             _("あなたは神秘のシールドで守られている", "You are protected by a mystic shield"));
     }
 
-    if (player.invuln) {
-        info.emplace_back(report_magics_aux(player.invuln),
+    if (subject.invuln) {
+        info.emplace_back(report_magics_aux(subject.invuln),
             _("あなたは無敵だ", "You are invulnerable"));
     }
 
-    if (player.wraith_form) {
-        info.emplace_back(report_magics_aux(player.wraith_form),
+    if (subject.wraith_form) {
+        info.emplace_back(report_magics_aux(subject.wraith_form),
             _("あなたは幽体化している", "You are incorporeal"));
     }
 
-    if (player.special_attack & ATTACK_CONFUSE) {
+    if (subject.special_attack & ATTACK_CONFUSE) {
         info.emplace_back(7, _("あなたの手は赤く輝いている", "Your hands are glowing dull red."));
     }
 
-    if (player.word_recall) {
-        info.emplace_back(report_magics_aux(player.word_recall),
+    if (subject.word_recall) {
+        info.emplace_back(report_magics_aux(subject.word_recall),
             _("この後帰還の詔が発動する", "You are waiting to be recalled"));
     }
 
-    if (player.alter_reality) {
-        info.emplace_back(report_magics_aux(player.alter_reality),
+    if (subject.alter_reality) {
+        info.emplace_back(report_magics_aux(subject.alter_reality),
             _("この後現実変容が発動する", "You waiting to be altered"));
     }
 
-    if (player.oppose_acid) {
-        info.emplace_back(report_magics_aux(player.oppose_acid),
+    if (subject.oppose_acid) {
+        info.emplace_back(report_magics_aux(subject.oppose_acid),
             _("あなたは酸への耐性を持っている", "You are resistant to acid"));
     }
 
-    if (player.oppose_elec) {
-        info.emplace_back(report_magics_aux(player.oppose_elec),
+    if (subject.oppose_elec) {
+        info.emplace_back(report_magics_aux(subject.oppose_elec),
             _("あなたは電撃への耐性を持っている", "You are resistant to lightning"));
     }
 
-    if (player.oppose_fire) {
-        info.emplace_back(report_magics_aux(player.oppose_fire),
+    if (subject.oppose_fire) {
+        info.emplace_back(report_magics_aux(subject.oppose_fire),
             _("あなたは火への耐性を持っている", "You are resistant to fire"));
     }
 
-    if (player.oppose_cold) {
-        info.emplace_back(report_magics_aux(player.oppose_cold),
+    if (subject.oppose_cold) {
+        info.emplace_back(report_magics_aux(subject.oppose_cold),
             _("あなたは冷気への耐性を持っている", "You are resistant to cold"));
     }
 
-    if (player.oppose_pois) {
-        info.emplace_back(report_magics_aux(player.oppose_pois),
+    if (subject.oppose_pois) {
+        info.emplace_back(report_magics_aux(subject.oppose_pois),
             _("あなたは毒への耐性を持っている", "You are resistant to poison"));
     }
 
