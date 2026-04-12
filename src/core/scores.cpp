@@ -31,7 +31,6 @@
 #include "system/angband-version.h"
 #include "system/creature-entity.h"
 #include "system/inner-game-data.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "util/angband-files.h"
@@ -203,7 +202,7 @@ errr top_twenty(CreatureEntity &creature)
     auto ct = time((time_t *)0);
 
     strftime(the_score.day, 10, "@%Y%m%d", localtime(&ct));
-    the_score.copy_info(static_cast<const PlayerType &>(creature));
+    the_score.copy_info(creature);
     if (creature.died_from.size() >= sizeof(the_score.how)) {
 #ifdef JP
         angband_strcpy(the_score.how, creature.died_from, sizeof(the_score.how) - 2);
@@ -261,7 +260,7 @@ errr predict_score(CreatureEntity &creature)
     snprintf(the_score.gold, sizeof(the_score.gold), "%9d", creature.au);
     snprintf(the_score.turns, sizeof(the_score.turns), "%9d", igd.get_real_turns(AngbandWorld::get_instance().game_turn));
     angband_strcpy(the_score.day, _("今日", "TODAY"), sizeof(the_score.day));
-    the_score.copy_info(static_cast<const PlayerType &>(creature));
+    the_score.copy_info(creature);
     strcpy(the_score.how, _("yet", "nobody (yet!)"));
     auto j = highscore_where(&the_score);
     if (j < 10) {

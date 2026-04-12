@@ -12,7 +12,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 

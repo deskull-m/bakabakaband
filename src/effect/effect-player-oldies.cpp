@@ -7,7 +7,6 @@
 #include "status/buff-setter.h"
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 void effect_player_old_heal(CreatureEntity &creature, EffectPlayerType *ep_ptr)
