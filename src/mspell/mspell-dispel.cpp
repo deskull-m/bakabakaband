@@ -35,7 +35,6 @@
  */
 static void dispel_player(CreatureEntity &creature)
 {
-    auto &player = creature;
     (void)set_acceleration(creature, 0, true);
     set_lightspeed(creature, 0, true);
     (void)BadStatusSetter(creature).set_deceleration(0, true);
@@ -82,8 +81,8 @@ static void dispel_player(CreatureEntity &creature)
     (void)set_tim_exorcism(creature, 0, true);
     (void)set_tim_imm_dark(creature, 0, true);
 
-    if (player.special_attack & ATTACK_CONFUSE) {
-        player.special_attack &= ~(ATTACK_CONFUSE);
+    if (creature.special_attack & ATTACK_CONFUSE) {
+        creature.special_attack &= ~(ATTACK_CONFUSE);
         msg_print(_("手の輝きがなくなった。", "Your hands stop glowing."));
     }
 
@@ -101,7 +100,7 @@ static void dispel_player(CreatureEntity &creature)
             msg_print(_("呪文が途切れた。", "Your casting is interrupted."));
         }
 
-        player.action = ACTION_NONE;
+        creature.action = ACTION_NONE;
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         static constexpr auto flags_srf = {
             StatusRecalculatingFlag::BONUS,
@@ -120,7 +119,7 @@ static void dispel_player(CreatureEntity &creature)
             SubWindowRedrawingFlag::DUNGEON,
         };
         rfu.set_flags(flags_swrf);
-        player.energy_need += ENERGY_NEED();
+        creature.energy_need += ENERGY_NEED();
     }
 }
 
@@ -135,7 +134,6 @@ static void dispel_player(CreatureEntity &creature)
  */
 MonsterSpellResult spell_RF4_DISPEL(MONSTER_IDX m_idx, CreatureEntity &creature, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player = creature;
     auto res = MonsterSpellResult::make_valid();
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
@@ -146,8 +144,8 @@ MonsterSpellResult spell_RF4_DISPEL(MONSTER_IDX m_idx, CreatureEntity &creature,
 
     if (target_type == MONSTER_TO_PLAYER) {
         dispel_player(creature);
-        if (player.riding) {
-            dispel_monster_status(creature, player.riding);
+        if (creature.riding) {
+            dispel_monster_status(creature, creature.riding);
         }
 
         if (creature.is_echizen()) {

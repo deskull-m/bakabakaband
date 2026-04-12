@@ -47,13 +47,13 @@ Pos2D decide_source_position(CreatureEntity &creature, MONSTER_IDX src_idx, cons
  * @brief 汎用的なビーム/ボルト/ボール系処理のルーチン Generic
  * "beam"/"bolt"/"ball" projection routine.
  * @param src_idx 魔法を発動したモンスター(0ならばプレイヤー) / Index of "source"
- * monster (zero for "player")
+ * monster (zero for "creature")
  * @param rad 効果半径(ビーム/ボルト = 0 / ボール = 1以上) / Radius of explosion
  * (0 = beam/bolt, 1 to 9 = ball)
  * @param target_y 目標Y座標 / Target y location (or location to travel "towards")
  * @param target_x 目標X座標 / Target x location (or location to travel "towards")
  * @param dam 基本威力 / Base damage roll to apply to affected monsters (or
- * player)
+ * creature)
  * @param typ 効果属性 / Type of damage to apply to monsters (and objects)
  * @param flag 効果フラグ / Extra bit flags (see PROJECT_xxxx)
  * @param monspell 効果元のモンスター魔法ID
@@ -63,13 +63,12 @@ Pos2D decide_source_position(CreatureEntity &creature, MONSTER_IDX src_idx, cons
 ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSITION rad, const POSITION target_y, const POSITION target_x, const int dam,
     const AttributeType typ, BIT_FLAGS flag, tl::optional<CapturedMonsterType *> cap_mon_ptr)
 {
-    auto &player = creature;
-    monster_target_y = player.y;
-    monster_target_x = player.x;
+    monster_target_y = creature.y;
+    monster_target_x = creature.x;
 
     ProjectResult res;
     const Pos2D pos_target(target_y, target_x);
-    const auto pos_source = decide_source_position(player, src_idx, pos_target, flag);
+    const auto pos_source = decide_source_position(creature, src_idx, pos_target, flag);
 
     if (flag & (PROJECT_THRU)) {
         if (pos_source == pos_target) {
@@ -112,15 +111,15 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
     /* Calculate the projection path */
     const auto &system = AngbandSystem::get_instance();
     const auto range = project_length != 0 ? project_length : AngbandSystem::get_instance().get_max_range();
-    auto &floor = *player.current_floor_ptr;
-    ProjectionPath path_g(floor, range, player.get_position(), pos_source, pos_target, flag);
-    handle_stuff(player);
+    auto &floor = *creature.current_floor_ptr;
+    ProjectionPath path_g(floor, range, creature.get_position(), pos_source, pos_target, flag);
+    handle_stuff(creature);
 
     auto k = 0;
     Pos2D pos_path = pos_source;
     auto visual = false;
     auto see_s_msg = true;
-    const auto is_blind = player.is_blind();
+    const auto is_blind = creature.is_blind();
     for (const auto &pos : path_g) {
         if (flag & PROJECT_DISI) {
             if (floor.can_block_disintegration_at(pos) && (rad > 0)) {
@@ -146,7 +145,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
                     move_cursor_relative(pos.y, pos.x);
                     term_fresh();
                     term_xtra(TERM_XTRA_DELAY, delay_factor);
-                    lite_spot(player, pos);
+                    lite_spot(creature, pos);
                     term_fresh();
                     if (flag & (PROJECT_BEAM)) {
                         print_bolt_pict(creature, pos, pos, typ);
@@ -227,7 +226,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
         if (drawn) {
             for (const auto &[_, pos] : positions) {
                 if (panel_contains(pos) && floor.has_los_at(pos)) {
-                    lite_spot(player, pos);
+                    lite_spot(creature, pos);
                 }
             }
 
@@ -236,12 +235,12 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
         }
     }
 
-    update_creature(player);
+    update_creature(creature);
 
-    const auto p_pos = player.get_position();
+    const auto p_pos = creature.get_position();
     if (flag & PROJECT_KILL) {
-        see_s_msg = is_monster(src_idx) ? is_seen(player, floor.get_monster(src_idx))
-                                        : (is_player(src_idx) ? true : (player_can_see_bold(player, pos_source.y, pos_source.x) && projectable(floor, p_pos, pos_source)));
+        see_s_msg = is_monster(src_idx) ? is_seen(creature, floor.get_monster(src_idx))
+                                        : (is_player(src_idx) ? true : (player_can_see_bold(creature, pos_source.y, pos_source.x) && projectable(floor, p_pos, pos_source)));
     }
 
     if (flag & (PROJECT_GRID)) {
@@ -253,7 +252,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
         }
     }
 
-    update_creature(player);
+    update_creature(creature);
     if (flag & (PROJECT_ITEM)) {
         for (const auto &[dist, pos] : positions) {
             const auto effective_dist = breath ? dist_to_line(pos, pos_source, pos_impact) : dist;
@@ -288,8 +287,8 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
                         pos_reflection = pos_source;
                     }
 
-                    if (is_seen(player, monster)) {
-                        const auto m_name = monster.get_monster_profile().ml ? monster_desc(player, monster, 0) : std::string(_("それ", "It"));
+                    if (is_seen(creature, monster)) {
+                        const auto m_name = monster.get_monster_profile().ml ? monster_desc(creature, monster, 0) : std::string(_("それ", "It"));
                         sound(SoundKind::REFLECT);
                         const auto reflect_message = monrace.get_message(m_name, MonsterMessageType::MESSAGE_REFLECT);
                         if (reflect_message) {
@@ -299,11 +298,11 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
                         sound(SoundKind::REFLECT);
                     }
 
-                    if (is_original_ap_and_seen(player, monster)) {
+                    if (is_original_ap_and_seen(creature, monster)) {
                         monrace.r_misc_flags.set(MonsterMiscType::REFLECTING);
                     }
 
-                    if (player.is_located_at(pos) || one_in_(2)) {
+                    if (creature.is_located_at(pos) || one_in_(2)) {
                         flag &= ~(PROJECT_PLAYER);
                     } else {
                         flag |= PROJECT_PLAYER;
@@ -317,7 +316,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
             /* Find the closest point in the blast */
             auto effective_dist = breath ? dist_to_line(pos, pos_source, pos_impact) : dist;
 
-            if (player.riding && player.is_located_at(pos)) {
+            if (creature.riding && creature.is_located_at(pos)) {
                 if (flag & PROJECT_PLAYER) {
                     if (flag & (PROJECT_BEAM | PROJECT_REFLECTABLE | PROJECT_AIMED)) {
                         /*
@@ -351,7 +350,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
                  */
                 /*
                  * A beam or bolt will hit either
-                 * player or mount.  Choose randomly.
+                 * creature or mount.  Choose randomly.
                  */
                 else if (flag & (PROJECT_BEAM | PROJECT_REFLECTABLE)) {
                     if (one_in_(2)) {
@@ -364,7 +363,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
 
                 /*
                  * The spell is not well aimed, so
-                 * partly affect both player and
+                 * partly affect both creature and
                  * mount.
                  */
                 else {
@@ -383,11 +382,11 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
             if (grid.has_monster()) {
                 auto &monster = floor.get_monster(grid.m_idx);
                 if (monster.get_monster_profile().ml) {
-                    if (!player.effects()->hallucination().is_hallucinated()) {
+                    if (!creature.effects()->hallucination().is_hallucinated()) {
                         tracker.set_trackee(monster.ap_r_idx);
                     }
 
-                    health_track(player, grid.m_idx);
+                    health_track(creature, grid.m_idx);
                 }
             }
         }
@@ -395,22 +394,22 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
 
     if (flag & (PROJECT_KILL)) {
         for (const auto &[dist, pos] : positions) {
-            if (!player.is_located_at(pos)) {
+            if (!creature.is_located_at(pos)) {
                 continue;
             }
 
             /* Find the closest point in the blast */
             auto effective_dist = breath ? dist_to_line(pos, pos_source, pos_impact) : dist;
 
-            if (player.riding) {
+            if (creature.riding) {
                 if (flag & PROJECT_PLAYER) {
-                    /* Hit the player with full damage */
+                    /* Hit the creature with full damage */
                 }
 
                 /*
                  * Hack -- When this grid was not the
                  * original target, a beam or bolt
-                 * would hit either player or mount,
+                 * would hit either creature or mount,
                  * and should be choosen randomly.
                  *
                  * But already choosen to hit the
@@ -422,13 +421,13 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
                     /*
                      * A beam or bolt is well aimed
                      * at the mount!
-                     * So don't affects the player.
+                     * So don't affects the creature.
                      */
                     continue;
                 } else {
                     /*
                      * The spell is not well aimed,
-                     * So partly affect the player too.
+                     * So partly affect the creature too.
                      */
                     effective_dist++;
                 }
@@ -436,10 +435,10 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
 
             std::string who_name;
             if (is_monster(src_idx)) {
-                who_name = monster_desc(player, floor.get_monster(src_idx), MD_WRONGDOER_NAME);
+                who_name = monster_desc(creature, floor.get_monster(src_idx), MD_WRONGDOER_NAME);
             }
 
-            if (affect_player(src_idx, player, who_name.data(), effective_dist, pos.y, pos.x, dam, typ, flag, fall_off_horse_effect, project)) {
+            if (affect_player(src_idx, creature, who_name.data(), effective_dist, pos.y, pos.x, dam, typ, flag, fall_off_horse_effect, project)) {
                 res.notice = true;
                 res.affected_player = true;
             }

@@ -103,17 +103,15 @@ void fetch_item(CreatureEntity &creature, const Direction &dir, WEIGHT wgt, bool
     floor.get_grid(p_pos).o_idx_list.add(floor, item_idx); /* 'move' it */
     item.set_position(p_pos);
 
-    auto &player = creature;
-    const auto item_name = describe_flavor(player, item, OD_NAME_ONLY);
+    const auto item_name = describe_flavor(creature, item, OD_NAME_ONLY);
     msg_format(_("%s^があなたの足元に飛んできた。", "%s^ flies through the air to your feet."), item_name.data());
-    note_spot(player, p_pos);
+    note_spot(creature, p_pos);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MAP);
 }
 
 bool fetch_monster(CreatureEntity &creature)
 {
-    auto &player = creature;
-    const auto pos = target_set(player, TARGET_KILL).get_position();
+    const auto pos = target_set(creature, TARGET_KILL).get_position();
     if (!pos) {
         return false;
     }
@@ -136,7 +134,7 @@ bool fetch_monster(CreatureEntity &creature)
         return false;
     }
 
-    const auto m_name = monster_desc(player, monster, 0);
+    const auto m_name = monster_desc(creature, monster, 0);
     msg_print(_("{}を引き戻した。", "You pull back {}."), m_name);
     ProjectionPath path_g(floor, AngbandSystem::get_instance().get_max_range(), *pos, p_pos);
     Pos2D pos_target = *pos;
@@ -151,19 +149,19 @@ bool fetch_monster(CreatureEntity &creature)
     floor.get_grid(pos_target).m_idx = m_idx;
     monster.set_position(pos_target);
     (void)set_monster_csleep(floor, m_idx, 0);
-    update_monster(player, m_idx, true);
-    lite_spot(player, *pos);
-    lite_spot(player, pos_target);
+    update_monster(creature, m_idx, true);
+    lite_spot(creature, *pos);
+    lite_spot(creature, pos_target);
     if (monster.get_monrace().brightness_flags.has_any_of(ld_mask)) {
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
     }
 
     if (monster.get_monster_profile().ml) {
-        if (!player.effects()->hallucination().is_hallucinated()) {
+        if (!creature.effects()->hallucination().is_hallucinated()) {
             LoreTracker::get_instance().set_trackee(monster.ap_r_idx);
         }
 
-        health_track(player, m_idx);
+        health_track(creature, m_idx);
     }
 
     return true;

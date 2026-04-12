@@ -16,12 +16,11 @@
 /*!
  * @brief
  * !!を刻んだ魔道具の時間経過による再充填を知らせる処理 /
- * If player has inscribed the object with "!!", let him know when it's recharged. -LM-
+ * If creature has inscribed the object with "!!", let him know when it's recharged. -LM-
  * @param o_ptr 対象オブジェクトの構造体参照ポインタ
  */
 static void recharged_notice(CreatureEntity &creature, const ItemEntity &item)
 {
-    auto &player = creature;
     if (!item.is_inscribed()) {
         return;
     }
@@ -29,7 +28,7 @@ static void recharged_notice(CreatureEntity &creature, const ItemEntity &item)
     auto s = angband_strchr(item.inscription->data(), '!');
     while (s) {
         if (s[1] == '!') {
-            const auto item_name = describe_flavor(player, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+            const auto item_name = describe_flavor(creature, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
 #ifdef JP
             msg_format("%sは再充填された。", item_name.data());
 #else
@@ -53,12 +52,11 @@ static void recharged_notice(CreatureEntity &creature, const ItemEntity &item)
  */
 void recharge_magic_items(CreatureEntity &creature)
 {
-    auto &player = creature;
     int i;
     bool changed;
 
     for (changed = false, i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        auto &item = *player.inventory[i];
+        auto &item = *creature.inventory[i];
         if (!item.is_valid()) {
             continue;
         }
@@ -84,7 +82,7 @@ void recharge_magic_items(CreatureEntity &creature)
      * one per turn. -LM-
      */
     for (changed = false, i = 0; i < INVEN_PACK; i++) {
-        auto &item = *player.inventory[i];
+        auto &item = *creature.inventory[i];
         if (!item.is_valid()) {
             continue;
         }
@@ -117,7 +115,7 @@ void recharge_magic_items(CreatureEntity &creature)
         wild_regen = 20;
     }
 
-    for (const auto &item_ptr : player.current_floor_ptr->o_list) {
+    for (const auto &item_ptr : creature.current_floor_ptr->o_list) {
         if (!item_ptr->is_valid()) {
             continue;
         }

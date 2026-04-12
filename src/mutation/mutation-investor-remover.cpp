@@ -36,12 +36,11 @@ static void sweep_gain_mutation(CreatureEntity &creature, glm_type *gm_ptr)
 
 static void race_dependent_mutation(CreatureEntity &creature, glm_type *gm_ptr)
 {
-    auto &player = creature;
     if (gm_ptr->choose_mut != 0) {
         return;
     }
 
-    CreatureRace pr(&player);
+    CreatureRace pr(&creature);
     if (pr.equals(PlayerRaceType::VAMPIRE) && creature.muta.has_not(PlayerMutationType::HYPN_GAZE) && (randint1(10) < 7)) {
         gm_ptr->muta_which = PlayerMutationType::HYPN_GAZE;
         gm_ptr->muta_desc = _("眼が幻惑的になった...", "Your eyes look mesmerizing...");
@@ -229,7 +228,6 @@ static void neutralize_other_status(CreatureEntity &creature, glm_type *gm_ptr)
  */
 bool gain_mutation(CreatureEntity &creature, MUTATION_IDX choose_mut)
 {
-    auto &player = creature;
     glm_type tmp_gm;
     glm_type *gm_ptr = initialize_glm_type(&tmp_gm, choose_mut);
     sweep_gain_mutation(creature, gm_ptr);
@@ -251,16 +249,16 @@ bool gain_mutation(CreatureEntity &creature, MUTATION_IDX choose_mut)
 
     // 肛門破壊の突然変異を獲得した場合、尻の穴の装備を強制的に外す
     if (gm_ptr->muta_which == PlayerMutationType::DESTROYED_ASSHOLE) {
-        auto &asshole_item = *player.inventory[INVEN_ASSHOLE];
+        auto &asshole_item = *creature.inventory[INVEN_ASSHOLE];
         if (asshole_item.is_valid()) {
             msg_print(_("肛門が破壊されたため、尻の穴の装備が外れた！", "Your asshole equipment has been removed due to destruction!"));
-            (void)inven_takeoff(player, INVEN_ASSHOLE, 255);
+            (void)inven_takeoff(creature, INVEN_ASSHOLE, 255);
         }
     }
 
-    player.mutant_regenerate_mod = calc_mutant_regenerate_mod(player);
+    creature.mutant_regenerate_mod = calc_mutant_regenerate_mod(creature);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player);
+    handle_stuff(creature);
     return true;
 }
 
@@ -292,7 +290,6 @@ static void sweep_lose_mutation(CreatureEntity &creature, glm_type *glm_ptr)
  */
 bool lose_mutation(CreatureEntity &creature, MUTATION_IDX choose_mut)
 {
-    auto &player = creature;
     glm_type tmp_glm;
     glm_type *glm_ptr = initialize_glm_type(&tmp_glm, choose_mut);
     sweep_lose_mutation(creature, glm_ptr);
@@ -306,20 +303,19 @@ bool lose_mutation(CreatureEntity &creature, MUTATION_IDX choose_mut)
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player);
-    player.mutant_regenerate_mod = calc_mutant_regenerate_mod(player);
+    handle_stuff(creature);
+    creature.mutant_regenerate_mod = calc_mutant_regenerate_mod(creature);
     return true;
 }
 
 void lose_all_mutations(CreatureEntity &creature)
 {
-    auto &player = creature;
     if (creature.muta.any()) {
         chg_virtue(creature, Virtue::CHANCE, -5);
         msg_print(_("全ての突然変異が治った。", "You are cured of all mutations."));
         creature.muta.clear();
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-        handle_stuff(player);
-        player.mutant_regenerate_mod = calc_mutant_regenerate_mod(player);
+        handle_stuff(creature);
+        creature.mutant_regenerate_mod = calc_mutant_regenerate_mod(creature);
     }
 }

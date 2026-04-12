@@ -36,8 +36,7 @@
 
 static bool process_mod_hallucination(CreatureEntity &creature, std::string_view m_name, const MonraceDefinition &monrace)
 {
-    auto &player = creature;
-    if (!player.effects()->hallucination().is_hallucinated()) {
+    if (!creature.effects()->hallucination().is_hallucinated()) {
         return false;
     }
 
@@ -57,7 +56,6 @@ static bool process_mod_hallucination(CreatureEntity &creature, std::string_view
  */
 void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necro)
 {
-    auto &player = creature;
     const auto &world = AngbandWorld::get_instance();
     if (AngbandSystem::get_instance().is_phase_out() || !world.character_dungeon) {
         return;
@@ -98,7 +96,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
             return;
         }
 
-        if (evaluate_percent(player.skill_sav - power)) {
+        if (evaluate_percent(creature.skill_sav - power)) {
             return;
         }
 
@@ -112,7 +110,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
         case PlayerRaceLifeType::DEMON:
             return;
         case PlayerRaceLifeType::UNDEAD:
-            if (evaluate_percent(25 + player.level)) {
+            if (evaluate_percent(25 + creature.level)) {
                 return;
             }
             break;
@@ -144,7 +142,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
             power *= 2;
         }
 
-        if (evaluate_percent(player.skill_sav * 100 / power)) {
+        if (evaluate_percent(creature.skill_sav * 100 / power)) {
             msg_format(_("夢の中で%sに追いかけられた。", "%s^ chases you through your dreams."), m_name.data());
             return;
         }
@@ -157,12 +155,12 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
         monrace.r_misc_flags.set(MonsterMiscType::ELDRITCH_HORROR);
         switch (CreatureRace(&creature).life()) {
         case PlayerRaceLifeType::DEMON:
-            if (evaluate_percent(20 + player.level)) {
+            if (evaluate_percent(20 + creature.level)) {
                 return;
             }
             break;
         case PlayerRaceLifeType::UNDEAD:
-            if (evaluate_percent(10 + player.level)) {
+            if (evaluate_percent(10 + creature.level)) {
                 return;
             }
             break;
@@ -176,7 +174,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
     /* 過去の効果無効率再現のため5回saving_throw 実行 */
     auto save = true;
     for (auto i = 0; i < 5; i++) {
-        save &= evaluate_percent(player.skill_sav - power);
+        save &= evaluate_percent(creature.skill_sav - power);
     }
 
     if (save) {
@@ -185,48 +183,48 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
 
     switch (randint1(22)) {
     case 1: {
-        if (player.muta.has_not(PlayerMutationType::MORONIC)) {
-            if ((player.stat_use[A_INT] < 4) && (player.stat_use[A_WIS] < 4)) {
+        if (creature.muta.has_not(PlayerMutationType::MORONIC)) {
+            if ((creature.stat_use[A_INT] < 4) && (creature.stat_use[A_WIS] < 4)) {
                 msg_print(_("あなたは完璧な馬鹿になったような気がした。しかしそれは元々だった。", "You turn into an utter moron!"));
             } else {
                 msg_print(_("あなたは完璧な馬鹿になった！", "You turn into an utter moron!"));
             }
 
-            if (player.muta.has(PlayerMutationType::HYPER_INT)) {
+            if (creature.muta.has(PlayerMutationType::HYPER_INT)) {
                 msg_print(_("あなたの脳は生体コンピュータではなくなった。", "Your brain is no longer a living computer."));
-                player.muta.reset(PlayerMutationType::HYPER_INT);
+                creature.muta.reset(PlayerMutationType::HYPER_INT);
             }
 
-            player.muta.set(PlayerMutationType::MORONIC);
+            creature.muta.set(PlayerMutationType::MORONIC);
         }
 
         break;
     }
     case 2: {
-        if (player.muta.has_not(PlayerMutationType::COWARDICE) && !has_resist_fear(creature)) {
+        if (creature.muta.has_not(PlayerMutationType::COWARDICE) && !has_resist_fear(creature)) {
             msg_print(_("あなたはパラノイアになった！", "You become paranoid!"));
-            if (player.muta.has(PlayerMutationType::FEARLESS)) {
+            if (creature.muta.has(PlayerMutationType::FEARLESS)) {
                 msg_print(_("あなたはもう恐れ知らずではなくなった。", "You are no longer fearless."));
-                player.muta.reset(PlayerMutationType::FEARLESS);
+                creature.muta.reset(PlayerMutationType::FEARLESS);
             }
 
-            player.muta.set(PlayerMutationType::COWARDICE);
+            creature.muta.set(PlayerMutationType::COWARDICE);
         }
 
         break;
     }
     case 3: {
-        if (player.muta.has_not(PlayerMutationType::HALLU) && !has_resist_chaos(creature)) {
+        if (creature.muta.has_not(PlayerMutationType::HALLU) && !has_resist_chaos(creature)) {
             msg_print(_("幻覚をひき起こす精神錯乱に陥った！", "You are afflicted by a hallucinatory insanity!"));
-            player.muta.set(PlayerMutationType::HALLU);
+            creature.muta.set(PlayerMutationType::HALLU);
         }
 
         break;
     }
     case 4: {
-        if (player.muta.has_not(PlayerMutationType::BERS_RAGE) && !has_resist_conf(creature)) {
+        if (creature.muta.has_not(PlayerMutationType::BERS_RAGE) && !has_resist_conf(creature)) {
             msg_print(_("激烈な感情の発作におそわれるようになった！", "You become subject to fits of berserk rage!"));
-            player.muta.set(PlayerMutationType::BERS_RAGE);
+            creature.muta.set(PlayerMutationType::BERS_RAGE);
         }
 
         break;
@@ -259,7 +257,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
         if (!has_resist_conf(creature)) {
             (void)bss.mod_confusion(randint0(4) + 4);
         }
-        if (!player.free_act) {
+        if (!creature.free_act) {
             (void)bss.mod_paralysis(randint0(4) + 4);
         }
         if (!has_resist_chaos(creature)) {
@@ -268,11 +266,11 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
 
         do {
             (void)do_dec_stat(creature, A_INT);
-        } while (!player.try_resist_eldritch_horror());
+        } while (!creature.try_resist_eldritch_horror());
 
         do {
             (void)do_dec_stat(creature, A_WIS);
-        } while (!player.try_resist_eldritch_horror());
+        } while (!creature.try_resist_eldritch_horror());
 
         break;
     }

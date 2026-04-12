@@ -38,15 +38,14 @@
  */
 void identify_pack(CreatureEntity &creature)
 {
-    auto &player = creature;
     for (INVENTORY_IDX i = 0; i < INVEN_TOTAL; i++) {
-        auto *o_ptr = player.inventory[i].get();
+        auto *o_ptr = creature.inventory[i].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
 
         identify_item(creature, o_ptr);
-        autopick_alter_item(player, i, false);
+        autopick_alter_item(creature, i, false);
     }
 }
 
@@ -59,8 +58,7 @@ void identify_pack(CreatureEntity &creature)
  */
 bool identify_item(CreatureEntity &creature, ItemEntity *o_ptr)
 {
-    auto &player = creature;
-    const auto known_item_name = describe_flavor(player, *o_ptr, 0);
+    const auto known_item_name = describe_flavor(creature, *o_ptr, 0);
     const auto old_known = any_bits(o_ptr->ident, IDENT_KNOWN);
     if (!o_ptr->is_fully_known()) {
         if (o_ptr->is_fixed_or_random_artifact() || one_in_(5)) {
@@ -90,7 +88,7 @@ bool identify_item(CreatureEntity &creature, ItemEntity *o_ptr)
     record_item_name = known_item_name;
     record_turn = AngbandWorld::get_instance().game_turn;
 
-    const auto item_name = describe_flavor(player, *o_ptr, OD_NAME_ONLY);
+    const auto item_name = describe_flavor(creature, *o_ptr, OD_NAME_ONLY);
     const auto &floor = *creature.current_floor_ptr;
     if (record_fix_art && !old_known && o_ptr->is_fixed_artifact()) {
         exe_write_diary(floor, DiaryKind::ART, 0, item_name);
@@ -115,11 +113,10 @@ bool identify_item(CreatureEntity &creature, ItemEntity *o_ptr)
  */
 bool ident_spell(CreatureEntity &creature, bool only_equip)
 {
-    auto &player = creature;
     std::unique_ptr<ItemTester> item_tester = std::make_unique<FuncItemTester>(only_equip ? object_is_not_identified_weapon_armor : object_is_not_identified);
 
     concptr q;
-    if (can_get_item(player, *item_tester)) {
+    if (can_get_item(creature, *item_tester)) {
         q = _("どのアイテムを鑑定しますか? ", "Identify which item? ");
     } else {
         if (only_equip) {
@@ -132,22 +129,22 @@ bool ident_spell(CreatureEntity &creature, bool only_equip)
 
     constexpr auto s = _("鑑定するべきアイテムがない。", "You have nothing to identify.");
     short i_idx;
-    auto *o_ptr = choose_object(player, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
+    auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
     if (!o_ptr) {
         return false;
     }
 
     auto old_known = identify_item(creature, o_ptr);
-    const auto item_name = describe_flavor(player, *o_ptr, 0);
+    const auto item_name = describe_flavor(creature, *o_ptr, 0);
     if (i_idx >= INVEN_MAIN_HAND) {
-        msg_format(_("%s^: %s(%c)。", "%s^: %s (%c)."), describe_use(player, i_idx), item_name.data(), index_to_label(i_idx));
+        msg_format(_("%s^: %s(%c)。", "%s^: %s (%c)."), describe_use(creature, i_idx), item_name.data(), index_to_label(i_idx));
     } else if (i_idx >= 0) {
         msg_format(_("ザック中: %s(%c)。", "In your pack: %s (%c)."), item_name.data(), index_to_label(i_idx));
     } else {
         msg_format(_("床上: %s。", "On the ground: %s."), item_name.data());
     }
 
-    autopick_alter_item(player, i_idx, (bool)(destroy_identify && !old_known));
+    autopick_alter_item(creature, i_idx, (bool)(destroy_identify && !old_known));
     return true;
 }
 
@@ -163,11 +160,10 @@ bool ident_spell(CreatureEntity &creature, bool only_equip)
  */
 bool identify_fully(CreatureEntity &creature, bool only_equip)
 {
-    auto &player = creature;
     std::unique_ptr<ItemTester> item_tester = std::make_unique<FuncItemTester>(only_equip ? object_is_not_fully_identified_weapon_armour : object_is_not_fully_identified);
 
     concptr q;
-    if (can_get_item(player, *item_tester)) {
+    if (can_get_item(creature, *item_tester)) {
         q = _("どのアイテムを*鑑定*しますか? ", "*Identify* which item? ");
     } else {
         if (only_equip) {
@@ -180,17 +176,17 @@ bool identify_fully(CreatureEntity &creature, bool only_equip)
 
     constexpr auto s = _("*鑑定*するべきアイテムがない。", "You have nothing to *identify*.");
     short i_idx;
-    auto *o_ptr = choose_object(player, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
+    auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
     if (o_ptr == nullptr) {
         return false;
     }
 
     auto old_known = identify_item(creature, o_ptr);
     o_ptr->ident |= (IDENT_FULL_KNOWN);
-    window_stuff(player);
-    const auto item_name = describe_flavor(player, *o_ptr, 0);
+    window_stuff(creature);
+    const auto item_name = describe_flavor(creature, *o_ptr, 0);
     if (i_idx >= INVEN_MAIN_HAND) {
-        msg_format(_("%s^: %s(%c)。", "%s^: %s (%c)."), describe_use(player, i_idx), item_name.data(), index_to_label(i_idx));
+        msg_format(_("%s^: %s(%c)。", "%s^: %s (%c)."), describe_use(creature, i_idx), item_name.data(), index_to_label(i_idx));
     } else if (i_idx >= 0) {
         msg_format(_("ザック中: %s(%c)。", "In your pack: %s (%c)."), item_name.data(), index_to_label(i_idx));
     } else {
@@ -198,6 +194,6 @@ bool identify_fully(CreatureEntity &creature, bool only_equip)
     }
 
     (void)screen_object(creature, *o_ptr, 0L);
-    autopick_alter_item(player, i_idx, (bool)(destroy_identify && !old_known));
+    autopick_alter_item(creature, i_idx, (bool)(destroy_identify && !old_known));
     return true;
 }

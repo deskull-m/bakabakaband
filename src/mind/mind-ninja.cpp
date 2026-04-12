@@ -91,8 +91,7 @@ bool kawarimi(CreatureEntity &creature, bool success)
     }
 
     const auto p_pos_orig = creature.get_position(); //!< @details 元の位置に変わり身を置く.
-    auto &player = creature;
-    teleport_player(player, 10 + randint1(90), TELEPORT_SPONTANEOUS);
+    teleport_player(creature, 10 + randint1(90), TELEPORT_SPONTANEOUS);
     constexpr auto sv_wooden_statue = 0;
     ItemEntity item({ ItemKindType::STATUE, sv_wooden_statue });
     item.pval = enum2i(MonraceId::NINJA);
@@ -142,8 +141,7 @@ bool rush_attack(CreatureEntity &creature, bool *mdeath)
         return true;
     }
 
-    auto &player = creature;
-    auto *player_ptr = &player;
+    auto *player_ptr = &creature;
     auto p_pos_new = p_pos;
     auto tmp_mdeath = false;
     auto moved = false;
@@ -204,8 +202,7 @@ bool rush_attack(CreatureEntity &creature, bool *mdeath)
  */
 void process_surprise_attack(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto &player = creature;
-    auto *player_ptr = &player;
+    auto *player_ptr = &creature;
 
     const auto &monrace = pa_ptr->m_ptr->get_monrace();
     if (!has_melee_weapon(creature, enum2i(INVEN_MAIN_HAND) + pa_ptr->hand) || player_ptr->is_icky_wield[pa_ptr->hand]) {
@@ -280,8 +277,7 @@ void calc_surprise_attack_damage(CreatureEntity &creature, player_attack_type *p
  */
 bool hayagake(CreatureEntity &creature)
 {
-    auto &player = creature;
-    auto *player_ptr = &player;
+    auto *player_ptr = &creature;
     PlayerEnergy energy(creature);
     if (player_ptr->action == ACTION_HAYAGAKE) {
         set_action(creature, ACTION_NONE);
@@ -311,8 +307,7 @@ bool set_superstealth(CreatureEntity &creature, bool set)
 {
     bool notice = false;
 
-    auto &player = creature;
-    auto *player_ptr = &player;
+    auto *player_ptr = &creature;
 
     auto ninja_data = CreatureClass(creature).get_specific_data<ninja_data_type>();
     if (!ninja_data || creature.is_dead()) {
@@ -354,15 +349,14 @@ bool set_superstealth(CreatureEntity &creature, bool set)
 
 /*!
  * @brief 忍術の発動 /
- * do_cmd_cast calls this function if the player's class is 'ninja'.
+ * do_cmd_cast calls this function if the creature's class is 'ninja'.
  * @param creature クリーチャーへの参照
  * @param spell 発動する特殊技能のID
  * @return 処理を実行したらTRUE、キャンセルした場合FALSEを返す。
  */
 bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
 {
-    auto &player = creature;
-    auto *player_ptr = &player;
+    auto *player_ptr = &creature;
     PLAYER_LEVEL plev = creature.level;
     auto ninja_data = CreatureClass(creature).get_specific_data<ninja_data_type>();
     switch (spell) {

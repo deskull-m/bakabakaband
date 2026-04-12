@@ -54,25 +54,24 @@
  */
 int staff_effect(CreatureEntity &creature, int sval, bool *use_charge, bool powerful, bool magic, bool known)
 {
-    auto &player = creature;
     int k;
     bool ident = false;
-    PLAYER_LEVEL lev = powerful ? player.level * 2 : player.level;
+    PLAYER_LEVEL lev = powerful ? creature.level * 2 : creature.level;
     POSITION detect_rad = powerful ? DETECT_RAD_DEFAULT * 3 / 2 : DETECT_RAD_DEFAULT;
 
-    player.plus_incident_tree("ZAP_STAFF", 1);
+    creature.plus_incident_tree("ZAP_STAFF", 1);
 
     /* Analyze the staff */
-    BadStatusSetter bss(player);
+    BadStatusSetter bss(creature);
     switch (sval) {
     case SV_STAFF_DARKNESS:
-        if (!has_resist_blind(player) && !has_resist_dark(player)) {
+        if (!has_resist_blind(creature) && !has_resist_dark(creature)) {
             if (bss.mod_blindness(3 + randint1(5))) {
                 ident = true;
             }
         }
 
-        if (unlite_area(player, 10, (powerful ? 6 : 3))) {
+        if (unlite_area(creature, 10, (powerful ? 6 : 3))) {
             ident = true;
         }
 
@@ -85,7 +84,7 @@ int staff_effect(CreatureEntity &creature, int sval, bool *use_charge, bool powe
     }
 
     case SV_STAFF_HASTE_MONSTERS: {
-        if (speed_monsters(player)) {
+        if (speed_monsters(creature)) {
             ident = true;
         }
         break;
@@ -94,7 +93,7 @@ int staff_effect(CreatureEntity &creature, int sval, bool *use_charge, bool powe
     case SV_STAFF_SUMMONING: {
         const int times = randint1(powerful ? 8 : 4);
         for (k = 0; k < times; k++) {
-            if (summon_specific(creature, creature.y, creature.x, player.current_floor_ptr->dun_level, SUMMON_NONE,
+            if (summon_specific(creature, creature.y, creature.x, creature.current_floor_ptr->dun_level, SUMMON_NONE,
                     (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET))) {
                 ident = true;
             }
@@ -110,11 +109,11 @@ int staff_effect(CreatureEntity &creature, int sval, bool *use_charge, bool powe
 
     case SV_STAFF_IDENTIFY: {
         if (powerful) {
-            if (!identify_fully(player, false)) {
+            if (!identify_fully(creature, false)) {
                 *use_charge = false;
             }
         } else {
-            if (!ident_spell(player, false)) {
+            if (!ident_spell(creature, false)) {
                 *use_charge = false;
             }
         }
@@ -131,134 +130,134 @@ int staff_effect(CreatureEntity &creature, int sval, bool *use_charge, bool powe
     }
 
     case SV_STAFF_STARLITE:
-        ident = starlight(player, magic);
+        ident = starlight(creature, magic);
         break;
 
     case SV_STAFF_LITE: {
-        if (lite_area(player, Dice::roll(2, 8), (powerful ? 4 : 2))) {
+        if (lite_area(creature, Dice::roll(2, 8), (powerful ? 4 : 2))) {
             ident = true;
         }
         break;
     }
 
     case SV_STAFF_MAPPING: {
-        map_area(player, powerful ? DETECT_RAD_MAP * 3 / 2 : DETECT_RAD_MAP);
+        map_area(creature, powerful ? DETECT_RAD_MAP * 3 / 2 : DETECT_RAD_MAP);
         ident = true;
         break;
     }
 
     case SV_STAFF_DETECT_GOLD: {
-        if (detect_treasure(player, detect_rad)) {
+        if (detect_treasure(creature, detect_rad)) {
             ident = true;
         }
-        if (detect_objects_gold(player, detect_rad)) {
+        if (detect_objects_gold(creature, detect_rad)) {
             ident = true;
         }
         break;
     }
 
     case SV_STAFF_DETECT_ITEM: {
-        if (detect_objects_normal(player, detect_rad)) {
+        if (detect_objects_normal(creature, detect_rad)) {
             ident = true;
         }
         break;
     }
 
     case SV_STAFF_DETECT_TRAP: {
-        if (detect_traps(player, detect_rad, known)) {
+        if (detect_traps(creature, detect_rad, known)) {
             ident = true;
         }
         break;
     }
 
     case SV_STAFF_DETECT_DOOR: {
-        if (detect_doors(player, detect_rad)) {
+        if (detect_doors(creature, detect_rad)) {
             ident = true;
         }
-        if (detect_stairs(player, detect_rad)) {
+        if (detect_stairs(creature, detect_rad)) {
             ident = true;
         }
         break;
     }
 
     case SV_STAFF_DETECT_INVIS: {
-        if (set_tim_invis(player, player.tim_invis + 12 + randint1(12), false)) {
+        if (set_tim_invis(creature, creature.tim_invis + 12 + randint1(12), false)) {
             ident = true;
         }
         break;
     }
 
     case SV_STAFF_DETECT_EVIL: {
-        if (detect_monsters_evil(player, detect_rad)) {
+        if (detect_monsters_evil(creature, detect_rad)) {
             ident = true;
         }
         break;
     }
 
     case SV_STAFF_CURE_LIGHT: {
-        ident = cure_light_wounds(player, Dice::roll(powerful ? 4 : 2, 8));
+        ident = cure_light_wounds(creature, Dice::roll(powerful ? 4 : 2, 8));
         break;
     }
 
     case SV_STAFF_CURING: {
-        ident = true_healing(player, 0);
-        if (set_berserk(player, 0, true)) {
+        ident = true_healing(creature, 0);
+        if (set_berserk(creature, 0, true)) {
             ident = true;
         }
         break;
     }
 
     case SV_STAFF_HEALING: {
-        if (cure_critical_wounds(player, powerful ? 500 : 300)) {
+        if (cure_critical_wounds(creature, powerful ? 500 : 300)) {
             ident = true;
         }
         break;
     }
 
     case SV_STAFF_THE_MAGI: {
-        if (do_res_stat(player, A_INT)) {
+        if (do_res_stat(creature, A_INT)) {
             ident = true;
         }
-        ident |= restore_mana(player, false);
-        if (set_berserk(player, 0, true)) {
+        ident |= restore_mana(creature, false);
+        if (set_berserk(creature, 0, true)) {
             ident = true;
         }
         break;
     }
 
     case SV_STAFF_SLEEP_MONSTERS: {
-        if (sleep_monsters(player, lev)) {
+        if (sleep_monsters(creature, lev)) {
             ident = true;
         }
         break;
     }
 
     case SV_STAFF_SLOW_MONSTERS: {
-        if (slow_monsters(player, lev)) {
+        if (slow_monsters(creature, lev)) {
             ident = true;
         }
         break;
     }
 
     case SV_STAFF_SPEED: {
-        if (set_acceleration(player, randint1(30) + (powerful ? 30 : 15), false)) {
+        if (set_acceleration(creature, randint1(30) + (powerful ? 30 : 15), false)) {
             ident = true;
         }
         break;
     }
 
     case SV_STAFF_PROBING: {
-        ident = probing(player);
+        ident = probing(creature);
         break;
     }
 
     case SV_STAFF_DISPEL_EVIL: {
-        ident = dispel_evil(player, powerful ? 120 : 80);
+        ident = dispel_evil(creature, powerful ? 120 : 80);
         break;
     }
 
     case SV_STAFF_POWER: {
-        ident = dispel_monsters(player, powerful ? 225 : 150);
+        ident = dispel_monsters(creature, powerful ? 225 : 150);
         break;
     }
 
@@ -268,7 +267,7 @@ int staff_effect(CreatureEntity &creature, int sval, bool *use_charge, bool powe
     }
 
     case SV_STAFF_GENOCIDE: {
-        ident = symbol_genocide(player, (magic ? lev + 50 : 200), true);
+        ident = symbol_genocide(creature, (magic ? lev + 50 : 200), true);
         break;
     }
 
@@ -313,7 +312,6 @@ int staff_effect(CreatureEntity &creature, int sval, bool *use_charge, bool powe
  */
 void do_cmd_use_staff(CreatureEntity &creature)
 {
-    auto &player = creature;
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
@@ -326,9 +324,9 @@ void do_cmd_use_staff(CreatureEntity &creature)
     constexpr auto q = _("どの杖を使いますか? ", "Use which staff? ");
     constexpr auto s = _("使える杖がない。", "You have no staff to use.");
     short i_idx;
-    if (!choose_object(player, &i_idx, q, s, (USE_INVEN | USE_FLOOR), TvalItemTester(ItemKindType::STAFF))) {
+    if (!choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_FLOOR), TvalItemTester(ItemKindType::STAFF))) {
         return;
     }
 
-    ObjectUseEntity(player, i_idx).execute();
+    ObjectUseEntity(creature, i_idx).execute();
 }

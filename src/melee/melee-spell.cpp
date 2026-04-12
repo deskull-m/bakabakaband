@@ -44,8 +44,7 @@ static bool try_melee_spell(CreatureEntity &creature, melee_spell_type *ms_ptr)
 
 static bool disturb_melee_spell(CreatureEntity &creature, melee_spell_type *ms_ptr)
 {
-    auto &player = creature;
-    if (spell_is_inate(ms_ptr->thrown_spell) || !SpellHex(player).check_hex_barrier(ms_ptr->m_idx, HEX_ANTI_MAGIC)) {
+    if (spell_is_inate(ms_ptr->thrown_spell) || !SpellHex(creature).check_hex_barrier(ms_ptr->m_idx, HEX_ANTI_MAGIC)) {
         return false;
     }
 
@@ -58,12 +57,11 @@ static bool disturb_melee_spell(CreatureEntity &creature, melee_spell_type *ms_p
 
 static void process_special_melee_spell(CreatureEntity &creature, melee_spell_type *ms_ptr)
 {
-    auto &player = creature;
-    CreatureClass pc(player);
+    CreatureClass pc(creature);
     bool is_special_magic = ms_ptr->m_ptr->get_monster_profile().ml;
     is_special_magic &= ms_ptr->maneable;
     is_special_magic &= AngbandWorld::get_instance().timewalk_m_idx == 0;
-    is_special_magic &= !player.is_blind();
+    is_special_magic &= !creature.is_blind();
     is_special_magic &= pc.equals(PlayerClassType::IMITATOR);
     is_special_magic &= ms_ptr->thrown_spell != MonsterAbilityType::SPECIAL;
     if (!is_special_magic) {
@@ -101,7 +99,7 @@ static void process_rememberance(melee_spell_type *ms_ptr)
  * @param m_idx 術者のモンスターID
  * @return 実際に特殊能力を使った場合TRUEを返す
  * @details
- * The player is only disturbed if able to be affected by the spell.
+ * The creature is only disturbed if able to be affected by the spell.
  */
 bool monst_spell_monst(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
@@ -121,8 +119,7 @@ bool monst_spell_monst(CreatureEntity &creature, MONSTER_IDX m_idx)
         return true;
     }
 
-    auto &player = creature;
-    ms_ptr->can_remember = is_original_ap_and_seen(player, *ms_ptr->m_ptr);
+    ms_ptr->can_remember = is_original_ap_and_seen(creature, *ms_ptr->m_ptr);
     const auto res = monspell_to_monster(creature, ms_ptr->thrown_spell, ms_ptr->y, ms_ptr->x, m_idx, ms_ptr->target_idx, false);
     if (!res.valid) {
         return false;
@@ -131,7 +128,7 @@ bool monst_spell_monst(CreatureEntity &creature, MONSTER_IDX m_idx)
     ms_ptr->dam = res.dam;
     process_special_melee_spell(creature, ms_ptr);
     process_rememberance(ms_ptr);
-    if (player.is_dead() && (ms_ptr->r_ptr->r_deaths < MAX_SHORT) && !creature.current_floor_ptr->inside_arena) {
+    if (creature.is_dead() && (ms_ptr->r_ptr->r_deaths < MAX_SHORT) && !creature.current_floor_ptr->inside_arena) {
         ms_ptr->r_ptr->r_deaths++;
     }
 

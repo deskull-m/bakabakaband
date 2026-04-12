@@ -26,12 +26,11 @@
 
 static void decide_melee_spell_target(CreatureEntity &creature, melee_spell_type *ms_ptr)
 {
-    auto &player = creature;
-    if ((player.pet_t_m_idx == 0) || !ms_ptr->pet) {
+    if ((creature.pet_t_m_idx == 0) || !ms_ptr->pet) {
         return;
     }
 
-    ms_ptr->target_idx = player.pet_t_m_idx;
+    ms_ptr->target_idx = creature.pet_t_m_idx;
     const auto &floor = *creature.current_floor_ptr;
     ms_ptr->t_ptr = &floor.get_monster(ms_ptr->target_idx);
     if ((ms_ptr->m_idx == ms_ptr->target_idx) || !projectable(floor, ms_ptr->m_ptr->get_position(), ms_ptr->t_ptr->get_position())) {
@@ -55,8 +54,7 @@ static void decide_indirection_melee_spell(CreatureEntity &creature, melee_spell
 
     ms_ptr->t_ptr = &floor.get_monster(ms_ptr->target_idx);
     const auto &monster_to = *ms_ptr->t_ptr;
-    auto &player = creature;
-    if ((ms_ptr->m_idx == ms_ptr->target_idx) || ((ms_ptr->target_idx != player.pet_t_m_idx) && !monster_from.is_hostile_to_melee(monster_to))) {
+    if ((ms_ptr->m_idx == ms_ptr->target_idx) || ((ms_ptr->target_idx != creature.pet_t_m_idx) && !monster_from.is_hostile_to_melee(monster_to))) {
         ms_ptr->target_idx = 0;
         return;
     }
@@ -215,8 +213,7 @@ static void check_melee_spell_rocket(CreatureEntity &creature, melee_spell_type 
 
 static void check_melee_spell_beam(CreatureEntity &creature, melee_spell_type *ms_ptr)
 {
-    auto &player = creature;
-    if (ms_ptr->ability_flags.has_none_of(RF_ABILITY_BEAM_MASK) || direct_beam(player, *ms_ptr->m_ptr, ms_ptr->t_ptr->get_position())) {
+    if (ms_ptr->ability_flags.has_none_of(RF_ABILITY_BEAM_MASK) || direct_beam(creature, *ms_ptr->m_ptr, ms_ptr->t_ptr->get_position())) {
         return;
     }
 
@@ -229,20 +226,19 @@ static void check_melee_spell_breath(CreatureEntity &creature, melee_spell_type 
         return;
     }
 
-    auto &player = creature;
     POSITION rad = ms_ptr->r_ptr->misc_flags.has(MonsterMiscType::POWERFUL) ? 3 : 2;
-    if (!breath_direct(player, ms_ptr->m_ptr->get_position(), ms_ptr->t_ptr->get_position(), rad, AttributeType::NONE, true)) {
+    if (!breath_direct(creature, ms_ptr->m_ptr->get_position(), ms_ptr->t_ptr->get_position(), rad, AttributeType::NONE, true)) {
         ms_ptr->ability_flags.reset(RF_ABILITY_BREATH_MASK);
         return;
     }
 
-    if (ms_ptr->ability_flags.has(MonsterAbilityType::BR_LITE) && !breath_direct(player, ms_ptr->m_ptr->get_position(),
+    if (ms_ptr->ability_flags.has(MonsterAbilityType::BR_LITE) && !breath_direct(creature, ms_ptr->m_ptr->get_position(),
                                                                       ms_ptr->t_ptr->get_position(), rad, AttributeType::LITE, true)) {
         ms_ptr->ability_flags.reset(MonsterAbilityType::BR_LITE);
         return;
     }
 
-    if (ms_ptr->ability_flags.has(MonsterAbilityType::BR_DISI) && !breath_direct(player, ms_ptr->m_ptr->get_position(),
+    if (ms_ptr->ability_flags.has(MonsterAbilityType::BR_DISI) && !breath_direct(creature, ms_ptr->m_ptr->get_position(),
                                                                       ms_ptr->t_ptr->get_position(), rad, AttributeType::DISINTEGRATE, true)) {
         ms_ptr->ability_flags.reset(MonsterAbilityType::BR_DISI);
     }
@@ -254,9 +250,8 @@ static void check_melee_spell_special(CreatureEntity &creature, melee_spell_type
         return;
     }
 
-    auto &player = creature;
     if (ms_ptr->m_ptr->r_idx == MonraceId::ROLENTO) {
-        if ((player.pet_extra_flags & (PF_ATTACK_SPELL | PF_SUMMON_SPELL)) != (PF_ATTACK_SPELL | PF_SUMMON_SPELL)) {
+        if ((creature.pet_extra_flags & (PF_ATTACK_SPELL | PF_SUMMON_SPELL)) != (PF_ATTACK_SPELL | PF_SUMMON_SPELL)) {
             ms_ptr->ability_flags.reset(MonsterAbilityType::SPECIAL);
         }
 
@@ -264,7 +259,7 @@ static void check_melee_spell_special(CreatureEntity &creature, melee_spell_type
     }
 
     if (ms_ptr->r_ptr->symbol_char_is_any_of("B")) {
-        if ((player.pet_extra_flags & (PF_ATTACK_SPELL | PF_TELEPORT)) != (PF_ATTACK_SPELL | PF_TELEPORT)) {
+        if ((creature.pet_extra_flags & (PF_ATTACK_SPELL | PF_TELEPORT)) != (PF_ATTACK_SPELL | PF_TELEPORT)) {
             ms_ptr->ability_flags.reset(MonsterAbilityType::SPECIAL);
         }
 
@@ -289,21 +284,20 @@ static void check_pet(CreatureEntity &creature, melee_spell_type *ms_ptr)
         return;
     }
 
-    auto &player = creature;
     ms_ptr->ability_flags.reset({ MonsterAbilityType::SHRIEK, MonsterAbilityType::DARKNESS, MonsterAbilityType::TRAPS });
-    if (!(player.pet_extra_flags & PF_TELEPORT)) {
+    if (!(creature.pet_extra_flags & PF_TELEPORT)) {
         ms_ptr->ability_flags.reset({ MonsterAbilityType::BLINK, MonsterAbilityType::TPORT, MonsterAbilityType::TELE_TO, MonsterAbilityType::TELE_AWAY, MonsterAbilityType::TELE_LEVEL });
     }
 
-    if (!(player.pet_extra_flags & PF_ATTACK_SPELL)) {
+    if (!(creature.pet_extra_flags & PF_ATTACK_SPELL)) {
         ms_ptr->ability_flags.reset(RF_ABILITY_ATTACK_MASK);
     }
 
-    if (!(player.pet_extra_flags & PF_SUMMON_SPELL)) {
+    if (!(creature.pet_extra_flags & PF_SUMMON_SPELL)) {
         ms_ptr->ability_flags.reset(RF_ABILITY_SUMMON_MASK);
     }
 
-    if (!(player.pet_extra_flags & PF_BALL_SPELL) && !ms_ptr->m_ptr->is_riding()) {
+    if (!(creature.pet_extra_flags & PF_BALL_SPELL) && !ms_ptr->m_ptr->is_riding()) {
         check_melee_spell_distance(creature, ms_ptr);
         check_melee_spell_rocket(creature, ms_ptr);
         check_melee_spell_beam(creature, ms_ptr);
@@ -319,24 +313,23 @@ static void check_non_stupid(CreatureEntity &creature, melee_spell_type *ms_ptr)
         return;
     }
 
-    auto &player = creature;
-    if (ms_ptr->ability_flags.has_any_of(RF_ABILITY_BOLT_MASK) && !clean_shot(player, ms_ptr->m_ptr->y, ms_ptr->m_ptr->x, ms_ptr->t_ptr->y, ms_ptr->t_ptr->x, ms_ptr->pet)) {
+    if (ms_ptr->ability_flags.has_any_of(RF_ABILITY_BOLT_MASK) && !clean_shot(creature, ms_ptr->m_ptr->y, ms_ptr->m_ptr->x, ms_ptr->t_ptr->y, ms_ptr->t_ptr->x, ms_ptr->pet)) {
         ms_ptr->ability_flags.reset(RF_ABILITY_BOLT_MASK);
     }
 
-    if (ms_ptr->ability_flags.has_any_of(RF_ABILITY_SUMMON_MASK) && !(summon_possible(player, ms_ptr->t_ptr->y, ms_ptr->t_ptr->x))) {
+    if (ms_ptr->ability_flags.has_any_of(RF_ABILITY_SUMMON_MASK) && !(summon_possible(creature, ms_ptr->t_ptr->y, ms_ptr->t_ptr->x))) {
         ms_ptr->ability_flags.reset(RF_ABILITY_SUMMON_MASK);
     }
 
-    if (ms_ptr->ability_flags.has(MonsterAbilityType::DISPEL) && !dispel_check_monster(player, ms_ptr->m_idx, ms_ptr->target_idx)) {
+    if (ms_ptr->ability_flags.has(MonsterAbilityType::DISPEL) && !dispel_check_monster(creature, ms_ptr->m_idx, ms_ptr->target_idx)) {
         ms_ptr->ability_flags.reset(MonsterAbilityType::DISPEL);
     }
 
-    if (ms_ptr->ability_flags.has(MonsterAbilityType::RAISE_DEAD) && !raise_possible(player, *ms_ptr->m_ptr)) {
+    if (ms_ptr->ability_flags.has(MonsterAbilityType::RAISE_DEAD) && !raise_possible(creature, *ms_ptr->m_ptr)) {
         ms_ptr->ability_flags.reset(MonsterAbilityType::RAISE_DEAD);
     }
 
-    if (ms_ptr->ability_flags.has(MonsterAbilityType::SPECIAL) && (ms_ptr->m_ptr->r_idx == MonraceId::ROLENTO) && !summon_possible(player, ms_ptr->t_ptr->y, ms_ptr->t_ptr->x)) {
+    if (ms_ptr->ability_flags.has(MonsterAbilityType::SPECIAL) && (ms_ptr->m_ptr->r_idx == MonraceId::ROLENTO) && !summon_possible(creature, ms_ptr->t_ptr->y, ms_ptr->t_ptr->x)) {
         ms_ptr->ability_flags.reset(MonsterAbilityType::SPECIAL);
     }
 }
@@ -365,8 +358,7 @@ static bool set_melee_spell_set(CreatureEntity &creature, melee_spell_type *ms_p
 
     EnumClassFlagGroup<MonsterAbilityType>::get_flags(ms_ptr->ability_flags, std::back_inserter(ms_ptr->spells));
 
-    auto &player = creature;
-    return !ms_ptr->spells.empty() && player.playing && !creature.is_dead() && !player.leaving;
+    return !ms_ptr->spells.empty() && creature.playing && !creature.is_dead() && !creature.leaving;
 }
 
 bool check_melee_spell_set(CreatureEntity &creature, melee_spell_type *ms_ptr)

@@ -36,8 +36,7 @@
  */
 static bool detect_feat_flag(CreatureEntity &creature, POSITION range, TerrainCharacteristics flag, bool known)
 {
-    auto &player = creature;
-    auto &floor = *player.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
     }
@@ -59,14 +58,14 @@ static bool detect_feat_flag(CreatureEntity &creature, POSITION range, TerrainCh
 
                 grid.info &= ~(CAVE_UNSAFE);
 
-                lite_spot(player, pos);
+                lite_spot(creature, pos);
             }
         }
 
         if (grid.has(flag)) {
-            disclose_grid(player, pos);
+            disclose_grid(creature, pos);
             grid.info |= (CAVE_MARK);
-            lite_spot(player, pos);
+            lite_spot(creature, pos);
             detect = true;
         }
     }
@@ -85,17 +84,16 @@ static bool detect_feat_flag(CreatureEntity &creature, POSITION range, TerrainCh
  */
 bool detect_traps(CreatureEntity &creature, POSITION range, bool known)
 {
-    auto &player = creature;
     bool detect = detect_feat_flag(creature, range, TerrainCharacteristics::TRAP, known);
     if (!known && detect) {
         detect_feat_flag(creature, range, TerrainCharacteristics::TRAP, true);
     }
 
     if (known || detect) {
-        player.dtrap = true;
+        creature.dtrap = true;
     }
 
-    if (music_singing(player, MUSIC_DETECT) && get_singing_count(player) > 0) {
+    if (music_singing(creature, MUSIC_DETECT) && get_singing_count(creature) > 0) {
         detect = false;
     }
 
@@ -114,10 +112,9 @@ bool detect_traps(CreatureEntity &creature, POSITION range, bool known)
  */
 bool detect_doors(CreatureEntity &creature, POSITION range)
 {
-    auto &player = creature;
     bool detect = detect_feat_flag(creature, range, TerrainCharacteristics::DOOR, true);
 
-    if (music_singing(player, MUSIC_DETECT) && get_singing_count(player) > 0) {
+    if (music_singing(creature, MUSIC_DETECT) && get_singing_count(creature) > 0) {
         detect = false;
     }
     if (detect) {
@@ -135,10 +132,9 @@ bool detect_doors(CreatureEntity &creature, POSITION range)
  */
 bool detect_stairs(CreatureEntity &creature, POSITION range)
 {
-    auto &player = creature;
     bool detect = detect_feat_flag(creature, range, TerrainCharacteristics::STAIRS, true);
 
-    if (music_singing(player, MUSIC_DETECT) && get_singing_count(player) > 0) {
+    if (music_singing(creature, MUSIC_DETECT) && get_singing_count(creature) > 0) {
         detect = false;
     }
     if (detect) {
@@ -156,10 +152,9 @@ bool detect_stairs(CreatureEntity &creature, POSITION range)
  */
 bool detect_treasure(CreatureEntity &creature, POSITION range)
 {
-    auto &player = creature;
     bool detect = detect_feat_flag(creature, range, TerrainCharacteristics::HAS_GOLD, true);
 
-    if (music_singing(player, MUSIC_DETECT) && get_singing_count(player) > 6) {
+    if (music_singing(creature, MUSIC_DETECT) && get_singing_count(creature) > 6) {
         detect = false;
     }
     if (detect) {
@@ -176,7 +171,6 @@ bool detect_treasure(CreatureEntity &creature, POSITION range)
  */
 bool detect_objects_gold(CreatureEntity &creature, POSITION range)
 {
-    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     POSITION range2 = range;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
@@ -201,12 +195,12 @@ bool detect_objects_gold(CreatureEntity &creature, POSITION range)
 
         if (item_ptr->bi_key.tval() == ItemKindType::GOLD) {
             item_ptr->marked.set(OmType::FOUND);
-            lite_spot(player, i_pos);
+            lite_spot(creature, i_pos);
             detect = true;
         }
     }
 
-    if (music_singing(player, MUSIC_DETECT) && get_singing_count(player) > 6) {
+    if (music_singing(creature, MUSIC_DETECT) && get_singing_count(creature) > 6) {
         detect = false;
     }
     if (detect) {
@@ -228,7 +222,6 @@ bool detect_objects_gold(CreatureEntity &creature, POSITION range)
  */
 bool detect_objects_normal(CreatureEntity &creature, POSITION range)
 {
-    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     POSITION range2 = range;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
@@ -251,12 +244,12 @@ bool detect_objects_normal(CreatureEntity &creature, POSITION range)
 
         if (item_ptr->bi_key.tval() != ItemKindType::GOLD) {
             item_ptr->marked.set(OmType::FOUND);
-            lite_spot(player, i_pos);
+            lite_spot(creature, i_pos);
             detect = true;
         }
     }
 
-    if (music_singing(player, MUSIC_DETECT) && get_singing_count(player) > 6) {
+    if (music_singing(creature, MUSIC_DETECT) && get_singing_count(creature) > 6) {
         detect = false;
     }
     if (detect) {
@@ -337,7 +330,6 @@ bool detect_objects_magic(CreatureEntity &creature, POSITION range)
  */
 bool detect_monsters_normal(CreatureEntity &creature, POSITION range)
 {
-    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
@@ -357,14 +349,14 @@ bool detect_monsters_normal(CreatureEntity &creature, POSITION range)
             continue;
         }
 
-        if (monrace.misc_flags.has_not(MonsterMiscType::INVISIBLE) || player.see_inv) {
+        if (monrace.misc_flags.has_not(MonsterMiscType::INVISIBLE) || creature.see_inv) {
             monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(player, i, false);
+            update_monster(creature, i, false);
             flag = true;
         }
     }
 
-    if (music_singing(player, MUSIC_DETECT) && get_singing_count(player) > 3) {
+    if (music_singing(creature, MUSIC_DETECT) && get_singing_count(creature) > 3) {
         flag = false;
     }
     if (flag) {
@@ -375,14 +367,13 @@ bool detect_monsters_normal(CreatureEntity &creature, POSITION range)
 }
 
 /*!
- * @brief 不可視のモンスターを感知する / Detect all "invisible" monsters around the player
+ * @brief 不可視のモンスターを感知する / Detect all "invisible" monsters around the creature
  * @param creature クリーチャーへの参照
  * @param range 効果範囲
  * @return 効力があった場合TRUEを返す
  */
 bool detect_monsters_invis(CreatureEntity &creature, POSITION range)
 {
-    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
@@ -412,12 +403,12 @@ bool detect_monsters_invis(CreatureEntity &creature, POSITION range)
             }
 
             monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(player, i, false);
+            update_monster(creature, i, false);
             flag = true;
         }
     }
 
-    if (music_singing(player, MUSIC_DETECT) && get_singing_count(player) > 3) {
+    if (music_singing(creature, MUSIC_DETECT) && get_singing_count(creature) > 3) {
         flag = false;
     }
     if (flag) {
@@ -581,7 +572,6 @@ bool detect_monsters_mind(CreatureEntity &creature, POSITION range)
  */
 bool detect_monsters_string(CreatureEntity &creature, POSITION range, concptr Match)
 {
-    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
@@ -610,12 +600,12 @@ bool detect_monsters_string(CreatureEntity &creature, POSITION range, concptr Ma
             }
 
             monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(player, i, false);
+            update_monster(creature, i, false);
             flag = true;
         }
     }
 
-    if (music_singing(player, MUSIC_DETECT) && get_singing_count(player) > 3) {
+    if (music_singing(creature, MUSIC_DETECT) && get_singing_count(creature) > 3) {
         flag = false;
     }
     if (flag) {

@@ -18,7 +18,7 @@
 /*!
  * @brief 魔道具の使用回数を回復させる施設のメインルーチン / Recharge rods, wands and staffs
  * @details
- * The player can select the number of charges to add\n
+ * The creature can select the number of charges to add\n
  * (up to a limit), and the recharge never fails.\n
  *\n
  * The cost for rods depends on the level of the rod. The prices\n
@@ -28,7 +28,6 @@
  */
 void building_recharge(CreatureEntity &creature)
 {
-    auto &player = creature;
     msg_flag = false;
     clear_bldg(4, 18);
     prt(_("  再充填の費用はアイテムの種類によります。", "  The prices of recharge depend on the type."), 6, 0);
@@ -41,19 +40,19 @@ void building_recharge(CreatureEntity &creature)
     }
 
     /*
-     * We don't want to give the player free info about
+     * We don't want to give the creature free info about
      * the level of the item or the number of charges.
      */
     if (!o_ptr->is_known()) {
         msg_format(_("充填する前に鑑定されている必要があります！", "The item must be identified first!"));
         msg_erase();
-        if ((player.au >= 50) && input_check(_("＄50で鑑定しますか？ ", "Identify for 50 gold? "))) {
-            player.au -= 50;
+        if ((creature.au >= 50) && input_check(_("＄50で鑑定しますか？ ", "Identify for 50 gold? "))) {
+            creature.au -= 50;
             identify_item(creature, o_ptr);
-            const auto item_name = describe_flavor(player, *o_ptr, 0);
+            const auto item_name = describe_flavor(creature, *o_ptr, 0);
             msg_format(_("%s です。", "You have: %s."), item_name.data());
-            autopick_alter_item(player, i_idx, false);
-            building_prt_gold(player.au);
+            autopick_alter_item(creature, i_idx, false);
+            building_prt_gold(creature.au);
         }
 
         return;
@@ -102,8 +101,8 @@ void building_recharge(CreatureEntity &creature)
         return;
     }
 
-    if (player.au < price) {
-        const auto item_name = describe_flavor(player, *o_ptr, OD_NAME_ONLY);
+    if (creature.au < price) {
+        const auto item_name = describe_flavor(creature, *o_ptr, OD_NAME_ONLY);
 #ifdef JP
         msg_format("%sを再充填するには＄%d 必要です！", item_name.data(), price);
 #else
@@ -133,7 +132,7 @@ void building_recharge(CreatureEntity &creature)
         }
 
         const auto mes = _("一回分＄%d で何回分充填しますか？", "Add how many charges for %d gold apiece? ");
-        const auto charges = input_quantity(std::min(player.au / price, max_charges), format(mes, price));
+        const auto charges = input_quantity(std::min(creature.au / price, max_charges), format(mes, price));
         if (charges < 1) {
             return;
         }
@@ -143,7 +142,7 @@ void building_recharge(CreatureEntity &creature)
         o_ptr->ident &= ~(IDENT_EMPTY);
     }
 
-    const auto item_name = describe_flavor(player, *o_ptr, 0);
+    const auto item_name = describe_flavor(creature, *o_ptr, 0);
 #ifdef JP
     msg_format("%sを＄%d で再充填しました。", item_name.data(), price);
 #else
@@ -156,13 +155,13 @@ void building_recharge(CreatureEntity &creature)
     };
     rfu.set_flags(flags);
     rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
-    player.au -= price;
+    creature.au -= price;
 }
 
 /*!
  * @brief 魔道具の使用回数を回復させる施設の一括処理向けサブルーチン / Recharge rods, wands and staffs
  * @details
- * The player can select the number of charges to add\n
+ * The creature can select the number of charges to add\n
  * (up to a limit), and the recharge never fails.\n
  *\n
  * The cost for rods depends on the level of the rod. The prices\n
@@ -172,7 +171,6 @@ void building_recharge(CreatureEntity &creature)
  */
 void building_recharge_all(CreatureEntity &creature)
 {
-    auto &player = creature;
     msg_flag = false;
     clear_bldg(4, 18);
     prt(_("  再充填の費用はアイテムの種類によります。", "  The prices of recharge depend on the type."), 6, 0);
@@ -180,7 +178,7 @@ void building_recharge_all(CreatureEntity &creature)
     auto price = 0;
     auto total_cost = 0;
     for (short i = 0; i < INVEN_PACK; i++) {
-        const auto &item = *player.inventory[i];
+        const auto &item = *creature.inventory[i];
         if (!item.can_recharge()) {
             continue;
         }
@@ -221,7 +219,7 @@ void building_recharge_all(CreatureEntity &creature)
         return;
     }
 
-    if (player.au < total_cost) {
+    if (creature.au < total_cost) {
         msg_format(_("すべてのアイテムを再充填するには＄%d 必要です！", "You need %d gold to recharge all items!"), total_cost);
         msg_erase();
         return;
@@ -232,14 +230,14 @@ void building_recharge_all(CreatureEntity &creature)
     }
 
     for (short i = 0; i < INVEN_PACK; i++) {
-        auto *o_ptr = player.inventory[i].get();
+        auto *o_ptr = creature.inventory[i].get();
         if (!o_ptr->can_recharge()) {
             continue;
         }
 
         if (!o_ptr->is_known()) {
             identify_item(creature, o_ptr);
-            autopick_alter_item(player, i, false);
+            autopick_alter_item(creature, i, false);
         }
 
         const auto base_pval = o_ptr->get_baseitem_pval();
@@ -275,5 +273,5 @@ void building_recharge_all(CreatureEntity &creature)
     };
     rfu.set_flags(flags);
     rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
-    player.au -= total_cost;
+    creature.au -= total_cost;
 }

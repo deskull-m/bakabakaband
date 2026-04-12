@@ -124,15 +124,13 @@ void process_player_damage_dodged(CreatureEntity &creature, int m_idx)
         return;
     }
 
-    auto &player = creature;
     const auto killer = build_killer_on_earthquake(creature, m_idx);
-    BadStatusSetter(player).mod_stun(randnum1<short>(50));
+    BadStatusSetter(creature).mod_stun(randnum1<short>(50));
     take_hit(creature, DAMAGE_ATTACK, Dice::roll(10, 4), killer);
 }
 
 void process_hit_to_player(CreatureEntity &creature, std::span<const Pos2D> pos_collapses, int m_idx)
 {
-    auto &player = creature;
     const auto has_hit = ranges::contains(pos_collapses, creature.get_position());
     if (!has_hit || has_pass_wall(creature) || has_kill_wall(creature)) {
         return;
@@ -147,7 +145,7 @@ void process_hit_to_player(CreatureEntity &creature, std::span<const Pos2D> pos_
 
     if (const auto pos_dodge = decide_player_dodge_posistion(creature, pos_collapses)) {
         process_player_damage_dodged(creature, m_idx);
-        (void)move_player_effect(player, pos_dodge->y, pos_dodge->x, MPE_DONT_PICKUP);
+        (void)move_player_effect(creature, pos_dodge->y, pos_dodge->x, MPE_DONT_PICKUP);
         return;
     }
     process_player_damage_undodged(creature, m_idx);
@@ -256,7 +254,6 @@ void process_hit_to_monsters(CreatureEntity &creature, std::span<const Pos2D> po
 
 void destruct_earthquake_area(CreatureEntity &creature, std::span<const Pos2D> pos_collapses)
 {
-    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     floor.forget_mon_lite();
     const auto &dungeon = floor.get_dungeon_definition();
@@ -268,7 +265,7 @@ void destruct_earthquake_area(CreatureEntity &creature, std::span<const Pos2D> p
     pt.entry_item(TerrainTag::MAGMA_VEIN, 30);
 
     for (const auto &pos : pos_collapses | ranges::views::filter(is_changeable)) {
-        delete_all_items_from_floor(player, pos);
+        delete_all_items_from_floor(creature, pos);
 
         if (floor.has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION)) {
             set_terrain_id_to_grid(creature, pos, pt.pick_one_at_random());
@@ -350,7 +347,6 @@ bool earthquake(CreatureEntity &creature, const Pos2D &center, int radius, MONST
 {
     const int earthquake_max = 80;
 
-    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     if ((floor.is_in_quest() && QuestType::is_fixed(floor.quest_number)) || !floor.is_underground()) {
         return false;
@@ -376,7 +372,7 @@ bool earthquake(CreatureEntity &creature, const Pos2D &center, int radius, MONST
     set_redrawing_flags();
 
     if (floor.get_grid(creature.get_position()).info & CAVE_GLOW) {
-        set_superstealth(player, false);
+        set_superstealth(creature, false);
     }
     return true;
 }

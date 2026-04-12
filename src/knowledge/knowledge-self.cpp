@@ -65,26 +65,25 @@ static void dump_explanation(std::string_view explanation, FILE *fff)
  */
 static void dump_yourself(CreatureEntity &creature, FILE *fff)
 {
-    auto &player = creature;
     if (!fff) {
         return;
     }
 
     fprintf(fff, "\n\n");
-    fprintf(fff, _("種族: %s\n", "Race: %s\n"), race_info[enum2i(player.prace)].title.data());
-    dump_explanation(race_explanations[enum2i(player.prace)], fff);
+    fprintf(fff, _("種族: %s\n", "Race: %s\n"), race_info[enum2i(creature.prace)].title.data());
+    dump_explanation(race_explanations[enum2i(creature.prace)], fff);
 
     fprintf(fff, "\n");
-    fprintf(fff, _("職業: %s\n", "Class: %s\n"), class_info.at(player.pclass).title.data());
-    auto short_pclass = enum2i(player.pclass);
+    fprintf(fff, _("職業: %s\n", "Class: %s\n"), class_info.at(creature.pclass).title.data());
+    auto short_pclass = enum2i(creature.pclass);
     dump_explanation(class_explanations[short_pclass].data(), fff);
 
     fprintf(fff, "\n");
-    fprintf(fff, _("性格: %s\n", "Pesonality: %s\n"), personality_info[player.ppersonality].title.data());
-    dump_explanation(personality_explanations[player.ppersonality], fff);
+    fprintf(fff, _("性格: %s\n", "Pesonality: %s\n"), personality_info[creature.ppersonality].title.data());
+    dump_explanation(personality_explanations[creature.ppersonality], fff);
 
     fprintf(fff, "\n");
-    PlayerRealm pr(player);
+    PlayerRealm pr(creature);
     if (pr.realm1().is_available()) {
         fprintf(fff, _("魔法: %s\n", "Realm: %s\n"), pr.realm1().get_name().data());
         dump_explanation(pr.realm1().get_explanation(), fff);
@@ -147,7 +146,6 @@ static void dump_winner_classes(FILE *fff)
  */
 void do_cmd_knowledge_stat(CreatureEntity &creature)
 {
-    auto &player = creature;
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
     if (!open_temporary_file(&fff, file_name)) {
@@ -162,16 +160,16 @@ void do_cmd_knowledge_stat(CreatureEntity &creature)
     fprintf(fff, _("合計のプレイ時間 : %d:%02d:%02d\n", "  Total play Time is %d:%02d:%02d\n"), all_time / (60 * 60), (all_time / 60) % 60, all_time % 60);
     fputs("\n", fff);
 
-    if (player.knowledge & KNOW_HPRATE) {
-        fprintf(fff, _("現在の体力ランク : %d/100\n\n", "Your current Life Rating is %d/100.\n\n"), player.calc_life_rating());
+    if (creature.knowledge & KNOW_HPRATE) {
+        fprintf(fff, _("現在の体力ランク : %d/100\n\n", "Your current Life Rating is %d/100.\n\n"), creature.calc_life_rating());
     } else {
         fprintf(fff, _("現在の体力ランク : ???\n\n", "Your current Life Rating is ???.\n\n"));
     }
 
     fprintf(fff, _("能力の最大値\n\n", "Limits of maximum stats\n\n"));
     for (int v_nr = 0; v_nr < A_MAX; v_nr++) {
-        if ((player.knowledge & KNOW_STAT) || player.stat_max[v_nr] == player.stat_max_max[v_nr]) {
-            fprintf(fff, "%s 18/%d\n", stat_names[v_nr], player.stat_max_max[v_nr] - 18);
+        if ((creature.knowledge & KNOW_STAT) || creature.stat_max[v_nr] == creature.stat_max_max[v_nr]) {
+            fprintf(fff, "%s 18/%d\n", stat_names[v_nr], creature.stat_max_max[v_nr] - 18);
         } else {
             fprintf(fff, "%s ???\n", stat_names[v_nr]);
         }
@@ -191,7 +189,6 @@ void do_cmd_knowledge_stat(CreatureEntity &creature)
  */
 void do_cmd_knowledge_home(CreatureEntity &creature)
 {
-    auto &player = creature;
     const auto &area = WildernessGrids::get_instance().get_area();
     parse_fixed_map(creature, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
 
@@ -221,7 +218,7 @@ void do_cmd_knowledge_home(CreatureEntity &creature)
             fprintf(fff, "\n ( %d ページ )\n", x++);
         }
 
-        const auto item_name = describe_flavor(player, *store.stock[i], 0);
+        const auto item_name = describe_flavor(creature, *store.stock[i], 0);
         const int item_length = item_name.length();
         if (item_length <= 80 - 3) {
             fprintf(fff, "%c%s %s\n", I2A(i % 12), close_bracket, item_name.data());
@@ -234,7 +231,7 @@ void do_cmd_knowledge_home(CreatureEntity &creature)
         fprintf(fff, "%c%s %.*s\n", I2A(i % 12), close_bracket, n, item_name.substr(0, n).data());
         fprintf(fff, "   %.77s\n", item_name.substr(n).data());
 #else
-        const auto item_name = describe_flavor(player, *store.stock[i], 0);
+        const auto item_name = describe_flavor(creature, *store.stock[i], 0);
         fprintf(fff, "%c%s %s\n", I2A(i % 12), close_bracket, item_name.data());
 #endif
     }

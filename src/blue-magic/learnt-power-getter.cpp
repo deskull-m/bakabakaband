@@ -251,26 +251,25 @@ static bool switch_blue_magic_choice(const char key, int &menu_line, const bluem
  */
 int calculate_blue_magic_failure_probability(CreatureEntity &creature, const monster_power &mp, int need_mana)
 {
-    auto &player = creature;
     auto chance = mp.fail;
-    if (player.level > mp.level) {
-        chance -= 3 * (player.level - mp.level);
+    if (creature.level > mp.level) {
+        chance -= 3 * (creature.level - mp.level);
     } else {
-        chance += (mp.level - player.level);
+        chance += (mp.level - creature.level);
     }
 
-    chance -= 3 * (adj_mag_stat[player.stat_index[A_INT]] - 1);
+    chance -= 3 * (adj_mag_stat[creature.stat_index[A_INT]] - 1);
     chance = mod_spell_chance_1(creature, chance);
-    if (need_mana > player.csp) {
-        chance += 5 * (need_mana - player.csp);
+    if (need_mana > creature.csp) {
+        chance += 5 * (need_mana - creature.csp);
     }
 
-    PERCENTAGE minfail = adj_mag_fail[player.stat_index[A_INT]];
+    PERCENTAGE minfail = adj_mag_fail[creature.stat_index[A_INT]];
     if (chance < minfail) {
         chance = minfail;
     }
 
-    chance += player.effects()->stun().get_magic_chance_penalty();
+    chance += creature.effects()->stun().get_magic_chance_penalty();
     if (chance > 95) {
         chance = 95;
     }
@@ -480,8 +479,7 @@ static tl::optional<MonsterAbilityType> select_learnt_spells_by_menu(CreatureEnt
  */
 tl::optional<MonsterAbilityType> get_learned_power(CreatureEntity &creature)
 {
-    auto &player = creature;
-    auto bluemage_data = CreatureClass(player).get_specific_data<bluemage_data_type>();
+    auto bluemage_data = CreatureClass(creature).get_specific_data<bluemage_data_type>();
     if (!bluemage_data) {
         return tl::nullopt;
     }

@@ -222,12 +222,11 @@ static void restore_world_floor_info(CreatureEntity &creature)
         return;
     }
 
-    auto &player = creature;
-    player.ride_monster(0);
+    creature.ride_monster(0);
     for (short i = floor.m_max; i > 0; i--) {
         const auto &monster = floor.get_monster(i);
         if (creature.is_located_at({ monster.y, monster.x })) {
-            player.ride_monster(i);
+            creature.ride_monster(i);
             break;
         }
     }
@@ -267,7 +266,7 @@ static void change_floor_if_error(CreatureEntity &creature)
     }
 
     if (!creature.y || !creature.x) {
-        msg_print(_("プレイヤーの位置がおかしい。フロアを再生成します。", "What a strange player location, regenerate the dungeon floor."));
+        msg_print(_("プレイヤーの位置がおかしい。フロアを再生成します。", "What a strange creature location, regenerate the dungeon floor."));
         change_floor(creature);
     }
 
@@ -424,7 +423,7 @@ static void process_game_turn(CreatureEntity &creature)
  * @note
  * If the "new_game" parameter is true, then, after loading the
  * savefile, we will commit suicide, if necessary, to allow the
- * player to start a new game.
+ * creature to start a new game.
  */
 void play_game(CreatureEntity &creature, bool new_game, bool browsing_movie, std::optional<QuestId> initial_quest_id)
 {

@@ -433,7 +433,6 @@ std::string probed_monster_info(CreatureEntity &creature, CreatureEntity &target
  */
 bool probing(CreatureEntity &creature)
 {
-    auto &player = creature;
     bool cu = game_term->scr->cu;
     bool cv = game_term->scr->cv;
     game_term->scr->cu = 0;
@@ -465,7 +464,7 @@ bool probing(CreatureEntity &creature)
 
         message_add(probe_result);
         rfu.set_flag(SubWindowRedrawingFlag::MESSAGE);
-        handle_stuff(player);
+        handle_stuff(creature);
         move_cursor_relative(monster.y, monster.x);
         inkey();
         term_erase(0, 0);

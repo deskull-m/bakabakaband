@@ -44,7 +44,6 @@ void display_gladiators()
  */
 bool melee_arena_comm(CreatureEntity &creature)
 {
-    auto &player = creature;
     auto &world = AngbandWorld::get_instance();
     if ((world.game_turn - world.arena_start_turn) > TURNS_PER_TICK * 250) {
         auto &melee_arena = MeleeArena::get_instance();
@@ -55,7 +54,7 @@ bool melee_arena_comm(CreatureEntity &creature)
     screen_save();
 
     /* No money */
-    if (player.au <= 1) {
+    if (creature.au <= 1) {
         msg_print(_("おい！おまえ一文なしじゃないか！こっから出ていけ！", "Hey! You don't have gold - get out of here!"));
         msg_erase();
         screen_load();
@@ -87,8 +86,8 @@ bool melee_arena_comm(CreatureEntity &creature)
         }
     }
 
-    auto maxbet = player.level * 200;
-    maxbet = std::min(maxbet, player.au);
+    auto maxbet = creature.level * 200;
+    maxbet = std::min(maxbet, creature.au);
     constexpr auto prompt = _("賭け金？", "Your wager? ");
     const auto wager = input_integer(prompt, 1, maxbet, 1);
     if (!wager) {
@@ -96,7 +95,7 @@ bool melee_arena_comm(CreatureEntity &creature)
         return false;
     }
 
-    if (wager > player.au) {
+    if (wager > creature.au) {
         msg_print(_("おい！金が足りないじゃないか！出ていけ！", "Hey! You don't have the gold - get out of here!"));
         msg_erase();
         screen_load();
@@ -105,12 +104,12 @@ bool melee_arena_comm(CreatureEntity &creature)
 
     msg_erase();
     melee_arena.set_wager(*wager);
-    player.au -= *wager;
-    reset_tim_flags(player);
+    creature.au -= *wager;
+    reset_tim_flags(creature);
 
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::SAVE_FLOORS);
     AngbandSystem::get_instance().set_phase_out(true);
-    player.leaving = true;
+    creature.leaving = true;
     screen_load();
     return true;
 }

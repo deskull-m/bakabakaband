@@ -99,11 +99,10 @@ tl::optional<short> get_tag(CreatureEntity &creature, char tag, BIT_FLAGS mode, 
         return tl::nullopt;
     }
 
-    auto &player = creature;
     const auto &[start, end] = *range;
     tl::optional<short> i_idx;
     for (auto i = start; i < end; i++) {
-        const auto &item = *player.inventory[i];
+        const auto &item = *creature.inventory[i];
         if (!item.is_valid() || !item.is_inscribed()) {
             continue;
         }
@@ -145,8 +144,7 @@ bool get_item_okay(CreatureEntity &creature, OBJECT_IDX i, const ItemTester &ite
         return is_ring_slot(i);
     }
 
-    auto &player = creature;
-    return item_tester.okay(player.inventory[i].get());
+    return item_tester.okay(creature.inventory[i].get());
 }
 
 /*!
@@ -161,10 +159,9 @@ bool get_item_allow(CreatureEntity &creature, INVENTORY_IDX i_idx)
         return true;
     }
 
-    auto &player = creature;
     ItemEntity *o_ptr;
     if (i_idx >= 0) {
-        o_ptr = player.inventory[i_idx].get();
+        o_ptr = creature.inventory[i_idx].get();
     } else {
         o_ptr = creature.current_floor_ptr->o_list[0 - i_idx].get();
     }
@@ -205,8 +202,7 @@ INVENTORY_IDX label_to_equipment(CreatureEntity &creature, int c)
         return is_ring_slot(i) ? i : -1;
     }
 
-    auto &player = creature;
-    if (!player.inventory[i]->bi_id) {
+    if (!creature.inventory[i]->bi_id) {
         return -1;
     }
 
@@ -225,8 +221,7 @@ INVENTORY_IDX label_to_inventory(CreatureEntity &creature, int c)
 {
     INVENTORY_IDX i = (INVENTORY_IDX)(islower(c) ? A2I(c) : -1);
 
-    auto &player = creature;
-    if ((i < 0) || (i > INVEN_PACK) || !player.inventory[i]->is_valid()) {
+    if ((i < 0) || (i > INVEN_PACK) || !creature.inventory[i]->is_valid()) {
         return -1;
     }
 
@@ -242,9 +237,8 @@ INVENTORY_IDX label_to_inventory(CreatureEntity &creature, int c)
  */
 bool verify(CreatureEntity &creature, concptr prompt, INVENTORY_IDX i_idx)
 {
-    auto &player = creature;
-    const auto &item = i_idx >= 0 ? *player.inventory[i_idx] : *creature.current_floor_ptr->o_list[0 - i_idx];
-    const auto item_name = describe_flavor(player, item, 0);
+    const auto &item = i_idx >= 0 ? *creature.inventory[i_idx] : *creature.current_floor_ptr->o_list[0 - i_idx];
+    const auto item_name = describe_flavor(creature, item, 0);
     std::stringstream ss;
     ss << prompt;
 #ifndef JP

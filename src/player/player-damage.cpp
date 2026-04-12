@@ -81,17 +81,16 @@ using dam_func = int (*)(CreatureEntity &creature, int dam, std::string_view kb_
 
 /*!
  * @brief 酸攻撃による装備のAC劣化処理 /
- * Acid has hit the player, attempt to affect some armor.
+ * Acid has hit the creature, attempt to affect some armor.
  * @param 酸を浴びたキャラクタへの参照ポインタ
  * @return 装備による軽減があったならTRUEを返す
  * @details
  * 免疫があったらそもそもこの関数は実行されない (確実に錆びない).
  * Note that the "base armor" of an object never changes.
- * If any armor is damaged (or resists), the player takes less damage.
+ * If any armor is damaged (or resists), the creature takes less damage.
  */
 static bool acid_minus_ac(CreatureEntity &creature)
 {
-    auto &player = creature;
     constexpr static auto candidates = {
         INVEN_MAIN_HAND,
         INVEN_SUB_HAND,
@@ -103,12 +102,12 @@ static bool acid_minus_ac(CreatureEntity &creature)
     };
 
     const auto slot = rand_choice(candidates);
-    auto &item = *player.inventory[slot];
+    auto &item = *creature.inventory[slot];
     if (!item.is_valid() || !item.is_protector()) {
         return false;
     }
 
-    const auto item_name = describe_flavor(player, item, OD_OMIT_PREFIX | OD_NAME_ONLY);
+    const auto item_name = describe_flavor(creature, item, OD_OMIT_PREFIX | OD_NAME_ONLY);
     const auto item_flags = item.get_flags();
     if (item.ac + item.to_a <= 0) {
         msg_format(_("%sは既にボロボロだ！", "Your %s is already fully corroded!"), item_name.data());
@@ -135,7 +134,7 @@ static bool acid_minus_ac(CreatureEntity &creature)
 
 /*!
  * @brief 酸属性によるプレイヤー損害処理 /
- * Hurt the player with Acid
+ * Hurt the creature with Acid
  * @param player_ptr 酸を浴びたキャラクタへの参照ポインタ
  * @param dam 基本ダメージ量
  * @param kb_str ダメージ原因記述
@@ -174,7 +173,7 @@ int acid_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool au
 
 /*!
  * @brief 電撃属性によるプレイヤー損害処理 /
- * Hurt the player with electricity
+ * Hurt the creature with electricity
  * @param player_ptr 電撃を浴びたキャラクタへの参照ポインタ
  * @param dam 基本ダメージ量
  * @param kb_str ダメージ原因記述
@@ -210,7 +209,7 @@ int elec_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool au
 
 /*!
  * @brief 火炎属性によるプレイヤー損害処理 /
- * Hurt the player with Fire
+ * Hurt the creature with Fire
  * @param player_ptr 火炎を浴びたキャラクタへの参照ポインタ
  * @param dam 基本ダメージ量
  * @param kb_str ダメージ原因記述
@@ -246,7 +245,7 @@ int fire_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool au
 
 /*!
  * @brief 冷気属性によるプレイヤー損害処理 /
- * Hurt the player with Cold
+ * Hurt the creature with Cold
  * @param player_ptr 冷気を浴びたキャラクタへの参照ポインタ
  * @param dam 基本ダメージ量
  * @param kb_str ダメージ原因記述
@@ -296,34 +295,33 @@ static void death_save(CreatureEntity &creature)
  *
  * Hack -- this function allows the user to save (or quit)
  * the game when he dies, since the "You die." message is shown before
- * setting the player to "dead".
+ * setting the creature to "dead".
  */
 int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_view hit_from, MonraceId killer_monrace_id)
 {
-    auto &player = creature;
-    const auto old_chp = player.hp;
-    const auto hp_warning_threshold = (player.maxhp * hitpoint_warn / 10);
-    if (player.is_dead()) {
+    const auto old_chp = creature.hp;
+    const auto hp_warning_threshold = (creature.maxhp * hitpoint_warn / 10);
+    if (creature.is_dead()) {
         return 0;
     }
 
-    if (player.sutemi) {
+    if (creature.sutemi) {
         damage *= 2;
     }
 
-    if (CreatureClass(player).samurai_stance_is(SamuraiStanceType::IAI)) {
+    if (CreatureClass(creature).samurai_stance_is(SamuraiStanceType::IAI)) {
         damage += (damage + 4) / 5;
     }
 
     if (damage_type != DAMAGE_USELIFE) {
-        disturb(player, true, true);
+        disturb(creature, true, true);
         if (auto_more) {
-            player.now_damaged = true;
+            creature.now_damaged = true;
         }
     }
 
     if ((damage_type != DAMAGE_USELIFE) && (damage_type != DAMAGE_LOSELIFE)) {
-        if (player.is_invulnerable() && (damage < 9000)) {
+        if (creature.is_invulnerable() && (damage < 9000)) {
             if (damage_type == DAMAGE_FORCE) {
                 msg_print(_("バリアが切り裂かれた！", "The attack cuts your shield of invulnerability open!"));
             } else if (one_in_(PENETRATE_INVULNERABILITY)) {
@@ -333,7 +331,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
             }
         }
 
-        if (check_multishadow(player)) {
+        if (check_multishadow(creature)) {
             if (damage_type == DAMAGE_FORCE) {
                 msg_print(_("幻影もろとも体が切り裂かれた！", "The attack hits Shadow together with you!"));
             } else if (damage_type == DAMAGE_ATTACK) {
@@ -342,7 +340,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
             }
         }
 
-        if (player.wraith_form) {
+        if (creature.wraith_form) {
             if (damage_type == DAMAGE_FORCE) {
                 msg_print(_("半物質の体が切り裂かれた！", "The attack cuts through your ethereal body!"));
             } else {
@@ -353,7 +351,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
             }
         }
 
-        if (CreatureClass(player).samurai_stance_is(SamuraiStanceType::MUSOU)) {
+        if (CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU)) {
             damage /= 2;
             if ((damage == 0) && one_in_(2)) {
                 damage = 1;
@@ -361,46 +359,46 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
         }
     }
 
-    player.hp -= damage;
-    if (player.hp < -9999) {
-        player.hp = -9999;
+    creature.hp -= damage;
+    if (creature.hp < -9999) {
+        creature.hp = -9999;
     }
 
-    if (damage_type == DAMAGE_GENO && player.hp < 0) {
-        damage += player.hp;
-        player.hp = 0;
+    if (damage_type == DAMAGE_GENO && creature.hp < 0) {
+        damage += creature.hp;
+        creature.hp = 0;
     }
 
     // 与ダメージの蓄積（プレイヤーが受けたダメージとして記録）
     if (damage > 0 && damage_type != DAMAGE_USELIFE && damage_type != DAMAGE_LOSELIFE) {
-        player.on_take_hit(damage);
+        creature.on_take_hit(damage);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::HP);
     rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
-    if (damage_type != DAMAGE_GENO && player.hp == 0) {
+    if (damage_type != DAMAGE_GENO && creature.hp == 0) {
         chg_virtue(creature, Virtue::SACRIFICE, 1);
         chg_virtue(creature, Virtue::CHANCE, 2);
     }
 
-    const auto &floor = *player.current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     auto &world = AngbandWorld::get_instance();
-    if (player.hp < 0 && !cheat_immortal) {
-        player.killer_monrace_id = killer_monrace_id;
-        player.on_death(hit_from);
+    if (creature.hp < 0 && !cheat_immortal) {
+        creature.killer_monrace_id = killer_monrace_id;
+        creature.on_death(hit_from);
         return damage;
     }
 
-    handle_stuff(player);
-    if (player.hp < hp_warning_threshold) {
+    handle_stuff(creature);
+    if (creature.hp < hp_warning_threshold) {
         if (old_chp > hp_warning_threshold) {
             bell();
         }
 
         sound(SoundKind::WARN);
         if (record_danger && (old_chp > hp_warning_threshold)) {
-            if (player.effects()->hallucination().is_hallucinated() && damage_type == DAMAGE_ATTACK) {
+            if (creature.effects()->hallucination().is_hallucinated() && damage_type == DAMAGE_ATTACK) {
                 hit_from = _("何か", "something");
             }
 
@@ -412,7 +410,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
         }
 
         if (auto_more) {
-            player.now_damaged = true;
+            creature.now_damaged = true;
         }
 
         msg_print(_("*** 警告:低ヒット・ポイント！ ***", "*** LOW HITPOINT WARNING! ***"));
@@ -420,8 +418,8 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
         flush();
     }
 
-    if (world.is_wild_mode() && !player.leaving && (player.hp < std::max(hp_warning_threshold, player.maxhp / 5))) {
-        change_wild_mode(player, false);
+    if (world.is_wild_mode() && !creature.leaving && (creature.hp < std::max(hp_warning_threshold, creature.maxhp / 5))) {
+        change_wild_mode(creature, false);
     }
 
     return damage;
@@ -725,15 +723,14 @@ void touch_zap_player(const CreatureEntity &source, CreatureEntity &creature)
  */
 void player_defecate(CreatureEntity &creature)
 {
-    auto &player = creature;
     auto &baseitems = BaseitemList::get_instance();
     ItemEntity item;
     disturb(creature, false, true);
     msg_print(_("ブッチッパ！", "BRUUUUP! Oops."));
     msg_erase();
     item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
-    (void)drop_near(creature, item, player.get_position());
+    (void)drop_near(creature, item, creature.get_position());
 
     // 脱糞した数をインシデントに記録
-    player.plus_incident_tree("DEFECATE", 1);
+    creature.plus_incident_tree("DEFECATE", 1);
 }

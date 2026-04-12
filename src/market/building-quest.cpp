@@ -24,10 +24,9 @@
  */
 static void get_questinfo(CreatureEntity &creature, QuestId quest_id, bool do_init)
 {
-    auto &player = creature;
     quest_text_lines.clear();
 
-    auto &floor = *player.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     const auto old_quest = floor.quest_number;
     floor.quest_number = quest_id;
 
@@ -66,10 +65,9 @@ static void print_questinfo(CreatureEntity &creature, QuestId quest_id, bool do_
  */
 void castle_quest(CreatureEntity &creature)
 {
-    auto &player = creature;
     clear_bldg(4, 18);
-    const auto &floor = *player.current_floor_ptr;
-    const auto quest_id = i2enum<QuestId>(floor.get_grid(player.get_position()).special);
+    const auto &floor = *creature.current_floor_ptr;
+    const auto quest_id = i2enum<QuestId>(floor.get_grid(creature.get_position()).special);
     if (!inside_quest(quest_id)) {
         put_str(_("今のところクエストはありません。", "I don't have a quest for you at the moment."), 8, 0);
         prt(_("何かキーを押して下さい。", "Hit any key."), 0, 0);
@@ -91,7 +89,7 @@ void castle_quest(CreatureEntity &creature)
         put_str(_("あなたは現在のクエストを終了させていません！", "You have not completed your current quest yet!"), 8, 0);
         put_str(_("CTRL-Qを使えばクエストの状態がチェックできます。", "Use CTRL-Q to check the status of your quest."), 9, 0);
 
-        get_questinfo(player, quest_id, false);
+        get_questinfo(creature, quest_id, false);
         put_str(format(_("現在のクエスト「%s」", "Current quest is '%s'."), quest.name.data()), 11, 0);
 
         if (quest.type != QuestKindType::KILL_LEVEL || quest.dungeon == DungeonId::WILDERNESS) {

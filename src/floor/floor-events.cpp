@@ -308,9 +308,8 @@ void update_dungeon_feeling(CreatureEntity &creature)
     }
 
     df.set_feeling(new_feeling);
-    auto &player = creature;
-    do_cmd_feeling(player);
-    select_floor_music(player);
+    do_cmd_feeling(creature);
+    select_floor_music(creature);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::DEPTH);
     if (disturb_minor) {
         disturb(creature, false, false);

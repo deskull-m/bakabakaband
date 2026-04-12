@@ -174,7 +174,6 @@ static void generate_circular_waterway(CreatureEntity &creature)
 
 static bool decide_tunnel_planned_site(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon, dt_type *dt_ptr, int i)
 {
-    auto &player = creature;
     dd_ptr->tunn_n = 0;
     dd_ptr->wall_n = 0;
     if (dungeon.flags.has(DungeonFeatureType::NO_TUNNEL)) {
@@ -189,7 +188,7 @@ static bool decide_tunnel_planned_site(CreatureEntity &creature, DungeonData *dd
         dd_ptr->why = _("トンネル接続に失敗", "Failed to generate tunnels");
         return false;
     } else {
-        msg_format_wizard(player, CHEAT_DUNGEON, _("トンネル失敗回数:%d ", "Failure Tunnels:%d "), dd_ptr->tunnel_fail_count);
+        msg_format_wizard(creature, CHEAT_DUNGEON, _("トンネル失敗回数:%d ", "Failure Tunnels:%d "), dd_ptr->tunnel_fail_count);
     }
 
     return true;
@@ -210,14 +209,13 @@ static void make_tunnels(CreatureEntity &creature, DungeonData *dd_ptr)
 
 static void make_walls(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon, dt_type *dt_ptr)
 {
-    auto &player = creature;
     for (size_t j = 0; j < dd_ptr->wall_n; j++) {
         dd_ptr->tunnel_pos = dd_ptr->walls[j];
         auto &grid = creature.current_floor_ptr->get_grid(dd_ptr->tunnel_pos);
         grid.mimic = 0;
         place_grid(creature, grid, GB_FLOOR);
         if (evaluate_percent(dt_ptr->dun_tun_pen) && dungeon.flags.has_not(DungeonFeatureType::NO_DOORS)) {
-            place_random_door(player, dd_ptr->tunnel_pos, true);
+            place_random_door(creature, dd_ptr->tunnel_pos, true);
         }
     }
 }
@@ -242,11 +240,10 @@ static bool make_centers(CreatureEntity &creature, DungeonData *dd_ptr, const Du
 
 static void make_doors(CreatureEntity &creature, DungeonData *dd_ptr, dt_type *dt_ptr)
 {
-    auto &player = creature;
     for (size_t i = 0; i < dd_ptr->door_n; i++) {
         dd_ptr->tunnel_pos = dd_ptr->doors[i];
         for (const auto &d : Direction::directions_4()) {
-            try_door(player, dt_ptr, dd_ptr->tunnel_pos + d.vec());
+            try_door(creature, dt_ptr, dd_ptr->tunnel_pos + d.vec());
         }
     }
 }
@@ -263,12 +260,11 @@ static void make_only_tunnel_points(const FloorType &floor, DungeonData *dd_ptr)
 
 static bool make_one_floor(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon)
 {
-    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     if (dungeon.flags.has(DungeonFeatureType::NO_ROOM)) {
         make_only_tunnel_points(floor, dd_ptr);
     } else {
-        if (!generate_rooms(player, dd_ptr)) {
+        if (!generate_rooms(creature, dd_ptr)) {
             dd_ptr->why = _("部屋群の生成に失敗", "Failed to generate rooms");
             return false;
         }
@@ -320,7 +316,7 @@ static bool make_one_floor(CreatureEntity &creature, DungeonData *dd_ptr, const 
         const auto portal_num = randint1(2);
         if (!alloc_stairs(creature, terrains.get_terrain_id(TerrainTag::PORTAL), portal_num, 3)) {
             // ポータル配置失敗は警告のみで処理継続
-            msg_print_wizard(player, CHEAT_DUNGEON, _("ポータル生成に失敗", "Failed to generate portals."));
+            msg_print_wizard(creature, CHEAT_DUNGEON, _("ポータル生成に失敗", "Failed to generate portals."));
         }
     }
 
@@ -329,10 +325,9 @@ static bool make_one_floor(CreatureEntity &creature, DungeonData *dd_ptr, const 
 
 static bool switch_making_floor(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon)
 {
-    auto &player = creature;
     if (dungeon.flags.has(DungeonFeatureType::MAZE)) {
         const auto &floor = *creature.current_floor_ptr;
-        build_maze_vault(player, { floor.height / 2 - 1, floor.width / 2 - 1 }, { floor.height - 4, floor.width - 4 }, false);
+        build_maze_vault(creature, { floor.height / 2 - 1, floor.width / 2 - 1 }, { floor.height - 4, floor.width - 4 }, false);
         const auto &terrains = TerrainList::get_instance();
         if (!alloc_stairs(creature, terrains.get_terrain_id(TerrainTag::DOWN_STAIR), rand_range(2, 3), 3)) {
             dd_ptr->why = _("迷宮ダンジョンの下り階段生成に失敗", "Failed to alloc up stairs in maze dungeon.");
@@ -349,7 +344,7 @@ static bool switch_making_floor(CreatureEntity &creature, DungeonData *dd_ptr, c
             const auto portal_num = randint1(2);
             if (!alloc_stairs(creature, terrains.get_terrain_id(TerrainTag::PORTAL), portal_num, 3)) {
                 // ポータル配置失敗は警告のみで処理継続
-                msg_print_wizard(player, CHEAT_DUNGEON, _("迷宮ダンジョンのポータル生成に失敗", "Failed to generate portals in maze dungeon."));
+                msg_print_wizard(creature, CHEAT_DUNGEON, _("迷宮ダンジョンのポータル生成に失敗", "Failed to generate portals in maze dungeon."));
             }
         }
 
@@ -417,15 +412,14 @@ static void make_perm_walls(CreatureEntity &creature)
 
 static bool check_place_necessary_objects(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto &player = creature;
     const auto p_pos = new_player_spot(creature);
     if (!p_pos) {
-        dd_ptr->why = _("プレイヤー配置に失敗", "Failed to place a player");
+        dd_ptr->why = _("プレイヤー配置に失敗", "Failed to place a creature");
         return false;
     }
 
-    player.set_position(*p_pos);
-    if (!place_quest_monsters(player)) {
+    creature.set_position(*p_pos);
+    if (!place_quest_monsters(creature)) {
         dd_ptr->why = _("クエストモンスター配置に失敗", "Failed to place a quest monster");
         return false;
     }
@@ -435,7 +429,6 @@ static bool check_place_necessary_objects(CreatureEntity &creature, DungeonData 
 
 static void decide_dungeon_data_allocation(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon)
 {
-    auto &player = creature;
     const auto &floor = *creature.current_floor_ptr;
     dd_ptr->alloc_object_num = floor.dun_level / 3 + 5;
     if (dd_ptr->alloc_object_num > 30) {
@@ -459,14 +452,13 @@ static void decide_dungeon_data_allocation(CreatureEntity &creature, DungeonData
     if (dd_ptr->alloc_monster_num > small_tester) {
         dd_ptr->alloc_monster_num = small_tester;
     } else {
-        msg_format_wizard(player, CHEAT_DUNGEON, _("モンスター数基本値を %d から %d に減らします", "Reduced monsters base from %d to %d"), small_tester,
+        msg_format_wizard(creature, CHEAT_DUNGEON, _("モンスター数基本値を %d から %d に減らします", "Reduced monsters base from %d to %d"), small_tester,
             dd_ptr->alloc_monster_num);
     }
 }
 
 static bool allocate_dungeon_data(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon)
 {
-    auto &player = creature;
     dd_ptr->alloc_monster_num += randint1(8);
     auto &floor = *creature.current_floor_ptr;
 
@@ -474,14 +466,14 @@ static bool allocate_dungeon_data(CreatureEntity &creature, DungeonData *dd_ptr,
         if (one_in_(30)) {
             // ランダムな位置を決定
             Pos2D pos(randint0(floor.height), randint0(floor.width));
-            if (alloc_creature_party(player, pos)) {
+            if (alloc_creature_party(creature, pos)) {
                 // パーティ生成に成功した場合、このイテレーションをスキップ
                 continue;
             }
         }
 
         // 通常のモンスター生成
-        (void)alloc_monster(player, 0, PM_ALLOW_SLEEP, summon_specific);
+        (void)alloc_monster(creature, 0, PM_ALLOW_SLEEP, summon_specific);
     }
 
     alloc_object(creature, ALLOC_SET_BOTH, ALLOC_TYP_TRAP, randint1(dd_ptr->alloc_object_num * dungeon.trap_rate / 100));
@@ -504,7 +496,7 @@ static bool allocate_dungeon_data(CreatureEntity &creature, DungeonData *dd_ptr,
     alloc_specific_floor_items(creature);
 
     floor.object_level = floor.base_level;
-    if (alloc_guardian(player, true)) {
+    if (alloc_guardian(creature, true)) {
         return true;
     }
 
@@ -557,7 +549,6 @@ uint32_t calculate_terrain_seed(int dungeon_id, int dun_level)
  */
 tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32_t> seed)
 {
-    auto &player = creature;
     // 乱数種の保存と復元用
     Xoshiro128StarStar::state_type original_state{};
     bool seed_was_fixed = false;
@@ -568,21 +559,21 @@ tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32
         original_state = rng.get_state(); // 現在の乱数状態を保存
         rng = Xoshiro128StarStar(*seed); // 指定された種で乱数を初期化
         seed_was_fixed = true;
-        msg_format_wizard(player, CHEAT_DUNGEON,
+        msg_format_wizard(creature, CHEAT_DUNGEON,
             _("乱数種を固定してダンジョンを生成: 0x%08X", "Generating dungeon with fixed seed: 0x%08X"),
             *seed);
     }
 
     auto &floor = *creature.current_floor_ptr;
     floor.reset_lite_area();
-    get_mon_num_prep_enum(player, floor.get_monrace_hook());
+    get_mon_num_prep_enum(creature, floor.get_monrace_hook());
 
     // 鉄獄（ANGBAND）では一定確率で他のダンジョンの生成処理を使用
     constexpr auto chance_random_dungeon = 10; // 10%の確率
     if (floor.dungeon_id == DungeonId::ANGBAND && one_in_(chance_random_dungeon)) {
         if (auto random_dungeon_id = select_random_non_beginner_dungeon()) {
             floor.dungeon_generated_id = *random_dungeon_id;
-            msg_print_wizard(player, CHEAT_DUNGEON,
+            msg_print_wizard(creature, CHEAT_DUNGEON,
                 format(_("鉄獄で他ダンジョンの生成処理を使用: %s", "Using random dungeon generation in Angband: %s"),
                     floor.get_generated_dungeon_definition().name.data()));
         } else {
@@ -599,17 +590,17 @@ tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32
     constexpr auto chance_empty_floor = 24;
     if (ironman_empty_levels || (dungeon.flags.has(DungeonFeatureType::ARENA) && (empty_levels && one_in_(chance_empty_floor)))) {
         dd.empty_level = true;
-        msg_print_wizard(player, CHEAT_DUNGEON, _("アリーナレベルを生成。", "Arena level."));
+        msg_print_wizard(creature, CHEAT_DUNGEON, _("アリーナレベルを生成。", "Arena level."));
     }
 
     // ALWAY_ARENAフラグがある場合は常にアリーナ地形にする
     if (dungeon.flags.has(DungeonFeatureType::ALWAY_ARENA)) {
         dd.empty_level = true;
-        msg_print_wizard(player, CHEAT_DUNGEON, _("常時アリーナレベルを生成。", "Always arena level."));
+        msg_print_wizard(creature, CHEAT_DUNGEON, _("常時アリーナレベルを生成。", "Always arena level."));
     }
 
     check_arena_floor(creature, &dd);
-    gen_caverns_and_lakes(player, dungeon, &dd);
+    gen_caverns_and_lakes(creature, dungeon, &dd);
     if (!switch_making_floor(creature, &dd, dungeon)) {
         // 乱数状態を復元
         if (seed_was_fixed) {
@@ -625,14 +616,14 @@ tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32
     constexpr int waterway_chance = 8;
     if (dungeon.flags.has(DungeonFeatureType::WATERWAY) && one_in_(waterway_chance) && !dd.empty_level) {
         generate_circular_waterway(creature);
-        msg_print_wizard(player, CHEAT_DUNGEON, _("環状水路を生成。", "Circular waterway generated."));
+        msg_print_wizard(creature, CHEAT_DUNGEON, _("環状水路を生成。", "Circular waterway generated."));
     }
 
     // 地形生成完了後、モンスター・アイテム配置前に左右対称化
     constexpr int symmetric_chance = 25;
     if (one_in_(symmetric_chance)) {
         make_symmetric_floor(floor);
-        msg_print_wizard(player, CHEAT_DUNGEON, _("シンメトリックなフロアを生成。", "Symmetric floor generated."));
+        msg_print_wizard(creature, CHEAT_DUNGEON, _("シンメトリックなフロアを生成。", "Symmetric floor generated."));
     }
 
     if (!check_place_necessary_objects(creature, &dd)) {
@@ -654,7 +645,7 @@ tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32
     // ★地形生成完了：ここで乱数状態を復元し、以降のモンスター/アイテム配置は元の乱数で実行★
     if (seed_was_fixed) {
         AngbandSystem::get_instance().get_rng().set_state(original_state);
-        msg_print_wizard(player, CHEAT_DUNGEON,
+        msg_print_wizard(creature, CHEAT_DUNGEON,
             _("地形生成完了、乱数状態を復元してモンスター/アイテム配置へ",
                 "Terrain generation complete, restoring RNG for monster/item placement"));
     }
@@ -676,7 +667,6 @@ tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32
  */
 void apply_vestige_terrain_replacement(CreatureEntity &creature)
 {
-    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     auto &terrains = TerrainList::get_instance();
 
@@ -713,7 +703,7 @@ void apply_vestige_terrain_replacement(CreatureEntity &creature)
         }
     }
 
-    msg_print_wizard(player, CHEAT_DUNGEON,
+    msg_print_wizard(creature, CHEAT_DUNGEON,
         format(_("VESTIGE効果: %d箇所の地形を差し替えました", "VESTIGE effect: Replaced %d terrain features"),
             replacement_count));
 }
@@ -731,7 +721,6 @@ void apply_void_terrain_placement(CreatureEntity &creature)
         return;
     }
 
-    auto &player = creature;
     auto &floor = *creature.current_floor_ptr;
     auto &terrains = TerrainList::get_instance();
 
@@ -777,7 +766,7 @@ void apply_void_terrain_placement(CreatureEntity &creature)
         }
     }
 
-    msg_print_wizard(player, CHEAT_DUNGEON,
+    msg_print_wizard(creature, CHEAT_DUNGEON,
         format(_("時空崩壊効果: %d箇所を虚空地形に置き換えました（崩壊度: %d.%06d%%、配置率: %d%%）",
                    "World collapse effect: Replaced %d terrain features with void (collapse: %d.%06d%%, rate: %d%%)"),
             placement_count,

@@ -25,8 +25,7 @@
  */
 void check_music(CreatureEntity &creature)
 {
-    auto &player = creature;
-    if (!CreatureClass(player).equals(PlayerClassType::BARD)) {
+    if (!CreatureClass(creature).equals(PlayerClassType::BARD)) {
         return;
     }
 
@@ -35,7 +34,7 @@ void check_music(CreatureEntity &creature)
         return;
     }
 
-    if (player.anti_magic) {
+    if (creature.anti_magic) {
         stop_singing(creature);
         return;
     }
@@ -47,19 +46,19 @@ void check_music(CreatureEntity &creature)
     uint32_t need_mana_frac = 0;
 
     s64b_rshift(&need_mana, &need_mana_frac, 1);
-    if (s64b_cmp(player.csp, player.csp_frac, need_mana, need_mana_frac) < 0) {
+    if (s64b_cmp(creature.csp, creature.csp_frac, need_mana, need_mana_frac) < 0) {
         stop_singing(creature);
         return;
     }
 
-    s64b_sub(&(player.csp), &(player.csp_frac), need_mana, need_mana_frac);
+    s64b_sub(&(creature.csp), &(creature.csp_frac), need_mana, need_mana_frac);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
     if (interupting_song_effect != 0) {
         set_singing_song_effect(creature, interupting_song_effect);
         set_interrupting_song_effect(creature, MUSIC_NONE);
         msg_print(_("歌を再開した。", "You resume singing."));
-        player.action = ACTION_SING;
+        creature.action = ACTION_SING;
         static constexpr auto flags_srf = {
             StatusRecalculatingFlag::BONUS,
             StatusRecalculatingFlag::HP,
@@ -79,7 +78,7 @@ void check_music(CreatureEntity &creature)
         rfu.set_flags(flags_swrf);
     }
 
-    PlayerSkill(player).gain_continuous_spell_skill_exp(RealmType::MUSIC, spell_id);
+    PlayerSkill(creature).gain_continuous_spell_skill_exp(RealmType::MUSIC, spell_id);
     exe_spell(creature, RealmType::MUSIC, spell_id, SpellProcessType::CONTNUATION);
 }
 
@@ -132,12 +131,11 @@ bool set_tim_stealth(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 }
 
 /*!
- * @brief 歌の停止を処理する / Stop singing if the player is a Bard
+ * @brief 歌の停止を処理する / Stop singing if the creature is a Bard
  */
 void stop_singing(CreatureEntity &creature)
 {
-    auto &player = creature;
-    if (!CreatureClass(player).equals(PlayerClassType::BARD)) {
+    if (!CreatureClass(creature).equals(PlayerClassType::BARD)) {
         return;
     }
 
@@ -150,7 +148,7 @@ void stop_singing(CreatureEntity &creature)
         return;
     }
 
-    if (player.action == ACTION_SING) {
+    if (creature.action == ACTION_SING) {
         set_action(creature, ACTION_NONE);
     }
 

@@ -1,6 +1,6 @@
 /*!
  * @file birth.c
- * @brief プレイヤーの作成を行う / Create a player character
+ * @brief プレイヤーの作成を行う / Create a creature character
  * @date 2013/12/28
  * @author
  * Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke\n
@@ -57,7 +57,6 @@
  */
 static void write_birth_diary(CreatureEntity &creature)
 {
-    auto &player = creature;
     concptr indent = "                            ";
 
     message_add(" ");
@@ -65,32 +64,32 @@ static void write_birth_diary(CreatureEntity &creature)
     message_add("====================");
     message_add(" ");
     message_add("  ");
-    const auto &floor = *player.current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     exe_write_diary(floor, DiaryKind::GAMESTART, 1, _("-------- 新規ゲーム開始 --------", "------- Started New Game -------"));
     exe_write_diary(floor, DiaryKind::DIALY, 0);
-    const auto mes_sex = format(_("%s性別に%sを選択した。", "%schose %s gender."), indent, sex_info[player.psex].title.data());
+    const auto mes_sex = format(_("%s性別に%sを選択した。", "%schose %s gender."), indent, sex_info[creature.psex].title.data());
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_sex);
-    const auto mes_race = format(_("%s種族に%sを選択した。", "%schose %s race."), indent, race_info[enum2i(player.prace)].title.data());
+    const auto mes_race = format(_("%s種族に%sを選択した。", "%schose %s race."), indent, race_info[enum2i(creature.prace)].title.data());
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_race);
-    const auto mes_class = format(_("%s職業に%sを選択した。", "%schose %s class."), indent, class_info.at(player.pclass).title.data());
+    const auto mes_class = format(_("%s職業に%sを選択した。", "%schose %s class."), indent, class_info.at(creature.pclass).title.data());
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_class);
-    PlayerRealm pr(player);
+    PlayerRealm pr(creature);
     if (pr.realm1().is_available()) {
         const auto mes_realm2 = pr.realm2().is_available() ? format(_("と%s", " and %s realms"), pr.realm2().get_name().data()) : _("", " realm");
         const auto mes_realm = format(_("%s魔法の領域に%s%sを選択した。", "%schose %s%s."), indent, pr.realm1().get_name().data(), mes_realm2.data());
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_realm);
     }
 
-    if (player.element_realm != ElementRealmType::NONE) {
-        const auto mes_element = format(_("%s元素系統に%sを選択した。", "%schose %s system."), indent, get_element_title(player.element_realm).data());
+    if (creature.element_realm != ElementRealmType::NONE) {
+        const auto mes_element = format(_("%s元素系統に%sを選択した。", "%schose %s system."), indent, get_element_title(creature.element_realm).data());
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_element);
     }
 
-    const auto mes_personality = format(_("%s性格に%sを選択した。", "%schose %s personality."), indent, personality_info[player.ppersonality].title.data());
+    const auto mes_personality = format(_("%s性格に%sを選択した。", "%schose %s personality."), indent, personality_info[creature.ppersonality].title.data());
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_personality);
     if (CreatureClass(creature).equals(PlayerClassType::CHAOS_WARRIOR)) {
         const auto fmt_patron = _("%s守護神%sと契約を交わした。", "%smade a contract with patron %s.");
-        const auto mes_patron = format(fmt_patron, indent, patron_list[player.patron].name.data());
+        const auto mes_patron = format(fmt_patron, indent, patron_list[creature.patron].name.data());
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_patron);
     }
 }
@@ -105,7 +104,6 @@ static void write_birth_diary(CreatureEntity &creature)
  */
 void player_birth(CreatureEntity &creature, std::optional<QuestId> initial_quest_id)
 {
-    auto &player = creature;
 
     TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
 
@@ -132,9 +130,9 @@ void player_birth(CreatureEntity &creature, std::optional<QuestId> initial_quest
 
     WildernessGrids::get_instance().initialize_seeds();
     if (CreatureRace(&creature).equals(PlayerRaceType::BEASTMAN)) {
-        player.hack_mutation = true;
+        creature.hack_mutation = true;
     } else {
-        player.hack_mutation = false;
+        creature.hack_mutation = false;
     }
 
     if (g_window_flags[1].none()) {
@@ -152,13 +150,13 @@ void player_birth(CreatureEntity &creature, std::optional<QuestId> initial_quest
 
         // クエストの初期化処理（ウィザードモードのwiz_enter_quest関数を参考）
         init_flags = i2enum<init_flags_type>(INIT_SHOW_TEXT | INIT_ASSIGN);
-        player.current_floor_ptr->quest_number = *initial_quest_id;
+        creature.current_floor_ptr->quest_number = *initial_quest_id;
         parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
         quest.status = QuestStatusType::TAKEN;
 
         // クエストに突入
         if (quest.dungeon == DungeonId::WILDERNESS) {
-            exe_enter_quest(player, *initial_quest_id);
+            exe_enter_quest(creature, *initial_quest_id);
         }
     }
 }

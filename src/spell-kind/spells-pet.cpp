@@ -20,7 +20,6 @@
  */
 void discharge_minion(CreatureEntity &creature)
 {
-    auto &player = creature;
     bool okay = true;
     const auto &floor = *creature.current_floor_ptr;
     for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
@@ -49,7 +48,7 @@ void discharge_minion(CreatureEntity &creature)
         if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
             const auto m_name = monster_desc(creature, monster, 0x00);
             msg_format(_("%sは爆破されるのを嫌がり、勝手に自分の世界へと帰った。", "%s^ resists being blasted and runs away."), m_name.data());
-            delete_monster_idx(player, i);
+            delete_monster_idx(creature, i);
             continue;
         }
 
@@ -63,13 +62,13 @@ void discharge_minion(CreatureEntity &creature)
         if (dam > 800) {
             dam = 800;
         }
-        project(player, i, 2 + (monrace.level / 20), monster.y, monster.x, dam, AttributeType::PLASMA, PROJECT_STOP | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
+        project(creature, i, 2 + (monrace.level / 20), monster.y, monster.x, dam, AttributeType::PLASMA, PROJECT_STOP | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
 
         if (record_named_pet && monster.is_named()) {
             const auto m_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
             exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_BLAST, m_name);
         }
 
-        delete_monster_idx(player, i);
+        delete_monster_idx(creature, i);
     }
 }

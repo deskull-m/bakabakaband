@@ -236,30 +236,29 @@ std::string make_screen_dump(CreatureEntity &creature)
  */
 bool report_score(CreatureEntity &creature)
 {
-    auto &player = creature;
     std::stringstream score_ss;
-    std::string personality_desc = (*player.personality).title.string();
-    personality_desc.append(_((*player.personality).no ? "の" : "", " "));
+    std::string personality_desc = (*creature.personality).title.string();
+    personality_desc.append(_((*creature.personality).no ? "の" : "", " "));
 
     PlayerRealm pr(creature);
-    const auto &realm1_name = CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST) ? get_element_title(player.element_realm) : pr.realm1().get_name().string();
-    score_ss << fmt::format("name: {}\n", player.name)
+    const auto &realm1_name = CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST) ? get_element_title(creature.element_realm) : pr.realm1().get_name().string();
+    score_ss << fmt::format("name: {}\n", creature.name)
              << fmt::format("version: {}\n", AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL))
              << fmt::format("score: {}\n", calc_score(creature))
-             << fmt::format("level: {}\n", player.level)
-             << fmt::format("depth: {}\n", player.current_floor_ptr->dun_level)
-             << fmt::format("maxlv: {}\n", player.max_plv)
+             << fmt::format("level: {}\n", creature.level)
+             << fmt::format("depth: {}\n", creature.current_floor_ptr->dun_level)
+             << fmt::format("maxlv: {}\n", creature.max_plv)
              << fmt::format("maxdp: {}\n", DungeonRecords::get_instance().get_record(DungeonId::ANGBAND).get_max_level())
-             << fmt::format("au: {}\n", player.au);
+             << fmt::format("au: {}\n", creature.au);
     const auto &igd = InnerGameData::get_instance();
     score_ss << fmt::format("turns: {}\n", igd.get_real_turns(AngbandWorld::get_instance().game_turn))
-             << fmt::format("sex: {}\n", enum2i(player.psex))
-             << fmt::format("race: {}\n", player.race->title)
-             << fmt::format("class: {}\n", (*player.pclass_ref).title)
+             << fmt::format("sex: {}\n", enum2i(creature.psex))
+             << fmt::format("race: {}\n", creature.race->title)
+             << fmt::format("class: {}\n", (*creature.pclass_ref).title)
              << fmt::format("seikaku: {}\n", personality_desc)
              << fmt::format("realm1: {}\n", realm1_name)
              << fmt::format("realm2: {}\n", pr.realm2().get_name())
-             << fmt::format("killer: {}\n", player.died_from)
+             << fmt::format("killer: {}\n", creature.died_from)
              << "-----charcter dump-----\n";
 
     make_dump(creature, score_ss);

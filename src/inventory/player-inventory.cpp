@@ -49,15 +49,14 @@
  */
 bool can_get_item(CreatureEntity &creature, const ItemTester &item_tester)
 {
-    auto &player = creature;
     for (int j = 0; j < INVEN_TOTAL; j++) {
-        if (item_tester.okay(player.inventory[j].get())) {
+        if (item_tester.okay(creature.inventory[j].get())) {
             return true;
         }
     }
 
-    const auto &floor = *player.current_floor_ptr;
-    const auto floor_item_index = scan_floor_items(floor, player.get_position(), { ScanFloorMode::ITEM_TESTER, ScanFloorMode::ONLY_MARKED }, item_tester);
+    const auto &floor = *creature.current_floor_ptr;
+    const auto floor_item_index = scan_floor_items(floor, creature.get_position(), { ScanFloorMode::ITEM_TESTER, ScanFloorMode::ONLY_MARKED }, item_tester);
     return !floor_item_index.empty();
 }
 
@@ -80,17 +79,16 @@ static bool query_pickup(std::string_view item_name)
 
 static void py_pickup_all_golds_on_floor(CreatureEntity &creature, const Grid &grid)
 {
-    auto &player = creature;
     for (auto it = grid.o_idx_list.begin(); it != grid.o_idx_list.end();) {
         const auto i_idx = *it++;
-        auto &item = *player.current_floor_ptr->o_list[i_idx];
+        auto &item = *creature.current_floor_ptr->o_list[i_idx];
         if (item.bi_key.tval() != ItemKindType::GOLD) {
             continue;
         }
 
         const auto value = item.pval;
-        const auto item_name = describe_flavor(player, item, 0);
-        player.au += value;
+        const auto item_name = describe_flavor(creature, item, 0);
+        creature.au += value;
 
         msg_print(_(" ${} の価値がある{}を見つけた。", "You have found {} gold pieces worth of {}."), value, item_name);
         sound(SoundKind::SELL);
@@ -105,9 +103,8 @@ static void py_pickup_all_golds_on_floor(CreatureEntity &creature, const Grid &g
 
 static void py_pickup_single_item(CreatureEntity &creature, short i_idx, bool pickup)
 {
-    auto &player = creature;
-    auto &item = *player.current_floor_ptr->o_list[i_idx];
-    const auto item_name = describe_flavor(player, item, 0);
+    auto &item = *creature.current_floor_ptr->o_list[i_idx];
+    const auto item_name = describe_flavor(creature, item, 0);
 
     if (!pickup) {
         msg_print(_("{}がある。", "You see {}."), item_name);
@@ -131,9 +128,8 @@ static void py_pickup_single_item(CreatureEntity &creature, short i_idx, bool pi
 
 static void py_pickup_multiple_items(CreatureEntity &creature, bool pickup)
 {
-    auto &player = creature;
-    const auto &floor = *player.current_floor_ptr;
-    const auto &grid = floor.get_grid(player.get_position());
+    const auto &floor = *creature.current_floor_ptr;
+    const auto &grid = floor.get_grid(creature.get_position());
 
     if (!pickup) {
         const auto count_of_items = grid.o_idx_list.size();
@@ -153,7 +149,7 @@ static void py_pickup_multiple_items(CreatureEntity &creature, bool pickup)
         constexpr auto q = _("どれを拾いますか？", "Get which item? ");
         constexpr auto s = _("もうザックには床にあるどのアイテムも入らない。", "You no longer have any room for the objects on the floor.");
         short i_idx;
-        if (!choose_object(player, &i_idx, q, s, (USE_FLOOR), tester)) {
+        if (!choose_object(creature, &i_idx, q, s, (USE_FLOOR), tester)) {
             break;
         }
         process_player_pickup_item(creature, -i_idx);
@@ -168,10 +164,9 @@ static void py_pickup_multiple_items(CreatureEntity &creature, bool pickup)
  */
 static void py_pickup_floor(CreatureEntity &creature, bool pickup)
 {
-    auto &player = creature;
-    const auto &o_list = player.current_floor_ptr->o_list;
+    const auto &o_list = creature.current_floor_ptr->o_list;
     const auto exclude_marked_as_skip = ranges::views::remove_if([&](auto i_idx) { return o_list.at(i_idx)->marked.has(OmType::SUPRESS_MESSAGE); });
-    const auto &grid = player.current_floor_ptr->get_grid(player.get_position());
+    const auto &grid = creature.current_floor_ptr->get_grid(creature.get_position());
 
     const auto i_idx_list = grid.o_idx_list | exclude_marked_as_skip | ranges::to_vector;
     const auto count_of_items = i_idx_list.size();
@@ -208,15 +203,14 @@ static void py_pickup_floor(CreatureEntity &creature, bool pickup)
  */
 static void print_pickup_message(CreatureEntity &creature, [[maybe_unused]] const ItemEntity &picked_item, const ItemEntity &picked_slot_item, short slot)
 {
-    auto &player = creature;
-    const auto item_name = describe_flavor(player, picked_slot_item, 0);
+    const auto item_name = describe_flavor(creature, picked_slot_item, 0);
     const auto item_name_with_label = fmt::format(_("{}({})", "{} ({})"), item_name, index_to_label(slot));
 
 #ifdef JP
-    if (picked_slot_item.is_specific_artifact(FixedArtifactId::CRIMSON) && (player.ppersonality == PERSONALITY_COMBAT)) {
-        msg_print("こうして、{}は『クリムゾン』を手に入れた。", player.name.data());
+    if (picked_slot_item.is_specific_artifact(FixedArtifactId::CRIMSON) && (creature.ppersonality == PERSONALITY_COMBAT)) {
+        msg_print("こうして、{}は『クリムゾン』を手に入れた。", creature.name.data());
         msg_print("しかし今、『混沌のサーペント』の放ったモンスターが、");
-        msg_print("{}に襲いかかる．．．", player.name.data());
+        msg_print("{}に襲いかかる．．．", creature.name.data());
         return;
     }
 
@@ -244,17 +238,16 @@ static void print_pickup_message(CreatureEntity &creature, [[maybe_unused]] cons
  */
 void process_player_pickup_item(CreatureEntity &creature, OBJECT_IDX o_idx)
 {
-    auto &player = creature;
     // delete_object_idx()で配列から削除した後にも使用するためshared_ptrをコピーする
-    const std::shared_ptr<ItemEntity> picked_item_ptr = player.current_floor_ptr->o_list[o_idx];
+    const std::shared_ptr<ItemEntity> picked_item_ptr = creature.current_floor_ptr->o_list[o_idx];
 
     const auto slot = store_item_to_inventory(creature, picked_item_ptr.get());
     delete_object_idx(creature, o_idx);
 
-    auto &picked_slot_item = *player.inventory[slot];
-    if (player.ppersonality == PERSONALITY_MUNCHKIN) {
+    auto &picked_slot_item = *creature.inventory[slot];
+    if (creature.ppersonality == PERSONALITY_MUNCHKIN) {
         const auto old_known = identify_item(creature, &picked_slot_item);
-        autopick_alter_item(player, slot, destroy_identify && !old_known);
+        autopick_alter_item(creature, slot, destroy_identify && !old_known);
         if (picked_slot_item.marked.has(OmType::AUTODESTROY)) {
             return;
         }
@@ -262,9 +255,9 @@ void process_player_pickup_item(CreatureEntity &creature, OBJECT_IDX o_idx)
 
     print_pickup_message(creature, *picked_item_ptr, picked_slot_item, slot);
 
-    record_item_name = describe_flavor(player, *picked_item_ptr, OD_NAME_ONLY);
+    record_item_name = describe_flavor(creature, *picked_item_ptr, OD_NAME_ONLY);
     record_turn = AngbandWorld::get_instance().game_turn;
-    check_find_art_quest_completion(player, &picked_slot_item);
+    check_find_art_quest_completion(creature, &picked_slot_item);
 }
 
 /*!
@@ -274,15 +267,14 @@ void process_player_pickup_item(CreatureEntity &creature, OBJECT_IDX o_idx)
  */
 void carry(CreatureEntity &creature, bool pickup)
 {
-    auto &player = creature;
     verify_panel(creature);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
     rfu.set_flag(MainWindowRedrawingFlag::MAP);
     rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
     handle_stuff(creature);
-    const auto &grid = player.current_floor_ptr->grid_array[player.y][player.x];
-    autopick_pickup_items(player, grid);
+    const auto &grid = creature.current_floor_ptr->grid_array[creature.y][creature.x];
+    autopick_pickup_items(creature, grid);
 
     if (!grid.o_idx_list.empty()) {
         disturb(creature, false, false);
@@ -297,8 +289,8 @@ void carry(CreatureEntity &creature, bool pickup)
 
     for (auto it = grid.o_idx_list.begin(); it != grid.o_idx_list.end();) {
         const auto this_o_idx = *it++;
-        auto &item = *player.current_floor_ptr->o_list[this_o_idx];
-        const auto item_name = describe_flavor(player, item, 0);
+        auto &item = *creature.current_floor_ptr->o_list[this_o_idx];
+        const auto item_name = describe_flavor(creature, item, 0);
 
         if (item.marked.has(OmType::SUPRESS_MESSAGE)) {
             item.marked.reset(OmType::SUPRESS_MESSAGE);

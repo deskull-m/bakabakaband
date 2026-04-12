@@ -41,8 +41,7 @@ static bool invest_terror_mask(CreatureEntity &creature, ItemEntity *o_ptr)
     if (!creature.is_player()) {
         return false;
     }
-    auto &player = creature;
-    switch (player.pclass) {
+    switch (creature.pclass) {
     case PlayerClassType::WARRIOR:
     case PlayerClassType::ARCHER:
     case PlayerClassType::CAVALRY:
@@ -67,8 +66,7 @@ static void milim_swimsuit(CreatureEntity &creature, ItemEntity *o_ptr)
     if (!o_ptr->is_specific_artifact(FixedArtifactId::MILIM) || !creature.is_player()) {
         return;
     }
-    auto &player = creature;
-    if (player.ppersonality != PERSONALITY_SEXY) {
+    if (creature.ppersonality != PERSONALITY_SEXY) {
         return;
     }
 
@@ -116,8 +114,7 @@ static void invest_special_artifact_abilities(CreatureEntity &creature, ItemEnti
         return;
     case FixedArtifactId::HEAVENLY_MAIDEN:
         if (creature.is_player()) {
-            auto &player = creature;
-            if (player.psex != SEX_FEMALE) {
+            if (creature.psex != SEX_FEMALE) {
                 o_ptr->art_flags.set(TR_AGGRAVATE);
             }
         }
