@@ -17,10 +17,6 @@ MonsterEntity::MonsterEntity()
 void MonsterEntity::wipe()
 {
     *this = {};
-    this->monster_profile.emplace();
-    for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
-        this->get_monster_profile().mtimed[mte] = 0;
-    }
 }
 
 MonsterEntity MonsterEntity::clone() const
