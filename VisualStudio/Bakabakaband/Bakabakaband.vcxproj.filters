@@ -641,6 +641,9 @@
     <ClCompile Include="..\..\src\combat\aura-counterattack.cpp">
       <Filter>combat</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\combat\damage-dispatcher.cpp">
+      <Filter>combat</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\pet\pet-fall-off.cpp">
       <Filter>pet</Filter>
     </ClCompile>
@@ -3505,6 +3508,9 @@
       <Filter>object</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\combat\aura-counterattack.h">
+      <Filter>combat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\combat\damage-dispatcher.h">
       <Filter>combat</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\pet\pet-util.h">
