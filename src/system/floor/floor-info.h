@@ -8,8 +8,8 @@
 #include "system/angband.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-kind.h"
-#include "system/monster-entity.h"
 #include "util/point-2d.h"
 #include <array>
 #include <map>
@@ -66,7 +66,6 @@ struct town_vault {
 
 enum class TerrainCharacteristics;
 enum class TerrainTag;
-#include "system/monster-entity.h"
 class DungeonDefinition;
 class Grid;
 class ItemEntity;
@@ -89,7 +88,7 @@ public:
     std::vector<std::shared_ptr<ItemEntity>> o_list; /*!< The array of dungeon items [max_o_idx] */
     bool prevent_repeat_floor_item_idx = false;
 
-    std::vector<MonsterEntity> m_list; /*!< The array of dungeon monsters [max_m_idx] */
+    std::vector<CreatureEntity> m_list; /*!< The array of dungeon monsters [max_m_idx] */
     MONSTER_IDX m_max = 0; /* Number of allocated monsters */
     MONSTER_IDX m_cnt = 0; /* Number of live monsters */
 

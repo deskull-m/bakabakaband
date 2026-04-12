@@ -39,6 +39,10 @@ FloorType::FloorType()
 {
     ranges::generate(this->o_list, [] { return std::make_shared<ItemEntity>(); });
 
+    for (auto &monster : this->m_list) {
+        monster.init_monster_profile();
+    }
+
     for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
         this->mproc_list[mte] = std::vector<short>(MAX_FLOOR_MONSTERS, {});
         this->mproc_max[mte] = 0;

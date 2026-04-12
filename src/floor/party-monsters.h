@@ -1,6 +1,6 @@
 #pragma once
 
-#include "system/monster-entity.h"
+#include "system/creature-entity.h"
 #include <array>
 
 /*!
@@ -10,8 +10,8 @@ class PartyMonsters {
 public:
     static constexpr int MAX_SIZE = 21; /*!< フロア移動時に先のフロアに連れて行けるペットの最大数 */
 
-    MonsterEntity &operator[](int i);
-    const MonsterEntity &operator[](int i) const;
+    CreatureEntity &operator[](int i);
+    const CreatureEntity &operator[](int i) const;
 
     void invalidate_all();
     void wipe_all();
@@ -35,7 +35,7 @@ public:
     }
 
 private:
-    std::array<MonsterEntity, MAX_SIZE> monsters_{};
+    std::array<CreatureEntity, MAX_SIZE> monsters_{};
 };
 
 extern PartyMonsters party_monsters;

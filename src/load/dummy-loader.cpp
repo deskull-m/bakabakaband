@@ -34,7 +34,8 @@ void rd_dummy2(void)
 void rd_dummy_monsters()
 {
     auto tmp16s = rd_s16b();
-    MonsterEntity dummy_mon;
+    CreatureEntity dummy_mon;
+    dummy_mon.init_monster_profile();
     auto monster_loader = MonsterLoaderFactory::create_loader();
     for (int i = 0; i < tmp16s; i++) {
         monster_loader->rd_monster(dummy_mon);
