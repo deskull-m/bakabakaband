@@ -468,9 +468,8 @@ short drop_near(CreatureEntity &subject, ItemEntity &drop_item, const Pos2D &pos
     }
 
     if (drop_item.is_fixed_artifact() && world.character_dungeon && subject.is_player()) {
-        auto &player = subject;
         auto &artifact = drop_item.get_fixed_artifact();
-        artifact.floor_id = player.floor_id;
+        artifact.floor_id = subject.floor_id;
     }
 
     note_spot(subject, pos_drop);

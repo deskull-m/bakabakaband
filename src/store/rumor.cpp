@@ -195,9 +195,9 @@ public:
         this->print_rumor(town_name);
 
         const uint32_t visit = (1U << (town_rumor.t_idx - 1));
-        auto &player = this->creature;
-        if ((town_rumor.t_idx != SECRET_TOWN) && !(player.visit & visit)) {
-            player.visit |= visit;
+        auto &creature = this->creature;
+        if ((town_rumor.t_idx != SECRET_TOWN) && !(creature.visit & visit)) {
+            creature.visit |= visit;
             msg_erase();
             msg_print(_("{}に行ったことがある気がする。", "You feel you have been to {}."), town_name);
         }

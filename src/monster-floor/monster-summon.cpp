@@ -43,8 +43,7 @@ static bool is_dead_summoning(summon_type type)
  */
 tl::optional<MONSTER_IDX> summon_specific(CreatureEntity &subject, POSITION y1, POSITION x1, DEPTH lev, summon_type type, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
 {
-    auto &player = subject;
-    const auto &floor = *player.current_floor_ptr;
+    const auto &floor = *subject.current_floor_ptr;
     if (floor.inside_arena) {
         return tl::nullopt;
     }
@@ -56,14 +55,14 @@ tl::optional<MONSTER_IDX> summon_specific(CreatureEntity &subject, POSITION y1, 
 
     const auto hook = floor.get_monrace_hook_terrain_at(*pos);
     SummonCondition condition(type, mode, summoner_m_idx, hook);
-    get_mon_num_prep_summon(player, condition);
+    get_mon_num_prep_summon(subject, condition);
 
     auto dlev = MAX_DEPTH;
     if (!(mode & PM_IGNORE_LEVEL)) {
         dlev = floor.is_underground() ? floor.get_level() : WildernessGrids::get_instance().get_player_grid().get_level();
     }
 
-    const auto r_idx = get_mon_num(player, 0, (dlev + lev) / 2 + 5, mode);
+    const auto r_idx = get_mon_num(subject, 0, (dlev + lev) / 2 + 5, mode);
     if (!MonraceList::is_valid(r_idx)) {
         return tl::nullopt;
     }
@@ -72,7 +71,7 @@ tl::optional<MONSTER_IDX> summon_specific(CreatureEntity &subject, POSITION y1, 
         mode |= PM_NO_KAGE;
     }
 
-    auto summoned_m_idx = place_specific_monster(player, pos->y, pos->x, r_idx, mode, summoner_m_idx);
+    auto summoned_m_idx = place_specific_monster(subject, pos->y, pos->x, r_idx, mode, summoner_m_idx);
     if (!summoned_m_idx) {
         return tl::nullopt;
     }
@@ -81,7 +80,7 @@ tl::optional<MONSTER_IDX> summon_specific(CreatureEntity &subject, POSITION y1, 
     if (!summoner_m_idx) {
         notice = true;
     } else {
-        const auto &monster = player.current_floor_ptr->get_monster(*summoner_m_idx);
+        const auto &monster = subject.current_floor_ptr->get_monster(*summoner_m_idx);
         if (monster.is_pet()) {
             notice = true;
         } else if (is_seen(subject, monster)) {
