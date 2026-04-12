@@ -1,15 +1,8 @@
 #include "system/player-type-definition.h"
-#include "floor/geometry.h"
 #include "inventory/inventory-slot-types.h"
-#include "monster/monster-util.h"
-#include "system/angband-exceptions.h"
 #include "system/creature-entity.h"
-#include "system/floor/floor-info.h"
-#include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "timed-effect/timed-effects.h"
-#include "world/world.h"
 #include <range/v3/algorithm.hpp>
 
 /*!
@@ -27,30 +20,6 @@ PlayerType::PlayerType()
     this->inventory.resize(INVEN_TOTAL);
     ranges::generate(this->inventory, [] { return std::make_shared<ItemEntity>(); });
     this->timed_effects = std::make_shared<TimedEffects>();
-}
-
-/*!
- * @brief インシデント数加算
- * @param incident_id 加算したいインシデント
- * @param num 加算量
- */
-void PlayerType::plus_incident(INCIDENT incidentID, int num)
-{
-    if (this->incident.count(incidentID) == 0) {
-        this->incident[incidentID] = 0;
-    }
-    this->incident[incidentID] += num;
-}
-
-/*!
- * @brief プレイヤーを指定座標に配置する
- * @param pos 配置先座標
- * @return 配置に成功したらTRUE
- */
-void PlayerType::set_position(const Pos2D &pos)
-{
-    this->y = pos.y;
-    this->x = pos.x;
 }
 
 bool PlayerType::is_valid() const
