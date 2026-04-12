@@ -74,7 +74,7 @@ bool binding_field(CreatureEntity &creature, int dam)
     int point_x[3]{};
     int point_y[3]{};
 
-    /* Default target of monsterspell is player */
+    /* Default target of monsterspell is creature */
     monster_target_y = creature.y;
     monster_target_x = creature.x;
 
@@ -299,32 +299,31 @@ bool set_multishadow(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
  */
 bool set_dustrobe(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
-    auto &player = creature;
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player.is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player.dustrobe && !do_dec) {
-            if (player.dustrobe > v) {
+        if (creature.dustrobe && !do_dec) {
+            if (creature.dustrobe > v) {
                 return false;
             }
-        } else if (!player.dustrobe) {
+        } else if (!creature.dustrobe) {
             msg_print(_("体が鏡のオーラで覆われた。", "You are enveloped by mirror shards."));
             notice = true;
         }
     } else {
-        if (player.dustrobe) {
+        if (creature.dustrobe) {
             msg_print(_("鏡のオーラが消えた。", "The mirror shards disappear."));
             notice = true;
         }
     }
 
-    player.dustrobe = v;
+    creature.dustrobe = v;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -336,7 +335,7 @@ bool set_dustrobe(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player);
+    handle_stuff(creature);
     return true;
 }
 
@@ -352,14 +351,13 @@ static int number_of_mirrors(const FloorType &floor)
 
 /*!
  * @brief 鏡魔法の発動 /
- * do_cmd_cast calls this function if the player's class is 'Mirror magic'.
+ * do_cmd_cast calls this function if the creature's class is 'Mirror magic'.
  * @param spell 発動する特殊技能のID
  * @return 処理を実行したらTRUE、キャンセルした場合FALSEを返す。
  */
 bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
 {
-    auto &player = creature;
-    PLAYER_LEVEL plev = player.level;
+    PLAYER_LEVEL plev = creature.level;
     int tmp;
     TIME_EFFECT t;
     const auto &grid = creature.current_floor_ptr->grid_array[creature.y][creature.x];
@@ -373,7 +371,7 @@ bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
             detect_monsters_invis(creature, DETECT_RAD_DEFAULT);
         }
         if (plev + tmp > 28) {
-            set_tim_esp(player, (TIME_EFFECT)plev, false);
+            set_tim_esp(creature, (TIME_EFFECT)plev, false);
         }
         if (plev + tmp > 38) {
             map_area(creature, DETECT_RAD_MAP);
@@ -408,13 +406,13 @@ bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
         break;
     }
     case MindMirrorMasterType::WRAPPED_MIRROR:
-        teleport_player(player, 10, TELEPORT_SPONTANEOUS);
+        teleport_player(creature, 10, TELEPORT_SPONTANEOUS);
         break;
     case MindMirrorMasterType::MIRROR_LIGHT:
         (void)lite_area(creature, Dice::roll(2, (plev / 2)), (plev / 10) + 1);
         break;
     case MindMirrorMasterType::WANDERING_MIRROR:
-        teleport_player(player, plev * 5, TELEPORT_SPONTANEOUS);
+        teleport_player(creature, plev * 5, TELEPORT_SPONTANEOUS);
         break;
     case MindMirrorMasterType::ROBE_DUST:
         set_dustrobe(creature, 20 + randint1(20), false);
@@ -460,13 +458,13 @@ bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
         break;
     case MindMirrorMasterType::WATER_SHIELD:
         t = 20 + randint1(20);
-        set_shield(player, t, false);
+        set_shield(creature, t, false);
         if (plev > 31) {
-            set_tim_reflect(player, t, false);
+            set_tim_reflect(creature, t, false);
         }
 
         if (plev > 39) {
-            set_resist_magic(player, t, false);
+            set_resist_magic(creature, t, false);
         }
 
         break;
@@ -499,7 +497,7 @@ bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
         msg_print(_("鏡の世界を通り抜け…  ", "You try to enter the mirror..."));
         return SpellsMirrorMaster(creature).mirror_tunnel();
     case MindMirrorMasterType::RECALL_MIRROR:
-        return recall_player(player, randint0(21) + 15);
+        return recall_player(creature, randint0(21) + 15);
     case MindMirrorMasterType::MULTI_SHADOW:
         set_multishadow(creature, 6 + randint1(6), false);
         break;
@@ -510,7 +508,7 @@ bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
 
         break;
     case MindMirrorMasterType::RUFFNOR_MIRROR:
-        (void)set_invuln(player, randint1(4) + 4, false);
+        (void)set_invuln(creature, randint1(4) + 4, false);
         break;
     default:
         msg_print(_("なに？", "Zap?"));

@@ -152,14 +152,13 @@ static void write_diary_pet(FILE *fff, int num, std::string_view note)
  */
 int exe_write_diary_quest(CreatureEntity &creature, DiaryKind dk, QuestId quest_id)
 {
-    auto &player = creature;
     static auto disable_diary = false;
     const auto &[day, hour, min] = AngbandWorld::get_instance().extract_date_time(InnerGameData::get_instance().get_start_race());
     if (disable_diary) {
         return -1;
     }
 
-    auto &floor = *player.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     const auto old_quest = floor.quest_number;
     const auto &quests = QuestList::get_instance();
     const auto &quest = quests.get_quest(quest_id);
@@ -378,7 +377,7 @@ void exe_write_diary(const FloorType &floor, DiaryKind dk, int num, std::string_
         break;
     }
     case DiaryKind::LEVELUP: {
-        constexpr auto fmt = _(" %2d:%02d %20s レベルが%dに上がった。\n", " %2d:%02d %20s reached player level %d.\n");
+        constexpr auto fmt = _(" %2d:%02d %20s レベルが%dに上がった。\n", " %2d:%02d %20s reached creature level %d.\n");
         fprintf(fff, fmt, hour, min, note_level.data(), num);
         break;
     }

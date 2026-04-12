@@ -29,13 +29,12 @@
  */
 void cast_shuffle(CreatureEntity &creature)
 {
-    auto &player = creature;
-    PLAYER_LEVEL plev = player.level;
+    PLAYER_LEVEL plev = creature.level;
     int die;
     int vir = virtue_number(creature, Virtue::CHANCE);
     int i;
 
-    CreatureClass pc(player);
+    CreatureClass pc(creature);
     auto is_good_shuffle = pc.equals(PlayerClassType::ROGUE);
     is_good_shuffle |= pc.equals(PlayerClassType::HIGH_MAGE);
     is_good_shuffle |= pc.equals(PlayerClassType::SORCERER);
@@ -46,8 +45,8 @@ void cast_shuffle(CreatureEntity &creature)
     }
 
     if (vir) {
-        auto it = player.virtues.find(Virtue::CHANCE);
-        if (it != player.virtues.end()) {
+        auto it = creature.virtues.find(Virtue::CHANCE);
+        if (it != creature.virtues.end()) {
             if (it->second > 0) {
                 while (randint1(400) < it->second) {
                     die++;
@@ -98,8 +97,8 @@ void cast_shuffle(CreatureEntity &creature)
 
     if (die < 26) {
         msg_print(_("《愚者》だ。", "It's the Fool."));
-        do_dec_stat(player, A_INT);
-        do_dec_stat(player, A_WIS);
+        do_dec_stat(creature, A_INT);
+        do_dec_stat(creature, A_WIS);
         return;
     }
 
@@ -130,7 +129,7 @@ void cast_shuffle(CreatureEntity &creature)
 
     if (die < 42) {
         msg_print(_("《正義》だ。", "It's Justice."));
-        set_blessed(player, player.level, false);
+        set_blessed(creature, creature.level, false);
         return;
     }
 
@@ -191,8 +190,8 @@ void cast_shuffle(CreatureEntity &creature)
     if (die < 96) {
         msg_print(_("《恋人》だ。", "It's the Lovers."));
 
-        if (const auto dir = get_aim_dir(player)) {
-            charm_monster(creature, dir, std::min<short>(player.level, 20));
+        if (const auto dir = get_aim_dir(creature)) {
+            charm_monster(creature, dir, std::min<short>(creature.level, 20));
         }
 
         return;
@@ -207,7 +206,7 @@ void cast_shuffle(CreatureEntity &creature)
     if (die < 111) {
         msg_print(_("《審判》だ。", "It's Judgement."));
         roll_hitdice(creature, SPOP_NONE);
-        lose_all_mutations(player);
+        lose_all_mutations(creature);
         return;
     }
 
@@ -220,11 +219,11 @@ void cast_shuffle(CreatureEntity &creature)
     }
 
     msg_print(_("《世界》だ。", "It's the World."));
-    if (player.exp >= PY_MAX_EXP) {
+    if (creature.exp >= PY_MAX_EXP) {
         return;
     }
 
-    int32_t ee = (player.exp / 25) + 1;
+    int32_t ee = (creature.exp / 25) + 1;
     if (ee > 5000) {
         ee = 5000;
     }
@@ -234,10 +233,9 @@ void cast_shuffle(CreatureEntity &creature)
 
 void become_living_trump(CreatureEntity &creature)
 {
-    auto &player = creature;
     /* 1/7 Teleport control and 6/7 Random teleportation (uncontrolled) */
     MUTATION_IDX mutation = one_in_(7) ? 12 : 77;
-    if (gain_mutation(player, mutation)) {
+    if (gain_mutation(creature, mutation)) {
         msg_print(_("あなたは生きているカードに変わった。", "You have turned into a Living Trump."));
     }
 }

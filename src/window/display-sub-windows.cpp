@@ -268,20 +268,19 @@ static void print_pet_list(CreatureEntity &creature, const std::vector<MONSTER_I
  */
 void fix_monster_list(CreatureEntity &creature)
 {
-    auto &player = creature;
     static std::vector<MONSTER_IDX> monster_list;
     std::once_flag once;
 
     display_sub_windows(SubWindowRedrawingFlag::SIGHT_MONSTERS,
-        [&player, &creature, &once] {
+        [&creature, &once] {
             const auto &[wid, hgt] = term_get_size();
-            std::call_once(once, target_sensing_monsters_prepare, std::ref(player), std::ref(monster_list));
+            std::call_once(once, target_sensing_monsters_prepare, std::ref(creature), std::ref(monster_list));
             print_monster_list(*creature.current_floor_ptr, monster_list, 0, 0, hgt);
         });
 
     if (use_music && has_monster_music) {
-        std::call_once(once, target_sensing_monsters_prepare, std::ref(player), std::ref(monster_list));
-        select_monster_music(player, monster_list);
+        std::call_once(once, target_sensing_monsters_prepare, std::ref(creature), std::ref(monster_list));
+        select_monster_music(creature, monster_list);
     }
 }
 
@@ -290,11 +289,10 @@ void fix_monster_list(CreatureEntity &creature)
  */
 void fix_pet_list(CreatureEntity &creature)
 {
-    auto &player = creature;
     display_sub_windows(SubWindowRedrawingFlag::PETS,
-        [&player, &creature] {
+        [&creature] {
             const auto &[wid, hgt] = term_get_size();
-            const auto pets = target_pets_prepare(player);
+            const auto pets = target_pets_prepare(creature);
             print_pet_list(creature, pets, 0, 0, wid, hgt);
         });
 }
@@ -309,7 +307,6 @@ static void display_equipment(CreatureEntity &creature, const ItemTester &item_t
         return;
     }
 
-    auto &player = creature;
     const auto &[wid, hgt] = term_get_size();
     byte attr = TERM_WHITE;
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
@@ -319,7 +316,7 @@ static void display_equipment(CreatureEntity &creature, const ItemTester &item_t
         }
 
         const auto &item = *creature.inventory[i];
-        auto do_disp = player.select_ring_slot ? is_ring_slot(i) : item_tester.okay(&item);
+        auto do_disp = creature.select_ring_slot ? is_ring_slot(i) : item_tester.okay(&item);
         std::string tmp_val = "   ";
 
         if (do_disp) {
@@ -338,7 +335,7 @@ static void display_equipment(CreatureEntity &creature, const ItemTester &item_t
             item_name = _("(武器を両手持ち)", "(wielding with two-hands)");
             attr = TERM_WHITE;
         } else {
-            item_name = describe_flavor(player, item, 0);
+            item_name = describe_flavor(creature, item, 0);
             attr = tval_to_attr[enum2i(item.bi_key.tval()) % 128];
         }
 
@@ -365,7 +362,7 @@ static void display_equipment(CreatureEntity &creature, const ItemTester &item_t
 
         if (show_labels) {
             term_putstr(wid - 20, cur_row, -1, TERM_WHITE, " <-- ");
-            prt(mention_use(player, i), cur_row, wid - 15);
+            prt(mention_use(creature, i), cur_row, wid - 15);
         }
     }
 
@@ -443,7 +440,7 @@ void fix_message(void)
  * Adjust for width and split messages
  * @param player_ptr プレイヤーへの参照ポインタ
  * @details
- * Note that the "player" symbol does NOT appear on the map.
+ * Note that the "creature" symbol does NOT appear on the map.
  */
 void fix_overhead(CreatureEntity &creature)
 {
@@ -484,7 +481,7 @@ static void display_dungeon(CreatureEntity &creature)
 }
 
 /*!
- * @brief 自分の周辺のダンジョンの地形をサブウィンドウに表示する / display dungeon view around player in a sub window
+ * @brief 自分の周辺のダンジョンの地形をサブウィンドウに表示する / display dungeon view around creature in a sub window
  * @param player_ptr プレイヤーへの参照ポインタ
  */
 void fix_dungeon(CreatureEntity &creature)
@@ -501,14 +498,13 @@ void fix_dungeon(CreatureEntity &creature)
  */
 void fix_monster(CreatureEntity &creature)
 {
-    auto &player = creature;
     if (!LoreTracker::get_instance().is_tracking()) {
         return;
     }
 
     display_sub_windows(SubWindowRedrawingFlag::MONSTER_LORE,
-        [&player] {
-            display_roff(player);
+        [&creature] {
+            display_roff(creature);
         });
 }
 
@@ -551,7 +547,6 @@ static bool is_seeing_monster_on(const FloorType &floor, const Grid &grid)
  */
 static void display_floor_item_list(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &player = creature;
     const auto &[wid, hgt] = term_get_size();
     if (hgt <= 0) {
         return;
@@ -611,7 +606,7 @@ static void display_floor_item_list(CreatureEntity &creature, const Pos2D &pos)
         if (is_hallucinated) {
             term_addstr(-1, TERM_WHITE, _("何か奇妙な物", "something strange"));
         } else {
-            const auto item_name = describe_flavor(player, item, 0);
+            const auto item_name = describe_flavor(creature, item, 0);
             TERM_COLOR attr = tval_to_attr[enum2i(tval) % 128];
             term_addstr(-1, attr, item_name);
         }
@@ -637,7 +632,6 @@ void fix_floor_item_list(CreatureEntity &creature, const Pos2D &pos)
  */
 static void display_found_item_list(CreatureEntity &creature)
 {
-    auto &player = creature;
     const auto &[wid, hgt] = term_get_size();
     if (hgt <= 0) {
         return;
@@ -663,8 +657,8 @@ static void display_found_item_list(CreatureEntity &creature)
 
     std::sort(
         found_item_list.begin(), found_item_list.end(),
-        [&player](const ItemEntity *left, const ItemEntity *right) -> bool {
-            return object_sort_comp(player, *left, *right);
+        [&creature](const ItemEntity *left, const ItemEntity *right) -> bool {
+            return object_sort_comp(creature, *left, *right);
         });
 
     term_clear();
@@ -688,7 +682,7 @@ static void display_found_item_list(CreatureEntity &creature)
         const auto symbol_str = format(" %c ", symbol.character);
         term_addstr(-1, symbol.color, symbol_str);
 
-        const auto item_name = describe_flavor(player, *item_ptr, 0);
+        const auto item_name = describe_flavor(creature, *item_ptr, 0);
         const auto color_code_for_item = tval_to_attr[enum2i(item_ptr->bi_key.tval()) % 128];
         term_addstr(-1, color_code_for_item, item_name);
 
@@ -720,7 +714,6 @@ void fix_found_item_list(CreatureEntity &creature)
  */
 static void display_spell_list(CreatureEntity &creature)
 {
-    auto &player = creature;
     TERM_LEN y, x;
     int m[9]{};
 
@@ -819,7 +812,7 @@ static void display_spell_list(CreatureEntity &creature)
         return;
     }
 
-    PlayerRealm pr(player);
+    PlayerRealm pr(creature);
     if (!pr.realm1().is_available()) {
         return;
     }

@@ -138,7 +138,6 @@ void inven_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
  */
 void drop_from_inventory(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUMBER amt)
 {
-    auto &player = creature;
     auto *o_ptr = creature.inventory[i_idx].get();
     if (amt <= 0) {
         return;
@@ -157,7 +156,7 @@ void drop_from_inventory(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUM
     distribute_charges(o_ptr, &item, amt);
 
     item.number = amt;
-    const auto item_name = describe_flavor(player, item, 0);
+    const auto item_name = describe_flavor(creature, item, 0);
     msg_format(_("%s(%c)を落とした。", "You drop %s (%c)."), item_name.data(), index_to_label(i_idx));
     (void)drop_near(creature, item, creature.get_position(), false);
     vary_item(creature, i_idx, -amt);
@@ -378,7 +377,6 @@ bool check_store_item_to_inventory(CreatureEntity &creature, const ItemEntity *o
  */
 INVENTORY_IDX inven_takeoff(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUMBER amt)
 {
-    auto &player = creature;
     const auto &item_inventory = *creature.inventory[i_idx];
     if (amt <= 0) {
         return -1;
@@ -390,7 +388,7 @@ INVENTORY_IDX inven_takeoff(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_
 
     auto item = item_inventory.clone();
     item.number = amt;
-    const auto item_name = describe_flavor(player, item, 0);
+    const auto item_name = describe_flavor(creature, item, 0);
     std::string act;
     if (((i_idx == INVEN_MAIN_HAND) || (i_idx == INVEN_SUB_HAND)) && item_inventory.is_melee_weapon()) {
         act = _("を装備からはずした", "You were wielding");

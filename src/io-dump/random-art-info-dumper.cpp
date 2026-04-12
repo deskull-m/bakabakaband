@@ -72,7 +72,6 @@ static void spoil_random_artifact_aux(CreatureEntity &creature, const ItemEntity
  */
 void spoil_random_artifact(CreatureEntity &creature)
 {
-    auto &player = creature;
     const auto path = path_build(ANGBAND_DIR_USER, "randifact.txt");
     std::ofstream ofs(path);
     if (!ofs) {
@@ -84,12 +83,12 @@ void spoil_random_artifact(CreatureEntity &creature)
     for (const auto &[tval_list, name] : group_artifact_list) {
         for (auto tval : tval_list) {
             for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-                auto &item = *player.inventory[i];
+                auto &item = *creature.inventory[i];
                 spoil_random_artifact_aux(creature, item, tval, ofs);
             }
 
             for (int i = 0; i < INVEN_PACK; i++) {
-                auto &item = *player.inventory[i];
+                auto &item = *creature.inventory[i];
                 spoil_random_artifact_aux(creature, item, tval, ofs);
             }
 

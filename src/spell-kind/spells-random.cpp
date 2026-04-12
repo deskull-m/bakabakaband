@@ -43,7 +43,6 @@
  */
 void call_chaos(CreatureEntity &creature)
 {
-    auto &player = creature;
     constexpr static auto hurt_types = { AttributeType::ELEC, AttributeType::POIS, AttributeType::ACID, AttributeType::COLD, AttributeType::FIRE,
         AttributeType::MISSILE, AttributeType::PLASMA, AttributeType::HOLY_FIRE, AttributeType::WATER, AttributeType::LITE,
         AttributeType::DARK, AttributeType::FORCE, AttributeType::INERTIAL, AttributeType::MANA, AttributeType::METEOR, AttributeType::ICE,
@@ -74,14 +73,14 @@ void call_chaos(CreatureEntity &creature)
         return;
     }
 
-    const auto dir = get_aim_dir(player);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return;
     }
     if (line_chaos) {
         fire_beam(creature, chaos_type, dir, 250);
     } else {
-        fire_ball(creature, chaos_type, dir, 250, 3 + (player.level / 35));
+        fire_ball(creature, chaos_type, dir, 250, 3 + (creature.level / 35));
     }
 }
 
@@ -94,12 +93,11 @@ void call_chaos(CreatureEntity &creature)
  * @details
  * <pre>
  * rr9: Stop the nasty things when a Cyberdemon is summoned
- * or the player gets paralyzed.
+ * or the creature gets paralyzed.
  * </pre>
  */
 bool activate_ty_curse(CreatureEntity &creature, bool stop_ty, int *count)
 {
-    auto &player = creature;
     BIT_FLAGS flg = (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP);
     bool is_first_curse = true;
     const auto &floor = *creature.current_floor_ptr;
@@ -184,7 +182,7 @@ bool activate_ty_curse(CreatureEntity &creature, bool stop_ty, int *count)
         case 11:
         case 12:
             msg_print(_("経験値が体から吸い取られた気がする！", "You feel your experience draining away..."));
-            lose_exp(creature, player.exp / 16);
+            lose_exp(creature, creature.exp / 16);
             if (!one_in_(6)) {
                 break;
             }
@@ -195,12 +193,12 @@ bool activate_ty_curse(CreatureEntity &creature, bool stop_ty, int *count)
         case 19:
         case 20: {
             auto is_statue = stop_ty;
-            is_statue |= player.free_act && (randint1(125) < player.skill_sav);
-            is_statue |= CreatureClass(player).equals(PlayerClassType::BERSERKER);
+            is_statue |= creature.free_act && (randint1(125) < creature.skill_sav);
+            is_statue |= CreatureClass(creature).equals(PlayerClassType::BERSERKER);
             if (!is_statue) {
                 msg_print(_("彫像になった気分だ！", "You feel like a statue!"));
-                TIME_EFFECT turns = player.free_act ? randint1(3) : randint1(13);
-                (void)BadStatusSetter(player).mod_paralysis(turns);
+                TIME_EFFECT turns = creature.free_act ? randint1(3) : randint1(13);
+                (void)BadStatusSetter(creature).mod_paralysis(turns);
                 stop_ty = true;
             }
 
@@ -212,7 +210,7 @@ bool activate_ty_curse(CreatureEntity &creature, bool stop_ty, int *count)
         case 21:
         case 22:
         case 23:
-            (void)do_dec_stat(player, randint0(6));
+            (void)do_dec_stat(creature, randint0(6));
             if (!one_in_(6)) {
                 break;
             }
@@ -238,7 +236,7 @@ bool activate_ty_curse(CreatureEntity &creature, bool stop_ty, int *count)
         default:
             for (int i = 0; i < A_MAX; i++) {
                 do {
-                    (void)do_dec_stat(player, i);
+                    (void)do_dec_stat(creature, i);
                 } while (one_in_(2));
             }
         }
@@ -254,7 +252,6 @@ bool activate_ty_curse(CreatureEntity &creature, bool stop_ty, int *count)
  */
 void wild_magic(CreatureEntity &creature, int spell)
 {
-    auto &player = creature;
     int type = SUMMON_MOLD + randint0(6);
     if (type < SUMMON_MOLD) {
         type = SUMMON_MOLD;
@@ -316,7 +313,7 @@ void wild_magic(CreatureEntity &creature, int spell)
         break;
     case 27:
     case 28:
-        (void)gain_mutation(player, 0);
+        (void)gain_mutation(creature, 0);
         break;
     case 29:
     case 30:
@@ -360,20 +357,19 @@ void wild_magic(CreatureEntity &creature, int spell)
  * @param dir 方向ID
  * @details
  * This spell should become more useful (more controlled) as the\n
- * player gains experience levels.  Thus, add 1/5 of the player's\n
+ * creature gains experience levels.  Thus, add 1/5 of the creature's\n
  * level to the die roll.  This eliminates the worst effects later on,\n
  * while keeping the results quite random.  It also allows some potent\n
  * effects only at high level.
  */
 void cast_wonder(CreatureEntity &creature, const Direction &dir)
 {
-    auto &player = creature;
-    PLAYER_LEVEL plev = player.level;
+    PLAYER_LEVEL plev = creature.level;
     int die = randint1(100) + plev / 5;
     int vir = virtue_number(creature, Virtue::CHANCE);
     if (vir) {
-        auto it = player.virtues.find(Virtue::CHANCE);
-        if (it != player.virtues.end()) {
+        auto it = creature.virtues.find(Virtue::CHANCE);
+        if (it != creature.virtues.end()) {
             if (it->second > 0) {
                 while (randint1(400) < it->second) {
                     die++;
@@ -495,7 +491,7 @@ void cast_wonder(CreatureEntity &creature, const Direction &dir)
     }
 
     if (die < 108) {
-        symbol_genocide(player, plev + 50, true);
+        symbol_genocide(creature, plev + 50, true);
         return;
     }
 
@@ -507,5 +503,5 @@ void cast_wonder(CreatureEntity &creature, const Direction &dir)
     dispel_monsters(creature, 150);
     slow_monsters(creature, plev);
     sleep_monsters(creature, plev);
-    hp_player(player, 300);
+    hp_player(creature, 300);
 }

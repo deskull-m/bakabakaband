@@ -7,9 +7,8 @@
 
 bool comvert_hp_to_mp(CreatureEntity &creature)
 {
-    auto &player = creature;
     constexpr auto mes = _("ＨＰからＭＰへの無謀な変換", "thoughtless conversion from HP to SP");
-    auto gain_sp = take_hit(player, DAMAGE_USELIFE, player.level, mes) / 5;
+    auto gain_sp = take_hit(creature, DAMAGE_USELIFE, creature.level, mes) / 5;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags = {
         MainWindowRedrawingFlag::HP,
@@ -21,10 +20,10 @@ bool comvert_hp_to_mp(CreatureEntity &creature)
         return true;
     }
 
-    player.csp += gain_sp;
-    if (player.csp > player.msp) {
-        player.csp = player.msp;
-        player.csp_frac = 0;
+    creature.csp += gain_sp;
+    if (creature.csp > creature.msp) {
+        creature.csp = creature.msp;
+        creature.csp_frac = 0;
     }
 
     rfu.set_flags(flags);
@@ -33,10 +32,9 @@ bool comvert_hp_to_mp(CreatureEntity &creature)
 
 bool comvert_mp_to_hp(CreatureEntity &creature)
 {
-    auto &player = creature;
-    if (player.csp >= player.level / 5) {
-        player.csp -= player.level / 5;
-        hp_player(player, player.level);
+    if (creature.csp >= creature.level / 5) {
+        creature.csp -= creature.level / 5;
+        hp_player(creature, creature.level);
     } else {
         msg_print(_("変換に失敗した。", "You failed to convert."));
     }

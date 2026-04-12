@@ -63,11 +63,10 @@ bool create_rune_explosion(CreatureEntity &creature, POSITION y, POSITION x)
 
 /*!
  * @brief プレイヤーの手による能動的な階段生成処理 /
- * Create stairs at or move previously created stairs into the player location.
+ * Create stairs at or move previously created stairs into the creature location.
  */
 void stair_creation(CreatureEntity &creature)
 {
-    auto &player = creature;
     auto up = !ironman_downward;
     auto &floor = *creature.current_floor_ptr;
     auto down = !inside_quest(floor.get_quest_id()) && (floor.dun_level < floor.get_dungeon_definition().maxdepth);
@@ -82,10 +81,10 @@ void stair_creation(CreatureEntity &creature)
         return;
     }
 
-    delete_all_items_from_floor(player, creature.get_position());
+    delete_all_items_from_floor(creature, creature.get_position());
     auto *sf_ptr = get_sf_ptr(creature.floor_id);
     if (!sf_ptr) {
-        creature.floor_id = get_unused_floor_id(player);
+        creature.floor_id = get_unused_floor_id(creature);
         sf_ptr = get_sf_ptr(creature.floor_id);
     }
 
@@ -129,7 +128,7 @@ void stair_creation(CreatureEntity &creature)
             set_terrain_id_to_grid(creature, pos, dungeon.select_floor_terrain_id());
         }
     } else {
-        dest_floor_id = get_unused_floor_id(player);
+        dest_floor_id = get_unused_floor_id(creature);
         if (up) {
             sf_ptr->upper_floor_id = dest_floor_id;
         } else {

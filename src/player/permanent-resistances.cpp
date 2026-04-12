@@ -18,42 +18,41 @@
  * @brief 突然変異による耐性フラグを返す
  * @param creature クリーチャーへの参照
  * @param flags 耐性フラグの配列
- * @todo 最終的にplayer-status系列と統合する
+ * @todo 最終的にcreature-status系列と統合する
  */
 static void add_mutation_flags(CreatureEntity &creature, TrFlags &flags)
 {
-    auto &player = creature;
-    if (player.muta.none()) {
+    if (creature.muta.none()) {
         return;
     }
 
-    if (player.muta.has(PlayerMutationType::FLESH_ROT)) {
+    if (creature.muta.has(PlayerMutationType::FLESH_ROT)) {
         flags.reset(TR_REGEN);
     }
-    if (player.muta.has_any_of({ PlayerMutationType::XTRA_FAT, PlayerMutationType::XTRA_LEGS, PlayerMutationType::SHORT_LEG, PlayerMutationType::WEAK_LOWER_BODY })) {
+    if (creature.muta.has_any_of({ PlayerMutationType::XTRA_FAT, PlayerMutationType::XTRA_LEGS, PlayerMutationType::SHORT_LEG, PlayerMutationType::WEAK_LOWER_BODY })) {
         flags.set(TR_SPEED);
     }
-    if (player.muta.has(PlayerMutationType::ELEC_TOUC)) {
+    if (creature.muta.has(PlayerMutationType::ELEC_TOUC)) {
         flags.set(TR_SH_ELEC);
     }
-    if (player.muta.has(PlayerMutationType::FIRE_BODY)) {
+    if (creature.muta.has(PlayerMutationType::FIRE_BODY)) {
         flags.set(TR_SH_FIRE);
         flags.set(TR_LITE_1);
     }
 
-    if (player.muta.has(PlayerMutationType::WINGS)) {
+    if (creature.muta.has(PlayerMutationType::WINGS)) {
         flags.set(TR_LEVITATION);
     }
-    if (player.muta.has(PlayerMutationType::FEARLESS)) {
+    if (creature.muta.has(PlayerMutationType::FEARLESS)) {
         flags.set(TR_RES_FEAR);
     }
-    if (player.muta.has(PlayerMutationType::REGEN)) {
+    if (creature.muta.has(PlayerMutationType::REGEN)) {
         flags.set(TR_REGEN);
     }
-    if (player.muta.has(PlayerMutationType::ESP)) {
+    if (creature.muta.has(PlayerMutationType::ESP)) {
         flags.set(TR_TELEPATHY);
     }
-    if (player.muta.has(PlayerMutationType::MOTION)) {
+    if (creature.muta.has(PlayerMutationType::MOTION)) {
         flags.set(TR_FREE_ACT);
     }
 }
@@ -62,20 +61,19 @@ static void add_mutation_flags(CreatureEntity &creature, TrFlags &flags)
  * @brief 性格による耐性フラグを返す
  * @param creature クリーチャーへの参照
  * @param flags 耐性フラグの配列
- * @todo 最終的にplayer-status系列と統合する
+ * @todo 最終的にcreature-status系列と統合する
  */
 static void add_personality_flags(CreatureEntity &creature, TrFlags &flags)
 {
-    auto &player = creature;
-    if (player.ppersonality == PERSONALITY_SEXY) {
+    if (creature.ppersonality == PERSONALITY_SEXY) {
         flags.set(TR_AGGRAVATE);
     }
 
-    if (player.ppersonality == PERSONALITY_CHARGEMAN) {
+    if (creature.ppersonality == PERSONALITY_CHARGEMAN) {
         flags.set(TR_RES_CONF);
     }
 
-    if (player.ppersonality != PERSONALITY_MUNCHKIN) {
+    if (creature.ppersonality != PERSONALITY_MUNCHKIN) {
         return;
     }
 
@@ -85,7 +83,7 @@ static void add_personality_flags(CreatureEntity &creature, TrFlags &flags)
     if (!CreatureClass(creature).equals(PlayerClassType::NINJA)) {
         flags.set(TR_LITE_1);
     }
-    if (player.level > 9) {
+    if (creature.level > 9) {
         flags.set(TR_SPEED);
     }
 }
@@ -96,8 +94,8 @@ static void add_personality_flags(CreatureEntity &creature, TrFlags &flags)
  * @param creature クリーチャーへの参照
  * @param flags フラグを保管する配列
  * @details
- * Obtain the "flags" for the player as if he was an item
- * @todo 最終的にplayer-status系列と統合する
+ * Obtain the "flags" for the creature as if he was an item
+ * @todo 最終的にcreature-status系列と統合する
  */
 void player_flags(CreatureEntity &creature, TrFlags &flags)
 {
@@ -122,9 +120,8 @@ void riding_flags(CreatureEntity &creature, TrFlags &flags, TrFlags &negative_fl
     if (!creature.is_player()) {
         return;
     }
-    auto &player = creature;
 
-    if (any_bits(has_levitation(player), FLAG_CAUSE_RIDING)) {
+    if (any_bits(has_levitation(creature), FLAG_CAUSE_RIDING)) {
         flags.set(TR_LEVITATION);
     } else {
         negative_flags.set(TR_LEVITATION);

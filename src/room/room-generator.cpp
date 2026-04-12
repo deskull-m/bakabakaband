@@ -99,7 +99,6 @@ static void move_prob_list(RoomType dst, RoomType src, std::map<RoomType, int> &
  */
 bool generate_rooms(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto &player = creature;
     auto *floor_ptr = creature.current_floor_ptr;
     auto &dungeon = floor_ptr->get_generated_dungeon_definition();
 
@@ -107,10 +106,10 @@ bool generate_rooms(CreatureEntity &creature, DungeonData *dd_ptr)
     if (dungeon.specific_vault_map.count(floor_ptr->dun_level)) {
         const auto vault_id = dungeon.specific_vault_map.at(floor_ptr->dun_level);
         if (build_fixed_room(creature, dd_ptr, 7, false, enum2i(vault_id))) {
-            msg_print_wizard(player, CHEAT_DUNGEON,
+            msg_print_wizard(creature, CHEAT_DUNGEON,
                 _("特定階層Vaultを生成", "Generated specific floor vault"));
         } else {
-            msg_print_wizard(player, CHEAT_DUNGEON,
+            msg_print_wizard(creature, CHEAT_DUNGEON,
                 _("特定階層Vaultを生成失敗", "Failed generating specific floor vault"));
             return false;
         }
@@ -275,10 +274,10 @@ bool generate_rooms(CreatureEntity &creature, DungeonData *dd_ptr)
     }
 
     if (rooms_built < 2) {
-        msg_format_wizard(player, CHEAT_DUNGEON, _("部屋数が2未満でした。生成を再試行します。", "Number of rooms was under 2. Retry."), rooms_built);
+        msg_format_wizard(creature, CHEAT_DUNGEON, _("部屋数が2未満でした。生成を再試行します。", "Number of rooms was under 2. Retry."), rooms_built);
         return false;
     }
 
-    msg_format_wizard(player, CHEAT_DUNGEON, _("このダンジョンの部屋数は %d です。", "Number of Rooms: %d"), rooms_built);
+    msg_format_wizard(creature, CHEAT_DUNGEON, _("このダンジョンの部屋数は %d です。", "Number of Rooms: %d"), rooms_built);
     return true;
 }

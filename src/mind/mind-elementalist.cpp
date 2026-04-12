@@ -313,11 +313,10 @@ AttributeType get_element_type(ElementRealmType realm, int n)
  */
 static AttributeType get_element_spells_type(CreatureEntity &creature, int n)
 {
-    auto &player = creature;
-    const auto &realm = element_types.at(player.element_realm);
+    const auto &realm = element_types.at(creature.element_realm);
     const auto t = realm.type.at(n);
     if (realm.extra.find(t) != realm.extra.end()) {
-        if (evaluate_percent(player.level * 2)) {
+        if (evaluate_percent(creature.level * 2)) {
             return realm.extra.at(t);
         }
     }
@@ -353,8 +352,7 @@ const std::string &get_element_name(ElementRealmType realm, int n)
  */
 static std::string get_element_tip(CreatureEntity &creature, int spell_idx)
 {
-    auto &player = creature;
-    auto realm = player.element_realm;
+    auto realm = creature.element_realm;
     auto spell = i2enum<ElementSpells>(spell_idx);
     auto elem = element_powers.at(spell).elem;
     return format(element_tips.at(spell).data(), element_types.at(realm).name[elem].data());
@@ -394,8 +392,7 @@ static mind_type get_elemental_info(CreatureEntity &creature, int spell_idx)
  */
 static std::string get_element_effect_info(CreatureEntity &creature, int spell_idx)
 {
-    auto &player = creature;
-    PLAYER_LEVEL plev = player.level;
+    PLAYER_LEVEL plev = creature.level;
     auto spell = i2enum<ElementSpells>(spell_idx);
     int dam = 0;
 
@@ -411,7 +408,7 @@ static std::string get_element_effect_info(CreatureEntity &creature, int spell_i
     case ElementSpells::BALL_1ST:
         return format(" %s%d", KWD_DAM, 55 + plev);
     case ElementSpells::BREATH_2ND:
-        dam = player.hp / 2;
+        dam = creature.hp / 2;
         return format(" %s%d", KWD_DAM, (dam > 150) ? 150 : dam);
     case ElementSpells::ANNIHILATE:
         return format(" %s%d", _("効力:", "pow "), 50 + plev);
@@ -426,7 +423,7 @@ static std::string get_element_effect_info(CreatureEntity &creature, int spell_i
     case ElementSpells::STORM_2ND:
         return format(" %s%d", KWD_DAM, 115 + plev * 5 / 2);
     case ElementSpells::BREATH_1ST:
-        return format(" %s%d", KWD_DAM, player.hp * 2 / 3);
+        return format(" %s%d", KWD_DAM, creature.hp * 2 / 3);
     case ElementSpells::STORM_3ND:
         return format(" %s%d", KWD_DAM, 300 + plev * 5);
     default:
@@ -442,11 +439,10 @@ static std::string get_element_effect_info(CreatureEntity &creature, int spell_i
  */
 static bool cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx)
 {
-    auto &player = creature;
     const auto &floor = *creature.current_floor_ptr;
     const auto spell = i2enum<ElementSpells>(spell_idx);
     const auto &power = element_powers.at(spell);
-    const auto plev = player.level;
+    const auto plev = creature.level;
     switch (spell) {
     case ElementSpells::BOLT_1ST: {
         const auto dir = get_aim_dir(creature);
@@ -464,9 +460,9 @@ static bool cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx)
         (void)detect_monsters_invis(creature, DETECT_RAD_DEFAULT);
         return true;
     case ElementSpells::PERCEPT:
-        return psychometry(player);
+        return psychometry(creature);
     case ElementSpells::CURE:
-        (void)hp_player(player, Dice::roll(2, 8));
+        (void)hp_player(creature, Dice::roll(2, 8));
         (void)BadStatusSetter(creature).mod_cut(-10);
         return true;
     case ElementSpells::BOLT_2ND: {
@@ -479,7 +475,7 @@ static bool cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx)
         const auto typ = get_element_spells_type(creature, power.elem);
         if (fire_bolt_or_beam(creature, plev, typ, dir, dam)) {
             if (typ == AttributeType::HYPODYNAMIA) {
-                (void)hp_player(player, dam / 2);
+                (void)hp_player(creature, dam / 2);
             }
         }
 
@@ -518,11 +514,11 @@ static bool cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx)
             return false;
         }
 
-        const auto dam = std::min(150, player.hp / 2);
+        const auto dam = std::min(150, creature.hp / 2);
         const auto typ = get_element_spells_type(creature, power.elem);
         if (fire_breath(creature, typ, dir, dam, 3)) {
             if (typ == AttributeType::HYPODYNAMIA) {
-                (void)hp_player(player, dam / 2);
+                (void)hp_player(creature, dam / 2);
             }
         }
 
@@ -564,7 +560,7 @@ static bool cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx)
         const auto typ = get_element_spells_type(creature, power.elem);
         if (fire_ball(creature, typ, dir, dam, 3)) {
             if (typ == AttributeType::HYPODYNAMIA) {
-                (void)hp_player(player, dam / 2);
+                (void)hp_player(creature, dam / 2);
             }
         }
 
@@ -604,7 +600,7 @@ static bool cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx)
         const auto typ = get_element_spells_type(creature, power.elem);
         if (fire_ball(creature, typ, dir, dam, 4)) {
             if (typ == AttributeType::HYPODYNAMIA) {
-                (void)hp_player(player, dam / 2);
+                (void)hp_player(creature, dam / 2);
             }
         }
 
@@ -616,7 +612,7 @@ static bool cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx)
             return false;
         }
 
-        const auto dam = player.hp * 2 / 3;
+        const auto dam = creature.hp * 2 / 3;
         const auto typ = get_element_spells_type(creature, power.elem);
         (void)fire_breath(creature, typ, dir, dam, 3);
         return true;
@@ -645,28 +641,27 @@ static bool cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx)
  */
 static PERCENTAGE decide_element_chance(CreatureEntity &creature, mind_type spell)
 {
-    auto &player = creature;
     PERCENTAGE chance = spell.fail;
 
-    chance -= 3 * (player.level - spell.min_lev);
-    chance += player.to_m_chance;
-    chance -= 3 * (adj_mag_stat[player.stat_index[A_WIS]] - 1);
+    chance -= 3 * (creature.level - spell.min_lev);
+    chance += creature.to_m_chance;
+    chance -= 3 * (adj_mag_stat[creature.stat_index[A_WIS]] - 1);
 
-    PERCENTAGE minfail = adj_mag_fail[player.stat_index[A_WIS]];
+    PERCENTAGE minfail = adj_mag_fail[creature.stat_index[A_WIS]];
     if (chance < minfail) {
         chance = minfail;
     }
 
-    chance += player.effects()->stun().get_magic_chance_penalty();
+    chance += creature.effects()->stun().get_magic_chance_penalty();
     if (heavy_armor(creature)) {
         chance += 5;
     }
 
-    if (player.is_icky_wield[0]) {
+    if (creature.is_icky_wield[0]) {
         chance += 5;
     }
 
-    if (player.is_icky_wield[1]) {
+    if (creature.is_icky_wield[1]) {
         chance += 5;
     }
 
@@ -698,12 +693,11 @@ static MANA_POINT decide_element_mana_cost(CreatureEntity &creature, mind_type s
  */
 bool get_element_power(CreatureEntity &creature, SPELL_IDX *sn, bool only_browse)
 {
-    auto &player = creature;
     SPELL_IDX i;
     int num = 0;
     TERM_LEN y = 1;
     TERM_LEN x = 10;
-    PLAYER_LEVEL plev = player.level;
+    PLAYER_LEVEL plev = creature.level;
     bool flag, redraw;
     int menu_line = (use_menu ? 1 : 0);
 
@@ -825,7 +819,7 @@ bool get_element_power(CreatureEntity &creature, SPELL_IDX *sn, bool only_browse
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
-    handle_stuff(player);
+    handle_stuff(creature);
     if (!flag) {
         return false;
     }
@@ -843,8 +837,7 @@ bool get_element_power(CreatureEntity &creature, SPELL_IDX *sn, bool only_browse
  */
 static bool check_element_mp_sufficiency(CreatureEntity &creature, int mana_cost)
 {
-    auto &player = creature;
-    if (mana_cost <= player.csp) {
+    if (mana_cost <= creature.csp) {
         return true;
     }
 
@@ -865,7 +858,6 @@ static bool check_element_mp_sufficiency(CreatureEntity &creature, int mana_cost
  */
 static bool try_cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx, PERCENTAGE chance)
 {
-    auto &player = creature;
     if (!evaluate_percent(chance)) {
         sound(SoundKind::ZAP);
         return cast_element_spell(creature, spell_idx);
@@ -879,14 +871,14 @@ static bool try_cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx
     sound(SoundKind::FAIL);
 
     if (randint1(100) < chance / 2) {
-        int plev = player.level;
+        int plev = creature.level;
         msg_print(_("元素の力が制御できない氾流となって解放された！", "The elemental power surges from you in an uncontrollable torrent!"));
-        const auto element = get_element_types(player.element_realm)[0];
+        const auto element = get_element_types(creature.element_realm)[0];
         constexpr auto flags = PROJECT_JUMP | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM;
         project(creature, PROJECT_WHO_UNCTRL_POWER, 2 + plev / 10, creature.y, creature.x, plev * 2, element, flags);
-        player.csp = std::max(0, player.csp - player.msp * 10 / (20 + randint1(10)));
+        creature.csp = std::max(0, creature.csp - creature.msp * 10 / (20 + randint1(10)));
 
-        PlayerEnergy(player).set_player_turn_energy(100);
+        PlayerEnergy(creature).set_player_turn_energy(100);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::MP);
         static constexpr auto flags_swrf = {
@@ -906,9 +898,8 @@ static bool try_cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx
  */
 void do_cmd_element(CreatureEntity &creature)
 {
-    auto &player = creature;
     SPELL_IDX i;
-    if (cmd_limit_confused(player) || !get_element_power(creature, &i, false)) {
+    if (cmd_limit_confused(creature) || !get_element_power(creature, &i, false)) {
         return;
     }
 
@@ -924,23 +915,23 @@ void do_cmd_element(CreatureEntity &creature)
         return;
     }
 
-    if (mana_cost <= player.csp) {
-        player.csp -= mana_cost;
+    if (mana_cost <= creature.csp) {
+        creature.csp -= mana_cost;
     } else {
         int oops = mana_cost;
-        player.csp = 0;
-        player.csp_frac = 0;
+        creature.csp = 0;
+        creature.csp_frac = 0;
         msg_print(_("精神を集中しすぎて気を失ってしまった！", "You faint from the effort!"));
         (void)BadStatusSetter(creature).mod_paralysis(randnum1<short>(5 * oops + 1));
         chg_virtue(creature, Virtue::KNOWLEDGE, -10);
         if (one_in_(2)) {
             const auto perm = one_in_(4);
             msg_print(_("体を悪くしてしまった！", "You have damaged your health!"));
-            (void)dec_stat(player, A_CON, 15 + randint1(10), perm);
+            (void)dec_stat(creature, A_CON, 15 + randint1(10), perm);
         }
     }
 
-    PlayerEnergy(player).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
     static constexpr auto flags_swrf = {
@@ -983,7 +974,6 @@ void do_cmd_element_browse(CreatureEntity &creature)
  */
 void display_element_spell_list(CreatureEntity &creature, int y, int x)
 {
-    auto &player = creature;
     prt("", y, x);
     put_str(_("名前", "Name"), y, x + 5);
     put_str(_("Lv   MP 失率 効果", "Lv Mana Fail Info"), y, x + 35);
@@ -992,12 +982,12 @@ void display_element_spell_list(CreatureEntity &creature, int y, int x)
     int i;
     for (i = 0; i < spell_max; i++) {
         const auto spell = get_elemental_info(creature, i);
-        if (spell.min_lev > player.level) {
+        if (spell.min_lev > creature.level) {
             break;
         }
 
         const auto elem = get_elemental_elem(creature, i);
-        const auto name = format(spell.name, get_element_name(player.element_realm, elem).data());
+        const auto name = format(spell.name, get_element_name(creature.element_realm, elem).data());
 
         const auto mana_cost = decide_element_mana_cost(creature, spell);
         const auto chance = decide_element_chance(creature, spell);
@@ -1005,7 +995,7 @@ void display_element_spell_list(CreatureEntity &creature, int y, int x)
 
         constexpr auto fmt = "  %c) %-30s%2d %4d %3d%%%s";
         const auto info_str = format(fmt, I2A(i), name.data(), spell.min_lev, mana_cost, chance, comment.data());
-        const auto color = mana_cost > player.csp ? TERM_ORANGE : TERM_WHITE;
+        const auto color = mana_cost > creature.csp ? TERM_ORANGE : TERM_WHITE;
         c_prt(color, info_str, y + i + 1, x);
     }
     prt("", y + i + 1, x);
@@ -1075,8 +1065,7 @@ static bool is_elemental_genocide_effective(const MonraceDefinition &monrace, At
  */
 ProcessResult effect_monster_elemental_genocide(CreatureEntity &creature, EffectMonster *em_ptr)
 {
-    auto &player = creature;
-    const auto &name = get_element_name(player.element_realm, 0);
+    const auto &name = get_element_name(creature.element_realm, 0);
     if (em_ptr->seen_msg) {
         msg_format(_("%sが%sを包み込んだ。", "The %s surrounds %s."), name.data(), em_ptr->m_name);
     }
@@ -1085,7 +1074,7 @@ ProcessResult effect_monster_elemental_genocide(CreatureEntity &creature, Effect
         em_ptr->obvious = true;
     }
 
-    const auto type = get_element_type(player.element_realm, 0);
+    const auto type = get_element_type(creature.element_realm, 0);
     const auto is_effective = is_elemental_genocide_effective(*em_ptr->r_ptr, type);
     if (!is_effective) {
         if (em_ptr->seen_msg) {
@@ -1095,7 +1084,7 @@ ProcessResult effect_monster_elemental_genocide(CreatureEntity &creature, Effect
         return ProcessResult::PROCESS_TRUE;
     }
 
-    if (genocide_aux(player, em_ptr->g_ptr->m_idx, em_ptr->dam, em_ptr->is_player(), (em_ptr->r_ptr->level + 1) / 2, _("モンスター消滅", "Genocide One"))) {
+    if (genocide_aux(creature, em_ptr->g_ptr->m_idx, em_ptr->dam, em_ptr->is_player(), (em_ptr->r_ptr->level + 1) / 2, _("モンスター消滅", "Genocide One"))) {
         if (em_ptr->seen_msg) {
             msg_format(_("%sは消滅した！", "%s^ disappeared!"), em_ptr->m_name);
         }
@@ -1119,12 +1108,11 @@ ProcessResult effect_monster_elemental_genocide(CreatureEntity &creature, Effect
  */
 bool has_element_resist(CreatureEntity &creature, ElementRealmType realm, PLAYER_LEVEL lev)
 {
-    auto &player = creature;
     if (!CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST)) {
         return false;
     }
 
-    return (player.element_realm == realm) && (player.level >= lev);
+    return (creature.element_realm == realm) && (creature.level >= lev);
 }
 
 /*!
@@ -1197,7 +1185,6 @@ static int interpret_realm_select_key(int cs, int n, char c)
  */
 static tl::optional<ElementRealmType> get_element_realm(CreatureEntity &creature, ElementRealmType realm, int n)
 {
-    auto &player = creature;
     int cs = std::max(0, enum2i(realm) - 1);
     int os = cs;
     int k;
@@ -1247,7 +1234,7 @@ static tl::optional<ElementRealmType> get_element_realm(CreatureEntity &creature
 
         if (c == '=') {
             screen_save();
-            do_cmd_options_aux(player, GameOptionPage::BIRTH, _("初期オプション((*)はスコアに影響)", "Birth Options ((*)) affect score"));
+            do_cmd_options_aux(creature, GameOptionPage::BIRTH, _("初期オプション((*)はスコアに影響)", "Birth Options ((*)) affect score"));
             screen_load();
         } else if (c != '2' && c != '4' && c != '6' && c != '8') {
             bell();
@@ -1265,7 +1252,6 @@ static tl::optional<ElementRealmType> get_element_realm(CreatureEntity &creature
  */
 tl::optional<ElementRealmType> select_element_realm(CreatureEntity &creature)
 {
-    auto &player = creature;
     clear_from(10);
 
     constexpr auto realm_max = enum2i(ElementRealmType::MAX);
@@ -1287,7 +1273,7 @@ tl::optional<ElementRealmType> select_element_realm(CreatureEntity &creature)
 
         display_wrap_around(element_texts.at(*realm), 74, row, 3);
 
-        if (input_check_strict(player, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
+        if (input_check_strict(creature, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
             break;
         }
 
@@ -1305,10 +1291,9 @@ tl::optional<ElementRealmType> select_element_realm(CreatureEntity &creature)
  */
 void switch_element_racial(CreatureEntity &creature, rc_type *rc_ptr)
 {
-    auto &player = creature;
-    auto plev = player.level;
+    auto plev = creature.level;
     rpi_type rpi;
-    switch (player.element_realm) {
+    switch (creature.element_realm) {
     case ElementRealmType::FIRE:
         rpi = rpi_type(_("ライト・エリア", "Light area"));
         rpi.text = _("光源が照らしている範囲か部屋全体を永久に明るくする。", "Lights up nearby area and the inside of a room permanently.");
@@ -1448,7 +1433,6 @@ static bool is_target_grid_dark(const FloorType &floor, const Pos2D &pos)
  */
 static bool door_to_darkness(CreatureEntity &creature, int distance)
 {
-    auto &player = creature;
     const auto p_pos_orig = creature.get_position();
     auto p_pos = tl::make_optional(creature.get_position());
     const auto &floor = *creature.current_floor_ptr;
@@ -1473,7 +1457,7 @@ static bool door_to_darkness(CreatureEntity &creature, int distance)
 
     const auto flag = cave_player_teleportable_bold(creature, p_pos->y, p_pos->x, TELEPORT_SPONTANEOUS) && is_target_grid_dark(floor, *p_pos);
     if (flag) {
-        teleport_player_to(player, p_pos->y, p_pos->x, TELEPORT_SPONTANEOUS);
+        teleport_player_to(creature, p_pos->y, p_pos->x, TELEPORT_SPONTANEOUS);
     } else {
         msg_print(_("闇の扉は開かなかった！", "The door to darkness does not open!"));
     }
@@ -1488,10 +1472,9 @@ static bool door_to_darkness(CreatureEntity &creature, int distance)
  */
 bool switch_element_execution(CreatureEntity &creature)
 {
-    auto &player = creature;
-    PLAYER_LEVEL plev = player.level;
+    PLAYER_LEVEL plev = creature.level;
 
-    switch (player.element_realm) {
+    switch (creature.element_realm) {
     case ElementRealmType::FIRE:
         (void)lite_area(creature, Dice::roll(2, plev / 2), plev / 10);
         return true;
@@ -1508,7 +1491,7 @@ bool switch_element_execution(CreatureEntity &creature)
             return false;
         }
 
-        (void)wall_to_mud(player, dir, plev * 3 / 2);
+        (void)wall_to_mud(creature, dir, plev * 3 / 2);
         return true;
     }
     case ElementRealmType::DARKNESS:

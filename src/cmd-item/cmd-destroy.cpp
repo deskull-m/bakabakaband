@@ -45,18 +45,17 @@ using SelectionResult = std::tuple<ItemEntity *, short, int>;
 
 static bool check_destory_item(CreatureEntity &creature, const ItemEntity &destroying_item, short i_idx)
 {
-    auto &player = creature;
     if (!confirm_destroy && (destroying_item.calc_price() <= 0)) {
         return true;
     }
 
-    const auto item_name = describe_flavor(player, destroying_item, OD_OMIT_PREFIX);
+    const auto item_name = describe_flavor(creature, destroying_item, OD_OMIT_PREFIX);
     constexpr auto fmt = _("本当に%sを壊しますか? [y/n/Auto]", "Really destroy %s? [y/n/Auto]");
     const auto msg = format(fmt, item_name.data());
     msg_erase();
     message_add(msg);
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MESSAGE);
-    window_stuff(player);
+    window_stuff(creature);
     while (true) {
         prt(msg, 0, 0);
         char i = inkey();
@@ -73,8 +72,8 @@ static bool check_destory_item(CreatureEntity &creature, const ItemEntity &destr
             continue;
         }
 
-        if (autopick_autoregister(player, &destroying_item)) {
-            autopick_alter_item(player, i_idx, true);
+        if (autopick_autoregister(creature, &destroying_item)) {
+            autopick_alter_item(creature, i_idx, true);
         }
 
         return false;
@@ -83,11 +82,10 @@ static bool check_destory_item(CreatureEntity &creature, const ItemEntity &destr
 
 static tl::optional<SelectionResult> select_destroying_item(CreatureEntity &creature, bool force_destroy)
 {
-    auto &player = creature;
     short i_idx;
     constexpr auto q = _("どのアイテムを壊しますか? ", "Destroy which item? ");
     constexpr auto s = _("壊せるアイテムを持っていない。", "You have nothing to destroy.");
-    auto *o_ptr = choose_object(player, &i_idx, q, s, USE_INVEN | USE_FLOOR);
+    auto *o_ptr = choose_object(creature, &i_idx, q, s, USE_INVEN | USE_FLOOR);
     if (o_ptr == nullptr) {
         return tl::nullopt;
     }
@@ -116,7 +114,6 @@ static tl::optional<SelectionResult> select_destroying_item(CreatureEntity &crea
  */
 static bool decide_magic_book_exp(CreatureEntity &creature, const ItemEntity &destroyed_item)
 {
-    auto &player = creature;
     if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
         return false;
     }
@@ -132,7 +129,7 @@ static bool decide_magic_book_exp(CreatureEntity &creature, const ItemEntity &de
     }
 
     auto is_good_magic_realm = (tval == ItemKindType::LIFE_BOOK) || (tval == ItemKindType::CRUSADE_BOOK);
-    if (PlayerRealm(player).realm1().is_good_attribute()) {
+    if (PlayerRealm(creature).realm1().is_good_attribute()) {
         return !is_good_magic_realm;
     } else {
         return is_good_magic_realm;
@@ -141,13 +138,12 @@ static bool decide_magic_book_exp(CreatureEntity &creature, const ItemEntity &de
 
 static void gain_exp_by_destroying_magic_book(CreatureEntity &creature, const ItemEntity &destroyed_item)
 {
-    auto &player = creature;
     const auto gain_expr = decide_magic_book_exp(creature, destroyed_item);
-    if (!gain_expr || (player.exp >= PY_MAX_EXP)) {
+    if (!gain_expr || (creature.exp >= PY_MAX_EXP)) {
         return;
     }
 
-    auto tester_exp = player.max_exp / 20;
+    auto tester_exp = creature.max_exp / 20;
     if (tester_exp > 10000) {
         tester_exp = 10000;
     }
@@ -194,14 +190,13 @@ static void process_destroy_magic_book(CreatureEntity &creature, const ItemEntit
 
 static void exe_destroy_item(CreatureEntity &creature, ItemEntity &destroying_item, short i_idx, int amount)
 {
-    auto &player = creature;
     auto destroyed_item = destroying_item.clone();
     destroyed_item.number = amount;
-    const auto item_name = describe_flavor(player, destroyed_item, 0);
+    const auto item_name = describe_flavor(creature, destroyed_item, 0);
     msg_format(_("%sを壊した。", "You destroy %s."), item_name.data());
     sound(SoundKind::DESTITEM);
     reduce_charges(&destroying_item, amount);
-    vary_item(player, i_idx, -amount);
+    vary_item(creature, i_idx, -amount);
     process_destroy_magic_book(creature, destroyed_item);
     if ((destroyed_item.to_a != 0) || (destroyed_item.to_d != 0) || (destroyed_item.to_h != 0)) {
         chg_virtue(creature, Virtue::HARMONY, 1);
@@ -218,7 +213,6 @@ static void exe_destroy_item(CreatureEntity &creature, ItemEntity &destroying_it
  */
 void do_cmd_destroy(CreatureEntity &creature)
 {
-    auto &player = creature;
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     const auto selection_result = select_destroying_item(creature, (command_arg > 0));
@@ -231,7 +225,7 @@ void do_cmd_destroy(CreatureEntity &creature)
     energy.set_player_turn_energy(100);
     if (!can_player_destroy_object(o_ptr)) {
         energy.reset_player_turn();
-        const auto item_name = describe_flavor(player, *o_ptr, 0);
+        const auto item_name = describe_flavor(creature, *o_ptr, 0);
         msg_format(_("%sは破壊不可能だ。", "You cannot destroy %s."), item_name.data());
         return;
     }

@@ -243,11 +243,10 @@ bool cast_summon_octopus(CreatureEntity &creature)
  */
 bool cast_summon_greater_demon(CreatureEntity &creature)
 {
-    auto &player = creature;
     constexpr auto q = _("どの死体を捧げますか? ", "Sacrifice which corpse? ");
     constexpr auto s = _("捧げられる死体を持っていない。", "You have nothing to sacrifice.");
     short i_idx;
-    const auto *o_ptr = choose_object(player, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::is_offerable));
+    const auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::is_offerable));
     if (!o_ptr) {
         return false;
     }
@@ -256,7 +255,7 @@ bool cast_summon_greater_demon(CreatureEntity &creature)
     if (summon_specific(creature, creature.y, creature.x, summon_lev, SUMMON_HI_DEMON, (PM_ALLOW_GROUP | PM_FORCE_PET))) {
         msg_print(_("硫黄の悪臭が充満した。", "The area fills with a stench of sulphur and brimstone."));
         msg_print(_("「ご用でございますか、ご主人様」", "'What is thy bidding... Master?'"));
-        vary_item(player, i_idx, -1);
+        vary_item(creature, i_idx, -1);
     } else {
         msg_print(_("悪魔は現れなかった。", "No Greater Demon arrives."));
     }
@@ -482,14 +481,13 @@ int activate_hi_summon(CreatureEntity &creature, POSITION y, POSITION x, bool ca
  */
 void cast_invoke_spirits(CreatureEntity &creature, const Direction &dir)
 {
-    auto &player = creature;
     PLAYER_LEVEL plev = creature.level;
     int die = randint1(100) + plev / 5;
     int vir = virtue_number(creature, Virtue::CHANCE);
 
     if (vir != 0) {
-        auto it = player.virtues.find(Virtue::CHANCE);
-        if (it != player.virtues.end()) {
+        auto it = creature.virtues.find(Virtue::CHANCE);
+        if (it != creature.virtues.end()) {
             if (it->second > 0) {
                 while (randint1(400) < it->second) {
                     die++;
@@ -511,7 +509,7 @@ void cast_invoke_spirits(CreatureEntity &creature, const Direction &dir)
         msg_print(_("あなたはおどろおどろしい力のうねりを感じた！", "You feel a surge of eldritch force!"));
     }
 
-    BadStatusSetter bss(player);
+    BadStatusSetter bss(creature);
     if (die < 8) {
         msg_print(_("なんてこった！あなたの周りの地面から朽ちた人影が立ち上がってきた！", "Oh no! Mouldering forms rise from the earth around you!"));
 
@@ -559,14 +557,14 @@ void cast_invoke_spirits(CreatureEntity &creature, const Direction &dir)
     } else if (die < 106) {
         (void)destroy_area(creature, creature.y, creature.x, 13 + randint0(5), false);
     } else if (die < 108) {
-        symbol_genocide(player, plev + 50, true);
+        symbol_genocide(creature, plev + 50, true);
     } else if (die < 110) {
         dispel_monsters(creature, 120);
     } else {
         dispel_monsters(creature, 150);
         slow_monsters(creature, plev);
         sleep_monsters(creature, plev);
-        hp_player(player, 300);
+        hp_player(creature, 300);
     }
 
     if (die < 31) {

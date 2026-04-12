@@ -37,32 +37,31 @@ static bool update_sight(CreatureEntity &creature, const bool notice)
  */
 bool set_tim_esp(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
-    auto &player = creature;
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player.is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player.tim_esp && !do_dec) {
-            if (player.tim_esp > v) {
+        if (creature.tim_esp && !do_dec) {
+            if (creature.tim_esp > v) {
                 return false;
             }
-        } else if (!player.is_time_limit_esp()) {
+        } else if (!creature.is_time_limit_esp()) {
             msg_print(_("意識が広がった気がする！", "You feel your consciousness expand!"));
             notice = true;
         }
     } else {
-        if (player.tim_esp && !music_singing(player, MUSIC_MIND)) {
+        if (creature.tim_esp && !music_singing(creature, MUSIC_MIND)) {
             msg_print(_("意識は元に戻った。", "Your consciousness contracts again."));
             notice = true;
         }
     }
 
-    player.tim_esp = v;
+    creature.tim_esp = v;
     return update_sight(creature, notice);
 }
 
@@ -74,32 +73,31 @@ bool set_tim_esp(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
  */
 bool set_tim_invis(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
-    auto &player = creature;
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player.is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player.tim_invis && !do_dec) {
-            if (player.tim_invis > v) {
+        if (creature.tim_invis && !do_dec) {
+            if (creature.tim_invis > v) {
                 return false;
             }
-        } else if (!player.tim_invis) {
+        } else if (!creature.tim_invis) {
             msg_print(_("目が非常に敏感になった気がする！", "Your eyes feel very sensitive!"));
             notice = true;
         }
     } else {
-        if (player.tim_invis) {
+        if (creature.tim_invis) {
             msg_print(_("目の敏感さがなくなったようだ。", "Your eyes feel less sensitive."));
             notice = true;
         }
     }
 
-    player.tim_invis = v;
+    creature.tim_invis = v;
     return update_sight(creature, notice);
 }
 
@@ -111,31 +109,30 @@ bool set_tim_invis(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
  */
 bool set_tim_infra(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
-    auto &player = creature;
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player.is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player.tim_infra && !do_dec) {
-            if (player.tim_infra > v) {
+        if (creature.tim_infra && !do_dec) {
+            if (creature.tim_infra > v) {
                 return false;
             }
-        } else if (!player.tim_infra) {
+        } else if (!creature.tim_infra) {
             msg_print(_("目がランランと輝き始めた！", "Your eyes begin to tingle!"));
             notice = true;
         }
     } else {
-        if (player.tim_infra) {
+        if (creature.tim_infra) {
             msg_print(_("目の輝きがなくなった。", "Your eyes stop tingling."));
             notice = true;
         }
     }
 
-    player.tim_infra = v;
+    creature.tim_infra = v;
     return update_sight(creature, notice);
 }

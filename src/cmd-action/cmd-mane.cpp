@@ -358,15 +358,14 @@ static int get_mane_power(CreatureEntity &creature, int *sn, bool baigaesi)
 
 /*!
  * @brief ものまね処理の発動 /
- * do_cmd_cast calls this function if the player's class is 'imitator'.
+ * do_cmd_cast calls this function if the creature's class is 'imitator'.
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param spell 発動するモンスター攻撃のID
  * @return 処理を実行したらTRUE、キャンセルした場合FALSEを返す。
  */
 static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
 {
-    auto &player = creature;
-    auto *player_ptr = &player;
+    auto *player_ptr = &creature;
     PLAYER_LEVEL plev = creature.get_level();
     BIT_FLAGS mode = (PM_ALLOW_GROUP | PM_FORCE_PET);
     BIT_FLAGS u_mode = 0L;
@@ -1175,7 +1174,7 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
 
 /*!
  * @brief ものまねコマンドのメインルーチン /
- * do_cmd_cast calls this function if the player's class is 'imitator'.
+ * do_cmd_cast calls this function if the creature's class is 'imitator'.
  * @param baigaesi TRUEならば倍返し上の処理として行う
  * @return 処理を実行したらTRUE、キャンセルした場合FALSEを返す。
  * @details

@@ -27,7 +27,6 @@
  */
 std::string process_pref_file_expr(CreatureEntity &creature, char **sp, char *fp)
 {
-    auto &player = creature;
     char *s = (*sp);
     while (iswspace(*s)) {
         s++;
@@ -164,12 +163,12 @@ std::string process_pref_file_expr(CreatureEntity &creature, char **sp, char *fp
             v = "OFF";
         }
     } else if (streq(b + 1, "RACE")) {
-        v = player.race->title.en_string();
+        v = creature.race->title.en_string();
     } else if (streq(b + 1, "CLASS")) {
-        v = (*player.pclass_ref).title.en_string();
+        v = (*creature.pclass_ref).title.en_string();
     } else if (streq(b + 1, "PLAYER")) {
         static char tmp_player_name[64];
-        const char *pn = player.name.c_str();
+        const char *pn = creature.name.c_str();
         char *tpn = tmp_player_name;
         for (; *pn; pn++, tpn++) {
 #ifdef JP
@@ -185,19 +184,19 @@ std::string process_pref_file_expr(CreatureEntity &creature, char **sp, char *fp
         *tpn = '\0';
         v = tmp_player_name;
     } else if (streq(b + 1, "REALM1")) {
-        v = PlayerRealm(player).realm1().get_name().en_string();
+        v = PlayerRealm(creature).realm1().get_name().en_string();
     } else if (streq(b + 1, "REALM2")) {
-        v = PlayerRealm(player).realm2().get_name().en_string();
+        v = PlayerRealm(creature).realm2().get_name().en_string();
     } else if (streq(b + 1, "LEVEL")) {
-        v = format("%02d", player.level);
+        v = format("%02d", creature.level);
     } else if (streq(b + 1, "AUTOREGISTER")) {
-        if (player.autopick_autoregister) {
+        if (creature.autopick_autoregister) {
             v = "1";
         } else {
             v = "0";
         }
     } else if (streq(b + 1, "MONEY")) {
-        v = format("%09ld", (long int)player.au);
+        v = format("%09ld", (long int)creature.au);
     }
 
     *fp = f;

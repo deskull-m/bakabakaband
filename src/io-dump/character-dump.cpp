@@ -58,7 +58,6 @@
  */
 static void dump_aux_pet(CreatureEntity &creature, FILE *fff)
 {
-    auto &player = creature;
     const auto &floor = *creature.current_floor_ptr;
     auto pet = false;
     auto pet_settings = false;
@@ -93,22 +92,22 @@ static void dump_aux_pet(CreatureEntity &creature, FILE *fff)
     fmt::println(fff, _("\n\n  [ペットへの命令]", "\n\n  [Command for Pets]"));
 
     fmt::print(fff, _("\n ドアを開ける:                       {}", "\n Pets open doors:                    {}"),
-        (player.pet_extra_flags & PF_OPEN_DOORS) ? "ON" : "OFF");
+        (creature.pet_extra_flags & PF_OPEN_DOORS) ? "ON" : "OFF");
 
     fmt::print(fff, _("\n アイテムを拾う:                     {}", "\n Pets pick up items:                 {}"),
-        (player.pet_extra_flags & PF_PICKUP_ITEMS) ? "ON" : "OFF");
+        (creature.pet_extra_flags & PF_PICKUP_ITEMS) ? "ON" : "OFF");
 
     fmt::print(fff, _("\n テレポート系魔法を使う:             {}", "\n Allow teleport:                     {}"),
-        (player.pet_extra_flags & PF_TELEPORT) ? "ON" : "OFF");
+        (creature.pet_extra_flags & PF_TELEPORT) ? "ON" : "OFF");
 
     fmt::print(fff, _("\n 攻撃魔法を使う:                     {}", "\n Allow cast attack spell:            {}"),
-        (player.pet_extra_flags & PF_ATTACK_SPELL) ? "ON" : "OFF");
+        (creature.pet_extra_flags & PF_ATTACK_SPELL) ? "ON" : "OFF");
 
     fmt::print(fff, _("\n 召喚魔法を使う:                     {}", "\n Allow cast summon spell:            {}"),
-        (player.pet_extra_flags & PF_SUMMON_SPELL) ? "ON" : "OFF");
+        (creature.pet_extra_flags & PF_SUMMON_SPELL) ? "ON" : "OFF");
 
-    fmt::print(fff, _("\n プレイヤーを巻き込む範囲魔法を使う: {}", "\n Allow involve player in area spell: {}"),
-        (player.pet_extra_flags & PF_BALL_SPELL) ? "ON" : "OFF");
+    fmt::print(fff, _("\n プレイヤーを巻き込む範囲魔法を使う: {}", "\n Allow involve creature in area spell: {}"),
+        (creature.pet_extra_flags & PF_BALL_SPELL) ? "ON" : "OFF");
 
     fmt::print(fff, "\n");
 }
@@ -137,7 +136,6 @@ static void dump_aux_quest(CreatureEntity &creature, FILE *fff)
  */
 static void dump_aux_last_message(CreatureEntity &creature, FILE *fff)
 {
-    auto &player = creature;
     if (!creature.is_dead()) {
         return;
     }
@@ -164,12 +162,12 @@ static void dump_aux_last_message(CreatureEntity &creature, FILE *fff)
         return;
     }
 
-    if (player.last_message.empty()) {
+    if (creature.last_message.empty()) {
         return;
     }
 
     fmt::println(fff, _("\n  [*勝利*メッセージ]\n", "\n  [*Winning* Message]\n"));
-    fmt::println(fff, "  {}\n", player.last_message);
+    fmt::println(fff, "  {}\n", creature.last_message);
 }
 
 /*!
@@ -373,8 +371,7 @@ static void dump_aux_monsters(FILE *fff)
  */
 static void dump_aux_race_history(CreatureEntity &creature, FILE *fff)
 {
-    auto &player = creature;
-    if (!player.old_race1 && !player.old_race2) {
+    if (!creature.old_race1 && !creature.old_race2) {
         return;
     }
 
@@ -385,11 +382,11 @@ static void dump_aux_race_history(CreatureEntity &creature, FILE *fff)
             continue;
         }
         if (i < 32) {
-            if (!(player.old_race1 & 1UL << i)) {
+            if (!(creature.old_race1 & 1UL << i)) {
                 continue;
             }
         } else {
-            if (!(player.old_race2 & 1UL << (i - 32))) {
+            if (!(creature.old_race2 & 1UL << (i - 32))) {
                 continue;
             }
         }
@@ -407,14 +404,13 @@ static void dump_aux_race_history(CreatureEntity &creature, FILE *fff)
  */
 static void dump_aux_realm_history(CreatureEntity &creature, FILE *fff)
 {
-    auto &player = creature;
-    if (player.old_realm == 0) {
+    if (creature.old_realm == 0) {
         return;
     }
 
     fmt::print(fff, "\n");
     for (auto realm : MAGIC_REALM_RANGE) {
-        if (!(player.old_realm & (1UL << (enum2i(realm) - 1)))) {
+        if (!(creature.old_realm & (1UL << (enum2i(realm) - 1)))) {
             continue;
         }
         fmt::print(fff, _("\n あなたはかつて{}魔法を使えた。", "\n You were able to use {} magic before."), PlayerRealm::get_name(realm));
@@ -430,33 +426,32 @@ static void dump_aux_realm_history(CreatureEntity &creature, FILE *fff)
  */
 static void dump_aux_virtues(CreatureEntity &creature, FILE *fff)
 {
-    auto &player = creature;
     fmt::println(fff, _("\n\n  [自分に関する情報]\n", "\n\n  [HP-rate & Max stat & Virtues]\n"));
 
 #ifdef JP
-    if (player.knowledge & KNOW_HPRATE) {
-        fmt::println(fff, "現在の体力ランク : {}/100\n", player.calc_life_rating());
+    if (creature.knowledge & KNOW_HPRATE) {
+        fmt::println(fff, "現在の体力ランク : {}/100\n", creature.calc_life_rating());
     } else {
         fmt::println(fff, "現在の体力ランク : ???\n");
     }
     fmt::println(fff, "能力の最大値");
 #else
-    if (player.knowledge & KNOW_HPRATE) {
-        fmt::println(fff, "Your current Life Rating is {}/100.\n", player.calc_life_rating());
+    if (creature.knowledge & KNOW_HPRATE) {
+        fmt::println(fff, "Your current Life Rating is {}/100.\n", creature.calc_life_rating());
     } else {
         fmt::println(fff, "Your current Life Rating is ???.\n");
     }
     fmt::println(fff, "Limits of maximum stats");
 #endif
     for (auto v_nr = 0; v_nr < A_MAX; v_nr++) {
-        if ((player.knowledge & KNOW_STAT) || player.stat_max[v_nr] == player.stat_max_max[v_nr]) {
-            fmt::println(fff, "{} 18/{}", stat_names[v_nr], player.stat_max_max[v_nr] - 18);
+        if ((creature.knowledge & KNOW_STAT) || creature.stat_max[v_nr] == creature.stat_max_max[v_nr]) {
+            fmt::println(fff, "{} 18/{}", stat_names[v_nr], creature.stat_max_max[v_nr] - 18);
         } else {
             fmt::println(fff, "{} ???", stat_names[v_nr]);
         }
     }
 
-    std::string alg = PlayerAlignment(player).get_alignment_description();
+    std::string alg = PlayerAlignment(creature).get_alignment_description();
     fmt::println(fff, _("\n属性 : {}", "\nYour alignment : {}"), alg);
     fmt::print(fff, "\n");
     dump_virtues(creature, fff);
@@ -469,8 +464,7 @@ static void dump_aux_virtues(CreatureEntity &creature, FILE *fff)
  */
 static void dump_aux_mutations(CreatureEntity &creature, FILE *fff)
 {
-    auto &player = creature;
-    if (player.muta.any()) {
+    if (creature.muta.any()) {
         fmt::println(fff, _("\n\n  [突然変異]\n", "\n\n  [Mutations]\n"));
         dump_mutations(creature, fff);
     }
@@ -483,11 +477,10 @@ static void dump_aux_mutations(CreatureEntity &creature, FILE *fff)
  */
 static void dump_aux_equipment_inventory(CreatureEntity &creature, FILE *fff)
 {
-    auto &player = creature;
-    if (player.equip_cnt) {
+    if (creature.equip_cnt) {
         fmt::println(fff, _("  [キャラクタの装備]\n", "  [Character Equipment]\n"));
         for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-            auto item_name = describe_flavor(player, *player.inventory[i], 0);
+            auto item_name = describe_flavor(creature, *creature.inventory[i], 0);
             auto is_two_handed = ((i == INVEN_MAIN_HAND) && can_attack_with_sub_hand(creature));
             is_two_handed |= ((i == INVEN_SUB_HAND) && can_attack_with_main_hand(creature));
             if (is_two_handed && has_two_handed_weapons(creature)) {
@@ -502,11 +495,11 @@ static void dump_aux_equipment_inventory(CreatureEntity &creature, FILE *fff)
 
     fmt::println(fff, _("  [キャラクタの持ち物]\n", "  [Character Inventory]\n"));
     for (auto i = 0; i < INVEN_PACK; i++) {
-        if (!player.inventory[i]->is_valid()) {
+        if (!creature.inventory[i]->is_valid()) {
             break;
         }
 
-        const auto item_name = describe_flavor(player, *player.inventory[i], 0);
+        const auto item_name = describe_flavor(creature, *creature.inventory[i], 0);
         fmt::println(fff, "{}) {}", index_to_label(i), item_name);
     }
 
@@ -520,7 +513,6 @@ static void dump_aux_equipment_inventory(CreatureEntity &creature, FILE *fff)
  */
 static void dump_aux_home_museum(CreatureEntity &creature, FILE *fff)
 {
-    auto &player = creature;
     const auto &home = towns_info[1].get_store(StoreSaleType::HOME);
     if (home.stock_num) {
         fmt::println(fff, _("  [我が家のアイテム]", "  [Home Inventory]"));
@@ -530,7 +522,7 @@ static void dump_aux_home_museum(CreatureEntity &creature, FILE *fff)
                 fmt::println(fff, _("\n ( {} ページ )", "\n ( page {} )"), page++);
             }
 
-            const auto item_name = describe_flavor(player, *home.stock[i], 0);
+            const auto item_name = describe_flavor(creature, *home.stock[i], 0);
             fmt::println(fff, "{}) {}", I2A(i % 12), item_name);
         }
 
@@ -549,7 +541,7 @@ static void dump_aux_home_museum(CreatureEntity &creature, FILE *fff)
             fmt::println(fff, _("\n ( {} ページ )", "\n ( page {} )"), page++);
         }
 
-        const auto item_name = describe_flavor(player, *museum.stock[i], 0);
+        const auto item_name = describe_flavor(creature, *museum.stock[i], 0);
         fmt::println(fff, "{}) {}", I2A(i % 12), item_name);
     }
 

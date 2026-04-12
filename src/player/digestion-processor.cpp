@@ -26,27 +26,26 @@
  */
 void starve_player(CreatureEntity &creature)
 {
-    auto &player = creature;
     if (AngbandSystem::get_instance().is_phase_out()) {
         return;
     }
 
-    if (player.food >= PY_FOOD_MAX) {
-        (void)set_food(creature, player.food - 100);
+    if (creature.food >= PY_FOOD_MAX) {
+        (void)set_food(creature, creature.food - 100);
     } else if (AngbandWorld::get_instance().game_turn % (TURNS_PER_TICK * 5) == 0) {
         int digestion = speed_to_energy(creature.get_speed());
-        if (player.regenerate) {
+        if (creature.regenerate) {
             digestion += 20;
         }
         CreatureClass pc(creature);
         if (!pc.monk_stance_is(MonkStanceType::NONE) || !pc.samurai_stance_is(SamuraiStanceType::NONE)) {
             digestion += 20;
         }
-        if (player.cursed.has(CurseTraitType::FAST_DIGEST)) {
+        if (creature.cursed.has(CurseTraitType::FAST_DIGEST)) {
             digestion += 30;
         }
 
-        if (player.slow_digest) {
+        if (creature.slow_digest) {
             digestion -= 5;
         }
 
@@ -61,10 +60,10 @@ void starve_player(CreatureEntity &creature)
             digestion *= 100;
         }
 
-        (void)set_food(creature, player.food - digestion);
+        (void)set_food(creature, creature.food - digestion);
     }
 
-    if ((player.food >= PY_FOOD_FAINT)) {
+    if ((creature.food >= PY_FOOD_FAINT)) {
         return;
     }
 
@@ -74,8 +73,8 @@ void starve_player(CreatureEntity &creature)
         (void)BadStatusSetter(creature).mod_paralysis(1 + randint0(5));
     }
 
-    if (player.food < PY_FOOD_STARVE) {
-        int dam = (PY_FOOD_STARVE - player.food) / 10;
+    if (creature.food < PY_FOOD_STARVE) {
+        int dam = (PY_FOOD_STARVE - creature.food) / 10;
         if (!creature.is_invulnerable()) {
             take_hit(creature, DAMAGE_LOSELIFE, dam, _("空腹", "starvation"));
         }
@@ -93,42 +92,41 @@ void starve_player(CreatureEntity &creature)
  * addition of the most "filling" item, Elvish Waybread, which adds
  * 7500 food units, without overflowing the 32767 maximum limit.\n
  *\n
- * Perhaps we should disturb the player with various messages,
+ * Perhaps we should disturb the creature with various messages,
  * especially messages about hunger status changes.  \n
  *\n
  * Digestion of food is handled in "dungeon.c", in which, normally,
- * the player digests about 20 food units per 100 game turns, more
+ * the creature digests about 20 food units per 100 game turns, more
  * when "fast", more when "regenerating", less with "slow digestion",
- * but when the player is "gorged", he digests 100 food units per 10
+ * but when the creature is "gorged", he digests 100 food units per 10
  * game turns, or a full 1000 food units per 100 game turns.\n
  *\n
- * Note that the player's speed is reduced by 10 units while gorged,
- * so if the player eats a single food ration (5000 food units) when
+ * Note that the creature's speed is reduced by 10 units while gorged,
+ * so if the creature eats a single food ration (5000 food units) when
  * full (15000 food units), he will be gorged for (5000/100)*10 = 500
- * game turns, or 500/(100/5) = 25 player turns (if nothing else is
- * affecting the player speed).\n
+ * game turns, or 500/(100/5) = 25 creature turns (if nothing else is
+ * affecting the creature speed).\n
  */
 bool set_food(CreatureEntity &creature, TIME_EFFECT v)
 {
     if (!creature.is_player()) {
         return false;
     }
-    auto &player = creature;
 
     int old_aux, new_aux;
 
     bool notice = false;
     v = (v > 20000) ? 20000 : (v < 0) ? 0
                                       : v;
-    if (player.food < PY_FOOD_FAINT) {
+    if (creature.food < PY_FOOD_FAINT) {
         old_aux = 0;
-    } else if (player.food < PY_FOOD_WEAK) {
+    } else if (creature.food < PY_FOOD_WEAK) {
         old_aux = 1;
-    } else if (player.food < PY_FOOD_ALERT) {
+    } else if (creature.food < PY_FOOD_ALERT) {
         old_aux = 2;
-    } else if (player.food < PY_FOOD_FULL) {
+    } else if (creature.food < PY_FOOD_FULL) {
         old_aux = 3;
-    } else if (player.food < PY_FOOD_MAX) {
+    } else if (creature.food < PY_FOOD_MAX) {
         old_aux = 4;
     } else {
         old_aux = 5;
@@ -211,13 +209,13 @@ bool set_food(CreatureEntity &creature, TIME_EFFECT v)
         }
 
         if (AngbandWorld::get_instance().is_wild_mode() && (new_aux < 2)) {
-            change_wild_mode(player, false);
+            change_wild_mode(creature, false);
         }
 
         notice = true;
     }
 
-    player.food = v;
+    creature.food = v;
     if (!notice) {
         return false;
     }
@@ -229,7 +227,7 @@ bool set_food(CreatureEntity &creature, TIME_EFFECT v)
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     rfu.set_flag(MainWindowRedrawingFlag::HUNGER);
-    handle_stuff(player);
+    handle_stuff(creature);
 
     return true;
 }

@@ -27,7 +27,6 @@
  */
 void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, int perc)
 {
-    auto &player = creature;
     int j, amt;
     if (check_multishadow(creature) || creature.current_floor_ptr->inside_arena) {
         return;
@@ -35,7 +34,7 @@ void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, in
 
     /* Scan through the slots backwards */
     for (short i = 0; i < INVEN_PACK; i++) {
-        auto &item = *player.inventory[i];
+        auto &item = *creature.inventory[i];
         if (!item.is_valid()) {
             continue;
         }
@@ -62,7 +61,7 @@ void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, in
             continue;
         }
 
-        const auto item_name = describe_flavor(player, item, OD_OMIT_PREFIX);
+        const auto item_name = describe_flavor(creature, item, OD_OMIT_PREFIX);
 
         msg_format(_("%s(%c)が%s壊れてしまった！", "%sour %s (%c) %s destroyed!"),
 #ifdef JP
@@ -73,15 +72,15 @@ void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, in
 #endif
 
 #ifdef JP
-        if (player.is_echizen()) {
+        if (creature.is_echizen()) {
             msg_print("やりやがったな！");
-        } else if (player.is_chargeman()) {
+        } else if (creature.is_chargeman()) {
             if (randint0(2) == 0) {
                 msg_print(_("ジュラル星人め！", ""));
             } else {
                 msg_print(_("弱い者いじめは止めるんだ！", ""));
             }
-        } else if (player.is_tough()) {
+        } else if (creature.is_tough()) {
             msg_print(_("う わ あ あ あ あ あ あ あ あ", ""));
         }
 
@@ -89,7 +88,7 @@ void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, in
 
         /* Potions smash open */
         if (item.is_potion()) {
-            (void)potion_smash_effect(player, 0, creature.y, creature.x, item.bi_id);
+            (void)potion_smash_effect(creature, 0, creature.y, creature.x, item.bi_id);
         }
 
         /* Reduce the charges of rods/wands */

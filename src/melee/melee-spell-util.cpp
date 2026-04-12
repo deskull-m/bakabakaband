@@ -16,8 +16,7 @@ melee_spell_type::melee_spell_type(CreatureEntity &creature, MONSTER_IDX m_idx)
     this->m_ptr = &floor.get_monster(m_idx);
     this->t_ptr = nullptr;
     this->r_ptr = &this->m_ptr->get_monrace();
-    auto &player = creature;
-    this->see_m = is_seen(player, *this->m_ptr);
+    this->see_m = is_seen(creature, *this->m_ptr);
     this->maneable = floor.has_los_at(this->m_ptr->get_position());
     this->pet = this->m_ptr->is_pet();
     const auto &dungeon = floor.get_dungeon_definition();

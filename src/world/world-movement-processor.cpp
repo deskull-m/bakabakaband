@@ -59,22 +59,21 @@ void check_random_quest_auto_failure(CreatureEntity &creature)
  * @param creature クリーチャーへの参照
  * @details
  * Autosave BEFORE resetting the recall counter (rr9)
- * The player is yanked up/down as soon as he loads the autosaved game.
+ * The creature is yanked up/down as soon as he loads the autosaved game.
  */
 void execute_recall(CreatureEntity &creature)
 {
-    auto &player = creature;
-    if (player.word_recall == 0) {
+    if (creature.word_recall == 0) {
         return;
     }
 
-    if (autosave_l && (player.word_recall == 1) && !AngbandSystem::get_instance().is_phase_out()) {
-        do_cmd_save_game(player, true);
+    if (autosave_l && (creature.word_recall == 1) && !AngbandSystem::get_instance().is_phase_out()) {
+        do_cmd_save_game(creature, true);
     }
 
-    player.word_recall--;
+    creature.word_recall--;
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (player.word_recall != 0) {
+    if (creature.word_recall != 0) {
         return;
     }
 
@@ -83,7 +82,7 @@ void execute_recall(CreatureEntity &creature)
     if (floor.is_underground() || floor.is_in_quest() || floor.is_entering_dungeon()) {
         msg_print(_("上に引っ張りあげられる感じがする！", "You feel yourself yanked upwards!"));
         if (floor.is_underground()) {
-            player.recall_dungeon = floor.dungeon_id;
+            creature.recall_dungeon = floor.dungeon_id;
         }
         if (record_stair) {
             exe_write_diary(floor, DiaryKind::RECALL, floor.dun_level);
@@ -91,16 +90,16 @@ void execute_recall(CreatureEntity &creature)
 
         floor.dun_level = 0;
         floor.reset_dungeon_index();
-        leave_quest_check(player);
-        leave_tower_check(player);
+        leave_quest_check(creature);
+        leave_tower_check(creature);
         floor.quest_number = QuestId::NONE;
-        player.leaving = true;
+        creature.leaving = true;
         sound(SoundKind::TPLEVEL);
         return;
     }
 
     msg_print(_("下に引きずり降ろされる感じがする！", "You feel yourself yanked downwards!"));
-    floor.set_dungeon_index(player.recall_dungeon);
+    floor.set_dungeon_index(creature.recall_dungeon);
     if (record_stair) {
         exe_write_diary(floor, DiaryKind::RECALL, floor.dun_level);
     }
@@ -134,7 +133,7 @@ void execute_recall(CreatureEntity &creature)
      * and create a first saved floor
      */
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::FIRST_FLOOR);
-    player.leaving = true;
+    creature.leaving = true;
 
     check_random_quest_auto_failure(creature);
     sound(SoundKind::TPLEVEL);
@@ -147,19 +146,18 @@ void execute_recall(CreatureEntity &creature)
  */
 void execute_floor_reset(CreatureEntity &creature)
 {
-    auto &player = creature;
     const auto &floor = *creature.current_floor_ptr;
-    if (player.alter_reality == 0) {
+    if (creature.alter_reality == 0) {
         return;
     }
 
-    if (autosave_l && (player.alter_reality == 1) && !AngbandSystem::get_instance().is_phase_out()) {
-        do_cmd_save_game(player, true);
+    if (autosave_l && (creature.alter_reality == 1) && !AngbandSystem::get_instance().is_phase_out()) {
+        do_cmd_save_game(creature, true);
     }
 
-    player.alter_reality--;
+    creature.alter_reality--;
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (player.alter_reality != 0) {
+    if (creature.alter_reality != 0) {
         return;
     }
 
@@ -174,7 +172,7 @@ void execute_floor_reset(CreatureEntity &creature)
         }
 
         FloorChangeModesStore::get_instace()->set(FloorChangeMode::FIRST_FLOOR);
-        player.leaving = true;
+        creature.leaving = true;
     } else {
         msg_print(_("世界が少しの間変化したようだ。", "The world seems to change for a moment!"));
     }

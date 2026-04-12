@@ -133,11 +133,10 @@ bool activate_judgement(CreatureEntity &creature, std::string_view name)
     msg_format(_("%sは赤く明るく光った！", "The %s flashes bright red!"), name.data());
     chg_virtue(creature, Virtue::KNOWLEDGE, 1);
     chg_virtue(creature, Virtue::ENLIGHTEN, 1);
-    auto &player = creature;
     wiz_lite(creature, false);
 
     msg_format(_("%sはあなたの体力を奪った...", "The %s drains your vitality..."), name.data());
-    take_hit(player, DAMAGE_LOSELIFE, Dice::roll(3, 8), _("審判の宝石", "the Jewel of Judgement"));
+    take_hit(creature, DAMAGE_LOSELIFE, Dice::roll(3, 8), _("審判の宝石", "the Jewel of Judgement"));
 
     (void)detect_traps(creature, DETECT_RAD_DEFAULT, true);
     (void)detect_doors(creature, DETECT_RAD_DEFAULT);

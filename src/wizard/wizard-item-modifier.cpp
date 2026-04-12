@@ -244,8 +244,7 @@ void wiz_restore_aware_flag_of_fixed_arfifact(FixedArtifactId reset_artifact_idx
  */
 void wiz_modify_item_activation(CreatureEntity &creature)
 {
-    auto &player = creature;
-    auto *player_ptr = &player;
+    auto *player_ptr = &creature;
     constexpr auto q = _("どのアイテムの発動を変更しますか？ ", "Which item? ");
     constexpr auto s = _("発動を変更するアイテムがない。", "Nothing to do with.");
     short i_idx;
@@ -374,7 +373,7 @@ static void prt_binary(BIT_FLAGS flags, const int row, int col)
 
 /*!
  * @brief アイテムの詳細ステータスを表示する /
- * Change various "permanent" player variables.
+ * Change various "permanent" creature variables.
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param o_ptr 詳細を表示するアイテム情報の参照ポインタ
  */
@@ -735,8 +734,7 @@ static void wiz_quantity_item(ItemEntity *o_ptr)
  */
 void wiz_modify_item(CreatureEntity &creature)
 {
-    auto &player = creature;
-    auto *player_ptr = &player;
+    auto *player_ptr = &creature;
     constexpr auto q = "Play with which object? ";
     constexpr auto s = "You have nothing to play with.";
     short i_idx;

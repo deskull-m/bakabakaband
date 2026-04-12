@@ -35,18 +35,17 @@ void AllianceShittoDan::panishment(CreatureEntity &creature)
     if (!creature.is_player()) {
         return;
     }
-    auto &player = creature;
     if (one_in_(20)) {
         Pos2D m_pos(creature.get_position());
-        m_pos = scatter(*player.current_floor_ptr, m_pos, 8, PROJECT_NONE);
+        m_pos = scatter(*creature.current_floor_ptr, m_pos, 8, PROJECT_NONE);
 
-        const auto m_idx = place_monster_one(player, m_pos.y, m_pos.x, MonraceId::SHITTO_MASK, PM_ALLOW_GROUP);
+        const auto m_idx = place_monster_one(creature, m_pos.y, m_pos.x, MonraceId::SHITTO_MASK, PM_ALLOW_GROUP);
         if (m_idx) {
             msg_print(_("「アベックもリア充も死にさらせええ！」しっと団の襲撃だ！",
                 "\"Death to couples and people with fulfilling social lives!\" It's an attack by the Shitto Dan!"));
             disturb(creature, true, true);
             for (int k = 0; k < 3; k++) {
-                summon_specific(player, m_pos.y, m_pos.x, 5, SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
+                summon_specific(creature, m_pos.y, m_pos.x, 5, SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }
     }

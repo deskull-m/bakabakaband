@@ -482,13 +482,12 @@ int monspell_race_damage(CreatureEntity &creature, MonsterAbilityType ms_type, M
  */
 int monspell_bluemage_damage(CreatureEntity &creature, MonsterAbilityType ms_type, PLAYER_LEVEL plev, int TYPE)
 {
-    auto &player = creature;
     ItemEntity *weapon_ptr = nullptr;
 
     if (has_melee_weapon(creature, INVEN_MAIN_HAND)) {
-        weapon_ptr = player.inventory[INVEN_MAIN_HAND].get();
+        weapon_ptr = creature.inventory[INVEN_MAIN_HAND].get();
     } else if (has_melee_weapon(creature, INVEN_SUB_HAND)) {
-        weapon_ptr = player.inventory[INVEN_SUB_HAND].get();
+        weapon_ptr = creature.inventory[INVEN_SUB_HAND].get();
     }
 
     const auto shoot_base = weapon_ptr ? weapon_ptr->to_d : 0;

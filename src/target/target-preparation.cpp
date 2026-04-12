@@ -21,10 +21,10 @@
  *
  * The concept of "targeting" was stolen from "Morgul" (?)
  *
- * The player can target any location, or any "target-able" monster.
+ * The creature can target any location, or any "target-able" monster.
  *
  * Currently, a monster is "target_able" if it is visible, and if
- * the player can hit it with a projection, and the player is not
+ * the creature can hit it with a projection, and the creature is not
  * hallucinating.  This allows use of "use closest target" macros.
  *
  * Future versions may restrict the ability to target "trappers"
@@ -109,7 +109,6 @@ static bool target_set_accept(CreatureEntity &creature, const Pos2D &pos)
  */
 std::vector<Pos2D> target_set_prepare(CreatureEntity &creature, target_type mode)
 {
-    auto &player = creature;
     POSITION min_hgt, max_hgt, min_wid, max_wid;
     const auto &floor = *creature.current_floor_ptr;
     const auto is_killable = any_bits(mode, TARGET_KILL);
@@ -159,7 +158,7 @@ std::vector<Pos2D> target_set_prepare(CreatureEntity &creature, target_type mode
         });
     }
 
-    if (player.riding == 0 || !target_pet || (std::ssize(pos_list) <= 1) || !is_killable) {
+    if (creature.riding == 0 || !target_pet || (std::ssize(pos_list) <= 1) || !is_killable) {
         return pos_list;
     }
 

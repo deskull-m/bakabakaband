@@ -31,7 +31,7 @@
 
 std::filesystem::path ANGBAND_DIR; //!< Path name: The main "lib" directory This variable is not actually used anywhere in the code
 std::filesystem::path ANGBAND_DIR_APEX; //!< High score files (binary) These files may be portable between platforms
-std::filesystem::path ANGBAND_DIR_BONE; //!< Bone files for player ghosts (ascii) These files are portable between platforms
+std::filesystem::path ANGBAND_DIR_BONE; //!< Bone files for creature ghosts (ascii) These files are portable between platforms
 std::filesystem::path ANGBAND_DIR_DATA; //!< Binary image files for the "*_info" arrays (binary) These files are not portable between platforms
 std::filesystem::path ANGBAND_DIR_EDIT; //!< Textual template files for the "*_info" arrays (ascii) These files are portable between platforms
 std::filesystem::path ANGBAND_DIR_SCRIPT; //!< Script files These files are portable between platforms.
@@ -230,14 +230,13 @@ tl::optional<std::string> get_random_line_ja_only(concptr file_name, int entry, 
  */
 static errr counts_seek(CreatureEntity &creature, int fd, uint32_t where, bool flag)
 {
-    auto &player = creature;
     char temp1[128]{}, temp2[128]{};
-    auto short_pclass = enum2i(player.pclass);
+    auto short_pclass = enum2i(creature.pclass);
 #ifdef SAVEFILE_USE_UID
     const auto user_id = UnixUserIds::get_instance().get_user_id();
-    const auto header = format("%d.%s.%d%d%d", user_id, savefile_base.string().data(), short_pclass, player.ppersonality, player.age);
+    const auto header = format("%d.%s.%d%d%d", user_id, savefile_base.string().data(), short_pclass, creature.ppersonality, creature.age);
 #else
-    const auto header = format("%s.%d%d%d", savefile_base.string().data(), short_pclass, player.ppersonality, player.age);
+    const auto header = format("%s.%d%d%d", savefile_base.string().data(), short_pclass, creature.ppersonality, creature.age);
 #endif
     angband_strcpy(temp1, header, sizeof(temp1));
     for (int i = 0; temp1[i]; i++) {

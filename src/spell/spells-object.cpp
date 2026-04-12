@@ -52,7 +52,7 @@
 static constexpr std::array<int, 16> enchant_table = { { 0, 10, 50, 100, 200, 300, 400, 500, 650, 800, 950, 987, 993, 995, 998, 1000 } };
 
 /*
- * Scatter some "amusing" objects near the player
+ * Scatter some "amusing" objects near the creature
  */
 enum class AmusementFlagType : byte {
     NOTHING, /* No restriction */
@@ -172,7 +172,7 @@ void generate_amusement(CreatureEntity &creature, int num, bool known)
 
 /*!
  * @brief 獲得ドロップを行う。
- * Scatter some "great" objects near the player
+ * Scatter some "great" objects near the creature
  * @param creature クリーチャーへの参照
  * @param y1 配置したいフロアのY座標
  * @param x1 配置したいフロアのX座標
@@ -199,15 +199,14 @@ void acquirement(CreatureEntity &creature, POSITION y1, POSITION x1, int num, bo
  */
 bool curse_armor(CreatureEntity &creature)
 {
-    auto &player = creature;
 
     /* Curse the body armor */
-    auto &item = *player.inventory[INVEN_BODY];
+    auto &item = *creature.inventory[INVEN_BODY];
     if (!item.is_valid()) {
         return false;
     }
 
-    const auto item_name = describe_flavor(player, item, OD_OMIT_PREFIX);
+    const auto item_name = describe_flavor(creature, item, OD_OMIT_PREFIX);
 
     if (item.is_fixed_or_random_artifact() && one_in_(2)) {
 #ifdef JP
@@ -260,8 +259,7 @@ bool curse_weapon_object(CreatureEntity &creature, bool force, ItemEntity *o_ptr
         return false;
     }
 
-    auto &player = creature;
-    const auto item_name = describe_flavor(player, *o_ptr, OD_OMIT_PREFIX);
+    const auto item_name = describe_flavor(creature, *o_ptr, OD_OMIT_PREFIX);
     if (o_ptr->is_fixed_or_random_artifact() && one_in_(2) && !force) {
 #ifdef JP
         msg_format("%sが%sを包み込もうとしたが、%sはそれを跳ね返した！", "恐怖の暗黒オーラ", "武器", item_name.data());
@@ -308,10 +306,9 @@ bool curse_weapon_object(CreatureEntity &creature, bool force, ItemEntity *o_ptr
  */
 void brand_bolts(CreatureEntity &creature)
 {
-    auto &player = creature;
 
     for (auto i = 0; i < INVEN_PACK; i++) {
-        auto *o_ptr = player.inventory[i].get();
+        auto *o_ptr = creature.inventory[i].get();
         if (o_ptr->bi_key.tval() != ItemKindType::BOLT) {
             continue;
         }
@@ -472,7 +469,6 @@ bool enchant_equipment(ItemEntity *o_ptr, int n, int eflag)
  */
 bool enchant_spell(CreatureEntity &creature, HIT_PROB num_hit, int num_dam, ARMOUR_CLASS num_ac)
 {
-    auto &player = creature;
 
     FuncItemTester item_tester(&ItemEntity::allow_enchant_weapon);
     if (num_ac) {
@@ -483,12 +479,12 @@ bool enchant_spell(CreatureEntity &creature, HIT_PROB num_hit, int num_dam, ARMO
     constexpr auto s = _("強化できるアイテムがない。", "You have nothing to enchant.");
     short i_idx;
     const auto options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    auto *o_ptr = choose_object(player, &i_idx, q, s, options, item_tester);
+    auto *o_ptr = choose_object(creature, &i_idx, q, s, options, item_tester);
     if (o_ptr == nullptr) {
         return false;
     }
 
-    const auto item_name = describe_flavor(player, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
 #ifdef JP
     msg_format("%s は明るく輝いた！", item_name.data());
 #else
@@ -531,13 +527,12 @@ bool enchant_spell(CreatureEntity &creature, HIT_PROB num_hit, int num_dam, ARMO
  */
 void brand_weapon(CreatureEntity &creature, int brand_type)
 {
-    auto &player = creature;
 
     constexpr auto q = _("どの武器を強化しますか? ", "Enchant which weapon? ");
     constexpr auto s = _("強化できる武器がない。", "You have nothing to enchant.");
     short i_idx;
     const auto options = USE_EQUIP | IGNORE_BOTHHAND_SLOT;
-    auto *o_ptr = choose_object(player, &i_idx, q, s, options, FuncItemTester(&ItemEntity::allow_enchant_melee_weapon));
+    auto *o_ptr = choose_object(creature, &i_idx, q, s, options, FuncItemTester(&ItemEntity::allow_enchant_melee_weapon));
     if (o_ptr == nullptr) {
         return;
     }
@@ -558,7 +553,7 @@ void brand_weapon(CreatureEntity &creature, int brand_type)
         return;
     }
 
-    const auto item_name = describe_flavor(player, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     concptr act = nullptr;
     switch (brand_type) {
     case 17:

@@ -15,17 +15,17 @@
  * reading scrolls, aiming wands, using staffs, zapping rods,
  * and activating artifacts.
  *
- * In all cases, if the player becomes "aware" of the item's use
+ * In all cases, if the creature becomes "aware" of the item's use
  * by testing it, mark it as "aware" and reward some experience
- * based on the object's level, always rounding up.  If the player
+ * based on the object's level, always rounding up.  If the creature
  * remains "unaware", mark that object "kind" as "tried".
  *
  * This code now correctly handles the unstacking of wands, staffs,
  * and rods.  Note the overly paranoid warning about potential pack
- * overflow, which allows the player to use and drop a stacked item.
+ * overflow, which allows the creature to use and drop a stacked item.
  *
  * In all "unstacking" scenarios, the "used" object is "carried" as if
- * the player had just picked it up.  In particular, this means that if
+ * the creature had just picked it up.  In particular, this means that if
  * the use of an item induces pack overflow, that item will be dropped.
  *
  * For simplicity, these routines induce a full "pack reorganization"
@@ -93,7 +93,6 @@
  */
 static tl::optional<BaseitemKey> select_magic_eater(CreatureEntity &creature, bool only_browse)
 {
-    auto &player = creature;
     bool flag, request_list;
     auto tval = ItemKindType::NONE;
     int menu_line = (use_menu ? 1 : 0);
@@ -267,14 +266,14 @@ static tl::optional<BaseitemKey> select_magic_eater(CreatureEntity &creature, bo
                 const auto &baseitem = baseitems.lookup_baseitem({ tval, sval_ctr });
                 level = (tval == ItemKindType::ROD ? baseitem.level * 5 / 6 - 5 : baseitem.level);
                 chance = level * 4 / 5 + 20;
-                chance -= 3 * (adj_mag_stat[player.stat_index[mp_ptr->spell_stat]] - 1);
+                chance -= 3 * (adj_mag_stat[creature.stat_index[mp_ptr->spell_stat]] - 1);
                 level /= 2;
-                if (player.level > level) {
-                    chance -= 3 * (player.level - level);
+                if (creature.level > level) {
+                    chance -= 3 * (creature.level - level);
                 }
                 chance = mod_spell_chance_1(creature, chance);
-                chance = std::max<int>(chance, adj_mag_fail[player.stat_index[mp_ptr->spell_stat]]);
-                chance += player.effects()->stun().get_magic_chance_penalty();
+                chance = std::max<int>(chance, adj_mag_fail[creature.stat_index[mp_ptr->spell_stat]]);
+                chance += creature.effects()->stun().get_magic_chance_penalty();
                 if (chance > 95) {
                     chance = 95;
                 }
@@ -491,7 +490,6 @@ static tl::optional<BaseitemKey> select_magic_eater(CreatureEntity &creature, bo
  */
 bool do_cmd_magic_eater(CreatureEntity &creature, bool only_browse, bool powerful)
 {
-    auto &player = creature;
     bool use_charge = true;
 
     if (cmd_limit_confused(creature)) {
@@ -509,14 +507,14 @@ bool do_cmd_magic_eater(CreatureEntity &creature, bool only_browse, bool powerfu
     const auto &baseitem = baseitems.lookup_baseitem(*bi_key);
     auto level = (bi_key->tval() == ItemKindType::ROD ? baseitem.level * 5 / 6 - 5 : baseitem.level);
     auto chance = level * 4 / 5 + 20;
-    chance -= 3 * (adj_mag_stat[player.stat_index[mp_ptr->spell_stat]] - 1);
+    chance -= 3 * (adj_mag_stat[creature.stat_index[mp_ptr->spell_stat]] - 1);
     level /= 2;
-    if (player.level > level) {
-        chance -= 3 * (player.level - level);
+    if (creature.level > level) {
+        chance -= 3 * (creature.level - level);
     }
     chance = mod_spell_chance_1(creature, chance);
-    chance = std::max<int>(chance, adj_mag_fail[player.stat_index[mp_ptr->spell_stat]]);
-    chance += player.effects()->stun().get_magic_chance_penalty();
+    chance = std::max<int>(chance, adj_mag_fail[creature.stat_index[mp_ptr->spell_stat]]);
+    chance += creature.effects()->stun().get_magic_chance_penalty();
     if (chance > 95) {
         chance = 95;
     }
@@ -546,13 +544,13 @@ bool do_cmd_magic_eater(CreatureEntity &creature, bool only_browse, bool powerfu
 
             auto dir = Direction::none();
             if (bi_key->is_aiming_rod()) {
-                dir = get_aim_dir(player);
+                dir = get_aim_dir(creature);
                 if (!dir) {
                     return false;
                 }
             }
 
-            (void)rod_effect(player, sval.value(), dir, &use_charge, powerful);
+            (void)rod_effect(creature, sval.value(), dir, &use_charge, powerful);
             if (!use_charge) {
                 return false;
             }
@@ -565,12 +563,12 @@ bool do_cmd_magic_eater(CreatureEntity &creature, bool only_browse, bool powerfu
                 return false;
             }
 
-            const auto dir = get_aim_dir(player);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return false;
             }
 
-            (void)wand_effect(player, sval.value(), dir, powerful, true);
+            (void)wand_effect(creature, sval.value(), dir, powerful, true);
             break;
         }
         default:
@@ -579,7 +577,7 @@ bool do_cmd_magic_eater(CreatureEntity &creature, bool only_browse, bool powerfu
                 return false;
             }
 
-            (void)staff_effect(player, sval.value(), &use_charge, powerful, true, true);
+            (void)staff_effect(creature, sval.value(), &use_charge, powerful, true, true);
             if (!use_charge) {
                 return false;
             }

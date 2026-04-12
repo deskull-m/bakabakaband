@@ -39,7 +39,7 @@ int AllianceKhorne::calcImpressionPoint(const CreatureEntity &creature) const
     }
 
     // 魔法使用による減点（コーンは魔法を嫌う）
-    if (player.realm1 != REALM_NONE || player.realm2 != REALM_NONE) {
+    if (creature.realm1 != REALM_NONE || creature.realm2 != REALM_NONE) {
         impression -= 100;
     }
     */
@@ -54,7 +54,6 @@ bool AllianceKhorne::isAnnihilated()
 
 void AllianceKhorne::panishment(CreatureEntity &creature)
 {
-    auto &player = creature;
     auto impression = calcImpressionPoint(creature);
     if (isAnnihilated() || impression > -60) {
         return;
@@ -104,12 +103,12 @@ void AllianceKhorne::panishment(CreatureEntity &creature)
     if (one_in_(20)) {
         Pos2D m_pos(creature.get_position());
         m_pos = scatter(*creature.current_floor_ptr, m_pos, 12, PROJECT_NONE);
-        const auto m_idx = place_monster_one(player, m_pos.y, m_pos.x, MonraceId::KHORNE_CHOSEN, PM_ALLOW_GROUP);
+        const auto m_idx = place_monster_one(creature, m_pos.y, m_pos.x, MonraceId::KHORNE_CHOSEN, PM_ALLOW_GROUP);
         if (m_idx) {
             msg_print(_("コーンの選ばれし者があなたを誅すべく追跡してきた！", "Khorne's Chosen is chasing you for revenge!"));
             disturb(creature, true, true);
             for (int k = 0; k < 3; k++) {
-                summon_specific(player, m_pos.y, m_pos.x, std::max(creature.current_floor_ptr->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
+                summon_specific(creature, m_pos.y, m_pos.x, std::max(creature.current_floor_ptr->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }
     }

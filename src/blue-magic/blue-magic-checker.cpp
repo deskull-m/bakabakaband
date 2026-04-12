@@ -31,17 +31,16 @@
  */
 void learn_spell(CreatureEntity &creature, MonsterAbilityType monspell)
 {
-    auto &player = creature;
-    if (player.action != ACTION_LEARN) {
+    if (creature.action != ACTION_LEARN) {
         return;
     }
 
-    auto bluemage_data = CreatureClass(player).get_specific_data<bluemage_data_type>();
+    auto bluemage_data = CreatureClass(creature).get_specific_data<bluemage_data_type>();
     if (!bluemage_data || bluemage_data->learnt_blue_magics.has(monspell)) {
         return;
     }
 
-    const auto effects = player.effects();
+    const auto effects = creature.effects();
     const auto is_confused = effects->confusion().is_confused();
     const auto is_blind = effects->blindness().is_blind();
     const auto is_stunned = effects->stun().is_stunned();
@@ -52,10 +51,10 @@ void learn_spell(CreatureEntity &creature, MonsterAbilityType monspell)
     }
 
     const auto &monster_power = monster_powers.at(monspell);
-    if (randint1(player.level + 70) > monster_power.level + 40) {
+    if (randint1(creature.level + 70) > monster_power.level + 40) {
         bluemage_data->learnt_blue_magics.set(monspell);
         msg_format(_("%sを学習した！", "You have learned %s!"), monster_power.name);
-        gain_exp(static_cast<CreatureEntity &>(player), monster_power.level * monster_power.smana);
+        gain_exp(static_cast<CreatureEntity &>(creature), monster_power.level * monster_power.smana);
         sound(SoundKind::STUDY);
         bluemage_data->new_magic_learned = true;
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);

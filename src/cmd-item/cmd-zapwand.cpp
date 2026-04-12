@@ -53,12 +53,11 @@
  */
 bool wand_effect(CreatureEntity &creature, int sval, const Direction &dir, bool powerful, bool magic)
 {
-    auto &player = creature;
     bool ident = false;
-    PLAYER_LEVEL lev = powerful ? player.level * 2 : player.level;
+    PLAYER_LEVEL lev = powerful ? creature.level * 2 : creature.level;
     POSITION rad = powerful ? 3 : 2;
 
-    player.plus_incident_tree("ZAP_WAND", 1);
+    creature.plus_incident_tree("ZAP_WAND", 1);
 
     /* XXX Hack -- Wand of wonder can do anything before it */
     if (sval == SV_WAND_WONDER) {
@@ -66,8 +65,8 @@ bool wand_effect(CreatureEntity &creature, int sval, const Direction &dir, bool 
         sval = randint0(SV_WAND_WONDER);
 
         if (vir) {
-            auto it = player.virtues.find(Virtue::CHANCE);
-            if (it != player.virtues.end()) {
+            auto it = creature.virtues.find(Virtue::CHANCE);
+            if (it != creature.virtues.end()) {
                 if (it->second > 0) {
                     while (randint1(300) < it->second) {
                         sval++;
@@ -94,21 +93,21 @@ bool wand_effect(CreatureEntity &creature, int sval, const Direction &dir, bool 
     switch (sval) {
     case SV_WAND_HEAL_MONSTER: {
         int dam = Dice::roll((powerful ? 20 : 10), 10);
-        if (heal_monster(player, dir, dam)) {
+        if (heal_monster(creature, dir, dam)) {
             ident = true;
         }
         break;
     }
 
     case SV_WAND_HASTE_MONSTER: {
-        if (speed_monster(player, dir, lev)) {
+        if (speed_monster(creature, dir, lev)) {
             ident = true;
         }
         break;
     }
 
     case SV_WAND_CLONE_MONSTER: {
-        if (clone_monster(player, dir)) {
+        if (clone_monster(creature, dir)) {
             ident = true;
         }
         break;
@@ -116,27 +115,27 @@ bool wand_effect(CreatureEntity &creature, int sval, const Direction &dir, bool 
 
     case SV_WAND_TELEPORT_AWAY: {
         int distance = MAX_PLAYER_SIGHT * (powerful ? 8 : 5);
-        if (teleport_monster(player, dir, distance)) {
+        if (teleport_monster(creature, dir, distance)) {
             ident = true;
         }
         break;
     }
 
     case SV_WAND_DISARMING: {
-        if (disarm_trap(player, dir)) {
+        if (disarm_trap(creature, dir)) {
             ident = true;
         }
-        if (powerful && disarm_traps_touch(player)) {
+        if (powerful && disarm_traps_touch(creature)) {
             ident = true;
         }
         break;
     }
 
     case SV_WAND_TRAP_DOOR_DEST: {
-        if (destroy_door(player, dir)) {
+        if (destroy_door(creature, dir)) {
             ident = true;
         }
-        if (powerful && destroy_doors_touch(player)) {
+        if (powerful && destroy_doors_touch(creature)) {
             ident = true;
         }
         break;
@@ -144,7 +143,7 @@ bool wand_effect(CreatureEntity &creature, int sval, const Direction &dir, bool 
 
     case SV_WAND_STONE_TO_MUD: {
         int dam = powerful ? 40 + randint1(60) : 20 + randint1(30);
-        if (wall_to_mud(player, dir, dam)) {
+        if (wall_to_mud(creature, dir, dam)) {
             ident = true;
         }
         break;
@@ -153,67 +152,67 @@ bool wand_effect(CreatureEntity &creature, int sval, const Direction &dir, bool 
     case SV_WAND_LITE: {
         int dam = Dice::roll((powerful ? 12 : 6), 8);
         msg_print(_("青く輝く光線が放たれた。", "A line of blue shimmering light appears."));
-        (void)lite_line(player, dir, dam);
+        (void)lite_line(creature, dir, dam);
         ident = true;
         break;
     }
 
     case SV_WAND_SLEEP_MONSTER: {
-        if (sleep_monster(player, dir, lev)) {
+        if (sleep_monster(creature, dir, lev)) {
             ident = true;
         }
         break;
     }
 
     case SV_WAND_SLOW_MONSTER: {
-        if (slow_monster(player, dir, lev)) {
+        if (slow_monster(creature, dir, lev)) {
             ident = true;
         }
         break;
     }
 
     case SV_WAND_CONFUSE_MONSTER: {
-        if (confuse_monster(player, dir, lev)) {
+        if (confuse_monster(creature, dir, lev)) {
             ident = true;
         }
         break;
     }
 
     case SV_WAND_FEAR_MONSTER: {
-        if (fear_monster(player, dir, lev)) {
+        if (fear_monster(creature, dir, lev)) {
             ident = true;
         }
         break;
     }
 
     case SV_WAND_HYPODYNAMIA: {
-        if (hypodynamic_bolt(player, dir, 80 + lev)) {
+        if (hypodynamic_bolt(creature, dir, 80 + lev)) {
             ident = true;
         }
         break;
     }
 
     case SV_WAND_POLYMORPH: {
-        if (poly_monster(player, dir, lev)) {
+        if (poly_monster(creature, dir, lev)) {
             ident = true;
         }
         break;
     }
 
     case SV_WAND_STINKING_CLOUD: {
-        fire_ball(player, AttributeType::POIS, dir, 12 + lev / 4, rad);
+        fire_ball(creature, AttributeType::POIS, dir, 12 + lev / 4, rad);
         ident = true;
         break;
     }
 
     case SV_WAND_MAGIC_MISSILE: {
-        fire_bolt_or_beam(player, 20, AttributeType::MISSILE, dir, Dice::roll(2 + lev / 10, 6));
+        fire_bolt_or_beam(creature, 20, AttributeType::MISSILE, dir, Dice::roll(2 + lev / 10, 6));
         ident = true;
         break;
     }
 
     case SV_WAND_ACID_BOLT: {
-        fire_bolt_or_beam(player, 20, AttributeType::ACID, dir, Dice::roll(6 + lev / 7, 8));
+        fire_bolt_or_beam(creature, 20, AttributeType::ACID, dir, Dice::roll(6 + lev / 7, 8));
         ident = true;
         break;
     }
@@ -226,37 +225,37 @@ bool wand_effect(CreatureEntity &creature, int sval, const Direction &dir, bool 
     }
 
     case SV_WAND_FIRE_BOLT: {
-        fire_bolt_or_beam(player, 20, AttributeType::FIRE, dir, Dice::roll(7 + lev / 6, 8));
+        fire_bolt_or_beam(creature, 20, AttributeType::FIRE, dir, Dice::roll(7 + lev / 6, 8));
         ident = true;
         break;
     }
 
     case SV_WAND_COLD_BOLT: {
-        fire_bolt_or_beam(player, 20, AttributeType::COLD, dir, Dice::roll(5 + lev / 8, 8));
+        fire_bolt_or_beam(creature, 20, AttributeType::COLD, dir, Dice::roll(5 + lev / 8, 8));
         ident = true;
         break;
     }
 
     case SV_WAND_ACID_BALL: {
-        fire_ball(player, AttributeType::ACID, dir, 60 + 3 * lev / 4, rad);
+        fire_ball(creature, AttributeType::ACID, dir, 60 + 3 * lev / 4, rad);
         ident = true;
         break;
     }
 
     case SV_WAND_ELEC_BALL: {
-        fire_ball(player, AttributeType::ELEC, dir, 40 + 3 * lev / 4, rad);
+        fire_ball(creature, AttributeType::ELEC, dir, 40 + 3 * lev / 4, rad);
         ident = true;
         break;
     }
 
     case SV_WAND_FIRE_BALL: {
-        fire_ball(player, AttributeType::FIRE, dir, 70 + 3 * lev / 4, rad);
+        fire_ball(creature, AttributeType::FIRE, dir, 70 + 3 * lev / 4, rad);
         ident = true;
         break;
     }
 
     case SV_WAND_COLD_BALL: {
-        fire_ball(player, AttributeType::COLD, dir, 50 + 3 * lev / 4, rad);
+        fire_ball(creature, AttributeType::COLD, dir, 50 + 3 * lev / 4, rad);
         ident = true;
         break;
     }
@@ -267,13 +266,13 @@ bool wand_effect(CreatureEntity &creature, int sval, const Direction &dir, bool 
     }
 
     case SV_WAND_DRAGON_FIRE: {
-        fire_breath(player, AttributeType::FIRE, dir, (powerful ? 300 : 200), 3);
+        fire_breath(creature, AttributeType::FIRE, dir, (powerful ? 300 : 200), 3);
         ident = true;
         break;
     }
 
     case SV_WAND_DRAGON_COLD: {
-        fire_breath(player, AttributeType::COLD, dir, (powerful ? 270 : 180), 3);
+        fire_breath(creature, AttributeType::COLD, dir, (powerful ? 270 : 180), 3);
         ident = true;
         break;
     }
@@ -293,33 +292,33 @@ bool wand_effect(CreatureEntity &creature, int sval, const Direction &dir, bool 
             dam = (dam * 3) / 2;
         }
 
-        fire_breath(player, type, dir, dam, 3);
+        fire_breath(creature, type, dir, dam, 3);
 
         ident = true;
         break;
     }
 
     case SV_WAND_DISINTEGRATE: {
-        fire_ball(player, AttributeType::DISINTEGRATE, dir, 200 + randint1(lev * 2), rad);
+        fire_ball(creature, AttributeType::DISINTEGRATE, dir, 200 + randint1(lev * 2), rad);
         ident = true;
         break;
     }
 
     case SV_WAND_ROCKETS: {
         msg_print(_("ロケットを発射した！", "You launch a rocket!"));
-        fire_rocket(player, AttributeType::ROCKET, dir, 250 + lev * 3, rad);
+        fire_rocket(creature, AttributeType::ROCKET, dir, 250 + lev * 3, rad);
         ident = true;
         break;
     }
 
     case SV_WAND_STRIKING: {
-        fire_bolt(player, AttributeType::METEOR, dir, Dice::roll(15 + lev / 3, 13));
+        fire_bolt(creature, AttributeType::METEOR, dir, Dice::roll(15 + lev / 3, 13));
         ident = true;
         break;
     }
 
     case SV_WAND_GENOCIDE: {
-        fire_ball_hide(player, AttributeType::GENOCIDE, dir, magic ? lev + 50 : 250, 0);
+        fire_ball_hide(creature, AttributeType::GENOCIDE, dir, magic ? lev + 50 : 250, 0);
         ident = true;
         break;
     }
@@ -332,7 +331,6 @@ bool wand_effect(CreatureEntity &creature, int sval, const Direction &dir, bool 
  */
 void do_cmd_aim_wand(CreatureEntity &creature)
 {
-    auto &player = creature;
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
@@ -344,7 +342,7 @@ void do_cmd_aim_wand(CreatureEntity &creature)
     constexpr auto q = _("どの魔法棒で狙いますか? ", "Aim which wand? ");
     constexpr auto s = _("使える魔法棒がない。", "You have no wand to aim.");
     short i_idx;
-    if (!choose_object(player, &i_idx, q, s, (USE_INVEN | USE_FLOOR), TvalItemTester(ItemKindType::WAND))) {
+    if (!choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_FLOOR), TvalItemTester(ItemKindType::WAND))) {
         return;
     }
 

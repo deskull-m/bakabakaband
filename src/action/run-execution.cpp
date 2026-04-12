@@ -185,13 +185,12 @@ static bool see_nothing(CreatureEntity &creature, const Direction &dir, const Po
  */
 static bool run_test(CreatureEntity &creature)
 {
-    auto &player = creature;
     const auto prev_dir = find_prevdir;
     const auto &floor = *creature.current_floor_ptr;
     const auto p_pos = creature.get_position();
     const auto &p_grid = floor.get_grid(p_pos);
-    if ((disturb_trap_detect || alert_trap_detect) && player.dtrap && !(p_grid.info & CAVE_IN_DETECT)) {
-        player.dtrap = false;
+    if ((disturb_trap_detect || alert_trap_detect) && creature.dtrap && !(p_grid.info & CAVE_IN_DETECT)) {
+        creature.dtrap = false;
         if (!(p_grid.info & CAVE_UNSAFE)) {
             if (alert_trap_detect) {
                 msg_print(_("* 注意:この先はトラップの感知範囲外です！ *", "*Leaving trap detect region!*"));
@@ -363,7 +362,6 @@ static bool run_test(CreatureEntity &creature)
  */
 void run_step(CreatureEntity &creature, const Direction &dir)
 {
-    auto &player = creature;
     if (dir) {
         ignore_avoid_run = true;
         if (see_wall(creature, dir, creature.get_position())) {
@@ -385,9 +383,9 @@ void run_step(CreatureEntity &creature, const Direction &dir)
         return;
     }
 
-    PlayerEnergy(player).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
     exe_movement(creature, find_current, false, false);
-    if (player.is_located_at_running_destination()) {
+    if (creature.is_located_at_running_destination()) {
         creature.run_py = 0;
         creature.run_px = 0;
         disturb(creature, false, false);

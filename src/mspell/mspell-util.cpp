@@ -61,18 +61,17 @@ bool monster_near_player(const CreatureEntity &creature, MONSTER_IDX m_idx, MONS
  */
 bool monspell_message_base(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, const mspell_cast_msg &msgs, bool msg_flag_aux, int target_type)
 {
-    auto &player = creature;
     bool notice = false;
     auto &floor = *creature.current_floor_ptr;
     bool known = monster_near_player(creature, m_idx, t_idx);
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
-    const auto m_name = monster_name(player, m_idx);
-    const auto t_name = monster_name(player, t_idx);
+    const auto m_name = monster_name(creature, m_idx);
+    const auto t_name = monster_name(creature, t_idx);
 
     if (mon_to_player || (mon_to_mon && known && see_either)) {
-        disturb(player, true, true);
+        disturb(creature, true, true);
     }
 
     if (msg_flag_aux) {
@@ -111,9 +110,8 @@ bool monspell_message_base(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_
  */
 bool monspell_message(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, const mspell_cast_msg_blind &msgs, int target_type)
 {
-    auto &player = creature;
     mspell_cast_msg mcm(msgs.blind, msgs.blind, msgs.to_player, msgs.to_mons);
-    const auto is_blind = player.is_blind();
+    const auto is_blind = creature.is_blind();
     return monspell_message_base(creature, m_idx, t_idx, mcm, is_blind, target_type);
 }
 
@@ -127,8 +125,7 @@ bool monspell_message(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t
  */
 void simple_monspell_message(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, const mspell_cast_msg_simple &msgs, int target_type)
 {
-    auto &player = creature;
     mspell_cast_msg mcm(msgs.to_player, msgs.to_mons, msgs.to_player, msgs.to_mons);
-    const auto is_blind = player.is_blind();
+    const auto is_blind = creature.is_blind();
     monspell_message_base(creature, m_idx, t_idx, mcm, is_blind, target_type);
 }

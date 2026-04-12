@@ -108,14 +108,13 @@ void do_cmd_inven(CreatureEntity &creature)
  */
 void do_cmd_drop(CreatureEntity &creature)
 {
-    auto &player = creature;
     int amt = 1;
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     constexpr auto q = _("どのアイテムを落としますか? ", "Drop which item? ");
     constexpr auto s = _("落とせるアイテムを持っていない。", "You have nothing to drop.");
     short i_idx;
-    auto *o_ptr = choose_object(player, &i_idx, q, s, (USE_EQUIP | USE_INVEN | IGNORE_BOTHHAND_SLOT));
+    auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_EQUIP | USE_INVEN | IGNORE_BOTHHAND_SLOT));
     if (!o_ptr) {
         return;
     }
@@ -132,8 +131,8 @@ void do_cmd_drop(CreatureEntity &creature)
         }
     }
 
-    PlayerEnergy(player).set_player_turn_energy(50);
-    drop_from_inventory(player, i_idx, amt);
+    PlayerEnergy(creature).set_player_turn_energy(50);
+    drop_from_inventory(creature, i_idx, amt);
     if (i_idx >= INVEN_MAIN_HAND) {
         verify_equip_slot(creature, i_idx);
         calc_android_exp(creature);
@@ -147,11 +146,10 @@ void do_cmd_drop(CreatureEntity &creature)
  */
 void do_cmd_observe(CreatureEntity &creature)
 {
-    auto &player = creature;
     constexpr auto q = _("どのアイテムを調べますか? ", "Examine which item? ");
     constexpr auto s = _("調べられるアイテムがない。", "You have nothing to examine.");
     short i_idx;
-    auto *o_ptr = choose_object(player, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT));
+    auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT));
     if (!o_ptr) {
         return;
     }
@@ -174,11 +172,10 @@ void do_cmd_observe(CreatureEntity &creature)
  */
 void do_cmd_uninscribe(CreatureEntity &creature)
 {
-    auto &player = creature;
     constexpr auto q = _("どのアイテムの銘を消しますか? ", "Un-inscribe which item? ");
     constexpr auto s = _("銘を消せるアイテムがない。", "You have nothing to un-inscribe.");
     short i_idx;
-    auto *o_ptr = choose_object(player, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT));
+    auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT));
     if (!o_ptr) {
         return;
     }
@@ -211,16 +208,15 @@ void do_cmd_uninscribe(CreatureEntity &creature)
  */
 void do_cmd_inscribe(CreatureEntity &creature)
 {
-    auto &player = creature;
     constexpr auto q = _("どのアイテムに銘を刻みますか? ", "Inscribe which item? ");
     constexpr auto s = _("銘を刻めるアイテムがない。", "You have nothing to inscribe.");
     short i_idx;
-    auto *o_ptr = choose_object(player, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT));
+    auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT));
     if (!o_ptr) {
         return;
     }
 
-    const auto item_name = describe_flavor(player, *o_ptr, OD_OMIT_INSCRIPTION);
+    const auto item_name = describe_flavor(creature, *o_ptr, OD_OMIT_INSCRIPTION);
     msg_format(_("%sに銘を刻む。", "Inscribing %s."), item_name.data());
     msg_erase();
     const auto initial_inscription = o_ptr->is_inscribed() ? *o_ptr->inscription : "";
@@ -253,7 +249,6 @@ void do_cmd_inscribe(CreatureEntity &creature)
  */
 void do_cmd_use(CreatureEntity &creature)
 {
-    auto &player = creature;
     if (AngbandWorld::get_instance().is_wild_mode() || cmd_limit_arena(creature)) {
         return;
     }
@@ -263,7 +258,7 @@ void do_cmd_use(CreatureEntity &creature)
     constexpr auto s = _("使えるものがありません。", "You have nothing to use.");
     const auto options = USE_INVEN | USE_EQUIP | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
     short i_idx;
-    const auto *o_ptr = choose_object(player, &i_idx, q, s, options, FuncItemTester(item_tester_hook_use, creature));
+    const auto *o_ptr = choose_object(creature, &i_idx, q, s, options, FuncItemTester(item_tester_hook_use, creature));
     if (o_ptr == nullptr) {
         return;
     }
@@ -279,16 +274,16 @@ void do_cmd_use(CreatureEntity &creature)
         ObjectZapWandEntity(creature).execute(i_idx);
         break;
     case ItemKindType::STAFF:
-        ObjectUseEntity(player, i_idx).execute();
+        ObjectUseEntity(creature, i_idx).execute();
         break;
     case ItemKindType::ROD:
-        ObjectZapRodEntity(player).execute(i_idx);
+        ObjectZapRodEntity(creature).execute(i_idx);
         break;
     case ItemKindType::POTION:
         ObjectQuaffEntity(creature).execute(i_idx);
         break;
     case ItemKindType::SCROLL:
-        if (cmd_limit_blind(creature) || cmd_limit_confused(player)) {
+        if (cmd_limit_blind(creature) || cmd_limit_confused(creature)) {
             return;
         }
 
@@ -297,7 +292,7 @@ void do_cmd_use(CreatureEntity &creature)
     case ItemKindType::SHOT:
     case ItemKindType::ARROW:
     case ItemKindType::BOLT:
-        exe_fire(player, i_idx, player.inventory[INVEN_BOW].get(), SP_NONE);
+        exe_fire(creature, i_idx, creature.inventory[INVEN_BOW].get(), SP_NONE);
         break;
     default:
         exe_activate(creature, i_idx);
@@ -311,7 +306,6 @@ void do_cmd_use(CreatureEntity &creature)
  */
 void do_cmd_activate(CreatureEntity &creature)
 {
-    auto &player = creature;
     if (AngbandWorld::get_instance().is_wild_mode() || cmd_limit_arena(creature)) {
         return;
     }
@@ -320,7 +314,7 @@ void do_cmd_activate(CreatureEntity &creature)
     constexpr auto q = _("どのアイテムを始動させますか? ", "Activate which item? ");
     constexpr auto s = _("始動できるアイテムを装備していない。", "You have nothing to activate.");
     short i_idx;
-    if (!choose_object(player, &i_idx, q, s, (USE_EQUIP | IGNORE_BOTHHAND_SLOT), FuncItemTester(&ItemEntity::is_activatable))) {
+    if (!choose_object(creature, &i_idx, q, s, (USE_EQUIP | IGNORE_BOTHHAND_SLOT), FuncItemTester(&ItemEntity::is_activatable))) {
         return;
     }
 

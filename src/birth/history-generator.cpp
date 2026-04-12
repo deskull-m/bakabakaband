@@ -13,9 +13,8 @@ static int get_history_chart(CreatureEntity &creature)
     if (!creature.is_player()) {
         return 0;
     }
-    auto &player = creature;
 
-    switch (player.prace) {
+    switch (creature.prace) {
     case PlayerRaceType::AMBERITE:
         return 67;
     case PlayerRaceType::HUMAN:
@@ -103,7 +102,6 @@ static std::string decide_social_class(CreatureEntity &creature)
     if (!creature.is_player()) {
         return "";
     }
-    auto &player = creature;
 
     auto social_class = randnum1<short>(4);
     auto chart = get_history_chart(creature);
@@ -126,7 +124,7 @@ static std::string decide_social_class(CreatureEntity &creature)
         social_class = 1;
     }
 
-    player.prestige = social_class;
+    creature.prestige = social_class;
     return ss.str();
 }
 
@@ -139,18 +137,17 @@ void get_history(CreatureEntity &creature)
     if (!creature.is_player()) {
         return;
     }
-    auto &player = creature;
 
     constexpr auto lines = 4;
     for (int i = 0; i < lines; i++) {
-        player.history[i][0] = '\0';
+        creature.history[i][0] = '\0';
     }
 
     auto social_class = decide_social_class(creature);
-    constexpr auto max_line_len = sizeof(player.history[0]);
+    constexpr auto max_line_len = sizeof(creature.history[0]);
     const auto history_lines = shape_buffer(social_class.data(), max_line_len);
     const auto max_lines = std::min<int>(lines, history_lines.size());
     for (auto i = 0; i < max_lines; ++i) {
-        angband_strcpy(player.history[i], history_lines[i], max_line_len);
+        angband_strcpy(creature.history[i], history_lines[i], max_line_len);
     }
 }
