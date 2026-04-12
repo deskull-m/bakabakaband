@@ -1,6 +1,5 @@
 #include "mutation/mutation-data.h"
 #include "player-base/player-class.h"
-#include "system/player-type-definition.h"
 #include "util/rng-xoshiro.h"
 
 const MutationData MutationDataManager::mutation_table[] = {

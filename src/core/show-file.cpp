@@ -5,7 +5,6 @@
 #include "main/sound-of-music.h"
 #include "system/angband-exceptions.h"
 #include "system/angband-system.h"
-#include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"

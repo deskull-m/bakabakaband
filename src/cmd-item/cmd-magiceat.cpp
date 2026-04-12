@@ -74,6 +74,7 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
+#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"

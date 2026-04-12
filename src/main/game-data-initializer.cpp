@@ -24,7 +24,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-allocation.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "util/angband-files.h"

@@ -14,6 +14,7 @@
 #include "player/process-name.h"
 #include "player/race-info-table.h"
 #include "system/creature-entity.h"
+#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/enum-converter.h"

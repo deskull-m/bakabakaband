@@ -5,7 +5,6 @@
 #include "monster-floor/monster-summon.h"
 #include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 

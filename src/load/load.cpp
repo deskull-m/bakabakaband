@@ -43,6 +43,7 @@
 #include "system/angband-exceptions.h"
 #include "system/angband-system.h"
 #include "system/angband-version.h"
+#include "system/player-type-definition.h"
 #include "system/system-variables.h"
 #include "util/angband-files.h"
 #include "util/enum-converter.h"

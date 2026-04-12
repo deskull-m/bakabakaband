@@ -3,7 +3,6 @@
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 
 int AllianceChinChinTei::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {

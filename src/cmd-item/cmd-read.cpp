@@ -20,7 +20,6 @@
 #include "status/action-setter.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "world/world.h"
 
 /*!

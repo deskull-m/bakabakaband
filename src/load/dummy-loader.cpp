@@ -3,7 +3,6 @@
 #include "load/monster/monster-loader-factory.h"
 #include "load/old/monster-loader-savefile50.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief ダミーバイトを読み込む

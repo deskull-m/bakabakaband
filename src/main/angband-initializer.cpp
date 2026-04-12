@@ -27,7 +27,6 @@
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/services/baseitem-monrace-service.h"
 #include "system/system-variables.h"
 #include "term/gameterm.h"

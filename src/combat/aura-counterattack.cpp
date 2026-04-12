@@ -26,6 +26,7 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
+#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 static void aura_fire_by_monster_attack(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)

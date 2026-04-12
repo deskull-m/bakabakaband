@@ -60,6 +60,7 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
+#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"

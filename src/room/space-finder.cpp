@@ -5,7 +5,6 @@
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief 指定のマスが床系地形であるかを返す
