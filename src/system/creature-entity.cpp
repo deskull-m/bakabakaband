@@ -95,6 +95,14 @@ void CreatureEntity::ride_monster(MONSTER_IDX m_idx)
     }
 }
 
+void CreatureEntity::plus_incident(INCIDENT incidentID, int num)
+{
+    if (this->incident.count(incidentID) == 0) {
+        this->incident[incidentID] = 0;
+    }
+    this->incident[incidentID] += num;
+}
+
 bool CreatureEntity::check_sub_alignments(const byte sub_align1, const byte sub_align2)
 {
     if (sub_align1 == sub_align2) {
