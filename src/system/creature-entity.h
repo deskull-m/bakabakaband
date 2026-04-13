@@ -479,6 +479,46 @@ public:
         return this->get_timed_effect(CreatureTimedEffect::SHIELD);
     }
 
+    short get_remaining_ultimate_resistance() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE);
+    }
+
+    short get_remaining_wraith_form() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::WRAITH_FORM);
+    }
+
+    short get_remaining_tim_esp() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::TIM_ESP);
+    }
+
+    short get_remaining_tim_stealth() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::TIM_STEALTH);
+    }
+
+    short get_remaining_tim_regen() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::TIM_REGEN);
+    }
+
+    short get_remaining_tsuyoshi() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::TSUYOSHI);
+    }
+
+    short get_remaining_tim_invis() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::TIM_INVIS);
+    }
+
+    short get_remaining_tim_infra() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::TIM_INFRA);
+    }
+
     tl::optional<std::string> get_pain_message(std::string_view monster_name, int damage) const;
 
     /*!
