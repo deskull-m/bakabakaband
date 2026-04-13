@@ -1825,7 +1825,7 @@ static ARMOUR_CLASS calc_to_ac(CreatureEntity &creature, bool is_real_value)
 
     if (creature.ult_res || (pc.samurai_stance_is(SamuraiStanceType::MUSOU))) {
         ac += 100;
-    } else if (creature.tsubureru || creature.shield || creature.magicdef) {
+    } else if (creature.tsubureru || creature.get_remaining_shield() || creature.magicdef) {
         ac += 50;
     }
 
@@ -3076,7 +3076,7 @@ uint32_t calc_score(CreatureEntity &creature)
  */
 bool is_blessed(CreatureEntity &creature)
 {
-    return creature.blessed || music_singing(creature, MUSIC_BLESS) || SpellHex(creature).is_spelling_specific(HEX_BLESS);
+    return creature.get_remaining_blessed() || music_singing(creature, MUSIC_BLESS) || SpellHex(creature).is_spelling_specific(HEX_BLESS);
 }
 
 bool is_tim_esp(CreatureEntity &creature)
@@ -3125,17 +3125,17 @@ bool is_fast(CreatureEntity &creature)
 }
 bool is_invuln(CreatureEntity &creature)
 {
-    return creature.invuln || music_singing(creature, MUSIC_INVULN);
+    return creature.get_remaining_invulnerability() || music_singing(creature, MUSIC_INVULN);
 }
 
 bool is_hero(CreatureEntity &creature)
 {
-    return creature.hero || music_singing(creature, MUSIC_HERO) || music_singing(creature, MUSIC_SHERO);
+    return creature.get_remaining_hero() || music_singing(creature, MUSIC_HERO) || music_singing(creature, MUSIC_SHERO);
 }
 
 bool is_shero(CreatureEntity &creature)
 {
-    return creature.berserk || CreatureClass(creature).equals(PlayerClassType::BERSERKER);
+    return creature.get_remaining_berserk() || CreatureClass(creature).equals(PlayerClassType::BERSERKER);
 }
 
 bool is_echizen(CreatureEntity &creature)

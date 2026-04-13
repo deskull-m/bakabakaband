@@ -74,12 +74,12 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         /*** 1st book (0-7) ***/
     case HEX_BLESS:
         if (cast) {
-            if (!creature.blessed) {
+            if (!creature.get_remaining_blessed()) {
                 msg_print(_("高潔な気分になった！", "You feel righteous!"));
             }
         }
         if (stop) {
-            if (!creature.blessed) {
+            if (!creature.get_remaining_blessed()) {
                 msg_print(_("高潔な気分が消え失せた。", "The prayer has expired."));
             }
         }

@@ -227,7 +227,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
         return true;
     }
 
-    if (creature.shield) {
+    if (creature.get_remaining_shield()) {
         return true;
     }
 
@@ -244,7 +244,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
     }
 
     CreatureClass pc(creature);
-    if (creature.berserk && !pc.equals(PlayerClassType::BERSERKER)) {
+    if (creature.get_remaining_berserk() && !pc.equals(PlayerClassType::BERSERKER)) {
         return true;
     }
 

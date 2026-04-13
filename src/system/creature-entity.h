@@ -459,6 +459,26 @@ public:
         return this->get_timed_effect(CreatureTimedEffect::DECELERATION);
     }
 
+    short get_remaining_hero() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::HERO);
+    }
+
+    short get_remaining_berserk() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::BERSERK);
+    }
+
+    short get_remaining_blessed() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::BLESSED);
+    }
+
+    short get_remaining_shield() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::SHIELD);
+    }
+
     tl::optional<std::string> get_pain_message(std::string_view monster_name, int damage) const;
 
     /*!

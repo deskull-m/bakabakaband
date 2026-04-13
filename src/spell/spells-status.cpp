@@ -327,7 +327,7 @@ bool heroism(CreatureEntity &creature, int base)
         ident = true;
     }
 
-    if (set_hero(creature, creature.hero + randint1(base) + base, false)) {
+    if (set_hero(creature, creature.get_remaining_hero() + randint1(base) + base, false)) {
         ident = true;
     }
 
@@ -349,7 +349,7 @@ bool berserk(CreatureEntity &creature, int base)
         ident = true;
     }
 
-    if (set_berserk(creature, creature.berserk + randint1(base) + base, false)) {
+    if (set_berserk(creature, creature.get_remaining_berserk() + randint1(base) + base, false)) {
         ident = true;
     }
 
@@ -652,10 +652,10 @@ bool cosmic_cast_off(CreatureEntity &creature, ItemEntity **o_ptr_ptr)
     (void)bss.set_fear(0);
     (void)set_tim_esp(creature, creature.tim_esp + t, false);
     (void)set_tim_regen(creature, creature.tim_regen + t, false);
-    (void)set_hero(creature, creature.hero + t, false);
-    (void)set_blessed(creature, creature.blessed + t, false);
+    (void)set_hero(creature, creature.get_remaining_hero() + t, false);
+    (void)set_blessed(creature, creature.get_remaining_blessed() + t, false);
     (void)mod_acceleration(creature, t, false);
-    (void)set_berserk(creature, creature.berserk + t, false);
+    (void)set_berserk(creature, creature.get_remaining_berserk() + t, false);
     if (CreatureClass(creature).equals(PlayerClassType::FORCETRAINER)) {
         set_current_ki(creature, true, creature.level * 5 + 190);
         msg_print(_("気が爆発寸前になった。", "Your force absorbs the explosion."));

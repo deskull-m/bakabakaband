@@ -343,18 +343,18 @@ void report_magics(CreatureEntity &subject)
             _("あなたは幻覚を見ている", "You are hallucinating"));
     }
 
-    if (subject.blessed) {
-        info.emplace_back(report_magics_aux(subject.blessed),
+    if (const auto remaining = subject.get_remaining_blessed(); remaining > 0) {
+        info.emplace_back(report_magics_aux(remaining),
             _("あなたは高潔さを感じている", "You feel rightous"));
     }
 
-    if (subject.hero) {
-        info.emplace_back(report_magics_aux(subject.hero),
+    if (const auto remaining = subject.get_remaining_hero(); remaining > 0) {
+        info.emplace_back(report_magics_aux(remaining),
             _("あなたはヒーロー気分だ", "You feel heroic"));
     }
 
     if (subject.is_shero()) {
-        info.emplace_back(report_magics_aux(subject.berserk),
+        info.emplace_back(report_magics_aux(subject.get_remaining_berserk()),
             _("あなたは戦闘狂だ", "You are in a battle rage"));
     }
 
@@ -364,8 +364,8 @@ void report_magics(CreatureEntity &subject)
             _("あなたは邪悪なる存在から守られている", "You are protected from evil"));
     }
 
-    if (subject.shield) {
-        info.emplace_back(report_magics_aux(subject.shield),
+    if (const auto remaining = subject.get_remaining_shield(); remaining > 0) {
+        info.emplace_back(report_magics_aux(remaining),
             _("あなたは神秘のシールドで守られている", "You are protected by a mystic shield"));
     }
 
