@@ -105,7 +105,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (stop) {
-            if (!creature.blessed) {
+            if (!creature.get_remaining_blessed()) {
                 msg_print(_("高潔な気分が消え失せた。", "The prayer has expired."));
             }
         }
@@ -247,7 +247,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (stop) {
-            if (!creature.hero) {
+            if (!creature.get_remaining_hero()) {
                 msg_print(_("ヒーローの気分が消え失せた。", "The heroism wears off."));
                 RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::HP);
             }
@@ -741,7 +741,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (stop) {
-            if (!creature.hero) {
+            if (!creature.get_remaining_hero()) {
                 msg_print(_("ヒーローの気分が消え失せた。", "The heroism wears off."));
                 RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::HP);
             }

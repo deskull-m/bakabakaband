@@ -169,20 +169,20 @@ void reduce_magic_effects_timeout(CreatureEntity &creature)
         (void)set_wraith_form(creature, creature.wraith_form - 1, true);
     }
 
-    if (creature.hero) {
-        (void)set_hero(creature, creature.hero - 1, true);
+    if (const auto remaining = creature.get_remaining_hero(); remaining > 0) {
+        (void)set_hero(creature, remaining - 1, true);
     }
 
-    if (creature.berserk) {
-        (void)set_berserk(creature, creature.berserk - 1, true);
+    if (const auto remaining = creature.get_remaining_berserk(); remaining > 0) {
+        (void)set_berserk(creature, remaining - 1, true);
     }
 
-    if (creature.blessed) {
-        (void)set_blessed(creature, creature.blessed - 1, true);
+    if (const auto remaining = creature.get_remaining_blessed(); remaining > 0) {
+        (void)set_blessed(creature, remaining - 1, true);
     }
 
-    if (creature.shield) {
-        (void)set_shield(creature, creature.shield - 1, true);
+    if (const auto remaining = creature.get_remaining_shield(); remaining > 0) {
+        (void)set_shield(creature, remaining - 1, true);
     }
 
     if (creature.tsubureru) {
