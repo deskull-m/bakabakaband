@@ -371,7 +371,7 @@ bool CreatureEntity::is_paralyzed() const
 
 bool CreatureEntity::is_blessed() const
 {
-    if (this->blessed > 0) {
+    if (this->get_remaining_blessed() > 0) {
         return true;
     }
 
@@ -386,7 +386,7 @@ bool CreatureEntity::is_blessed() const
 
 bool CreatureEntity::is_hero() const
 {
-    if (this->hero > 0) {
+    if (this->get_remaining_hero() > 0) {
         return true;
     }
 
@@ -396,7 +396,7 @@ bool CreatureEntity::is_hero() const
 
 bool CreatureEntity::is_shero() const
 {
-    return this->berserk > 0 || this->pclass == PlayerClassType::BERSERKER;
+    return this->get_remaining_berserk() > 0 || this->pclass == PlayerClassType::BERSERKER;
 }
 
 bool CreatureEntity::is_echizen() const

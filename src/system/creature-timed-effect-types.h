@@ -14,5 +14,9 @@ enum class CreatureTimedEffect {
     SLEEP_OR_PARALYSIS, /*!< 眠り・麻痺 / Sleep or Paralysis */
     BLINDNESS, /*!< 盲目 / Blindness (プレイヤーのみ、モンスターは常に0) */
     PARALYSIS, /*!< 麻痺 / Paralysis (プレイヤーのみ、モンスターは SLEEP_OR_PARALYSIS で代替) */
+    HERO, /*!< 士気高揚 / Heroism (プレイヤーのみ、モンスターは常に0) */
+    BERSERK, /*!< 狂戦士化 / Super Heroism / Berserk (プレイヤーのみ、モンスターは常に0) */
+    BLESSED, /*!< 祝福 / Blessed (プレイヤーのみ、モンスターは常に0) */
+    SHIELD, /*!< 魔法の盾 / Shield spell (プレイヤーのみ、モンスターは常に0) */
     MAX,
 };

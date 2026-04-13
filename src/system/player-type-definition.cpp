@@ -59,6 +59,14 @@ short PlayerType::get_timed_effect(CreatureTimedEffect effect) const
         return eff.blindness().current();
     case CreatureTimedEffect::PARALYSIS:
         return eff.paralysis().current();
+    case CreatureTimedEffect::HERO:
+        return this->hero;
+    case CreatureTimedEffect::BERSERK:
+        return this->berserk;
+    case CreatureTimedEffect::BLESSED:
+        return this->blessed;
+    case CreatureTimedEffect::SHIELD:
+        return this->shield;
     default:
         return 0;
     }
@@ -94,6 +102,18 @@ void PlayerType::set_timed_effect(CreatureTimedEffect effect, short value)
         break;
     case CreatureTimedEffect::PARALYSIS:
         eff.paralysis().set(value);
+        break;
+    case CreatureTimedEffect::HERO:
+        this->hero = value;
+        break;
+    case CreatureTimedEffect::BERSERK:
+        this->berserk = value;
+        break;
+    case CreatureTimedEffect::BLESSED:
+        this->blessed = value;
+        break;
+    case CreatureTimedEffect::SHIELD:
+        this->shield = value;
         break;
     default:
         break;
