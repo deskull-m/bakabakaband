@@ -19,5 +19,4 @@ public:
     MonsterEntity &operator=(const MonsterEntity &) = default;
 
     void wipe() override;
-    MonsterEntity clone() const;
 };

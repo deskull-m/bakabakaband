@@ -90,7 +90,7 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
         return false;
     }
 
-    auto back_m = floor.m_list[grid.m_idx].clone();
+    auto back_m = floor.m_list[grid.m_idx];
     new_r_idx = select_polymorph_monrace_id(creature, old_r_idx);
     if (new_r_idx == old_r_idx) {
         return false;
@@ -122,7 +122,7 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
     } else {
         m_idx = place_specific_monster(creature, y, x, old_r_idx, (mode | PM_NO_KAGE | PM_IGNORE_TERRAIN));
         if (m_idx) {
-            floor.m_list[*m_idx] = back_m.clone();
+            floor.m_list[*m_idx] = back_m;
             floor.reset_mproc();
         } else {
             preserve_hold_objects = false;

@@ -53,7 +53,7 @@ static void check_riding_preservation(CreatureEntity &creature)
         creature.pet_extra_flags &= ~(PF_TWO_HANDS);
         creature.riding_ryoute = creature.old_riding_ryoute = false;
     } else {
-        party_monsters[0] = monster.clone();
+        party_monsters[0] = monster;
         delete_monster_idx(creature, creature.riding);
     }
 }
@@ -98,7 +98,7 @@ static void sweep_preserving_pet(CreatureEntity &creature)
             continue;
         }
 
-        party_monsters[party_monster_num] = creature.current_floor_ptr->m_list[i].clone();
+        party_monsters[party_monster_num] = creature.current_floor_ptr->m_list[i];
         party_monster_num++;
         delete_monster_idx(creature, i);
     }
