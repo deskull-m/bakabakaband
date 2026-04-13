@@ -28,7 +28,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "util/enum-range.h"
 #include "util/string-processor.h"
 #include "world/world.h"
@@ -44,7 +43,7 @@ void player_wipe_without_name(CreatureEntity &creature)
 {
     const std::string backup_name = creature.name;
     auto &world = AngbandWorld::get_instance();
-    static_cast<PlayerType &>(creature) = {};
+    creature.wipe();
 
     // TODO: キャラ作成からゲーム開始までに  current_floor_ptr を参照しなければならない処理は今後整理して外す。
     creature.current_floor_ptr = &FloorList::get_instance().get_floor(0);

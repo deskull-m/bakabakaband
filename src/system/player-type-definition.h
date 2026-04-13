@@ -17,6 +17,8 @@ public:
 
     short get_timed_effect(CreatureTimedEffect effect) const override;
     void set_timed_effect(CreatureTimedEffect effect, short value) override;
+
+    void wipe() override;
 };
 
 extern PlayerType *p_ptr;
