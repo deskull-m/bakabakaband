@@ -114,7 +114,7 @@ static void spell_damcalc(CreatureEntity &creature, const CreatureEntity &monste
 
     case AttributeType::DARK:
         dam = dam * calc_dark_damage_rate(creature, CALC_MAX) / 100;
-        if (has_immune_dark(creature) || creature.wraith_form) {
+        if (has_immune_dark(creature) || creature.get_remaining_wraith_form()) {
             ignore_wraith_form = true;
         }
         break;
@@ -221,7 +221,7 @@ static void spell_damcalc(CreatureEntity &creature, const CreatureEntity &monste
         break;
     }
 
-    if (creature.wraith_form && !ignore_wraith_form) {
+    if (creature.get_remaining_wraith_form() && !ignore_wraith_form) {
         dam /= 2;
         if (!dam) {
             dam = 1;
@@ -315,7 +315,7 @@ static int blow_damcalc(const CreatureEntity &monster, CreatureEntity &creature,
         break;
     }
 
-    if (check_wraith_form && creature.wraith_form) {
+    if (check_wraith_form && creature.get_remaining_wraith_form()) {
         dam /= 2;
         if (!dam) {
             dam = 1;

@@ -447,7 +447,7 @@ static void update_max_hitpoints(CreatureEntity &creature)
     if (creature.is_shero()) {
         mhp += 30;
     }
-    if (creature.tsuyoshi) {
+    if (creature.get_remaining_tsuyoshi()) {
         mhp += 50;
     }
     if (SpellHex(creature).is_spelling_specific(HEX_XTRA_MIGHT)) {
@@ -1161,7 +1161,7 @@ static ACTION_SKILL_POWER calc_saving_throw(CreatureEntity &creature)
         pow = 10;
     }
 
-    if ((creature.ult_res || creature.resist_magic || creature.magicdef) && (pow < (95 + creature.level))) {
+    if ((creature.get_remaining_ultimate_resistance() || creature.resist_magic || creature.magicdef) && (pow < (95 + creature.level))) {
         pow = 95 + creature.level;
     }
 
@@ -1823,7 +1823,7 @@ static ARMOUR_CLASS calc_to_ac(CreatureEntity &creature, bool is_real_value)
         ac -= 50;
     }
 
-    if (creature.ult_res || (pc.samurai_stance_is(SamuraiStanceType::MUSOU))) {
+    if (creature.get_remaining_ultimate_resistance() || (pc.samurai_stance_is(SamuraiStanceType::MUSOU))) {
         ac += 100;
     } else if (creature.tsubureru || creature.get_remaining_shield() || creature.magicdef) {
         ac += 50;
@@ -3083,24 +3083,24 @@ bool is_tim_esp(CreatureEntity &creature)
 {
     auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
     auto sniper_concent = sniper_data ? sniper_data->concent : 0;
-    return creature.tim_esp || music_singing(creature, MUSIC_MIND) || (sniper_concent >= CONCENT_TELE_THRESHOLD);
+    return creature.get_remaining_tim_esp() || music_singing(creature, MUSIC_MIND) || (sniper_concent >= CONCENT_TELE_THRESHOLD);
 }
 
 bool is_tim_stealth(CreatureEntity &creature)
 {
-    return creature.tim_stealth || music_singing(creature, MUSIC_STEALTH);
+    return creature.get_remaining_tim_stealth() || music_singing(creature, MUSIC_STEALTH);
 }
 
 bool is_time_limit_esp(CreatureEntity &creature)
 {
     auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
     auto sniper_concent = sniper_data ? sniper_data->concent : 0;
-    return creature.tim_esp || music_singing(creature, MUSIC_MIND) || (sniper_concent >= CONCENT_TELE_THRESHOLD);
+    return creature.get_remaining_tim_esp() || music_singing(creature, MUSIC_MIND) || (sniper_concent >= CONCENT_TELE_THRESHOLD);
 }
 
 bool is_time_limit_stealth(CreatureEntity &creature)
 {
-    return creature.tim_stealth || music_singing(creature, MUSIC_STEALTH);
+    return creature.get_remaining_tim_stealth() || music_singing(creature, MUSIC_STEALTH);
 }
 
 /*!

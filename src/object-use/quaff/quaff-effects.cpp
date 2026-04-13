@@ -115,9 +115,9 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
     case SV_POTION_DEATH:
         return this->death();
     case SV_POTION_INFRAVISION:
-        return set_tim_infra(this->creature, this->creature.tim_infra + 100 + randint1(100), false);
+        return set_tim_infra(this->creature, this->creature.get_remaining_tim_infra() + 100 + randint1(100), false);
     case SV_POTION_DETECT_INVIS:
-        return set_tim_invis(this->creature, this->creature.tim_invis + 12 + randint1(12), false);
+        return set_tim_invis(this->creature, this->creature.get_remaining_tim_invis() + 12 + randint1(12), false);
     case SV_POTION_SLOW_POISON:
         return BadStatusSetter(this->creature).set_poison(this->creature.effects()->poison().current() / 2);
     case SV_POTION_CURE_POISON:
@@ -205,7 +205,7 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
     case SV_POTION_NEO_TSUYOSHI:
         msg_print(_("「新・オクレ兄さん！」", "NEW Brother OKURE!"));
         msg_erase();
-        this->creature.tsuyoshi = 1;
+        this->creature.set_timed_effect(CreatureTimedEffect::TSUYOSHI, 1);
         (void)set_tsuyoshi(this->creature, 0, true);
         if (!has_resist_chaos(this->creature)) {
             (void)BadStatusSetter(this->creature).mod_hallucination(50 + randint1(100));
@@ -564,7 +564,7 @@ bool QuaffEffects::new_life()
 bool QuaffEffects::neo_tsuyoshi()
 {
     (void)BadStatusSetter(this->creature).hallucination(0);
-    (void)set_tsuyoshi(this->creature, this->creature.tsuyoshi + randint1(100) + 100, false);
+    (void)set_tsuyoshi(this->creature, this->creature.get_remaining_tsuyoshi() + randint1(100) + 100, false);
     return true;
 }
 
@@ -576,7 +576,7 @@ bool QuaffEffects::tsuyoshi()
 {
     msg_print(_("「オクレ兄さん！」", "Brother OKURE!"));
     msg_erase();
-    this->creature.tsuyoshi = 1;
+    this->creature.set_timed_effect(CreatureTimedEffect::TSUYOSHI, 1);
     (void)set_tsuyoshi(this->creature, 0, true);
     if (!has_resist_chaos(this->creature)) {
         (void)BadStatusSetter(this->creature).hallucination(50 + randint1(50));

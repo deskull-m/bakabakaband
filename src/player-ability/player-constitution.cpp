@@ -88,7 +88,7 @@ int16_t PlayerConstitution::stance_bonus()
     } else if (pc.monk_stance_is(MonkStanceType::SUZAKU)) {
         result -= 2;
     }
-    if (this->creature.tsuyoshi) {
+    if (this->creature.get_remaining_tsuyoshi()) {
         result += 4;
     }
 

@@ -64,7 +64,7 @@ int16_t PlayerStrength::time_effect_bonus()
         }
     }
 
-    if (this->creature.tsuyoshi) {
+    if (this->creature.get_remaining_tsuyoshi()) {
         result += 4;
     }
 

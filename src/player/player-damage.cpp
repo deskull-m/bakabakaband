@@ -340,7 +340,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
             }
         }
 
-        if (creature.wraith_form) {
+        if (creature.get_remaining_wraith_form()) {
             if (damage_type == DAMAGE_FORCE) {
                 msg_print(_("半物質の体が切り裂かれた！", "The attack cuts through your ethereal body!"));
             } else {

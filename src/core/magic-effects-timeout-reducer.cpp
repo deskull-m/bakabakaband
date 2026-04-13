@@ -39,16 +39,16 @@ void reduce_magic_effects_timeout(CreatureEntity &creature)
         (void)bss.mod_blindness(-1);
     }
 
-    if (creature.tim_invis) {
-        (void)set_tim_invis(creature, creature.tim_invis - 1, true);
+    if (const auto remaining = creature.get_remaining_tim_invis(); remaining > 0) {
+        (void)set_tim_invis(creature, remaining - 1, true);
     }
 
     if (creature.suppress_multi_reward) {
         creature.suppress_multi_reward = false;
     }
 
-    if (creature.tim_esp) {
-        (void)set_tim_esp(creature, creature.tim_esp - 1, true);
+    if (const auto remaining = creature.get_remaining_tim_esp(); remaining > 0) {
+        (void)set_tim_esp(creature, remaining - 1, true);
     }
 
     if (creature.ele_attack) {
@@ -65,12 +65,12 @@ void reduce_magic_effects_timeout(CreatureEntity &creature)
         }
     }
 
-    if (creature.tim_infra) {
-        (void)set_tim_infra(creature, creature.tim_infra - 1, true);
+    if (const auto remaining = creature.get_remaining_tim_infra(); remaining > 0) {
+        (void)set_tim_infra(creature, remaining - 1, true);
     }
 
-    if (creature.tim_stealth) {
-        (void)set_tim_stealth(creature, creature.tim_stealth - 1, true);
+    if (const auto remaining = creature.get_remaining_tim_stealth(); remaining > 0) {
+        (void)set_tim_stealth(creature, remaining - 1, true);
     }
 
     if (creature.tim_levitation) {
@@ -97,8 +97,8 @@ void reduce_magic_effects_timeout(CreatureEntity &creature)
         (void)set_resist_magic(creature, creature.resist_magic - 1, true);
     }
 
-    if (creature.tim_regen) {
-        (void)set_tim_regen(creature, creature.tim_regen - 1, true);
+    if (const auto remaining = creature.get_remaining_tim_regen(); remaining > 0) {
+        (void)set_tim_regen(creature, remaining - 1, true);
     }
 
     if (creature.tim_res_nether) {
@@ -165,8 +165,8 @@ void reduce_magic_effects_timeout(CreatureEntity &creature)
         (void)set_invuln(creature, creature.invuln - 1, true);
     }
 
-    if (creature.wraith_form) {
-        (void)set_wraith_form(creature, creature.wraith_form - 1, true);
+    if (const auto remaining = creature.get_remaining_wraith_form(); remaining > 0) {
+        (void)set_wraith_form(creature, remaining - 1, true);
     }
 
     if (const auto remaining = creature.get_remaining_hero(); remaining > 0) {
@@ -193,8 +193,8 @@ void reduce_magic_effects_timeout(CreatureEntity &creature)
         (void)set_magicdef(creature, creature.magicdef - 1, true);
     }
 
-    if (creature.tsuyoshi) {
-        (void)set_tsuyoshi(creature, creature.tsuyoshi - 1, true);
+    if (const auto remaining = creature.get_remaining_tsuyoshi(); remaining > 0) {
+        (void)set_tsuyoshi(creature, remaining - 1, true);
     }
 
     if (creature.oppose_acid) {
@@ -229,8 +229,8 @@ void reduce_magic_effects_timeout(CreatureEntity &creature)
         (void)set_tim_imm_dark(creature, creature.tim_imm_dark - 1, true);
     }
 
-    if (creature.ult_res) {
-        (void)set_ultimate_res(creature, creature.ult_res - 1, true);
+    if (const auto remaining = creature.get_remaining_ultimate_resistance(); remaining > 0) {
+        (void)set_ultimate_res(creature, remaining - 1, true);
     }
 
     if (effects->poison().is_poisoned()) {

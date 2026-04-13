@@ -427,7 +427,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
     }
 
     if (creature.muta.has(PlayerMutationType::WEIRD_MIND) && !creature.anti_magic && one_in_(3000)) {
-        if (creature.tim_esp > 0) {
+        if (creature.get_remaining_tim_esp() > 0) {
             msg_print(_("精神にもやがかかった！", "Your mind feels cloudy!"));
             set_tim_esp(creature, 0, true);
         } else {
