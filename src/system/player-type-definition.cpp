@@ -67,6 +67,22 @@ short PlayerType::get_timed_effect(CreatureTimedEffect effect) const
         return this->blessed;
     case CreatureTimedEffect::SHIELD:
         return this->shield;
+    case CreatureTimedEffect::ULTIMATE_RESISTANCE:
+        return this->ult_res;
+    case CreatureTimedEffect::WRAITH_FORM:
+        return this->wraith_form;
+    case CreatureTimedEffect::TIM_ESP:
+        return this->tim_esp;
+    case CreatureTimedEffect::TIM_STEALTH:
+        return this->tim_stealth;
+    case CreatureTimedEffect::TIM_REGEN:
+        return this->tim_regen;
+    case CreatureTimedEffect::TSUYOSHI:
+        return this->tsuyoshi;
+    case CreatureTimedEffect::TIM_INVIS:
+        return this->tim_invis;
+    case CreatureTimedEffect::TIM_INFRA:
+        return this->tim_infra;
     default:
         return 0;
     }
@@ -114,6 +130,30 @@ void PlayerType::set_timed_effect(CreatureTimedEffect effect, short value)
         break;
     case CreatureTimedEffect::SHIELD:
         this->shield = value;
+        break;
+    case CreatureTimedEffect::ULTIMATE_RESISTANCE:
+        this->ult_res = value;
+        break;
+    case CreatureTimedEffect::WRAITH_FORM:
+        this->wraith_form = value;
+        break;
+    case CreatureTimedEffect::TIM_ESP:
+        this->tim_esp = value;
+        break;
+    case CreatureTimedEffect::TIM_STEALTH:
+        this->tim_stealth = value;
+        break;
+    case CreatureTimedEffect::TIM_REGEN:
+        this->tim_regen = value;
+        break;
+    case CreatureTimedEffect::TSUYOSHI:
+        this->tsuyoshi = value;
+        break;
+    case CreatureTimedEffect::TIM_INVIS:
+        this->tim_invis = value;
+        break;
+    case CreatureTimedEffect::TIM_INFRA:
+        this->tim_infra = value;
         break;
     default:
         break;
