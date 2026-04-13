@@ -120,7 +120,7 @@ static MonraceDefinition &set_pet_params(CreatureEntity &creature, const int cur
 
     creature.current_floor_ptr->grid_array[cy][cx].m_idx = m_idx;
     auto &monster = creature.current_floor_ptr->m_list[m_idx];
-    monster = party_monsters[current_monster].clone();
+    monster = party_monsters[current_monster];
     monster.y = cy;
     monster.x = cx;
     monster.current_floor_ptr = creature.current_floor_ptr;

@@ -18,8 +18,3 @@ void MonsterEntity::wipe()
 {
     *this = {};
 }
-
-MonsterEntity MonsterEntity::clone() const
-{
-    return *this;
-}
