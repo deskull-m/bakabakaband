@@ -99,3 +99,13 @@ void PlayerType::set_timed_effect(CreatureTimedEffect effect, short value)
         break;
     }
 }
+
+/*!
+ * @brief プレイヤー状態を空の初期値にリセットする
+ * @details game-play-initializer 等からのキャラクター再初期化時に使われる。
+ *          名前やフロア情報等は呼び出し側が事前退避・事後復元する前提。
+ */
+void PlayerType::wipe()
+{
+    *this = {};
+}
