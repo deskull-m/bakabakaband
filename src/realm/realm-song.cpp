@@ -510,23 +510,23 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (stop) {
-            if (!creature.oppose_acid) {
+            if (!creature.get_remaining_oppose_acid()) {
                 msg_print(_("酸への耐性が薄れた気がする。", "You feel less resistant to acid."));
             }
 
-            if (!creature.oppose_elec) {
+            if (!creature.get_remaining_oppose_elec()) {
                 msg_print(_("電撃への耐性が薄れた気がする。", "You feel less resistant to elec."));
             }
 
-            if (!creature.oppose_fire) {
+            if (!creature.get_remaining_oppose_fire()) {
                 msg_print(_("火への耐性が薄れた気がする。", "You feel less resistant to fire."));
             }
 
-            if (!creature.oppose_cold) {
+            if (!creature.get_remaining_oppose_cold()) {
                 msg_print(_("冷気への耐性が薄れた気がする。", "You feel less resistant to cold."));
             }
 
-            if (!creature.oppose_pois) {
+            if (!creature.get_remaining_oppose_pois()) {
                 msg_print(_("毒への耐性が薄れた気がする。", "You feel less resistant to pois."));
             }
         }

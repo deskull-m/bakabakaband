@@ -393,28 +393,28 @@ void report_magics(CreatureEntity &subject)
             _("この後現実変容が発動する", "You waiting to be altered"));
     }
 
-    if (subject.oppose_acid) {
-        info.emplace_back(report_magics_aux(subject.oppose_acid),
+    if (const auto remaining = subject.get_remaining_oppose_acid(); remaining > 0) {
+        info.emplace_back(report_magics_aux(remaining),
             _("あなたは酸への耐性を持っている", "You are resistant to acid"));
     }
 
-    if (subject.oppose_elec) {
-        info.emplace_back(report_magics_aux(subject.oppose_elec),
+    if (const auto remaining = subject.get_remaining_oppose_elec(); remaining > 0) {
+        info.emplace_back(report_magics_aux(remaining),
             _("あなたは電撃への耐性を持っている", "You are resistant to lightning"));
     }
 
-    if (subject.oppose_fire) {
-        info.emplace_back(report_magics_aux(subject.oppose_fire),
+    if (const auto remaining = subject.get_remaining_oppose_fire(); remaining > 0) {
+        info.emplace_back(report_magics_aux(remaining),
             _("あなたは火への耐性を持っている", "You are resistant to fire"));
     }
 
-    if (subject.oppose_cold) {
-        info.emplace_back(report_magics_aux(subject.oppose_cold),
+    if (const auto remaining = subject.get_remaining_oppose_cold(); remaining > 0) {
+        info.emplace_back(report_magics_aux(remaining),
             _("あなたは冷気への耐性を持っている", "You are resistant to cold"));
     }
 
-    if (subject.oppose_pois) {
-        info.emplace_back(report_magics_aux(subject.oppose_pois),
+    if (const auto remaining = subject.get_remaining_oppose_pois(); remaining > 0) {
+        info.emplace_back(report_magics_aux(remaining),
             _("あなたは毒への耐性を持っている", "You are resistant to poison"));
     }
 

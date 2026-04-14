@@ -127,9 +127,9 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
     case SV_POTION_SPEED:
         return this->speed();
     case SV_POTION_RESIST_HEAT:
-        return set_oppose_fire(this->creature, this->creature.oppose_fire + randint1(10) + 10, false);
+        return set_oppose_fire(this->creature, this->creature.get_remaining_oppose_fire() + randint1(10) + 10, false);
     case SV_POTION_RESIST_COLD:
-        return set_oppose_cold(this->creature, this->creature.oppose_cold + randint1(10) + 10, false);
+        return set_oppose_cold(this->creature, this->creature.get_remaining_oppose_cold() + randint1(10) + 10, false);
     case SV_POTION_HEROISM:
         return heroism(this->creature, 25);
     case SV_POTION_BESERK_STRENGTH:
@@ -536,11 +536,11 @@ bool QuaffEffects::experience()
  */
 bool QuaffEffects::resistance()
 {
-    (void)set_oppose_acid(this->creature, this->creature.oppose_acid + randint1(20) + 20, false);
-    (void)set_oppose_elec(this->creature, this->creature.oppose_elec + randint1(20) + 20, false);
-    (void)set_oppose_fire(this->creature, this->creature.oppose_fire + randint1(20) + 20, false);
-    (void)set_oppose_cold(this->creature, this->creature.oppose_cold + randint1(20) + 20, false);
-    (void)set_oppose_pois(this->creature, this->creature.oppose_pois + randint1(20) + 20, false);
+    (void)set_oppose_acid(this->creature, this->creature.get_remaining_oppose_acid() + randint1(20) + 20, false);
+    (void)set_oppose_elec(this->creature, this->creature.get_remaining_oppose_elec() + randint1(20) + 20, false);
+    (void)set_oppose_fire(this->creature, this->creature.get_remaining_oppose_fire() + randint1(20) + 20, false);
+    (void)set_oppose_cold(this->creature, this->creature.get_remaining_oppose_cold() + randint1(20) + 20, false);
+    (void)set_oppose_pois(this->creature, this->creature.get_remaining_oppose_pois() + randint1(20) + 20, false);
     return true;
 }
 
