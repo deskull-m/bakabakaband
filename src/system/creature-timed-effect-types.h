@@ -26,5 +26,10 @@ enum class CreatureTimedEffect {
     TSUYOSHI, /*!< つよし特殊 / Tsuyoshi Special (プレイヤーのみ、モンスターは常に0) */
     TIM_INVIS, /*!< 一時透明視 / Timed See Invisible (プレイヤーのみ、モンスターは常に0) */
     TIM_INFRA, /*!< 一時赤外線視 / Timed Infra Vision (プレイヤーのみ、モンスターは常に0) */
+    OPPOSE_ACID, /*!< 一時酸耐性 / Timed Oppose Acid (プレイヤーのみ、モンスターは常に0) */
+    OPPOSE_ELEC, /*!< 一時電撃耐性 / Timed Oppose Lightning (プレイヤーのみ、モンスターは常に0) */
+    OPPOSE_FIRE, /*!< 一時火炎耐性 / Timed Oppose Fire (プレイヤーのみ、モンスターは常に0) */
+    OPPOSE_COLD, /*!< 一時冷気耐性 / Timed Oppose Cold (プレイヤーのみ、モンスターは常に0) */
+    OPPOSE_POIS, /*!< 一時毒耐性 / Timed Oppose Poison (プレイヤーのみ、モンスターは常に0) */
     MAX,
 };

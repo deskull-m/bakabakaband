@@ -83,6 +83,16 @@ short PlayerType::get_timed_effect(CreatureTimedEffect effect) const
         return this->tim_invis;
     case CreatureTimedEffect::TIM_INFRA:
         return this->tim_infra;
+    case CreatureTimedEffect::OPPOSE_ACID:
+        return this->oppose_acid;
+    case CreatureTimedEffect::OPPOSE_ELEC:
+        return this->oppose_elec;
+    case CreatureTimedEffect::OPPOSE_FIRE:
+        return this->oppose_fire;
+    case CreatureTimedEffect::OPPOSE_COLD:
+        return this->oppose_cold;
+    case CreatureTimedEffect::OPPOSE_POIS:
+        return this->oppose_pois;
     default:
         return 0;
     }
@@ -154,6 +164,21 @@ void PlayerType::set_timed_effect(CreatureTimedEffect effect, short value)
         break;
     case CreatureTimedEffect::TIM_INFRA:
         this->tim_infra = value;
+        break;
+    case CreatureTimedEffect::OPPOSE_ACID:
+        this->oppose_acid = value;
+        break;
+    case CreatureTimedEffect::OPPOSE_ELEC:
+        this->oppose_elec = value;
+        break;
+    case CreatureTimedEffect::OPPOSE_FIRE:
+        this->oppose_fire = value;
+        break;
+    case CreatureTimedEffect::OPPOSE_COLD:
+        this->oppose_cold = value;
+        break;
+    case CreatureTimedEffect::OPPOSE_POIS:
+        this->oppose_pois = value;
         break;
     default:
         break;

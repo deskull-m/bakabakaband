@@ -519,6 +519,31 @@ public:
         return this->get_timed_effect(CreatureTimedEffect::TIM_INFRA);
     }
 
+    short get_remaining_oppose_acid() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::OPPOSE_ACID);
+    }
+
+    short get_remaining_oppose_elec() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::OPPOSE_ELEC);
+    }
+
+    short get_remaining_oppose_fire() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE);
+    }
+
+    short get_remaining_oppose_cold() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::OPPOSE_COLD);
+    }
+
+    short get_remaining_oppose_pois() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::OPPOSE_POIS);
+    }
+
     tl::optional<std::string> get_pain_message(std::string_view monster_name, int damage) const;
 
     /*!
