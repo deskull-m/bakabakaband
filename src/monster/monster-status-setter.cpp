@@ -75,17 +75,17 @@ bool set_monster_csleep(FloorType &floor, MONSTER_IDX m_idx, int v)
                                       : v;
     if (v) {
         if (!monster.is_asleep()) {
-            floor.add_mproc(m_idx, MonsterTimedEffect::SLEEP);
+            floor.add_mproc(m_idx, CreatureTimedEffect::SLEEP_OR_PARALYSIS);
             notice = true;
         }
     } else {
         if (monster.is_asleep()) {
-            floor.remove_mproc(m_idx, MonsterTimedEffect::SLEEP);
+            floor.remove_mproc(m_idx, CreatureTimedEffect::SLEEP_OR_PARALYSIS);
             notice = true;
         }
     }
 
-    monster.get_monster_profile().mtimed[MonsterTimedEffect::SLEEP] = (int16_t)v;
+    monster.get_monster_profile().mtimed[CreatureTimedEffect::SLEEP_OR_PARALYSIS] = (int16_t)v;
     if (!notice) {
         return false;
     }
@@ -120,17 +120,17 @@ bool set_monster_fast(FloorType &floor, MONSTER_IDX m_idx, int v)
                                   : v;
     if (v) {
         if (!monster.is_accelerated()) {
-            floor.add_mproc(m_idx, MonsterTimedEffect::FAST);
+            floor.add_mproc(m_idx, CreatureTimedEffect::ACCELERATION);
             notice = true;
         }
     } else {
         if (monster.is_accelerated()) {
-            floor.remove_mproc(m_idx, MonsterTimedEffect::FAST);
+            floor.remove_mproc(m_idx, CreatureTimedEffect::ACCELERATION);
             notice = true;
         }
     }
 
-    monster.get_monster_profile().mtimed[MonsterTimedEffect::FAST] = (int16_t)v;
+    monster.get_monster_profile().mtimed[CreatureTimedEffect::ACCELERATION] = (int16_t)v;
     if (!notice) {
         return false;
     }
@@ -157,17 +157,17 @@ bool set_monster_slow(FloorType &floor, MONSTER_IDX m_idx, int v)
                                   : v;
     if (v) {
         if (!monster.is_decelerated()) {
-            floor.add_mproc(m_idx, MonsterTimedEffect::SLOW);
+            floor.add_mproc(m_idx, CreatureTimedEffect::DECELERATION);
             notice = true;
         }
     } else {
         if (monster.is_decelerated()) {
-            floor.remove_mproc(m_idx, MonsterTimedEffect::SLOW);
+            floor.remove_mproc(m_idx, CreatureTimedEffect::DECELERATION);
             notice = true;
         }
     }
 
-    monster.get_monster_profile().mtimed[MonsterTimedEffect::SLOW] = (int16_t)v;
+    monster.get_monster_profile().mtimed[CreatureTimedEffect::DECELERATION] = (int16_t)v;
     if (!notice) {
         return false;
     }
@@ -194,17 +194,17 @@ bool set_monster_stunned(FloorType &floor, MONSTER_IDX m_idx, int v)
                                   : v;
     if (v) {
         if (!monster.is_stunned()) {
-            floor.add_mproc(m_idx, MonsterTimedEffect::STUN);
+            floor.add_mproc(m_idx, CreatureTimedEffect::STUN);
             notice = true;
         }
     } else {
         if (monster.is_stunned()) {
-            floor.remove_mproc(m_idx, MonsterTimedEffect::STUN);
+            floor.remove_mproc(m_idx, CreatureTimedEffect::STUN);
             notice = true;
         }
     }
 
-    monster.get_monster_profile().mtimed[MonsterTimedEffect::STUN] = (int16_t)v;
+    monster.get_monster_profile().mtimed[CreatureTimedEffect::STUN] = (int16_t)v;
     return notice;
 }
 
@@ -223,17 +223,17 @@ bool set_monster_confused(FloorType &floor, MONSTER_IDX m_idx, int v)
                                   : v;
     if (v) {
         if (!monster.is_confused()) {
-            floor.add_mproc(m_idx, MonsterTimedEffect::CONFUSION);
+            floor.add_mproc(m_idx, CreatureTimedEffect::CONFUSION);
             notice = true;
         }
     } else {
         if (monster.is_confused()) {
-            floor.remove_mproc(m_idx, MonsterTimedEffect::CONFUSION);
+            floor.remove_mproc(m_idx, CreatureTimedEffect::CONFUSION);
             notice = true;
         }
     }
 
-    monster.get_monster_profile().mtimed[MonsterTimedEffect::CONFUSION] = (int16_t)v;
+    monster.get_monster_profile().mtimed[CreatureTimedEffect::CONFUSION] = (int16_t)v;
     return notice;
 }
 
@@ -258,17 +258,17 @@ bool set_monster_monfear(FloorType &floor, MONSTER_IDX m_idx, int v)
                                   : v;
     if (v) {
         if (!monster.is_fearful()) {
-            floor.add_mproc(m_idx, MonsterTimedEffect::FEAR);
+            floor.add_mproc(m_idx, CreatureTimedEffect::FEAR);
             notice = true;
         }
     } else {
         if (monster.is_fearful()) {
-            floor.remove_mproc(m_idx, MonsterTimedEffect::FEAR);
+            floor.remove_mproc(m_idx, CreatureTimedEffect::FEAR);
             notice = true;
         }
     }
 
-    monster.get_monster_profile().mtimed[MonsterTimedEffect::FEAR] = (int16_t)v;
+    monster.get_monster_profile().mtimed[CreatureTimedEffect::FEAR] = (int16_t)v;
 
     if (!notice) {
         return false;
@@ -300,12 +300,12 @@ bool set_monster_invulner(FloorType &floor, MONSTER_IDX m_idx, int v, bool energ
                                   : v;
     if (v) {
         if (!monster.is_invulnerable()) {
-            floor.add_mproc(m_idx, MonsterTimedEffect::INVULNERABILITY);
+            floor.add_mproc(m_idx, CreatureTimedEffect::INVULNERABILITY);
             notice = true;
         }
     } else {
         if (monster.is_invulnerable()) {
-            floor.remove_mproc(m_idx, MonsterTimedEffect::INVULNERABILITY);
+            floor.remove_mproc(m_idx, CreatureTimedEffect::INVULNERABILITY);
             if (energy_need && !AngbandWorld::get_instance().is_wild_mode()) {
                 monster.energy_need += ENERGY_NEED();
             }
@@ -313,7 +313,7 @@ bool set_monster_invulner(FloorType &floor, MONSTER_IDX m_idx, int v, bool energ
         }
     }
 
-    monster.get_monster_profile().mtimed[MonsterTimedEffect::INVULNERABILITY] = (int16_t)v;
+    monster.get_monster_profile().mtimed[CreatureTimedEffect::INVULNERABILITY] = (int16_t)v;
     if (!notice) {
         return false;
     }

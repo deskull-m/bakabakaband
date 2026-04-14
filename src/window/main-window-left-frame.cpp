@@ -2,6 +2,7 @@
 #include "floor/dungeon-feeling.h"
 #include "game-option/special-options.h"
 #include "game-option/text-display-options.h"
+#include "monster/monster-timed-effects.h"
 #include "player-base/player-race.h"
 #include "player-info/class-info.h"
 #include "player-info/mimic-info-table.h"
@@ -306,25 +307,25 @@ static std::vector<condition_layout_info> get_condition_layout_info(const Creatu
     std::vector<condition_layout_info> result;
 
     if (monster.is_invulnerable()) {
-        result.push_back({ effect_type_to_label.at(MonsterTimedEffect::INVULNERABILITY), TERM_WHITE });
+        result.push_back({ effect_type_to_label.at(CreatureTimedEffect::INVULNERABILITY), TERM_WHITE });
     }
     if (monster.is_accelerated()) {
-        result.push_back({ effect_type_to_label.at(MonsterTimedEffect::FAST), TERM_L_GREEN });
+        result.push_back({ effect_type_to_label.at(CreatureTimedEffect::ACCELERATION), TERM_L_GREEN });
     }
     if (monster.is_decelerated()) {
-        result.push_back({ effect_type_to_label.at(MonsterTimedEffect::SLOW), TERM_UMBER });
+        result.push_back({ effect_type_to_label.at(CreatureTimedEffect::DECELERATION), TERM_UMBER });
     }
     if (monster.is_fearful()) {
-        result.push_back({ effect_type_to_label.at(MonsterTimedEffect::FEAR), TERM_SLATE });
+        result.push_back({ effect_type_to_label.at(CreatureTimedEffect::FEAR), TERM_SLATE });
     }
     if (monster.is_confused()) {
-        result.push_back({ effect_type_to_label.at(MonsterTimedEffect::CONFUSION), TERM_L_UMBER });
+        result.push_back({ effect_type_to_label.at(CreatureTimedEffect::CONFUSION), TERM_L_UMBER });
     }
     if (monster.is_asleep()) {
-        result.push_back({ effect_type_to_label.at(MonsterTimedEffect::SLEEP), TERM_BLUE });
+        result.push_back({ effect_type_to_label.at(CreatureTimedEffect::SLEEP_OR_PARALYSIS), TERM_BLUE });
     }
     if (monster.is_stunned()) {
-        result.push_back({ effect_type_to_label.at(MonsterTimedEffect::STUN), TERM_ORANGE });
+        result.push_back({ effect_type_to_label.at(CreatureTimedEffect::STUN), TERM_ORANGE });
     }
 
     return result;

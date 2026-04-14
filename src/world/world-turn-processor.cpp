@@ -20,6 +20,7 @@
 #include "monster-floor/monster-summon.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-status.h"
+#include "monster/monster-timed-effects.h"
 #include "mutation/mutation-processor.h"
 #include "object/lite-processor.h"
 #include "perception/simple-perception.h"
@@ -299,7 +300,7 @@ void WorldTurnProcessor::process_world_monsters()
         return;
     }
 
-    for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
+    for (const auto mte : MONSTER_TIMED_EFFECT_LIST) {
         if (this->creature.current_floor_ptr->mproc_max[mte] > 0) {
             process_monsters_mtimed(this->creature, mte);
         }

@@ -107,13 +107,13 @@ int mon_damage_mod(CreatureEntity &creature, const CreatureEntity &target, int d
  * @param m_idx モンスター参照ID
  * @param mte 更新するモンスターの時限ステータスID
  */
-static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_idx, MonsterTimedEffect mte)
+static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_idx, CreatureTimedEffect mte)
 {
     auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.get_monster(m_idx);
     const auto cdis = Grid::calc_distance(creature.get_position(), monster.get_position());
     switch (mte) {
-    case MonsterTimedEffect::SLEEP: {
+    case CreatureTimedEffect::SLEEP_OR_PARALYSIS: {
         auto &monrace = monster.get_monrace();
         auto is_wakeup = false;
         if (cdis < MAX_MONSTER_SENSING) {
@@ -184,7 +184,7 @@ static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_
 
         break;
     }
-    case MonsterTimedEffect::FAST:
+    case CreatureTimedEffect::ACCELERATION:
         /* Reduce by one, note if expires */
         if (set_monster_fast(floor, m_idx, monster.get_remaining_acceleration() - 1)) {
             if (is_seen(creature, monster)) {
@@ -194,7 +194,7 @@ static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_
         }
 
         break;
-    case MonsterTimedEffect::SLOW:
+    case CreatureTimedEffect::DECELERATION:
         /* Reduce by one, note if expires */
         if (set_monster_slow(floor, m_idx, monster.get_remaining_deceleration() - 1)) {
             if (is_seen(creature, monster)) {
@@ -204,7 +204,7 @@ static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_
         }
 
         break;
-    case MonsterTimedEffect::STUN: {
+    case CreatureTimedEffect::STUN: {
         int rlev = monster.get_monrace().level;
 
         /* Recover from stun */
@@ -218,7 +218,7 @@ static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_
 
         break;
     }
-    case MonsterTimedEffect::CONFUSION: {
+    case CreatureTimedEffect::CONFUSION: {
         /* Reduce the confusion */
         if (!set_monster_confused(floor, m_idx, monster.get_remaining_confusion() - randint1(monster.get_monrace().level / 20 + 1))) {
             break;
@@ -232,7 +232,7 @@ static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_
 
         break;
     }
-    case MonsterTimedEffect::FEAR: {
+    case CreatureTimedEffect::FEAR: {
         /* Reduce the fear */
         if (!set_monster_monfear(floor, m_idx, monster.get_remaining_fear() - randint1(monster.get_monrace().level / 20 + 1))) {
             break;
@@ -255,7 +255,7 @@ static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_
 
         break;
     }
-    case MonsterTimedEffect::INVULNERABILITY: {
+    case CreatureTimedEffect::INVULNERABILITY: {
         /* Reduce by one, note if expires */
         if (!set_monster_invulner(floor, m_idx, monster.get_remaining_invulnerability() - 1, true)) {
             break;
@@ -269,7 +269,7 @@ static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_
         break;
     }
     default:
-        THROW_EXCEPTION(std::logic_error, format("Invalid MonsterTimedEffect is specified! %d", enum2i(mte)));
+        THROW_EXCEPTION(std::logic_error, format("Invalid CreatureTimedEffect is specified! %d", enum2i(mte)));
     }
 }
 
@@ -281,13 +281,13 @@ static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_
  * Process the counters of monsters (once per 10 game turns)\n
  * These functions are to process monsters' counters same as player's.
  */
-void process_monsters_mtimed(CreatureEntity &creature, MonsterTimedEffect mte)
+void process_monsters_mtimed(CreatureEntity &creature, CreatureTimedEffect mte)
 {
     const auto &floor = *creature.current_floor_ptr;
     const auto &cur_mproc_list = floor.mproc_list.at(mte);
 
     /* Hack -- calculate the "player noise" */
-    if (mte == MonsterTimedEffect::SLEEP) {
+    if (mte == CreatureTimedEffect::SLEEP_OR_PARALYSIS) {
         csleep_noise = (1U << (30 - creature.skill_stl));
     }
 

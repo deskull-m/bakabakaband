@@ -451,7 +451,7 @@ MonsterAbilityType choose_attack_spell(CreatureEntity &creature, msa_type *msa_p
         return rand_choice(tactic);
     }
 
-    if (!invul.empty() && !monster.get_monster_profile().mtimed.at(MonsterTimedEffect::INVULNERABILITY) && one_in_(2)) {
+    if (!invul.empty() && !monster.get_monster_profile().mtimed.at(CreatureTimedEffect::INVULNERABILITY) && one_in_(2)) {
         return rand_choice(invul);
     }
 

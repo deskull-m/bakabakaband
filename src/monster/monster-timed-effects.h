@@ -1,20 +1,23 @@
 #pragma once
 
-#include "util/enum-range.h"
+#include "system/creature-timed-effect-types.h"
+#include <array>
 #include <map>
 #include <string>
 
-enum class MonsterTimedEffect : int {
-    SLEEP = 0,
-    FAST = 1,
-    SLOW = 2,
-    STUN = 3,
-    CONFUSION = 4,
-    FEAR = 5,
-    INVULNERABILITY = 6,
-    MAX = 7,
+/*!
+ * @brief モンスターが持ちうる時限効果の一覧
+ * @details CreatureTimedEffect のうちモンスター側で扱う 7 種。
+ * プレイヤー専用効果（HERO/BLESSED 等）はここに含まれない。
+ */
+constexpr std::array<CreatureTimedEffect, 7> MONSTER_TIMED_EFFECT_LIST = {
+    CreatureTimedEffect::SLEEP_OR_PARALYSIS,
+    CreatureTimedEffect::ACCELERATION,
+    CreatureTimedEffect::DECELERATION,
+    CreatureTimedEffect::STUN,
+    CreatureTimedEffect::CONFUSION,
+    CreatureTimedEffect::FEAR,
+    CreatureTimedEffect::INVULNERABILITY,
 };
 
-constexpr auto MONSTER_TIMED_EFFECT_RANGE = EnumRange<MonsterTimedEffect>(MonsterTimedEffect::SLEEP, MonsterTimedEffect::MAX);
-
-extern const std::map<MonsterTimedEffect, std::string> effect_type_to_label;
+extern const std::map<CreatureTimedEffect, std::string> effect_type_to_label;

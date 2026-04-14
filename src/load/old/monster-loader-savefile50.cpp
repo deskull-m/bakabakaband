@@ -47,7 +47,7 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
 
     monster.ap_r_idx = any_bits(flags, SaveDataMonsterFlagType::AP_R_IDX) ? i2enum<MonraceId>(rd_s16b()) : monster.r_idx;
     monster.get_monster_profile().sub_align = any_bits(flags, SaveDataMonsterFlagType::SUB_ALIGN) ? rd_byte() : 0;
-    monster.get_monster_profile().mtimed[MonsterTimedEffect::SLEEP] = any_bits(flags, SaveDataMonsterFlagType::SLEEP) ? rd_s16b() : 0;
+    monster.get_monster_profile().mtimed[CreatureTimedEffect::SLEEP_OR_PARALYSIS] = any_bits(flags, SaveDataMonsterFlagType::SLEEP) ? rd_s16b() : 0;
     monster.speed = rd_byte();
     monster.energy_need = rd_s16b();
     if (loading_savefile_version_is_older_than(38)) {
@@ -56,14 +56,14 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
     } else {
         monster.ac = rd_s16b();
     }
-    monster.get_monster_profile().mtimed[MonsterTimedEffect::FAST] = any_bits(flags, SaveDataMonsterFlagType::FAST) ? rd_byte() : 0;
-    monster.get_monster_profile().mtimed[MonsterTimedEffect::SLOW] = any_bits(flags, SaveDataMonsterFlagType::SLOW) ? rd_byte() : 0;
-    monster.get_monster_profile().mtimed[MonsterTimedEffect::STUN] = any_bits(flags, SaveDataMonsterFlagType::STUNNED) ? rd_byte() : 0;
-    monster.get_monster_profile().mtimed[MonsterTimedEffect::CONFUSION] = any_bits(flags, SaveDataMonsterFlagType::CONFUSED) ? rd_byte() : 0;
-    monster.get_monster_profile().mtimed[MonsterTimedEffect::FEAR] = any_bits(flags, SaveDataMonsterFlagType::MONFEAR) ? rd_byte() : 0;
+    monster.get_monster_profile().mtimed[CreatureTimedEffect::ACCELERATION] = any_bits(flags, SaveDataMonsterFlagType::FAST) ? rd_byte() : 0;
+    monster.get_monster_profile().mtimed[CreatureTimedEffect::DECELERATION] = any_bits(flags, SaveDataMonsterFlagType::SLOW) ? rd_byte() : 0;
+    monster.get_monster_profile().mtimed[CreatureTimedEffect::STUN] = any_bits(flags, SaveDataMonsterFlagType::STUNNED) ? rd_byte() : 0;
+    monster.get_monster_profile().mtimed[CreatureTimedEffect::CONFUSION] = any_bits(flags, SaveDataMonsterFlagType::CONFUSED) ? rd_byte() : 0;
+    monster.get_monster_profile().mtimed[CreatureTimedEffect::FEAR] = any_bits(flags, SaveDataMonsterFlagType::MONFEAR) ? rd_byte() : 0;
     monster.target.y = any_bits(flags, SaveDataMonsterFlagType::TARGET_Y) ? rd_s16b() : 0;
     monster.target.x = any_bits(flags, SaveDataMonsterFlagType::TARGET_X) ? rd_s16b() : 0;
-    monster.get_monster_profile().mtimed[MonsterTimedEffect::INVULNERABILITY] = any_bits(flags, SaveDataMonsterFlagType::INVULNER) ? rd_byte() : 0;
+    monster.get_monster_profile().mtimed[CreatureTimedEffect::INVULNERABILITY] = any_bits(flags, SaveDataMonsterFlagType::INVULNER) ? rd_byte() : 0;
     monster.get_monster_profile().mflag.clear();
     monster.get_monster_profile().mflag2.clear();
     if (any_bits(flags, SaveDataMonsterFlagType::SMART)) {

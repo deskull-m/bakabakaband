@@ -2,9 +2,9 @@
 
 #include "alliance/alliance.h"
 #include "monster/monster-flag-types.h"
-#include "monster/monster-timed-effects.h"
 #include "monster/smart-learn-types.h"
 #include "object/object-index-list.h"
+#include "system/creature-timed-effect-types.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "util/flag-group.h"
 #include <map>
@@ -27,7 +27,7 @@ struct MonsterProfile {
     std::vector<PlayerRaceType> equivalent_player_races{}; /*!< モンスターのフラグに基づいて対応するプレイヤー種族IDリスト */
     std::vector<PlayerClassType> equivalent_player_classes{}; /*!< モンスターのフラグに基づいて対応するプレイヤー職業IDリスト */
     int death_count{}; /*!< 自壊するまでの残りターン数 */
-    std::map<MonsterTimedEffect, short> mtimed{}; /*!< 与えられた時限効果の残りターン / Timed status counter */
+    std::map<CreatureTimedEffect, short> mtimed{}; /*!< 与えられた時限効果の残りターン / Timed status counter */
     EnumClassFlagGroup<MonsterTemporaryFlagType> mflag{}; /*!< モンスター個体に与えられた特殊フラグ1 (セーブ不要) / Extra monster flags */
     EnumClassFlagGroup<MonsterConstantFlagType> mflag2{}; /*!< モンスター個体に与えられた特殊フラグ2 (セーブ必要) / Extra monster flags */
     bool ml{}; /*!< モンスターがプレイヤーにとって視認できるか(処理のためのテンポラリ変数) Monster is "visible" */

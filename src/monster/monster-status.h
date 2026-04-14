@@ -13,5 +13,5 @@ int mon_damage_mod(CreatureEntity &creature, const CreatureEntity &target, int d
 void dispel_monster_status(CreatureEntity &creature, MONSTER_IDX m_idx);
 void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId s_idx);
 
-enum class MonsterTimedEffect : int;
-void process_monsters_mtimed(CreatureEntity &creature, MonsterTimedEffect mte);
+enum class CreatureTimedEffect;
+void process_monsters_mtimed(CreatureEntity &creature, CreatureTimedEffect mte);
