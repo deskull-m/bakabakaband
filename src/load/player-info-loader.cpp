@@ -356,41 +356,41 @@ static void rd_status(CreatureEntity &creature)
     effects->poison().set(rd_s16b());
     effects->hallucination().set(rd_s16b());
     effects->protection().set(rd_s16b());
-    creature.invuln = rd_s16b();
-    creature.ult_res = rd_s16b();
+    creature.set_timed_effect(CreatureTimedEffect::INVULNERABILITY, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE, rd_s16b());
 }
 
 static void set_timed_effects(CreatureEntity &creature)
 {
-    creature.tim_esp = rd_s16b();
-    creature.wraith_form = rd_s16b();
-    creature.resist_magic = rd_s16b();
-    creature.tim_regen = rd_s16b();
-    creature.tim_pass_wall = rd_s16b();
-    creature.tim_stealth = rd_s16b();
-    creature.tim_levitation = rd_s16b();
-    creature.tim_sh_touki = rd_s16b();
-    creature.lightspeed = rd_s16b();
-    creature.tsubureru = rd_s16b();
-    creature.magicdef = rd_s16b();
-    creature.tim_res_nether = rd_s16b();
-    creature.tim_res_time = rd_s16b();
+    creature.set_timed_effect(CreatureTimedEffect::TIM_ESP, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::WRAITH_FORM, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::RESIST_MAGIC, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::TIM_REGEN, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::TIM_PASS_WALL, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::TIM_STEALTH, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::TIM_LEVITATION, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::TIM_SH_TOUKI, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::LIGHTSPEED, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::TSUBURERU, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::MAGICDEF, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::TIM_RES_NETHER, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::TIM_RES_TIME, rd_s16b());
     creature.mimic_form = i2enum<MimicKindType>(rd_byte());
-    creature.tim_mimic = rd_s16b();
-    creature.tim_sh_fire = rd_s16b();
-    creature.tim_sh_holy = rd_s16b();
-    creature.tim_eyeeye = rd_s16b();
-    creature.tim_reflect = rd_s16b();
-    creature.multishadow = rd_s16b();
-    creature.dustrobe = rd_s16b();
+    creature.set_timed_effect(CreatureTimedEffect::TIM_MIMIC, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::TIM_SH_FIRE, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::TIM_SH_HOLY, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::TIM_EYEEYE, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::TIM_REFLECT, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::MULTISHADOW, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::DUSTROBE, rd_s16b());
 
     if (!loading_savefile_version_is_older_than(37)) {
-        creature.tim_res_lite = rd_s16b();
-        creature.tim_res_dark = rd_s16b();
-        creature.tim_res_fear = rd_s16b();
-        creature.tim_emission = rd_s16b();
-        creature.tim_exorcism = rd_s16b();
-        creature.tim_imm_dark = rd_s16b();
+        creature.set_timed_effect(CreatureTimedEffect::TIM_RES_LITE, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::TIM_RES_DARK, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::TIM_RES_FEAR, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::TIM_EMISSION, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::TIM_EXORCISM, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::TIM_IMM_DARK, rd_s16b());
     }
 }
 
@@ -470,22 +470,22 @@ static void rd_player_status(CreatureEntity &creature)
     rd_bad_status(creature);
     rd_energy(creature);
     rd_status(creature);
-    creature.hero = rd_s16b();
-    creature.berserk = rd_s16b();
-    creature.shield = rd_s16b();
-    creature.blessed = rd_s16b();
-    creature.tim_invis = rd_s16b();
+    creature.set_timed_effect(CreatureTimedEffect::HERO, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::BERSERK, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::SHIELD, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::BLESSED, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::TIM_INVIS, rd_s16b());
     creature.word_recall = rd_s16b();
     creature.recall_dungeon = i2enum<DungeonId>(rd_s16b());
     creature.alter_reality = rd_s16b();
     creature.see_infra = rd_s16b();
-    creature.tim_infra = rd_s16b();
-    creature.oppose_fire = rd_s16b();
-    creature.oppose_cold = rd_s16b();
-    creature.oppose_acid = rd_s16b();
-    creature.oppose_elec = rd_s16b();
-    creature.oppose_pois = rd_s16b();
-    creature.tsuyoshi = rd_s16b();
+    creature.set_timed_effect(CreatureTimedEffect::TIM_INFRA, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_FIRE, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_COLD, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_ACID, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_ELEC, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_POIS, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::TSUYOSHI, rd_s16b());
     rd_timed_effects(creature);
     creature.mutant_regenerate_mod = calc_mutant_regenerate_mod(creature);
 
