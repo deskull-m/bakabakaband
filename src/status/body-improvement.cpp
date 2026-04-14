@@ -98,8 +98,8 @@ bool set_invuln(CreatureEntity &creature, short v, bool do_dec)
         SubWindowRedrawingFlag::DUNGEON,
     };
     if (v) {
-        if (creature.invuln && !do_dec) {
-            if (creature.invuln > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY) > v) {
                 return false;
             }
         } else if (!creature.is_invulnerable()) {
@@ -114,7 +114,7 @@ bool set_invuln(CreatureEntity &creature, short v, bool do_dec)
             rfu.set_flags(flags_swrf);
         }
     } else {
-        if (creature.invuln && !music_singing(creature, MUSIC_INVULN)) {
+        if (creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY) && !music_singing(creature, MUSIC_INVULN)) {
             msg_print(_("無敵ではなくなった。", "The invulnerability wears off."));
             notice = true;
             rfu.set_flag(MainWindowRedrawingFlag::MAP);
@@ -124,7 +124,7 @@ bool set_invuln(CreatureEntity &creature, short v, bool do_dec)
         }
     }
 
-    creature.invuln = v;
+    creature.set_timed_effect(CreatureTimedEffect::INVULNERABILITY, v);
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
 
     if (!notice) {
@@ -157,22 +157,22 @@ bool set_tim_regen(CreatureEntity &creature, short v, bool do_dec)
     }
 
     if (v) {
-        if (creature.tim_regen && !do_dec) {
-            if (creature.tim_regen > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_REGEN) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::TIM_REGEN) > v) {
                 return false;
             }
-        } else if (!creature.tim_regen) {
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::TIM_REGEN)) {
             msg_print(_("回復力が上がった！", "You feel yourself regenerating quickly!"));
             notice = true;
         }
     } else {
-        if (creature.tim_regen) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_REGEN)) {
             msg_print(_("素早く回復する感じがなくなった。", "You feel you are no longer regenerating quickly."));
             notice = true;
         }
     }
 
-    creature.tim_regen = v;
+    creature.set_timed_effect(CreatureTimedEffect::TIM_REGEN, v);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -205,22 +205,22 @@ bool set_tim_reflect(CreatureEntity &creature, short v, bool do_dec)
     }
 
     if (v) {
-        if (creature.tim_reflect && !do_dec) {
-            if (creature.tim_reflect > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_REFLECT) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::TIM_REFLECT) > v) {
                 return false;
             }
-        } else if (!creature.tim_reflect) {
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::TIM_REFLECT)) {
             msg_print(_("体の表面が滑かになった気がする。", "Your body becames smooth."));
             notice = true;
         }
     } else {
-        if (creature.tim_reflect) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_REFLECT)) {
             msg_print(_("体の表面が滑かでなくなった。", "Your body is no longer smooth."));
             notice = true;
         }
     }
 
-    creature.tim_reflect = v;
+    creature.set_timed_effect(CreatureTimedEffect::TIM_REFLECT, v);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -253,22 +253,22 @@ bool set_pass_wall(CreatureEntity &creature, short v, bool do_dec)
     }
 
     if (v) {
-        if (creature.tim_pass_wall && !do_dec) {
-            if (creature.tim_pass_wall > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_PASS_WALL) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::TIM_PASS_WALL) > v) {
                 return false;
             }
-        } else if (!creature.tim_pass_wall) {
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::TIM_PASS_WALL)) {
             msg_print(_("体が半物質の状態になった。", "You became ethereal."));
             notice = true;
         }
     } else {
-        if (creature.tim_pass_wall) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_PASS_WALL)) {
             msg_print(_("体が物質化した。", "You are no longer ethereal."));
             notice = true;
         }
     }
 
-    creature.tim_pass_wall = v;
+    creature.set_timed_effect(CreatureTimedEffect::TIM_PASS_WALL, v);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -301,22 +301,22 @@ bool set_tim_emission(CreatureEntity &creature, short v, bool do_dec)
     }
 
     if (v) {
-        if (creature.tim_emission && !do_dec) {
-            if (creature.tim_emission > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_EMISSION) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::TIM_EMISSION) > v) {
                 return false;
             }
-        } else if (!creature.tim_emission) {
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::TIM_EMISSION)) {
             msg_print(_("体が発光した。", "Your body emit light."));
             notice = true;
         }
     } else {
-        if (creature.tim_emission) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_EMISSION)) {
             msg_print(_("体の光が消え去った。", "Your body stopped emitting light."));
             notice = true;
         }
     }
 
-    creature.tim_emission = v;
+    creature.set_timed_effect(CreatureTimedEffect::TIM_EMISSION, v);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -349,22 +349,22 @@ bool set_tim_exorcism(CreatureEntity &creature, short v, bool do_dec)
     }
 
     if (v) {
-        if (creature.tim_exorcism && !do_dec) {
-            if (creature.tim_exorcism > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM) > v) {
                 return false;
             }
-        } else if (!creature.tim_exorcism) {
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM)) {
             msg_print(_("浄化の力を得た気がする。", "You feel you become an exorcist."));
             notice = true;
         }
     } else {
-        if (creature.tim_exorcism) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM)) {
             msg_print(_("浄化の力を失った。", "You are no longer exorcist."));
             notice = true;
         }
     }
 
-    creature.tim_exorcism = v;
+    creature.set_timed_effect(CreatureTimedEffect::TIM_EXORCISM, v);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {

@@ -30,8 +30,8 @@ bool set_oppose_acid(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     if (v) {
-        if (creature.oppose_acid && !do_dec) {
-            if (creature.oppose_acid > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ACID) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ACID) > v) {
                 return false;
             }
         } else if (!is_oppose_acid(creature)) {
@@ -39,14 +39,14 @@ bool set_oppose_acid(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
             notice = true;
         }
     } else {
-        if (creature.oppose_acid && !music_singing(creature, MUSIC_RESIST) &&
+        if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ACID) && !music_singing(creature, MUSIC_RESIST) &&
             !CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU)) {
             msg_print(_("酸への耐性が薄れた気がする。", "You feel less resistant to acid."));
             notice = true;
         }
     }
 
-    creature.oppose_acid = v;
+    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_ACID, v);
     if (!notice) {
         return false;
     }
@@ -77,8 +77,8 @@ bool set_oppose_elec(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     if (v) {
-        if (creature.oppose_elec && !do_dec) {
-            if (creature.oppose_elec > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ELEC) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ELEC) > v) {
                 return false;
             }
         } else if (!is_oppose_elec(creature)) {
@@ -86,14 +86,14 @@ bool set_oppose_elec(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
             notice = true;
         }
     } else {
-        if (creature.oppose_elec && !music_singing(creature, MUSIC_RESIST) &&
+        if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ELEC) && !music_singing(creature, MUSIC_RESIST) &&
             !CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU)) {
             msg_print(_("電撃への耐性が薄れた気がする。", "You feel less resistant to electricity."));
             notice = true;
         }
     }
 
-    creature.oppose_elec = v;
+    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_ELEC, v);
     if (!notice) {
         return false;
     }
@@ -126,8 +126,8 @@ bool set_oppose_fire(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         v = 1;
     }
     if (v) {
-        if (creature.oppose_fire && !do_dec) {
-            if (creature.oppose_fire > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE) > v) {
                 return false;
             }
         } else if (!is_oppose_fire(creature)) {
@@ -135,14 +135,14 @@ bool set_oppose_fire(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
             notice = true;
         }
     } else {
-        if (creature.oppose_fire && !music_singing(creature, MUSIC_RESIST) &&
+        if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE) && !music_singing(creature, MUSIC_RESIST) &&
             !CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU)) {
             msg_print(_("火への耐性が薄れた気がする。", "You feel less resistant to fire."));
             notice = true;
         }
     }
 
-    creature.oppose_fire = v;
+    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_FIRE, v);
     if (!notice) {
         return false;
     }
@@ -172,8 +172,8 @@ bool set_oppose_cold(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     if (v) {
-        if (creature.oppose_cold && !do_dec) {
-            if (creature.oppose_cold > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD) > v) {
                 return false;
             }
         } else if (!is_oppose_cold(creature)) {
@@ -181,14 +181,14 @@ bool set_oppose_cold(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
             notice = true;
         }
     } else {
-        if (creature.oppose_cold && !music_singing(creature, MUSIC_RESIST) &&
+        if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD) && !music_singing(creature, MUSIC_RESIST) &&
             !CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU)) {
             msg_print(_("冷気への耐性が薄れた気がする。", "You feel less resistant to cold."));
             notice = true;
         }
     }
 
-    creature.oppose_cold = v;
+    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_COLD, v);
     if (!notice) {
         return false;
     }
@@ -222,8 +222,8 @@ bool set_oppose_pois(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     if (v) {
-        if (creature.oppose_pois && !do_dec) {
-            if (creature.oppose_pois > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_POIS) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_POIS) > v) {
                 return false;
             }
         } else if (!is_oppose_pois(creature)) {
@@ -231,14 +231,14 @@ bool set_oppose_pois(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
             notice = true;
         }
     } else {
-        if (creature.oppose_pois && !music_singing(creature, MUSIC_RESIST) &&
+        if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_POIS) && !music_singing(creature, MUSIC_RESIST) &&
             !pc.samurai_stance_is(SamuraiStanceType::MUSOU)) {
             msg_print(_("毒への耐性が薄れた気がする。", "You feel less resistant to poison."));
             notice = true;
         }
     }
 
-    creature.oppose_pois = v;
+    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_POIS, v);
     if (!notice) {
         return false;
     }
@@ -254,7 +254,7 @@ bool set_oppose_pois(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 
 bool is_oppose_acid(CreatureEntity &creature)
 {
-    auto can_oppose_acid = creature.oppose_acid != 0;
+    auto can_oppose_acid = creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ACID) != 0;
     can_oppose_acid |= music_singing(creature, MUSIC_RESIST);
     can_oppose_acid |= CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU);
     return can_oppose_acid;
@@ -262,7 +262,7 @@ bool is_oppose_acid(CreatureEntity &creature)
 
 bool is_oppose_elec(CreatureEntity &creature)
 {
-    auto can_oppose_elec = creature.oppose_elec != 0;
+    auto can_oppose_elec = creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ELEC) != 0;
     can_oppose_elec |= music_singing(creature, MUSIC_RESIST);
     can_oppose_elec |= CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU);
     return can_oppose_elec;
@@ -270,7 +270,7 @@ bool is_oppose_elec(CreatureEntity &creature)
 
 bool is_oppose_fire(CreatureEntity &creature)
 {
-    auto can_oppose_fire = creature.oppose_fire != 0;
+    auto can_oppose_fire = creature.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE) != 0;
     can_oppose_fire |= music_singing(creature, MUSIC_RESIST);
     can_oppose_fire |= CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU);
     can_oppose_fire |= creature.mimic_form == MimicKindType::DEMON;
@@ -280,7 +280,7 @@ bool is_oppose_fire(CreatureEntity &creature)
 
 bool is_oppose_cold(CreatureEntity &creature)
 {
-    auto can_oppose_cold = creature.oppose_cold != 0;
+    auto can_oppose_cold = creature.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD) != 0;
     can_oppose_cold |= music_singing(creature, MUSIC_RESIST);
     can_oppose_cold |= CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU);
     return can_oppose_cold;
@@ -289,7 +289,7 @@ bool is_oppose_cold(CreatureEntity &creature)
 bool is_oppose_pois(CreatureEntity &creature)
 {
     CreatureClass pc(creature);
-    auto can_oppose_pois = creature.oppose_pois != 0;
+    auto can_oppose_pois = creature.get_timed_effect(CreatureTimedEffect::OPPOSE_POIS) != 0;
     can_oppose_pois |= music_singing(creature, MUSIC_RESIST);
     can_oppose_pois |= pc.samurai_stance_is(SamuraiStanceType::MUSOU);
     can_oppose_pois |= pc.has_poison_resistance();
