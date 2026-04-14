@@ -55,7 +55,7 @@
  */
 bool check_multishadow(const CreatureEntity &creature)
 {
-    return (creature.multishadow != 0) && ((AngbandWorld::get_instance().game_turn & 1) != 0);
+    return (creature.get_timed_effect(CreatureTimedEffect::MULTISHADOW) != 0) && ((AngbandWorld::get_instance().game_turn & 1) != 0);
 }
 
 /*!
@@ -260,22 +260,22 @@ bool set_multishadow(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     if (v) {
-        if (creature.multishadow && !do_dec) {
-            if (creature.multishadow > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::MULTISHADOW) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::MULTISHADOW) > v) {
                 return false;
             }
-        } else if (!creature.multishadow) {
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::MULTISHADOW)) {
             msg_print(_("あなたの周りに幻影が生まれた。", "Your Shadow enveloped you."));
             notice = true;
         }
     } else {
-        if (creature.multishadow) {
+        if (creature.get_timed_effect(CreatureTimedEffect::MULTISHADOW)) {
             msg_print(_("幻影が消えた。", "Your Shadow disappears."));
             notice = true;
         }
     }
 
-    creature.multishadow = v;
+    creature.set_timed_effect(CreatureTimedEffect::MULTISHADOW, v);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -308,22 +308,22 @@ bool set_dustrobe(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     if (v) {
-        if (creature.dustrobe && !do_dec) {
-            if (creature.dustrobe > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::DUSTROBE) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::DUSTROBE) > v) {
                 return false;
             }
-        } else if (!creature.dustrobe) {
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::DUSTROBE)) {
             msg_print(_("体が鏡のオーラで覆われた。", "You are enveloped by mirror shards."));
             notice = true;
         }
     } else {
-        if (creature.dustrobe) {
+        if (creature.get_timed_effect(CreatureTimedEffect::DUSTROBE)) {
             msg_print(_("鏡のオーラが消えた。", "The mirror shards disappear."));
             notice = true;
         }
     }
 
-    creature.dustrobe = v;
+    creature.set_timed_effect(CreatureTimedEffect::DUSTROBE, v);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {

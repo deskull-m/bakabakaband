@@ -664,27 +664,27 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_EYEEYE);
     }
 
-    if (creature.tim_res_lite) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_RES_LITE)) {
         ADD_BAR_FLAG(BAR_RESLITE);
     }
 
-    if (creature.tim_res_dark) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_RES_DARK)) {
         ADD_BAR_FLAG(BAR_RESDARK);
     }
 
-    if (creature.tim_res_fear) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_RES_FEAR)) {
         ADD_BAR_FLAG(BAR_RESFEAR);
     }
 
-    if (creature.tim_emission) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_EMISSION)) {
         ADD_BAR_FLAG(BAR_EMISSION);
     }
 
-    if (creature.tim_exorcism) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM)) {
         ADD_BAR_FLAG(BAR_EXORCISM);
     }
 
-    if (creature.tim_imm_dark) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_IMM_DARK)) {
         ADD_BAR_FLAG(BAR_IMMDARK);
     }
 

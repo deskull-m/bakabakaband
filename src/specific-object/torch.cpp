@@ -105,7 +105,7 @@ void update_lite_radius(CreatureEntity &creature)
         creature.cur_lite += 6;
     }
 
-    if (creature.tim_emission > 0) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_EMISSION) > 0) {
         creature.cur_lite += creature.level / 5;
     }
 

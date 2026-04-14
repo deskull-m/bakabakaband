@@ -196,7 +196,7 @@ static int calc_temporary_speed(CreatureEntity &creature)
             tmp_speed -= 10;
         }
 
-        if (creature.lightspeed) {
+        if (creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED)) {
             tmp_speed = 99;
         }
     } else {
@@ -225,7 +225,7 @@ static void display_player_speed(CreatureEntity &creature, TERM_COLOR attr, int 
     char buf[160];
     if (tmp_speed) {
         if (!creature.riding) {
-            if (creature.lightspeed) {
+            if (creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED)) {
                 sprintf(buf, _("光速化 (+99)", "Lightspeed (+99)"));
             } else {
                 sprintf(buf, "(%+d%+d)", base_speed - tmp_speed, tmp_speed);

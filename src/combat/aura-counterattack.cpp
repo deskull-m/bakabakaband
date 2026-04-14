@@ -106,7 +106,7 @@ static void aura_cold_by_monster_attack(CreatureEntity &creature, MonsterAttackP
 
 static void aura_shards_by_monster_attack(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    if (!creature.dustrobe || !monap_ptr->alive || creature.is_dead()) {
+    if (!creature.get_timed_effect(CreatureTimedEffect::DUSTROBE) || !monap_ptr->alive || creature.is_dead()) {
         return;
     }
 
@@ -133,7 +133,7 @@ static void aura_shards_by_monster_attack(CreatureEntity &creature, MonsterAttac
 
 static void aura_holy_by_monster_attack(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    if (!creature.tim_sh_holy || !monap_ptr->alive || creature.is_dead()) {
+    if (!creature.get_timed_effect(CreatureTimedEffect::TIM_SH_HOLY) || !monap_ptr->alive || creature.is_dead()) {
         return;
     }
 
@@ -166,7 +166,7 @@ static void aura_holy_by_monster_attack(CreatureEntity &creature, MonsterAttackP
 
 static void aura_force_by_monster_attack(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    if (!creature.tim_sh_touki || !monap_ptr->alive || creature.is_dead()) {
+    if (!creature.get_timed_effect(CreatureTimedEffect::TIM_SH_TOUKI) || !monap_ptr->alive || creature.is_dead()) {
         return;
     }
 

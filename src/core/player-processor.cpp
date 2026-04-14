@@ -218,8 +218,8 @@ void process_player(CreatureEntity &creature)
     }
 
     load = false;
-    if (creature.lightspeed) {
-        set_lightspeed(creature, creature.lightspeed - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED)) {
+        set_lightspeed(creature, creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED) - 1, true);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();

@@ -26,6 +26,7 @@
 #include "player/attack-defense-types.h"
 #include "player/player-status-flags.h"
 #include "system/creature-entity.h"
+#include "system/creature-timed-effect-types.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
@@ -343,18 +344,18 @@ void report_magics(CreatureEntity &subject)
             _("あなたは幻覚を見ている", "You are hallucinating"));
     }
 
-    if (const auto remaining = subject.get_remaining_blessed(); remaining > 0) {
-        info.emplace_back(report_magics_aux(remaining),
+    if (subject.get_timed_effect(CreatureTimedEffect::BLESSED)) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::BLESSED)),
             _("あなたは高潔さを感じている", "You feel rightous"));
     }
 
-    if (const auto remaining = subject.get_remaining_hero(); remaining > 0) {
-        info.emplace_back(report_magics_aux(remaining),
+    if (subject.get_timed_effect(CreatureTimedEffect::HERO)) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::HERO)),
             _("あなたはヒーロー気分だ", "You feel heroic"));
     }
 
     if (subject.is_shero()) {
-        info.emplace_back(report_magics_aux(subject.get_remaining_berserk()),
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::BERSERK)),
             _("あなたは戦闘狂だ", "You are in a battle rage"));
     }
 
@@ -364,18 +365,18 @@ void report_magics(CreatureEntity &subject)
             _("あなたは邪悪なる存在から守られている", "You are protected from evil"));
     }
 
-    if (const auto remaining = subject.get_remaining_shield(); remaining > 0) {
-        info.emplace_back(report_magics_aux(remaining),
+    if (subject.get_timed_effect(CreatureTimedEffect::SHIELD)) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::SHIELD)),
             _("あなたは神秘のシールドで守られている", "You are protected by a mystic shield"));
     }
 
-    if (const auto remaining = subject.get_remaining_invulnerability(); remaining > 0) {
-        info.emplace_back(report_magics_aux(remaining),
+    if (subject.get_timed_effect(CreatureTimedEffect::INVULNERABILITY)) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::INVULNERABILITY)),
             _("あなたは無敵だ", "You are invulnerable"));
     }
 
-    if (const auto remaining = subject.get_remaining_wraith_form(); remaining > 0) {
-        info.emplace_back(report_magics_aux(remaining),
+    if (subject.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)),
             _("あなたは幽体化している", "You are incorporeal"));
     }
 
@@ -393,28 +394,28 @@ void report_magics(CreatureEntity &subject)
             _("この後現実変容が発動する", "You waiting to be altered"));
     }
 
-    if (const auto remaining = subject.get_remaining_oppose_acid(); remaining > 0) {
-        info.emplace_back(report_magics_aux(remaining),
+    if (subject.get_timed_effect(CreatureTimedEffect::OPPOSE_ACID)) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::OPPOSE_ACID)),
             _("あなたは酸への耐性を持っている", "You are resistant to acid"));
     }
 
-    if (const auto remaining = subject.get_remaining_oppose_elec(); remaining > 0) {
-        info.emplace_back(report_magics_aux(remaining),
+    if (subject.get_timed_effect(CreatureTimedEffect::OPPOSE_ELEC)) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::OPPOSE_ELEC)),
             _("あなたは電撃への耐性を持っている", "You are resistant to lightning"));
     }
 
-    if (const auto remaining = subject.get_remaining_oppose_fire(); remaining > 0) {
-        info.emplace_back(report_magics_aux(remaining),
+    if (subject.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE)) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE)),
             _("あなたは火への耐性を持っている", "You are resistant to fire"));
     }
 
-    if (const auto remaining = subject.get_remaining_oppose_cold(); remaining > 0) {
-        info.emplace_back(report_magics_aux(remaining),
+    if (subject.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD)) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD)),
             _("あなたは冷気への耐性を持っている", "You are resistant to cold"));
     }
 
-    if (const auto remaining = subject.get_remaining_oppose_pois(); remaining > 0) {
-        info.emplace_back(report_magics_aux(remaining),
+    if (subject.get_timed_effect(CreatureTimedEffect::OPPOSE_POIS)) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::OPPOSE_POIS)),
             _("あなたは毒への耐性を持っている", "You are resistant to poison"));
     }
 

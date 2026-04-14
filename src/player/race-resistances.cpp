@@ -69,7 +69,7 @@ void tim_player_immunity(CreatureEntity &creature, TrFlags &flags)
     if (creature.special_defense & DEFENSE_COLD) {
         flags.set(TR_RES_COLD);
     }
-    if (creature.get_remaining_wraith_form()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
         flags.set(TR_RES_DARK);
     }
 }

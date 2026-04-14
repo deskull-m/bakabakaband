@@ -352,7 +352,7 @@ tl::optional<uint8_t> get_monochrome_display_color(CreatureEntity &creature)
     if (creature.is_invulnerable() || creature.timewalk) {
         return TERM_WHITE;
     }
-    if (creature.get_remaining_wraith_form()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
         return TERM_L_DARK;
     }
 

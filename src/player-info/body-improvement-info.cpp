@@ -25,7 +25,7 @@ void set_body_improvement_info_1(CreatureEntity &creature, self_info_type *self_
         self_ptr->info_list.emplace_back(_("あなたは邪悪なる存在から守られている。", "You are protected from evil."));
     }
 
-    if (creature.get_remaining_shield()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::SHIELD)) {
         self_ptr->info_list.emplace_back(_("あなたは神秘のシールドで守られている。", "You are protected by a mystic shield."));
     }
 
@@ -33,7 +33,7 @@ void set_body_improvement_info_1(CreatureEntity &creature, self_info_type *self_
         self_ptr->info_list.emplace_back(_("あなたは現在傷つかない。", "You are temporarily invulnerable."));
     }
 
-    if (creature.get_remaining_wraith_form()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
         self_ptr->info_list.emplace_back(_("あなたは一時的に幽体化している。", "You are temporarily incorporeal."));
     }
 }
@@ -117,11 +117,11 @@ void set_body_improvement_info_3(CreatureEntity &creature, self_info_type *self_
         self_ptr->info_list.emplace_back(_("あなたは身も凍る冷気に包まれている。", "You are being damaged with coldness."));
     }
 
-    if (creature.tim_sh_holy) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_HOLY)) {
         self_ptr->info_list.emplace_back(_("あなたは聖なるオーラに包まれている。", "You are surrounded with a holy aura."));
     }
 
-    if (creature.tim_sh_touki) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_TOUKI)) {
         self_ptr->info_list.emplace_back(_("あなたは闘気のオーラに包まれている。", "You are surrounded with an energy aura."));
     }
 
@@ -173,7 +173,7 @@ void set_body_improvement_info_4(CreatureEntity &creature, self_info_type *self_
 /*!< @todo 並び順の都合で連番を付ける。 */
 void set_body_improvement_info_5(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    if (creature.tim_exorcism > 0) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM) > 0) {
         if (has_kill_demon_from_exorcism(creature)) {
             self_ptr->info_list.emplace_back(_("あなたはデーモンの天敵である。", "You are a great bane of demons."));
         } else if (has_slay_demon_from_exorcism(creature)) {

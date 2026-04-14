@@ -63,7 +63,7 @@ bool set_ele_attack(CreatureEntity &creature, uint32_t attack_type, TIME_EFFECT 
 
     if ((v) && (attack_type)) {
         creature.special_attack |= (attack_type);
-        creature.ele_attack = v;
+        creature.set_timed_effect(CreatureTimedEffect::ELE_ATTACK, v);
         std::string element;
         switch (attack_type) {
         case ATTACK_ACID:
@@ -141,7 +141,7 @@ bool set_ele_immune(CreatureEntity &creature, uint32_t immune_type, TIME_EFFECT 
 
     if ((v) && (immune_type)) {
         creature.special_defense |= (immune_type);
-        creature.ele_immune = v;
+        creature.set_timed_effect(CreatureTimedEffect::ELE_IMMUNE, v);
         std::string element;
         switch (immune_type) {
         case DEFENSE_ACID:

@@ -268,7 +268,7 @@ PERCENTAGE calc_lite_damage_rate(CreatureEntity &creature, rate_calc_type_mode m
         per /= randrate(4, 7, mode);
     }
 
-    if (creature.get_remaining_wraith_form()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
         per *= 2;
     }
 

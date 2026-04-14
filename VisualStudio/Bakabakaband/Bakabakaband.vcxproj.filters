@@ -2818,6 +2818,7 @@
     </ClCompile>
     <ClCompile Include="..\..\src\monster-floor\party-generator.cpp" />
     <ClCompile Include="..\..\src\system\creature-entity.cpp" />
+    <ClCompile Include="..\..\src\floor\party-monsters.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -6080,6 +6081,7 @@
       <Filter>info-reader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\monster-floor\party-generator.h" />
+    <ClInclude Include="..\..\src\floor\party-monsters.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\wall.bmp" />

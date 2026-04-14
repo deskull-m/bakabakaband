@@ -213,7 +213,7 @@ static std::vector<TextCommand> get_text_commands()
                 // 稀にポジティブ効果
                 if (one_in_(10)) {
                     msg_print(_("素晴らしい踊りで気分が高揚した！", "Your wonderful dance lifts your spirits!"));
-                    set_hero(creature, creature.get_remaining_blessed() + randint1(10), false);
+                    set_hero(creature, creature.get_timed_effect(CreatureTimedEffect::BLESSED) + randint1(10), false);
                 }
             },
             _("踊る", "Dance") },

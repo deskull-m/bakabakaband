@@ -310,8 +310,8 @@ void process_world_aux_mutation(CreatureEntity &creature)
             }
         }
 
-        if (creature.tim_emission > 0) {
-            hp_player(creature, creature.tim_emission);
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_EMISSION) > 0) {
+            hp_player(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_EMISSION));
             set_tim_emission(creature, 0, true);
             msg_print(_("あなたは自身の光をエネルギーとして吸収した！", "You absorb energy from your own light!"));
         }
@@ -427,7 +427,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
     }
 
     if (creature.muta.has(PlayerMutationType::WEIRD_MIND) && !creature.anti_magic && one_in_(3000)) {
-        if (creature.get_remaining_tim_esp() > 0) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_ESP) > 0) {
             msg_print(_("精神にもやがかかった！", "Your mind feels cloudy!"));
             set_tim_esp(creature, 0, true);
         } else {

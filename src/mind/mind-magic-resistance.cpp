@@ -25,22 +25,22 @@ bool set_resist_magic(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     if (v) {
-        if (creature.resist_magic && !do_dec) {
-            if (creature.resist_magic > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::RESIST_MAGIC) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::RESIST_MAGIC) > v) {
                 return false;
             }
-        } else if (!creature.resist_magic) {
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::RESIST_MAGIC)) {
             msg_print(_("魔法への耐性がついた。", "You have been protected from magic!"));
             notice = true;
         }
     } else {
-        if (creature.resist_magic) {
+        if (creature.get_timed_effect(CreatureTimedEffect::RESIST_MAGIC)) {
             msg_print(_("魔法に弱くなった。", "You are no longer protected from magic."));
             notice = true;
         }
     }
 
-    creature.resist_magic = v;
+    creature.set_timed_effect(CreatureTimedEffect::RESIST_MAGIC, v);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {

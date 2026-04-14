@@ -1308,7 +1308,7 @@ BIT_FLAGS has_resist_cold(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_RES_COLD);
 
-    if (creature.get_remaining_ultimate_resistance()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1332,7 +1332,7 @@ BIT_FLAGS has_resist_pois(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_RES_POIS);
 
-    if (creature.get_remaining_ultimate_resistance()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1347,7 +1347,7 @@ BIT_FLAGS has_resist_conf(CreatureEntity &creature)
         result |= FLAG_CAUSE_PERSONALITY;
     }
 
-    if (creature.get_remaining_ultimate_resistance() || creature.magicdef) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::MAGICDEF)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1358,7 +1358,7 @@ BIT_FLAGS has_resist_sound(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_RES_SOUND);
 
-    if (creature.get_remaining_ultimate_resistance()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1369,7 +1369,7 @@ BIT_FLAGS has_resist_lite(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_RES_LITE) | common_cause_flags(creature, TR_IM_LITE);
 
-    if (creature.get_remaining_ultimate_resistance() || creature.tim_res_lite || creature.mimic_form == MimicKindType::DEMIGOD) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::TIM_RES_LITE) || creature.mimic_form == MimicKindType::DEMIGOD) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1380,7 +1380,7 @@ BIT_FLAGS has_vuln_lite(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_VUL_LITE);
 
-    if (creature.get_remaining_wraith_form()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1391,7 +1391,7 @@ BIT_FLAGS has_resist_dark(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_RES_DARK) | common_cause_flags(creature, TR_IM_DARK);
 
-    if (creature.get_remaining_ultimate_resistance() || creature.tim_res_dark || creature.tim_imm_dark) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::TIM_RES_DARK) || creature.get_timed_effect(CreatureTimedEffect::TIM_IMM_DARK)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1402,7 +1402,7 @@ BIT_FLAGS has_resist_chaos(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_RES_CHAOS);
 
-    if (creature.get_remaining_ultimate_resistance()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1413,7 +1413,7 @@ BIT_FLAGS has_resist_disen(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_RES_DISEN);
 
-    if (creature.get_remaining_ultimate_resistance()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1424,7 +1424,7 @@ BIT_FLAGS has_resist_shard(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_RES_SHARDS);
 
-    if (creature.get_remaining_ultimate_resistance()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1435,7 +1435,7 @@ BIT_FLAGS has_resist_nexus(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_RES_NEXUS);
 
-    if (creature.get_remaining_ultimate_resistance()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1450,7 +1450,7 @@ BIT_FLAGS has_resist_blind(CreatureEntity &creature)
         result |= FLAG_CAUSE_PERSONALITY;
     }
 
-    if (creature.get_remaining_ultimate_resistance() || creature.magicdef) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::MAGICDEF)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1461,7 +1461,7 @@ BIT_FLAGS has_resist_neth(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_RES_NETHER);
 
-    if (creature.get_remaining_ultimate_resistance() || creature.tim_res_nether) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::TIM_RES_NETHER)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1472,7 +1472,7 @@ BIT_FLAGS has_resist_time(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_RES_TIME);
 
-    if (creature.get_remaining_ultimate_resistance() || creature.tim_res_time) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::TIM_RES_TIME)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1483,7 +1483,7 @@ BIT_FLAGS has_resist_water(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_RES_WATER);
 
-    if (creature.get_remaining_ultimate_resistance()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1499,7 +1499,7 @@ BIT_FLAGS has_resist_curse(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_RES_CURSE);
 
-    if (creature.get_remaining_ultimate_resistance()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1564,7 +1564,7 @@ BIT_FLAGS has_resist_fear(CreatureEntity &creature)
         result |= FLAG_CAUSE_MUTATION;
     }
 
-    if (creature.is_hero() || creature.is_shero() || creature.get_remaining_ultimate_resistance() || creature.tim_res_fear) {
+    if (creature.is_hero() || creature.is_shero() || creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::TIM_RES_FEAR)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1575,7 +1575,7 @@ BIT_FLAGS has_immune_acid(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_IM_ACID);
 
-    if (creature.ele_immune) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ELE_IMMUNE)) {
         if (creature.special_defense & DEFENSE_ACID) {
             result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
         }
@@ -1588,7 +1588,7 @@ BIT_FLAGS has_immune_elec(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_IM_ELEC);
 
-    if (creature.ele_immune) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ELE_IMMUNE)) {
         if (creature.special_defense & DEFENSE_ELEC) {
             result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
         }
@@ -1601,7 +1601,7 @@ BIT_FLAGS has_immune_fire(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_IM_FIRE);
 
-    if (creature.ele_immune) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ELE_IMMUNE)) {
         if (creature.special_defense & DEFENSE_FIRE) {
             result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
         }
@@ -1614,7 +1614,7 @@ BIT_FLAGS has_immune_cold(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_IM_COLD);
 
-    if (creature.ele_immune) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ELE_IMMUNE)) {
         if (creature.special_defense & DEFENSE_COLD) {
             result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
         }
@@ -1627,7 +1627,7 @@ BIT_FLAGS has_immune_dark(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_IM_DARK);
 
-    if (creature.get_remaining_wraith_form() || creature.tim_imm_dark) {
+    if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM) || creature.get_timed_effect(CreatureTimedEffect::TIM_IMM_DARK)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1734,7 +1734,7 @@ BIT_FLAGS has_lite(CreatureEntity &creature)
         result |= FLAG_CAUSE_RACE;
     }
 
-    if (creature.get_remaining_ultimate_resistance()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 

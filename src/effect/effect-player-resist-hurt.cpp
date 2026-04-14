@@ -427,7 +427,7 @@ void effect_player_lite(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 
-    if (!creature.get_remaining_wraith_form() || check_multishadow(creature)) {
+    if (!creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM) || check_multishadow(creature)) {
         return;
     }
 

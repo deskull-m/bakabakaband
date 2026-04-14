@@ -46,7 +46,7 @@ void decide_blood_sucking(CreatureEntity &creature, player_attack_type *pa_ptr)
  */
 void decide_exorcism(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto is_exorcism = creature.tim_exorcism > 0;
+    auto is_exorcism = creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM) > 0;
     if (!is_exorcism) {
         return;
     }

@@ -105,7 +105,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (stop) {
-            if (!creature.get_remaining_blessed()) {
+            if (!creature.get_timed_effect(CreatureTimedEffect::BLESSED)) {
                 msg_print(_("高潔な気分が消え失せた。", "The prayer has expired."));
             }
         }
@@ -247,7 +247,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (stop) {
-            if (!creature.get_remaining_hero()) {
+            if (!creature.get_timed_effect(CreatureTimedEffect::HERO)) {
                 msg_print(_("ヒーローの気分が消え失せた。", "The heroism wears off."));
                 RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::HP);
             }
@@ -382,7 +382,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (stop) {
-            if (!creature.get_remaining_tim_stealth()) {
+            if (!creature.get_timed_effect(CreatureTimedEffect::TIM_STEALTH)) {
                 msg_print(_("姿がはっきりと見えるようになった。", "You are no longer hidden."));
             }
         }
@@ -510,23 +510,23 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (stop) {
-            if (!creature.get_remaining_oppose_acid()) {
+            if (!creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ACID)) {
                 msg_print(_("酸への耐性が薄れた気がする。", "You feel less resistant to acid."));
             }
 
-            if (!creature.get_remaining_oppose_elec()) {
+            if (!creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ELEC)) {
                 msg_print(_("電撃への耐性が薄れた気がする。", "You feel less resistant to elec."));
             }
 
-            if (!creature.get_remaining_oppose_fire()) {
+            if (!creature.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE)) {
                 msg_print(_("火への耐性が薄れた気がする。", "You feel less resistant to fire."));
             }
 
-            if (!creature.get_remaining_oppose_cold()) {
+            if (!creature.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD)) {
                 msg_print(_("冷気への耐性が薄れた気がする。", "You feel less resistant to cold."));
             }
 
-            if (!creature.get_remaining_oppose_pois()) {
+            if (!creature.get_timed_effect(CreatureTimedEffect::OPPOSE_POIS)) {
                 msg_print(_("毒への耐性が薄れた気がする。", "You feel less resistant to pois."));
             }
         }
@@ -741,7 +741,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (stop) {
-            if (!creature.get_remaining_hero()) {
+            if (!creature.get_timed_effect(CreatureTimedEffect::HERO)) {
                 msg_print(_("ヒーローの気分が消え失せた。", "The heroism wears off."));
                 RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::HP);
             }
@@ -844,7 +844,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (stop) {
-            if (!creature.invuln) {
+            if (!creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY)) {
                 msg_print(_("無敵ではなくなった。", "The invulnerability wears off."));
                 auto &rfu = RedrawingFlagsUpdater::get_instance();
                 rfu.set_flag(MainWindowRedrawingFlag::MAP);

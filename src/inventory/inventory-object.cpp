@@ -67,7 +67,7 @@ void inven_item_increase(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUM
         SubWindowRedrawingFlag::EQUIPMENT,
     };
     rfu.set_flags(flags_swrf);
-    if (o_ptr->number || !creature.ele_attack) {
+    if (o_ptr->number || !creature.get_timed_effect(CreatureTimedEffect::ELE_ATTACK)) {
         return;
     }
 

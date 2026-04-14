@@ -93,6 +93,7 @@
 #include "sv-definition/sv-lite-types.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/creature-entity.h"
+#include "system/creature-timed-effect-types.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -447,7 +448,7 @@ static void update_max_hitpoints(CreatureEntity &creature)
     if (creature.is_shero()) {
         mhp += 30;
     }
-    if (creature.get_remaining_tsuyoshi()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TSUYOSHI)) {
         mhp += 50;
     }
     if (SpellHex(creature).is_spelling_specific(HEX_XTRA_MIGHT)) {
@@ -1157,11 +1158,11 @@ static ACTION_SKILL_POWER calc_saving_throw(CreatureEntity &creature)
         pow = 90 + creature.level;
     }
 
-    if (creature.tsubureru) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TSUBURERU)) {
         pow = 10;
     }
 
-    if ((creature.get_remaining_ultimate_resistance() || creature.resist_magic || creature.magicdef) && (pow < (95 + creature.level))) {
+    if ((creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::RESIST_MAGIC) || creature.get_timed_effect(CreatureTimedEffect::MAGICDEF)) && (pow < (95 + creature.level))) {
         pow = 95 + creature.level;
     }
 
@@ -1823,9 +1824,9 @@ static ARMOUR_CLASS calc_to_ac(CreatureEntity &creature, bool is_real_value)
         ac -= 50;
     }
 
-    if (creature.get_remaining_ultimate_resistance() || (pc.samurai_stance_is(SamuraiStanceType::MUSOU))) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || (pc.samurai_stance_is(SamuraiStanceType::MUSOU))) {
         ac += 100;
-    } else if (creature.tsubureru || creature.get_remaining_shield() || creature.magicdef) {
+    } else if (creature.get_timed_effect(CreatureTimedEffect::TSUBURERU) || creature.get_timed_effect(CreatureTimedEffect::SHIELD) || creature.get_timed_effect(CreatureTimedEffect::MAGICDEF)) {
         ac += 50;
     }
 
@@ -3076,31 +3077,31 @@ uint32_t calc_score(CreatureEntity &creature)
  */
 bool is_blessed(CreatureEntity &creature)
 {
-    return creature.get_remaining_blessed() || music_singing(creature, MUSIC_BLESS) || SpellHex(creature).is_spelling_specific(HEX_BLESS);
+    return creature.get_timed_effect(CreatureTimedEffect::BLESSED) || music_singing(creature, MUSIC_BLESS) || SpellHex(creature).is_spelling_specific(HEX_BLESS);
 }
 
 bool is_tim_esp(CreatureEntity &creature)
 {
     auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
     auto sniper_concent = sniper_data ? sniper_data->concent : 0;
-    return creature.get_remaining_tim_esp() || music_singing(creature, MUSIC_MIND) || (sniper_concent >= CONCENT_TELE_THRESHOLD);
+    return creature.get_timed_effect(CreatureTimedEffect::TIM_ESP) || music_singing(creature, MUSIC_MIND) || (sniper_concent >= CONCENT_TELE_THRESHOLD);
 }
 
 bool is_tim_stealth(CreatureEntity &creature)
 {
-    return creature.get_remaining_tim_stealth() || music_singing(creature, MUSIC_STEALTH);
+    return creature.get_timed_effect(CreatureTimedEffect::TIM_STEALTH) || music_singing(creature, MUSIC_STEALTH);
 }
 
 bool is_time_limit_esp(CreatureEntity &creature)
 {
     auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
     auto sniper_concent = sniper_data ? sniper_data->concent : 0;
-    return creature.get_remaining_tim_esp() || music_singing(creature, MUSIC_MIND) || (sniper_concent >= CONCENT_TELE_THRESHOLD);
+    return creature.get_timed_effect(CreatureTimedEffect::TIM_ESP) || music_singing(creature, MUSIC_MIND) || (sniper_concent >= CONCENT_TELE_THRESHOLD);
 }
 
 bool is_time_limit_stealth(CreatureEntity &creature)
 {
-    return creature.get_remaining_tim_stealth() || music_singing(creature, MUSIC_STEALTH);
+    return creature.get_timed_effect(CreatureTimedEffect::TIM_STEALTH) || music_singing(creature, MUSIC_STEALTH);
 }
 
 /*!
@@ -3125,17 +3126,17 @@ bool is_fast(CreatureEntity &creature)
 }
 bool is_invuln(CreatureEntity &creature)
 {
-    return creature.get_remaining_invulnerability() || music_singing(creature, MUSIC_INVULN);
+    return creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY) || music_singing(creature, MUSIC_INVULN);
 }
 
 bool is_hero(CreatureEntity &creature)
 {
-    return creature.get_remaining_hero() || music_singing(creature, MUSIC_HERO) || music_singing(creature, MUSIC_SHERO);
+    return creature.get_timed_effect(CreatureTimedEffect::HERO) || music_singing(creature, MUSIC_HERO) || music_singing(creature, MUSIC_SHERO);
 }
 
 bool is_shero(CreatureEntity &creature)
 {
-    return creature.get_remaining_berserk() || CreatureClass(creature).equals(PlayerClassType::BERSERKER);
+    return creature.get_timed_effect(CreatureTimedEffect::BERSERK) || CreatureClass(creature).equals(PlayerClassType::BERSERKER);
 }
 
 bool is_echizen(CreatureEntity &creature)
