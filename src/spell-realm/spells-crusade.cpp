@@ -44,23 +44,23 @@ bool set_tim_sh_holy(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     if (v) {
-        if (creature.tim_sh_holy && !do_dec) {
-            if (creature.tim_sh_holy > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_HOLY) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_HOLY) > v) {
                 return false;
             }
-        } else if (!creature.tim_sh_holy) {
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::TIM_SH_HOLY)) {
             msg_print(_("体が聖なるオーラで覆われた。", "You are enveloped by a holy aura!"));
             notice = true;
         }
     } else {
-        if (creature.tim_sh_holy) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_HOLY)) {
             msg_print(_("聖なるオーラが消えた。", "The holy aura disappeared."));
             notice = true;
         }
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    creature.tim_sh_holy = v;
+    creature.set_timed_effect(CreatureTimedEffect::TIM_SH_HOLY, v);
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
 
     if (!notice) {
@@ -95,23 +95,23 @@ bool set_tim_eyeeye(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     if (v) {
-        if (creature.tim_eyeeye && !do_dec) {
-            if (creature.tim_eyeeye > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_EYEEYE) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::TIM_EYEEYE) > v) {
                 return false;
             }
-        } else if (!creature.tim_eyeeye) {
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::TIM_EYEEYE)) {
             msg_print(_("法の守り手になった気がした！", "You feel like a keeper of commandments!"));
             notice = true;
         }
     } else {
-        if (creature.tim_eyeeye) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_EYEEYE)) {
             msg_print(_("懲罰を執行することができなくなった。", "You lost your aura of retribution."));
             notice = true;
         }
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    creature.tim_eyeeye = v;
+    creature.set_timed_effect(CreatureTimedEffect::TIM_EYEEYE, v);
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
 
     if (!notice) {
@@ -129,7 +129,7 @@ bool set_tim_eyeeye(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 
 void check_emission(CreatureEntity &creature)
 {
-    if (creature.tim_emission > 0) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_EMISSION) > 0) {
         if (creature.level > 29) {
             map_area(creature, creature.cur_lite);
         }
@@ -153,7 +153,7 @@ void check_demigod(CreatureEntity &creature)
 
 bool has_slay_demon_from_exorcism(const CreatureEntity &creature)
 {
-    if (creature.tim_exorcism > 0) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM) > 0) {
         if (creature.level < THRESHOLD_KILL_FROM_EXORCISM) {
             return true;
         }
@@ -163,7 +163,7 @@ bool has_slay_demon_from_exorcism(const CreatureEntity &creature)
 
 bool has_kill_demon_from_exorcism(const CreatureEntity &creature)
 {
-    if (creature.tim_exorcism > 0) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM) > 0) {
         if (creature.level >= THRESHOLD_KILL_FROM_EXORCISM) {
             return true;
         }
@@ -173,7 +173,7 @@ bool has_kill_demon_from_exorcism(const CreatureEntity &creature)
 
 bool has_slay_undead_from_exorcism(const CreatureEntity &creature)
 {
-    if (creature.tim_exorcism > 0) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM) > 0) {
         if (creature.level < THRESHOLD_KILL_FROM_EXORCISM) {
             return true;
         }
@@ -183,7 +183,7 @@ bool has_slay_undead_from_exorcism(const CreatureEntity &creature)
 
 bool has_kill_undead_from_exorcism(const CreatureEntity &creature)
 {
-    if (creature.tim_exorcism > 0) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM) > 0) {
         if (creature.level >= THRESHOLD_KILL_FROM_EXORCISM) {
             return true;
         }

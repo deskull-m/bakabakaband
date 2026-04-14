@@ -19,6 +19,7 @@
 #include "spell-realm/spells-hex.h"
 #include "status/element-resistance.h"
 #include "system/creature-entity.h"
+#include "system/creature-timed-effect-types.h"
 #include "system/floor/floor-info.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -269,7 +270,7 @@ void print_speed(CreatureEntity &creature)
             } else {
                 attr = TERM_GREEN;
             }
-        } else if ((is_player_fast && !is_slow) || creature.lightspeed) {
+        } else if ((is_player_fast && !is_slow) || creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED)) {
             attr = TERM_YELLOW;
         } else if (is_slow && !is_player_fast) {
             attr = TERM_VIOLET;
@@ -444,7 +445,7 @@ void print_status(CreatureEntity &creature)
     term_erase(0, row_statbar, max_col_statbar);
     BIT_FLAGS bar_flags[3]{};
     auto effects = creature.effects();
-    if (creature.get_remaining_tsuyoshi()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TSUYOSHI)) {
         ADD_BAR_FLAG(BAR_TSUYOSHI);
     }
 
@@ -468,7 +469,7 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_POISONED);
     }
 
-    if (creature.get_remaining_tim_invis()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_INVIS)) {
         ADD_BAR_FLAG(BAR_SENSEUNSEEN);
     }
 
@@ -482,11 +483,11 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_TELEPATHY);
     }
 
-    if (creature.get_remaining_tim_regen()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_REGEN)) {
         ADD_BAR_FLAG(BAR_REGENERATION);
     }
 
-    if (creature.get_remaining_tim_infra()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_INFRA)) {
         ADD_BAR_FLAG(BAR_INFRAVISION);
     }
 
@@ -498,15 +499,15 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_INVULN);
     }
 
-    if (creature.get_remaining_wraith_form()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
         ADD_BAR_FLAG(BAR_WRAITH);
     }
 
-    if (creature.tim_pass_wall) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_PASS_WALL)) {
         ADD_BAR_FLAG(BAR_PASSWALL);
     }
 
-    if (creature.tim_reflect) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_REFLECT)) {
         ADD_BAR_FLAG(BAR_REFLECTION);
     }
 
@@ -522,15 +523,15 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_BLESSED);
     }
 
-    if (creature.magicdef) {
+    if (creature.get_timed_effect(CreatureTimedEffect::MAGICDEF)) {
         ADD_BAR_FLAG(BAR_MAGICDEFENSE);
     }
 
-    if (creature.tsubureru) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TSUBURERU)) {
         ADD_BAR_FLAG(BAR_EXPAND);
     }
 
-    if (creature.get_remaining_shield()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::SHIELD)) {
         ADD_BAR_FLAG(BAR_STONESKIN);
     }
 
@@ -587,11 +588,11 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_AFRAID);
     }
 
-    if (creature.tim_res_time) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_RES_TIME)) {
         ADD_BAR_FLAG(BAR_RESTIME);
     }
 
-    if (creature.multishadow) {
+    if (creature.get_timed_effect(CreatureTimedEffect::MULTISHADOW)) {
         ADD_BAR_FLAG(BAR_MULTISHADOW);
     }
 
@@ -599,23 +600,23 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_ATTKCONF);
     }
 
-    if (creature.resist_magic) {
+    if (creature.get_timed_effect(CreatureTimedEffect::RESIST_MAGIC)) {
         ADD_BAR_FLAG(BAR_REGMAGIC);
     }
 
-    if (creature.get_remaining_ultimate_resistance()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         ADD_BAR_FLAG(BAR_ULTIMATE);
     }
 
-    if (creature.tim_levitation) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_LEVITATION)) {
         ADD_BAR_FLAG(BAR_LEVITATE);
     }
 
-    if (creature.tim_res_nether) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_RES_NETHER)) {
         ADD_BAR_FLAG(BAR_RESNETH);
     }
 
-    if (creature.dustrobe) {
+    if (creature.get_timed_effect(CreatureTimedEffect::DUSTROBE)) {
         ADD_BAR_FLAG(BAR_DUSTROBE);
     }
 
@@ -643,7 +644,7 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_SUPERSTEALTH);
     }
 
-    if (creature.tim_sh_fire) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_FIRE)) {
         ADD_BAR_FLAG(BAR_SHFIRE);
     }
 
@@ -651,15 +652,15 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_STEALTH);
     }
 
-    if (creature.tim_sh_touki) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_TOUKI)) {
         ADD_BAR_FLAG(BAR_TOUKI);
     }
 
-    if (creature.tim_sh_holy) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_HOLY)) {
         ADD_BAR_FLAG(BAR_SHHOLY);
     }
 
-    if (creature.tim_eyeeye) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_EYEEYE)) {
         ADD_BAR_FLAG(BAR_EYEEYE);
     }
 

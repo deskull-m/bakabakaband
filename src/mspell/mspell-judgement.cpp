@@ -223,28 +223,28 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
         return true;
     }
 
-    if (creature.get_remaining_wraith_form()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
         return true;
     }
 
-    if (creature.get_remaining_shield()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::SHIELD)) {
         return true;
     }
 
-    if (creature.magicdef) {
+    if (creature.get_timed_effect(CreatureTimedEffect::MAGICDEF)) {
         return true;
     }
 
-    if (creature.multishadow) {
+    if (creature.get_timed_effect(CreatureTimedEffect::MULTISHADOW)) {
         return true;
     }
 
-    if (creature.dustrobe) {
+    if (creature.get_timed_effect(CreatureTimedEffect::DUSTROBE)) {
         return true;
     }
 
     CreatureClass pc(creature);
-    if (creature.get_remaining_berserk() && !pc.equals(PlayerClassType::BERSERKER)) {
+    if (creature.get_timed_effect(CreatureTimedEffect::BERSERK) && !pc.equals(PlayerClassType::BERSERKER)) {
         return true;
     }
 
@@ -260,7 +260,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
     const auto &monster = floor_ref.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     if (monrace.ability_flags.has(MonsterAbilityType::BR_ACID)) {
-        if (!has_immune_acid(creature) && (creature.get_remaining_oppose_acid() || music_singing(creature, MUSIC_RESIST))) {
+        if (!has_immune_acid(creature) && (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ACID) || music_singing(creature, MUSIC_RESIST))) {
             return true;
         }
 
@@ -271,7 +271,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
 
     if (monrace.ability_flags.has(MonsterAbilityType::BR_FIRE)) {
         if (!(CreatureRace(&creature).equals(PlayerRaceType::BALROG) && creature.level > 44)) {
-            if (!has_immune_fire(creature) && (creature.get_remaining_oppose_fire() || music_singing(creature, MUSIC_RESIST))) {
+            if (!has_immune_fire(creature) && (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE) || music_singing(creature, MUSIC_RESIST))) {
                 return true;
             }
 
@@ -282,7 +282,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
     }
 
     if (monrace.ability_flags.has(MonsterAbilityType::BR_ELEC)) {
-        if (!has_immune_elec(creature) && (creature.get_remaining_oppose_elec() || music_singing(creature, MUSIC_RESIST))) {
+        if (!has_immune_elec(creature) && (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ELEC) || music_singing(creature, MUSIC_RESIST))) {
             return true;
         }
 
@@ -292,7 +292,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
     }
 
     if (monrace.ability_flags.has(MonsterAbilityType::BR_COLD)) {
-        if (!has_immune_cold(creature) && (creature.get_remaining_oppose_cold() || music_singing(creature, MUSIC_RESIST))) {
+        if (!has_immune_cold(creature) && (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD) || music_singing(creature, MUSIC_RESIST))) {
             return true;
         }
 
@@ -302,7 +302,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
     }
 
     if (monrace.ability_flags.has_any_of({ MonsterAbilityType::BR_POIS, MonsterAbilityType::BR_NUKE }) && !(pc.equals(PlayerClassType::NINJA) && (creature.level > 44))) {
-        if (creature.get_remaining_oppose_pois() || music_singing(creature, MUSIC_RESIST)) {
+        if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_POIS) || music_singing(creature, MUSIC_RESIST)) {
             return true;
         }
 
@@ -311,11 +311,11 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
         }
     }
 
-    if (creature.get_remaining_ultimate_resistance()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         return true;
     }
 
-    if (creature.get_remaining_tsuyoshi()) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TSUYOSHI)) {
         return true;
     }
 
@@ -345,7 +345,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
 
     constexpr auto threshold = 25;
     const auto threshold_speed = STANDARD_SPEED + threshold;
-    if (creature.lightspeed && (monster.speed <= threshold_speed)) {
+    if (creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED) && (monster.speed <= threshold_speed)) {
         return true;
     }
 

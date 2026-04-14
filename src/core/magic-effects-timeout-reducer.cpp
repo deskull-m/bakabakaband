@@ -25,8 +25,8 @@
  */
 void reduce_magic_effects_timeout(CreatureEntity &creature)
 {
-    if (creature.tim_mimic) {
-        (void)set_mimic(creature, creature.tim_mimic - 1, creature.mimic_form, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_MIMIC)) {
+        (void)set_mimic(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_MIMIC) - 1, creature.mimic_form, true);
     }
 
     BadStatusSetter bss(creature);
@@ -39,102 +39,102 @@ void reduce_magic_effects_timeout(CreatureEntity &creature)
         (void)bss.mod_blindness(-1);
     }
 
-    if (const auto remaining = creature.get_remaining_tim_invis(); remaining > 0) {
-        (void)set_tim_invis(creature, remaining - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_INVIS)) {
+        (void)set_tim_invis(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_INVIS) - 1, true);
     }
 
     if (creature.suppress_multi_reward) {
         creature.suppress_multi_reward = false;
     }
 
-    if (const auto remaining = creature.get_remaining_tim_esp(); remaining > 0) {
-        (void)set_tim_esp(creature, remaining - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_ESP)) {
+        (void)set_tim_esp(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_ESP) - 1, true);
     }
 
-    if (creature.ele_attack) {
-        creature.ele_attack--;
-        if (!creature.ele_attack) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ELE_ATTACK)) {
+        creature.set_timed_effect(CreatureTimedEffect::ELE_ATTACK, creature.get_timed_effect(CreatureTimedEffect::ELE_ATTACK) - 1);
+        if (!creature.get_timed_effect(CreatureTimedEffect::ELE_ATTACK)) {
             set_ele_attack(creature, 0, 0);
         }
     }
 
-    if (creature.ele_immune) {
-        creature.ele_immune--;
-        if (!creature.ele_immune) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ELE_IMMUNE)) {
+        creature.set_timed_effect(CreatureTimedEffect::ELE_IMMUNE, creature.get_timed_effect(CreatureTimedEffect::ELE_IMMUNE) - 1);
+        if (!creature.get_timed_effect(CreatureTimedEffect::ELE_IMMUNE)) {
             set_ele_immune(creature, 0, 0);
         }
     }
 
-    if (const auto remaining = creature.get_remaining_tim_infra(); remaining > 0) {
-        (void)set_tim_infra(creature, remaining - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_INFRA)) {
+        (void)set_tim_infra(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_INFRA) - 1, true);
     }
 
-    if (const auto remaining = creature.get_remaining_tim_stealth(); remaining > 0) {
-        (void)set_tim_stealth(creature, remaining - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_STEALTH)) {
+        (void)set_tim_stealth(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_STEALTH) - 1, true);
     }
 
-    if (creature.tim_levitation) {
-        (void)set_tim_levitation(creature, creature.tim_levitation - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_LEVITATION)) {
+        (void)set_tim_levitation(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_LEVITATION) - 1, true);
     }
 
-    if (creature.tim_sh_touki) {
-        (void)set_tim_sh_force(creature, creature.tim_sh_touki - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_TOUKI)) {
+        (void)set_tim_sh_force(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_SH_TOUKI) - 1, true);
     }
 
-    if (creature.tim_sh_fire) {
-        (void)set_tim_sh_fire(creature, creature.tim_sh_fire - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_FIRE)) {
+        (void)set_tim_sh_fire(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_SH_FIRE) - 1, true);
     }
 
-    if (creature.tim_sh_holy) {
-        (void)set_tim_sh_holy(creature, creature.tim_sh_holy - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_HOLY)) {
+        (void)set_tim_sh_holy(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_SH_HOLY) - 1, true);
     }
 
-    if (creature.tim_eyeeye) {
-        (void)set_tim_eyeeye(creature, creature.tim_eyeeye - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_EYEEYE)) {
+        (void)set_tim_eyeeye(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_EYEEYE) - 1, true);
     }
 
-    if (creature.resist_magic) {
-        (void)set_resist_magic(creature, creature.resist_magic - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::RESIST_MAGIC)) {
+        (void)set_resist_magic(creature, creature.get_timed_effect(CreatureTimedEffect::RESIST_MAGIC) - 1, true);
     }
 
-    if (const auto remaining = creature.get_remaining_tim_regen(); remaining > 0) {
-        (void)set_tim_regen(creature, remaining - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_REGEN)) {
+        (void)set_tim_regen(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_REGEN) - 1, true);
     }
 
-    if (creature.tim_res_nether) {
-        (void)set_tim_res_nether(creature, creature.tim_res_nether - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_RES_NETHER)) {
+        (void)set_tim_res_nether(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_RES_NETHER) - 1, true);
     }
 
-    if (creature.tim_res_lite) {
-        (void)set_tim_res_lite(creature, creature.tim_res_lite - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_RES_LITE)) {
+        (void)set_tim_res_lite(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_RES_LITE) - 1, true);
     }
 
-    if (creature.tim_res_dark) {
-        (void)set_tim_res_dark(creature, creature.tim_res_dark - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_RES_DARK)) {
+        (void)set_tim_res_dark(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_RES_DARK) - 1, true);
     }
 
-    if (creature.tim_res_fear) {
-        (void)set_tim_res_fear(creature, creature.tim_res_fear - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_RES_FEAR)) {
+        (void)set_tim_res_fear(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_RES_FEAR) - 1, true);
     }
 
-    if (creature.tim_res_time) {
-        (void)set_tim_res_time(creature, creature.tim_res_time - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_RES_TIME)) {
+        (void)set_tim_res_time(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_RES_TIME) - 1, true);
     }
 
-    if (creature.tim_reflect) {
-        (void)set_tim_reflect(creature, creature.tim_reflect - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_REFLECT)) {
+        (void)set_tim_reflect(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_REFLECT) - 1, true);
     }
 
-    if (creature.multishadow) {
-        (void)set_multishadow(creature, creature.multishadow - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::MULTISHADOW)) {
+        (void)set_multishadow(creature, creature.get_timed_effect(CreatureTimedEffect::MULTISHADOW) - 1, true);
     }
 
-    if (creature.dustrobe) {
-        (void)set_dustrobe(creature, creature.dustrobe - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::DUSTROBE)) {
+        (void)set_dustrobe(creature, creature.get_timed_effect(CreatureTimedEffect::DUSTROBE) - 1, true);
     }
 
-    if (creature.tim_pass_wall) {
-        (void)set_pass_wall(creature, creature.tim_pass_wall - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_PASS_WALL)) {
+        (void)set_pass_wall(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_PASS_WALL) - 1, true);
     }
 
     if (effects->paralysis().is_paralyzed()) {
@@ -161,44 +161,44 @@ void reduce_magic_effects_timeout(CreatureEntity &creature)
         BodyImprovement(creature).mod_protection(-1, true);
     }
 
-    if (creature.invuln) {
-        (void)set_invuln(creature, creature.invuln - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY)) {
+        (void)set_invuln(creature, creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY) - 1, true);
     }
 
-    if (const auto remaining = creature.get_remaining_wraith_form(); remaining > 0) {
-        (void)set_wraith_form(creature, remaining - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
+        (void)set_wraith_form(creature, creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM) - 1, true);
     }
 
-    if (const auto remaining = creature.get_remaining_hero(); remaining > 0) {
-        (void)set_hero(creature, remaining - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::HERO)) {
+        (void)set_hero(creature, creature.get_timed_effect(CreatureTimedEffect::HERO) - 1, true);
     }
 
-    if (const auto remaining = creature.get_remaining_berserk(); remaining > 0) {
-        (void)set_berserk(creature, remaining - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::BERSERK)) {
+        (void)set_berserk(creature, creature.get_timed_effect(CreatureTimedEffect::BERSERK) - 1, true);
     }
 
-    if (const auto remaining = creature.get_remaining_blessed(); remaining > 0) {
-        (void)set_blessed(creature, remaining - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::BLESSED)) {
+        (void)set_blessed(creature, creature.get_timed_effect(CreatureTimedEffect::BLESSED) - 1, true);
     }
 
-    if (const auto remaining = creature.get_remaining_shield(); remaining > 0) {
-        (void)set_shield(creature, remaining - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::SHIELD)) {
+        (void)set_shield(creature, creature.get_timed_effect(CreatureTimedEffect::SHIELD) - 1, true);
     }
 
-    if (creature.tsubureru) {
-        (void)set_leveling(creature, creature.tsubureru - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TSUBURERU)) {
+        (void)set_leveling(creature, creature.get_timed_effect(CreatureTimedEffect::TSUBURERU) - 1, true);
     }
 
-    if (creature.magicdef) {
-        (void)set_magicdef(creature, creature.magicdef - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::MAGICDEF)) {
+        (void)set_magicdef(creature, creature.get_timed_effect(CreatureTimedEffect::MAGICDEF) - 1, true);
     }
 
-    if (const auto remaining = creature.get_remaining_tsuyoshi(); remaining > 0) {
-        (void)set_tsuyoshi(creature, remaining - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TSUYOSHI)) {
+        (void)set_tsuyoshi(creature, creature.get_timed_effect(CreatureTimedEffect::TSUYOSHI) - 1, true);
     }
 
-    if (const auto remaining = creature.get_remaining_oppose_acid(); remaining > 0) {
-        (void)set_oppose_acid(creature, remaining - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ACID)) {
+        (void)set_oppose_acid(creature, creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ACID) - 1, true);
     }
 
     if (const auto remaining = creature.get_remaining_oppose_elec(); remaining > 0) {
