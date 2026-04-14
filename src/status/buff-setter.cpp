@@ -26,9 +26,9 @@
  */
 void reset_tim_flags(CreatureEntity &creature)
 {
+    // TimedEffects オブジェクト経由のリセット
     auto effects = creature.effects();
     effects->acceleration().reset();
-    creature.lightspeed = 0;
     effects->deceleration().reset();
     effects->blindness().reset();
     effects->paralysis().reset();
@@ -40,54 +40,57 @@ void reset_tim_flags(CreatureEntity &creature)
     effects->stun().reset();
     effects->protection().reset();
 
-    creature.invuln = 0; /* Timed -- Invulnerable */
-    creature.ult_res = 0;
-    creature.hero = 0; /* Timed -- Heroism */
-    creature.berserk = 0; /* Timed -- Super Heroism */
-    creature.shield = 0; /* Timed -- Shield Spell */
-    creature.blessed = 0; /* Timed -- Blessed */
-    creature.tim_invis = 0; /* Timed -- Invisibility */
-    creature.tim_infra = 0; /* Timed -- Infra Vision */
-    creature.tim_regen = 0; /* Timed -- Regeneration */
-    creature.tim_stealth = 0; /* Timed -- Stealth */
-    creature.tim_esp = 0;
-    creature.wraith_form = 0; /* Timed -- Wraith Form */
-    creature.tim_levitation = 0;
-    creature.tim_sh_touki = 0;
-    creature.tim_sh_fire = 0;
-    creature.tim_sh_holy = 0;
-    creature.tim_eyeeye = 0;
-    creature.magicdef = 0;
-    creature.resist_magic = 0;
-    creature.tsuyoshi = 0;
-    creature.tim_pass_wall = 0;
-    creature.tim_res_nether = 0;
-    creature.tim_res_lite = 0;
-    creature.tim_res_dark = 0;
-    creature.tim_res_fear = 0;
-    creature.tim_res_time = 0;
-    creature.tim_mimic = 0;
+    // CreatureTimedEffect 経由のリセット
+    creature.set_timed_effect(CreatureTimedEffect::INVULNERABILITY, 0);
+    creature.set_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE, 0);
+    creature.set_timed_effect(CreatureTimedEffect::HERO, 0);
+    creature.set_timed_effect(CreatureTimedEffect::BERSERK, 0);
+    creature.set_timed_effect(CreatureTimedEffect::SHIELD, 0);
+    creature.set_timed_effect(CreatureTimedEffect::BLESSED, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_INVIS, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_INFRA, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_REGEN, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_STEALTH, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_ESP, 0);
+    creature.set_timed_effect(CreatureTimedEffect::WRAITH_FORM, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_LEVITATION, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_SH_TOUKI, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_SH_FIRE, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_SH_HOLY, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_EYEEYE, 0);
+    creature.set_timed_effect(CreatureTimedEffect::MAGICDEF, 0);
+    creature.set_timed_effect(CreatureTimedEffect::RESIST_MAGIC, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TSUYOSHI, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_PASS_WALL, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_RES_NETHER, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_RES_LITE, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_RES_DARK, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_RES_FEAR, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_RES_TIME, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_MIMIC, 0);
     creature.mimic_form = MimicKindType::NONE;
-    creature.tim_reflect = 0;
-    creature.multishadow = 0;
-    creature.dustrobe = 0;
-    creature.tim_emission = 0;
-    creature.tim_exorcism = 0;
-    creature.tim_imm_dark = 0;
+    creature.set_timed_effect(CreatureTimedEffect::TIM_REFLECT, 0);
+    creature.set_timed_effect(CreatureTimedEffect::MULTISHADOW, 0);
+    creature.set_timed_effect(CreatureTimedEffect::DUSTROBE, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_EMISSION, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_EXORCISM, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_IMM_DARK, 0);
+    creature.set_timed_effect(CreatureTimedEffect::LIGHTSPEED, 0);
+    creature.set_timed_effect(CreatureTimedEffect::ELE_ATTACK, 0);
+    creature.set_timed_effect(CreatureTimedEffect::ELE_IMMUNE, 0);
     creature.action = ACTION_NONE;
 
-    creature.oppose_acid = 0; /* Timed -- oppose acid */
-    creature.oppose_elec = 0; /* Timed -- oppose lightning */
-    creature.oppose_fire = 0; /* Timed -- oppose heat */
-    creature.oppose_cold = 0; /* Timed -- oppose cold */
-    creature.oppose_pois = 0; /* Timed -- oppose poison */
+    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_ACID, 0);
+    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_ELEC, 0);
+    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_FIRE, 0);
+    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_COLD, 0);
+    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_POIS, 0);
 
+    // 非 CreatureTimedEffect のリセット
     creature.word_recall = 0;
     creature.alter_reality = 0;
     creature.sutemi = false;
     creature.counter = false;
-    creature.ele_attack = 0;
-    creature.ele_immune = 0;
     creature.special_attack = 0L;
     creature.special_defense = 0L;
 

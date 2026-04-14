@@ -211,7 +211,7 @@ std::pair<TERM_COLOR, int> CreatureEntity::get_hp_bar_data() const
 
 bool CreatureEntity::is_time_limit_esp() const
 {
-    if (this->tim_esp > 0) {
+    if (this->get_timed_effect(CreatureTimedEffect::TIM_ESP) > 0) {
         return true;
     }
 
@@ -227,7 +227,7 @@ bool CreatureEntity::is_time_limit_esp() const
 
 bool CreatureEntity::is_time_limit_stealth() const
 {
-    if (this->tim_stealth > 0) {
+    if (this->get_timed_effect(CreatureTimedEffect::TIM_STEALTH) > 0) {
         return true;
     }
 
@@ -371,7 +371,7 @@ bool CreatureEntity::is_paralyzed() const
 
 bool CreatureEntity::is_blessed() const
 {
-    if (this->get_remaining_blessed() > 0) {
+    if (this->get_timed_effect(CreatureTimedEffect::BLESSED) > 0) {
         return true;
     }
 
@@ -386,7 +386,7 @@ bool CreatureEntity::is_blessed() const
 
 bool CreatureEntity::is_hero() const
 {
-    if (this->get_remaining_hero() > 0) {
+    if (this->get_timed_effect(CreatureTimedEffect::HERO) > 0) {
         return true;
     }
 
@@ -396,7 +396,7 @@ bool CreatureEntity::is_hero() const
 
 bool CreatureEntity::is_shero() const
 {
-    return this->get_remaining_berserk() > 0 || this->pclass == PlayerClassType::BERSERKER;
+    return this->get_timed_effect(CreatureTimedEffect::BERSERK) > 0 || this->pclass == PlayerClassType::BERSERKER;
 }
 
 bool CreatureEntity::is_echizen() const

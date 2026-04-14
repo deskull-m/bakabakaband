@@ -63,26 +63,16 @@ short PlayerType::get_timed_effect(CreatureTimedEffect effect) const
         return this->hero;
     case CreatureTimedEffect::BERSERK:
         return this->berserk;
-    case CreatureTimedEffect::BLESSED:
-        return this->blessed;
     case CreatureTimedEffect::SHIELD:
         return this->shield;
+    case CreatureTimedEffect::BLESSED:
+        return this->blessed;
+    case CreatureTimedEffect::MAGICDEF:
+        return this->magicdef;
     case CreatureTimedEffect::ULTIMATE_RESISTANCE:
         return this->ult_res;
-    case CreatureTimedEffect::WRAITH_FORM:
-        return this->wraith_form;
-    case CreatureTimedEffect::TIM_ESP:
-        return this->tim_esp;
-    case CreatureTimedEffect::TIM_STEALTH:
-        return this->tim_stealth;
-    case CreatureTimedEffect::TIM_REGEN:
-        return this->tim_regen;
     case CreatureTimedEffect::TSUYOSHI:
         return this->tsuyoshi;
-    case CreatureTimedEffect::TIM_INVIS:
-        return this->tim_invis;
-    case CreatureTimedEffect::TIM_INFRA:
-        return this->tim_infra;
     case CreatureTimedEffect::OPPOSE_ACID:
         return this->oppose_acid;
     case CreatureTimedEffect::OPPOSE_ELEC:
@@ -93,6 +83,64 @@ short PlayerType::get_timed_effect(CreatureTimedEffect effect) const
         return this->oppose_cold;
     case CreatureTimedEffect::OPPOSE_POIS:
         return this->oppose_pois;
+    case CreatureTimedEffect::RESIST_MAGIC:
+        return this->resist_magic;
+    case CreatureTimedEffect::TIM_RES_NETHER:
+        return this->tim_res_nether;
+    case CreatureTimedEffect::TIM_RES_LITE:
+        return this->tim_res_lite;
+    case CreatureTimedEffect::TIM_RES_DARK:
+        return this->tim_res_dark;
+    case CreatureTimedEffect::TIM_RES_FEAR:
+        return this->tim_res_fear;
+    case CreatureTimedEffect::TIM_RES_TIME:
+        return this->tim_res_time;
+    case CreatureTimedEffect::TIM_IMM_DARK:
+        return this->tim_imm_dark;
+    case CreatureTimedEffect::TIM_ESP:
+        return this->tim_esp;
+    case CreatureTimedEffect::TIM_INVIS:
+        return this->tim_invis;
+    case CreatureTimedEffect::TIM_INFRA:
+        return this->tim_infra;
+    case CreatureTimedEffect::TIM_STEALTH:
+        return this->tim_stealth;
+    case CreatureTimedEffect::TIM_REGEN:
+        return this->tim_regen;
+    case CreatureTimedEffect::TIM_PASS_WALL:
+        return this->tim_pass_wall;
+    case CreatureTimedEffect::TIM_LEVITATION:
+        return this->tim_levitation;
+    case CreatureTimedEffect::TIM_REFLECT:
+        return this->tim_reflect;
+    case CreatureTimedEffect::LIGHTSPEED:
+        return this->lightspeed;
+    case CreatureTimedEffect::TSUBURERU:
+        return this->tsubureru;
+    case CreatureTimedEffect::TIM_SH_TOUKI:
+        return this->tim_sh_touki;
+    case CreatureTimedEffect::TIM_SH_FIRE:
+        return this->tim_sh_fire;
+    case CreatureTimedEffect::TIM_SH_HOLY:
+        return this->tim_sh_holy;
+    case CreatureTimedEffect::TIM_EYEEYE:
+        return this->tim_eyeeye;
+    case CreatureTimedEffect::TIM_MIMIC:
+        return this->tim_mimic;
+    case CreatureTimedEffect::WRAITH_FORM:
+        return this->wraith_form;
+    case CreatureTimedEffect::MULTISHADOW:
+        return this->multishadow;
+    case CreatureTimedEffect::DUSTROBE:
+        return this->dustrobe;
+    case CreatureTimedEffect::ELE_ATTACK:
+        return this->ele_attack;
+    case CreatureTimedEffect::ELE_IMMUNE:
+        return this->ele_immune;
+    case CreatureTimedEffect::TIM_EMISSION:
+        return this->tim_emission;
+    case CreatureTimedEffect::TIM_EXORCISM:
+        return this->tim_exorcism;
     default:
         return 0;
     }
@@ -135,35 +183,20 @@ void PlayerType::set_timed_effect(CreatureTimedEffect effect, short value)
     case CreatureTimedEffect::BERSERK:
         this->berserk = value;
         break;
+    case CreatureTimedEffect::SHIELD:
+        this->shield = value;
+        break;
     case CreatureTimedEffect::BLESSED:
         this->blessed = value;
         break;
-    case CreatureTimedEffect::SHIELD:
-        this->shield = value;
+    case CreatureTimedEffect::MAGICDEF:
+        this->magicdef = value;
         break;
     case CreatureTimedEffect::ULTIMATE_RESISTANCE:
         this->ult_res = value;
         break;
-    case CreatureTimedEffect::WRAITH_FORM:
-        this->wraith_form = value;
-        break;
-    case CreatureTimedEffect::TIM_ESP:
-        this->tim_esp = value;
-        break;
-    case CreatureTimedEffect::TIM_STEALTH:
-        this->tim_stealth = value;
-        break;
-    case CreatureTimedEffect::TIM_REGEN:
-        this->tim_regen = value;
-        break;
     case CreatureTimedEffect::TSUYOSHI:
         this->tsuyoshi = value;
-        break;
-    case CreatureTimedEffect::TIM_INVIS:
-        this->tim_invis = value;
-        break;
-    case CreatureTimedEffect::TIM_INFRA:
-        this->tim_infra = value;
         break;
     case CreatureTimedEffect::OPPOSE_ACID:
         this->oppose_acid = value;
@@ -179,6 +212,93 @@ void PlayerType::set_timed_effect(CreatureTimedEffect effect, short value)
         break;
     case CreatureTimedEffect::OPPOSE_POIS:
         this->oppose_pois = value;
+        break;
+    case CreatureTimedEffect::RESIST_MAGIC:
+        this->resist_magic = value;
+        break;
+    case CreatureTimedEffect::TIM_RES_NETHER:
+        this->tim_res_nether = value;
+        break;
+    case CreatureTimedEffect::TIM_RES_LITE:
+        this->tim_res_lite = value;
+        break;
+    case CreatureTimedEffect::TIM_RES_DARK:
+        this->tim_res_dark = value;
+        break;
+    case CreatureTimedEffect::TIM_RES_FEAR:
+        this->tim_res_fear = value;
+        break;
+    case CreatureTimedEffect::TIM_RES_TIME:
+        this->tim_res_time = value;
+        break;
+    case CreatureTimedEffect::TIM_IMM_DARK:
+        this->tim_imm_dark = value;
+        break;
+    case CreatureTimedEffect::TIM_ESP:
+        this->tim_esp = value;
+        break;
+    case CreatureTimedEffect::TIM_INVIS:
+        this->tim_invis = value;
+        break;
+    case CreatureTimedEffect::TIM_INFRA:
+        this->tim_infra = value;
+        break;
+    case CreatureTimedEffect::TIM_STEALTH:
+        this->tim_stealth = value;
+        break;
+    case CreatureTimedEffect::TIM_REGEN:
+        this->tim_regen = value;
+        break;
+    case CreatureTimedEffect::TIM_PASS_WALL:
+        this->tim_pass_wall = value;
+        break;
+    case CreatureTimedEffect::TIM_LEVITATION:
+        this->tim_levitation = value;
+        break;
+    case CreatureTimedEffect::TIM_REFLECT:
+        this->tim_reflect = value;
+        break;
+    case CreatureTimedEffect::LIGHTSPEED:
+        this->lightspeed = value;
+        break;
+    case CreatureTimedEffect::TSUBURERU:
+        this->tsubureru = value;
+        break;
+    case CreatureTimedEffect::TIM_SH_TOUKI:
+        this->tim_sh_touki = value;
+        break;
+    case CreatureTimedEffect::TIM_SH_FIRE:
+        this->tim_sh_fire = value;
+        break;
+    case CreatureTimedEffect::TIM_SH_HOLY:
+        this->tim_sh_holy = value;
+        break;
+    case CreatureTimedEffect::TIM_EYEEYE:
+        this->tim_eyeeye = value;
+        break;
+    case CreatureTimedEffect::TIM_MIMIC:
+        this->tim_mimic = value;
+        break;
+    case CreatureTimedEffect::WRAITH_FORM:
+        this->wraith_form = value;
+        break;
+    case CreatureTimedEffect::MULTISHADOW:
+        this->multishadow = value;
+        break;
+    case CreatureTimedEffect::DUSTROBE:
+        this->dustrobe = value;
+        break;
+    case CreatureTimedEffect::ELE_ATTACK:
+        this->ele_attack = value;
+        break;
+    case CreatureTimedEffect::ELE_IMMUNE:
+        this->ele_immune = value;
+        break;
+    case CreatureTimedEffect::TIM_EMISSION:
+        this->tim_emission = value;
+        break;
+    case CreatureTimedEffect::TIM_EXORCISM:
+        this->tim_exorcism = value;
         break;
     default:
         break;
