@@ -46,8 +46,8 @@ bool set_tim_esp(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     if (v) {
-        if (creature.tim_esp && !do_dec) {
-            if (creature.tim_esp > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_ESP) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::TIM_ESP) > v) {
                 return false;
             }
         } else if (!creature.is_time_limit_esp()) {
@@ -55,13 +55,13 @@ bool set_tim_esp(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
             notice = true;
         }
     } else {
-        if (creature.tim_esp && !music_singing(creature, MUSIC_MIND)) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_ESP) && !music_singing(creature, MUSIC_MIND)) {
             msg_print(_("意識は元に戻った。", "Your consciousness contracts again."));
             notice = true;
         }
     }
 
-    creature.tim_esp = v;
+    creature.set_timed_effect(CreatureTimedEffect::TIM_ESP, v);
     return update_sight(creature, notice);
 }
 
@@ -82,22 +82,22 @@ bool set_tim_invis(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     if (v) {
-        if (creature.tim_invis && !do_dec) {
-            if (creature.tim_invis > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_INVIS) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::TIM_INVIS) > v) {
                 return false;
             }
-        } else if (!creature.tim_invis) {
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::TIM_INVIS)) {
             msg_print(_("目が非常に敏感になった気がする！", "Your eyes feel very sensitive!"));
             notice = true;
         }
     } else {
-        if (creature.tim_invis) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_INVIS)) {
             msg_print(_("目の敏感さがなくなったようだ。", "Your eyes feel less sensitive."));
             notice = true;
         }
     }
 
-    creature.tim_invis = v;
+    creature.set_timed_effect(CreatureTimedEffect::TIM_INVIS, v);
     return update_sight(creature, notice);
 }
 
@@ -118,21 +118,21 @@ bool set_tim_infra(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     if (v) {
-        if (creature.tim_infra && !do_dec) {
-            if (creature.tim_infra > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_INFRA) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::TIM_INFRA) > v) {
                 return false;
             }
-        } else if (!creature.tim_infra) {
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::TIM_INFRA)) {
             msg_print(_("目がランランと輝き始めた！", "Your eyes begin to tingle!"));
             notice = true;
         }
     } else {
-        if (creature.tim_infra) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_INFRA)) {
             msg_print(_("目の輝きがなくなった。", "Your eyes stop tingling."));
             notice = true;
         }
     }
 
-    creature.tim_infra = v;
+    creature.set_timed_effect(CreatureTimedEffect::TIM_INFRA, v);
     return update_sight(creature, notice);
 }
