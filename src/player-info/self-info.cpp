@@ -248,7 +248,7 @@ void self_knowledge(CreatureEntity &subject)
     display_max_base_status(subject, self_ptr);
     display_virtue(subject, self_ptr);
     self_ptr->info_list.emplace_back("");
-    if (subject.mimic_form != MimicKindType::NONE) {
+    if (subject.get_mimic_form() != MimicKindType::NONE) {
         display_mimic_race_ability(subject, self_ptr);
     } else {
         set_race_ability_info(subject, self_ptr);

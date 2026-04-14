@@ -97,11 +97,11 @@ void update_lite_radius(CreatureEntity &creature)
         creature.cur_lite = 14;
     }
 
-    if (creature.mimic_form == MimicKindType::ANGEL) {
+    if (creature.get_mimic_form() == MimicKindType::ANGEL) {
         creature.cur_lite += 3;
     }
 
-    if (creature.mimic_form == MimicKindType::DEMIGOD) {
+    if (creature.get_mimic_form() == MimicKindType::DEMIGOD) {
         creature.cur_lite += 6;
     }
 

@@ -144,7 +144,7 @@ void check_emission(CreatureEntity &creature)
 
 void check_demigod(CreatureEntity &creature)
 {
-    if (creature.mimic_form == MimicKindType::DEMIGOD) {
+    if (creature.get_mimic_form() == MimicKindType::DEMIGOD) {
         const Dice dice(1, creature.level * 4);
 
         dispel_evil(creature, dice.roll());

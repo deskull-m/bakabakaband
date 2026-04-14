@@ -26,7 +26,7 @@
 void reduce_magic_effects_timeout(CreatureEntity &creature)
 {
     if (creature.get_timed_effect(CreatureTimedEffect::TIM_MIMIC)) {
-        (void)set_mimic(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_MIMIC) - 1, creature.mimic_form, true);
+        (void)set_mimic(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_MIMIC) - 1, creature.get_mimic_form(), true);
     }
 
     BadStatusSetter bss(creature);

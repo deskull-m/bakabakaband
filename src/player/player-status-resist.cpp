@@ -216,7 +216,7 @@ PERCENTAGE calc_nuke_damage_rate(CreatureEntity &creature)
 PERCENTAGE calc_deathray_damage_rate(CreatureEntity &creature, rate_calc_type_mode mode)
 {
     (void)mode; // unused
-    if (creature.mimic_form != MimicKindType::NONE) {
+    if (creature.get_mimic_form() != MimicKindType::NONE) {
         if (CreatureRace(&creature).is_mimic_nonliving()) {
             return 0;
         }

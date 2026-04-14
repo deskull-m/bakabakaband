@@ -72,7 +72,7 @@ const player_race_info *CreatureRace::get_info() const
         return &race_info[enum2i(this->creature_ptr->prace)];
     }
 
-    switch (this->creature_ptr->mimic_form) {
+    switch (this->creature_ptr->get_mimic_form()) {
     case MimicKindType::NONE:
         return &race_info[enum2i(this->creature_ptr->prace)];
     case MimicKindType::DEMON:
@@ -80,7 +80,7 @@ const player_race_info *CreatureRace::get_info() const
     case MimicKindType::VAMPIRE:
     case MimicKindType::ANGEL:
     case MimicKindType::DEMIGOD:
-        return &mimic_info.at(this->creature_ptr->mimic_form);
+        return &mimic_info.at(this->creature_ptr->get_mimic_form());
     default:
         THROW_EXCEPTION(std::logic_error, "Invalid MimicKindType was specified!");
     }
@@ -110,7 +110,7 @@ PlayerRaceFoodType CreatureRace::food() const
 bool CreatureRace::is_mimic_nonliving() const
 {
     constexpr int nonliving_flag = 1;
-    return any_bits(mimic_info.at(this->creature_ptr->mimic_form).choice, nonliving_flag);
+    return any_bits(mimic_info.at(this->creature_ptr->get_mimic_form()).choice, nonliving_flag);
 }
 
 bool CreatureRace::has_cut_immunity() const
@@ -129,7 +129,7 @@ bool CreatureRace::has_stun_immunity() const
 
 bool CreatureRace::equals(PlayerRaceType prace) const
 {
-    return (this->creature_ptr->mimic_form == MimicKindType::NONE) && (this->creature_ptr->prace == prace);
+    return (this->creature_ptr->get_mimic_form() == MimicKindType::NONE) && (this->creature_ptr->prace == prace);
 }
 
 /*!
@@ -167,7 +167,7 @@ int16_t CreatureRace::speed() const
         }
     }
 
-    switch (this->creature_ptr->mimic_form) {
+    switch (this->creature_ptr->get_mimic_form()) {
     case MimicKindType::NONE:
         return result;
     case MimicKindType::DEMON:

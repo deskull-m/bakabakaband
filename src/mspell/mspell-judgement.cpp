@@ -248,11 +248,11 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
         return true;
     }
 
-    if (creature.mimic_form == MimicKindType::DEMON_LORD) {
+    if (creature.get_mimic_form() == MimicKindType::DEMON_LORD) {
         return true;
     }
 
-    if (creature.mimic_form == MimicKindType::DEMIGOD) {
+    if (creature.get_mimic_form() == MimicKindType::DEMIGOD) {
         return true;
     }
 

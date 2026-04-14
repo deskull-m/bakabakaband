@@ -68,7 +68,7 @@ void reset_tim_flags(CreatureEntity &creature)
     creature.set_timed_effect(CreatureTimedEffect::TIM_RES_FEAR, 0);
     creature.set_timed_effect(CreatureTimedEffect::TIM_RES_TIME, 0);
     creature.set_timed_effect(CreatureTimedEffect::TIM_MIMIC, 0);
-    creature.mimic_form = MimicKindType::NONE;
+    creature.set_mimic_form(MimicKindType::NONE);
     creature.set_timed_effect(CreatureTimedEffect::TIM_REFLECT, 0);
     creature.set_timed_effect(CreatureTimedEffect::MULTISHADOW, 0);
     creature.set_timed_effect(CreatureTimedEffect::DUSTROBE, 0);
@@ -383,13 +383,13 @@ bool set_mimic(CreatureEntity &creature, TIME_EFFECT v, MimicKindType mimic_race
     }
 
     if (v) {
-        if (creature.get_timed_effect(CreatureTimedEffect::TIM_MIMIC) && (creature.mimic_form == mimic_race_idx) && !do_dec) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_MIMIC) && (creature.get_mimic_form() == mimic_race_idx) && !do_dec) {
             if (creature.get_timed_effect(CreatureTimedEffect::TIM_MIMIC) > v) {
                 return false;
             }
-        } else if ((!creature.get_timed_effect(CreatureTimedEffect::TIM_MIMIC)) || (creature.mimic_form != mimic_race_idx)) {
+        } else if ((!creature.get_timed_effect(CreatureTimedEffect::TIM_MIMIC)) || (creature.get_mimic_form() != mimic_race_idx)) {
             msg_print(_("自分の体が変わってゆくのを感じた。", "You feel that your body changes."));
-            creature.mimic_form = mimic_race_idx;
+            creature.set_mimic_form(mimic_race_idx);
             notice = true;
         }
     }
@@ -397,10 +397,10 @@ bool set_mimic(CreatureEntity &creature, TIME_EFFECT v, MimicKindType mimic_race
     else {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_MIMIC)) {
             msg_print(_("変身が解けた。", "You are no longer transformed."));
-            if (creature.mimic_form == MimicKindType::DEMON) {
+            if (creature.get_mimic_form() == MimicKindType::DEMON) {
                 set_oppose_fire(creature, 0, true);
             }
-            creature.mimic_form = MimicKindType::NONE;
+            creature.set_mimic_form(MimicKindType::NONE);
             notice = true;
             mimic_race_idx = MimicKindType::NONE;
         }

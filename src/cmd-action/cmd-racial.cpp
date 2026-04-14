@@ -481,7 +481,7 @@ void do_cmd_racial_power(CreatureEntity &creature)
 
     switch_class_racial(creature, rc_ptr);
 
-    if (creature.mimic_form != MimicKindType::NONE) {
+    if (creature.get_mimic_form() != MimicKindType::NONE) {
         set_mimic_racial_command(creature, rc_ptr);
     } else {
         set_race_racial_command(creature, rc_ptr);

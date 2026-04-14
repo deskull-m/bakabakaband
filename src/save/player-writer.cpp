@@ -234,7 +234,7 @@ void wr_player(CreatureEntity &creature)
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_RES_DARK));
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_RES_FEAR));
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_RES_TIME));
-    wr_byte((byte)creature.mimic_form);
+    wr_byte((byte)creature.get_mimic_form());
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_MIMIC));
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_SH_FIRE));
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_SH_HOLY));

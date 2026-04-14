@@ -786,6 +786,24 @@ public:
     }
 
     /*!
+     * @brief 現在の変身形態を取得する
+     * @return 変身形態（NONE なら通常状態）
+     */
+    MimicKindType get_mimic_form() const
+    {
+        return this->mimic_form;
+    }
+
+    /*!
+     * @brief 変身形態を設定する
+     * @param form 変身形態
+     */
+    void set_mimic_form(MimicKindType form)
+    {
+        this->mimic_form = form;
+    }
+
+    /*!
      * @brief 体力ランク (0-100) を計算する
      * @return 体力ランク
      */
@@ -976,60 +994,8 @@ public:
     // 地形移動能力 / Terrain movement abilities
     bool can_swim{}; /* No damage in water */
 
-    // 時限効果 / Timed effects
-    TIME_EFFECT invuln{}; /* Timed -- Invulnerable */
-    TIME_EFFECT ult_res{}; /* Timed -- Ultimate Resistance */
-    TIME_EFFECT hero{}; /* Timed -- Heroism */
-    TIME_EFFECT berserk{}; /* Timed -- Super Heroism */
-    TIME_EFFECT shield{}; /* Timed -- Shield Spell */
-    TIME_EFFECT blessed{}; /* Timed -- Blessed */
-    TIME_EFFECT tim_invis{}; /* Timed -- See Invisible */
-    TIME_EFFECT tim_infra{}; /* Timed -- Infra Vision */
-    TIME_EFFECT tsuyoshi{}; /* Timed -- Tsuyoshi Special */
-    TIME_EFFECT ele_attack{}; /* Timed -- Elemental Attack */
-    TIME_EFFECT ele_immune{}; /* Timed -- Elemental Immune */
-
     /* クリーチャーの防御状態の定義 / Bit flags for the "special_defense" variable. -LM- */
     BIT_FLAGS special_defense{};
-
-    TIME_EFFECT oppose_acid{}; /* Timed -- oppose acid */
-    TIME_EFFECT oppose_elec{}; /* Timed -- oppose lightning */
-    TIME_EFFECT oppose_fire{}; /* Timed -- oppose heat */
-    TIME_EFFECT oppose_cold{}; /* Timed -- oppose cold */
-    TIME_EFFECT oppose_pois{}; /* Timed -- oppose poison */
-
-    TIME_EFFECT tim_esp{}; /* Timed ESP */
-    TIME_EFFECT wraith_form{}; /* Timed wraithform */
-
-    TIME_EFFECT resist_magic{}; /* Timed Resist Magic (later) */
-    TIME_EFFECT tim_regen{};
-    TIME_EFFECT tim_pass_wall{};
-    TIME_EFFECT tim_stealth{};
-    TIME_EFFECT tim_levitation{};
-    TIME_EFFECT tim_sh_touki{};
-    TIME_EFFECT lightspeed{};
-    TIME_EFFECT tsubureru{};
-    TIME_EFFECT magicdef{};
-    TIME_EFFECT tim_res_nether{}; /* Timed -- Nether resistance */
-    TIME_EFFECT tim_res_lite{}; /* Timed -- Lite resistance */
-    TIME_EFFECT tim_res_dark{}; /* Timed -- Dark resistance */
-    TIME_EFFECT tim_res_fear{}; /* Timed -- Fear resistance */
-    TIME_EFFECT tim_res_time{}; /* Timed -- Time resistance */
-    MimicKindType mimic_form{};
-    TIME_EFFECT tim_mimic{};
-    TIME_EFFECT tim_sh_fire{};
-    TIME_EFFECT tim_sh_holy{};
-    TIME_EFFECT tim_eyeeye{};
-
-    /* for mirror master */
-    TIME_EFFECT tim_reflect{}; /* Timed -- Reflect */
-    TIME_EFFECT multishadow{}; /* Timed -- Multi-shadow */
-    TIME_EFFECT dustrobe{}; /* Timed -- Robe of dust */
-
-    /* for crusade */
-    TIME_EFFECT tim_emission{}; /* Timed -- Player Emission */
-    TIME_EFFECT tim_exorcism{}; /* Timed -- Exorcism */
-    TIME_EFFECT tim_imm_dark{}; /* Timed -- Darkness immunity */
 
     // 装備・能力関連フラグ / Equipment and ability flags
     bool hack_mutation{};
@@ -1258,6 +1224,51 @@ public:
 
 protected:
     std::shared_ptr<TimedEffects> timed_effects; /*!< 時限効果管理オブジェクト */
+
+    // 時限効果 / Timed effects（外部からは get/set_timed_effect() 経由でアクセスすること）
+    TIME_EFFECT invuln{}; /* Timed -- Invulnerable */
+    TIME_EFFECT ult_res{}; /* Timed -- Ultimate Resistance */
+    TIME_EFFECT hero{}; /* Timed -- Heroism */
+    TIME_EFFECT berserk{}; /* Timed -- Super Heroism */
+    TIME_EFFECT shield{}; /* Timed -- Shield Spell */
+    TIME_EFFECT blessed{}; /* Timed -- Blessed */
+    TIME_EFFECT tim_invis{}; /* Timed -- See Invisible */
+    TIME_EFFECT tim_infra{}; /* Timed -- Infra Vision */
+    TIME_EFFECT tsuyoshi{}; /* Timed -- Tsuyoshi Special */
+    TIME_EFFECT ele_attack{}; /* Timed -- Elemental Attack */
+    TIME_EFFECT ele_immune{}; /* Timed -- Elemental Immune */
+    TIME_EFFECT oppose_acid{}; /* Timed -- oppose acid */
+    TIME_EFFECT oppose_elec{}; /* Timed -- oppose lightning */
+    TIME_EFFECT oppose_fire{}; /* Timed -- oppose heat */
+    TIME_EFFECT oppose_cold{}; /* Timed -- oppose cold */
+    TIME_EFFECT oppose_pois{}; /* Timed -- oppose poison */
+    TIME_EFFECT tim_esp{}; /* Timed ESP */
+    TIME_EFFECT wraith_form{}; /* Timed wraithform */
+    TIME_EFFECT resist_magic{}; /* Timed Resist Magic (later) */
+    TIME_EFFECT tim_regen{};
+    TIME_EFFECT tim_pass_wall{};
+    TIME_EFFECT tim_stealth{};
+    TIME_EFFECT tim_levitation{};
+    TIME_EFFECT tim_sh_touki{};
+    TIME_EFFECT lightspeed{};
+    TIME_EFFECT tsubureru{};
+    TIME_EFFECT magicdef{};
+    TIME_EFFECT tim_res_nether{}; /* Timed -- Nether resistance */
+    TIME_EFFECT tim_res_lite{}; /* Timed -- Lite resistance */
+    TIME_EFFECT tim_res_dark{}; /* Timed -- Dark resistance */
+    TIME_EFFECT tim_res_fear{}; /* Timed -- Fear resistance */
+    TIME_EFFECT tim_res_time{}; /* Timed -- Time resistance */
+    MimicKindType mimic_form{};
+    TIME_EFFECT tim_mimic{};
+    TIME_EFFECT tim_sh_fire{};
+    TIME_EFFECT tim_sh_holy{};
+    TIME_EFFECT tim_eyeeye{};
+    TIME_EFFECT tim_reflect{}; /* Timed -- Reflect */
+    TIME_EFFECT multishadow{}; /* Timed -- Multi-shadow */
+    TIME_EFFECT dustrobe{}; /* Timed -- Robe of dust */
+    TIME_EFFECT tim_emission{}; /* Timed -- Player Emission */
+    TIME_EFFECT tim_exorcism{}; /* Timed -- Exorcism */
+    TIME_EFFECT tim_imm_dark{}; /* Timed -- Darkness immunity */
 
 private:
     std::string build_damage_description() const;

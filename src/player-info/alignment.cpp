@@ -65,7 +65,7 @@ void PlayerAlignment::update_alignment()
         }
     }
 
-    switch (this->creature_ptr->mimic_form) {
+    switch (this->creature_ptr->get_mimic_form()) {
     case MimicKindType::NONE:
         switch (this->creature_ptr->prace) {
         case PlayerRaceType::ARCHON:

@@ -73,7 +73,7 @@ void display_virtue(CreatureEntity &creature, self_info_type *self_ptr)
 
 void display_mimic_race_ability(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    switch (creature.mimic_form) {
+    switch (creature.get_mimic_form()) {
     case MimicKindType::NONE:
         return;
     case MimicKindType::DEMON:

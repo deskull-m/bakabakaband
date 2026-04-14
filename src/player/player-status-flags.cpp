@@ -499,7 +499,7 @@ BIT_FLAGS get_player_flags(CreatureEntity &creature, tr_type tr_flag)
  */
 bool has_kill_wall(CreatureEntity &creature)
 {
-    if (creature.mimic_form == MimicKindType::DEMON_LORD || music_singing(creature, MUSIC_WALL)) {
+    if (creature.get_mimic_form() == MimicKindType::DEMON_LORD || music_singing(creature, MUSIC_WALL)) {
         return true;
     }
 
@@ -1369,7 +1369,7 @@ BIT_FLAGS has_resist_lite(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_RES_LITE) | common_cause_flags(creature, TR_IM_LITE);
 
-    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::TIM_RES_LITE) || creature.mimic_form == MimicKindType::DEMIGOD) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::TIM_RES_LITE) || creature.get_mimic_form() == MimicKindType::DEMIGOD) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1637,7 +1637,7 @@ BIT_FLAGS has_immune_dark(CreatureEntity &creature)
 BIT_FLAGS has_immune_lite(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_IM_LITE);
-    if (creature.mimic_form == MimicKindType::DEMIGOD) {
+    if (creature.get_mimic_form() == MimicKindType::DEMIGOD) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
     return result;

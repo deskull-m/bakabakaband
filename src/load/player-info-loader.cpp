@@ -375,7 +375,7 @@ static void set_timed_effects(CreatureEntity &creature)
     creature.set_timed_effect(CreatureTimedEffect::MAGICDEF, rd_s16b());
     creature.set_timed_effect(CreatureTimedEffect::TIM_RES_NETHER, rd_s16b());
     creature.set_timed_effect(CreatureTimedEffect::TIM_RES_TIME, rd_s16b());
-    creature.mimic_form = i2enum<MimicKindType>(rd_byte());
+    creature.set_mimic_form(i2enum<MimicKindType>(rd_byte()));
     creature.set_timed_effect(CreatureTimedEffect::TIM_MIMIC, rd_s16b());
     creature.set_timed_effect(CreatureTimedEffect::TIM_SH_FIRE, rd_s16b());
     creature.set_timed_effect(CreatureTimedEffect::TIM_SH_HOLY, rd_s16b());

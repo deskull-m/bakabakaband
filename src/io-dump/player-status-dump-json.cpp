@@ -58,8 +58,8 @@ static void add_basic_info_to_json(nlohmann::json &j, CreatureEntity &creature)
     j["basic"]["experience"] = creature.exp;
     j["basic"]["max_experience"] = creature.max_exp;
 
-    if (creature.mimic_form != MimicKindType::NONE) {
-        j["basic"]["mimic_form"] = localized_to_utf8_safe(mimic_info.at(creature.mimic_form).title);
+    if (creature.get_mimic_form() != MimicKindType::NONE) {
+        j["basic"]["mimic_form"] = localized_to_utf8_safe(mimic_info.at(creature.get_mimic_form()).title);
     }
 
     // 性格
