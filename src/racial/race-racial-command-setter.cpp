@@ -8,7 +8,7 @@
 void set_mimic_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
 {
     rpi_type rpi;
-    switch (creature.mimic_form) {
+    switch (creature.get_mimic_form()) {
     case MimicKindType::NONE:
         return;
     case MimicKindType::DEMON:

@@ -66,7 +66,7 @@ static int calc_death_scythe_reflection_magnification_mimic_none(CreatureEntity 
  */
 static int calc_death_scythe_reflection_magnification(CreatureEntity &creature)
 {
-    switch (creature.mimic_form) {
+    switch (creature.get_mimic_form()) {
     case MimicKindType::NONE:
         return calc_death_scythe_reflection_magnification_mimic_none(creature);
     case MimicKindType::DEMON:

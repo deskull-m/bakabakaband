@@ -122,7 +122,7 @@ bool set_oppose_fire(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         return false;
     }
 
-    if ((CreatureRace(&creature).equals(PlayerRaceType::BALROG) && (creature.level > 44)) || (creature.mimic_form == MimicKindType::DEMON)) {
+    if ((CreatureRace(&creature).equals(PlayerRaceType::BALROG) && (creature.level > 44)) || (creature.get_mimic_form() == MimicKindType::DEMON)) {
         v = 1;
     }
     if (v) {
@@ -273,7 +273,7 @@ bool is_oppose_fire(CreatureEntity &creature)
     auto can_oppose_fire = creature.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE) != 0;
     can_oppose_fire |= music_singing(creature, MUSIC_RESIST);
     can_oppose_fire |= CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU);
-    can_oppose_fire |= creature.mimic_form == MimicKindType::DEMON;
+    can_oppose_fire |= creature.get_mimic_form() == MimicKindType::DEMON;
     can_oppose_fire |= (CreatureRace(&creature).equals(PlayerRaceType::BALROG) && creature.level > 44);
     return can_oppose_fire;
 }

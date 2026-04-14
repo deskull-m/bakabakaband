@@ -32,7 +32,7 @@ bool exe_racial_power(CreatureEntity &creature, const int32_t command)
         return switch_class_racial_execution(creature, command);
     }
 
-    if (creature.mimic_form != MimicKindType::NONE) {
+    if (creature.get_mimic_form() != MimicKindType::NONE) {
         return switch_mimic_racial_execution(creature);
     }
 

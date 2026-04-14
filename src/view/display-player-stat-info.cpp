@@ -131,7 +131,7 @@ static void display_basic_stat_value(CreatureEntity &creature, int stat_num, int
 static void process_stats(CreatureEntity &creature, int row, int stat_col)
 {
     for (int i = 0; i < A_MAX; i++) {
-        int r_adj = creature.mimic_form != MimicKindType::NONE ? mimic_info.at(creature.mimic_form).r_adj[i] : creature.race->r_adj[i];
+        int r_adj = creature.get_mimic_form() != MimicKindType::NONE ? mimic_info.at(creature.get_mimic_form()).r_adj[i] : creature.race->r_adj[i];
         int e_adj = calc_basic_stat(creature, i);
         r_adj += compensate_special_race(creature, i);
         e_adj -= r_adj;

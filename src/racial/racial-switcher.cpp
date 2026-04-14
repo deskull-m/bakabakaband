@@ -296,7 +296,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
 
 bool switch_mimic_racial_execution(CreatureEntity &creature)
 {
-    switch (creature.mimic_form) {
+    switch (creature.get_mimic_form()) {
     case MimicKindType::DEMON:
     case MimicKindType::DEMON_LORD: {
         return demonic_breath(creature);

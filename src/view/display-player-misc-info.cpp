@@ -50,7 +50,7 @@ void display_player_misc_info(CreatureEntity &creature)
     put_str(_("職業  :", "Class :"), 5, 1);
 
     c_put_str(TERM_L_BLUE, sp_ptr->title, 3, 9);
-    c_put_str(TERM_L_BLUE, (creature.mimic_form != MimicKindType::NONE ? mimic_info.at(creature.mimic_form).title : creature.race->title), 4, 9);
+    c_put_str(TERM_L_BLUE, (creature.get_mimic_form() != MimicKindType::NONE ? mimic_info.at(creature.get_mimic_form()).title : creature.race->title), 4, 9);
     c_put_str(TERM_L_BLUE, (*creature.pclass_ref).title, 5, 9);
 
     put_str(_("レベル:", "Level :"), 6, 1);

@@ -418,8 +418,8 @@ static void update_max_hitpoints(CreatureEntity &creature)
 
     CreatureClass pc(creature);
     auto is_sorcerer = pc.equals(PlayerClassType::SORCERER);
-    if (creature.mimic_form != MimicKindType::NONE) {
-        auto r_mhp = mimic_info.at(creature.mimic_form).r_mhp;
+    if (creature.get_mimic_form() != MimicKindType::NONE) {
+        auto r_mhp = mimic_info.at(creature.get_mimic_form()).r_mhp;
         const auto mimic_hit_dice = Dice(1, (is_sorcerer ? r_mhp / 2 : r_mhp) + (*creature.pclass_ref).c_mhp + (*creature.personality).a_mhp);
         mhp = mhp * mimic_hit_dice.maxroll() / creature.hit_dice.maxroll();
     }
@@ -1028,8 +1028,8 @@ static ACTION_SKILL_POWER calc_disarming(CreatureEntity &creature)
     ACTION_SKILL_POWER pow;
     const player_race_info *tmp_race_ptr;
 
-    if (creature.mimic_form != MimicKindType::NONE) {
-        tmp_race_ptr = &mimic_info.at(creature.mimic_form);
+    if (creature.get_mimic_form() != MimicKindType::NONE) {
+        tmp_race_ptr = &mimic_info.at(creature.get_mimic_form());
     } else {
         tmp_race_ptr = &race_info[enum2i(creature.prace)];
     }
@@ -1060,8 +1060,8 @@ static ACTION_SKILL_POWER calc_device_ability(CreatureEntity &creature)
     ACTION_SKILL_POWER pow;
     const player_race_info *tmp_race_ptr;
 
-    if (creature.mimic_form != MimicKindType::NONE) {
-        tmp_race_ptr = &mimic_info.at(creature.mimic_form);
+    if (creature.get_mimic_form() != MimicKindType::NONE) {
+        tmp_race_ptr = &mimic_info.at(creature.get_mimic_form());
     } else {
         tmp_race_ptr = &race_info[enum2i(creature.prace)];
     }
@@ -1116,8 +1116,8 @@ static ACTION_SKILL_POWER calc_saving_throw(CreatureEntity &creature)
     ACTION_SKILL_POWER pow;
     const player_race_info *tmp_race_ptr;
 
-    if (creature.mimic_form != MimicKindType::NONE) {
-        tmp_race_ptr = &mimic_info.at(creature.mimic_form);
+    if (creature.get_mimic_form() != MimicKindType::NONE) {
+        tmp_race_ptr = &mimic_info.at(creature.get_mimic_form());
     } else {
         tmp_race_ptr = &race_info[enum2i(creature.prace)];
     }
@@ -1189,8 +1189,8 @@ static ACTION_SKILL_POWER calc_search(CreatureEntity &creature)
     ACTION_SKILL_POWER pow;
     const player_race_info *tmp_race_ptr;
 
-    if (creature.mimic_form != MimicKindType::NONE) {
-        tmp_race_ptr = &mimic_info.at(creature.mimic_form);
+    if (creature.get_mimic_form() != MimicKindType::NONE) {
+        tmp_race_ptr = &mimic_info.at(creature.get_mimic_form());
     } else {
         tmp_race_ptr = &race_info[enum2i(creature.prace)];
     }
@@ -1238,8 +1238,8 @@ static ACTION_SKILL_POWER calc_search_freq(CreatureEntity &creature)
 {
     ACTION_SKILL_POWER pow;
     const player_race_info *tmp_race_ptr;
-    if (creature.mimic_form != MimicKindType::NONE) {
-        tmp_race_ptr = &mimic_info.at(creature.mimic_form);
+    if (creature.get_mimic_form() != MimicKindType::NONE) {
+        tmp_race_ptr = &mimic_info.at(creature.get_mimic_form());
     } else {
         tmp_race_ptr = &race_info[enum2i(creature.prace)];
     }
@@ -1285,8 +1285,8 @@ static ACTION_SKILL_POWER calc_to_hit_melee(CreatureEntity &creature)
     const auto &player_class = class_info.at(creature.pclass);
     const auto &player_personality = personality_info[creature.ppersonality];
     const player_race_info *tmp_race_ptr;
-    if (creature.mimic_form != MimicKindType::NONE) {
-        tmp_race_ptr = &mimic_info.at(creature.mimic_form);
+    if (creature.get_mimic_form() != MimicKindType::NONE) {
+        tmp_race_ptr = &mimic_info.at(creature.get_mimic_form());
     } else {
         tmp_race_ptr = &race_info[enum2i(creature.prace)];
     }
@@ -1309,8 +1309,8 @@ static ACTION_SKILL_POWER calc_to_hit_shoot(CreatureEntity &creature)
     const auto &player_class = class_info.at(creature.pclass);
     const auto &player_personality = personality_info[creature.ppersonality];
     const player_race_info *tmp_race_ptr;
-    if (creature.mimic_form != MimicKindType::NONE) {
-        tmp_race_ptr = &mimic_info.at(creature.mimic_form);
+    if (creature.get_mimic_form() != MimicKindType::NONE) {
+        tmp_race_ptr = &mimic_info.at(creature.get_mimic_form());
     } else {
         tmp_race_ptr = &race_info[enum2i(creature.prace)];
     }
@@ -1334,8 +1334,8 @@ static ACTION_SKILL_POWER calc_to_hit_throw(CreatureEntity &creature)
     const auto &player_class = class_info.at(creature.pclass);
     const auto &player_personality = personality_info[creature.ppersonality];
     const player_race_info *tmp_race_ptr;
-    if (creature.mimic_form != MimicKindType::NONE) {
-        tmp_race_ptr = &mimic_info.at(creature.mimic_form);
+    if (creature.get_mimic_form() != MimicKindType::NONE) {
+        tmp_race_ptr = &mimic_info.at(creature.get_mimic_form());
     } else {
         tmp_race_ptr = &race_info[enum2i(creature.prace)];
     }
@@ -1678,7 +1678,7 @@ static ARMOUR_CLASS calc_to_ac(CreatureEntity &creature, bool is_real_value)
 
     ac += ((int)(adj_dex_ta[creature.stat_index[A_DEX]]) - 128);
 
-    switch (creature.mimic_form) {
+    switch (creature.get_mimic_form()) {
     case MimicKindType::NONE:
         break;
     case MimicKindType::DEMON:
