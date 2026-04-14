@@ -6,12 +6,12 @@
 
 PartyMonsters party_monsters;
 
-MonsterEntity &PartyMonsters::operator[](int i)
+CreatureEntity &PartyMonsters::operator[](int i)
 {
     return monsters_[i];
 }
 
-const MonsterEntity &PartyMonsters::operator[](int i) const
+const CreatureEntity &PartyMonsters::operator[](int i) const
 {
     return monsters_[i];
 }

@@ -160,8 +160,7 @@ void AllianceNibelung::panishment([[maybe_unused]] CreatureEntity &creature)
                 player_ptr.current_floor_ptr->dun_level + 10,
                 SUMMON_DWARF, PM_FORCE_PET | PM_ALLOW_GROUP);
             if (m_idx) {
-                MonsterEntity *m_ptr = &player_ptr.current_floor_ptr->m_list[m_idx];
-                set_monster_hostile(m_ptr);
+                player_ptr.current_floor_ptr->m_list[m_idx].set_hostile();
                 msg_print("ニーベルングの戦士があなたを討伐しにやってきた！");
             }
         }
@@ -199,8 +198,7 @@ void AllianceNibelung::panishment([[maybe_unused]] CreatureEntity &creature)
                 player_ptr.current_floor_ptr->dun_level + 20,
                 SUMMON_DWARF, PM_FORCE_PET | PM_ALLOW_GROUP);
             if (m_idx) {
-                MonsterEntity *m_ptr = &player_ptr.current_floor_ptr->m_list[m_idx];
-                set_monster_hostile(m_ptr);
+                player_ptr.current_floor_ptr->m_list[m_idx].set_hostile();
             }
         }
         return;
@@ -221,8 +219,7 @@ void AllianceNibelung::panishment([[maybe_unused]] CreatureEntity &creature)
             player_ptr.current_floor_ptr->dun_level + 30,
             SUMMON_DWARF, PM_FORCE_PET | PM_ALLOW_GROUP);
         if (m_idx) {
-            MonsterEntity *m_ptr = &player_ptr.current_floor_ptr->m_list[m_idx];
-            set_monster_hostile(m_ptr);
+            player_ptr.current_floor_ptr->m_list[m_idx].set_hostile();
         }
     }
 

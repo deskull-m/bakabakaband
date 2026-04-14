@@ -84,7 +84,7 @@ struct DeathRecord {
 
 /*!
  * @brief プレイヤーとモンスターの共通基底クラス
- * @details PlayerTypeとMonsterEntityの実装を将来的に一元化するための基底クラス。
+ * @details PlayerTypeとモンスターの実装を一元化した基底クラス。
  * 座標、HP、速度、エネルギーなど両者に共通する基本属性を保持する。
  */
 class CreatureEntity {
@@ -709,12 +709,17 @@ public:
     byte get_temporary_speed() const;
 
     /*!
-     * @brief クリーチャーの状態をデフォルト（空）にリセットする
-     * @note モンスターでは *this = {} を行う。プレイヤーではデフォルト実装は何もしない。
+     * @brief モンスター固有データ（MonsterProfile）を初期化する
+     * @details monster_profile を emplace し、時限効果を 0 で初期化する。
+     * 旧 MonsterEntity のコンストラクタ相当の処理。フロアの m_list 初期化等から呼ぶ。
      */
-    virtual void wipe()
-    {
-    }
+    void init_monster_profile();
+
+    /*!
+     * @brief クリーチャーの状態をデフォルト（空）にリセットする
+     * @details モンスター（monster_profile を持つ）の場合は再初期化も行う。
+     */
+    virtual void wipe();
 
     /*!
      * @brief 二つのサブアライメントが敵対しているかどうかを判定
@@ -770,6 +775,15 @@ public:
 
     virtual bool is_time_limit_esp() const;
     virtual bool is_time_limit_stealth() const;
+
+    /*!
+     * @brief クリーチャーのコピーを返す
+     * @return コピーされたクリーチャー
+     */
+    CreatureEntity clone() const
+    {
+        return *this;
+    }
 
     /*!
      * @brief 体力ランク (0-100) を計算する

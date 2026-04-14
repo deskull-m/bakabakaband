@@ -1006,3 +1006,20 @@ bool CreatureEntity::can_ring_boss_call_nazgul() const
     const auto is_nazgul_alive = (nazgul.cur_num + 2) < nazgul.max_num;
     return is_boss && is_nazgul_alive;
 }
+
+void CreatureEntity::init_monster_profile()
+{
+    this->monster_profile.emplace();
+    for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
+        this->get_monster_profile().mtimed[mte] = 0;
+    }
+}
+
+void CreatureEntity::wipe()
+{
+    const bool was_monster = this->has_monster_profile();
+    *this = {};
+    if (was_monster) {
+        this->init_monster_profile();
+    }
+}

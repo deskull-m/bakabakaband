@@ -2,7 +2,7 @@
 
 /*!
  * @brief クリーチャー（プレイヤー・モンスター共通）の時限効果の種別
- * @details PlayerType の TimedEffects および MonsterEntity の mtimed と対応する
+ * @details PlayerType の TimedEffects および MonsterProfile の mtimed と対応する
  */
 enum class CreatureTimedEffect {
     STUN, /*!< 朦朧 / Stun */

@@ -72,7 +72,8 @@ static void compact_monsters_aux(CreatureEntity &creature, MONSTER_IDX i1, MONST
         }
     }
 
-    floor.m_list[i2] = std::exchange(floor.m_list[i1], {});
+    floor.m_list[i2] = std::move(floor.m_list[i1]);
+    floor.m_list[i1].wipe();
 
     for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
         const auto index = floor.get_mproc_index(i1, mte);
