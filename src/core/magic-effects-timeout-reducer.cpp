@@ -197,24 +197,24 @@ void reduce_magic_effects_timeout(CreatureEntity &creature)
         (void)set_tsuyoshi(creature, remaining - 1, true);
     }
 
-    if (creature.oppose_acid) {
-        (void)set_oppose_acid(creature, creature.oppose_acid - 1, true);
+    if (const auto remaining = creature.get_remaining_oppose_acid(); remaining > 0) {
+        (void)set_oppose_acid(creature, remaining - 1, true);
     }
 
-    if (creature.oppose_elec) {
-        (void)set_oppose_elec(creature, creature.oppose_elec - 1, true);
+    if (const auto remaining = creature.get_remaining_oppose_elec(); remaining > 0) {
+        (void)set_oppose_elec(creature, remaining - 1, true);
     }
 
-    if (creature.oppose_fire) {
-        (void)set_oppose_fire(creature, creature.oppose_fire - 1, true);
+    if (const auto remaining = creature.get_remaining_oppose_fire(); remaining > 0) {
+        (void)set_oppose_fire(creature, remaining - 1, true);
     }
 
-    if (creature.oppose_cold) {
-        (void)set_oppose_cold(creature, creature.oppose_cold - 1, true);
+    if (const auto remaining = creature.get_remaining_oppose_cold(); remaining > 0) {
+        (void)set_oppose_cold(creature, remaining - 1, true);
     }
 
-    if (creature.oppose_pois) {
-        (void)set_oppose_pois(creature, creature.oppose_pois - 1, true);
+    if (const auto remaining = creature.get_remaining_oppose_pois(); remaining > 0) {
+        (void)set_oppose_pois(creature, remaining - 1, true);
     }
 
     if (creature.tim_emission) {
