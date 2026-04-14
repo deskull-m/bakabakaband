@@ -369,13 +369,13 @@ void report_magics(CreatureEntity &subject)
             _("あなたは神秘のシールドで守られている", "You are protected by a mystic shield"));
     }
 
-    if (subject.invuln) {
-        info.emplace_back(report_magics_aux(subject.invuln),
+    if (const auto remaining = subject.get_remaining_invulnerability(); remaining > 0) {
+        info.emplace_back(report_magics_aux(remaining),
             _("あなたは無敵だ", "You are invulnerable"));
     }
 
-    if (subject.wraith_form) {
-        info.emplace_back(report_magics_aux(subject.wraith_form),
+    if (const auto remaining = subject.get_remaining_wraith_form(); remaining > 0) {
+        info.emplace_back(report_magics_aux(remaining),
             _("あなたは幽体化している", "You are incorporeal"));
     }
 

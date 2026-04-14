@@ -380,7 +380,7 @@ void process_player_hp_mp(CreatureEntity &creature)
      */
     if (terrain.flags.has_none_of({ TerrainCharacteristics::MOVE, TerrainCharacteristics::CAN_FLY })) {
         auto should_damage = !creature.is_invulnerable();
-        should_damage &= creature.wraith_form == 0;
+        should_damage &= creature.get_remaining_wraith_form() == 0;
         should_damage &= creature.tim_pass_wall == 0;
         should_damage &= (creature.hp > (creature.level / 5)) || !has_pass_wall(creature);
         if (should_damage) {

@@ -33,7 +33,7 @@ void set_body_improvement_info_1(CreatureEntity &creature, self_info_type *self_
         self_ptr->info_list.emplace_back(_("あなたは現在傷つかない。", "You are temporarily invulnerable."));
     }
 
-    if (creature.wraith_form) {
+    if (creature.get_remaining_wraith_form()) {
         self_ptr->info_list.emplace_back(_("あなたは一時的に幽体化している。", "You are temporarily incorporeal."));
     }
 }

@@ -75,7 +75,7 @@ void set_high_resistance_info(CreatureEntity &creature, self_info_type *self_ptr
         self_ptr->info_list.emplace_back(_("あなたは閃光に弱い。", "You are susceptible to damage from bright light."));
     }
 
-    if (has_immune_dark(creature) || creature.wraith_form) {
+    if (has_immune_dark(creature) || creature.get_remaining_wraith_form()) {
         self_ptr->info_list.emplace_back(_("あなたは暗黒に対する完全なる免疫を持っている。", "You are completely immune to darkness."));
     } else if (has_resist_dark(creature)) {
         self_ptr->info_list.emplace_back(_("あなたは暗黒への耐性を持っている。", "You are resistant to darkness."));

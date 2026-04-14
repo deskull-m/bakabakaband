@@ -427,11 +427,11 @@ void effect_player_lite(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 
-    if (!creature.wraith_form || check_multishadow(creature)) {
+    if (!creature.get_remaining_wraith_form() || check_multishadow(creature)) {
         return;
     }
 
-    creature.wraith_form = 0;
+    creature.set_timed_effect(CreatureTimedEffect::WRAITH_FORM, 0);
     msg_print(_("閃光のため非物質的な影の存在でいられなくなった。", "The light forces you out of your incorporeal shadow form."));
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();

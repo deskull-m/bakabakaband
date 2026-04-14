@@ -444,7 +444,7 @@ void print_status(CreatureEntity &creature)
     term_erase(0, row_statbar, max_col_statbar);
     BIT_FLAGS bar_flags[3]{};
     auto effects = creature.effects();
-    if (creature.tsuyoshi) {
+    if (creature.get_remaining_tsuyoshi()) {
         ADD_BAR_FLAG(BAR_TSUYOSHI);
     }
 
@@ -468,7 +468,7 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_POISONED);
     }
 
-    if (creature.tim_invis) {
+    if (creature.get_remaining_tim_invis()) {
         ADD_BAR_FLAG(BAR_SENSEUNSEEN);
     }
 
@@ -482,11 +482,11 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_TELEPATHY);
     }
 
-    if (creature.tim_regen) {
+    if (creature.get_remaining_tim_regen()) {
         ADD_BAR_FLAG(BAR_REGENERATION);
     }
 
-    if (creature.tim_infra) {
+    if (creature.get_remaining_tim_infra()) {
         ADD_BAR_FLAG(BAR_INFRAVISION);
     }
 
@@ -498,7 +498,7 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_INVULN);
     }
 
-    if (creature.wraith_form) {
+    if (creature.get_remaining_wraith_form()) {
         ADD_BAR_FLAG(BAR_WRAITH);
     }
 
@@ -530,7 +530,7 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_EXPAND);
     }
 
-    if (creature.shield) {
+    if (creature.get_remaining_shield()) {
         ADD_BAR_FLAG(BAR_STONESKIN);
     }
 
@@ -603,7 +603,7 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_REGMAGIC);
     }
 
-    if (creature.ult_res) {
+    if (creature.get_remaining_ultimate_resistance()) {
         ADD_BAR_FLAG(BAR_ULTIMATE);
     }
 

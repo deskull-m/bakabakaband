@@ -223,7 +223,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
         return true;
     }
 
-    if (creature.wraith_form) {
+    if (creature.get_remaining_wraith_form()) {
         return true;
     }
 
@@ -311,11 +311,11 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
         }
     }
 
-    if (creature.ult_res) {
+    if (creature.get_remaining_ultimate_resistance()) {
         return true;
     }
 
-    if (creature.tsuyoshi) {
+    if (creature.get_remaining_tsuyoshi()) {
         return true;
     }
 

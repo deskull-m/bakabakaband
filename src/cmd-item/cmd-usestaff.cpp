@@ -181,7 +181,7 @@ int staff_effect(CreatureEntity &creature, int sval, bool *use_charge, bool powe
     }
 
     case SV_STAFF_DETECT_INVIS: {
-        if (set_tim_invis(creature, creature.tim_invis + 12 + randint1(12), false)) {
+        if (set_tim_invis(creature, creature.get_remaining_tim_invis() + 12 + randint1(12), false)) {
             ident = true;
         }
         break;

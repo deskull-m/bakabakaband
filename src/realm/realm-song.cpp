@@ -382,7 +382,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (stop) {
-            if (!creature.tim_stealth) {
+            if (!creature.get_remaining_tim_stealth()) {
                 msg_print(_("姿がはっきりと見えるようになった。", "You are no longer hidden."));
             }
         }

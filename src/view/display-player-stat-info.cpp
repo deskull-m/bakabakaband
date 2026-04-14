@@ -225,7 +225,7 @@ static int compensation_stat_by_mutation(CreatureEntity &creature, int stat)
         if (creature.muta.has(PlayerMutationType::PUNY)) {
             compensation -= 4;
         }
-        if (creature.tsuyoshi) {
+        if (creature.get_remaining_tsuyoshi()) {
             compensation += 4;
         }
         return compensation;
@@ -267,7 +267,7 @@ static int compensation_stat_by_mutation(CreatureEntity &creature, int stat)
         if (creature.muta.has(PlayerMutationType::FLESH_ROT)) {
             compensation -= 2;
         }
-        if (creature.tsuyoshi) {
+        if (creature.get_remaining_tsuyoshi()) {
             compensation += 4;
         }
         return compensation;

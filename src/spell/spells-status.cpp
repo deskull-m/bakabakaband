@@ -650,8 +650,8 @@ bool cosmic_cast_off(CreatureEntity &creature, ItemEntity **o_ptr_ptr)
     BadStatusSetter bss(creature);
     (void)bss.mod_blindness(t);
     (void)bss.set_fear(0);
-    (void)set_tim_esp(creature, creature.tim_esp + t, false);
-    (void)set_tim_regen(creature, creature.tim_regen + t, false);
+    (void)set_tim_esp(creature, creature.get_remaining_tim_esp() + t, false);
+    (void)set_tim_regen(creature, creature.get_remaining_tim_regen() + t, false);
     (void)set_hero(creature, creature.get_remaining_hero() + t, false);
     (void)set_blessed(creature, creature.get_remaining_blessed() + t, false);
     (void)mod_acceleration(creature, t, false);
