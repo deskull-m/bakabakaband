@@ -115,9 +115,9 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
     case SV_POTION_DEATH:
         return this->death();
     case SV_POTION_INFRAVISION:
-        return set_tim_infra(this->creature, this->creature.get_remaining_tim_infra() + 100 + randint1(100), false);
+        return set_tim_infra(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::TIM_INFRA) + 100 + randint1(100), false);
     case SV_POTION_DETECT_INVIS:
-        return set_tim_invis(this->creature, this->creature.get_remaining_tim_invis() + 12 + randint1(12), false);
+        return set_tim_invis(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::TIM_INVIS) + 12 + randint1(12), false);
     case SV_POTION_SLOW_POISON:
         return BadStatusSetter(this->creature).set_poison(this->creature.effects()->poison().current() / 2);
     case SV_POTION_CURE_POISON:
@@ -127,9 +127,9 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
     case SV_POTION_SPEED:
         return this->speed();
     case SV_POTION_RESIST_HEAT:
-        return set_oppose_fire(this->creature, this->creature.get_remaining_oppose_fire() + randint1(10) + 10, false);
+        return set_oppose_fire(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE) + randint1(10) + 10, false);
     case SV_POTION_RESIST_COLD:
-        return set_oppose_cold(this->creature, this->creature.get_remaining_oppose_cold() + randint1(10) + 10, false);
+        return set_oppose_cold(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD) + randint1(10) + 10, false);
     case SV_POTION_HEROISM:
         return heroism(this->creature, 25);
     case SV_POTION_BESERK_STRENGTH:
@@ -195,7 +195,7 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
     case SV_POTION_CURING:
         return true_healing(this->creature, 50);
     case SV_POTION_INVULNERABILITY:
-        (void)set_invuln(this->creature, this->creature.invuln + randint1(4) + 4, false);
+        (void)set_invuln(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY) + randint1(4) + 4, false);
         return true;
     case SV_POTION_NEW_LIFE:
         return this->new_life();
@@ -536,11 +536,11 @@ bool QuaffEffects::experience()
  */
 bool QuaffEffects::resistance()
 {
-    (void)set_oppose_acid(this->creature, this->creature.get_remaining_oppose_acid() + randint1(20) + 20, false);
-    (void)set_oppose_elec(this->creature, this->creature.get_remaining_oppose_elec() + randint1(20) + 20, false);
-    (void)set_oppose_fire(this->creature, this->creature.get_remaining_oppose_fire() + randint1(20) + 20, false);
-    (void)set_oppose_cold(this->creature, this->creature.get_remaining_oppose_cold() + randint1(20) + 20, false);
-    (void)set_oppose_pois(this->creature, this->creature.get_remaining_oppose_pois() + randint1(20) + 20, false);
+    (void)set_oppose_acid(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ACID) + randint1(20) + 20, false);
+    (void)set_oppose_elec(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ELEC) + randint1(20) + 20, false);
+    (void)set_oppose_fire(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE) + randint1(20) + 20, false);
+    (void)set_oppose_cold(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD) + randint1(20) + 20, false);
+    (void)set_oppose_pois(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::OPPOSE_POIS) + randint1(20) + 20, false);
     return true;
 }
 
@@ -564,7 +564,7 @@ bool QuaffEffects::new_life()
 bool QuaffEffects::neo_tsuyoshi()
 {
     (void)BadStatusSetter(this->creature).hallucination(0);
-    (void)set_tsuyoshi(this->creature, this->creature.get_remaining_tsuyoshi() + randint1(100) + 100, false);
+    (void)set_tsuyoshi(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::TSUYOSHI) + randint1(100) + 100, false);
     return true;
 }
 

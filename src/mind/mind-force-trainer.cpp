@@ -110,24 +110,24 @@ void set_lightspeed(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     if (v) {
-        if (creature.lightspeed && !do_dec) {
-            if (creature.lightspeed > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED) > v) {
                 return;
             }
-        } else if (!creature.lightspeed) {
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED)) {
             msg_print(_("非常に素早く動けるようになった！", "You feel yourself moving extremely fast!"));
             notice = true;
             chg_virtue(creature, Virtue::PATIENCE, -1);
             chg_virtue(creature, Virtue::DILIGENCE, 1);
         }
     } else {
-        if (creature.lightspeed) {
+        if (creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED)) {
             msg_print(_("動きの素早さがなくなったようだ。", "You feel yourself slow down."));
             notice = true;
         }
     }
 
-    creature.lightspeed = v;
+    creature.set_timed_effect(CreatureTimedEffect::LIGHTSPEED, v);
 
     if (!notice) {
         return;
@@ -158,22 +158,22 @@ bool set_tim_sh_force(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     if (v) {
-        if (creature.tim_sh_touki && !do_dec) {
-            if (creature.tim_sh_touki > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_TOUKI) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_TOUKI) > v) {
                 return false;
             }
-        } else if (!creature.tim_sh_touki) {
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::TIM_SH_TOUKI)) {
             msg_print(_("体が闘気のオーラで覆われた。", "You are enveloped by an aura of the Force!"));
             notice = true;
         }
     } else {
-        if (creature.tim_sh_touki) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_TOUKI)) {
             msg_print(_("闘気が消えた。", "The aura of the Force disappeared."));
             notice = true;
         }
     }
 
-    creature.tim_sh_touki = v;
+    creature.set_timed_effect(CreatureTimedEffect::TIM_SH_TOUKI, v);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;

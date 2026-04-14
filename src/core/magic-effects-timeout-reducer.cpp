@@ -201,36 +201,36 @@ void reduce_magic_effects_timeout(CreatureEntity &creature)
         (void)set_oppose_acid(creature, creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ACID) - 1, true);
     }
 
-    if (const auto remaining = creature.get_remaining_oppose_elec(); remaining > 0) {
-        (void)set_oppose_elec(creature, remaining - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ELEC)) {
+        (void)set_oppose_elec(creature, creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ELEC) - 1, true);
     }
 
-    if (const auto remaining = creature.get_remaining_oppose_fire(); remaining > 0) {
-        (void)set_oppose_fire(creature, remaining - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE)) {
+        (void)set_oppose_fire(creature, creature.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE) - 1, true);
     }
 
-    if (const auto remaining = creature.get_remaining_oppose_cold(); remaining > 0) {
-        (void)set_oppose_cold(creature, remaining - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD)) {
+        (void)set_oppose_cold(creature, creature.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD) - 1, true);
     }
 
-    if (const auto remaining = creature.get_remaining_oppose_pois(); remaining > 0) {
-        (void)set_oppose_pois(creature, remaining - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_POIS)) {
+        (void)set_oppose_pois(creature, creature.get_timed_effect(CreatureTimedEffect::OPPOSE_POIS) - 1, true);
     }
 
-    if (creature.tim_emission) {
-        (void)set_tim_emission(creature, creature.tim_emission - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_EMISSION)) {
+        (void)set_tim_emission(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_EMISSION) - 1, true);
     }
 
-    if (creature.tim_exorcism) {
-        (void)set_tim_exorcism(creature, creature.tim_exorcism - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM)) {
+        (void)set_tim_exorcism(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM) - 1, true);
     }
 
-    if (creature.tim_imm_dark) {
-        (void)set_tim_imm_dark(creature, creature.tim_imm_dark - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_IMM_DARK)) {
+        (void)set_tim_imm_dark(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_IMM_DARK) - 1, true);
     }
 
-    if (const auto remaining = creature.get_remaining_ultimate_resistance(); remaining > 0) {
-        (void)set_ultimate_res(creature, remaining - 1, true);
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
+        (void)set_ultimate_res(creature, creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) - 1, true);
     }
 
     if (effects->poison().is_poisoned()) {

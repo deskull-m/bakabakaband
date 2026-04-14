@@ -99,8 +99,8 @@ bool set_tim_stealth(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     if (v) {
-        if (creature.tim_stealth && !do_dec) {
-            if (creature.tim_stealth > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_STEALTH) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::TIM_STEALTH) > v) {
                 return false;
             }
         } else if (!creature.is_time_limit_stealth()) {
@@ -108,13 +108,13 @@ bool set_tim_stealth(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
             notice = true;
         }
     } else {
-        if (creature.tim_stealth && !music_singing(creature, MUSIC_STEALTH)) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_STEALTH) && !music_singing(creature, MUSIC_STEALTH)) {
             msg_print(_("足音が大きくなった。", "You no longer walk silently."));
             notice = true;
         }
     }
 
-    creature.tim_stealth = v;
+    creature.set_timed_effect(CreatureTimedEffect::TIM_STEALTH, v);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {

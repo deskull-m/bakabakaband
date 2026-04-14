@@ -190,7 +190,7 @@ static void process_light_equipment_characteristics(CreatureEntity &creature, al
         }
     }
 
-    if (creature.tim_emission > 0) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_EMISSION) > 0) {
         char_stat.syms.emplace_back("#");
         char_stat.has_tim = true;
         return;

@@ -60,7 +60,7 @@ int16_t PlayerInfravision::mutation_bonus()
 int16_t PlayerInfravision::time_effect_bonus()
 {
     int16_t bonus = 0;
-    if (this->creature.get_remaining_tim_infra()) {
+    if (this->creature.get_timed_effect(CreatureTimedEffect::TIM_INFRA)) {
         bonus += 3;
     }
 

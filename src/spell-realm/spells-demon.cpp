@@ -24,22 +24,22 @@ bool set_tim_sh_fire(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     if (v) {
-        if (creature.tim_sh_fire && !do_dec) {
-            if (creature.tim_sh_fire > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_FIRE) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_FIRE) > v) {
                 return false;
             }
-        } else if (!creature.tim_sh_fire) {
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::TIM_SH_FIRE)) {
             msg_print(_("体が炎のオーラで覆われた。", "You are enveloped by a fiery aura!"));
             notice = true;
         }
     } else {
-        if (creature.tim_sh_fire) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_FIRE)) {
             msg_print(_("炎のオーラが消えた。", "The fiery aura disappeared."));
             notice = true;
         }
     }
 
-    creature.tim_sh_fire = v;
+    creature.set_timed_effect(CreatureTimedEffect::TIM_SH_FIRE, v);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
 

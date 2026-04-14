@@ -6,10 +6,11 @@
 #include "player-info/samurai-data-type.h"
 #include "player/attack-defense-types.h"
 #include "player/special-defense-types.h"
+#include "system/creature-entity.h"
 
 void rd_special_attack(CreatureEntity &creature)
 {
-    creature.ele_attack = rd_s16b();
+    creature.set_timed_effect(CreatureTimedEffect::ELE_ATTACK, rd_s16b());
     creature.special_attack = rd_u32b();
 }
 
@@ -27,7 +28,7 @@ void rd_special_action(CreatureEntity &creature)
 
 void rd_special_defense(CreatureEntity &creature)
 {
-    creature.ele_immune = rd_s16b();
+    creature.set_timed_effect(CreatureTimedEffect::ELE_IMMUNE, rd_s16b());
     creature.special_defense = rd_u32b();
 }
 

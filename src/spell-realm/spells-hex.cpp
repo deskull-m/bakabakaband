@@ -368,7 +368,7 @@ void SpellHex::interrupt_spelling()
 void SpellHex::eyes_on_eyes(MONSTER_IDX m_idx, int dam)
 {
     auto &creature = this->creature;
-    const auto is_eyeeye_finished = (this->creature.tim_eyeeye == 0) && !this->is_spelling_specific(HEX_EYE_FOR_EYE);
+    const auto is_eyeeye_finished = (this->creature.get_timed_effect(CreatureTimedEffect::TIM_EYEEYE) == 0) && !this->is_spelling_specific(HEX_EYE_FOR_EYE);
     if (is_eyeeye_finished || (dam == 0) || this->creature.is_dead()) {
         return;
     }
@@ -384,8 +384,8 @@ void SpellHex::eyes_on_eyes(MONSTER_IDX m_idx, int dam)
     const auto y = monster.y;
     const auto x = monster.x;
     project(creature, 0, 0, y, x, dam, AttributeType::MISSILE, PROJECT_KILL);
-    if (this->creature.tim_eyeeye) {
-        set_tim_eyeeye(creature, this->creature.tim_eyeeye - 5, true);
+    if (this->creature.get_timed_effect(CreatureTimedEffect::TIM_EYEEYE)) {
+        set_tim_eyeeye(creature, this->creature.get_timed_effect(CreatureTimedEffect::TIM_EYEEYE) - 5, true);
     }
 }
 

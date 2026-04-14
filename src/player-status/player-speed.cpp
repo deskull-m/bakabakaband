@@ -207,7 +207,7 @@ int16_t PlayerSpeed::time_effect_bonus()
         bonus -= 10;
     }
 
-    if (this->creature.lightspeed) {
+    if (this->creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED)) {
         bonus += 999;
     }
 

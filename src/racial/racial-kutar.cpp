@@ -24,22 +24,22 @@ bool set_leveling(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     if (v) {
-        if (creature.tsubureru && !do_dec) {
-            if (creature.tsubureru > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TSUBURERU) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::TSUBURERU) > v) {
                 return false;
             }
-        } else if (!creature.tsubureru) {
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::TSUBURERU)) {
             msg_print(_("横に伸びた。", "Your body expands horizontally."));
             notice = true;
         }
     } else {
-        if (creature.tsubureru) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TSUBURERU)) {
             msg_print(_("もう横に伸びていない。", "Your body returns to normal."));
             notice = true;
         }
     }
 
-    creature.tsubureru = v;
+    creature.set_timed_effect(CreatureTimedEffect::TSUBURERU, v);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {

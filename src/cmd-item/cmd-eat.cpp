@@ -160,7 +160,7 @@ static bool exe_eat_corpse_type_object(CreatureEntity &creature, ItemEntity *o_p
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::BERSERKER)) {
-        set_berserk(creature, creature.get_remaining_berserk() + randint1(10) + 10, false);
+        set_berserk(creature, creature.get_timed_effect(CreatureTimedEffect::BERSERK) + randint1(10) + 10, false);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::ACIDIC)) {

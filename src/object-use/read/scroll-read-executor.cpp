@@ -291,19 +291,19 @@ bool ScrollReadExecutor::read()
         break;
     }
     case SV_SCROLL_BLESSING:
-        if (set_blessed(this->creature, this->creature.get_remaining_blessed() + randint1(12) + 6, false)) {
+        if (set_blessed(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::BLESSED) + randint1(12) + 6, false)) {
             this->ident = true;
         }
 
         break;
     case SV_SCROLL_HOLY_CHANT:
-        if (set_blessed(this->creature, this->creature.get_remaining_blessed() + randint1(24) + 12, false)) {
+        if (set_blessed(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::BLESSED) + randint1(24) + 12, false)) {
             this->ident = true;
         }
 
         break;
     case SV_SCROLL_HOLY_PRAYER:
-        if (set_blessed(this->creature, this->creature.get_remaining_blessed() + randint1(48) + 24, false)) {
+        if (set_blessed(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::BLESSED) + randint1(48) + 24, false)) {
             this->ident = true;
         }
 
