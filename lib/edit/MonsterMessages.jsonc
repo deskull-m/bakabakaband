@@ -8335,18 +8335,6 @@
                     }
                 },
                 {
-                    "action": "SPEAK_FRIEND",
-                    "chance": 8,
-                    "message": {
-                        "ja": [
-                            ""
-                        ],
-                        "en": [
-                            ""
-                        ]
-                    }
-                },
-                {
                     "action": "SPEAK_DEATH",
                     "chance": 1,
                     "message": {
