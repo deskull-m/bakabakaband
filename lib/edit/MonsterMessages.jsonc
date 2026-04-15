@@ -7964,6 +7964,27 @@
             ]
         },
         {
+            "id_list": [
+                2344 /*亡霊『はらへりじじい』/ Hungry old man, the ghost (hengband#5180 相当)*/
+            ],
+            "message": [
+                {
+                    "action": "SPEAK_ALL",
+                    "chance": 8,
+                    "message": {
+                        "ja": [
+                            "「おにぎりをくれぇ！ おにぎりをくれぇぇーー！」",
+                            "「うはっ、うはははははーーーーーー！」"
+                        ],
+                        "en": [
+                            "says, 'Give me food! Give me food!'",
+                            "says, 'Uh, Uhhhhhhhhhhhhhhhhhhh!'"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
             "name": "DEFAULT",
             "message": [
                 {

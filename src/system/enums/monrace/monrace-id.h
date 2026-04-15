@@ -323,6 +323,6 @@ enum class MonraceId : int16_t {
     IDE = 2277,
     KING_SHIN = 2281,
     KING_SOLDIER = 2282,
-    POLYGON_SPIN = -1, // TODO: 変愚から後日移植
-    HUNGRY_OLD_MAN = -2 // TODO: 変愚から後日移植
+    POLYGON_SPIN = 2343, // まわるポリゴン（hengband#5180 相当）
+    HUNGRY_OLD_MAN = 2344, // 亡霊『はらへりじじい』（hengband#5180 相当）
 };
