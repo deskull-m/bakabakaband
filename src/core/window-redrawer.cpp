@@ -39,7 +39,7 @@ void redraw_window()
     }
 
     RedrawingFlagsUpdater::get_instance().fill_up_sub_flags();
-    handle_stuff(*p_ptr);
+    handle_stuff(PlayerType::get_instance());
     term_redraw();
 }
 

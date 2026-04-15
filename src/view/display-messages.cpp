@@ -295,7 +295,7 @@ void msg_print(std::string_view msg)
     const auto split_width = wid - 8;
 
     if ((msg_head_pos > 0) && ((msg_head_pos + std::ssize(msg)) > split_width)) {
-        msg_flush(*p_ptr, msg_head_pos);
+        msg_flush(PlayerType::get_instance(), msg_head_pos);
         msg_flag = false;
         msg_head_pos = 0;
     }
@@ -311,13 +311,13 @@ void msg_print(std::string_view msg)
     while (std::ssize(msg) > split_width) {
         auto split = split_length(msg, split_width);
         term_putstr(0, 0, split, TERM_WHITE, msg.data());
-        msg_flush(*p_ptr, split + 1);
+        msg_flush(PlayerType::get_instance(), split + 1);
         msg.remove_prefix(split);
     }
 
     term_putstr(msg_head_pos, 0, msg.size(), TERM_WHITE, msg.data());
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MESSAGE);
-    window_stuff(*p_ptr);
+    window_stuff(PlayerType::get_instance());
 
     msg_flag = true;
     msg_head_pos += msg.size() + _(0, 1);
@@ -339,7 +339,7 @@ void msg_erase()
     }
 
     if (msg_head_pos > 0) {
-        msg_flush(*p_ptr, msg_head_pos);
+        msg_flush(PlayerType::get_instance(), msg_head_pos);
         msg_flag = false;
         msg_head_pos = 0;
     }

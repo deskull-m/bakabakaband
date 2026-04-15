@@ -198,7 +198,7 @@ tl::optional<std::string> input_string(std::string_view prompt, int len, std::st
  */
 bool input_check(std::string_view prompt)
 {
-    return input_check_strict(*p_ptr, prompt, UserCheck::NONE);
+    return input_check_strict(PlayerType::get_instance(), prompt, UserCheck::NONE);
 }
 
 /*!

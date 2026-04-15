@@ -68,25 +68,25 @@ static void handle_signal_simple(int sig)
     }
 
     signal_count++;
-    auto &floor = *p_ptr->get_floor();
-    if (p_ptr->is_dead()) {
-        p_ptr->died_from = _("強制終了", "Abortion");
+    auto &floor = *PlayerType::get_instance().get_floor();
+    if (PlayerType::get_instance().is_dead()) {
+        PlayerType::get_instance().died_from = _("強制終了", "Abortion");
         floor.forget_lite();
         floor.forget_view();
         floor.forget_mon_lite();
-        close_game(*p_ptr);
+        close_game(PlayerType::get_instance());
         quit(_("強制終了", "interrupt"));
     } else if (signal_count >= 5) {
-        p_ptr->died_from = _("強制終了中", "Interrupting");
+        PlayerType::get_instance().died_from = _("強制終了中", "Interrupting");
         floor.forget_lite();
         floor.forget_view();
         floor.forget_mon_lite();
-        p_ptr->playing = false;
+        PlayerType::get_instance().playing = false;
         if (!cheat_immortal) {
-            p_ptr->is_dead_ = true;
+            PlayerType::get_instance().is_dead_ = true;
         }
-        p_ptr->leaving = true;
-        close_game(*p_ptr);
+        PlayerType::get_instance().leaving = true;
+        close_game(PlayerType::get_instance());
         quit(_("強制終了", "interrupt"));
     } else if (signal_count >= 4) {
         term_xtra(TERM_XTRA_NOISE, 0);
@@ -126,7 +126,7 @@ static void handle_signal_abort(int sig)
         quit("");
     }
 
-    auto &floor = *p_ptr->get_floor();
+    auto &floor = *PlayerType::get_instance().get_floor();
     floor.forget_lite();
     floor.forget_view();
     floor.forget_mon_lite();
@@ -140,11 +140,11 @@ static void handle_signal_abort(int sig)
     term_fresh();
 
     AngbandSystem::get_instance().set_panic_save(true);
-    p_ptr->died_from = _("(緊急セーブ)", "(panic save)");
+    PlayerType::get_instance().died_from = _("(緊急セーブ)", "(panic save)");
 
     signals_ignore_tstp();
 
-    if (save_player(*p_ptr, SaveType::CLOSE_GAME)) {
+    if (save_player(PlayerType::get_instance(), SaveType::CLOSE_GAME)) {
         term_putstr(45, hgt - 1, -1, TERM_RED, _("緊急セーブ成功！", "Panic save succeeded!"));
     } else {
         term_putstr(45, hgt - 1, -1, TERM_RED, _("緊急セーブ失敗！", "Panic save failed!"));
