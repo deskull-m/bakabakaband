@@ -2568,6 +2568,7 @@ errr init_x11(int argc, char *argv[])
     }
 
 #ifndef USE_XFT
+    char filename[1024]{};
     switch (arg_graphics) {
     case GRAPHICS_ORIGINAL: {
         const auto &path = path_build(ANGBAND_DIR_XTRA, "graf/8x8.bmp");
@@ -2575,6 +2576,7 @@ errr init_x11(int argc, char *argv[])
             use_graphics = true;
             pict_wid = pict_hgt = 8;
             ANGBAND_GRAF = "old";
+            angband_strcpy(filename, path.string().data(), sizeof(filename));
         }
         break;
     }
@@ -2584,6 +2586,7 @@ errr init_x11(int argc, char *argv[])
             use_graphics = true;
             pict_wid = pict_hgt = 16;
             ANGBAND_GRAF = "new";
+            angband_strcpy(filename, path.string().data(), sizeof(filename));
         }
         break;
     }
@@ -2592,7 +2595,6 @@ errr init_x11(int argc, char *argv[])
     if (use_graphics) {
         Display *dpy = Metadpy->dpy;
         XImage *tiles_raw;
-        char filename[1024]{};
         tiles_raw = ReadBMP(dpy, filename);
         for (i = 0; i < num_term; i++) {
             term_data *td = &data[i];
