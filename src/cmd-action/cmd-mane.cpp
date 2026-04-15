@@ -829,7 +829,7 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_CYBER: {
-        int max_cyber = (creature.current_floor_ptr->dun_level / 50) + randint1(3);
+        int max_cyber = (creature.get_floor()->dun_level / 50) + randint1(3);
         const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;

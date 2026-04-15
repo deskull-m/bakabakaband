@@ -40,7 +40,7 @@ bool cast_berserk_spell(CreatureEntity &creature, MindBerserkerType spell)
         }
 
         const auto pos = creature.get_neighbor(dir);
-        const auto &floor = *creature.current_floor_ptr;
+        const auto &floor = *creature.get_floor();
         const auto &grid = floor.get_grid(pos);
         if (!grid.has_monster()) {
             msg_print(_("その方向にはモンスターはいません。", "There is no monster."));

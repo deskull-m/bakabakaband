@@ -37,7 +37,7 @@
  */
 bool affect_item(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, POSITION y, POSITION x, int dam, AttributeType typ)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const Pos2D pos(y, x);
     const auto &grid = floor.get_grid(pos);
 
@@ -48,7 +48,7 @@ bool affect_item(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, POSI
     std::vector<OBJECT_IDX> delete_i_idx_list;
     std::vector<short> affected_potions;
     for (const auto this_o_idx : grid.o_idx_list) {
-        auto &item = *creature.current_floor_ptr->o_list[this_o_idx];
+        auto &item = *creature.get_floor()->o_list[this_o_idx];
         auto ignore = false;
         auto do_kill = false;
         concptr note_kill = nullptr;
@@ -225,7 +225,7 @@ bool affect_item(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, POSI
             }
 
             BIT_FLAGS mode = 0L;
-            if (is_player(src_idx) || creature.current_floor_ptr->get_monster(src_idx).is_pet()) {
+            if (is_player(src_idx) || creature.get_floor()->get_monster(src_idx).is_pet()) {
                 mode |= PM_FORCE_PET;
             }
 

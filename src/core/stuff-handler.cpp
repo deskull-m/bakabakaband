@@ -53,7 +53,7 @@ void object_kind_track(CreatureEntity &creature, short bi_id)
  */
 void health_track(CreatureEntity &creature, short m_idx)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     if (monster.is_riding()) {
         return;

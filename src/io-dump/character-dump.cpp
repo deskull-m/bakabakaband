@@ -58,7 +58,7 @@
  */
 static void dump_aux_pet(CreatureEntity &creature, FILE *fff)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     auto pet = false;
     auto pet_settings = false;
     for (auto i = floor.m_max - 1; i >= 1; i--) {

@@ -157,10 +157,10 @@ void AllianceNibelung::panishment([[maybe_unused]] CreatureEntity &creature)
         // ドワーフの戦士を召喚
         for (int i = 0; i < randint1(3) + 1; i++) {
             MONSTER_IDX m_idx = summon_specific(&player_ptr, 0, player_ptr.y, player_ptr.x,
-                player_ptr.current_floor_ptr->dun_level + 10,
+                player_ptr.get_floor()->dun_level + 10,
                 SUMMON_DWARF, PM_FORCE_PET | PM_ALLOW_GROUP);
             if (m_idx) {
-                player_ptr.current_floor_ptr->m_list[m_idx].set_hostile();
+                player_ptr.get_floor()->m_list[m_idx].set_hostile();
                 msg_print("ニーベルングの戦士があなたを討伐しにやってきた！");
             }
         }
@@ -195,10 +195,10 @@ void AllianceNibelung::panishment([[maybe_unused]] CreatureEntity &creature)
         // より強力なドワーフ軍団を召喚
         for (int i = 0; i < randint1(4) + 2; i++) {
             MONSTER_IDX m_idx = summon_specific(&player_ptr, 0, player_ptr.y, player_ptr.x,
-                player_ptr.current_floor_ptr->dun_level + 20,
+                player_ptr.get_floor()->dun_level + 20,
                 SUMMON_DWARF, PM_FORCE_PET | PM_ALLOW_GROUP);
             if (m_idx) {
-                player_ptr.current_floor_ptr->m_list[m_idx].set_hostile();
+                player_ptr.get_floor()->m_list[m_idx].set_hostile();
             }
         }
         return;
@@ -216,10 +216,10 @@ void AllianceNibelung::panishment([[maybe_unused]] CreatureEntity &creature)
     // 大量のドワーフ軍団召喚
     for (int i = 0; i < randint1(6) + 4; i++) {
         MONSTER_IDX m_idx = summon_specific(&player_ptr, 0, player_ptr.y, player_ptr.x,
-            player_ptr.current_floor_ptr->dun_level + 30,
+            player_ptr.get_floor()->dun_level + 30,
             SUMMON_DWARF, PM_FORCE_PET | PM_ALLOW_GROUP);
         if (m_idx) {
-            player_ptr.current_floor_ptr->m_list[m_idx].set_hostile();
+            player_ptr.get_floor()->m_list[m_idx].set_hostile();
         }
     }
 

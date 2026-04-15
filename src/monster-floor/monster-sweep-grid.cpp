@@ -33,7 +33,7 @@ namespace {
  */
 bool mon_will_run(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     if (monrace.behavior_flags.has(MonsterBehaviorType::TIMID)) {
         return true;
@@ -114,7 +114,7 @@ public:
      */
     static Pos2D run_away(CreatureEntity &creature, MONSTER_IDX m_idx, const Pos2D &pos_move)
     {
-        const auto &floor = *creature.current_floor_ptr;
+        const auto &floor = *creature.get_floor();
         const auto &monster = floor.get_monster(m_idx);
         const auto &monrace = monster.get_monrace();
         const auto m_pos = monster.get_position();
@@ -164,7 +164,7 @@ public:
 
     tl::optional<Pos2D> decide_move_grid() const override
     {
-        const auto &floor = *this->creature_ptr->current_floor_ptr;
+        const auto &floor = *this->creature_ptr->get_floor();
         const auto &monster = floor.get_monster(this->m_idx);
         const auto pos_target = monster.get_target_position();
         const auto t_m_idx = floor.get_grid(pos_target).m_idx;
@@ -201,7 +201,7 @@ public:
 
     tl::optional<Pos2D> decide_move_grid() const override
     {
-        const auto &floor = *this->creature_ptr->current_floor_ptr;
+        const auto &floor = *this->creature_ptr->get_floor();
         const auto &monrace = floor.get_monster(this->m_idx).get_monrace();
         const auto p_pos = this->creature_ptr->get_position();
 
@@ -251,7 +251,7 @@ public:
 
     tl::optional<Pos2D> decide_move_grid() const override
     {
-        const auto &floor = *this->creature_ptr->current_floor_ptr;
+        const auto &floor = *this->creature_ptr->get_floor();
         const auto &monster = floor.get_monster(this->m_idx);
         const auto &monrace = monster.get_monrace();
         const auto p_pos = this->creature_ptr->get_position();
@@ -294,7 +294,7 @@ public:
 
     tl::optional<Pos2D> decide_move_grid() const override
     {
-        const auto &floor = *this->creature_ptr->current_floor_ptr;
+        const auto &floor = *this->creature_ptr->get_floor();
         const auto &monster = floor.get_monster(this->m_idx);
         const auto &monrace = monster.get_monrace();
         const auto p_pos = this->creature_ptr->get_position();
@@ -377,7 +377,7 @@ public:
 
     tl::optional<Pos2D> decide_move_grid() const override
     {
-        const auto &floor = *this->creature_ptr->current_floor_ptr;
+        const auto &floor = *this->creature_ptr->get_floor();
         const auto &monster = floor.get_monster(this->m_idx);
         const auto &monrace = monster.get_monrace();
         const auto p_pos = this->creature_ptr->get_position();
@@ -423,7 +423,7 @@ public:
 
     tl::optional<Pos2D> decide_move_grid() const override
     {
-        const auto &floor = *this->creature_ptr->current_floor_ptr;
+        const auto &floor = *this->creature_ptr->get_floor();
         const auto &monster = floor.get_monster(this->m_idx);
         const auto p_pos = this->creature_ptr->get_position();
         const auto m_pos = monster.get_position();
@@ -458,7 +458,7 @@ class MonsterMoveGridDecidersFactory {
 public:
     static std::vector<std::unique_ptr<const MonsterMoveGridDecider>> create_deciders(CreatureEntity *creature_ptr, MONSTER_IDX m_idx)
     {
-        const auto &floor = *creature_ptr->current_floor_ptr;
+        const auto &floor = *creature_ptr->get_floor();
         const auto &monster = floor.get_monster(m_idx);
         const auto &monrace = monster.get_monrace();
         const auto will_run = mon_will_run(*creature_ptr, m_idx);
@@ -532,7 +532,7 @@ tl::optional<MonsterMovementDirectionList> MonsterSweepGrid::get_movable_grid()
         pos_move = MonsterMoveGridDecider::run_away(*this->creature_ptr, this->m_idx, pos_move);
     }
 
-    const auto &floor = *this->creature_ptr->current_floor_ptr;
+    const auto &floor = *this->creature_ptr->get_floor();
     const auto &monster = floor.get_monster(this->m_idx);
     const auto vec = monster.get_position() - pos_move;
 

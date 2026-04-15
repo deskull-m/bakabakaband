@@ -14,7 +14,7 @@
 
 bool vampirism(CreatureEntity &creature)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::NO_MELEE)) {
         msg_print(_("なぜか攻撃することができない。", "Something prevents you from attacking."));
         return false;

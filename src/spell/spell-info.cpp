@@ -129,7 +129,7 @@ PERCENTAGE spell_chance(CreatureEntity &creature, SPELL_IDX spell_id, RealmType 
     chance -= 3 * (creature.level - spell.slevel);
     chance -= 3 * (adj_mag_stat[creature.stat_index[mp_ptr->spell_stat]] - 1);
     if (creature.riding) {
-        const auto &riding_monrace = creature.current_floor_ptr->get_monster(creature.riding).get_monrace();
+        const auto &riding_monrace = creature.get_floor()->get_monster(creature.riding).get_monrace();
         chance += (std::max(riding_monrace.level - creature.skill_exp[PlayerSkillKindType::RIDING] / 100 - 10, 0));
     }
 

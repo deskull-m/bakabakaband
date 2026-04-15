@@ -65,7 +65,7 @@ void AllianceHafu::panishment(CreatureEntity &creature)
     /*
 if (one_in_(18)) {
     Pos2D m_pos(player_ptr.get_position());
-    m_pos = scatter(*player_ptr.current_floor_ptr, m_pos, 12, PROJECT_NONE);
+    m_pos = scatter(*player_ptr.get_floor(), m_pos, 12, PROJECT_NONE);
 
     // 覇府の威信レベルに応じて異なる討伐隊を派遣
     MonraceId avenger_id;
@@ -99,7 +99,7 @@ if (one_in_(18)) {
 
         for (int k = 0; k < retainer_count; k++) {
             summon_specific(&player_ptr, m_pos.y, m_pos.x,
-                std::max(player_ptr.current_floor_ptr->monster_level, 10),
+                std::max(player_ptr.get_floor()->monster_level, 10),
                 SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
         }
     }

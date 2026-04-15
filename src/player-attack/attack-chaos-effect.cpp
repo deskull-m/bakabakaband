@@ -64,7 +64,7 @@ static void attack_confuse(CreatureEntity &creature, player_attack_type *pa_ptr,
         msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
     } else {
         msg_format(_("%s^は混乱したようだ。", "%s^ appears confused."), pa_ptr->m_name);
-        (void)set_monster_confused(*creature.current_floor_ptr, pa_ptr->m_idx, pa_ptr->m_ptr->get_remaining_confusion() + 10 + randint0(creature.level) / 5);
+        (void)set_monster_confused(*creature.get_floor(), pa_ptr->m_idx, pa_ptr->m_ptr->get_remaining_confusion() + 10 + randint0(creature.level) / 5);
     }
 }
 
@@ -88,7 +88,7 @@ static void attack_stun(CreatureEntity &creature, player_attack_type *pa_ptr, bo
         msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
     } else {
         msg_format(_("%s^は朦朧としたようだ。", "%s^ appears stunned."), pa_ptr->m_name);
-        (void)set_monster_stunned(*creature.current_floor_ptr, pa_ptr->m_idx, pa_ptr->m_ptr->get_remaining_stun() + 10 + randint0(creature.level) / 5);
+        (void)set_monster_stunned(*creature.get_floor(), pa_ptr->m_idx, pa_ptr->m_ptr->get_remaining_stun() + 10 + randint0(creature.level) / 5);
     }
 }
 
@@ -112,7 +112,7 @@ static void attack_scare(CreatureEntity &creature, player_attack_type *pa_ptr, b
         msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
     } else {
         msg_format(_("%s^は恐怖して逃げ出した！", "%s^ flees in terror!"), pa_ptr->m_name);
-        (void)set_monster_monfear(*creature.current_floor_ptr, pa_ptr->m_idx, pa_ptr->m_ptr->get_remaining_fear() + 10 + randint0(creature.level) / 5);
+        (void)set_monster_monfear(*creature.get_floor(), pa_ptr->m_idx, pa_ptr->m_ptr->get_remaining_fear() + 10 + randint0(creature.level) / 5);
     }
 }
 
@@ -242,7 +242,7 @@ static void attack_polymorph(CreatureEntity &creature, player_attack_type *pa_pt
         msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
     }
 
-    pa_ptr->m_ptr = &creature.current_floor_ptr->get_monster(pa_ptr->m_idx);
+    pa_ptr->m_ptr = &creature.get_floor()->get_monster(pa_ptr->m_idx);
     angband_strcpy(pa_ptr->m_name, monster_desc(creature, *pa_ptr->m_ptr, 0), sizeof(pa_ptr->m_name));
 }
 
@@ -253,7 +253,7 @@ static void attack_polymorph(CreatureEntity &creature, player_attack_type *pa_pt
  */
 static void attack_golden_hammer(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &monster = floor.get_monster(pa_ptr->m_idx);
     if (monster.get_monster_profile().hold_o_idx_list.empty()) {
         return;

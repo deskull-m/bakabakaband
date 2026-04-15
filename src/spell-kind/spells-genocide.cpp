@@ -41,7 +41,7 @@
  */
 bool genocide_aux(CreatureEntity &creature, MONSTER_IDX m_idx, int power, bool player_cast, int dam_side, concptr spell_name)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &monster = floor.get_monster(m_idx);
     auto &monrace = monster.get_monrace();
     if (monster.is_pet() && !player_cast) {
@@ -80,7 +80,7 @@ bool genocide_aux(CreatureEntity &creature, MONSTER_IDX m_idx, int power, bool p
         }
 
         if (monster.is_asleep()) {
-            (void)set_monster_csleep(*creature.current_floor_ptr, m_idx, 0);
+            (void)set_monster_csleep(*creature.get_floor(), m_idx, 0);
             if (monster.get_monster_profile().ml) {
                 msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
             }
@@ -121,7 +121,7 @@ bool genocide_aux(CreatureEntity &creature, MONSTER_IDX m_idx, int power, bool p
  */
 bool symbol_genocide(CreatureEntity &creature, int power, bool player_cast)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     bool is_special_floor = floor.is_in_quest() && !inside_quest(floor.get_random_quest_id());
     is_special_floor |= floor.inside_arena;
     is_special_floor |= AngbandSystem::get_instance().is_phase_out();
@@ -168,7 +168,7 @@ bool symbol_genocide(CreatureEntity &creature, int power, bool player_cast)
  */
 bool mass_genocide(CreatureEntity &creature, int power, bool player_cast)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     bool is_special_floor = floor.is_in_quest() && !inside_quest(floor.get_random_quest_id());
     is_special_floor |= floor.inside_arena;
     is_special_floor |= AngbandSystem::get_instance().is_phase_out();
@@ -205,7 +205,7 @@ bool mass_genocide(CreatureEntity &creature, int power, bool player_cast)
  */
 bool mass_genocide_undead(CreatureEntity &creature, int power, bool player_cast)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     bool is_special_floor = floor.is_in_quest() && !inside_quest(floor.get_random_quest_id());
     is_special_floor |= floor.inside_arena;
     is_special_floor |= AngbandSystem::get_instance().is_phase_out();

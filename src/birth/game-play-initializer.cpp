@@ -46,7 +46,7 @@ void player_wipe_without_name(CreatureEntity &creature)
     creature.wipe();
 
     // TODO: キャラ作成からゲーム開始までに  current_floor_ptr を参照しなければならない処理は今後整理して外す。
-    creature.current_floor_ptr = &FloorList::get_instance().get_floor(0);
+    creature.set_floor(&FloorList::get_instance().get_floor(0));
     for (int i = 0; i < 4; i++) {
         creature.history[i][0] = '\0';
     }
@@ -149,7 +149,7 @@ void player_wipe_without_name(CreatureEntity &creature)
 void init_dungeon_quests(CreatureEntity &creature)
 {
     init_flags = INIT_ASSIGN;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &quests = QuestList::get_instance();
     floor.quest_number = QuestId::RANDOM_QUEST1;
     parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);

@@ -56,7 +56,7 @@ bool exe_tunnel(CreatureEntity &creature, POSITION y, POSITION x)
 {
     auto more = false;
     const Pos2D pos(y, x);
-    const auto &grid = creature.current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     if (!do_cmd_tunnel_test(grid)) {
         return false;
     }

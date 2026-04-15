@@ -169,7 +169,7 @@ static bool check_same_monster(CreatureEntity &creature, mam_type *mam_ptr)
         return false;
     }
 
-    if (creature.current_floor_ptr->get_dungeon_definition().flags.has(DungeonFeatureType::NO_MELEE)) {
+    if (creature.get_floor()->get_dungeon_definition().flags.has(DungeonFeatureType::NO_MELEE)) {
         return false;
     }
 
@@ -239,11 +239,11 @@ static void process_melee(CreatureEntity &creature, mam_type *mam_ptr)
 {
     const auto remaining_stun = mam_ptr->m_ptr->get_remaining_stun();
     if (mam_ptr->effect != RaceBlowEffectType::NONE && !check_hit_from_monster_to_monster(mam_ptr->power, mam_ptr->rlev, mam_ptr->ac, remaining_stun)) {
-        describe_monster_missed_monster(*creature.current_floor_ptr, mam_ptr);
+        describe_monster_missed_monster(*creature.get_floor(), mam_ptr);
         return;
     }
 
-    (void)set_monster_csleep(*creature.current_floor_ptr, mam_ptr->t_idx, 0);
+    (void)set_monster_csleep(*creature.get_floor(), mam_ptr->t_idx, 0);
     redraw_health_bar(mam_ptr);
     describe_melee_method(mam_ptr);
     describe_silly_melee(mam_ptr);
@@ -262,7 +262,7 @@ static void thief_runaway_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
             if (mam_ptr->see_m) {
                 msg_print(_("泥棒は笑って逃げ...ようとしたがバリアに防がれた。", "The thief flees laughing...? But a magic barrier obstructs it."));
             } else if (mam_ptr->known) {
-                creature.current_floor_ptr->monster_noise = true;
+                creature.get_floor()->monster_noise = true;
             }
             return;
         }
@@ -270,7 +270,7 @@ static void thief_runaway_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
     if (mam_ptr->see_m) {
         msg_print(_("泥棒は笑って逃げた！", "The thief flees laughing!"));
     } else if (mam_ptr->known) {
-        creature.current_floor_ptr->monster_noise = true;
+        creature.get_floor()->monster_noise = true;
     }
 
     teleport_away(creature, mam_ptr->m_idx, MAX_PLAYER_SIGHT * 2 + 5, TELEPORT_SPONTANEOUS);
@@ -287,7 +287,7 @@ static void explode_monster_by_melee(CreatureEntity &creature, mam_type *mam_ptr
     }
 
     sound(SoundKind::EXPLODE);
-    (void)set_monster_invulner(*creature.current_floor_ptr, mam_ptr->m_idx, 0, false);
+    (void)set_monster_invulner(*creature.get_floor(), mam_ptr->m_idx, 0, false);
     mon_take_hit_mon(creature, mam_ptr->m_idx, mam_ptr->m_ptr->hp + 1, &mam_ptr->dead, &mam_ptr->fear,
         _("は爆発して粉々になった。", " explodes into tiny shreds."), mam_ptr->m_idx);
     mam_ptr->blinked = false;
@@ -359,7 +359,7 @@ bool monst_attack_monst(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX
     angband_strcpy(mam_ptr->m_name, monster_desc(creature, *mam_ptr->m_ptr, 0), sizeof(mam_ptr->m_name));
     angband_strcpy(mam_ptr->t_name, monster_desc(creature, *mam_ptr->t_ptr, 0), sizeof(mam_ptr->t_name));
     if (!mam_ptr->see_either && mam_ptr->known) {
-        creature.current_floor_ptr->monster_noise = true;
+        creature.get_floor()->monster_noise = true;
     }
 
     if (creature.is_player() && mam_ptr->m_ptr->is_riding()) {

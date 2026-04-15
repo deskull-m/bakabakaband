@@ -39,7 +39,7 @@ static std::vector<Pos2D> tgt_pt_prepare(CreatureEntity &creature)
     }
 
     std::vector<Pos2D> positions;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     const auto is_hallucinated = creature.effects()->hallucination().is_hallucinated();
     for (const auto &pos : floor.get_area(FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
@@ -155,7 +155,7 @@ void tgt_pt_info::move_to_symbol(CreatureEntity &creature)
     this->n++;
 
     if (this->ch == '+') {
-        const auto pos_building = select_building_pos(*creature.current_floor_ptr);
+        const auto pos_building = select_building_pos(*creature.get_floor());
         if (!pos_building) {
             return;
         }
@@ -164,7 +164,7 @@ void tgt_pt_info::move_to_symbol(CreatureEntity &creature)
     } else {
         for (; this->n < this->positions.size(); ++this->n) {
             const auto &pos_cur = this->positions.at(this->n);
-            const auto &grid = creature.current_floor_ptr->get_grid(pos_cur);
+            const auto &grid = creature.get_floor()->get_grid(pos_cur);
             if (this->callback(grid)) {
                 this->pos = this->positions.at(this->n);
                 break;
@@ -297,7 +297,7 @@ tl::optional<Pos2D> point_target(CreatureEntity &creature)
                 change_panel(creature, dy, dx);
             }
 
-            const auto &floor = *creature.current_floor_ptr;
+            const auto &floor = *creature.get_floor();
             if (info.pos.x >= floor.width - 1) {
                 info.pos.x = floor.width - 2;
             } else if (info.pos.x <= 0) {

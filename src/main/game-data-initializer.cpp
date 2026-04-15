@@ -52,7 +52,7 @@ static void init_gf_colors()
 void init_other(CreatureEntity &creature)
 {
     auto &floor_data = FloorList::get_instance();
-    creature.current_floor_ptr = &floor_data.get_floor(0); // TODO:本当はこんなところで初期化したくない ← FloorTypeの方で初期化するべき？
+    creature.set_floor(&floor_data.get_floor(0)); // TODO:本当はこんなところで初期化したくない ← FloorTypeの方で初期化するべき？
 
     init_gf_colors();
 

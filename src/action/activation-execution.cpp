@@ -214,7 +214,7 @@ static bool activate_whistle(CreatureEntity &user, ae_type *ae_ptr)
         (void)SpellHex(user).stop_all_spells();
     }
 
-    const auto &floor = *user.current_floor_ptr;
+    const auto &floor = *user.get_floor();
     std::vector<short> pet_index;
     for (short pet_indice = floor.m_max - 1; pet_indice >= 1; pet_indice--) {
         const auto &monster = floor.get_monster(pet_indice);

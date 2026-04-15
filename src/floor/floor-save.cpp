@@ -193,7 +193,7 @@ FLOOR_IDX get_unused_floor_id(CreatureEntity &creature)
     sf_ptr->upper_floor_id = 0;
     sf_ptr->lower_floor_id = 0;
     sf_ptr->visit_mark = latest_visit_mark++;
-    sf_ptr->dun_level = creature.current_floor_ptr->dun_level;
+    sf_ptr->dun_level = creature.get_floor()->dun_level;
     if (max_floor_id < MAX_SHORT) {
         max_floor_id++;
     } else {

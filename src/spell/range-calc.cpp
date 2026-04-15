@@ -15,7 +15,7 @@
 namespace {
 bool is_prevent_blast(CreatureEntity &creature, const Pos2D &center, const Pos2D &pos, AttributeType type)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     switch (type) {
     case AttributeType::LITE:
     case AttributeType::LITE_WEAK:
@@ -219,7 +219,7 @@ std::vector<std::pair<int, Pos2D>> breath_shape(CreatureEntity &creature, const 
     auto bx = pos_source.x;
     auto path_n = 0;
     const auto mdis = Grid::calc_distance(pos_source, pos_target) + rad;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     std::vector<std::pair<int, Pos2D>> positions;
 
     for (auto bdis = 0; bdis <= mdis; ++bdis) {
@@ -267,7 +267,7 @@ std::vector<std::pair<int, Pos2D>> breath_shape(CreatureEntity &creature, const 
 std::vector<std::pair<int, Pos2D>> ball_shape(CreatureEntity &creature, const Pos2D &center, int rad, AttributeType typ)
 {
     std::vector<std::pair<int, Pos2D>> positions;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     for (auto dist = 0; dist <= rad; dist++) {
         for (auto y = center.y - dist; y <= center.y + dist; y++) {
             for (auto x = center.x - dist; x <= center.x + dist; x++) {

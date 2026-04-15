@@ -75,14 +75,14 @@ bool update_riding_monster(CreatureEntity &creature, turn_flags *turn_flags_ptr,
     if (!creature.is_player()) {
         return false;
     }
-    auto &monster = creature.current_floor_ptr->get_monster(m_idx);
-    auto &grid = creature.current_floor_ptr->grid_array[ny][nx];
-    CreatureEntity *y_ptr = &creature.current_floor_ptr->get_monster(grid.m_idx);
+    auto &monster = creature.get_floor()->get_monster(m_idx);
+    auto &grid = creature.get_floor()->grid_array[ny][nx];
+    CreatureEntity *y_ptr = &creature.get_floor()->get_monster(grid.m_idx);
     if (turn_flags_ptr->is_riding_mon) {
         return move_player_effect(creature, ny, nx, MPE_DONT_PICKUP);
     }
 
-    creature.current_floor_ptr->grid_array[oy][ox].m_idx = grid.m_idx;
+    creature.get_floor()->grid_array[oy][ox].m_idx = grid.m_idx;
     if (grid.has_monster()) {
         y_ptr->y = oy;
         y_ptr->x = ox;
@@ -177,7 +177,7 @@ void update_monster_race_flags(CreatureEntity &creature, turn_flags *turn_flags_
 
 static um_type *initialize_um_type(CreatureEntity &creature, um_type *um_ptr, MONSTER_IDX m_idx, bool full)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     um_ptr->m_ptr = &floor.get_monster(m_idx);
     um_ptr->do_disturb = disturb_move;
     um_ptr->fy = um_ptr->m_ptr->y;
@@ -467,7 +467,7 @@ static void decide_sight_invisible_monster(CreatureEntity &creature, um_type *um
         update_specific_race_telepathy(creature, um_ptr);
     }
 
-    if (!creature.current_floor_ptr->has_los_at({ um_ptr->fy, um_ptr->fx }) || creature.is_blind()) {
+    if (!creature.get_floor()->has_los_at({ um_ptr->fy, um_ptr->fx }) || creature.is_blind()) {
         return;
     }
 
@@ -530,7 +530,7 @@ static void update_invisible_monster(CreatureEntity &creature, um_type *um_ptr, 
         monster.get_monster_profile().mflag.set(MonsterTemporaryFlagType::SANITY_BLAST);
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     const auto m_pos = monster.get_position();
     const auto projectable_from_monster = projectable(floor, m_pos, p_pos);
@@ -622,7 +622,7 @@ void update_monster(CreatureEntity &creature, MONSTER_IDX m_idx, bool full)
  */
 void update_monsters(CreatureEntity &creature, bool full)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
         const auto &monster = floor.get_monster(i);
         if (!monster.is_valid()) {
@@ -640,7 +640,7 @@ void update_monsters(CreatureEntity &creature, bool full)
  */
 void update_smart_learn(CreatureEntity &creature, MONSTER_IDX m_idx, int what)
 {
-    auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     if (!smart_learn || (monrace.behavior_flags.has(MonsterBehaviorType::STUPID)) || ((monrace.behavior_flags.has_not(MonsterBehaviorType::SMART)) && one_in_(2))) {
         return;

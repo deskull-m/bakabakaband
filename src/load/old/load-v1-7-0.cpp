@@ -13,7 +13,7 @@ void set_exp_frac_old(CreatureEntity &creature)
 
 void remove_water_cave(CreatureEntity &creature)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.quest_number != i2enum<QuestId>(OLD_QUEST_WATER_CAVE)) {
         return;
     }

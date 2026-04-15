@@ -147,7 +147,7 @@ void ObjectUseEntity::execute()
     if (this->i_idx >= 0) {
         inven_item_charges(*creature.inventory[this->i_idx]);
     } else {
-        floor_item_charges(*creature.current_floor_ptr, 0 - this->i_idx);
+        floor_item_charges(*creature.get_floor(), 0 - this->i_idx);
     }
 }
 

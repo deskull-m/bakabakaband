@@ -58,7 +58,7 @@
  */
 static void discover_hidden_things(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(pos);
     if (grid.mimic && floor.has_trap_at(pos)) {
         disclose_grid(creature, pos);
@@ -125,7 +125,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
 {
     const Pos2D pos_new(ny, nx);
     const Pos2D pos_old(creature.y, creature.x);
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &grid_new = floor.get_grid(pos_new);
     auto &grid_old = floor.get_grid(pos_old);
     const auto &terrain_new = grid_new.get_terrain();

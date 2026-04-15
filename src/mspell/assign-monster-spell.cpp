@@ -31,7 +31,7 @@
 
 static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, MonsterAbilityType ms_type, POSITION y, POSITION x, MONSTER_IDX m_idx)
 {
-    CreatureEntity *m_ptr = &creature.current_floor_ptr->get_monster(m_idx);
+    CreatureEntity *m_ptr = &creature.get_floor()->get_monster(m_idx);
     MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
 
     // クイルスルグは自身を中心に召喚する
@@ -109,7 +109,7 @@ static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, Mons
     case MonsterAbilityType::BA_FIRE:
     case MonsterAbilityType::BA_COLD:
          {
-         auto rad = monster_is_powerful(*creature.current_floor_ptr, m_idx) ? 4 : 2;
+         auto rad = monster_is_powerful(*creature.get_floor(), m_idx) ? 4 : 2;
          return MSpellBall(creature, m_idx, ms_type, rad, MONSTER_TO_PLAYER).shoot(y, x);
          }
 
@@ -215,7 +215,7 @@ static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, Mons
 static MonsterSpellResult monspell_to_monster_impl(
     CreatureEntity &creature, MonsterAbilityType ms_type, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, bool is_special_spell)
 {
-    CreatureEntity *m_ptr = &creature.current_floor_ptr->get_monster(m_idx);
+    CreatureEntity *m_ptr = &creature.get_floor()->get_monster(m_idx);
     MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
 
     // クイルスルグは自身を中心に召喚する
@@ -293,7 +293,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::BA_FIRE:
     case MonsterAbilityType::BA_COLD:
          {
-         auto rad = monster_is_powerful(*creature.current_floor_ptr, m_idx) ? 4 : 2;
+         auto rad = monster_is_powerful(*creature.get_floor(), m_idx) ? 4 : 2;
          return MSpellBall(creature, m_idx, t_idx, ms_type, rad, MONSTER_TO_MONSTER).shoot(y, x);
          }
 

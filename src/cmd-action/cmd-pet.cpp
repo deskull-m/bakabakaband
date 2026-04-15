@@ -73,7 +73,7 @@ void do_cmd_pet_dismiss(CreatureEntity &creature)
     auto cv = game_term->scr->cv;
     game_term->scr->cu = false;
     game_term->scr->cv = true;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     std::vector<short> pet_index;
     for (short pet_indice = floor.m_max - 1; pet_indice >= 1; pet_indice--) {
         const auto &monster = floor.get_monster(pet_indice);
@@ -192,7 +192,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
     }
 
     const auto pos = creature.get_neighbor(dir);
-    auto &grid = creature.current_floor_ptr->get_grid(pos);
+    auto &grid = creature.get_floor()->get_grid(pos);
 
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
@@ -224,7 +224,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
             return false;
         }
 
-        const auto &monster = creature.current_floor_ptr->get_monster(grid.m_idx);
+        const auto &monster = creature.get_floor()->get_monster(grid.m_idx);
 
         if (!grid.has_monster() || !monster.get_monster_profile().ml) {
             msg_print(_("その場所にはモンスターはいません。", "There is no monster here."));
@@ -265,7 +265,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
 
         if (monster.is_asleep()) {
             const auto m_name = monster_desc(creature, monster, 0);
-            (void)set_monster_csleep(*creature.current_floor_ptr, grid.m_idx, 0);
+            (void)set_monster_csleep(*creature.get_floor(), grid.m_idx, 0);
             msg_format(_("%sを起こした。", "You have woken %s up."), m_name.data());
         }
 
@@ -312,7 +312,7 @@ static void do_name_pet(CreatureEntity &creature)
     }
 
     target_pet = old_target_pet;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(*pos);
     if (!grid.has_monster()) {
         return;
@@ -382,7 +382,7 @@ void do_cmd_pet(CreatureEntity &creature)
     powers[num++] = PET_DISMISS;
 
     const auto is_hallucinated = creature.effects()->hallucination().is_hallucinated();
-    const auto taget_of_pet = creature.current_floor_ptr->get_monster(creature.pet_t_m_idx).get_appearance_monrace().name.data();
+    const auto taget_of_pet = creature.get_floor()->get_monster(creature.pet_t_m_idx).get_appearance_monrace().name.data();
     const auto target_of_pet_appearance = is_hallucinated ? _("何か奇妙な物", "something strange") : taget_of_pet;
     const auto mes = _("ペットのターゲットを指定 (現在：%s)", "specify a target of pet (now:%s)");
     const auto target_name = creature.pet_t_m_idx > 0 ? target_of_pet_appearance : _("指定なし", "nothing");
@@ -670,8 +670,8 @@ void do_cmd_pet(CreatureEntity &creature)
     case PET_DISMISS: /* Dismiss pets */
     {
         /* Check pets (backwards) */
-        for (pet_ctr = creature.current_floor_ptr->m_max - 1; pet_ctr >= 1; pet_ctr--) {
-            const auto &m_ref = creature.current_floor_ptr->get_monster(pet_ctr);
+        for (pet_ctr = creature.get_floor()->m_max - 1; pet_ctr >= 1; pet_ctr--) {
+            const auto &m_ref = creature.get_floor()->get_monster(pet_ctr);
             if (m_ref.is_pet()) {
                 break;
             }
@@ -691,9 +691,9 @@ void do_cmd_pet(CreatureEntity &creature)
         if (!pos) {
             creature.pet_t_m_idx = 0;
         } else {
-            const auto &grid = creature.current_floor_ptr->get_grid(*pos);
-            if (grid.has_monster() && (creature.current_floor_ptr->get_monster(grid.m_idx).get_monster_profile().ml)) {
-                creature.pet_t_m_idx = creature.current_floor_ptr->get_grid(*pos).m_idx;
+            const auto &grid = creature.get_floor()->get_grid(*pos);
+            if (grid.has_monster() && (creature.get_floor()->get_monster(grid.m_idx).get_monster_profile().ml)) {
+                creature.pet_t_m_idx = creature.get_floor()->get_grid(*pos).m_idx;
                 creature.pet_follow_distance = PET_DESTROY_DIST;
             } else {
                 creature.pet_t_m_idx = 0;
@@ -743,8 +743,8 @@ void do_cmd_pet(CreatureEntity &creature)
     case PET_TAKE_ITEMS: {
         if (creature.pet_extra_flags & PF_PICKUP_ITEMS) {
             creature.pet_extra_flags &= ~(PF_PICKUP_ITEMS);
-            for (pet_ctr = creature.current_floor_ptr->m_max - 1; pet_ctr >= 1; pet_ctr--) {
-                auto &monster = creature.current_floor_ptr->get_monster(pet_ctr);
+            for (pet_ctr = creature.get_floor()->m_max - 1; pet_ctr >= 1; pet_ctr--) {
+                auto &monster = creature.get_floor()->get_monster(pet_ctr);
                 if (monster.is_pet()) {
                     monster_drop_carried_objects(creature, monster);
                 }

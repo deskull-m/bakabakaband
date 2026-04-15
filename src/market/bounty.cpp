@@ -187,7 +187,7 @@ bool exchange_cash(CreatureEntity &creature)
             msg_format(_("これで合計 %d ポイント獲得しました。", "You earned %d point%s total."), num, (num > 1 ? "s" : ""));
 
             ItemEntity prize_item(prize_list[num - 1]);
-            ItemMagicApplier(creature, &prize_item, creature.current_floor_ptr->object_level, AM_NO_FIXED_ART).execute();
+            ItemMagicApplier(creature, &prize_item, creature.get_floor()->object_level, AM_NO_FIXED_ART).execute();
             object_aware(creature, prize_item);
             prize_item.mark_as_known();
 

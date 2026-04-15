@@ -179,7 +179,7 @@ void process_command(CreatureEntity &creature)
 
     auto &world = AngbandWorld::get_instance();
     const auto is_wild_mode = world.is_wild_mode();
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     switch (command_cmd) {
     case ESCAPE:
     case ' ':

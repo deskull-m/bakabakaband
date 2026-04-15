@@ -109,7 +109,7 @@ int mon_damage_mod(CreatureEntity &creature, const CreatureEntity &target, int d
  */
 static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_idx, CreatureTimedEffect mte)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     const auto cdis = Grid::calc_distance(creature.get_position(), monster.get_position());
     switch (mte) {
@@ -283,7 +283,7 @@ static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_
  */
 void process_monsters_mtimed(CreatureEntity &creature, CreatureTimedEffect mte)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &cur_mproc_list = floor.mproc_list.at(mte);
 
     /* Hack -- calculate the "player noise" */
@@ -306,7 +306,7 @@ void process_monsters_mtimed(CreatureEntity &creature, CreatureTimedEffect mte)
  */
 void dispel_monster_status(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     const auto m_name = monster_desc(creature, monster, 0);
     if (set_monster_invulner(floor, m_idx, 0, true)) {
@@ -340,7 +340,7 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
         return;
     }
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &monster = floor.get_monster(m_idx);
     if (!monster.is_valid()) {
         return;

@@ -98,8 +98,8 @@ MonsterDamageProcessor::MonsterDamageProcessor(CreatureEntity &creature, MONSTER
  */
 bool MonsterDamageProcessor::mon_take_hit(std::string_view note)
 {
-    auto &monster = this->creature.current_floor_ptr->m_list[this->m_idx];
-    const auto exp_mon = monster;
+    auto &monster = this->creature.get_floor()->m_list[this->m_idx];
+    const auto exp_mon = monster.clone();
     auto exp_dam = (monster.hp > this->dam) ? this->dam : monster.hp;
     this->get_exp_from_mon(exp_mon, exp_dam);
     if (this->genocide_patron()) {
@@ -130,13 +130,13 @@ bool MonsterDamageProcessor::mon_take_hit(std::string_view note)
 bool MonsterDamageProcessor::genocide_patron()
 {
     auto &creature = this->creature;
-    const auto &monster = creature.current_floor_ptr->get_monster(this->m_idx);
+    const auto &monster = creature.get_floor()->get_monster(this->m_idx);
     if (!monster.is_valid()) {
         this->m_idx = 0;
     }
 
     this->set_redraw();
-    (void)set_monster_csleep(*creature.current_floor_ptr, this->m_idx, 0);
+    (void)set_monster_csleep(*creature.get_floor(), this->m_idx, 0);
     set_superstealth(this->creature, false);
 
     return this->m_idx == 0;
@@ -145,7 +145,7 @@ bool MonsterDamageProcessor::genocide_patron()
 bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, const CreatureEntity &exp_target)
 {
     auto &creature = this->creature;
-    auto &monster = creature.current_floor_ptr->get_monster(this->m_idx);
+    auto &monster = creature.get_floor()->get_monster(this->m_idx);
     auto &monrace = monster.get_real_monrace();
     if (monster.hp >= 0) {
         return false;
@@ -162,7 +162,7 @@ bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, cons
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE) && record_destroy_uniq) {
         std::stringstream ss;
         ss << monrace.name << (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CLONED) ? _("(クローン)", "(Clone)") : "");
-        exe_write_diary(*creature.current_floor_ptr, DiaryKind::UNIQUE, 0, ss.str());
+        exe_write_diary(*creature.get_floor(), DiaryKind::UNIQUE, 0, ss.str());
     }
 
     sound(SoundKind::KILL);
@@ -182,7 +182,7 @@ bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, cons
 void MonsterDamageProcessor::death_special_flag_monster()
 {
     auto &creature = this->creature;
-    auto &monster = creature.current_floor_ptr->get_monster(this->m_idx);
+    auto &monster = creature.get_floor()->get_monster(this->m_idx);
     auto monrace_id = monster.r_idx;
     auto &monrace = monster.get_monrace();
     if (monrace.misc_flags.has(MonsterMiscType::TANUKI)) {
@@ -218,7 +218,7 @@ void MonsterDamageProcessor::death_special_flag_monster()
 void MonsterDamageProcessor::increase_kill_numbers()
 {
     auto &creature = this->creature;
-    auto &monster = creature.current_floor_ptr->get_monster(this->m_idx);
+    auto &monster = creature.get_floor()->get_monster(this->m_idx);
     auto &monrace = monster.get_real_monrace();
     monrace.increment_akills();
     creature.plus_incident_tree("KILL", 1);
@@ -262,7 +262,7 @@ void MonsterDamageProcessor::increase_kill_numbers()
 
 void MonsterDamageProcessor::death_amberites(std::string_view m_name)
 {
-    const auto &monster = this->creature.current_floor_ptr->get_monster(this->m_idx);
+    const auto &monster = this->creature.get_floor()->get_monster(this->m_idx);
     const auto &r_ref = monster.get_real_monrace();
     if (r_ref.kind_flags.has_not(MonsterKindType::AMBERITE) || one_in_(2)) {
         return;
@@ -280,7 +280,7 @@ void MonsterDamageProcessor::death_amberites(std::string_view m_name)
 
 void MonsterDamageProcessor::death_choasians(std::string_view m_name)
 {
-    const auto &monster = this->creature.current_floor_ptr->get_monster(this->m_idx);
+    const auto &monster = this->creature.get_floor()->get_monster(this->m_idx);
     const auto &r_ref = monster.get_real_monrace();
     if (r_ref.kind_flags.has_not(MonsterKindType::CHOASIAN) || one_in_(3)) {
         return;
@@ -322,7 +322,7 @@ void MonsterDamageProcessor::death_choasians(std::string_view m_name)
 void MonsterDamageProcessor::dying_scream(std::string_view m_name)
 {
     auto &creature = this->creature;
-    const auto &monster = creature.current_floor_ptr->get_monster(this->m_idx);
+    const auto &monster = creature.get_floor()->get_monster(this->m_idx);
     const auto &r_ref = monster.get_real_monrace();
     if (r_ref.speak_flags.has_none_of({ MonsterSpeakType::SPEAK_ALL, MonsterSpeakType::SPEAK_DEATH })) {
         return;
@@ -342,7 +342,7 @@ void MonsterDamageProcessor::dying_scream(std::string_view m_name)
 
 void MonsterDamageProcessor::show_kill_message(std::string_view note, std::string_view m_name)
 {
-    const auto &floor = *this->creature.current_floor_ptr;
+    const auto &floor = *this->creature.get_floor();
     const auto &monster = floor.get_monster(this->m_idx);
     if (!note.empty()) {
         msg_format("%s^%s", m_name.data(), note.data());
@@ -392,7 +392,7 @@ void MonsterDamageProcessor::show_explosion_message(std::string_view died_mes, s
 void MonsterDamageProcessor::show_bounty_message(std::string_view m_name)
 {
     auto &creature = this->creature;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &monster = floor.get_monster(this->m_idx);
     const auto &monrace = monster.get_real_monrace();
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) || monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CLONED) || vanilla_town) {
@@ -443,7 +443,7 @@ void MonsterDamageProcessor::get_exp_from_mon(const CreatureEntity &target, int 
     s64b_mul(&div_h, &div_l, 0, (ironman_nightmare ? 2 : 1) * compensation);
 
     /* Special penalty in the wilderness */
-    if (!this->creature.current_floor_ptr->is_underground()) {
+    if (!this->creature.get_floor()->is_underground()) {
         auto is_dungeon_monster = monrace.wilderness_flags.has_not(MonsterWildernessType::WILD_ONLY);
         is_dungeon_monster |= monrace.kind_flags.has_not(MonsterKindType::UNIQUE);
         if (is_dungeon_monster) {
@@ -488,7 +488,7 @@ void MonsterDamageProcessor::get_exp_from_mon(const CreatureEntity &target, int 
 void MonsterDamageProcessor::set_redraw()
 {
     auto &creature = this->creature;
-    auto &monster = creature.current_floor_ptr->get_monster(this->m_idx);
+    auto &monster = creature.get_floor()->get_monster(this->m_idx);
     HealthBarTracker::get_instance().set_flag_if_tracking(this->m_idx);
     if (monster.is_riding()) {
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
@@ -498,10 +498,10 @@ void MonsterDamageProcessor::set_redraw()
 void MonsterDamageProcessor::add_monster_fear()
 {
     auto &creature = this->creature;
-    const auto &monster = creature.current_floor_ptr->get_monster(this->m_idx);
+    const auto &monster = creature.get_floor()->get_monster(this->m_idx);
     if (monster.is_fearful() && (this->dam > 0)) {
         auto fear_remining = monster.get_remaining_fear() - randint1(this->dam);
-        if (set_monster_monfear(*creature.current_floor_ptr, this->m_idx, fear_remining)) {
+        if (set_monster_monfear(*creature.get_floor(), this->m_idx, fear_remining)) {
             *this->fear = false;
         }
     }
@@ -520,7 +520,7 @@ void MonsterDamageProcessor::add_monster_fear()
     *this->fear = true;
     auto fear_condition = (this->dam >= monster.hp) && (percentage > 7);
     auto fear_value = randint1(10) + (fear_condition ? 20 : (11 - percentage) * 5);
-    (void)set_monster_monfear(*creature.current_floor_ptr, this->m_idx, fear_value);
+    (void)set_monster_monfear(*creature.get_floor(), this->m_idx, fear_value);
 }
 
 /*!
@@ -530,7 +530,7 @@ void MonsterDamageProcessor::add_monster_fear()
 void MonsterDamageProcessor::process_masochist_reaction()
 {
     auto &creature = this->creature;
-    auto &monster = creature.current_floor_ptr->get_monster(this->m_idx);
+    auto &monster = creature.get_floor()->get_monster(this->m_idx);
     const auto &monrace = monster.get_monrace();
 
     if (!monrace.misc_flags.has(MonsterMiscType::MASOCHIST)) {
@@ -538,7 +538,7 @@ void MonsterDamageProcessor::process_masochist_reaction()
     }
 
     if (one_in_(3) && this->dam < std::min(monster.maxhp / 10, 40)) {
-        (void)set_monster_monfear(*creature.current_floor_ptr, this->m_idx, 0);
+        (void)set_monster_monfear(*creature.get_floor(), this->m_idx, 0);
         *this->fear = false;
 
         // 一定確率で少量回復
@@ -560,7 +560,7 @@ void MonsterDamageProcessor::process_masochist_reaction()
 void MonsterDamageProcessor::process_sadist_reaction()
 {
     auto &creature = this->creature;
-    auto &monster = creature.current_floor_ptr->get_monster(this->m_idx);
+    auto &monster = creature.get_floor()->get_monster(this->m_idx);
     const auto &monrace = monster.get_monrace();
 
     if (!monrace.misc_flags.has(MonsterMiscType::SADIST)) {
@@ -569,11 +569,11 @@ void MonsterDamageProcessor::process_sadist_reaction()
 
     // SADISTモンスターがプレイヤーにダメージを与えた場合の興奮状態
     if (this->dam > 0 && one_in_(4)) {
-        (void)set_monster_monfear(*creature.current_floor_ptr, this->m_idx, 0);
+        (void)set_monster_monfear(*creature.get_floor(), this->m_idx, 0);
         *this->fear = false;
 
         // 一時的な加速効果付与（興奮状態）
-        (void)set_monster_fast(*creature.current_floor_ptr, this->m_idx, monster.get_remaining_acceleration() + 100);
+        (void)set_monster_fast(*creature.get_floor(), this->m_idx, monster.get_remaining_acceleration() + 100);
 
         if (monster.get_monster_profile().ml) {
             msg_format(_("%s^は他者の苦痛に興奮している！", "%s^ gets excited by others' pain!"), monster.get_monrace().name.data());
@@ -588,7 +588,7 @@ void MonsterDamageProcessor::process_sadist_reaction()
 bool MonsterDamageProcessor::check_and_process_hp_transform()
 {
     auto &creature = this->creature;
-    auto &monster = creature.current_floor_ptr->get_monster(this->m_idx);
+    auto &monster = creature.get_floor()->get_monster(this->m_idx);
 
     // 変身条件のチェック
     if (monster.get_monster_profile().has_transformed) {

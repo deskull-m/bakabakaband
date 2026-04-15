@@ -87,7 +87,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
             const auto attack_to = [&creature](const Direction &dir) {
                 const auto pos = creature.get_neighbor(dir);
-                const auto &grid = creature.current_floor_ptr->get_grid(pos);
+                const auto &grid = creature.get_floor()->get_grid(pos);
 
                 if (grid.has_monster()) {
                     do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
@@ -118,7 +118,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             }
 
             const auto pos = creature.get_neighbor(dir);
-            if (creature.current_floor_ptr->get_grid(pos).has_monster()) {
+            if (creature.get_floor()->get_grid(pos).has_monster()) {
                 do_cmd_attack(creature, pos.y, pos.x, HISSATSU_FIRE);
             } else {
                 msg_print(_("その方向にはモンスターはいません。", "There is no monster."));
@@ -141,7 +141,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             }
 
             const auto pos = creature.get_neighbor(dir);
-            if (creature.current_floor_ptr->get_grid(pos).has_monster()) {
+            if (creature.get_floor()->get_grid(pos).has_monster()) {
                 do_cmd_attack(creature, pos.y, pos.x, HISSATSU_MINEUCHI);
             } else {
                 msg_print(_("その方向にはモンスターはいません。", "There is no monster."));
@@ -174,7 +174,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             }
 
             const auto pos_target = creature.get_neighbor(dir);
-            const auto &floor = *creature.current_floor_ptr;
+            const auto &floor = *creature.get_floor();
             const auto &grid_target = floor.get_grid(pos_target);
             if (!grid_target.has_monster()) {
                 msg_print(_("その方向にはモンスターはいません。", "There is no monster."));
@@ -203,7 +203,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             }
 
             const auto pos = creature.get_neighbor(dir);
-            const auto &floor = *creature.current_floor_ptr;
+            const auto &floor = *creature.get_floor();
             if (floor.get_grid(pos).has_monster()) {
                 do_cmd_attack(creature, pos.y, pos.x, HISSATSU_POISON);
             } else {
@@ -221,7 +221,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             }
 
             const auto pos = creature.get_neighbor(dir);
-            const auto &floor = *creature.current_floor_ptr;
+            const auto &floor = *creature.get_floor();
             if (floor.get_grid(pos).has_monster()) {
                 do_cmd_attack(creature, pos.y, pos.x, HISSATSU_ZANMA);
             } else {
@@ -239,7 +239,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             }
 
             const auto pos = creature.get_neighbor(dir);
-            auto &floor = *creature.current_floor_ptr;
+            auto &floor = *creature.get_floor();
             const auto &grid = floor.get_grid(pos);
             if (grid.has_monster()) {
                 do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
@@ -307,7 +307,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             }
 
             const auto pos = creature.get_neighbor(dir);
-            const auto &floor = *creature.current_floor_ptr;
+            const auto &floor = *creature.get_floor();
             if (floor.get_grid(pos).has_monster()) {
                 do_cmd_attack(creature, pos.y, pos.x, HISSATSU_HAGAN);
             }
@@ -330,7 +330,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             }
 
             const auto pos = creature.get_neighbor(dir);
-            const auto &floor = *creature.current_floor_ptr;
+            const auto &floor = *creature.get_floor();
             if (floor.get_grid(pos).has_monster()) {
                 do_cmd_attack(creature, pos.y, pos.x, HISSATSU_COLD);
             } else {
@@ -348,7 +348,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             }
 
             const auto pos = creature.get_neighbor(dir);
-            const auto &floor = *creature.current_floor_ptr;
+            const auto &floor = *creature.get_floor();
             if (floor.get_grid(pos).has_monster()) {
                 do_cmd_attack(creature, pos.y, pos.x, HISSATSU_KYUSHO);
             } else {
@@ -366,7 +366,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             }
 
             const auto pos = creature.get_neighbor(dir);
-            const auto &floor = *creature.current_floor_ptr;
+            const auto &floor = *creature.get_floor();
             if (floor.get_grid(pos).has_monster()) {
                 do_cmd_attack(creature, pos.y, pos.x, HISSATSU_MAJIN);
             } else {
@@ -384,7 +384,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             }
 
             const auto pos = creature.get_neighbor(dir);
-            const auto &floor = *creature.current_floor_ptr;
+            const auto &floor = *creature.get_floor();
             if (floor.get_grid(pos).has_monster()) {
                 do_cmd_attack(creature, pos.y, pos.x, HISSATSU_SUTEMI);
             } else {
@@ -403,7 +403,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             }
 
             const auto pos = creature.get_neighbor(dir);
-            const auto &floor = *creature.current_floor_ptr;
+            const auto &floor = *creature.get_floor();
             if (floor.get_grid(pos).has_monster()) {
                 do_cmd_attack(creature, pos.y, pos.x, HISSATSU_ELEC);
             } else {
@@ -426,7 +426,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             const auto current_cut = creature.effects()->cut().current();
             short new_cut = current_cut < 300 ? current_cut + 300 : current_cut * 2;
             (void)BadStatusSetter(creature).set_cut(new_cut);
-            const auto &floor = *creature.current_floor_ptr;
+            const auto &floor = *creature.get_floor();
             for (const auto &d : Direction::directions_8()) {
                 const auto pos = creature.get_position();
                 const auto pos_ddd = pos + d.vec();
@@ -455,7 +455,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             }
 
             const auto pos = creature.get_neighbor(dir);
-            const auto &floor = *creature.current_floor_ptr;
+            const auto &floor = *creature.get_floor();
             if (floor.get_grid(pos).has_monster()) {
                 do_cmd_attack(creature, pos.y, pos.x, HISSATSU_QUAKE);
             } else {
@@ -519,7 +519,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
                 return tl::nullopt;
             }
 
-            auto &floor = *creature.current_floor_ptr;
+            auto &floor = *creature.get_floor();
             for (auto i = 0; i < 3; i++) {
                 const Pos2D pos = creature.get_neighbor(dir);
                 auto &grid = floor.get_grid(pos);
@@ -591,7 +591,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             }
 
             const auto pos = creature.get_neighbor(dir);
-            const auto &floor = *creature.current_floor_ptr;
+            const auto &floor = *creature.get_floor();
             if (floor.get_grid(pos).has_monster()) {
                 do_cmd_attack(creature, pos.y, pos.x, HISSATSU_DRAIN);
             } else {
@@ -655,7 +655,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             const auto p_pos = creature.get_position();
             const auto is_teleportable = cave_player_teleportable_bold(creature, pos->y, pos->x, TELEPORT_SPONTANEOUS);
             const auto dist = Grid::calc_distance(*pos, p_pos);
-            if (!is_teleportable || (dist > MAX_PLAYER_SIGHT / 2) || !projectable(*creature.current_floor_ptr, p_pos, *pos)) {
+            if (!is_teleportable || (dist > MAX_PLAYER_SIGHT / 2) || !projectable(*creature.get_floor(), p_pos, *pos)) {
                 msg_print(_("失敗！", "You cannot move to that place!"));
                 break;
             }
@@ -676,7 +676,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             }
 
             const auto pos = creature.get_neighbor(dir);
-            const auto &grid = creature.current_floor_ptr->get_grid(pos);
+            const auto &grid = creature.get_floor()->get_grid(pos);
             if (grid.has_monster()) {
                 do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
                 if (grid.has_monster()) {
@@ -698,7 +698,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             }
 
             const auto pos = creature.get_neighbor(dir);
-            const auto &floor = *creature.current_floor_ptr;
+            const auto &floor = *creature.get_floor();
             if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::NO_MELEE)) {
                 msg_print(_("なぜか攻撃することができない。", "Something prevents you from attacking."));
                 return "";
@@ -745,7 +745,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             }
 
             const auto pos = creature.get_neighbor(dir);
-            const auto &floor = *creature.current_floor_ptr;
+            const auto &floor = *creature.get_floor();
             if (floor.get_grid(pos).has_monster()) {
                 do_cmd_attack(creature, pos.y, pos.x, HISSATSU_UNDEAD);
             } else {

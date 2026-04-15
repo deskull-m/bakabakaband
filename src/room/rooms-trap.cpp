@@ -37,7 +37,7 @@ bool build_type14(CreatureEntity &creature, DungeonData *dd_ptr)
     }
 
     /* Choose lite or dark */
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto light = ((floor.dun_level <= randint1(25)) && floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::DARKNESS));
 
     /* Get corner values */

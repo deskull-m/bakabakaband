@@ -91,7 +91,7 @@ void spell_badstatus_message_to_player(CreatureEntity &creature, MONSTER_IDX m_i
 void spell_badstatus_message_to_mons(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, const mspell_cast_msg_bad_status_to_monster &msgs, bool resist,
     bool saved_throw)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool see_t = see_monster(creature, t_idx);
     bool known = monster_near_player(creature, m_idx, t_idx);
@@ -120,7 +120,7 @@ void spell_badstatus_message_to_mons(CreatureEntity &creature, MONSTER_IDX m_idx
         }
     }
 
-    set_monster_csleep(*creature.current_floor_ptr, t_idx, 0);
+    set_monster_csleep(*creature.get_floor(), t_idx, 0);
 }
 
 /*!
@@ -171,7 +171,7 @@ MonsterSpellResult spell_RF5_DRAIN_MANA(CreatureEntity &creature, POSITION y, PO
  */
 MonsterSpellResult spell_RF5_MIND_BLAST(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     bool seen = (!creature.is_blind() && monster.get_monster_profile().ml);
     const auto m_name = monster_name(creature, m_idx);
     const auto t_name = monster_name(creature, t_idx);
@@ -209,7 +209,7 @@ MonsterSpellResult spell_RF5_MIND_BLAST(CreatureEntity &creature, POSITION y, PO
  */
 MonsterSpellResult spell_RF5_BRAIN_SMASH(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     bool seen = (!creature.is_blind() && monster.get_monster_profile().ml);
     const auto m_name = monster_name(creature, m_idx);
     const auto t_name = monster_name(creature, t_idx);
@@ -247,7 +247,7 @@ MonsterSpellResult spell_RF5_SCARE(MONSTER_IDX m_idx, CreatureEntity &creature, 
     auto res = MonsterSpellResult::make_valid();
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster_target = floor.get_monster(t_idx);
     const auto &monrace_target = monster_target.get_monrace();
     DEPTH rlev = monster_level_idx(floor, m_idx);
@@ -285,7 +285,7 @@ MonsterSpellResult spell_RF5_SCARE(MONSTER_IDX m_idx, CreatureEntity &creature, 
     spell_badstatus_message_to_mons(creature, m_idx, t_idx, msg, resist, saving_throw);
 
     if (!resist && !saving_throw) {
-        set_monster_monfear(*creature.current_floor_ptr, t_idx, monster_target.get_remaining_fear() + randint0(4) + 4);
+        set_monster_monfear(*creature.get_floor(), t_idx, monster_target.get_remaining_fear() + randint0(4) + 4);
     }
 
     return res;
@@ -304,7 +304,7 @@ MonsterSpellResult spell_RF5_BLIND(MONSTER_IDX m_idx, CreatureEntity &creature, 
     auto res = MonsterSpellResult::make_valid();
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster_target = floor.get_monster(t_idx);
     const auto &monrace_target = monster_target.get_monrace();
     DEPTH rlev = monster_level_idx(floor, m_idx);
@@ -350,7 +350,7 @@ MonsterSpellResult spell_RF5_BLIND(MONSTER_IDX m_idx, CreatureEntity &creature, 
     spell_badstatus_message_to_mons(creature, m_idx, t_idx, msg, resist, saving_throw);
 
     if (!resist && !saving_throw) {
-        (void)set_monster_confused(*creature.current_floor_ptr, t_idx, monster_target.get_remaining_confusion() + 12 + randint0(4));
+        (void)set_monster_confused(*creature.get_floor(), t_idx, monster_target.get_remaining_confusion() + 12 + randint0(4));
     }
 
     return res;
@@ -369,7 +369,7 @@ MonsterSpellResult spell_RF5_CONF(MONSTER_IDX m_idx, CreatureEntity &creature, M
     auto res = MonsterSpellResult::make_valid();
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster_target = floor.get_monster(t_idx);
     const auto &monrace_target = monster_target.get_monrace();
     DEPTH rlev = monster_level_idx(floor, m_idx);
@@ -408,7 +408,7 @@ MonsterSpellResult spell_RF5_CONF(MONSTER_IDX m_idx, CreatureEntity &creature, M
     spell_badstatus_message_to_mons(creature, m_idx, t_idx, msg, resist, saving_throw);
 
     if (!resist && !saving_throw) {
-        (void)set_monster_confused(*creature.current_floor_ptr, t_idx, monster_target.get_remaining_confusion() + 12 + randint0(4));
+        (void)set_monster_confused(*creature.get_floor(), t_idx, monster_target.get_remaining_confusion() + 12 + randint0(4));
     }
 
     return res;
@@ -427,7 +427,7 @@ MonsterSpellResult spell_RF5_HOLD(MONSTER_IDX m_idx, CreatureEntity &creature, M
     auto res = MonsterSpellResult::make_valid();
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster_target = floor.get_monster(t_idx);
     const auto &monrace_target = monster_target.get_monrace();
     DEPTH rlev = monster_level_idx(floor, m_idx);
@@ -464,7 +464,7 @@ MonsterSpellResult spell_RF5_HOLD(MONSTER_IDX m_idx, CreatureEntity &creature, M
     spell_badstatus_message_to_mons(creature, m_idx, t_idx, msg, (bool)resist, saving_throw);
 
     if (!resist && !saving_throw) {
-        (void)set_monster_csleep(*creature.current_floor_ptr, t_idx, 500);
+        (void)set_monster_csleep(*creature.get_floor(), t_idx, 500);
     }
 
     return res;
@@ -482,7 +482,7 @@ MonsterSpellResult spell_RF5_HOLD(MONSTER_IDX m_idx, CreatureEntity &creature, M
 MonsterSpellResult spell_RF6_HASTE(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     bool see_m = see_monster(creature, m_idx);
-    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto m_name = monster_name(creature, m_idx);
     const auto m_poss = monster_desc(creature, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
 
@@ -493,7 +493,7 @@ MonsterSpellResult spell_RF6_HASTE(CreatureEntity &creature, MONSTER_IDX m_idx, 
 
     monspell_message_base(creature, m_idx, t_idx, msg, creature.is_blind(), target_type);
 
-    if (set_monster_fast(*creature.current_floor_ptr, m_idx, monster.get_remaining_acceleration() + 100)) {
+    if (set_monster_fast(*creature.get_floor(), m_idx, monster.get_remaining_acceleration() + 100)) {
         if (target_type == MONSTER_TO_PLAYER || (target_type == MONSTER_TO_MONSTER && see_m)) {
             msg_format(_("%s^の動きが速くなった。", "%s^ starts moving faster."), m_name.data());
         }
@@ -515,7 +515,7 @@ MonsterSpellResult spell_RF5_SLOW(MONSTER_IDX m_idx, CreatureEntity &creature, M
     auto res = MonsterSpellResult::make_valid();
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster_target = floor.get_monster(t_idx);
     const auto &monrace_target = monster_target.get_monrace();
     DEPTH rlev = monster_level_idx(floor, m_idx);
@@ -561,7 +561,7 @@ MonsterSpellResult spell_RF5_SLOW(MONSTER_IDX m_idx, CreatureEntity &creature, M
     spell_badstatus_message_to_mons(creature, m_idx, t_idx, msg, resist, saving_throw);
 
     if (!resist && !saving_throw) {
-        set_monster_slow(*creature.current_floor_ptr, t_idx, monster_target.get_remaining_deceleration() + 50);
+        set_monster_slow(*creature.get_floor(), t_idx, monster_target.get_remaining_deceleration() + 50);
     }
 
     return res;
@@ -581,7 +581,7 @@ MonsterSpellResult spell_RF6_HEAL(CreatureEntity &creature, MONSTER_IDX m_idx, M
     const auto res = MonsterSpellResult::make_valid();
 
     mspell_cast_msg msg;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &monster = floor.get_monster(m_idx);
     DEPTH rlev = monster_level_idx(floor, m_idx);
     const auto is_blind = creature.is_blind();
@@ -621,7 +621,7 @@ MonsterSpellResult spell_RF6_HEAL(CreatureEntity &creature, MONSTER_IDX m_idx, M
         return res;
     }
 
-    (void)set_monster_monfear(*creature.current_floor_ptr, m_idx, 0);
+    (void)set_monster_monfear(*creature.get_floor(), m_idx, 0);
 
     if (see_monster(creature, m_idx)) {
         const auto m_name = monster_name(creature, m_idx);
@@ -642,7 +642,7 @@ MonsterSpellResult spell_RF6_HEAL(CreatureEntity &creature, MONSTER_IDX m_idx, M
  */
 MonsterSpellResult spell_RF6_INVULNER(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     bool seen = (!creature.is_blind() && monster.get_monster_profile().ml);
     mspell_cast_msg msg(_("%s^が何かを力強くつぶやいた。", "%s^ mumbles powerfully."),
         _("%s^が何かを力強くつぶやいた。", "%s^ mumbles powerfully."), _("%sは無傷の球の呪文を唱えた。", "%s^ casts a Globe of Invulnerability."),
@@ -668,7 +668,7 @@ MonsterSpellResult spell_RF6_INVULNER(CreatureEntity &creature, MONSTER_IDX m_id
     }
 
     if (!monster.is_invulnerable()) {
-        (void)set_monster_invulner(*creature.current_floor_ptr, m_idx, randint1(4) + 4, false);
+        (void)set_monster_invulner(*creature.get_floor(), m_idx, randint1(4) + 4, false);
     }
 
     return MonsterSpellResult::make_valid();
@@ -683,7 +683,7 @@ MonsterSpellResult spell_RF6_INVULNER(CreatureEntity &creature, MONSTER_IDX m_id
  */
 MonsterSpellResult spell_RF6_FORGET(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    DEPTH rlev = monster_level_idx(*creature.current_floor_ptr, m_idx);
+    DEPTH rlev = monster_level_idx(*creature.get_floor(), m_idx);
     const auto m_name = monster_name(creature, m_idx);
 
     disturb(creature, true, true);

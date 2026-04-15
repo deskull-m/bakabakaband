@@ -61,7 +61,7 @@ void AllianceKhorne::panishment(CreatureEntity &creature)
     /*
     if (one_in_(15)) {
         Pos2D m_pos(player_ptr.get_position());
-        m_pos = scatter(*player_ptr.current_floor_ptr, m_pos, 15, PROJECT_NONE);
+        m_pos = scatter(*player_ptr.get_floor(), m_pos, 15, PROJECT_NONE);
 
         // コーンの怒りレベルに応じて異なる復讐者を派遣
         MonraceId avenger_id;
@@ -86,7 +86,7 @@ void AllianceKhorne::panishment(CreatureEntity &creature)
             // 追加の配下召喚（血と戦いの混沌）
             for (int k = 0; k < 3 + (impression < -300 ? 2 : 0); k++) {
                 summon_specific(&player_ptr, m_pos.y, m_pos.x,
-                    std::max(player_ptr.current_floor_ptr->monster_level, 10),
+                    std::max(player_ptr.get_floor()->monster_level, 10),
                     SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }
@@ -102,13 +102,13 @@ void AllianceKhorne::panishment(CreatureEntity &creature)
 
     if (one_in_(20)) {
         Pos2D m_pos(creature.get_position());
-        m_pos = scatter(*creature.current_floor_ptr, m_pos, 12, PROJECT_NONE);
+        m_pos = scatter(*creature.get_floor(), m_pos, 12, PROJECT_NONE);
         const auto m_idx = place_monster_one(creature, m_pos.y, m_pos.x, MonraceId::KHORNE_CHOSEN, PM_ALLOW_GROUP);
         if (m_idx) {
             msg_print(_("コーンの選ばれし者があなたを誅すべく追跡してきた！", "Khorne's Chosen is chasing you for revenge!"));
             disturb(creature, true, true);
             for (int k = 0; k < 3; k++) {
-                summon_specific(creature, m_pos.y, m_pos.x, std::max(creature.current_floor_ptr->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
+                summon_specific(creature, m_pos.y, m_pos.x, std::max(creature.get_floor()->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }
     }

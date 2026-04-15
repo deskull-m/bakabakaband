@@ -50,7 +50,7 @@ bool player_can_see_bold(CreatureEntity &creature, POSITION y, POSITION x)
     }
 
     const Pos2D pos(y, x);
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(pos);
 
     /* Note that "torch-lite" yields "illumination" */
@@ -139,7 +139,7 @@ bool is_seen(CreatureEntity &creature, const CreatureEntity &target)
     is_inside_view |= AngbandSystem::get_instance().is_phase_out();
     const auto p_pos = creature.get_position();
     const auto t_pos = target.get_position();
-    is_inside_view |= player_can_see_bold(creature, t_pos.y, t_pos.x) && projectable(*creature.current_floor_ptr, p_pos, t_pos);
+    is_inside_view |= player_can_see_bold(creature, t_pos.y, t_pos.x) && projectable(*creature.get_floor(), p_pos, t_pos);
     const auto ml = target.has_monster_profile() ? target.get_monster_profile().ml : false;
     return ml && is_inside_view;
 }

@@ -89,7 +89,7 @@ bool identify_item(CreatureEntity &creature, ItemEntity *o_ptr)
     record_turn = AngbandWorld::get_instance().game_turn;
 
     const auto item_name = describe_flavor(creature, *o_ptr, OD_NAME_ONLY);
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (record_fix_art && !old_known && o_ptr->is_fixed_artifact()) {
         exe_write_diary(floor, DiaryKind::ART, 0, item_name);
     }

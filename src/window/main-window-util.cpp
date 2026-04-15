@@ -77,7 +77,7 @@ void print_map(CreatureEntity &creature)
     const auto v = term_get_cursor();
     term_set_cursor(false);
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     POSITION xmin = (0 < panel_col_min) ? panel_col_min : 0;
     POSITION xmax = (floor.width - 1 > panel_col_max) ? panel_col_max : floor.width - 1;
     POSITION ymin = (0 < panel_row_min) ? panel_row_min : 0;
@@ -168,7 +168,7 @@ void display_map(CreatureEntity &creature, int *cy, int *cx)
         wid = wid / 2 - 1;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto yrat = (floor.height + hgt - 1) / hgt;
     const auto xrat = (floor.width + wid - 1) / wid;
     view_special_lite = false;

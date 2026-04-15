@@ -158,7 +158,7 @@ ProcessResult effect_monster_brain_smash(CreatureEntity &creature, EffectMonster
             em_ptr->do_stun = randint0(8) + 8;
         }
 
-        (void)set_monster_slow(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_deceleration() + 10);
+        (void)set_monster_slow(*creature.get_floor(), em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_deceleration() + 10);
     }
 
     return ProcessResult::PROCESS_CONTINUE;

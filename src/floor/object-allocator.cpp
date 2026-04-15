@@ -47,7 +47,7 @@ static int next_to_walls(const FloorType &floor, const Pos2D &pos)
  */
 static bool alloc_stairs_aux(const CreatureEntity &creature, const Pos2D &pos, int walls)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(pos);
     if (!grid.is_floor() || grid.has(TerrainCharacteristics::PATTERN) || !grid.o_idx_list.empty() || grid.has_monster() || next_to_walls(floor, pos) < walls) {
         return false;
@@ -68,7 +68,7 @@ bool alloc_stairs(CreatureEntity &creature, FEAT_IDX feat, int num, int walls)
 {
     int shaft_num = 0;
     const auto &terrain = TerrainList::get_instance().get_terrain(feat);
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
     if (terrain.flags.has(TerrainCharacteristics::LESS)) {
         if (ironman_downward || !floor.is_underground()) {
@@ -138,7 +138,7 @@ bool alloc_stairs(CreatureEntity &creature, FEAT_IDX feat, int num, int walls)
 void alloc_object(CreatureEntity &creature, dap_type set, dungeon_allocation_type typ, int num)
 {
     auto dummy = 0;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     num = num * floor.height * floor.width / (MAX_HGT * MAX_WID) + 1;
     for (auto k = 0; k < num; k++) {
         Pos2D pos(0, 0);
@@ -201,7 +201,7 @@ void alloc_object(CreatureEntity &creature, dap_type set, dungeon_allocation_typ
  */
 void alloc_specific_floor_items(CreatureEntity &creature)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_generated_dungeon_definition();
 
     // 現在の階層に特定のアイテム生成ルールがあるかチェック

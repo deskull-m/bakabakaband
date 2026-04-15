@@ -75,7 +75,7 @@ void WorldTurnProcessor::process_world()
     }
 
     decide_auto_save();
-    const auto &floor = *this->creature.current_floor_ptr;
+    const auto &floor = *this->creature.get_floor();
     if (floor.monster_noise && !ignore_unview) {
         msg_print(_("何かが聞こえた。", "You hear noise."));
     }
@@ -157,7 +157,7 @@ void WorldTurnProcessor::print_cheat_position()
 void WorldTurnProcessor::process_downward()
 {
     /* 帰還無しモード時のレベルテレポバグ対策 / Fix for level teleport bugs on ironman_downward.*/
-    auto &floor = *this->creature.current_floor_ptr;
+    auto &floor = *this->creature.get_floor();
     if (!ironman_downward || (floor.dungeon_id == DungeonId::ANGBAND) || !floor.is_underground() || floor.is_in_quest()) {
         return;
     }
@@ -176,7 +176,7 @@ void WorldTurnProcessor::process_monster_arena()
         return;
     }
 
-    const auto &floor = *this->creature.current_floor_ptr;
+    const auto &floor = *this->creature.get_floor();
     const auto monster_exists = [&](const Pos2D &pos) {
         const auto &grid = floor.get_grid(pos);
         return grid.has_monster() && !floor.get_monster(grid.m_idx).is_riding();
@@ -206,7 +206,7 @@ void WorldTurnProcessor::process_monster_arena()
 
 void WorldTurnProcessor::process_monster_arena_winner(int win_m_idx)
 {
-    const auto &monster = this->creature.current_floor_ptr->get_monster(win_m_idx);
+    const auto &monster = this->creature.get_floor()->get_monster(win_m_idx);
     const auto m_name = monster_desc(this->creature, monster, 0);
     msg_format(_("%sが勝利した！", "%s won!"), m_name.data());
     msg_erase();
@@ -228,7 +228,7 @@ void WorldTurnProcessor::process_monster_arena_winner(int win_m_idx)
 
 void WorldTurnProcessor::process_monster_arena_draw()
 {
-    auto turn = this->creature.current_floor_ptr->generated_turn;
+    auto turn = this->creature.get_floor()->generated_turn;
     if (AngbandWorld::get_instance().game_turn - turn != 150 * TURNS_PER_TICK) {
         return;
     }
@@ -257,7 +257,7 @@ void WorldTurnProcessor::decide_auto_save()
 
 void WorldTurnProcessor::process_change_daytime_night()
 {
-    const auto &floor = *this->creature.current_floor_ptr;
+    const auto &floor = *this->creature.get_floor();
     const auto &world = AngbandWorld::get_instance();
     if (!floor.is_underground() && !floor.is_in_quest() && !AngbandSystem::get_instance().is_phase_out() && !floor.inside_arena) {
         if (!(world.game_turn % ((TURNS_PER_TICK * TOWN_DAWN) / 2))) {
@@ -301,7 +301,7 @@ void WorldTurnProcessor::process_world_monsters()
     }
 
     for (const auto mte : MONSTER_TIMED_EFFECT_LIST) {
-        if (this->creature.current_floor_ptr->mproc_max[mte] > 0) {
+        if (this->creature.get_floor()->mproc_max[mte] > 0) {
             process_monsters_mtimed(this->creature, mte);
         }
     }
@@ -309,7 +309,7 @@ void WorldTurnProcessor::process_world_monsters()
 
 void WorldTurnProcessor::decide_alloc_monster()
 {
-    const auto &floor = *this->creature.current_floor_ptr;
+    const auto &floor = *this->creature.get_floor();
     auto should_alloc = one_in_(floor.get_dungeon_definition().max_m_alloc_chance);
     should_alloc &= !floor.inside_arena;
     should_alloc &= !floor.is_in_quest();

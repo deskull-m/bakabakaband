@@ -51,7 +51,7 @@ SpellsMirrorMaster::SpellsMirrorMaster(CreatureEntity &creature)
 void SpellsMirrorMaster::remove_mirror(int y, int x)
 {
     const Pos2D pos(y, x);
-    auto &floor = *this->creature_ptr->current_floor_ptr;
+    auto &floor = *this->creature_ptr->get_floor();
     auto &grid = floor.get_grid(pos);
     reset_bits(grid.info, CAVE_OBJECT);
     grid.mimic = 0;
@@ -79,7 +79,7 @@ void SpellsMirrorMaster::remove_mirror(int y, int x)
  */
 void SpellsMirrorMaster::remove_all_mirrors(bool explode)
 {
-    const auto &floor = *this->creature_ptr->current_floor_ptr;
+    const auto &floor = *this->creature_ptr->get_floor();
     for (const auto &pos : floor.get_area()) {
         if (!floor.get_grid(pos).is_mirror()) {
             continue;
@@ -123,7 +123,7 @@ bool SpellsMirrorMaster::mirror_tunnel()
 tl::optional<std::string> SpellsMirrorMaster::place_mirror()
 {
     const auto p_pos = this->creature_ptr->get_position();
-    auto &floor = *this->creature_ptr->current_floor_ptr;
+    auto &floor = *this->creature_ptr->get_floor();
     auto &grid = floor.get_grid(p_pos);
     if (!grid.is_clean()) {
         return _("床上のアイテムが呪文を跳ね返した。", "The object resists the spell.");
@@ -150,7 +150,7 @@ bool SpellsMirrorMaster::mirror_concentration()
         return false;
     }
 
-    if (!this->creature_ptr->current_floor_ptr->grid_array[this->creature_ptr->y][this->creature_ptr->x].is_mirror()) {
+    if (!this->creature_ptr->get_floor()->grid_array[this->creature_ptr->y][this->creature_ptr->x].is_mirror()) {
         msg_print(_("鏡の上でないと集中できない！", "There's no mirror here!"));
         return true;
     }
@@ -173,7 +173,7 @@ bool SpellsMirrorMaster::mirror_concentration()
  */
 void SpellsMirrorMaster::seal_of_mirror(const int dam)
 {
-    const auto &floor = *this->creature_ptr->current_floor_ptr;
+    const auto &floor = *this->creature_ptr->get_floor();
     for (const auto &pos : floor.get_area()) {
         const auto &g_ref = floor.get_grid(pos);
         if (!g_ref.is_mirror()) {
@@ -210,7 +210,7 @@ void SpellsMirrorMaster::super_ray(const Direction &dir, int dam)
  */
 Pos2D SpellsMirrorMaster::get_next_mirror_position(const Pos2D &pos_current) const
 {
-    const auto &floor = *this->creature_ptr->current_floor_ptr;
+    const auto &floor = *this->creature_ptr->get_floor();
     const auto has_mirror = [&](const Pos2D &pos) { return floor.get_grid(pos).is_mirror(); };
     const auto mirror_positions = floor.get_area() | ranges::views::filter(has_mirror) | ranges::to_vector;
 
@@ -232,7 +232,7 @@ void SpellsMirrorMaster::project_seeker_ray(int target_x, int target_y, int dam)
     BIT_FLAGS flag = PROJECT_BEAM | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM | PROJECT_THRU | PROJECT_MIRROR;
     monster_target_y = this->creature_ptr->y;
     monster_target_x = this->creature_ptr->x;
-    auto &floor = *this->creature_ptr->current_floor_ptr;
+    auto &floor = *this->creature_ptr->get_floor();
 
     ProjectResult res;
 
@@ -339,7 +339,7 @@ static void draw_super_ray_pict(CreatureEntity &creature, const std::map<int, st
     // スーパーレイの描画を行った座標のリスト。スーパーレイの全ての描画完了後に描画を消去するのに使用する。
     std::vector<Pos2D> drawn_pos_list;
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     for (const auto &[n, pos_list] : pos_list_map) {
         // スーパーレイの最終到達点の座標の描画を行った座標のリスト。最終到達点の描画を '*' で上書きするのに使用する。
         std::vector<Pos2D> drawn_last_pos_list;
@@ -391,7 +391,7 @@ static bool activate_super_ray_effect(CreatureEntity &creature, int y, int x, in
 
     (void)affect_monster(creature, 0, 0, y, x, dam, typ, flag, true);
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.grid_array[project_m_y][project_m_x];
     const auto &monster = floor.get_monster(grid.m_idx);
     if (project_m_n == 1 && grid.has_monster() && monster.get_monster_profile().ml) {
@@ -412,7 +412,7 @@ void SpellsMirrorMaster::project_super_ray(int target_x, int target_y, int dam)
     BIT_FLAGS flag = PROJECT_BEAM | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM | PROJECT_THRU | PROJECT_MIRROR;
     monster_target_y = this->creature_ptr->y;
     monster_target_x = this->creature_ptr->x;
-    const auto &floor = *this->creature_ptr->current_floor_ptr;
+    const auto &floor = *this->creature_ptr->get_floor();
 
     ProjectResult res;
     const auto p_pos = this->creature_ptr->get_position();

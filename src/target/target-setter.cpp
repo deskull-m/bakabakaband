@@ -72,7 +72,7 @@ TargetSetter::TargetSetter(CreatureEntity &creature, target_type mode)
 
 static bool set_travel_goal(CreatureEntity &creature, const Pos2D &pos)
 {
-    if (creature.is_located_at(pos) || !Travel::can_travel_to(*creature.current_floor_ptr, pos)) {
+    if (creature.is_located_at(pos) || !Travel::can_travel_to(*creature.get_floor(), pos)) {
         return false;
     }
 
@@ -189,7 +189,7 @@ std::string TargetSetter::describe_projectablity() const
         print_path(this->player, this->pos_target.y, this->pos_target.x);
     }
 
-    const auto &floor = *this->player.current_floor_ptr;
+    const auto &floor = *this->player.get_floor();
     std::string info;
     const auto &grid = floor.get_grid(this->pos_target);
     if (target_able(this->player, grid.m_idx)) {
@@ -209,7 +209,7 @@ std::string TargetSetter::describe_projectablity() const
     const auto p_pos = this->player.get_position();
     const auto cheatinfo = format(" X:%d Y:%d LOS:%d LOP:%d",
         this->pos_target.x, this->pos_target.y,
-        los(*this->player.current_floor_ptr, p_pos, this->pos_target),
+        los(*this->player.get_floor(), p_pos, this->pos_target),
         projectable(floor, p_pos, this->pos_target));
     return info.append(cheatinfo);
 }
@@ -258,7 +258,7 @@ Direction TargetSetter::switch_target_input()
     case '.':
     case '5':
     case '0': {
-        const auto &grid = this->player.current_floor_ptr->get_grid(this->pos_target);
+        const auto &grid = this->player.get_floor()->get_grid(this->pos_target);
         if (!target_able(this->player, grid.m_idx)) {
             bell();
             return Direction::none();
@@ -379,7 +379,7 @@ tl::optional<int> TargetSetter::sweep_targets(const Direction &dir, int panel_ro
         }
     }
 
-    const auto &floor = *this->player.current_floor_ptr;
+    const auto &floor = *this->player.get_floor();
     x = std::clamp(x, 1, floor.width - 2);
     y = std::clamp(y, 1, floor.height - 2);
     return tl::nullopt;
@@ -414,7 +414,7 @@ std::string TargetSetter::describe_grid_wizard() const
         return "";
     }
 
-    const auto &floor = *this->player.current_floor_ptr;
+    const auto &floor = *this->player.get_floor();
     const auto &grid = floor.get_grid(this->pos_target);
     constexpr auto fmt = " X:%d Y:%d LOS:%d LOP:%d SPECIAL:%d";
     const auto p_pos = this->player.get_position();
@@ -522,7 +522,7 @@ void TargetSetter::decide_change_panel(const Direction &dir, bool move_fast)
         this->pos_interests = target_set_prepare(this->player, this->mode);
     }
 
-    const auto &floor = *this->player.current_floor_ptr;
+    const auto &floor = *this->player.get_floor();
     x = std::clamp(x, 1, floor.width - 2);
     y = std::clamp(y, 1, floor.height - 2);
 }

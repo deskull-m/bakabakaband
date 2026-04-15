@@ -197,7 +197,7 @@ ProcessResult effect_monster_engetsu(CreatureEntity &creature, EffectMonster *em
         switch (randint0(4)) {
         case 0:
             if (em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::UNIQUE)) {
-                if (set_monster_slow(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_deceleration() + 50)) {
+                if (set_monster_slow(*creature.get_floor(), em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_deceleration() + 50)) {
                     em_ptr->note = _("の動きが遅くなった。", " starts moving slower.");
                 }
                 done = true;

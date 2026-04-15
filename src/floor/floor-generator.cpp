@@ -73,7 +73,7 @@ static Pos2D build_arena(CreatureEntity &creature)
     const auto y_depth = yval + 15;
     const auto x_left = xval - 15;
     const auto x_right = xval + 15;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (auto y = y_height; y <= y_height + 5; y++) {
         for (auto x = x_left; x <= x_right; x++) {
             const Pos2D pos(y, x);
@@ -141,7 +141,7 @@ static Pos2D build_arena(CreatureEntity &creature)
 static void generate_challenge_arena(CreatureEntity &creature)
 {
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     floor.height = SCREEN_HGT;
     floor.width = SCREEN_WID;
     for (auto y = 0; y < MAX_HGT; y++) {
@@ -186,7 +186,7 @@ static Pos2D build_battle(CreatureEntity &creature)
     const auto y_depth = yval + 15;
     const auto x_left = xval - 15;
     const auto x_right = xval + 15;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (auto y = y_height; y <= y_height + 5; y++) {
         for (auto x = x_left; x <= x_right; x++) {
             const Pos2D pos(y, x);
@@ -246,7 +246,7 @@ static Pos2D build_battle(CreatureEntity &creature)
 static void generate_gambling_arena(CreatureEntity &creature)
 {
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (auto y = 0; y < MAX_HGT; y++) {
         for (auto x = 0; x < MAX_WID; x++) {
             const Pos2D pos(y, x);
@@ -295,7 +295,7 @@ static void generate_gambling_arena(CreatureEntity &creature)
 static void generate_fixed_floor(CreatureEntity &creature)
 {
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (const auto &pos : floor.get_area()) {
         place_bold(creature, pos.y, pos.x, GB_SOLID_PERM);
     }
@@ -339,7 +339,7 @@ static tl::optional<std::string> level_gen(CreatureEntity &creature, tl::optiona
     }
 
     constexpr auto chance_small_floor = 10;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_generated_dungeon_definition();
     int level_height, level_width;
     if (dungeon.flags.has(DungeonFeatureType::ALWAY_MAX_SIZE)) {
@@ -436,7 +436,7 @@ void wipe_generate_random_floor_flags(FloorType &floor)
 void clear_cave(CreatureEntity &creature)
 {
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     floor.o_list.clear();
     floor.o_list.push_back(std::make_shared<ItemEntity>()); // 0番にダミーアイテムを用意
 
@@ -567,7 +567,7 @@ static bool floor_is_connected(const FloorType &floor, const IsWallFunc is_wall)
  */
 void generate_floor(CreatureEntity &creature)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto is_wild_mode = AngbandWorld::get_instance().is_wild_mode();
     for (int num = 0; true; num++) {
         tl::optional<std::string> why;

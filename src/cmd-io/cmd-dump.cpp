@@ -237,7 +237,7 @@ void do_cmd_feeling(CreatureEntity &creature)
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
-    FloorType *floor_ptr = creature.current_floor_ptr;
+    FloorType *floor_ptr = creature.get_floor();
     int grids_rate = floor_ptr->width * floor_ptr->height * 100 / (MAX_WID * MAX_HGT);
 
     if (floor_ptr->allianceID != AllianceType::NONE) {
@@ -247,7 +247,7 @@ void do_cmd_feeling(CreatureEntity &creature)
         }
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (floor.is_in_quest() && !inside_quest(floor.get_random_quest_id())) {
         msg_print(_("典型的なクエストのダンジョンのようだ。", "Looks like a typical quest level."));
         return;

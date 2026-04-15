@@ -101,7 +101,7 @@ static void redraw_character_xtra(CreatureEntity &creature)
  */
 void process_dungeon(CreatureEntity &creature, bool load_game)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &world = AngbandWorld::get_instance();
     floor.base_level = floor.dun_level;
     world.is_loading_now = false;

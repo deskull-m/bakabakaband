@@ -64,7 +64,7 @@ static void write_birth_diary(CreatureEntity &creature)
     message_add("====================");
     message_add(" ");
     message_add("  ");
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     exe_write_diary(floor, DiaryKind::GAMESTART, 1, _("-------- 新規ゲーム開始 --------", "------- Started New Game -------"));
     exe_write_diary(floor, DiaryKind::DIALY, 0);
     const auto mes_sex = format(_("%s性別に%sを選択した。", "%schose %s gender."), indent, sex_info[creature.psex].title.data());
@@ -150,7 +150,7 @@ void player_birth(CreatureEntity &creature, std::optional<QuestId> initial_quest
 
         // クエストの初期化処理（ウィザードモードのwiz_enter_quest関数を参考）
         init_flags = i2enum<init_flags_type>(INIT_SHOW_TEXT | INIT_ASSIGN);
-        creature.current_floor_ptr->quest_number = *initial_quest_id;
+        creature.get_floor()->quest_number = *initial_quest_id;
         parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
         quest.status = QuestStatusType::TAKEN;
 

@@ -33,7 +33,7 @@
  */
 void fetch_item(CreatureEntity &creature, const Direction &dir, WEIGHT wgt, bool require_los)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     if (!floor.get_grid(p_pos).o_idx_list.empty()) {
         msg_print(_("自分の足の下にある物は取れません。", "You can't fetch when you're already standing on something."));
@@ -116,7 +116,7 @@ bool fetch_monster(CreatureEntity &creature)
         return false;
     }
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto m_idx = floor.get_grid(*pos).m_idx;
     if (!is_monster(m_idx)) {
         return false;

@@ -77,7 +77,7 @@ void AllianceYeekKingdom::panishment([[maybe_unused]] CreatureEntity &creature)
     if (impression <= -100) {
         int attack_chance = (-impression - 100) / 50 + 1;
         if (one_in_(std::max(1, 20 - attack_chance))) {
-            summon_specific(&player_ptr, player_ptr.y, player_ptr.x, player_ptr.current_floor_ptr->dun_level + 10, SUMMON_YEEK, PM_AMBUSH);
+            summon_specific(&player_ptr, player_ptr.y, player_ptr.x, player_ptr.get_floor()->dun_level + 10, SUMMON_YEEK, PM_AMBUSH);
         }
     }
     */

@@ -52,7 +52,7 @@ static void update_sun_light(CreatureEntity &creature)
         SubWindowRedrawingFlag::DUNGEON,
     };
     rfu.set_flags(flags);
-    if ((creature.current_floor_ptr->grid_array[creature.y][creature.x].info & CAVE_GLOW) != 0) {
+    if ((creature.get_floor()->grid_array[creature.y][creature.x].info & CAVE_GLOW) != 0) {
         set_superstealth(creature, false);
     }
 }
@@ -65,7 +65,7 @@ void day_break(CreatureEntity &creature)
         return;
     }
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (const auto &pos : floor.get_area()) {
         auto &grid = floor.get_grid(pos);
         grid.add_info(CAVE_GLOW);
@@ -87,7 +87,7 @@ void night_falls(CreatureEntity &creature)
         return;
     }
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (const auto &pos : floor.get_area()) {
         auto &grid = floor.get_grid(pos);
         const auto &terrain = grid.get_terrain(TerrainKind::MIMIC);
@@ -272,7 +272,7 @@ static int get_dungeon_feeling(const auto &floor)
  */
 void update_dungeon_feeling(CreatureEntity &creature)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.is_underground()) {
         return;
     }
@@ -321,7 +321,7 @@ void update_dungeon_feeling(CreatureEntity &creature)
  */
 void glow_deep_lava_and_bldg(CreatureEntity &creature)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         return;
     }

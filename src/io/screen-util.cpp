@@ -48,8 +48,8 @@ void resize_map()
 
     panel_row_max = 0;
     panel_col_max = 0;
-    panel_row_min = p_ptr->current_floor_ptr->height;
-    panel_col_min = p_ptr->current_floor_ptr->width;
+    panel_row_min = p_ptr->get_floor()->height;
+    panel_col_min = p_ptr->get_floor()->width;
     verify_panel(*p_ptr);
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();

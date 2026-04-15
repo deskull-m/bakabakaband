@@ -61,7 +61,7 @@ bool ScrollReadExecutor::is_identified() const
 bool ScrollReadExecutor::read()
 {
     auto used_up = true;
-    const auto &floor = *this->creature.current_floor_ptr;
+    const auto &floor = *this->creature.get_floor();
     switch (*this->o_ptr->bi_key.sval()) {
     case SV_SCROLL_DARKNESS:
         if (!has_resist_blind(this->creature) && !has_resist_dark(this->creature)) {

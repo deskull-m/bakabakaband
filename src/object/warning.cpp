@@ -243,7 +243,7 @@ static void spell_damcalc(CreatureEntity &creature, const CreatureEntity &monste
  */
 static void spell_damcalc_by_spellnum(CreatureEntity &creature, MonsterAbilityType ms_type, AttributeType typ, MONSTER_IDX m_idx, int *max)
 {
-    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     int dam = monspell_damage(creature, ms_type, m_idx, DAM_MAX);
     spell_damcalc(creature, monster, typ, dam, max);
 }
@@ -339,7 +339,7 @@ bool process_warning(CreatureEntity &creature, POSITION xx, POSITION yy)
     int dam_max = 0;
     static int old_damage = 0;
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
     for (auto mx = xx - warning_aware_range; mx < xx + warning_aware_range + 1; mx++) {
         for (auto my = yy - warning_aware_range; my < yy + warning_aware_range + 1; my++) {

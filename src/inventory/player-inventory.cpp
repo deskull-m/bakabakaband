@@ -55,7 +55,7 @@ bool can_get_item(CreatureEntity &creature, const ItemTester &item_tester)
         }
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto floor_item_index = scan_floor_items(floor, creature.get_position(), { ScanFloorMode::ITEM_TESTER, ScanFloorMode::ONLY_MARKED }, item_tester);
     return !floor_item_index.empty();
 }
@@ -81,7 +81,7 @@ static void py_pickup_all_golds_on_floor(CreatureEntity &creature, const Grid &g
 {
     for (auto it = grid.o_idx_list.begin(); it != grid.o_idx_list.end();) {
         const auto i_idx = *it++;
-        auto &item = *creature.current_floor_ptr->o_list[i_idx];
+        auto &item = *creature.get_floor()->o_list[i_idx];
         if (item.bi_key.tval() != ItemKindType::GOLD) {
             continue;
         }
@@ -103,7 +103,7 @@ static void py_pickup_all_golds_on_floor(CreatureEntity &creature, const Grid &g
 
 static void py_pickup_single_item(CreatureEntity &creature, short i_idx, bool pickup)
 {
-    auto &item = *creature.current_floor_ptr->o_list[i_idx];
+    auto &item = *creature.get_floor()->o_list[i_idx];
     const auto item_name = describe_flavor(creature, item, 0);
 
     if (!pickup) {
@@ -128,7 +128,7 @@ static void py_pickup_single_item(CreatureEntity &creature, short i_idx, bool pi
 
 static void py_pickup_multiple_items(CreatureEntity &creature, bool pickup)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(creature.get_position());
 
     if (!pickup) {
@@ -164,9 +164,9 @@ static void py_pickup_multiple_items(CreatureEntity &creature, bool pickup)
  */
 static void py_pickup_floor(CreatureEntity &creature, bool pickup)
 {
-    const auto &o_list = creature.current_floor_ptr->o_list;
+    const auto &o_list = creature.get_floor()->o_list;
     const auto exclude_marked_as_skip = ranges::views::remove_if([&](auto i_idx) { return o_list.at(i_idx)->marked.has(OmType::SUPRESS_MESSAGE); });
-    const auto &grid = creature.current_floor_ptr->get_grid(creature.get_position());
+    const auto &grid = creature.get_floor()->get_grid(creature.get_position());
 
     const auto i_idx_list = grid.o_idx_list | exclude_marked_as_skip | ranges::to_vector;
     const auto count_of_items = i_idx_list.size();
@@ -239,7 +239,7 @@ static void print_pickup_message(CreatureEntity &creature, [[maybe_unused]] cons
 void process_player_pickup_item(CreatureEntity &creature, OBJECT_IDX o_idx)
 {
     // delete_object_idx()で配列から削除した後にも使用するためshared_ptrをコピーする
-    const std::shared_ptr<ItemEntity> picked_item_ptr = creature.current_floor_ptr->o_list[o_idx];
+    const std::shared_ptr<ItemEntity> picked_item_ptr = creature.get_floor()->o_list[o_idx];
 
     const auto slot = store_item_to_inventory(creature, picked_item_ptr.get());
     delete_object_idx(creature, o_idx);
@@ -273,7 +273,7 @@ void carry(CreatureEntity &creature, bool pickup)
     rfu.set_flag(MainWindowRedrawingFlag::MAP);
     rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
     handle_stuff(creature);
-    const auto &grid = creature.current_floor_ptr->grid_array[creature.y][creature.x];
+    const auto &grid = creature.get_floor()->grid_array[creature.y][creature.x];
     autopick_pickup_items(creature, grid);
 
     if (!grid.o_idx_list.empty()) {
@@ -289,7 +289,7 @@ void carry(CreatureEntity &creature, bool pickup)
 
     for (auto it = grid.o_idx_list.begin(); it != grid.o_idx_list.end();) {
         const auto this_o_idx = *it++;
-        auto &item = *creature.current_floor_ptr->o_list[this_o_idx];
+        auto &item = *creature.get_floor()->o_list[this_o_idx];
         const auto item_name = describe_flavor(creature, item, 0);
 
         if (item.marked.has(OmType::SUPRESS_MESSAGE)) {

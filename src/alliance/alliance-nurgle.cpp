@@ -168,10 +168,10 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
         /*
         for (int i = 0; i < 2; i++) {
             MONSTER_IDX m_idx = summon_specific(&player_ptr, 0, player_ptr.y, player_ptr.x,
-                player_ptr.current_floor_ptr->dun_level + 5,
+                player_ptr.get_floor()->dun_level + 5,
                 SUMMON_DEMON, PM_FORCE_PET | PM_ALLOW_GROUP);
             if (m_idx) {
-                player_ptr.current_floor_ptr->m_list[m_idx].set_hostile();
+                player_ptr.get_floor()->m_list[m_idx].set_hostile();
             }
         }
         return;
@@ -203,10 +203,10 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
         /*
         for (int i = 0; i < 4; i++) {
             MONSTER_IDX m_idx = summon_specific(&player_ptr, 0, player_ptr.y, player_ptr.x,
-                player_ptr.current_floor_ptr->dun_level + 10,
+                player_ptr.get_floor()->dun_level + 10,
                 SUMMON_DEMON, PM_FORCE_PET | PM_ALLOW_GROUP);
             if (m_idx) {
-                player_ptr.current_floor_ptr->m_list[m_idx].set_hostile();
+                player_ptr.get_floor()->m_list[m_idx].set_hostile();
             }
         }
         return;
@@ -238,10 +238,10 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
     /*
     for (int i = 0; i < 8; i++) {
         MONSTER_IDX m_idx = summon_specific(&player_ptr, 0, player_ptr.y, player_ptr.x,
-            player_ptr.current_floor_ptr->dun_level + 15,
+            player_ptr.get_floor()->dun_level + 15,
             SUMMON_DEMON, PM_FORCE_PET | PM_ALLOW_GROUP);
         if (m_idx) {
-            player_ptr.current_floor_ptr->m_list[m_idx].set_hostile();
+            player_ptr.get_floor()->m_list[m_idx].set_hostile();
         }
     }
     */

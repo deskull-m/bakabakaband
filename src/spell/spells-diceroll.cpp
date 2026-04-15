@@ -21,7 +21,7 @@ bool common_saving_throw_charm(CreatureEntity &creature, int pow, const Creature
 {
     auto &monrace = target.get_monrace();
 
-    if (creature.current_floor_ptr->inside_arena) {
+    if (creature.get_floor()->inside_arena) {
         return true;
     }
 
@@ -61,7 +61,7 @@ bool common_saving_throw_control(CreatureEntity &creature, int pow, const Creatu
 {
     auto &monrace = target.get_monrace();
 
-    if (creature.current_floor_ptr->inside_arena) {
+    if (creature.get_floor()->inside_arena) {
         return true;
     }
 

@@ -267,7 +267,7 @@ void store_purchase(CreatureEntity &creature, StoreSaleType store_num)
     msg_print(_("{}を ${}で購入しました。", "You bought {} for {} gold."), purchased_item_name, res.value());
     record_item_name = purchased_item_name;
     record_turn = world.game_turn;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (record_buy) {
         exe_write_diary(floor, DiaryKind::BUY, 0, purchased_item_name);
     }

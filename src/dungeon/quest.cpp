@@ -283,7 +283,7 @@ void quest_discovery(QuestId quest_id)
  */
 void leave_quest_check(CreatureEntity &creature)
 {
-    leaving_quest = creature.current_floor_ptr->quest_number;
+    leaving_quest = creature.get_floor()->quest_number;
     if (!inside_quest(leaving_quest)) {
         return;
     }
@@ -333,7 +333,7 @@ void leave_quest_check(CreatureEntity &creature)
 void leave_tower_check(CreatureEntity &creature)
 {
     auto &quests = QuestList::get_instance();
-    leaving_quest = creature.current_floor_ptr->quest_number;
+    leaving_quest = creature.get_floor()->quest_number;
 
     auto &tower1 = quests.get_quest(QuestId::TOWER1);
     auto is_leaving_from_tower = inside_quest(leaving_quest);
@@ -359,9 +359,9 @@ void exe_enter_quest(CreatureEntity &creature, QuestId quest_id)
 {
     const auto &quests = QuestList::get_instance();
     if (quests.get_quest(quest_id).type != QuestKindType::RANDOM) {
-        creature.current_floor_ptr->dun_level = 1;
+        creature.get_floor()->dun_level = 1;
     }
-    creature.current_floor_ptr->quest_number = quest_id;
+    creature.get_floor()->quest_number = quest_id;
     creature.leaving = true;
 }
 
@@ -376,7 +376,7 @@ void do_cmd_quest(CreatureEntity &creature)
     }
 
     PlayerEnergy(creature).set_player_turn_energy(100);
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.has_terrain_characteristics(creature.get_position(), TerrainCharacteristics::QUEST_ENTER)) {
         msg_print(_("ここにはクエストの入口はない。", "You see no quest level here."));
         return;

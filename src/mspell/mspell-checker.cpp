@@ -35,7 +35,7 @@
 bool summon_possible(CreatureEntity &creature, POSITION y1, POSITION x1)
 {
     const auto p_pos = creature.get_position();
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const Pos2D pos1(y1, x1);
     for (auto y = y1 - 2; y <= y1 + 2; y++) {
         for (auto x = x1 - 2; x <= x1 + 2; x++) {
@@ -71,7 +71,7 @@ bool summon_possible(CreatureEntity &creature, POSITION y1, POSITION x1)
 bool raise_possible(CreatureEntity &creature, const CreatureEntity &target)
 {
     const auto m_pos = target.get_position();
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     for (auto xx = m_pos.x - 5; xx <= m_pos.x + 5; xx++) {
         for (auto yy = m_pos.y - 5; yy <= m_pos.y + 5; yy++) {
             const Pos2D pos(yy, xx);
@@ -123,7 +123,7 @@ bool raise_possible(CreatureEntity &creature, const CreatureEntity &target)
  */
 bool clean_shot(CreatureEntity &creature, POSITION y1, POSITION x1, POSITION y2, POSITION x2, bool is_friend)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     ProjectionPath grid_g(floor, AngbandSystem::get_instance().get_max_range(), { y1, x1 }, { y2, x2 });
     if (grid_g.path_num() == 0) {
         return false;
@@ -234,7 +234,7 @@ ProjectResult ball(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX
  */
 ProjectResult breath(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, AttributeType typ, int dam_hp, POSITION rad, int target_type)
 {
-    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     BIT_FLAGS flg = PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_BREATH;
     if (target_type == MONSTER_TO_PLAYER) {

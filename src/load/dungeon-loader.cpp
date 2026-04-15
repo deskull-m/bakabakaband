@@ -25,7 +25,7 @@ static errr rd_dungeon(CreatureEntity &creature)
 {
     init_saved_floors(false);
     errr err = 0;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
 
     (void)rd_byte(); // @todo 1byteズレた場所を特定。要修正。
     max_floor_id = rd_s16b();

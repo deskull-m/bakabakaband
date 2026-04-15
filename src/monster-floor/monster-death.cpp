@@ -61,7 +61,7 @@ static void write_pet_death(CreatureEntity &creature, MonsterDeath *md_ptr)
     md_ptr->md_x = md_ptr->m_ptr->x;
     if (record_named_pet && md_ptr->m_ptr->is_named_pet()) {
         const auto m_name = monster_desc(creature, *md_ptr->m_ptr, MD_INDEF_VISIBLE);
-        exe_write_diary(*creature.current_floor_ptr, DiaryKind::NAMED_PET, 3, m_name);
+        exe_write_diary(*creature.get_floor(), DiaryKind::NAMED_PET, 3, m_name);
     }
 }
 
@@ -82,7 +82,7 @@ static void on_dead_explosion(CreatureEntity &creature, MonsterDeath *md_ptr)
 
 static void on_defeat_arena_monster(CreatureEntity &creature, MonsterDeath *md_ptr)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.inside_arena || md_ptr->m_ptr->is_pet()) {
         return;
     }
@@ -118,7 +118,7 @@ static void on_defeat_arena_monster(CreatureEntity &creature, MonsterDeath *md_p
 
 static void drop_corpse(CreatureEntity &creature, MonsterDeath *md_ptr)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     auto is_drop_corpse = one_in_(md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) ? 1 : 4);
     is_drop_corpse &= md_ptr->r_ptr->drop_flags.has_any_of({ MonsterDropType::DROP_CORPSE, MonsterDropType::DROP_SKELETON, MonsterDropType::DROP_JUNK });
     is_drop_corpse &= !(floor.inside_arena || AngbandSystem::get_instance().is_phase_out() || md_ptr->cloned || ((md_ptr->m_ptr->r_idx == AngbandWorld::get_instance().today_mon) && md_ptr->m_ptr->is_pet()));
@@ -207,7 +207,7 @@ bool drop_single_artifact(CreatureEntity &creature, MonsterDeath *md_ptr, FixedA
 
 static tl::optional<short> drop_dungeon_final_artifact(CreatureEntity &creature, MonsterDeath *md_ptr)
 {
-    const auto &dungeon = creature.current_floor_ptr->get_dungeon_definition();
+    const auto &dungeon = creature.get_floor()->get_dungeon_definition();
     const auto has_reward = dungeon.final_object > 0;
     const auto bi_id = has_reward ? dungeon.final_object : BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::SCROLL, SV_SCROLL_ACQUIREMENT });
     if (dungeon.final_artifact == FixedArtifactId::NONE) {
@@ -231,7 +231,7 @@ static void drop_artifacts(CreatureEntity &creature, MonsterDeath *md_ptr)
     }
 
     drop_artifact_from_unique(creature, md_ptr);
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
     if (md_ptr->r_ptr->misc_flags.has_not(MonsterMiscType::GUARDIAN) || (dungeon.final_guardian != md_ptr->m_ptr->r_idx)) {
         return;
@@ -295,7 +295,7 @@ static int decide_drop_numbers(CreatureEntity &creature, MonsterDeath *md_ptr, c
     }
 
     // クローンは、クローン地獄内のユニークモンスター以外はドロップしない
-    if (md_ptr->cloned && !(md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) && (creature.current_floor_ptr->quest_number == QuestId::CLONE))) {
+    if (md_ptr->cloned && !(md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) && (creature.get_floor()->quest_number == QuestId::CLONE))) {
         drop_numbers = 0;
     }
 
@@ -318,7 +318,7 @@ static void drop_items_golds(CreatureEntity &creature, MonsterDeath *md_ptr, int
 {
     auto dump_item = 0;
     auto dump_gold = 0;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &monraces = MonraceList::get_instance();
     for (auto i = 0; i < drop_numbers; i++) {
         if (md_ptr->do_gold && (!md_ptr->do_item || one_in_(2))) {
@@ -354,7 +354,7 @@ static void on_defeat_last_boss(CreatureEntity &creature)
     world.add_winner_class(creature.pclass);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TITLE);
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_FINAL_QUEST_CLEAR);
-    exe_write_diary(*creature.current_floor_ptr, DiaryKind::DESCRIPTION, 0, _("見事に馬鹿馬鹿蛮怒の勝利者となった！", "finally became *WINNER* of Bakabakaband!"));
+    exe_write_diary(*creature.get_floor(), DiaryKind::DESCRIPTION, 0, _("見事に馬鹿馬鹿蛮怒の勝利者となった！", "finally became *WINNER* of Bakabakaband!"));
     patron_list[creature.patron].admire(creature);
     msg_print(_("*** おめでとう ***", "*** CONGRATULATIONS ***"));
     msg_print(_("あなたはゲームをコンプリートしました。", "You have won the game!"));
@@ -395,7 +395,7 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
  */
 void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, AttributeFlags attribute_flags)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
 
     MonsterDeath md(floor, m_idx, drop_item);
     auto &world = AngbandWorld::get_instance();

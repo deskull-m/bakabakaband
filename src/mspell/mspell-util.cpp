@@ -29,7 +29,7 @@ mspell_cast_msg_simple::mspell_cast_msg_simple(concptr to_player, concptr to_mon
  */
 bool see_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     return is_seen(creature, monster);
 }
 
@@ -42,7 +42,7 @@ bool see_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
  */
 bool monster_near_player(const CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     const auto &monster = floor.get_monster(m_idx);
     const auto &monster_target = floor.get_monster(t_idx);
@@ -62,7 +62,7 @@ bool monster_near_player(const CreatureEntity &creature, MONSTER_IDX m_idx, MONS
 bool monspell_message_base(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, const mspell_cast_msg &msgs, bool msg_flag_aux, int target_type)
 {
     bool notice = false;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     bool known = monster_near_player(creature, m_idx, t_idx);
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);

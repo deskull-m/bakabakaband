@@ -369,7 +369,7 @@ void do_cmd_building(CreatureEntity &creature)
     PlayerEnergy energy(creature);
     energy.set_player_turn_energy(100);
     const auto p_pos = creature.get_position();
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (!floor.has_terrain_characteristics(p_pos, TerrainCharacteristics::BLDG)) {
         msg_print(_("ここには建物はない。", "You see no building here."));
         return;

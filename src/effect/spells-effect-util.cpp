@@ -48,7 +48,7 @@ void FallOffHorseEffect::apply() const
         return;
     }
 
-    const auto &floor = *this->creature_ptr->current_floor_ptr;
+    const auto &floor = *this->creature_ptr->get_floor();
     const auto m_name = monster_desc(*this->creature_ptr, floor.get_monster(creature_ptr->riding), 0);
 
     if (this->shake_off_damage > 0) {

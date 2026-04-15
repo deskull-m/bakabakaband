@@ -323,7 +323,7 @@ static int calculate_hp_regen_rate(CreatureEntity &creature)
     }
 
     // 地形による衛生補正
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(creature.get_position());
     const auto &terrain = grid.get_terrain();
     if (regen_amount > 0 && terrain.hygiene != 0) {

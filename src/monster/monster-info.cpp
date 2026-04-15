@@ -258,6 +258,6 @@ bool is_original_ap_and_seen(CreatureEntity &subject, const CreatureEntity &crea
  */
 std::string monster_name(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     return monster_desc(creature, monster, 0x00);
 }

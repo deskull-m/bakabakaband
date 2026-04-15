@@ -523,7 +523,7 @@ static bool exe_eat_charge_of_magic_device(CreatureEntity &creature, ItemEntity 
     if (i_idx >= 0) {
         inven_item_charges(*creature.inventory[i_idx]);
     } else {
-        floor_item_charges(*creature.current_floor_ptr, 0 - i_idx);
+        floor_item_charges(*creature.get_floor(), 0 - i_idx);
     }
 
     static constexpr auto flags = {

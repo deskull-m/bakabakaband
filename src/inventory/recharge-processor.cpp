@@ -115,7 +115,7 @@ void recharge_magic_items(CreatureEntity &creature)
         wild_regen = 20;
     }
 
-    for (const auto &item_ptr : creature.current_floor_ptr->o_list) {
+    for (const auto &item_ptr : creature.get_floor()->o_list) {
         if (!item_ptr->is_valid()) {
             continue;
         }

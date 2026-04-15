@@ -304,7 +304,7 @@ static bool switch_mind_class(CreatureEntity &creature, cm_type *cm_ptr)
         cm_ptr->cast = cast_berserk_spell(creature, i2enum<MindBerserkerType>(cm_ptr->n));
         return true;
     case MindKindType::MIRROR_MASTER:
-        if (creature.current_floor_ptr->grid_array[creature.y][creature.x].is_mirror()) {
+        if (creature.get_floor()->grid_array[creature.y][creature.x].is_mirror()) {
             cm_ptr->on_mirror = true;
         }
 

@@ -192,7 +192,7 @@ void print_depth(CreatureEntity &creature)
     const auto &[wid, hgt] = term_get_size();
     const auto col_depth = wid + COL_DEPTH;
     const auto row_depth = hgt + ROW_DEPTH;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.is_underground()) {
         c_prt(attr, format("%7s", _("地上", "Surf.")), row_depth, col_depth);
         return;
@@ -286,7 +286,7 @@ static void print_health_monster_in_arena_for_wizard(CreatureEntity &creature)
 
         term_putstr(col - 2, row + row_offset, 12, TERM_WHITE, "      /     ");
 
-        auto &monster = creature.current_floor_ptr->get_monster(monster_list_index);
+        auto &monster = creature.get_floor()->get_monster(monster_list_index);
         if (monster.is_valid()) {
             const auto &monrace = monster.get_monrace();
             const auto &symbol_config = monrace.symbol_config;
@@ -387,7 +387,7 @@ void print_health(CreatureEntity &creature, bool riding)
         return;
     }
 
-    const auto &monster = creature.current_floor_ptr->get_monster(monster_idx.value());
+    const auto &monster = creature.get_floor()->get_monster(monster_idx.value());
 
     if ((!monster.get_monster_profile().ml) || (creature.effects()->hallucination().is_hallucinated()) || monster.is_dead()) {
         term_putstr(col, row, max_width, TERM_WHITE, "[----------]");

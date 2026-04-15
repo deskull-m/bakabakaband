@@ -64,7 +64,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
     auto &monraces = MonraceList::get_instance();
     auto power = 100;
     if (!necro && m_idx) {
-        auto &monster = creature.current_floor_ptr->get_monster(*m_idx);
+        auto &monster = creature.get_floor()->get_monster(*m_idx);
         auto &monrace = monster.get_appearance_monrace();
         const auto m_name = monster_desc(creature, monster, 0);
         power = monrace.level / 2;

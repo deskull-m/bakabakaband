@@ -145,7 +145,7 @@ static void show_dead_place(CreatureEntity &creature, int extra_line)
     }
 
     std::string place;
-    if (!creature.current_floor_ptr->is_underground()) {
+    if (!creature.get_floor()->is_underground()) {
         concptr field_name = creature.town_num ? "街" : "荒野";
         if (streq(creature.died_from, "途中終了")) {
             place = format("%sで死んで飽きた", field_name);
@@ -154,9 +154,9 @@ static void show_dead_place(CreatureEntity &creature, int extra_line)
         }
     } else {
         if (streq(creature.died_from, "途中終了")) {
-            place = format("地下 %d 階で死んで飽きた", (int)creature.current_floor_ptr->dun_level);
+            place = format("地下 %d 階で死んで飽きた", (int)creature.get_floor()->dun_level);
         } else {
-            place = format("に地下 %d 階で殺されて飽きた", (int)creature.current_floor_ptr->dun_level);
+            place = format("に地下 %d 階で殺されて飽きた", (int)creature.get_floor()->dun_level);
         }
     }
 
@@ -191,7 +191,7 @@ static void show_tomb_detail(CreatureEntity &creature)
  */
 static void show_tomb_detail(CreatureEntity &creature)
 {
-    show_tomb_line(format("Killed on Level %d", creature.current_floor_ptr->dun_level), GRAVE_DEAD_PLACE_ROW);
+    show_tomb_line(format("Killed on Level %d", creature.get_floor()->dun_level), GRAVE_DEAD_PLACE_ROW);
 
     auto lines = shape_buffer(format("by %s.", creature.died_from.data()).data(), GRAVE_LINE_WIDTH + 1);
     show_tomb_line(lines[0], GRAVE_KILLER_NAME_ROW);

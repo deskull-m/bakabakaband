@@ -126,7 +126,7 @@ void fill_treasure(CreatureEntity &creature, const Rect2D &area, int difficulty)
 {
     const auto center = area.center();
     const auto size = area.width() - 1 + area.height() - 1;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
 
     for (const auto &pos : area) {
         deploy_treasure(creature, floor, center, pos, size, difficulty);

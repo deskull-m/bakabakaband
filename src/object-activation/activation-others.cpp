@@ -164,8 +164,8 @@ bool activate_telekinesis(CreatureEntity &creature, std::string_view name)
 bool activate_unique_detection(CreatureEntity &creature)
 {
     msg_print(_("奇妙な場所が頭の中に浮かんだ．．．", "Some strange places show up in your mind. And you see ..."));
-    for (int i = creature.current_floor_ptr->m_max - 1; i >= 1; i--) {
-        const auto &monster = creature.current_floor_ptr->get_monster(i);
+    for (int i = creature.get_floor()->m_max - 1; i >= 1; i--) {
+        const auto &monster = creature.get_floor()->get_monster(i);
         if (!monster.is_valid()) {
             continue;
         }
@@ -433,7 +433,7 @@ bool activate_dispel_magic(CreatureEntity &creature)
         return false;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto m_idx = floor.get_grid(*pos).m_idx;
     if (m_idx == 0) {
         return true;
@@ -462,7 +462,7 @@ bool activate_whistle(CreatureEntity &creature, const ItemEntity &item)
         (void)SpellHex(creature).stop_all_spells();
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     std::vector<short> pet_index;
     for (short pet_indice = floor.m_max - 1; pet_indice >= 1; pet_indice--) {
         const auto &monster = floor.get_monster(pet_indice);

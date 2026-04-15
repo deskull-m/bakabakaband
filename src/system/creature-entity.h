@@ -321,6 +321,15 @@ public:
     }
 
     /*!
+     * @brief クリーチャーが所属するフロアを設定
+     * @param floor フロアへのポインタ
+     */
+    void set_floor(FloorType *floor)
+    {
+        this->current_floor_ptr = floor;
+    }
+
+    /*!
      * @brief クリーチャーの実種族定義を取得する
      * @return 実種族定義への参照（r_idx が MonraceId::PLAYER の場合はプレイヤー種族エントリを返す）
      */
@@ -1038,9 +1047,6 @@ public:
     // 死亡履歴
     std::vector<DeathRecord> death_history{}; /*!< 死亡履歴リスト */
 
-    // フロア情報
-    FloorType *current_floor_ptr{}; /*!< 現在所属しているフロアへのポインタ / Current floor pointer */
-
     /*!<
      * @brief 時限効果管理オブジェクトを取得
      * @return 時限効果管理オブジェクトへの共有ポインタ
@@ -1269,6 +1275,9 @@ protected:
     TIME_EFFECT tim_emission{}; /* Timed -- Player Emission */
     TIME_EFFECT tim_exorcism{}; /* Timed -- Exorcism */
     TIME_EFFECT tim_imm_dark{}; /* Timed -- Darkness immunity */
+
+    // フロア情報（外部からは get_floor() / set_floor() 経由でアクセスすること）
+    FloorType *current_floor_ptr{}; /*!< 現在所属しているフロアへのポインタ / Current floor pointer */
 
 private:
     std::string build_damage_description() const;

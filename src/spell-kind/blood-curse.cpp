@@ -18,8 +18,8 @@
 
 void blood_curse_to_enemy(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
-    const auto &grid = creature.current_floor_ptr->grid_array[monster.y][monster.x];
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
+    const auto &grid = creature.get_floor()->grid_array[monster.y][monster.x];
     BIT_FLAGS curse_flg = (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP);
     int count = 0;
     bool is_first_loop = true;
@@ -103,7 +103,7 @@ void blood_curse_to_enemy(CreatureEntity &creature, MONSTER_IDX m_idx)
                 mode |= (PM_NO_PET | PM_FORCE_FRIENDLY);
             }
 
-            const auto level = pet ? creature.level * 2 / 3 + randint1(creature.level / 2) : creature.current_floor_ptr->dun_level;
+            const auto level = pet ? creature.level * 2 / 3 + randint1(creature.level / 2) : creature.get_floor()->dun_level;
             count += summon_specific(creature, creature.y, creature.x, level, SUMMON_NONE, mode) ? 1 : 0;
             if (!one_in_(6)) {
                 break;

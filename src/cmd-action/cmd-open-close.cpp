@@ -47,7 +47,7 @@ static bool exe_open_chest(CreatureEntity &creature, const Pos2D &pos, OBJECT_ID
 {
     auto flag = true;
     auto more = false;
-    auto *o_ptr = creature.current_floor_ptr->o_list[o_idx].get();
+    auto *o_ptr = creature.get_floor()->o_list[o_idx].get();
     PlayerEnergy(creature).set_player_turn_energy(100);
     if (o_ptr->pval > 0) {
         flag = false;
@@ -103,7 +103,7 @@ void do_cmd_open(CreatureEntity &creature)
     }
 
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (easy_open) {
         const auto &[num_doors, dir_door] = floor.count_doors_traps(creature.get_position(), GridCountKind::CLOSED_DOOR, false);
         const auto &[num_chests, dir_chest] = count_chests(creature, false);
@@ -155,7 +155,7 @@ void do_cmd_close(CreatureEntity &creature)
         return;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
     if (easy_open) {
         const auto &[num_doors, dir] = floor.count_doors_traps(creature.get_position(), GridCountKind::OPEN, false);
@@ -200,7 +200,7 @@ void do_cmd_disarm(CreatureEntity &creature)
         return;
     }
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
     if (easy_disarm) {
         const auto &[num_traps, dir_trap] = floor.count_doors_traps(creature.get_position(), GridCountKind::TRAP, true);
@@ -274,7 +274,7 @@ void do_cmd_bash(CreatureEntity &creature)
     auto more = false;
     if (const auto dir = get_rep_dir(creature)) {
         const auto pos = creature.get_neighbor(dir);
-        const Grid &grid = creature.current_floor_ptr->get_grid(pos);
+        const Grid &grid = creature.get_floor()->get_grid(pos);
         if (grid.get_terrain(TerrainKind::MIMIC).flags.has_not(TerrainCharacteristics::BASH)) {
             msg_print(_("そこには体当たりするものが見当たらない。", "You see nothing there to bash."));
         } else if (grid.has_monster()) {
@@ -340,7 +340,7 @@ void do_cmd_spike(CreatureEntity &creature)
     }
 
     const auto pos = creature.get_neighbor(dir);
-    const auto &grid = creature.current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto &terrain_mimic = grid.get_terrain(TerrainKind::MIMIC);
     INVENTORY_IDX i_idx;
     if (terrain_mimic.flags.has_not(TerrainCharacteristics::SPIKE)) {

@@ -5,7 +5,7 @@
 
 msa_type::msa_type(CreatureEntity &creature, MONSTER_IDX m_idx)
     : m_idx(m_idx)
-    , m_ptr(&creature.current_floor_ptr->get_monster(m_idx))
+    , m_ptr(&creature.get_floor()->get_monster(m_idx))
     , x(creature.x)
     , y(creature.y)
     , do_spell(DO_SPELL_NONE)

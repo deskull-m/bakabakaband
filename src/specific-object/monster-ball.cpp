@@ -105,7 +105,7 @@ static bool release_monster(CreatureEntity &creature, ItemEntity &item, const Di
         return false;
     }
 
-    auto &monster = creature.current_floor_ptr->get_monster(*m_idx);
+    auto &monster = creature.get_floor()->get_monster(*m_idx);
     if (item.captured_monster_speed > 0) {
         monster.speed = item.captured_monster_speed;
     }

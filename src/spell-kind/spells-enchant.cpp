@@ -97,7 +97,7 @@ bool artifact_scroll(CreatureEntity &creature)
 
     if (record_rand_art) {
         const auto diary_item_name = describe_flavor(creature, *o_ptr, OD_NAME_ONLY);
-        exe_write_diary(*creature.current_floor_ptr, DiaryKind::ART_SCROLL, 0, diary_item_name);
+        exe_write_diary(*creature.get_floor(), DiaryKind::ART_SCROLL, 0, diary_item_name);
     }
 
     chg_virtue(creature, Virtue::ENCHANT, 1);

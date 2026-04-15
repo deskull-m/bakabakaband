@@ -108,7 +108,7 @@ void do_cmd_diary(CreatureEntity &creature)
 {
     screen_save();
     TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     while (true) {
         term_clear();
         prt(_("[ 記録の設定 ]", "[ Play Record ]"), 2, 0);

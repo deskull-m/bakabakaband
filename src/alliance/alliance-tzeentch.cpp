@@ -78,7 +78,7 @@ void AllianceTzeentch::panishment(CreatureEntity &creature)
     }
     if (one_in_(22)) {
         Pos2D m_pos(creature.get_position());
-        m_pos = scatter(*creature.current_floor_ptr, m_pos, 15, PROJECT_NONE);
+        m_pos = scatter(*creature.get_floor(), m_pos, 15, PROJECT_NONE);
 
         // ティーンチの知識と変幻レベルに応じて異なる復讐者を派遣
         /*
@@ -117,7 +117,7 @@ void AllianceTzeentch::panishment(CreatureEntity &creature)
 
             for (int k = 0; k < summon_count; k++) {
                 summon_specific(&player_ptr, m_pos.y, m_pos.x,
-                    std::max(player_ptr.current_floor_ptr->monster_level, 12),
+                    std::max(player_ptr.get_floor()->monster_level, 12),
                     SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }

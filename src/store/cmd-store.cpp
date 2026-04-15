@@ -59,7 +59,7 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
     xtra_stock = std::min(14 + 26, ((hgt > MAIN_TERM_MIN_ROWS) ? (hgt - MAIN_TERM_MIN_ROWS) : 0));
     store_bottom = MIN_STOCK + xtra_stock;
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     StoreSaleType store_num;
     const auto &grid = floor.get_grid(creature.get_position());
 

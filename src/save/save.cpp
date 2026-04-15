@@ -334,7 +334,7 @@ bool save_player(CreatureEntity &creature, SaveType type)
     if (type != SaveType::CLOSE_GAME) {
         world.is_loading_now = false;
         update_creature(creature);
-        creature.current_floor_ptr->reset_mproc();
+        creature.get_floor()->reset_mproc();
         world.is_loading_now = true;
     }
 

@@ -38,7 +38,7 @@
 
 bool CreatureEntity::try_set_position(const Pos2D &pos)
 {
-    if (this->current_floor_ptr->get_grid(pos).has_monster()) {
+    if (this->get_floor()->get_grid(pos).has_monster()) {
         return false;
     }
 
@@ -86,13 +86,13 @@ bool CreatureEntity::try_resist_eldritch_horror() const
 void CreatureEntity::ride_monster(MONSTER_IDX m_idx)
 {
     if (is_monster(this->riding)) {
-        this->current_floor_ptr->get_monster(this->riding).get_monster_profile().mflag2.reset(MonsterConstantFlagType::RIDING);
+        this->get_floor()->get_monster(this->riding).get_monster_profile().mflag2.reset(MonsterConstantFlagType::RIDING);
     }
 
     this->riding = m_idx;
 
     if (is_monster(m_idx)) {
-        this->current_floor_ptr->get_monster(m_idx).get_monster_profile().mflag2.set(MonsterConstantFlagType::RIDING);
+        this->get_floor()->get_monster(m_idx).get_monster_profile().mflag2.set(MonsterConstantFlagType::RIDING);
     }
 }
 
@@ -513,7 +513,7 @@ void CreatureEntity::set_hostile()
     this->get_monster_profile().mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
 
     if (this->get_monster_profile().alliance_idx != AllianceType::NONE) {
-        for (auto &monster : this->current_floor_ptr->m_list) {
+        for (auto &monster : this->get_floor()->m_list) {
             if (monster.get_monster_profile().alliance_idx == this->get_monster_profile().alliance_idx) {
                 monster.get_monster_profile().mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
             }
