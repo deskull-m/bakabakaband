@@ -7,6 +7,7 @@
 #include "monster-race/race-kind-flags.h"
 #include "monster/monster-flag-types.h"
 #include "monster/monster-pain-describer.h"
+#include "monster/monster-timed-effects.h"
 #include "monster/monster-util.h"
 #include "player-ability/player-ability-types.h"
 #include "player-info/bard-data-type.h"
@@ -410,25 +411,9 @@ short CreatureEntity::get_timed_effect(CreatureTimedEffect effect) const
         return 0;
     }
 
-    const auto &mp = this->get_monster_profile();
-    switch (effect) {
-    case CreatureTimedEffect::STUN:
-        return mp.mtimed.at(MonsterTimedEffect::STUN);
-    case CreatureTimedEffect::CONFUSION:
-        return mp.mtimed.at(MonsterTimedEffect::CONFUSION);
-    case CreatureTimedEffect::FEAR:
-        return mp.mtimed.at(MonsterTimedEffect::FEAR);
-    case CreatureTimedEffect::INVULNERABILITY:
-        return mp.mtimed.at(MonsterTimedEffect::INVULNERABILITY);
-    case CreatureTimedEffect::ACCELERATION:
-        return mp.mtimed.at(MonsterTimedEffect::FAST);
-    case CreatureTimedEffect::DECELERATION:
-        return mp.mtimed.at(MonsterTimedEffect::SLOW);
-    case CreatureTimedEffect::SLEEP_OR_PARALYSIS:
-        return mp.mtimed.at(MonsterTimedEffect::SLEEP);
-    default:
-        return 0;
-    }
+    const auto &mtimed = this->get_monster_profile().mtimed;
+    const auto it = mtimed.find(effect);
+    return (it != mtimed.end()) ? it->second : 0;
 }
 
 void CreatureEntity::set_timed_effect(CreatureTimedEffect effect, short value)
@@ -437,32 +422,7 @@ void CreatureEntity::set_timed_effect(CreatureTimedEffect effect, short value)
         return;
     }
 
-    auto &mp = this->get_monster_profile();
-    switch (effect) {
-    case CreatureTimedEffect::STUN:
-        mp.mtimed[MonsterTimedEffect::STUN] = value;
-        break;
-    case CreatureTimedEffect::CONFUSION:
-        mp.mtimed[MonsterTimedEffect::CONFUSION] = value;
-        break;
-    case CreatureTimedEffect::FEAR:
-        mp.mtimed[MonsterTimedEffect::FEAR] = value;
-        break;
-    case CreatureTimedEffect::INVULNERABILITY:
-        mp.mtimed[MonsterTimedEffect::INVULNERABILITY] = value;
-        break;
-    case CreatureTimedEffect::ACCELERATION:
-        mp.mtimed[MonsterTimedEffect::FAST] = value;
-        break;
-    case CreatureTimedEffect::DECELERATION:
-        mp.mtimed[MonsterTimedEffect::SLOW] = value;
-        break;
-    case CreatureTimedEffect::SLEEP_OR_PARALYSIS:
-        mp.mtimed[MonsterTimedEffect::SLEEP] = value;
-        break;
-    default:
-        break;
-    }
+    this->get_monster_profile().mtimed[effect] = value;
 }
 
 void CreatureEntity::make_lore_treasure(int num_item, int num_gold) const
@@ -1010,7 +970,7 @@ bool CreatureEntity::can_ring_boss_call_nazgul() const
 void CreatureEntity::init_monster_profile()
 {
     this->monster_profile.emplace();
-    for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
+    for (const auto mte : MONSTER_TIMED_EFFECT_LIST) {
         this->get_monster_profile().mtimed[mte] = 0;
     }
 }

@@ -34,6 +34,7 @@
 #include "monster/monster-flag-types.h"
 #include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
+#include "monster/monster-timed-effects.h"
 #include "monster/monster-update.h"
 #include "monster/monster-util.h"
 #include "system/angband-system.h"
@@ -445,7 +446,7 @@ void clear_cave(CreatureEntity &creature)
     }
     floor.m_max = 1;
     floor.m_cnt = 0;
-    for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
+    for (const auto mte : MONSTER_TIMED_EFFECT_LIST) {
         floor.mproc_max[mte] = 0;
     }
 

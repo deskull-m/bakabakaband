@@ -130,13 +130,13 @@ static void attack_dispel(CreatureEntity &creature, player_attack_type *pa_ptr)
     }
 
     auto dd = 2;
-    if (pa_ptr->m_ptr->get_monster_profile().mtimed[MonsterTimedEffect::SLOW]) {
+    if (pa_ptr->m_ptr->get_monster_profile().mtimed[CreatureTimedEffect::DECELERATION]) {
         dd += 1;
     }
-    if (pa_ptr->m_ptr->get_monster_profile().mtimed[MonsterTimedEffect::FAST]) {
+    if (pa_ptr->m_ptr->get_monster_profile().mtimed[CreatureTimedEffect::ACCELERATION]) {
         dd += 2;
     }
-    if (pa_ptr->m_ptr->get_monster_profile().mtimed[MonsterTimedEffect::INVULNERABILITY]) {
+    if (pa_ptr->m_ptr->get_monster_profile().mtimed[CreatureTimedEffect::INVULNERABILITY]) {
         dd += 3;
     }
 

@@ -50,7 +50,7 @@ enum class FloorBoundary {
 
 enum class DungeonId;
 enum class GridCountKind;
-enum class MonsterTimedEffect : int;
+enum class CreatureTimedEffect;
 enum class MonraceHook;
 enum class MonraceHookTerrain;
 enum class MonraceId : short;
@@ -92,8 +92,8 @@ public:
     MONSTER_IDX m_max = 0; /* Number of allocated monsters */
     MONSTER_IDX m_cnt = 0; /* Number of live monsters */
 
-    std::map<MonsterTimedEffect, std::vector<short>> mproc_list; /*!< The array to process dungeon monsters[max_m_idx] */
-    std::map<MonsterTimedEffect, short> mproc_max; /*!< Number of monsters to be processed */
+    std::map<CreatureTimedEffect, std::vector<short>> mproc_list; /*!< The array to process dungeon monsters[max_m_idx] */
+    std::map<CreatureTimedEffect, short> mproc_max; /*!< Number of monsters to be processed */
 
     bool monster_noise = false;
     QuestId quest_number;
@@ -146,9 +146,9 @@ public:
     void leave_dungeon(bool state);
     void reset_mproc();
     void reset_mproc_max();
-    tl::optional<int> get_mproc_index(short m_idx, MonsterTimedEffect mte);
-    void add_mproc(short m_idx, MonsterTimedEffect mte);
-    void remove_mproc(short m_idx, MonsterTimedEffect mte);
+    tl::optional<int> get_mproc_index(short m_idx, CreatureTimedEffect mte);
+    void add_mproc(short m_idx, CreatureTimedEffect mte);
+    void remove_mproc(short m_idx, CreatureTimedEffect mte);
 
     CreatureEntity &get_monster(MONSTER_IDX m_idx);
     const CreatureEntity &get_monster(MONSTER_IDX m_idx) const;

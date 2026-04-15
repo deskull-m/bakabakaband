@@ -6,6 +6,7 @@
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
 #include "monster/monster-info.h"
+#include "monster/monster-timed-effects.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -75,7 +76,7 @@ static void compact_monsters_aux(CreatureEntity &creature, MONSTER_IDX i1, MONST
     floor.m_list[i2] = std::move(floor.m_list[i1]);
     floor.m_list[i1].wipe();
 
-    for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
+    for (const auto mte : MONSTER_TIMED_EFFECT_LIST) {
         const auto index = floor.get_mproc_index(i1, mte);
         if (index >= 0) {
             floor.mproc_list[mte][*index] = i2;
