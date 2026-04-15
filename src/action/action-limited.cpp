@@ -23,7 +23,7 @@
  */
 bool cmd_limit_cast(CreatureEntity &creature)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (floor.is_underground() && (floor.get_dungeon_definition().flags.has(DungeonFeatureType::NO_MAGIC))) {
         msg_print(_("ダンジョンが魔法を吸収した！", "The dungeon absorbs all attempted magic!"));
         msg_erase();
@@ -75,7 +75,7 @@ bool cmd_limit_stun(const CreatureEntity &creature)
 
 bool cmd_limit_arena(const CreatureEntity &creature)
 {
-    if (creature.current_floor_ptr->inside_arena) {
+    if (creature.get_floor()->inside_arena) {
         msg_print(_("アリーナが魔法を吸収した！", "The arena absorbs all attempted magic!"));
         msg_erase();
         return true;

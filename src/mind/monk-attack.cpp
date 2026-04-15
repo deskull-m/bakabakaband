@@ -229,7 +229,7 @@ static void print_stun_effect(CreatureEntity &creature, player_attack_type *pa_p
     const auto &monrace = pa_ptr->m_ptr->get_monrace();
     if (stun_effect && ((pa_ptr->attack_damage + creature.to_d[pa_ptr->hand]) < pa_ptr->m_ptr->hp)) {
         if (creature.level > randint1(monrace.level + resist_stun + 10)) {
-            if (set_monster_stunned(*creature.current_floor_ptr, pa_ptr->g_ptr->m_idx, stun_effect + pa_ptr->m_ptr->get_remaining_stun())) {
+            if (set_monster_stunned(*creature.get_floor(), pa_ptr->g_ptr->m_idx, stun_effect + pa_ptr->m_ptr->get_remaining_stun())) {
                 msg_format(_("%s^はフラフラになった。", "%s^ is stunned."), pa_ptr->m_name);
             } else {
                 msg_format(_("%s^はさらにフラフラになった。", "%s^ is more stunned."), pa_ptr->m_name);
@@ -275,7 +275,7 @@ bool double_attack(CreatureEntity &creature)
     }
 
     const auto pos = creature.get_neighbor(dir);
-    const auto &grid = creature.current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto has_monster = grid.has_monster();
     if (!has_monster) {
         msg_print(_("その方向にはモンスターはいません。", "You don't see any monster in this direction"));

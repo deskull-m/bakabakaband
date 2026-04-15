@@ -162,7 +162,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
             msg_format(_("%sを $%dで売却しました。", "You sold %s for %d gold."), sold_item_name.data(), price);
 
             if (record_sell) {
-                exe_write_diary(*creature.current_floor_ptr, DiaryKind::SELL, 0, sold_item_name);
+                exe_write_diary(*creature.get_floor(), DiaryKind::SELL, 0, sold_item_name);
             }
 
             creature.plus_incident_tree("STORE_SELL", 1);

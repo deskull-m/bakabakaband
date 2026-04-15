@@ -67,14 +67,14 @@ static void do_cmd_knowledge_quests_current(CreatureEntity &creature, FILE *fff)
             continue;
         }
 
-        const auto old_quest = creature.current_floor_ptr->quest_number;
+        const auto old_quest = creature.get_floor()->quest_number;
 
         quest_text_lines.clear();
 
-        creature.current_floor_ptr->quest_number = quest_id;
+        creature.get_floor()->quest_number = quest_id;
         init_flags = INIT_SHOW_TEXT;
         parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
-        creature.current_floor_ptr->quest_number = old_quest;
+        creature.get_floor()->quest_number = old_quest;
         if (quest.flags & QUEST_FLAG_SILENT) {
             continue;
         }
@@ -184,7 +184,7 @@ static bool do_cmd_knowledge_quests_aux(CreatureEntity &creature, FILE *fff, Que
     const auto &quests = QuestList::get_instance();
     const auto &quest = quests.get_quest(q_idx);
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto is_fixed_quest = QuestType::is_fixed(q_idx);
     if (is_fixed_quest) {
         const auto old_quest = floor.quest_number;

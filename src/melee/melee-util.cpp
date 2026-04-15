@@ -13,8 +13,8 @@ mam_type *initialize_mam_type(CreatureEntity &creature, mam_type *mam_ptr, MONST
     mam_ptr->attribute = BlowEffectType::NONE;
     mam_ptr->m_idx = m_idx;
     mam_ptr->t_idx = t_idx;
-    mam_ptr->m_ptr = &creature.current_floor_ptr->get_monster(m_idx);
-    mam_ptr->t_ptr = &creature.current_floor_ptr->get_monster(t_idx);
+    mam_ptr->m_ptr = &creature.get_floor()->get_monster(m_idx);
+    mam_ptr->t_ptr = &creature.get_floor()->get_monster(t_idx);
     mam_ptr->damage = 0;
     if (creature.is_player()) {
         mam_ptr->see_m = is_seen(creature, *mam_ptr->m_ptr);

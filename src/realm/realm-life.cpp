@@ -308,7 +308,7 @@ tl::optional<std::string> do_life_spell(CreatureEntity &creature, SPELL_IDX spel
 
     case 24: {
         if (cast) {
-            creature.current_floor_ptr->num_repro += MAX_REPRODUCTION;
+            creature.get_floor()->num_repro += MAX_REPRODUCTION;
         }
     } break;
 

@@ -83,7 +83,7 @@ static tl::optional<DungeonId> select_random_non_beginner_dungeon()
 
 static void check_arena_floor(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!dd_ptr->empty_level) {
         for (const auto &pos : floor.get_area()) {
             place_bold(creature, pos.y, pos.x, GB_EXTRA);
@@ -103,7 +103,7 @@ static void check_arena_floor(CreatureEntity &creature, DungeonData *dd_ptr)
 
 static void place_cave_contents(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.dun_level == 1) {
         constexpr auto density_moss = 2;
         while (one_in_(density_moss)) {
@@ -142,7 +142,7 @@ static void place_cave_contents(CreatureEntity &creature, DungeonData *dd_ptr, c
  */
 static void generate_circular_waterway(CreatureEntity &creature)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto margin = 2; // 外壁からのマージン
 
     // 環状水路の座標を計算
@@ -179,7 +179,7 @@ static bool decide_tunnel_planned_site(CreatureEntity &creature, DungeonData *dd
     if (dungeon.flags.has(DungeonFeatureType::NO_TUNNEL)) {
         return true;
     }
-    if (randint1(creature.current_floor_ptr->dun_level) > dungeon.tunnel_percent) {
+    if (randint1(creature.get_floor()->dun_level) > dungeon.tunnel_percent) {
         (void)build_tunnel2(creature, dd_ptr, dd_ptr->centers[i], dd_ptr->tunnel_pos, 2, 2);
     } else if (!build_tunnel(creature, dd_ptr, dt_ptr, dd_ptr->centers[i], dd_ptr->tunnel_pos)) {
         dd_ptr->tunnel_fail_count++;
@@ -198,7 +198,7 @@ static void make_tunnels(CreatureEntity &creature, DungeonData *dd_ptr)
 {
     for (size_t i = 0; i < dd_ptr->tunn_n; i++) {
         dd_ptr->tunnel_pos = dd_ptr->tunnels[i];
-        auto &grid = creature.current_floor_ptr->get_grid(dd_ptr->tunnel_pos);
+        auto &grid = creature.get_floor()->get_grid(dd_ptr->tunnel_pos);
         const auto &terrain = grid.get_terrain();
         if (terrain.flags.has_not(TerrainCharacteristics::MOVE) || terrain.flags.has_none_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::LAVA })) {
             grid.mimic = 0;
@@ -211,7 +211,7 @@ static void make_walls(CreatureEntity &creature, DungeonData *dd_ptr, const Dung
 {
     for (size_t j = 0; j < dd_ptr->wall_n; j++) {
         dd_ptr->tunnel_pos = dd_ptr->walls[j];
-        auto &grid = creature.current_floor_ptr->get_grid(dd_ptr->tunnel_pos);
+        auto &grid = creature.get_floor()->get_grid(dd_ptr->tunnel_pos);
         grid.mimic = 0;
         place_grid(creature, grid, GB_FLOOR);
         if (evaluate_percent(dt_ptr->dun_tun_pen) && dungeon.flags.has_not(DungeonFeatureType::NO_DOORS)) {
@@ -260,7 +260,7 @@ static void make_only_tunnel_points(const FloorType &floor, DungeonData *dd_ptr)
 
 static bool make_one_floor(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (dungeon.flags.has(DungeonFeatureType::NO_ROOM)) {
         make_only_tunnel_points(floor, dd_ptr);
     } else {
@@ -326,7 +326,7 @@ static bool make_one_floor(CreatureEntity &creature, DungeonData *dd_ptr, const 
 static bool switch_making_floor(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon)
 {
     if (dungeon.flags.has(DungeonFeatureType::MAZE)) {
-        const auto &floor = *creature.current_floor_ptr;
+        const auto &floor = *creature.get_floor();
         build_maze_vault(creature, { floor.height / 2 - 1, floor.width / 2 - 1 }, { floor.height - 4, floor.width - 4 }, false);
         const auto &terrains = TerrainList::get_instance();
         if (!alloc_stairs(creature, terrains.get_terrain_id(TerrainTag::DOWN_STAIR), rand_range(2, 3), 3)) {
@@ -395,7 +395,7 @@ static void place_bound_perm_wall(CreatureEntity &creature, Grid &grid)
 
     const auto &terrain = grid.get_terrain();
     if (terrain.flags.has_any_of({ TerrainCharacteristics::HAS_GOLD, TerrainCharacteristics::HAS_ITEM }) && terrain.flags.has_not(TerrainCharacteristics::SECRET)) {
-        grid.feat = creature.current_floor_ptr->get_dungeon_definition().convert_terrain_id(grid.feat, TerrainCharacteristics::ENSECRET);
+        grid.feat = creature.get_floor()->get_dungeon_definition().convert_terrain_id(grid.feat, TerrainCharacteristics::ENSECRET);
     }
 
     grid.mimic = grid.feat;
@@ -404,7 +404,7 @@ static void place_bound_perm_wall(CreatureEntity &creature, Grid &grid)
 
 static void make_perm_walls(CreatureEntity &creature)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     floor.get_area().each_edge([&](const Pos2D &pos) {
         place_bound_perm_wall(creature, floor.get_grid(pos));
     });
@@ -429,7 +429,7 @@ static bool check_place_necessary_objects(CreatureEntity &creature, DungeonData 
 
 static void decide_dungeon_data_allocation(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     dd_ptr->alloc_object_num = floor.dun_level / 3 + 5;
     if (dd_ptr->alloc_object_num > 30) {
         dd_ptr->alloc_object_num = 30;
@@ -460,7 +460,7 @@ static void decide_dungeon_data_allocation(CreatureEntity &creature, DungeonData
 static bool allocate_dungeon_data(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon)
 {
     dd_ptr->alloc_monster_num += randint1(8);
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
 
     for (dd_ptr->alloc_monster_num = dd_ptr->alloc_monster_num + dd_ptr->alloc_object_num; dd_ptr->alloc_monster_num > 0; dd_ptr->alloc_monster_num--) {
         if (one_in_(30)) {
@@ -564,7 +564,7 @@ tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32
             *seed);
     }
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     floor.reset_lite_area();
     get_mon_num_prep_enum(creature, floor.get_monrace_hook());
 
@@ -667,7 +667,7 @@ tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32
  */
 void apply_vestige_terrain_replacement(CreatureEntity &creature)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &terrains = TerrainList::get_instance();
 
     // PERMANENTフラグを持たない地形IDのリストを作成
@@ -721,7 +721,7 @@ void apply_void_terrain_placement(CreatureEntity &creature)
         return;
     }
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &terrains = TerrainList::get_instance();
 
     // 時空崩壊度から配置率を計算

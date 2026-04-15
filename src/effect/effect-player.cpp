@@ -93,7 +93,7 @@ static bool process_bolt_reflection(CreatureEntity &creature, EffectPlayerType *
     const auto p_pos = creature.get_position();
     Pos2D pos(0, 0);
     if (ep_ptr->is_monster()) {
-        const auto &floor = *creature.current_floor_ptr;
+        const auto &floor = *creature.get_floor();
         const auto &monster = floor.get_monster(ep_ptr->src_idx);
         do {
             const Pos2DVec vec(randint1(3) - 1, randint1(3) - 1);
@@ -156,7 +156,7 @@ static ProcessResult check_continue_player_effect(CreatureEntity &creature, Effe
 static void describe_effect_source(CreatureEntity &creature, EffectPlayerType *ep_ptr, concptr src_name)
 {
     if (ep_ptr->is_monster()) {
-        ep_ptr->m_ptr = &creature.current_floor_ptr->get_monster(ep_ptr->src_idx);
+        ep_ptr->m_ptr = &creature.get_floor()->get_monster(ep_ptr->src_idx);
         ep_ptr->rlev = ep_ptr->m_ptr->get_monrace().level >= 1 ? ep_ptr->m_ptr->get_monrace().level : 1;
         ep_ptr->m_name = monster_desc(creature, *ep_ptr->m_ptr, 0);
         ep_ptr->killer = src_name;
@@ -194,7 +194,7 @@ static void describe_effect_source(CreatureEntity &creature, EffectPlayerType *e
 bool affect_player(MONSTER_IDX src_idx, CreatureEntity &creature, concptr src_name, int r, POSITION y, POSITION x, int dam, AttributeType attribute,
     BIT_FLAGS flag, FallOffHorseEffect &fall_off_horse_effect, project_func project)
 {
-    EffectPlayerType tmp_effect(*creature.current_floor_ptr, src_idx, dam, attribute, flag);
+    EffectPlayerType tmp_effect(*creature.get_floor(), src_idx, dam, attribute, flag);
     auto *ep_ptr = &tmp_effect;
     auto check_result = check_continue_player_effect(creature, ep_ptr, { y, x }, project);
     if (check_result != ProcessResult::PROCESS_CONTINUE) {

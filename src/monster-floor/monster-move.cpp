@@ -57,7 +57,7 @@ static bool check_hp_for_terrain_destruction(const TerrainType &terrain, const C
  */
 static bool process_wall(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &monster, const Pos2D &pos, bool can_cross)
 {
-    const auto &grid = creature.current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto &terrain = grid.get_terrain();
     if (creature.is_located_at(pos)) {
         turn_flags_ptr->do_move = true;
@@ -111,7 +111,7 @@ static bool process_wall(CreatureEntity &creature, turn_flags *turn_flags_ptr, c
 static bool bash_normal_door(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &monster, const Pos2D &pos)
 {
     const auto &monrace = monster.get_monrace();
-    const auto &grid = creature.current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto &terrain = grid.get_terrain();
     turn_flags_ptr->do_move = false;
     using Tc = TerrainCharacteristics;
@@ -187,7 +187,7 @@ static void bash_glass_door(CreatureEntity &creature, turn_flags *turn_flags_ptr
 static bool process_door(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &monster, const Pos2D &pos)
 {
     auto &monrace = monster.get_monrace();
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.has_closed_door_at(pos)) {
         return true;
     }
@@ -236,7 +236,7 @@ static bool process_door(CreatureEntity &creature, turn_flags *turn_flags_ptr, c
  */
 static bool process_protection_rune(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &monster, const Pos2D &pos)
 {
-    auto &grid = creature.current_floor_ptr->get_grid(pos);
+    auto &grid = creature.get_floor()->get_grid(pos);
     const auto &monrace = monster.get_monrace();
     auto can_enter = turn_flags_ptr->do_move;
     can_enter &= grid.is_rune_protection();
@@ -272,7 +272,7 @@ static bool process_protection_rune(CreatureEntity &creature, turn_flags *turn_f
  */
 static bool process_explosive_rune(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &monster, const Pos2D &pos)
 {
-    const auto &grid = creature.current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto &monrace = monster.get_monrace();
     auto should_explode = turn_flags_ptr->do_move;
     should_explode &= (monrace.behavior_flags.has_not(MonsterBehaviorType::NEVER_BLOW)) || !creature.is_located_at(pos);
@@ -306,7 +306,7 @@ static bool process_explosive_rune(CreatureEntity &creature, turn_flags *turn_fl
 static bool process_post_dig_wall(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &monster, const Pos2D &pos)
 {
     auto &monrace = monster.get_monrace();
-    const auto &grid = creature.current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto &terrain = grid.get_terrain();
     if (!turn_flags_ptr->did_kill_wall || !turn_flags_ptr->do_move) {
         return true;
@@ -351,7 +351,7 @@ static bool process_post_dig_wall(CreatureEntity &creature, turn_flags *turn_fla
  */
 void activate_explosive_rune(CreatureEntity &creature, const Pos2D &pos, const MonraceDefinition &monrace)
 {
-    auto &grid = creature.current_floor_ptr->get_grid(pos);
+    auto &grid = creature.get_floor()->get_grid(pos);
     const auto level = creature.level;
     if (!grid.is_rune_explosion()) {
         return;
@@ -387,7 +387,7 @@ void activate_explosive_rune(CreatureEntity &creature, const Pos2D &pos, const M
  */
 bool process_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_ptr, const MonsterMovementDirectionList &mmdl, const Pos2D &pos, int *count)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto m_idx = mmdl.get_m_idx();
     for (const auto &dir : mmdl.get_movement_directions()) {
         const auto &dir_move = dir.has_direction() ? dir : rand_choice(Direction::directions_8());
@@ -564,7 +564,7 @@ void process_sound(CreatureEntity &creature, MONSTER_IDX m_idx)
         return;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
 
@@ -612,7 +612,7 @@ void process_speak(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION oy, POS
         return;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     constexpr auto chance_speak = 8;

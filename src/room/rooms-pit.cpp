@@ -111,7 +111,7 @@ tl::optional<std::array<MonraceId, NUM_PIT_MONRACES>> pick_pit_monraces(Creature
 
 void place_pit_outer(CreatureEntity &creature, const Pos2D &center)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const Rect2D rectangle(center, PIT_SIZE);
     for (auto y = rectangle.top_left.y - 1; y <= rectangle.bottom_right.y + 1; y++) {
         for (auto x = rectangle.top_left.x - 1; x <= rectangle.bottom_right.x + 1; x++) {
@@ -134,7 +134,7 @@ void place_pit_outer(CreatureEntity &creature, const Pos2D &center)
 
 void place_pit_inner(CreatureEntity &creature, const Pos2D &center)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto rectangle = Rect2D(center, PIT_SIZE).resized(-2);
     for (auto y = rectangle.top_left.y - 1; y <= rectangle.bottom_right.y + 1; y++) {
         place_grid(creature, floor.get_grid({ y, rectangle.top_left.x - 1 }), GB_INNER);
@@ -207,7 +207,7 @@ void place_pit_inner(CreatureEntity &creature, const Pos2D &center)
  */
 bool build_type6(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto pit_type = pick_pit_type(floor, pit_types);
     if (!pit_type) {
         return false;
@@ -339,7 +339,7 @@ bool build_type6(CreatureEntity &creature, DungeonData *dd_ptr)
  */
 bool build_type13(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto pit_type = pick_pit_type(floor, pit_types);
 
     /* Only in Angband */

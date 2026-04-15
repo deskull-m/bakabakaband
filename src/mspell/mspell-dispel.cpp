@@ -162,7 +162,7 @@ MonsterSpellResult spell_RF4_DISPEL(MONSTER_IDX m_idx, CreatureEntity &creature,
 
         return res;
     }
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &target = floor.get_monster(t_idx);
     if (target_type == MONSTER_TO_MONSTER) {
         if (target.is_riding()) {

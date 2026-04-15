@@ -65,7 +65,7 @@
  */
 MonsterAttackPlayer::MonsterAttackPlayer(CreatureEntity &creature, short m_idx)
     : m_idx(m_idx)
-    , m_ptr(&creature.current_floor_ptr->get_monster(m_idx))
+    , m_ptr(&creature.get_floor()->get_monster(m_idx))
     , method(RaceBlowMethodType::NONE)
     , effect(RaceBlowEffectType::NONE)
     , do_silly_attack(one_in_(2) && creature.effects()->hallucination().is_hallucinated())
@@ -130,7 +130,7 @@ bool MonsterAttackPlayer::check_no_blow()
         return false;
     }
 
-    if (creature.current_floor_ptr->get_dungeon_definition().flags.has(DungeonFeatureType::NO_MELEE)) {
+    if (creature.get_floor()->get_dungeon_definition().flags.has(DungeonFeatureType::NO_MELEE)) {
         return false;
     }
 
@@ -554,7 +554,7 @@ void MonsterAttackPlayer::postprocess_monster_blows()
     musou_counterattack(creature, this);
     this->process_thief_teleport(spell_hex);
     auto &monrace = this->m_ptr->get_monrace();
-    if (creature.is_dead() && (monrace.r_deaths < MAX_SHORT) && !creature.current_floor_ptr->inside_arena) {
+    if (creature.is_dead() && (monrace.r_deaths < MAX_SHORT) && !creature.get_floor()->inside_arena) {
         monrace.r_deaths++;
     }
 
@@ -596,7 +596,7 @@ void MonsterAttackPlayer::process_sadist_reaction()
 
     // プレイヤーにダメージを与えた場合の興奮状態
     if (this->damage > 0 && one_in_(4)) {
-        (void)set_monster_monfear(*creature.current_floor_ptr, this->m_idx, 0);
+        (void)set_monster_monfear(*creature.get_floor(), this->m_idx, 0);
 
         // 一時的な攻撃力上昇（怒り状態付与）
         this->m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::ANGER);

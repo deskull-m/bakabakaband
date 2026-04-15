@@ -26,7 +26,7 @@
  */
 void add_door(CreatureEntity &creature, const Pos2D &pos)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.get_grid(pos).is_outer()) {
         return;
     }
@@ -56,7 +56,7 @@ void add_door(CreatureEntity &creature, const Pos2D &pos)
  */
 void place_secret_door(CreatureEntity &creature, const Pos2D &pos, tl::optional<DoorKind> door_kind_initial)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
     if (dungeon.flags.has(DungeonFeatureType::NO_DOORS)) {
         place_bold(creature, pos.y, pos.x, GB_FLOOR);
@@ -82,7 +82,7 @@ void place_secret_door(CreatureEntity &creature, const Pos2D &pos, tl::optional<
  */
 void place_locked_door(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
     if (dungeon.flags.has(DungeonFeatureType::NO_DOORS)) {
         place_bold(creature, pos.y, pos.x, GB_FLOOR);
@@ -103,7 +103,7 @@ void place_locked_door(CreatureEntity &creature, const Pos2D &pos)
  */
 void place_random_door(CreatureEntity &creature, const Pos2D &pos, bool is_room_door)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &grid = floor.get_grid(pos);
     grid.set_terrain_id(TerrainTag::NONE, TerrainKind::MIMIC);
     const auto &dungeon = floor.get_dungeon_definition();
@@ -155,7 +155,7 @@ void place_random_door(CreatureEntity &creature, const Pos2D &pos, bool is_room_
  */
 void place_closed_door(CreatureEntity &creature, const Pos2D &pos, DoorKind door_kind)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::NO_DOORS)) {
         place_bold(creature, pos.y, pos.x, GB_FLOOR);
         return;

@@ -69,7 +69,7 @@ static bool is_player_undead(CreatureEntity &creature)
  */
 static void write_diary_stay_inn(CreatureEntity &creature, int prev_hour)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if ((prev_hour >= 6) && (prev_hour < 18)) {
         const auto stay_message = _(is_player_undead(creature) ? "宿屋に泊まった。" : "日が暮れるまで宿屋で過ごした。", "stayed during the day at the inn.");
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, stay_message);
@@ -101,7 +101,7 @@ static bool has_a_nightmare(CreatureEntity &creature)
     }
 
     msg_print(_("あなたは絶叫して目を覚ました。", "You awake screaming."));
-    exe_write_diary(*creature.current_floor_ptr, DiaryKind::DESCRIPTION, 0, _("悪夢にうなされてよく眠れなかった。", "had a nightmare."));
+    exe_write_diary(*creature.get_floor(), DiaryKind::DESCRIPTION, 0, _("悪夢にうなされてよく眠れなかった。", "had a nightmare."));
     return true;
 }
 
@@ -147,7 +147,7 @@ static void charge_magic_eating_energy(CreatureEntity &creature)
  */
 static void display_stay_result(CreatureEntity &creature, int prev_hour)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if ((prev_hour >= 6) && (prev_hour < 18)) {
 #if JP
         char refresh_message_jp[50];
@@ -185,7 +185,7 @@ static bool stay_inn(CreatureEntity &creature)
     prevent_turn_overflow(creature);
     if ((prev_hour >= 18) && (prev_hour <= 23)) {
         determine_daily_bounty(creature);
-        exe_write_diary(*creature.current_floor_ptr, DiaryKind::DIALY, 0);
+        exe_write_diary(*creature.get_floor(), DiaryKind::DIALY, 0);
     }
 
     creature.hp = creature.maxhp;

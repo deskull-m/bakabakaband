@@ -500,7 +500,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
     auto stick_to = false;
 
     /* Access the item (if in the pack) */
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (i_idx >= 0) {
         o_ptr = creature.inventory[i_idx].get();
     } else {

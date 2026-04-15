@@ -193,7 +193,7 @@ MONSTER_NUMBER summon_NAZGUL(CreatureEntity &creature, POSITION y, POSITION x, M
     }
 
     msg_erase();
-    const auto &floor = *player_ptr.current_floor_ptr;
+    const auto &floor = *player_ptr.get_floor();
     const auto p_pos = player_ptr.get_position();
     auto count = 0;
     for (auto k = 0; k < 30; k++) {
@@ -351,7 +351,7 @@ MONSTER_NUMBER summon_PLASMA(CreatureEntity &creature, POSITION y, POSITION x, i
 MONSTER_NUMBER summon_LAFFEY_II(CreatureEntity &creature, const Pos2D &position, MONSTER_IDX m_idx)
 {
     auto &player_ptr = creature;
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *player_ptr.get_floor();
     auto count = 0;
     constexpr auto summon_num = 2;
     auto real_num = summon_num - MonraceList::get_instance().get_monrace(MonraceId::BUNBUN_STRIKERS).cur_num;

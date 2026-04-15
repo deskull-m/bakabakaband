@@ -186,7 +186,7 @@ static void init_world_floor_info(CreatureEntity &creature, std::optional<QuestI
 {
     AngbandWorld::get_instance().character_dungeon = false;
     wc_ptr->collapse_degree = 0;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     floor.reset_dungeon_index();
     floor.dun_level = 0;
     floor.quest_number = QuestId::NONE;
@@ -215,7 +215,7 @@ static void restore_world_floor_info(CreatureEntity &creature)
 {
     write_level = false;
     constexpr auto mes = _("                            ----ゲーム再開----", "                            --- Restarted Game ---");
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     exe_write_diary(floor, DiaryKind::GAMESTART, 1, mes);
 
     if (creature.riding != -1) {
@@ -280,7 +280,7 @@ static void change_floor_if_error(CreatureEntity &creature)
 static void generate_world(CreatureEntity &creature, bool new_game)
 {
     reset_world_info(creature);
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     panel_row_min = floor.height;
     panel_col_min = floor.width;
 
@@ -324,7 +324,7 @@ static void init_riding_pet(CreatureEntity &creature, bool new_game)
     const auto pet_id = pc.equals(PlayerClassType::CAVALRY) ? MonraceId::HORSE : MonraceId::YASE_HORSE;
     const auto &monrace = MonraceList::get_instance().get_monrace(pet_id);
     const auto m_idx = place_specific_monster(creature, creature.y, creature.x - 1, pet_id, (PM_FORCE_PET | PM_NO_KAGE));
-    auto &monster = creature.current_floor_ptr->get_monster(*m_idx);
+    auto &monster = creature.get_floor()->get_monster(*m_idx);
     monster.speed = monrace.speed;
     monster.maxhp = monrace.hit_dice.floored_expected_value();
     monster.max_maxhp = monster.maxhp;
@@ -340,7 +340,7 @@ static void decide_arena_death(CreatureEntity &creature)
     }
 
     auto &world = AngbandWorld::get_instance();
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (!floor.inside_arena) {
 
         while (true) {
@@ -383,7 +383,7 @@ static void decide_arena_death(CreatureEntity &creature)
 static void process_game_turn(CreatureEntity &creature)
 {
     auto load_game = true;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &world = AngbandWorld::get_instance();
     world.play_time.unpause();
     while (true) {
@@ -449,7 +449,7 @@ void play_game(CreatureEntity &creature, bool new_game, bool browsing_movie, std
     }
 
     // クエスト開始時は、マップサイズを事前に取得する
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (new_game && floor.is_in_quest()) {
         init_flags = INIT_GET_SIZE;
         parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);

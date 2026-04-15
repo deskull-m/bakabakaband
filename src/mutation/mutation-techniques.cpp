@@ -33,7 +33,7 @@ bool eat_rock(CreatureEntity &creature)
     }
 
     const auto pos = creature.get_neighbor(dir);
-    const auto &grid = creature.current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto &terrain = grid.get_terrain();
     const auto &terrain_mimic = grid.get_terrain(TerrainKind::MIMIC);
 
@@ -43,7 +43,7 @@ bool eat_rock(CreatureEntity &creature)
     } else if (terrain.flags.has(TerrainCharacteristics::PERMANENT)) {
         msg_format(_("いてっ！この%sはあなたの歯より硬い！", "Ouch!  This %s is harder than your teeth!"), terrain_mimic.name.data());
     } else if (grid.has_monster()) {
-        const auto &monster = creature.current_floor_ptr->get_monster(grid.m_idx);
+        const auto &monster = creature.get_floor()->get_monster(grid.m_idx);
         msg_print(_("何かが邪魔しています！", "There's something in the way!"));
         if (!monster.get_monster_profile().ml || !monster.is_pet()) {
             do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);

@@ -76,7 +76,7 @@ static void generate_artifact(CreatureEntity &creature, qtwg_type *qtwg_ptr, con
     }
 
     ItemEntity item({ ItemKindType::SCROLL, SV_SCROLL_ACQUIREMENT });
-    drop_here(*creature.current_floor_ptr, std::move(item), *qtwg_ptr->y, *qtwg_ptr->x);
+    drop_here(*creature.get_floor(), std::move(item), *qtwg_ptr->y, *qtwg_ptr->x);
 }
 
 /**
@@ -85,7 +85,7 @@ static void generate_artifact(CreatureEntity &creature, qtwg_type *qtwg_ptr, con
 static void parse_qtw_D(CreatureEntity &creature, qtwg_type *qtwg_ptr, char *s)
 {
     *qtwg_ptr->x = qtwg_ptr->xmin;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     int len = strlen(s);
     auto &monraces = MonraceList::get_instance();
     const auto &dungeon = floor.get_dungeon_definition();
@@ -345,7 +345,7 @@ static bool parse_qtw_P(CreatureEntity &creature, qtwg_type *qtwg_ptr, char **zz
         panels_y++;
     }
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     floor.height = panels_y * SCREEN_HGT;
     int panels_x = (*qtwg_ptr->x / SCREEN_WID);
     if (*qtwg_ptr->x % SCREEN_WID) {
@@ -417,7 +417,7 @@ parse_error_type generate_fixed_map_floor(CreatureEntity &creature, qtwg_type *q
 
     /* Process "F:<letter>:<terrain>:<cave_info>:<monster>:<object>:<ego>:<artifact>:<trap>:<special>" -- info for dungeon grid */
     if (qtwg_ptr->buf[0] == 'F') {
-        return parse_line_feature(*creature.current_floor_ptr, qtwg_ptr->buf);
+        return parse_line_feature(*creature.get_floor(), qtwg_ptr->buf);
     }
 
     if (qtwg_ptr->buf[0] == 'D') {
@@ -459,11 +459,11 @@ parse_error_type generate_fixed_map_floor(CreatureEntity &creature, qtwg_type *q
         if (init_flags & INIT_ONLY_FEATURES) {
             return PARSE_ERROR_NONE;
         }
-        return parse_line_vault(creature.current_floor_ptr, qtwg_ptr->buf);
+        return parse_line_vault(creature.get_floor(), qtwg_ptr->buf);
     }
 
     if (qtwg_ptr->buf[0] == 'A') {
-        return parse_line_alliance(creature.current_floor_ptr, qtwg_ptr->buf);
+        return parse_line_alliance(creature.get_floor(), qtwg_ptr->buf);
     }
 
     if (qtwg_ptr->buf[0] == 'M') {

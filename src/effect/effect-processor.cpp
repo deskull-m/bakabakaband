@@ -37,7 +37,7 @@ Pos2D decide_source_position(CreatureEntity &creature, MONSTER_IDX src_idx, cons
         return pos_target;
     }
     if (is_monster(src_idx)) {
-        return creature.current_floor_ptr->get_monster(src_idx).get_position();
+        return creature.get_floor()->get_monster(src_idx).get_position();
     }
     return creature.get_position();
 }
@@ -111,7 +111,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
     /* Calculate the projection path */
     const auto &system = AngbandSystem::get_instance();
     const auto range = project_length != 0 ? project_length : AngbandSystem::get_instance().get_max_range();
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     ProjectionPath path_g(floor, range, creature.get_position(), pos_source, pos_target, flag);
     handle_stuff(creature);
 

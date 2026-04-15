@@ -214,7 +214,7 @@ void AllianceSexyCommandoClub::panishment([[maybe_unused]] CreatureEntity &creat
         // 部員召喚
         for (int i = 0; i < 2; i++) {
             summon_specific(creature_ptr, 0, creature.y, creature.x,
-                creature.current_floor_ptr->dun_level + 5,
+                creature.get_floor()->dun_level + 5,
                 SUMMON_HUMAN, PM_FORCE_PET | PM_NO_PET);
         }
     } else if (this->impression >= -150) {
@@ -242,7 +242,7 @@ void AllianceSexyCommandoClub::panishment([[maybe_unused]] CreatureEntity &creat
         // 部員大量召喚
         for (int i = 0; i < 4; i++) {
             summon_specific(creature_ptr, 0, creature.y, creature.x,
-                creature.current_floor_ptr->dun_level + 10,
+                creature.get_floor()->dun_level + 10,
                 SUMMON_HUMAN, PM_FORCE_PET | PM_NO_PET);
         }
     } else {
@@ -273,7 +273,7 @@ void AllianceSexyCommandoClub::panishment([[maybe_unused]] CreatureEntity &creat
         // 部員軍団召喚
         for (int i = 0; i < 8; i++) {
             summon_specific(creature_ptr, 0, creature.y, creature.x,
-                creature.current_floor_ptr->dun_level + 15,
+                creature.get_floor()->dun_level + 15,
                 SUMMON_HUMAN, PM_FORCE_PET | PM_NO_PET);
         }
 

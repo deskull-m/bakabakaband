@@ -177,7 +177,7 @@ Pos2D scatter(const FloorType &floor, const Pos2D &pos, int d, uint32_t mode)
  */
 std::string map_name(CreatureEntity &creature)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &quests = QuestList::get_instance();
     auto is_fixed_quest = floor.is_in_quest();
     is_fixed_quest &= QuestType::is_fixed(floor.quest_number);

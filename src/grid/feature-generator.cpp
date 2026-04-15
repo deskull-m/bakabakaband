@@ -32,7 +32,7 @@ static bool decide_cavern(const FloorType &floor, const DungeonDefinition &dunge
  */
 void gen_caverns_and_lakes(CreatureEntity &creature, const DungeonDefinition &dungeon, DungeonData *dd_ptr)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     constexpr auto chance_destroyed = 18;
     if ((floor.dun_level > 30) && one_in_(chance_destroyed * 2) && small_levels && dungeon.flags.has(DungeonFeatureType::DESTROY)) {
         dd_ptr->destroyed = true;
@@ -162,7 +162,7 @@ static bool possible_doorway(const FloorType &floor, POSITION y, POSITION x)
  */
 void try_door(CreatureEntity &creature, dt_type *dt_ptr, const Pos2D &pos)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE) || floor.has_terrain_characteristics(pos, TerrainCharacteristics::WALL) || floor.get_grid(pos).is_room()) {
         return;
     }

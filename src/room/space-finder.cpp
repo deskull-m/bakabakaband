@@ -31,7 +31,7 @@ static bool get_is_floor(const FloorType &floor, const Pos2D &pos)
  */
 static void set_floor(CreatureEntity &creature, const Pos2D &pos)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         return;
     }
@@ -54,7 +54,7 @@ static void set_floor(CreatureEntity &creature, const Pos2D &pos)
  */
 static void check_room_boundary(CreatureEntity &creature, const Pos2D &pos1, const Pos2D &pos2)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto count = 0;
     auto old_is_floor = get_is_floor(floor, { pos1.y, pos1.x - 1 });
     bool new_is_floor;
@@ -204,7 +204,7 @@ tl::optional<Pos2D> find_space(CreatureEntity &creature, DungeonData *dd_ptr, in
 
     auto block_y = 0;
     auto block_x = 0;
-    const auto &dungeon = creature.current_floor_ptr->get_dungeon_definition();
+    const auto &dungeon = creature.get_floor()->get_dungeon_definition();
     const auto has_cave = dungeon.flags.has_not(DungeonFeatureType::NO_CAVE);
     auto pick = has_cave ? randint1(candidates) : candidates / 2 + 1;
     for (block_y = dd_ptr->row_rooms - blocks_high; block_y >= 0; block_y--) {

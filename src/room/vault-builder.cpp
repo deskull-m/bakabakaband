@@ -16,7 +16,7 @@
  */
 static bool player_grid(const CreatureEntity &creature, const Grid &grid)
 {
-    return &grid == &creature.current_floor_ptr->grid_array[creature.y][creature.x];
+    return &grid == &creature.get_floor()->grid_array[creature.y][creature.x];
 }
 
 /*
@@ -38,7 +38,7 @@ static bool is_cave_empty_grid(const CreatureEntity &creature, const Grid &grid)
  */
 void vault_monsters(CreatureEntity &creature, const Pos2D &pos_center, int num)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (auto k = 0; k < num; k++) {
         for (auto i = 0; i < 9; i++) {
             const auto d = 1;
@@ -66,7 +66,7 @@ void vault_monsters(CreatureEntity &creature, const Pos2D &pos_center, int num)
  */
 void vault_objects(CreatureEntity &creature, const Pos2D &pos_center, int num)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (; num > 0; --num) {
         Pos2D pos = pos_center;
         int dummy = 0;

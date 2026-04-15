@@ -40,7 +40,7 @@ void pattern_teleport(CreatureEntity &creature)
     auto *player_ptr = &creature;
     auto min_level = 0;
     auto max_level = 99;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *player_ptr->get_floor();
     auto current_level = static_cast<short>(floor.dun_level);
     if (input_check(_("他の階にテレポートしますか？", "Teleport level? "))) {
         if (ironman_downward) {
@@ -84,7 +84,7 @@ void pattern_teleport(CreatureEntity &creature)
         exe_write_diary(floor, DiaryKind::PAT_TELE, 0);
     }
 
-    player_ptr->current_floor_ptr->quest_number = QuestId::NONE;
+    player_ptr->get_floor()->quest_number = QuestId::NONE;
     PlayerEnergy(*player_ptr).reset_player_turn();
 
     /*
@@ -105,7 +105,7 @@ void pattern_teleport(CreatureEntity &creature)
 bool pattern_effect(CreatureEntity &creature)
 {
     auto *player_ptr = &creature;
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *player_ptr->get_floor();
     const auto p_pos = player_ptr->get_position();
     const auto &grid = floor.get_grid(p_pos);
     if (!grid.has(TerrainCharacteristics::PATTERN)) {
@@ -170,7 +170,7 @@ bool pattern_effect(CreatureEntity &creature)
 bool pattern_seq(CreatureEntity &creature, const Pos2D &pos)
 {
     auto *player_ptr = &creature;
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *player_ptr->get_floor();
     const auto &grid_current = floor.get_grid(player_ptr->get_position());
     const auto &grid_new = floor.get_grid(pos);
     const auto &terrain_current = grid_current.get_terrain();

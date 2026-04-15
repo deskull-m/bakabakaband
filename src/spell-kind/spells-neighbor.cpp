@@ -141,8 +141,8 @@ void wall_breaker(CreatureEntity &creature)
     if (randint1(80 + creature.level) < 70) {
         Pos2D pos(0, 0);
         while (attempts--) {
-            pos = scatter(*creature.current_floor_ptr, p_pos, 4, PROJECT_NONE);
-            if (!creature.current_floor_ptr->has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION)) {
+            pos = scatter(*creature.get_floor(), p_pos, 4, PROJECT_NONE);
+            if (!creature.get_floor()->has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION)) {
                 continue;
             }
 
@@ -165,7 +165,7 @@ void wall_breaker(CreatureEntity &creature)
     for (auto i = 0; i < num; i++) {
         Pos2D pos(0, 0);
         while (true) {
-            pos = scatter(*creature.current_floor_ptr, p_pos, 10, PROJECT_NONE);
+            pos = scatter(*creature.get_floor(), p_pos, 10, PROJECT_NONE);
             if (!creature.is_located_at(pos)) {
                 break;
             }

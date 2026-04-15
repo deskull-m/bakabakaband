@@ -439,7 +439,7 @@ static std::string get_element_effect_info(CreatureEntity &creature, int spell_i
  */
 static bool cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto spell = i2enum<ElementSpells>(spell_idx);
     const auto &power = element_powers.at(spell);
     const auto plev = creature.level;
@@ -1435,7 +1435,7 @@ static bool door_to_darkness(CreatureEntity &creature, int distance)
 {
     const auto p_pos_orig = creature.get_position();
     auto p_pos = tl::make_optional(creature.get_position());
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     for (auto i = 0; i < 3; i++) {
         p_pos = point_target(creature);
         if (!p_pos) {
@@ -1503,8 +1503,8 @@ bool switch_element_execution(CreatureEntity &creature)
         (void)earthquake(creature, creature.get_position(), 10);
         return true;
     case ElementRealmType::DEATH:
-        if (creature.current_floor_ptr->num_repro <= MAX_REPRODUCTION) {
-            creature.current_floor_ptr->num_repro += MAX_REPRODUCTION;
+        if (creature.get_floor()->num_repro <= MAX_REPRODUCTION) {
+            creature.get_floor()->num_repro += MAX_REPRODUCTION;
         }
 
         return true;

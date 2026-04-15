@@ -72,7 +72,7 @@ void generate_room_floor(CreatureEntity &creature, const Rect2D &rectangle, int 
     }
 
     for (const auto &pos : rectangle) {
-        auto &grid = creature.current_floor_ptr->get_grid(pos);
+        auto &grid = creature.get_floor()->get_grid(pos);
         place_grid(creature, grid, GB_FLOOR);
         grid.add_info(info);
     }

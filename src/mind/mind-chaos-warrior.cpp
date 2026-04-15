@@ -69,8 +69,8 @@ void acquire_chaos_weapon(CreatureEntity &creature)
     const auto sval = rand_choice(candidates);
 
     ItemEntity item({ ItemKindType::SWORD, sval });
-    item.to_h = 3 + randint1(creature.current_floor_ptr->dun_level) % 10;
-    item.to_d = 3 + randint1(creature.current_floor_ptr->dun_level) % 10;
+    item.to_h = 3 + randint1(creature.get_floor()->dun_level) % 10;
+    item.to_d = 3 + randint1(creature.get_floor()->dun_level) % 10;
     one_resistance(&item);
     item.ego_idx = EgoType::CHAOTIC;
     (void)drop_near(creature, item, creature.get_position());

@@ -59,7 +59,7 @@
 static bool confirm_leave_level(CreatureEntity &creature, bool down_stair)
 {
     const auto &quests = QuestList::get_instance();
-    const auto &quest = quests.get_quest(creature.current_floor_ptr->quest_number);
+    const auto &quest = quests.get_quest(creature.get_floor()->quest_number);
 
     auto caution_in_tower = any_bits(quest.flags, QUEST_FLAG_TOWER);
     caution_in_tower &= quest.status != QuestStatusType::STAGE_COMPLETED || (down_stair && (quests.get_quest(QuestId::TOWER1).status != QuestStatusType::COMPLETED));
@@ -68,7 +68,7 @@ static bool confirm_leave_level(CreatureEntity &creature, bool down_stair)
     caution_in_quest |= quest.flags & QUEST_FLAG_ONCE && quest.status != QuestStatusType::COMPLETED;
     caution_in_quest |= caution_in_tower;
 
-    if (confirm_quest && creature.current_floor_ptr->is_in_quest() && caution_in_quest) {
+    if (confirm_quest && creature.get_floor()->is_in_quest() && caution_in_quest) {
         msg_print(_("この階を一度去ると二度と戻って来られません。", "You can't come back here once you leave this floor."));
         return input_check(_("本当にこの階を去りますか？", "Really leave this floor? "));
     }
@@ -82,7 +82,7 @@ static bool confirm_leave_level(CreatureEntity &creature, bool down_stair)
 void do_cmd_go_up(CreatureEntity &creature)
 {
     auto &quests = QuestList::get_instance();
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid({ creature.y, creature.x });
     const auto &terrain = grid.get_terrain();
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
@@ -221,7 +221,7 @@ void do_cmd_go_down(CreatureEntity &creature)
 {
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &grid = floor.grid_array[creature.y][creature.x];
     auto &terrain = grid.get_terrain();
 
@@ -416,7 +416,7 @@ void do_cmd_walk(CreatureEntity &creature, bool pickup)
         more = true;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     if (is_wild_mode && !floor.has_terrain_characteristics(p_pos, TerrainCharacteristics::TOWN)) {
         const auto wild_level = WildernessGrids::get_instance().get_player_grid().get_level();
@@ -567,7 +567,7 @@ void do_cmd_rest(CreatureEntity &creature)
  */
 void do_cmd_go_portal(CreatureEntity &creature)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid({ creature.y, creature.x });
     const auto &terrain = grid.get_terrain();
 

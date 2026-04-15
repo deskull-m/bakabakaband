@@ -52,7 +52,7 @@ void QuestCompletionChecker::complete()
 
 static bool check_quest_completion(CreatureEntity &creature, const QuestType &quest, const CreatureEntity &monster)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (quest.status != QuestStatusType::TAKEN) {
         return false;
     }
@@ -86,7 +86,7 @@ static bool check_quest_completion(CreatureEntity &creature, const QuestType &qu
 
 void QuestCompletionChecker::set_quest_idx()
 {
-    const auto &floor = *this->creature_ptr->current_floor_ptr;
+    const auto &floor = *this->creature_ptr->get_floor();
     const auto &quests = QuestList::get_instance();
     this->quest_idx = floor.quest_number;
     if (inside_quest(this->quest_idx)) {
@@ -161,7 +161,7 @@ std::tuple<bool, bool> QuestCompletionChecker::complete_random()
     auto create_stairs = false;
     if (none_bits(this->q_ptr->flags, QUEST_FLAG_PRESET)) {
         create_stairs = true;
-        this->creature_ptr->current_floor_ptr->quest_number = QuestId::NONE;
+        this->creature_ptr->get_floor()->quest_number = QuestId::NONE;
     }
 
     if (this->quest_idx == QuestId::MELKO) {
@@ -212,7 +212,7 @@ void QuestCompletionChecker::complete_tower()
  */
 int QuestCompletionChecker::count_all_hostile_monsters()
 {
-    const auto &floor = *this->creature_ptr->current_floor_ptr;
+    const auto &floor = *this->creature_ptr->get_floor();
     const auto hostile_monster_exists = [&floor](const Pos2D &pos) {
         const auto &grid = floor.get_grid(pos);
         return grid.has_monster() && floor.get_monster(grid.m_idx).is_hostile();
@@ -228,7 +228,7 @@ Pos2D QuestCompletionChecker::make_stairs(const bool create_stairs)
         return m_pos;
     }
 
-    auto &floor = *this->creature_ptr->current_floor_ptr;
+    auto &floor = *this->creature_ptr->get_floor();
     const auto *grid_ptr = &floor.get_grid(m_pos);
     while (floor.has_terrain_characteristics(m_pos, TerrainCharacteristics::PERMANENT) || !grid_ptr->o_idx_list.empty() || grid_ptr->is_object()) {
         m_pos = scatter(floor, m_pos, 1, PROJECT_NONE);
@@ -243,7 +243,7 @@ Pos2D QuestCompletionChecker::make_stairs(const bool create_stairs)
 
 void QuestCompletionChecker::make_reward(const Pos2D pos)
 {
-    const auto drop_num = this->creature_ptr->current_floor_ptr->dun_level / 15 + 1;
+    const auto drop_num = this->creature_ptr->get_floor()->dun_level / 15 + 1;
     const auto &monrace = this->m_ptr->get_monrace();
     for (auto i = 0; i < drop_num; i++) {
         while (auto item = make_object(*this->creature_ptr, AM_GOOD | AM_GREAT, nullptr, monrace.level)) {

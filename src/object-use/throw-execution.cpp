@@ -58,7 +58,7 @@
 
 ObjectThrowHitMonster::ObjectThrowHitMonster(CreatureEntity &creature, POSITION y, POSITION x)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid({ y, x });
     if (!grid.has_monster() || std::cmp_greater_equal(grid.m_idx, floor.m_list.size())) {
         THROW_EXCEPTION(std::logic_error, "Invalid monster index");
@@ -92,7 +92,7 @@ bool ObjectThrowEntity::check_can_throw()
     }
 
     const auto is_spike = this->o_ptr->bi_key.tval() == ItemKindType::SPIKE;
-    if (creature.current_floor_ptr->inside_arena && !this->boomerang && !is_spike) {
+    if (creature.get_floor()->inside_arena && !this->boomerang && !is_spike) {
         msg_print(_("アリーナではアイテムを使えない！", "You're in the arena now. This is hand-to-hand!"));
         msg_erase();
         return false;
@@ -226,7 +226,7 @@ void ObjectThrowEntity::exe_throw()
 void ObjectThrowEntity::display_figurine_throw()
 {
     auto &creature = *this->creature_ptr;
-    if ((this->q_ptr->bi_key.tval() != ItemKindType::FIGURINE) || creature.current_floor_ptr->inside_arena) {
+    if ((this->q_ptr->bi_key.tval() != ItemKindType::FIGURINE) || creature.get_floor()->inside_arena) {
         return;
     }
 
@@ -334,7 +334,7 @@ void ObjectThrowEntity::drop_thrown_item()
         return;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto has_terrain_projection = floor.has_terrain_characteristics({ this->y, this->x }, TerrainCharacteristics::PROJECTION);
     const auto drop_y = has_terrain_projection ? this->y : this->prev_y;
     const auto drop_x = has_terrain_projection ? this->x : this->prev_x;
@@ -403,7 +403,7 @@ bool ObjectThrowEntity::check_racial_target_bold()
     const auto pos = mmove2({ this->y, this->x }, creature.get_position(), { this->ty, this->tx });
     this->ny[this->cur_dis] = pos.y;
     this->nx[this->cur_dis] = pos.x;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (floor.has_terrain_characteristics({ this->ny[this->cur_dis], this->nx[this->cur_dis] }, TerrainCharacteristics::PROJECTION)) {
         return false;
     }
@@ -442,7 +442,7 @@ bool ObjectThrowEntity::check_racial_target_monster()
     this->x = this->nx[this->cur_dis];
     this->y = this->ny[this->cur_dis];
     this->cur_dis++;
-    return creature.current_floor_ptr->grid_array[this->y][this->x].m_idx == 0;
+    return creature.get_floor()->grid_array[this->y][this->x].m_idx == 0;
 }
 
 void ObjectThrowEntity::attack_racial_power()

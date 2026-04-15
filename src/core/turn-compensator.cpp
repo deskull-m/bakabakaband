@@ -35,7 +35,7 @@ void prevent_turn_overflow(CreatureEntity &creature)
     } else {
         world.game_turn = 1;
     }
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.generated_turn > rollback_turns) {
         floor.generated_turn -= rollback_turns;
     } else {

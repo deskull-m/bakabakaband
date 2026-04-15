@@ -251,7 +251,7 @@ bool exe_cmd_debug(CreatureEntity &creature, char cmd)
         teleport_player(creature, 100, TELEPORT_SPONTANEOUS);
         return true;
     case 'u': {
-        auto &floor = *creature.current_floor_ptr;
+        auto &floor = *creature.get_floor();
         for (const auto &pos : floor.get_area()) {
             floor.get_grid(pos).info |= CAVE_GLOW | CAVE_MARK;
         }

@@ -33,7 +33,7 @@ public:
             return false;
         }
 
-        const auto &floor = *creature.current_floor_ptr;
+        const auto &floor = *creature.get_floor();
         const auto pos = item.is_held_by_monster() ? floor.get_monster(item.held_m_idx).get_position() : item.get_position();
 
         if (Grid::calc_distance(creature.get_position(), pos) < this->distance_threshold) {
@@ -83,7 +83,7 @@ void compact_objects(CreatureEntity &creature, int size)
         rfu.set_flags(flags_swrf);
     }
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (auto deleted_num = 0, try_count = 1; deleted_num < size; try_count++) {
         const ItemCompactionChecker icc(creature, try_count);
         std::vector<OBJECT_IDX> delete_i_idx_list;

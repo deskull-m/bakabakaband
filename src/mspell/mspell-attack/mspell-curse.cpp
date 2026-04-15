@@ -29,7 +29,7 @@ static bool message_curse(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_I
         if (see_monster(creature, m_idx)) {
             msg_format(msg3.data(), m_name.data(), t_name.data());
         } else {
-            creature.current_floor_ptr->monster_noise = true;
+            creature.get_floor()->monster_noise = true;
         }
     }
     return false;

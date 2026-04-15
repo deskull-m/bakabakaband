@@ -560,14 +560,14 @@ void brand_weapon(CreatureEntity &creature, int brand_type)
         if (o_ptr->bi_key.tval() == ItemKindType::SWORD) {
             act = _("は鋭さを増した！", "becomes very sharp!");
             o_ptr->ego_idx = EgoType::SHARPNESS;
-            o_ptr->pval = (PARAMETER_VALUE)m_bonus(5, creature.current_floor_ptr->dun_level) + 1;
+            o_ptr->pval = (PARAMETER_VALUE)m_bonus(5, creature.get_floor()->dun_level) + 1;
             if ((o_ptr->bi_key.sval() == SV_HAYABUSA) && (o_ptr->pval > 2)) {
                 o_ptr->pval = 2;
             }
         } else {
             act = _("は破壊力を増した！", "seems very powerful.");
             o_ptr->ego_idx = EgoType::EARTHQUAKES;
-            o_ptr->pval = (PARAMETER_VALUE)m_bonus(3, creature.current_floor_ptr->dun_level);
+            o_ptr->pval = (PARAMETER_VALUE)m_bonus(3, creature.get_floor()->dun_level);
         }
 
         break;

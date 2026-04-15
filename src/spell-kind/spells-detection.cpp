@@ -36,7 +36,7 @@
  */
 static bool detect_feat_flag(CreatureEntity &creature, POSITION range, TerrainCharacteristics flag, bool known)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
     }
@@ -171,7 +171,7 @@ bool detect_treasure(CreatureEntity &creature, POSITION range)
  */
 bool detect_objects_gold(CreatureEntity &creature, POSITION range)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     POSITION range2 = range;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range2 /= 3;
@@ -222,7 +222,7 @@ bool detect_objects_gold(CreatureEntity &creature, POSITION range)
  */
 bool detect_objects_normal(CreatureEntity &creature, POSITION range)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     POSITION range2 = range;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range2 /= 3;
@@ -289,7 +289,7 @@ static bool is_object_magically(const ItemKindType tval)
  */
 bool detect_objects_magic(CreatureEntity &creature, POSITION range)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
     }
@@ -330,7 +330,7 @@ bool detect_objects_magic(CreatureEntity &creature, POSITION range)
  */
 bool detect_monsters_normal(CreatureEntity &creature, POSITION range)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
     }
@@ -374,7 +374,7 @@ bool detect_monsters_normal(CreatureEntity &creature, POSITION range)
  */
 bool detect_monsters_invis(CreatureEntity &creature, POSITION range)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
     }
@@ -426,7 +426,7 @@ bool detect_monsters_invis(CreatureEntity &creature, POSITION range)
  */
 bool detect_monsters_evil(CreatureEntity &creature, POSITION range)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
     }
@@ -477,7 +477,7 @@ bool detect_monsters_evil(CreatureEntity &creature, POSITION range)
  */
 bool detect_monsters_nonliving(CreatureEntity &creature, POSITION range)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
     }
@@ -523,7 +523,7 @@ bool detect_monsters_nonliving(CreatureEntity &creature, POSITION range)
  */
 bool detect_monsters_mind(CreatureEntity &creature, POSITION range)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
     }
@@ -572,7 +572,7 @@ bool detect_monsters_mind(CreatureEntity &creature, POSITION range)
  */
 bool detect_monsters_string(CreatureEntity &creature, POSITION range, concptr Match)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
     }

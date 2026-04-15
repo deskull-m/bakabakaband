@@ -54,7 +54,7 @@ bool build_tunnel(CreatureEntity &creature, DungeonData *dd_ptr, dt_type *dt_ptr
     auto main_loop_count = 0;
     auto door_flag = false;
     auto vec = correct_dir(pos_start, pos_end);
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     while (pos_current != pos_end) {
         if (main_loop_count++ > 2000) {
             return false;
@@ -160,7 +160,7 @@ bool build_tunnel(CreatureEntity &creature, DungeonData *dd_ptr, dt_type *dt_ptr
 static bool set_tunnel(CreatureEntity &creature, DungeonData *dd_ptr, POSITION *y, POSITION *x, bool affectwall)
 {
     const Pos2D pos(*y, *x);
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &grid = floor.get_grid(pos);
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE) || grid.is_inner()) {
         return true;
@@ -352,7 +352,7 @@ static void short_seg_hack(
 bool build_tunnel2(CreatureEntity &creature, DungeonData *dd_ptr, const Pos2D &pos_start, const Pos2D &pos_end, int type, int cutoff)
 {
     const auto length = Grid::calc_distance(pos_start, pos_end);
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (length <= cutoff) {
         auto initial_failure = true;
         short_seg_hack(creature, dd_ptr, pos_start.x, pos_start.y, pos_end.x, pos_end.y, type, 0, &initial_failure);

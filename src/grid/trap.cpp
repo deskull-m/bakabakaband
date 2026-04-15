@@ -122,7 +122,7 @@ const std::vector<EnumClassFlagGroup<ChestTrapType>> chest_traps = {
  */
 void disclose_grid(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &grid = creature.current_floor_ptr->get_grid(pos);
+    auto &grid = creature.get_floor()->get_grid(pos);
 
     if (grid.has(TerrainCharacteristics::SECRET)) {
         /* No longer hidden */
@@ -288,7 +288,7 @@ static void hit_trap_slow(CreatureEntity &creature)
  */
 void hit_trap(CreatureEntity &creature, bool break_trap)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     const auto &grid = floor.get_grid(p_pos);
     const auto &terrain = grid.get_terrain();
@@ -482,9 +482,9 @@ void hit_trap(CreatureEntity &creature, bool break_trap)
         fire_ball_hide(creature, AttributeType::WATER_FLOW, Direction::self(), 1, 10);
 
         /* Summon Piranhas */
-        const auto num = 1 + creature.current_floor_ptr->dun_level / 20;
+        const auto num = 1 + creature.get_floor()->dun_level / 20;
         for (auto i = 0; i < num; i++) {
-            (void)summon_specific(creature, p_pos.y, p_pos.x, creature.current_floor_ptr->dun_level, SUMMON_PIRANHAS, (PM_ALLOW_GROUP | PM_NO_PET));
+            (void)summon_specific(creature, p_pos.y, p_pos.x, creature.get_floor()->dun_level, SUMMON_PIRANHAS, (PM_ALLOW_GROUP | PM_NO_PET));
         }
         break;
     }
@@ -530,7 +530,7 @@ void hit_trap(CreatureEntity &creature, bool break_trap)
 
     case TrapType::JUMP_VOID: {
         msg_print(_("なんてこった！あなたは猿空間に送られた！", "What a hell! You were sent to the SARU space!"));
-        jump_floor(creature, DungeonId::VOID_TERRITORY, creature.current_floor_ptr->dun_level);
+        jump_floor(creature, DungeonId::VOID_TERRITORY, creature.get_floor()->dun_level);
         break;
     }
 

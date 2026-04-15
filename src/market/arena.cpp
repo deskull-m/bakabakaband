@@ -65,7 +65,7 @@ static bool check_battle_metal_babble(CreatureEntity &creature)
     AngbandWorld::get_instance().set_arena(false);
     reset_tim_flags(creature);
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::SAVE_FLOORS);
-    creature.current_floor_ptr->inside_arena = true;
+    creature.get_floor()->inside_arena = true;
     creature.leaving = true;
     return true;
 }
@@ -103,7 +103,7 @@ static bool go_to_arena(CreatureEntity &creature)
     AngbandWorld::get_instance().set_arena(false);
     reset_tim_flags(creature);
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::SAVE_FLOORS);
-    creature.current_floor_ptr->inside_arena = true;
+    creature.get_floor()->inside_arena = true;
     creature.leaving = true;
     return true;
 }

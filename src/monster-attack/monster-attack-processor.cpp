@@ -30,7 +30,7 @@
  */
 void exe_monster_attack_to_player(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx, const Pos2D &pos)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     auto &monrace = monster.get_monrace();
     if (!turn_flags_ptr->do_move || !creature.is_located_at(pos)) {
@@ -72,10 +72,10 @@ void exe_monster_attack_to_player(CreatureEntity &creature, turn_flags *turn_fla
  */
 static bool exe_monster_attack_to_monster(CreatureEntity &creature, MONSTER_IDX m_idx, const Grid &grid)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     auto &monrace = monster.get_monrace();
-    const auto &monster_target = creature.current_floor_ptr->get_monster(grid.m_idx);
+    const auto &monster_target = creature.get_floor()->get_monster(grid.m_idx);
     if (monrace.behavior_flags.has(MonsterBehaviorType::NEVER_BLOW)) {
         return false;
     }
@@ -123,9 +123,9 @@ bool process_monster_attack_to_monster(CreatureEntity &creature, turn_flags *tur
     }
 
     turn_flags_ptr->do_move = false;
-    const auto &monster_from = creature.current_floor_ptr->get_monster(m_idx);
+    const auto &monster_from = creature.get_floor()->get_monster(m_idx);
     const auto &monrace_from = monster_from.get_monrace();
-    const auto &monster_to = creature.current_floor_ptr->get_monster(grid.m_idx);
+    const auto &monster_to = creature.get_floor()->get_monster(grid.m_idx);
     const auto &monrace_to = monster_to.get_monrace();
     auto do_kill_body = monrace_from.behavior_flags.has(MonsterBehaviorType::KILL_BODY) && monrace_from.behavior_flags.has_not(MonsterBehaviorType::NEVER_BLOW);
     do_kill_body &= (monrace_from.mexp * monrace_from.level > monrace_to.mexp * monrace_to.level);
@@ -142,11 +142,11 @@ bool process_monster_attack_to_monster(CreatureEntity &creature, turn_flags *tur
     do_move_body &= (monrace_from.mexp > monrace_to.mexp);
     do_move_body &= can_cross;
     do_move_body &= !monster_to.is_riding();
-    do_move_body &= monster_can_cross_terrain(&creature, creature.current_floor_ptr->grid_array[monster_from.y][monster_from.x].feat, monrace_to, 0);
+    do_move_body &= monster_can_cross_terrain(&creature, creature.get_floor()->grid_array[monster_from.y][monster_from.x].feat, monrace_to, 0);
     if (do_move_body) {
         turn_flags_ptr->do_move = true;
         turn_flags_ptr->did_move_body = true;
-        (void)set_monster_csleep(*creature.current_floor_ptr, grid.m_idx, 0);
+        (void)set_monster_csleep(*creature.get_floor(), grid.m_idx, 0);
     }
 
     return false;

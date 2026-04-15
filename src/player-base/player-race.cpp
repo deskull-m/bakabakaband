@@ -146,7 +146,7 @@ int16_t CreatureRace::speed() const
 {
     int16_t result = 0;
 
-    FloorType *floor_ptr = this->creature_ptr->current_floor_ptr;
+    FloorType *floor_ptr = this->creature_ptr->get_floor();
     if (creature_ptr->x > 0 && creature_ptr->y > 0 && creature_ptr->x <= floor_ptr->width - 1 && creature_ptr->y <= floor_ptr->height - 1) {
         const auto &f_ptr = TerrainList::get_instance().get_terrain(floor_ptr->grid_array[this->creature_ptr->y][this->creature_ptr->x].feat);
         if (f_ptr.flags.has(TerrainCharacteristics::SLOW)) {
@@ -158,7 +158,7 @@ int16_t CreatureRace::speed() const
     }
 
     if (this->equals(PlayerRaceType::MERFOLK)) {
-        const auto &floor = *this->creature_ptr->current_floor_ptr;
+        const auto &floor = *this->creature_ptr->get_floor();
         const auto &terrain = floor.get_grid(this->creature_ptr->get_position()).get_terrain();
         if (terrain.flags.has(TerrainCharacteristics::WATER)) {
             result += (2 + this->creature_ptr->level / 10);

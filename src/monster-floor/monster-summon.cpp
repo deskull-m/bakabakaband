@@ -43,7 +43,7 @@ static bool is_dead_summoning(summon_type type)
  */
 tl::optional<MONSTER_IDX> summon_specific(CreatureEntity &subject, POSITION y1, POSITION x1, DEPTH lev, summon_type type, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
 {
-    const auto &floor = *subject.current_floor_ptr;
+    const auto &floor = *subject.get_floor();
     if (floor.inside_arena) {
         return tl::nullopt;
     }
@@ -80,7 +80,7 @@ tl::optional<MONSTER_IDX> summon_specific(CreatureEntity &subject, POSITION y1, 
     if (!summoner_m_idx) {
         notice = true;
     } else {
-        const auto &monster = subject.current_floor_ptr->get_monster(*summoner_m_idx);
+        const auto &monster = subject.get_floor()->get_monster(*summoner_m_idx);
         if (monster.is_pet()) {
             notice = true;
         } else if (is_seen(subject, monster)) {
@@ -113,7 +113,7 @@ tl::optional<MONSTER_IDX> summon_named_creature(CreatureEntity &creature, MONSTE
         return false;
     }
 
-    if (creature.current_floor_ptr->inside_arena) {
+    if (creature.get_floor()->inside_arena) {
         return false;
     }
 

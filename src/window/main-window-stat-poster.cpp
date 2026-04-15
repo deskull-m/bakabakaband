@@ -105,7 +105,7 @@ void print_stun(CreatureEntity &creature)
  */
 void print_hunger(CreatureEntity &creature)
 {
-    if (AngbandWorld::get_instance().wizard && creature.current_floor_ptr->inside_arena) {
+    if (AngbandWorld::get_instance().wizard && creature.get_floor()->inside_arena) {
         return;
     }
 
@@ -255,7 +255,7 @@ void print_speed(CreatureEntity &creature)
     auto row_speed = hgt + ROW_SPEED;
 
     const auto speed = creature.get_speed() - STANDARD_SPEED;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     bool is_player_fast = creature.is_fast();
     char buf[32] = "";
     TERM_COLOR attr = TERM_WHITE;

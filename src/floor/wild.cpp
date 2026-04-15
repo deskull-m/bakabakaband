@@ -284,7 +284,7 @@ static void generate_area(CreatureEntity &creature, const Pos2D &pos, bool is_bo
     const auto &wilderness = WildernessGrids::get_instance();
     const auto &wg = wilderness.get_grid(pos);
     creature.town_num = wg.get_town();
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     floor.base_level = wg.get_level();
     floor.dun_level = 0;
     floor.monster_level = floor.base_level;
@@ -406,8 +406,8 @@ static void generate_wild_monsters(CreatureEntity &creature)
             if (!ambush_monsters.empty()) {
                 for (const auto &monster_id : ambush_monsters) {
                     for (int i = 0; i < 3; i++) { // 各モンスターを3体ずつ配置
-                        auto y = randint0(creature.current_floor_ptr->height);
-                        auto x = randint0(creature.current_floor_ptr->width);
+                        auto y = randint0(creature.get_floor()->height);
+                        auto x = randint0(creature.get_floor()->width);
                         (void)place_monster_one(creature, y, x, monster_id, PM_ALLOW_GROUP);
                     }
                 }
@@ -435,7 +435,7 @@ static void generate_wild_monsters(CreatureEntity &creature)
 void wilderness_gen(CreatureEntity &creature)
 {
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     floor.height = MAX_HGT;
     floor.width = MAX_WID;
     panel_row_min = floor.height;
@@ -612,7 +612,7 @@ void wilderness_gen(CreatureEntity &creature)
 void wilderness_gen_small(CreatureEntity &creature)
 {
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (auto x = 0; x < MAX_WID; x++) {
         for (auto y = 0; y < MAX_HGT; y++) {
             floor.get_grid({ y, x }).set_terrain_id(TerrainTag::PERMANENT_WALL);
@@ -861,8 +861,8 @@ bool change_wild_mode(CreatureEntity &creature, bool encount)
 
     bool has_pet = false;
     PlayerEnergy energy(creature);
-    for (int i = 1; i < creature.current_floor_ptr->m_max; i++) {
-        const auto &monster = creature.current_floor_ptr->get_monster(i);
+    for (int i = 1; i < creature.get_floor()->m_max; i++) {
+        const auto &monster = creature.get_floor()->get_monster(i);
         if (!monster.is_valid()) {
             continue;
         }

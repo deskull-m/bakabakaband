@@ -93,7 +93,7 @@ int staff_effect(CreatureEntity &creature, int sval, bool *use_charge, bool powe
     case SV_STAFF_SUMMONING: {
         const int times = randint1(powerful ? 8 : 4);
         for (k = 0; k < times; k++) {
-            if (summon_specific(creature, creature.y, creature.x, creature.current_floor_ptr->dun_level, SUMMON_NONE,
+            if (summon_specific(creature, creature.y, creature.x, creature.get_floor()->dun_level, SUMMON_NONE,
                     (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET))) {
                 ident = true;
             }

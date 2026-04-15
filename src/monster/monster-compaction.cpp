@@ -29,7 +29,7 @@ static void compact_monsters_aux(CreatureEntity &creature, MONSTER_IDX i1, MONST
         return;
     }
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(i1);
 
     const auto y = monster.y;
@@ -105,7 +105,7 @@ void compact_monsters(CreatureEntity &creature, int size)
     }
 
     /* Compact at least 'size' objects */
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (int num = 0, cnt = 1; num < size; cnt++) {
         int cur_lev = 5 * cnt;
         int cur_dis = 5 * (20 - cnt);

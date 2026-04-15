@@ -62,7 +62,7 @@
 bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
 {
     PLAYER_LEVEL lvl = creature.level;
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     switch (power) {
     case PlayerMutationType::SPIT_ACID: {
         const auto dir = get_aim_dir(creature);

@@ -21,7 +21,7 @@
  */
 bool alloc_creature_party(CreatureEntity &creature, const Pos2D &pos_center)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
 
     // 現在の階層に適したパーティを取得
     auto &party_list = CreaturePartyList::get_instance();

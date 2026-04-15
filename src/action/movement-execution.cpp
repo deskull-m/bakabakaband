@@ -82,7 +82,7 @@ static bool boundary_floor(const Grid &grid, const TerrainType &terrain, const T
 void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup, bool break_trap)
 {
     const auto pos = creature.get_neighbor(dir);
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &grid = floor.get_grid(pos);
     bool p_can_enter = player_can_enter(creature, grid.feat, CEM_P_CAN_ENTER_PATTERN);
     const auto &world = AngbandWorld::get_instance();
@@ -160,7 +160,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
         can_cast &= !is_stunned;
         can_cast &= creature.muta.has_not(PlayerMutationType::BERS_RAGE) || !creature.is_shero();
         if (!monster.is_hostile() && can_cast && pattern_seq(creature, pos) && (p_can_enter || p_can_kill_walls)) {
-            (void)set_monster_csleep(*creature.current_floor_ptr, grid.m_idx, 0);
+            (void)set_monster_csleep(*creature.get_floor(), grid.m_idx, 0);
             m_name = monster_desc(creature, monster, 0);
             if (monster.get_monster_profile().ml) {
                 if (!is_hallucinated) {

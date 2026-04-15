@@ -538,7 +538,7 @@ void do_cmd_options(CreatureEntity &creature)
                 break;
             }
 
-            do_cmd_options_cheat(*creature.current_floor_ptr, creature.name, _("詐欺師は決して勝利できない！", "Cheaters never win"));
+            do_cmd_options_cheat(*creature.get_floor(), creature.name, _("詐欺師は決して勝利できない！", "Cheaters never win"));
             break;
         }
         case 'a':

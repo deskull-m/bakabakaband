@@ -44,7 +44,7 @@ static bool find_breakleft;
  */
 static bool see_wall(CreatureEntity &creature, const Direction &dir, const Pos2D &pos_orig)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto pos = pos_orig + dir.vec();
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
         return false;
@@ -99,7 +99,7 @@ static void run_init(CreatureEntity &creature, const Direction &dir)
     creature.run_py = pos.y;
     creature.run_px = pos.x;
     const auto pos_neighbor = creature.get_neighbor(dir);
-    ignore_avoid_run = creature.current_floor_ptr->has_terrain_characteristics(pos_neighbor, TerrainCharacteristics::AVOID_RUN);
+    ignore_avoid_run = creature.get_floor()->has_terrain_characteristics(pos_neighbor, TerrainCharacteristics::AVOID_RUN);
     const auto dir_left45 = dir.rotated_45degree(1);
     const auto dir_right45 = dir.rotated_45degree(-1);
     auto deepleft = false;
@@ -159,7 +159,7 @@ static void run_init(CreatureEntity &creature, const Direction &dir)
 static bool see_nothing(CreatureEntity &creature, const Direction &dir, const Pos2D &pos_orig)
 {
     const auto pos = pos_orig + dir.vec();
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
         return true;
     }
@@ -186,7 +186,7 @@ static bool see_nothing(CreatureEntity &creature, const Direction &dir, const Po
 static bool run_test(CreatureEntity &creature)
 {
     const auto prev_dir = find_prevdir;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     const auto &p_grid = floor.get_grid(p_pos);
     if ((disturb_trap_detect || alert_trap_detect) && creature.dtrap && !(p_grid.info & CAVE_IN_DETECT)) {

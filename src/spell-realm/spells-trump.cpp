@@ -65,7 +65,7 @@ void cast_shuffle(CreatureEntity &creature)
         chg_virtue(creature, Virtue::CHANCE, 1);
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (die < 7) {
         msg_print(_("なんてこった！《死》だ！", "Oh no! It's Death!"));
 

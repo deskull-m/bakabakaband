@@ -142,7 +142,7 @@ static bool should_show_slaying_bonus(const ItemEntity &item)
 
 static std::string describe_weapon_dice(CreatureEntity &creature, const ItemEntity &item, const describe_option_type &opt)
 {
-    if (!opt.known && item.is_target_of(creature.current_floor_ptr->quest_number)) {
+    if (!opt.known && item.is_target_of(creature.get_floor()->quest_number)) {
         return "";
     }
 

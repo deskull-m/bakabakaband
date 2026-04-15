@@ -96,7 +96,7 @@ COMMAND_CODE show_floor_items(CreatureEntity &creature, int target_item, POSITIO
     auto dont_need_to_show_weights = true;
     const auto &[wid, hgt] = term_get_size();
     auto len = std::max((*min_width), 20);
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto floor_item_index = scan_floor_items(floor, pos, { ScanFloorMode::ITEM_TESTER, ScanFloorMode::ONLY_MARKED }, item_tester);
     auto k = 0;
     for (size_t i = 0; (i < floor_item_index.size()) && (i < max_items); i++) {

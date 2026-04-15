@@ -43,8 +43,8 @@ void verify_panel(CreatureEntity &creature)
     POSITION y = creature.y;
     POSITION x = creature.x;
     const auto &[wid, hgt] = get_screen_size();
-    int max_prow_min = creature.current_floor_ptr->height - hgt;
-    int max_pcol_min = creature.current_floor_ptr->width - wid;
+    int max_prow_min = creature.get_floor()->height - hgt;
+    int max_pcol_min = creature.get_floor()->width - wid;
     if (max_prow_min < 0) {
         max_prow_min = 0;
     }

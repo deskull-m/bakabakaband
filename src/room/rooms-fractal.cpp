@@ -19,7 +19,7 @@ bool build_type9(CreatureEntity &creature, DungeonData *dd_ptr)
     auto width = randint1(22) * 2 + 6;
     auto height = randint1(15) * 2 + 6;
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto center = find_space(creature, dd_ptr, height + 1, width + 1);
     if (!center) {
         /* Limit to the minimum room size, and retry */

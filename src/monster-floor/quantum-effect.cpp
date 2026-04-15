@@ -23,7 +23,7 @@
  */
 static void vanish_nonunique(CreatureEntity &creature, MONSTER_IDX m_idx, bool see_m)
 {
-    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     if (see_m) {
         const auto m_name = monster_desc(creature, monster, 0);
         msg_format(_("%sは消え去った！", "%s^ disappears!"), m_name.data());
@@ -50,7 +50,7 @@ static void vanish_nonunique(CreatureEntity &creature, MONSTER_IDX m_idx, bool s
  */
 static void produce_quantum_effect(CreatureEntity &creature, MONSTER_IDX m_idx, bool see_m)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     const auto coherent = los(floor, monster.get_position(), creature.get_position());
     if (!see_m && !coherent) {
@@ -81,7 +81,7 @@ static void produce_quantum_effect(CreatureEntity &creature, MONSTER_IDX m_idx, 
  */
 bool process_quantum_effect(CreatureEntity &creature, MONSTER_IDX m_idx, bool see_m)
 {
-    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     if (monrace.kind_flags.has_not(MonsterKindType::QUANTUM) && monrace.kind_flags.has_not(MonsterKindType::MONKEY_SPACE)) {
         return false;

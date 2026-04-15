@@ -33,7 +33,7 @@ constexpr auto TRAVEL_UNABLE = 9999;
 int travel_flow_cost(CreatureEntity &creature, const Pos2D &pos)
 {
     int cost = 1;
-    const auto &grid = creature.current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto &terrain = grid.get_terrain();
     if (terrain.flags.has(TerrainCharacteristics::AVOID_RUN)) {
         cost += 1;
@@ -83,7 +83,7 @@ int travel_flow_cost(CreatureEntity &creature, const Pos2D &pos)
  */
 tl::optional<int> travel_flow_aux(CreatureEntity &creature, const Pos2D pos, int current_cost, bool wall)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(pos);
     const auto &terrain = grid.get_terrain();
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
@@ -136,7 +136,7 @@ Direction decide_travel_step_dir(CreatureEntity &creature, const Direction &prev
     }
 
     const auto p_pos = creature.get_position();
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &p_grid = floor.get_grid(p_pos);
     if (creature.is_player()) {
         if ((disturb_trap_detect || alert_trap_detect) && creature.dtrap && none_bits(p_grid.info, CAVE_IN_DETECT)) {
@@ -302,7 +302,7 @@ void Travel::update_flow(CreatureEntity &creature)
         return;
     }
 
-    const auto &terrain = creature.current_floor_ptr->get_grid(creature.get_position()).get_terrain();
+    const auto &terrain = creature.get_floor()->get_grid(creature.get_position()).get_terrain();
     const auto wall = terrain.flags.has(TerrainCharacteristics::MOVE);
 
     using CostAndPos = std::pair<int, Pos2D>;

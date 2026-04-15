@@ -50,7 +50,7 @@ void do_cmd_tunnel(CreatureEntity &creature)
 
     auto more = false;
     const auto pos = creature.get_neighbor(dir);
-    const auto &grid = creature.current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto &terrain_mimic = grid.get_terrain(TerrainKind::MIMIC);
     if (terrain_mimic.flags.has(TerrainCharacteristics::DOOR)) {
         msg_print(_("ドアは掘れない。", "You cannot tunnel through doors."));

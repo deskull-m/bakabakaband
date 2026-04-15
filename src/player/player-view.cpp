@@ -28,7 +28,7 @@
 static bool update_view_aux(CreatureEntity &creature, POSITION y, POSITION x, POSITION y1, POSITION x1, POSITION y2, POSITION x2)
 {
     const Pos2D pos(y, x);
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     Grid *g1_c_ptr;
     Grid *g2_c_ptr;
     g1_c_ptr = &floor.grid_array[y1][x1];
@@ -103,7 +103,7 @@ void update_view(CreatureEntity &creature)
 
     int full, over;
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     POSITION y_max = floor.height - 1;
     POSITION x_max = floor.width - 1;
 

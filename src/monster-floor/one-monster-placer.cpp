@@ -65,7 +65,7 @@ static MonraceId initial_r_appearance(CreatureEntity &creature, MonraceId r_idx,
 
     get_mon_num_prep_enum(creature, MonraceHook::TANUKI);
     auto attempts = 1000;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     auto min = std::min(floor.base_level - 5, 50);
     while (--attempts) {
         auto ap_r_idx = get_mon_num(creature, 0, floor.base_level + 10, PM_NONE);
@@ -157,7 +157,7 @@ static bool check_quest_placeable(const FloorType &floor, MonraceId r_idx)
  */
 static bool check_procection_rune(CreatureEntity &creature, MonraceId monrace_id, const Pos2D &pos)
 {
-    auto &grid = creature.current_floor_ptr->get_grid(pos);
+    auto &grid = creature.get_floor()->get_grid(pos);
     if (!grid.is_rune_protection()) {
         return true;
     }
@@ -225,7 +225,7 @@ static void warn_unique_generation(CreatureEntity &creature, MonraceId r_idx)
  */
 tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, POSITION x, MonraceId r_idx, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
 {
-    auto &floor = *player.current_floor_ptr;
+    auto &floor = *player.get_floor();
     auto pos = Pos2D(y, x);
     auto *g_ptr = &floor.grid_array[y][x];
     auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
@@ -264,7 +264,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     m_ptr->get_monster_profile().mflag.clear();
     m_ptr->get_monster_profile().mflag2.clear();
-    m_ptr->current_floor_ptr = player.current_floor_ptr;
+    m_ptr->set_floor(player.get_floor());
 
     if (monrace.misc_flags.has(MonsterMiscType::CHAMELEON)) {
         m_ptr->r_idx = r_idx;
@@ -375,7 +375,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     m_ptr->y = y;
     m_ptr->x = x;
-    m_ptr->current_floor_ptr = &floor;
+    m_ptr->set_floor(&floor);
 
     for (const auto mte : MONSTER_TIMED_EFFECT_LIST) {
         m_ptr->get_monster_profile().mtimed[mte] = 0;

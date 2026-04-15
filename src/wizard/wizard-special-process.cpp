@@ -181,7 +181,7 @@ void wiz_create_item(CreatureEntity &creature)
 
     ItemEntity item;
     item.generate(*bi_id);
-    ItemMagicApplier(creature, &item, creature.current_floor_ptr->dun_level, AM_NO_FIXED_ART).execute();
+    ItemMagicApplier(creature, &item, creature.get_floor()->dun_level, AM_NO_FIXED_ART).execute();
     (void)drop_near(creature, item, creature.get_position());
     msg_print("Allocated.");
 }
@@ -407,7 +407,7 @@ void wiz_create_feature(CreatureEntity &creature)
         return;
     }
 
-    auto &grid = creature.current_floor_ptr->get_grid(*pos);
+    auto &grid = creature.get_floor()->get_grid(*pos);
     const int max = TerrainList::get_instance().size() - 1;
     const auto f_val1 = input_numerics(_("実地形ID", "FeatureID"), 0, max, grid.feat);
     if (!f_val1.has_value()) {
@@ -472,7 +472,7 @@ static tl::optional<int> select_debugging_floor(const FloorType &floor, DungeonI
  */
 void wiz_jump_to_dungeon(CreatureEntity &creature)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto dungeon_id = select_debugging_dungeon();
     if (!dungeon_id) {
         return;
@@ -724,7 +724,7 @@ void wiz_dump_options()
  */
 void wiz_zap_surrounding_monsters(CreatureEntity &creature)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
         const auto &monster = floor.get_monster(i);
         if (!monster.is_valid() || (i == creature.riding) || (Grid::calc_distance(creature.get_position(), monster.get_position()) > MAX_PLAYER_SIGHT)) {
@@ -746,7 +746,7 @@ void wiz_zap_surrounding_monsters(CreatureEntity &creature)
  */
 void wiz_zap_floor_monsters(CreatureEntity &creature)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
         const auto &monster = floor.get_monster(i);
         if (!monster.is_valid() || monster.is_riding()) {
@@ -824,7 +824,7 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
     creature.died_from = _("死の欺き", "Cheating death");
     (void)set_food(creature, PY_FOOD_MAX - 1);
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     floor.dun_level = 0;
     floor.inside_arena = false;
     AngbandSystem::get_instance().set_phase_out(false);

@@ -242,7 +242,7 @@ void build_streamer(CreatureEntity &creature, FEAT_IDX feat, int chance)
     bool streamer_may_have_gold = streamer.flags.has(TerrainCharacteristics::MAY_HAVE_GOLD);
 
     /* Hack -- Choose starting point */
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto y = rand_spread(floor.height / 2, floor.height / 6);
     auto x = rand_spread(floor.width / 2, floor.width / 6);
 
@@ -370,7 +370,7 @@ void build_streamer(CreatureEntity &creature, FEAT_IDX feat, int chance)
 void place_trees(CreatureEntity &creature, const Pos2D &pos)
 {
     /* place trees/ rubble in ovalish distribution */
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (auto x = pos.x - 3; x < pos.x + 4; x++) {
         for (auto y = pos.y - 3; y < pos.y + 4; y++) {
             const Pos2D pos_neighbor(y, x);
@@ -420,7 +420,7 @@ void destroy_level(CreatureEntity &creature)
 
     /* Drop a few epi-centers (usually about two) */
     POSITION y1, x1;
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     for (int n = 0; n < randint1(5); n++) {
         /* Pick an epi-center */
         x1 = rand_range(5, floor.width - 1 - 5);

@@ -138,7 +138,7 @@ void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
         return;
     }
 
-    floor_item_charges(*this->creature.current_floor_ptr, 0 - i_idx);
+    floor_item_charges(*this->creature.get_floor(), 0 - i_idx);
 }
 
 bool ObjectZapWandEntity::check_can_zap() const

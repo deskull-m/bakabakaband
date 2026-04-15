@@ -71,7 +71,7 @@ static void process_fishing(CreatureEntity &creature)
     if (one_in_(1000)) {
         bool success = false;
         get_mon_num_prep_enum(creature, MonraceHook::FISHING);
-        const auto &floor = *creature.current_floor_ptr;
+        const auto &floor = *creature.get_floor();
         const auto wild_level = WildernessGrids::get_instance().get_player_grid().get_level();
         const auto level = floor.is_underground() ? floor.dun_level : wild_level;
         const auto r_idx = get_mon_num(creature, 0, level, PM_NONE);
@@ -122,8 +122,8 @@ void process_player(CreatureEntity &creature)
 
     const auto &system = AngbandSystem::get_instance();
     if (system.is_phase_out()) {
-        for (MONSTER_IDX m_idx = 1; m_idx < creature.current_floor_ptr->m_max; m_idx++) {
-            auto &monster = creature.current_floor_ptr->m_list[m_idx];
+        for (MONSTER_IDX m_idx = 1; m_idx < creature.get_floor()->m_max; m_idx++) {
+            auto &monster = creature.get_floor()->m_list[m_idx];
             if (!monster.is_valid()) {
                 continue;
             }
@@ -182,16 +182,16 @@ void process_player(CreatureEntity &creature)
 
     const auto effects = creature.effects();
     if (creature.riding && !effects->confusion().is_confused() && !effects->blindness().is_blind()) {
-        const auto &monster = creature.current_floor_ptr->m_list[creature.riding];
+        const auto &monster = creature.get_floor()->m_list[creature.riding];
         const auto &monrace = monster.get_monrace();
         if (monster.is_asleep()) {
             const auto m_name = monster_desc(creature, monster, 0);
-            (void)set_monster_csleep(*creature.current_floor_ptr, creature.riding, 0);
+            (void)set_monster_csleep(*creature.get_floor(), creature.riding, 0);
             msg_format(_("%s^を起こした。", "You have woken %s up."), m_name.data());
         }
 
         if (monster.is_stunned()) {
-            if (set_monster_stunned(*creature.current_floor_ptr, creature.riding,
+            if (set_monster_stunned(*creature.get_floor(), creature.riding,
                     (randint0(monrace.level) < creature.skill_exp[PlayerSkillKindType::RIDING]) ? 0 : (monster.get_remaining_stun() - 1))) {
                 const auto m_name = monster_desc(creature, monster, 0);
                 msg_format(_("%s^を朦朧状態から立ち直らせた。", "%s^ is no longer stunned."), m_name.data());
@@ -199,7 +199,7 @@ void process_player(CreatureEntity &creature)
         }
 
         if (monster.is_confused()) {
-            if (set_monster_confused(*creature.current_floor_ptr, creature.riding,
+            if (set_monster_confused(*creature.get_floor(), creature.riding,
                     (randint0(monrace.level) < creature.skill_exp[PlayerSkillKindType::RIDING]) ? 0 : (monster.get_remaining_confusion() - 1))) {
                 const auto m_name = monster_desc(creature, monster, 0);
                 msg_format(_("%s^を混乱状態から立ち直らせた。", "%s^ is no longer confused."), m_name.data());
@@ -207,7 +207,7 @@ void process_player(CreatureEntity &creature)
         }
 
         if (monster.is_fearful()) {
-            if (set_monster_monfear(*creature.current_floor_ptr, creature.riding,
+            if (set_monster_monfear(*creature.get_floor(), creature.riding,
                     (randint0(monrace.level) < creature.skill_exp[PlayerSkillKindType::RIDING]) ? 0 : (monster.get_remaining_fear() - 1))) {
                 const auto m_name = monster_desc(creature, monster, 0);
                 msg_format(_("%s^を恐怖から立ち直らせた。", "%s^ is no longer fearful."), m_name.data());
@@ -339,8 +339,8 @@ void process_player(CreatureEntity &creature)
                 rfu.set_flag(MainWindowRedrawingFlag::MAP);
             }
 
-            for (MONSTER_IDX m_idx = 1; m_idx < creature.current_floor_ptr->m_max; m_idx++) {
-                auto &monster = creature.current_floor_ptr->m_list[m_idx];
+            for (MONSTER_IDX m_idx = 1; m_idx < creature.get_floor()->m_max; m_idx++) {
+                auto &monster = creature.get_floor()->m_list[m_idx];
                 if (!monster.is_valid()) {
                     continue;
                 }
@@ -430,7 +430,7 @@ void process_player(CreatureEntity &creature)
         }
     }
 
-    update_smell(*creature.current_floor_ptr, creature.get_position());
+    update_smell(*creature.get_floor(), creature.get_position());
 }
 
 /*!

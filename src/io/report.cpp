@@ -246,7 +246,7 @@ bool report_score(CreatureEntity &creature)
              << fmt::format("version: {}\n", AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL))
              << fmt::format("score: {}\n", calc_score(creature))
              << fmt::format("level: {}\n", creature.level)
-             << fmt::format("depth: {}\n", creature.current_floor_ptr->dun_level)
+             << fmt::format("depth: {}\n", creature.get_floor()->dun_level)
              << fmt::format("maxlv: {}\n", creature.max_plv)
              << fmt::format("maxdp: {}\n", DungeonRecords::get_instance().get_record(DungeonId::ANGBAND).get_max_level())
              << fmt::format("au: {}\n", creature.au);

@@ -148,7 +148,7 @@ void PitNestFilter::set_dragon_breaths()
 bool vault_aux_dragon(CreatureEntity &creature, MonraceId r_idx)
 {
     const auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     auto is_valid = !floor.is_underground() || DungeonMonraceService::is_suitable_for_dungeon(floor.dungeon_id, r_idx);
     is_valid &= monrace.is_suitable_for_special_room();
     if (!is_valid) {
@@ -193,7 +193,7 @@ bool vault_aux_gay(CreatureEntity &creature, MonraceId r_idx)
         return false;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     auto is_valid = !floor.is_underground() || DungeonMonraceService::is_suitable_for_dungeon(floor.dungeon_id, r_idx);
     is_valid &= monrace.is_suitable_for_special_room();
     if (!is_valid) {
@@ -223,7 +223,7 @@ bool vault_aux_les(CreatureEntity &creature, MonraceId r_idx)
         return false;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     auto is_valid = !floor.is_underground() || DungeonMonraceService::is_suitable_for_dungeon(floor.dungeon_id, r_idx);
     is_valid &= monrace.is_suitable_for_special_room();
     if (!is_valid) {

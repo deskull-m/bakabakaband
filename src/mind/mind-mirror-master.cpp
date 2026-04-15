@@ -79,7 +79,7 @@ bool binding_field(CreatureEntity &creature, int dam)
     monster_target_x = creature.x;
 
     const auto max_range = AngbandSystem::get_instance().get_max_range();
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     for (const auto &pos : floor.get_area()) {
         const auto &grid = floor.get_grid(pos);
@@ -360,7 +360,7 @@ bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
     PLAYER_LEVEL plev = creature.level;
     int tmp;
     TIME_EFFECT t;
-    const auto &grid = creature.current_floor_ptr->grid_array[creature.y][creature.x];
+    const auto &grid = creature.get_floor()->grid_array[creature.y][creature.x];
     switch (spell) {
     case MindMirrorMasterType::MIRROR_SEEING:
         tmp = grid.is_mirror() ? 4 : 0;
@@ -381,7 +381,7 @@ bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
         }
         break;
     case MindMirrorMasterType::MAKE_MIRROR:
-        if (number_of_mirrors(*creature.current_floor_ptr) < 4 + plev / 10) {
+        if (number_of_mirrors(*creature.get_floor()) < 4 + plev / 10) {
             const auto error = SpellsMirrorMaster(creature).place_mirror();
             if (error) {
                 msg_print(*error);
@@ -436,8 +436,8 @@ bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
         break;
     }
     case MindMirrorMasterType::SLEEPING_MIRROR:
-        for (const auto &pos : creature.current_floor_ptr->get_area()) {
-            if (creature.current_floor_ptr->get_grid(pos).is_mirror()) {
+        for (const auto &pos : creature.get_floor()->get_area()) {
+            if (creature.get_floor()->get_grid(pos).is_mirror()) {
                 project(creature, 0, 2, pos.y, pos.x, (int)plev, AttributeType::OLD_SLEEP,
                     (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP | PROJECT_NO_HANGEKI));
             }

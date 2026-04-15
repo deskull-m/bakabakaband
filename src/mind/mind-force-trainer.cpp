@@ -209,7 +209,7 @@ bool shock_power(CreatureEntity &creature)
     PLAYER_LEVEL plev = creature.level;
     const auto dam = Dice::roll(8 + ((plev - 5) / 4) + boost / 12, 8);
     fire_beam(creature, AttributeType::MISSILE, dir, dam);
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(pos);
     if (!grid.has_monster()) {
         return true;
@@ -337,7 +337,7 @@ bool cast_force_spell(CreatureEntity &creature, MindForceTrainerType spell)
             return false;
         }
 
-        const auto &floor = *creature.current_floor_ptr;
+        const auto &floor = *creature.get_floor();
         const auto &grid = floor.get_grid(*pos);
         const auto m_idx = grid.m_idx;
         const auto p_pos = creature.get_position();

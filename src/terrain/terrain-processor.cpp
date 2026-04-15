@@ -38,7 +38,7 @@ static void process_volcanic_crater(CreatureEntity &creature, const Pos2D &pos)
     }
 
     // プレイヤーの視界内かチェック
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const bool in_sight = los(floor, creature.get_position(), pos);
 
     // プレイヤーの視界内であればメッセージ表示
@@ -66,7 +66,7 @@ static void process_summoning_circle(CreatureEntity &creature, const Pos2D &pos)
         return;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(pos);
 
     // 既にモンスターがいる場合は生成しない
@@ -134,7 +134,7 @@ void process_terrain_effects(CreatureEntity &creature)
         return;
     }
 
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &terrains = TerrainList::get_instance();
     const auto volcanic_crater_id = terrains.get_terrain_id(TerrainTag::VOLCANIC_CRATER);
     const auto summoning_circle_id = terrains.get_terrain_id(TerrainTag::SUMMONING_CIRCLE);

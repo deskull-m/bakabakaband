@@ -167,7 +167,7 @@ static bool do_hook(CreatureEntity &creature, MonraceHook hook, MonraceId monrac
 {
     const auto &monraces = MonraceList::get_instance();
     const auto &monrace = monraces.get_monrace(monrace_id);
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto is_suitable_for_dungeon = !floor.is_underground() || DungeonMonraceService::is_suitable_for_dungeon(floor.dungeon_id, monrace_id);
     switch (hook) {
     case MonraceHook::NONE:
@@ -268,7 +268,7 @@ static bool do_hook(CreatureEntity &creature, MonraceHook hook, MonraceId monrac
  */
 void get_mon_num_prep_enum(CreatureEntity &creature, MonraceHook hook1, MonraceHookTerrain hook2)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto dungeon_level = floor.dun_level;
     const auto &system = AngbandSystem::get_instance();
     auto &table = MonraceAllocationTable::get_instance();
@@ -313,8 +313,8 @@ void get_mon_num_prep_enum(CreatureEntity &creature, MonraceHook hook1, MonraceH
         mfdi.update(entry.prob2, entry.level);
 
         // フロアの現在所属アライアンスに応じた生成率修正
-        if (creature.current_floor_ptr->allianceID != AllianceType::NONE) {
-            if (entry.is_same_alliance(creature.current_floor_ptr->allianceID)) {
+        if (creature.get_floor()->allianceID != AllianceType::NONE) {
+            if (entry.is_same_alliance(creature.get_floor()->allianceID)) {
                 entry.prob2 *= ALLIANCE_GENERATE_RATE;
             } else {
                 entry.prob2 /= ALLIANCE_GENERATE_RATE;
@@ -339,7 +339,7 @@ void get_mon_num_prep_enum(CreatureEntity &creature, MonraceHook hook1, MonraceH
  */
 static bool place_monster_can_escort(CreatureEntity &creature, MonraceId monrace_id, MonraceId escorted_monrace_id, short escorted_m_idx)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto dungeon_id = floor.dungeon_id;
     const auto &escorted_monster = floor.get_monster(escorted_m_idx);
     const auto &monraces = MonraceList::get_instance();
@@ -393,7 +393,7 @@ static bool place_monster_can_escort(CreatureEntity &creature, MonraceId monrace
  */
 void get_mon_num_prep_escort(CreatureEntity &creature, MonraceId escorted_monrace_id, short m_idx, MonraceHookTerrain hook)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto dungeon_level = floor.dun_level;
     const auto &system = AngbandSystem::get_instance();
     auto &table = MonraceAllocationTable::get_instance();
@@ -449,7 +449,7 @@ void get_mon_num_prep_escort(CreatureEntity &creature, MonraceId escorted_monrac
  */
 static bool summon_specific_okay(CreatureEntity &creature, MonraceId monrace_id, const SummonCondition &condition)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.is_underground() && !DungeonMonraceService::is_suitable_for_dungeon(floor.dungeon_id, monrace_id)) {
         return false;
     }
@@ -498,7 +498,7 @@ static bool summon_specific_okay(CreatureEntity &creature, MonraceId monrace_id,
  */
 void get_mon_num_prep_summon(CreatureEntity &creature, const SummonCondition &condition)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto dungeon_level = floor.dun_level;
     const auto &system = AngbandSystem::get_instance();
     auto &table = MonraceAllocationTable::get_instance();
@@ -575,7 +575,7 @@ static bool monster_hook_chameleon_lord(CreatureEntity &creature, const Chameleo
         return false;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(ct.m_idx);
     const auto &old_monrace = monster.get_monrace();
     if (old_monrace.misc_flags.has_not(MonsterMiscType::CHAMELEON)) {
@@ -616,7 +616,7 @@ static bool monster_hook_chameleon(CreatureEntity &creature, const ChameleonTran
         return false;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(ct.m_idx);
     const auto &old_monrace = monster.get_monrace();
     if (old_monrace.misc_flags.has_not(MonsterMiscType::CHAMELEON)) {
@@ -647,7 +647,7 @@ static bool monster_hook_chameleon(CreatureEntity &creature, const ChameleonTran
  */
 void get_mon_num_prep_chameleon(CreatureEntity &creature, const ChameleonTransformation &ct)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto dungeon_level = floor.dun_level;
     const auto &system = AngbandSystem::get_instance();
     auto &table = MonraceAllocationTable::get_instance();
@@ -687,7 +687,7 @@ void get_mon_num_prep_chameleon(CreatureEntity &creature, const ChameleonTransfo
  */
 void get_mon_num_prep_bounty(CreatureEntity &creature)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto dungeon_level = floor.dun_level;
     const auto &system = AngbandSystem::get_instance();
     auto &table = MonraceAllocationTable::get_instance();
@@ -723,7 +723,7 @@ void get_mon_num_prep_bounty(CreatureEntity &creature)
  */
 void mark_monsters_present(CreatureEntity &creature)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
 
     for (MONSTER_IDX m_idx = floor.m_max - 1; m_idx >= 1; m_idx--) {
         auto &monster = floor.get_monster(m_idx);

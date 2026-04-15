@@ -50,8 +50,8 @@ bool teleport_swap(CreatureEntity &creature, const Direction &dir)
         return false;
     }
 
-    const auto &grid = creature.current_floor_ptr->get_grid(pos);
-    if (!grid.has_monster() || creature.current_floor_ptr->get_monster(grid.m_idx).is_riding()) {
+    const auto &grid = creature.get_floor()->get_grid(pos);
+    if (!grid.has_monster() || creature.get_floor()->get_monster(grid.m_idx).is_riding()) {
         msg_print(_("それとは場所を交換できません。", "You can't trade places with that!"));
         return false;
     }
@@ -61,10 +61,10 @@ bool teleport_swap(CreatureEntity &creature, const Direction &dir)
         return false;
     }
 
-    const auto &monster = creature.current_floor_ptr->get_monster(grid.m_idx);
+    const auto &monster = creature.get_floor()->get_monster(grid.m_idx);
     auto &monrace = monster.get_monrace();
 
-    (void)set_monster_csleep(*creature.current_floor_ptr, grid.m_idx, 0);
+    (void)set_monster_csleep(*creature.get_floor(), grid.m_idx, 0);
 
     if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT)) {
         msg_print(_("テレポートを邪魔された！", "Your teleportation is blocked!"));
@@ -106,7 +106,7 @@ bool teleport_monster(CreatureEntity &creature, const Direction &dir, int distan
  */
 bool teleport_away(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION dis, teleport_flags mode)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &monster = floor.get_monster(m_idx);
     if (!monster.is_valid()) {
         return false;
@@ -190,7 +190,7 @@ bool teleport_away(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION dis, te
  */
 void teleport_monster_to(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION ty, POSITION tx, int power, teleport_flags mode)
 {
-    auto &floor = *creature.current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &monster = floor.get_monster(m_idx);
     if (!monster.is_valid()) {
         return;
@@ -293,7 +293,7 @@ bool teleport_player_aux(CreatureEntity &creature, POSITION dis, bool is_quantum
         dis = max_distance;
     }
 
-    const auto &floor_ref = *creature.current_floor_ptr;
+    const auto &floor_ref = *creature.get_floor();
     const auto left = std::max(1, creature.x - dis);
     const auto right = std::min(floor_ref.width - 2, creature.x + dis);
     const auto top = std::max(1, creature.y - dis);
@@ -391,11 +391,11 @@ void teleport_player(CreatureEntity &creature, POSITION dis, BIT_FLAGS mode)
     /* Monsters with teleport ability may follow the creature */
     for (POSITION xx = -1; xx < 2; xx++) {
         for (POSITION yy = -1; yy < 2; yy++) {
-            MONSTER_IDX tmp_m_idx = creature.current_floor_ptr->grid_array[oy + yy][ox + xx].m_idx;
+            MONSTER_IDX tmp_m_idx = creature.get_floor()->grid_array[oy + yy][ox + xx].m_idx;
             if (!is_monster(tmp_m_idx)) {
                 continue;
             }
-            const auto &monster = creature.current_floor_ptr->get_monster(tmp_m_idx);
+            const auto &monster = creature.get_floor()->get_monster(tmp_m_idx);
             if (!monster.is_riding()) {
                 const auto &monrace = monster.get_monrace();
 
@@ -429,7 +429,7 @@ void teleport_player_away(MONSTER_IDX m_idx, CreatureEntity &creature, POSITION 
     if (!teleport_player_aux(creature, dis, is_quantum_effect, TELEPORT_PASSIVE)) {
         return;
     }
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
 
     /* Monsters with teleport ability may follow the creature */
     for (POSITION xx = -1; xx < 2; xx++) {
@@ -441,7 +441,7 @@ void teleport_player_away(MONSTER_IDX m_idx, CreatureEntity &creature, POSITION 
                 continue;
             }
 
-            const auto &monster = creature.current_floor_ptr->get_monster(tmp_m_idx);
+            const auto &monster = creature.get_floor()->get_monster(tmp_m_idx);
             const auto &monrace = monster.get_monrace();
 
             bool can_follow = monrace.ability_flags.has(MonsterAbilityType::TPORT);
@@ -473,7 +473,7 @@ void teleport_player_to(CreatureEntity &creature, POSITION ny, POSITION nx, tele
         return;
     }
 
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     Pos2D pos(0, 0);
     auto dis = 0;
     auto ctr = 0;
@@ -511,7 +511,7 @@ void teleport_player_to(CreatureEntity &creature, POSITION ny, POSITION nx, tele
 
 void teleport_away_followable(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &floor = *creature.current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     const auto old_m_pos = monster.get_position();
     bool old_ml = monster.get_monster_profile().ml;

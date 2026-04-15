@@ -59,10 +59,10 @@ static void escape_monster(CreatureEntity &player, turn_flags *turn_flags_ptr, c
 
         auto speak = monster.get_monrace().speak_flags.has_any_of(flags);
         speak &= !is_acting_monster(monster.r_idx);
-        const auto &floor = *player.current_floor_ptr;
+        const auto &floor = *player.get_floor();
         const auto p_pos = player.get_position();
         const auto m_pos = monster.get_position();
-        speak &= player.current_floor_ptr->has_los_at(m_pos);
+        speak &= player.get_floor()->has_los_at(m_pos);
         speak &= projectable(floor, m_pos, p_pos);
         if (speak) {
             msg_format(_("%s^「ピンチだ！退却させてもらう！」", "%s^ says 'It is the pinch! I will retreat'."), m_name);
@@ -87,7 +87,7 @@ static void escape_monster(CreatureEntity &player, turn_flags *turn_flags_ptr, c
  */
 bool runaway_monster(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx)
 {
-    const auto &monster = creature.current_floor_ptr->get_monster(m_idx);
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     bool can_runaway = monster.is_pet() || monster.is_friendly();
     can_runaway &= (monrace.kind_flags.has(MonsterKindType::UNIQUE)) || (monrace.population_flags.has(MonsterPopulationType::NAZGUL));

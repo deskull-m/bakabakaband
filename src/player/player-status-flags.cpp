@@ -507,7 +507,7 @@ bool has_kill_wall(CreatureEntity &creature)
         return false;
     }
 
-    const auto &riding_monster = creature.current_floor_ptr->get_monster(creature.riding);
+    const auto &riding_monster = creature.get_floor()->get_monster(creature.riding);
     const auto &riding_monrace = riding_monster.get_monrace();
     return riding_monrace.feature_flags.has(MonsterFeatureType::KILL_WALL);
 }
@@ -528,7 +528,7 @@ bool has_pass_wall(CreatureEntity &creature)
         return can_player_pass_wall;
     }
 
-    const auto &monster = creature.current_floor_ptr->get_monster(creature.riding);
+    const auto &monster = creature.get_floor()->get_monster(creature.riding);
     const auto &monrace = monster.get_monrace();
     return can_player_pass_wall && monrace.feature_flags.has(MonsterFeatureType::PASS_WALL);
 }
@@ -767,8 +767,8 @@ void check_no_flowed(CreatureEntity &creature)
         }
     }
 
-    for (const auto this_o_idx : creature.current_floor_ptr->grid_array[creature.y][creature.x].o_idx_list) {
-        o_ptr = creature.current_floor_ptr->o_list[this_o_idx].get();
+    for (const auto this_o_idx : creature.get_floor()->grid_array[creature.y][creature.x].o_idx_list) {
+        o_ptr = creature.get_floor()->o_list[this_o_idx].get();
 
         if (o_ptr->bi_key == BaseitemKey(ItemKindType::NATURE_BOOK, 2)) {
             has_sw = true;
@@ -1036,7 +1036,7 @@ BIT_FLAGS has_levitation(CreatureEntity &creature)
         return result;
     }
 
-    const auto &monster = creature.current_floor_ptr->get_monster(creature.riding);
+    const auto &monster = creature.get_floor()->get_monster(creature.riding);
     const auto &monrace = monster.get_monrace();
     return monrace.feature_flags.has(MonsterFeatureType::CAN_FLY) ? FLAG_CAUSE_RIDING : FLAG_CAUSE_NONE;
 }
@@ -1051,7 +1051,7 @@ bool has_can_swim(CreatureEntity &creature)
         return false;
     }
 
-    const auto &monster = creature.current_floor_ptr->get_monster(creature.riding);
+    const auto &monster = creature.get_floor()->get_monster(creature.riding);
     const auto &monrace = monster.get_monrace();
     return monrace.feature_flags.has_any_of({ MonsterFeatureType::CAN_SWIM, MonsterFeatureType::AQUATIC });
 }
