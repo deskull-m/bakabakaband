@@ -20,6 +20,20 @@ public:
     void set_timed_effect(CreatureTimedEffect effect, short value) override;
 
     void wipe() override;
-};
 
-extern PlayerType *p_ptr;
+    /*!
+     * @brief プレイヤー唯一のインスタンスを取得する
+     * @return プレイヤーインスタンスへの参照
+     * @note 原則としてエントリポイント・シグナルハンドラ・UIコールバック等の
+     * 「プレイヤー参照の根」でのみ使用すること。通常のゲームロジックからは
+     * CreatureEntity & 引数経由で受け取ること。
+     */
+    static PlayerType &get_instance();
+
+    /*!
+     * @brief プレイヤー唯一のインスタンスを取得する（ポインタ版）
+     * @return プレイヤーインスタンスへのポインタ
+     * @note 用途は get_instance() と同じ。ポインタが必要な場所専用。
+     */
+    static PlayerType *get_instance_ptr();
+};

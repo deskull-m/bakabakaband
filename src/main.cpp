@@ -225,7 +225,7 @@ static bool parse_long_opt(const char *opt)
     }
 
     init_stuff();
-    init_angband(*p_ptr, true);
+    init_angband(PlayerType::get_instance(), true);
     switch (output_all_spoilers()) {
     case SpoilerOutputResultType::SUCCESSFUL:
         puts("Successfully created a spoiler file.");
@@ -284,7 +284,7 @@ int main(int argc, char *argv[])
 #ifdef SET_UID
     char tmp_name[128];
     user_name(tmp_name, ids.get_user_id());
-    p_ptr->name = tmp_name;
+    PlayerType::get_instance().name = tmp_name;
 #ifdef PRIVATE_USER_PATH
     create_user_dir();
 #endif /* PRIVATE_USER_PATH */
@@ -338,9 +338,9 @@ int main(int argc, char *argv[])
                 break;
             }
 
-            p_ptr->name = &argv[i][2];
-            if (p_ptr->name.length() > 40) {
-                p_ptr->name.resize(40);
+            PlayerType::get_instance().name = &argv[i][2];
+            if (PlayerType::get_instance().name.length() > 40) {
+                PlayerType::get_instance().name.resize(40);
             }
             break;
         case 'm':
@@ -395,7 +395,7 @@ int main(int argc, char *argv[])
         argv[1] = nullptr;
     }
 
-    process_player_name(*p_ptr, true);
+    process_player_name(PlayerType::get_instance(), true);
     quit_aux = quit_hook;
 
 #ifdef USE_X11
@@ -440,7 +440,7 @@ int main(int argc, char *argv[])
 
     {
         TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
-        init_angband(*p_ptr, false);
+        init_angband(PlayerType::get_instance(), false);
         pause_line(MAIN_TERM_MIN_ROWS - 1);
     }
 
@@ -449,7 +449,7 @@ int main(int argc, char *argv[])
     clear_png_display();
 #endif
 
-    play_game(*p_ptr, new_game, browsing_movie);
+    play_game(PlayerType::get_instance(), new_game, browsing_movie);
     quit("");
     return 0;
 }

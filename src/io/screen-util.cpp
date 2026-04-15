@@ -48,9 +48,9 @@ void resize_map()
 
     panel_row_max = 0;
     panel_col_max = 0;
-    panel_row_min = p_ptr->get_floor()->height;
-    panel_col_min = p_ptr->get_floor()->width;
-    verify_panel(*p_ptr);
+    panel_row_min = PlayerType::get_instance().get_floor()->height;
+    panel_col_min = PlayerType::get_instance().get_floor()->width;
+    verify_panel(PlayerType::get_instance());
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags_srf = {
@@ -75,11 +75,11 @@ void resize_map()
         MainWindowRedrawingFlag::EQUIPPY,
     };
     rfu.set_flags(flags_mwrf);
-    handle_stuff(*p_ptr);
+    handle_stuff(PlayerType::get_instance());
     term_redraw();
 
     if (can_save) {
-        move_cursor_relative(p_ptr->y, p_ptr->x);
+        move_cursor_relative(PlayerType::get_instance().y, PlayerType::get_instance().x);
     }
 
     term_fresh();

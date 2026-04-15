@@ -7,19 +7,25 @@
 
 /*!
  * @brief プレイヤー構造体実体 / Static player info record
+ * @note get_instance() を通してのみアクセスすること。直接参照しないこと。
  */
-PlayerType p_body;
-
-/*!
- * @brief プレイヤー構造体へのグローバル参照ポインタ / Pointer to the player info
- */
-PlayerType *p_ptr = &p_body;
+static PlayerType p_body;
 
 PlayerType::PlayerType()
 {
     this->inventory.resize(INVEN_TOTAL);
     ranges::generate(this->inventory, [] { return std::make_shared<ItemEntity>(); });
     this->timed_effects = std::make_shared<TimedEffects>();
+}
+
+PlayerType &PlayerType::get_instance()
+{
+    return p_body;
+}
+
+PlayerType *PlayerType::get_instance_ptr()
+{
+    return &p_body;
 }
 
 bool PlayerType::is_valid() const

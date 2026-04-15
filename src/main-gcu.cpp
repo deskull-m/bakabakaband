@@ -694,10 +694,10 @@ static errr game_term_xtra_gcu_event(int v)
 
         /* Broken input is special */
         if (i == ERR) {
-            exit_game_panic(*p_ptr);
+            exit_game_panic(PlayerType::get_instance());
         }
         if (i == EOF) {
-            exit_game_panic(*p_ptr);
+            exit_game_panic(PlayerType::get_instance());
         }
 
         *bp++ = (char)i;
@@ -707,7 +707,7 @@ static errr game_term_xtra_gcu_event(int v)
 
         while ((i = getch()) != EOF) {
             if (i == ERR) {
-                exit_game_panic(*p_ptr);
+                exit_game_panic(PlayerType::get_instance());
             }
             *bp++ = (char)i;
             if (bp == &buf[255]) {
@@ -776,7 +776,7 @@ static errr game_term_xtra_gcu_event(int v)
 
         /* Hack -- Handle bizarre "errors" */
         if ((i <= 0) && (errno != EINTR)) {
-            exit_game_panic(*p_ptr);
+            exit_game_panic(PlayerType::get_instance());
         }
 
         /* Get the current flags for stdin */
