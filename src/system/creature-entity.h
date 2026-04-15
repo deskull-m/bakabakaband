@@ -415,6 +415,39 @@ public:
     virtual void on_death([[maybe_unused]] std::string_view cause) {}
 
     /*!
+     * @brief 防御（無敵・幽体化・分身等）による被ダメージ軽減を計算する
+     * @param damage 元のダメージ量（参照渡し。関数内で軽減後の値に書き換えられる）
+     * @param damage_type ダメージ種別（DAMAGE_ATTACK 等）
+     * @return true ならダメージが完全吸収された（呼び出し元は以降の処理をスキップすべき）
+     * @details
+     * プレイヤー側では無敵・幻影・幽体化・無想の構え等による軽減ロジックを実行し、
+     * メッセージ表示も行う（そのため非 const）。
+     * モンスターはデフォルト実装（軽減なし）で十分。
+     */
+    virtual bool calc_damage_reduction(int &damage, [[maybe_unused]] int damage_type)
+    {
+        (void)damage;
+        return false;
+    }
+
+    /*!
+     * @brief ダメージをHPに適用する共通処理
+     * @param damage 適用するダメージ量
+     * @details hp を減算し -9999 でクランプ、on_take_hit() を呼ぶ。
+     * プレイヤー・モンスター両者の基本的なダメージ算術を統一する。
+     */
+    void apply_raw_damage(int damage)
+    {
+        this->hp -= damage;
+        if (this->hp < -9999) {
+            this->hp = -9999;
+        }
+        if (damage > 0) {
+            this->on_take_hit(damage);
+        }
+    }
+
+    /*!
      * @brief クリーチャーの時限効果の残りターン数を取得
      * @param effect 取得する時限効果の種別
      * @return 残りターン数（0なら効果なし）
