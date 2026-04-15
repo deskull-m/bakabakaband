@@ -265,3 +265,305 @@ MSVC ビルドは `.github/workflows/build-test-with-msvc.yml` を参照。
 ```powershell
 MSBuild -warnAsError .\VisualStudio\Bakabakaband.sln /t:Rebuild /p:Configuration=Debug
 ```
+
+---
+
+## 変愚蛮怒（上流）からのマージ指針
+
+### 背景
+
+bakabakaband は変愚蛮怒（Hengband, https://github.com/hengband/hengband ）をベースにした派生作品であり、
+歴史的に上流の修正・機能追加を手動チェリーピックで取り込んできた。しかし近年の
+CreatureEntity 統合リファクタリング（`PlayerType *` → `CreatureEntity &`、`p_ptr` 廃止、
+`MonsterEntity` 吸収、時限効果の enum 統一等）により **直接のチェリーピックは衝突が
+多発し不可能** となっている。
+
+本節では、変愚蛮怒の更新を継続的に取り込むための標準手順を定義する。
+
+### セットアップ：上流リモートの追加
+
+変愚蛮怒を `hengband` という名前のリモートとして追加する（初回のみ）。
+
+```bash
+git remote add hengband https://github.com/hengband/hengband.git
+git remote set-url --push hengband DISABLED  # 誤 push 防止
+git fetch hengband
+```
+
+確認:
+
+```bash
+git remote -v
+# origin   https://github.com/deskull-m/bakabakaband.git (fetch)
+# origin   https://github.com/deskull-m/bakabakaband.git (push)
+# hengband https://github.com/hengband/hengband.git (fetch)
+# hengband DISABLED (push)
+```
+
+### 定期取得
+
+```bash
+git fetch hengband
+```
+
+主要ブランチは `hengband/develop`。リリース済みバージョンは `hengband/master` を参照。
+
+### マージ対象の特定
+
+マージ対象となる ISSUE は、タイトルに「変愚「...」のマージ」を含むものが中心。
+GitHub 検索で列挙できる：
+
+```
+is:issue is:open 変愚 マージ in:title
+```
+
+各 ISSUE 本文に上流 PR 番号（例: `#5323`）が記載されているので、それを基に
+対応する上流コミットを特定する。
+
+```bash
+# 上流 PR に含まれるコミット範囲を取得
+git log hengband/develop --grep="#5323" --oneline
+# または上流 PR のマージコミットから辿る
+git log hengband/develop --oneline --first-parent | grep 'Merge pull request #5323'
+```
+
+### マージ手順
+
+#### Step 1: 上流コミット範囲の特定
+
+上流 PR のマージコミットを見つけ、そのマージコミットに含まれる実コミット群を確認する。
+
+```bash
+# マージコミットを特定
+MERGE_SHA=$(git log hengband/develop --first-parent --grep="pull request #5323" --format=%H | head -1)
+# マージに含まれるコミット一覧
+git log $MERGE_SHA^..$MERGE_SHA^2 --oneline
+```
+
+#### Step 2: 作業ブランチの作成
+
+マージ対象ごとに専用ブランチを切る。命名規則は `merge/hengband-<PR番号>-<要約>`。
+
+```bash
+git checkout -b merge/hengband-5323-terrain-flag-rename
+```
+
+#### Step 3: チェリーピック試行（競合前提）
+
+コミットを 1 つずつチェリーピックする。衝突は前提なので `--no-commit` で停止させて
+差分を精査する方針が望ましい。
+
+```bash
+git cherry-pick --no-commit <commit-sha>
+# 衝突発生 → 手動で差分吸収（下記 Step 4）
+```
+
+競合なくピックできる低リスクな変更（jsonc データファイル、リソース、ドキュメント等）は
+そのまま通常のチェリーピックでよい：
+
+```bash
+git cherry-pick <commit-sha>
+```
+
+#### Step 4: 差分吸収（リファクタリング由来の衝突解決）
+
+bakabakaband 側と上流側でよくある構造的差異を以下のルールで機械的に置換する。
+この作業は Claude Code に以下を指示して代行させられる：
+
+**指示例:**
+> 以下のパッチを bakabakaband の構造に合わせて適応してください。
+> `PlayerType *player_ptr` → `CreatureEntity &creature`、`p_ptr` → `PlayerType::get_instance()`、
+> `player_ptr->hero` → `creature.get_timed_effect(CreatureTimedEffect::HERO)` 等の置換を
+> 実施し、最終的にコンパイル可能な形にしてください。
+
+**主要な変換マッピング**:
+
+| 上流（変愚蛮怒） | bakabakaband |
+|---|---|
+| `PlayerType *player_ptr` 引数 | `CreatureEntity &creature` |
+| `player_ptr->field` | `creature.field` |
+| `p_ptr->field` | `PlayerType::get_instance().field` |
+| `p_ptr` / `*p_ptr` 引数 | `PlayerType::get_instance()` |
+| `MonsterEntity *m_ptr = &floor.m_list[idx]` | `auto &monster = floor.m_list[idx]`（`CreatureEntity &`） |
+| `m_ptr->field` | `monster.field` |
+| `MonsterEntity` の直接使用 | `CreatureEntity`（大抵の場面で互換） |
+| `player_ptr->current_floor_ptr` | `creature.get_floor()` |
+| `player_ptr->hero`, `player_ptr->blessed`, `player_ptr->invuln` 等の直接 TIME_EFFECT フィールド | `creature.get_timed_effect(CreatureTimedEffect::HERO)` 等 |
+| `player_ptr->hero = v` 等の代入 | `creature.set_timed_effect(CreatureTimedEffect::HERO, v)` |
+| `MonsterTimedEffect::SLEEP` | `CreatureTimedEffect::SLEEP_OR_PARALYSIS` |
+| `MonsterTimedEffect::FAST` | `CreatureTimedEffect::ACCELERATION` |
+| `MonsterTimedEffect::SLOW` | `CreatureTimedEffect::DECELERATION` |
+| `MonsterTimedEffect::STUN/CONFUSION/FEAR/INVULNERABILITY` | 同名 `CreatureTimedEffect::XXX`（`MonsterTimedEffect` 自体は削除済み） |
+| `MONSTER_TIMED_EFFECT_RANGE` | `MONSTER_TIMED_EFFECT_LIST` |
+| `player_ptr->mimic_form` | `creature.get_mimic_form()` / `set_mimic_form()` |
+| `is_hero(player_ptr)` 等の古い自由関数 | `creature.is_hero()` 等の仮想メソッド |
+| `take_hit(player_ptr, ...)` | `take_hit(creature, ...)` |
+| `mon_take_hit_mon(...)` | `MonsterDamageProcessor(creature, ...).mon_take_hit(...)` |
+
+**GCC 固有の注意**:
+上流は MSVC 前提のことが多く、`<cstdint>` 等のインクルード漏れがあれば追加する。
+
+#### Step 5: ビルド・フォーマット確認
+
+```bash
+sh .github/scripts/ci-check-format.sh
+sh .github/scripts/ci-build-test.sh
+```
+
+エラーが出たら Step 4 に戻り、変換漏れを補修する。
+
+#### Step 6: コミット
+
+チェリーピック元のコミットメッセージを保ちつつ、bakabakaband 側の改変内容を明記する。
+
+```bash
+git commit -m "$(cat <<'EOF'
+merge: [上流タイトル]（hengband#5323 相当）
+
+変愚蛮怒 PR #5323 の内容を bakabakaband 構造に適応してマージ。
+
+上流コミット: abc1234 (hengband/develop)
+主な型変換:
+- PlayerType *player_ptr → CreatureEntity &creature
+- TIME_EFFECT 直接フィールド → get/set_timed_effect()
+EOF
+)"
+```
+
+#### Step 7: ISSUE への報告・クローズ
+
+対応する ISSUE（例: #8166）にコメントして PR を作成、マージ後に ISSUE をクローズする。
+
+### よくある落とし穴
+
+1. **`MonsterEntity` 残存**: 上流では `MonsterEntity` クラスが存在するが bakabakaband では廃止済み。
+   フィールド数や継承関係に差があるため、`CreatureEntity` への置換時にフィールド名・
+   アクセス方法が変わっていないか要確認。
+
+2. **`get_floor()` と `current_floor_ptr` の混在**: 上流は直接メンバ参照、bakabakaband は
+   アクセサ必須。`.current_floor_ptr` を `.get_floor()` に、`*creature.current_floor_ptr` を
+   `*creature.get_floor()` に変換する。
+
+3. **TIME_EFFECT フィールドは `protected`**: 外部コードからは get/set アクセサ経由でないと
+   コンパイルエラーとなる。
+
+4. **`MonsterTimedEffect` enum の廃止**: 上流にはこの enum があるが bakabakaband では削除済み。
+   `CreatureTimedEffect` に統合されているので対応する値にマッピングする。
+
+5. **グローバル `p_ptr` の廃止**: bakabakaband では `extern PlayerType *p_ptr` が存在しない。
+   `PlayerType::get_instance()` に置換する必要がある。
+
+### 差分吸収を Claude Code に委譲する場合のプロンプト雛形
+
+```
+以下の変愚蛮怒パッチを bakabakaband にマージしてください:
+<パッチ内容または cherry-pick -n 後の git diff>
+
+変換ルール（CLAUDE.md の「変愚蛮怒（上流）からのマージ指針」節を参照）:
+- PlayerType * → CreatureEntity &
+- p_ptr → PlayerType::get_instance()
+- TIME_EFFECT 直接フィールド → get/set_timed_effect(CreatureTimedEffect::XXX)
+- current_floor_ptr → get_floor() / set_floor()
+- MonsterTimedEffect → CreatureTimedEffect
+- mimic_form → get_mimic_form() / set_mimic_form()
+
+作業後:
+1. 変更ファイルをコンパイルチェック
+2. clang-format 適用
+3. 完全ビルド確認（sh .github/scripts/ci-build-test.sh）
+4. 変換内容を要約した上でコミット
+```
+
+### マージ対象の優先順位
+
+変愚マージ関連 ISSUE が多数溜まっているので、以下の順で優先する：
+
+1. **バグ修正**: `[Fix]` プレフィックスの ISSUE。小さい差分で影響が限定的。
+2. **データファイル更新**: jsonc、効果音、タイル等。ロジック変更を伴わないもの。
+3. **小さな機能追加**: モンスター追加、アイテム追加等。
+4. **リファクタリング**: `[Refactor]` プレフィックス。bakabakaband 側の差異吸収コストが高い。
+5. **大規模機能**: HTTP 通信、X11 BGM 等。依存が多いものは最後。
+
+### マージ作業前の適用可否判断
+
+ISSUE の中には、以下のような理由で**マージ作業が不要**または**困難**なものが含まれている。
+Claude Code が ISSUE を処理する際は、着手前に必ず以下の観点で可否を判定し、
+該当する場合は**作業を止めてユーザーに指示を仰ぐこと**。
+
+#### 作業不要と判断すべきケース
+
+1. **既に修正済み**: 上流 PR の内容が別経路（独自実装、別マージ、リファクタリング時の
+   副次的対応）で既に bakabakaband に反映されている。
+   - 判定方法: 上流 PR の主要変更点が bakabakaband 現行コードに存在するか grep で確認。
+
+2. **対象機能が bakabakaband に存在しない**: 上流が持つ機能を bakabakaband は実装していない、
+   または既に削除している（例: 特定のプレイヤークラス、特定の UI モード）。
+   - 判定方法: 変更対象ファイル/シンボルが bakabakaband に存在するか確認。
+
+3. **bakabakaband の方針と矛盾する**: 上流の仕様変更が bakabakaband 独自の設計方針と
+   衝突する（例: バランス調整、ゲームシステム変更）。
+   - 判定方法: ISSUE の議論履歴を確認し、過去に方針差があった分野かをチェック。
+
+4. **時代遅れ / 意味を失った**: 修正対象のコード自体が bakabakaband のリファクタリングで
+   大幅に書き換えられており、上流パッチがそもそも適用対象外。
+   - 判定方法: 上流 PR の変更ファイル・関数が bakabakaband に存在するか確認。
+
+#### 作業困難と判断すべきケース
+
+1. **差分吸収が大規模**: 上流 PR の変更点が bakabakaband の構造と大きく乖離し、
+   機械的な変換マッピングでは対応できない（例: 根本的なクラス階層差異）。
+
+2. **依存する上流変更が未マージ**: 対象 PR が別の未マージ PR に依存している場合、
+   先にそちらを処理する必要があるか、まとめて対応する必要がある。
+
+3. **判断が必要な設計選択**: 上流が複数の実装選択肢から 1 つを選んでいる場合、
+   bakabakaband でも同じ選択で良いか人間判断が必要。
+
+#### 判定時の報告フォーマット
+
+ユーザーに指示を仰ぐ際は、以下の情報を整理して提示すること：
+
+```markdown
+## ISSUE #XXXX 判定結果: [作業不要 / 作業困難 / 要判断]
+
+### 上流 PR 概要
+- リポジトリ: hengband/hengband#YYYY
+- 変更ファイル数: N
+- 主な変更点: ...
+
+### bakabakaband 側の現状
+- 該当コードの存在: [ある / ない / 大幅に変更済み]
+- 既存の対応: ...
+
+### 判定理由
+...
+
+### 推奨アクション
+- [ ] ISSUE クローズ（作業不要のため）
+- [ ] 別 ISSUE に統合
+- [ ] 保留（上流側の議論待ち等）
+- [ ] ユーザー判断による作業継続
+```
+
+#### ISSUE 処理フロー全体
+
+```
+1. ISSUE 本文から上流 PR 番号を特定
+   ↓
+2. git log hengband/develop で該当コミット群を取得
+   ↓
+3. 適用可否を判定（上記基準）
+   ├─ 作業不要/困難 → ユーザーに報告・指示待ち
+   └─ 適用可能 → 次へ
+   ↓
+4. 作業ブランチ作成
+   ↓
+5. cherry-pick --no-commit で試行
+   ↓
+6. 衝突解決（変換マッピング適用）
+   ↓
+7. ビルド確認 → コミット → プッシュ
+   ↓
+8. ISSUE にコメント・クローズ
+```
+
