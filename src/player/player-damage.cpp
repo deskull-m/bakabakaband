@@ -320,58 +320,32 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
         }
     }
 
-    if ((damage_type != DAMAGE_USELIFE) && (damage_type != DAMAGE_LOSELIFE)) {
-        if (creature.is_invulnerable() && (damage < 9000)) {
-            if (damage_type == DAMAGE_FORCE) {
-                msg_print(_("バリアが切り裂かれた！", "The attack cuts your shield of invulnerability open!"));
-            } else if (one_in_(PENETRATE_INVULNERABILITY)) {
-                msg_print(_("無敵のバリアを破って攻撃された！", "The attack penetrates your shield of invulnerability!"));
-            } else {
-                return 0;
-            }
-        }
-
-        if (check_multishadow(creature)) {
-            if (damage_type == DAMAGE_FORCE) {
-                msg_print(_("幻影もろとも体が切り裂かれた！", "The attack hits Shadow together with you!"));
-            } else if (damage_type == DAMAGE_ATTACK) {
-                msg_print(_("攻撃は幻影に命中し、あなたには届かなかった。", "The attack hits Shadow, but you are unharmed!"));
-                return 0;
-            }
-        }
-
-        if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
-            if (damage_type == DAMAGE_FORCE) {
-                msg_print(_("半物質の体が切り裂かれた！", "The attack cuts through your ethereal body!"));
-            } else {
-                damage /= 2;
-                if ((damage == 0) && one_in_(2)) {
-                    damage = 1;
-                }
-            }
-        }
-
-        if (CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU)) {
-            damage /= 2;
-            if ((damage == 0) && one_in_(2)) {
-                damage = 1;
-            }
-        }
+    // 防御（無敵・分身・幽体化・無想の構え）による軽減を仮想メソッド経由で処理
+    if (creature.calc_damage_reduction(damage, damage_type)) {
+        return 0;
     }
 
-    creature.hp -= damage;
-    if (creature.hp < -9999) {
-        creature.hp = -9999;
-    }
-
-    if (damage_type == DAMAGE_GENO && creature.hp < 0) {
-        damage += creature.hp;
-        creature.hp = 0;
-    }
-
-    // 与ダメージの蓄積（プレイヤーが受けたダメージとして記録）
-    if (damage > 0 && damage_type != DAMAGE_USELIFE && damage_type != DAMAGE_LOSELIFE) {
-        creature.on_take_hit(damage);
+    // HP にダメージを適用（dealt_damage 蓄積を含む）
+    // DAMAGE_GENO / USELIFE / LOSELIFE は特別扱いのためヘルパーを使わずインラインで処理
+    if (damage_type == DAMAGE_USELIFE || damage_type == DAMAGE_LOSELIFE) {
+        creature.hp -= damage;
+        if (creature.hp < -9999) {
+            creature.hp = -9999;
+        }
+    } else if (damage_type == DAMAGE_GENO) {
+        creature.hp -= damage;
+        if (creature.hp < -9999) {
+            creature.hp = -9999;
+        }
+        if (creature.hp < 0) {
+            damage += creature.hp;
+            creature.hp = 0;
+        }
+        if (damage > 0) {
+            creature.on_take_hit(damage);
+        }
+    } else {
+        creature.apply_raw_damage(damage);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -435,6 +409,62 @@ void PlayerType::on_take_hit(int damage)
     if (this->dealt_damage > 999999999) {
         this->dealt_damage = 999999999;
     }
+}
+
+/*!
+ * @brief プレイヤーの防御による被ダメージ軽減処理
+ * @param damage 元のダメージ量（参照渡し。関数内で軽減後の値に書き換えられる）
+ * @param damage_type ダメージ種別
+ * @return true ならダメージが完全吸収された（呼び出し元は以降の処理をスキップすべき）
+ * @details
+ * 無敵バリア・分身・幽体化・無想の構えによるダメージ軽減を処理する。
+ * DAMAGE_USELIFE / DAMAGE_LOSELIFE はスキップする。
+ * ロジックは従来 take_hit() 内にインライン展開されていたものを抽出。
+ */
+bool PlayerType::calc_damage_reduction(int &damage, int damage_type)
+{
+    if ((damage_type == DAMAGE_USELIFE) || (damage_type == DAMAGE_LOSELIFE)) {
+        return false;
+    }
+
+    if (this->is_invulnerable() && (damage < 9000)) {
+        if (damage_type == DAMAGE_FORCE) {
+            msg_print(_("バリアが切り裂かれた！", "The attack cuts your shield of invulnerability open!"));
+        } else if (one_in_(PENETRATE_INVULNERABILITY)) {
+            msg_print(_("無敵のバリアを破って攻撃された！", "The attack penetrates your shield of invulnerability!"));
+        } else {
+            return true;
+        }
+    }
+
+    if (check_multishadow(*this)) {
+        if (damage_type == DAMAGE_FORCE) {
+            msg_print(_("幻影もろとも体が切り裂かれた！", "The attack hits Shadow together with you!"));
+        } else if (damage_type == DAMAGE_ATTACK) {
+            msg_print(_("攻撃は幻影に命中し、あなたには届かなかった。", "The attack hits Shadow, but you are unharmed!"));
+            return true;
+        }
+    }
+
+    if (this->get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
+        if (damage_type == DAMAGE_FORCE) {
+            msg_print(_("半物質の体が切り裂かれた！", "The attack cuts through your ethereal body!"));
+        } else {
+            damage /= 2;
+            if ((damage == 0) && one_in_(2)) {
+                damage = 1;
+            }
+        }
+    }
+
+    if (CreatureClass(*this).samurai_stance_is(SamuraiStanceType::MUSOU)) {
+        damage /= 2;
+        if ((damage == 0) && one_in_(2)) {
+            damage = 1;
+        }
+    }
+
+    return false;
 }
 
 /*!

@@ -107,8 +107,7 @@ bool MonsterDamageProcessor::mon_take_hit(std::string_view note)
     }
 
     this->process_masochist_reaction();
-    monster.hp -= this->dam;
-    monster.on_take_hit(this->dam);
+    monster.apply_raw_damage(this->dam);
 
     if (AngbandWorld::get_instance().wizard) {
         msg_format(_("合計%d/%dのダメージを与えた。", "You do %d (out of %d) damage."), monster.dealt_damage, monster.maxhp);
