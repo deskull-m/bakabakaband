@@ -20,8 +20,11 @@ constexpr std::string_view VARIANT_NAME("Bakabaka");
 
 /*!
  * @brief セーブファイルのバージョン(3.0.0から導入)
+ * @details
+ * 47: XOR 鎖チェックサム修復 (hengband#1372 相当)。本バージョン以降は
+ * verify_checksum() / verify_encoded_checksum() の失敗をエラーとして扱う。
  */
-constexpr uint32_t SAVEFILE_VERSION = 46;
+constexpr uint32_t SAVEFILE_VERSION = 47;
 
 /*!
  * @brief バージョンが開発版が安定版かを返す(廃止予定)
