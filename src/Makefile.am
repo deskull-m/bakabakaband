@@ -834,6 +834,7 @@ hengband_SOURCES = \
 	main-unix/x11-type-string.cpp main-unix/x11-type-string.h \
 	main-unix/unix-music.cpp main-unix/unix-music.h \
 	main-unix/unix-cfg-reader.cpp main-unix/unix-cfg-reader.h \
+	main-unix/unix-sound.cpp main-unix/unix-sound.h \
 	\
 	market/arena.cpp market/arena.h \
 	market/arena-entry.cpp market/arena-entry.h \
