@@ -99,6 +99,36 @@ void display_monster_drop_golds(lore_type *lore_ptr)
 #endif
 }
 
+void display_monster_drops_summary(lore_type *lore_ptr)
+{
+    if ((lore_ptr->drop_gold == 0) && (lore_ptr->drop_item == 0)) {
+        return;
+    }
+    const auto drop_num = std::max(lore_ptr->drop_gold, lore_ptr->drop_item);
+    std::string drop_what;
+    std::string drop_quality;
+
+    if (lore_ptr->drop_flags.has(MonsterDropType::DROP_GREAT)) {
+        drop_quality = _("特別 ", "great ");
+    } else if (lore_ptr->drop_flags.has(MonsterDropType::DROP_GOOD)) {
+        drop_quality = _("上質 ", "good ");
+    }
+
+    auto is_item_only = lore_ptr->drop_gold == 0;
+    is_item_only |= lore_ptr->drop_flags.has_any_of({ MonsterDropType::DROP_GOOD, MonsterDropType::DROP_GREAT });
+    if (is_item_only && lore_ptr->drop_item > 0) {
+        drop_what = _("アイテム", "item");
+    }
+    if (!is_item_only && lore_ptr->drop_item > 0 && lore_ptr->drop_gold > 0) {
+        drop_what = _("アイテム/財宝", "item/treasure");
+    }
+    if (!is_item_only && lore_ptr->drop_item == 0 && lore_ptr->drop_gold > 0) {
+        drop_what = _("財宝", "treasure");
+    }
+
+    hooked_roff(format(_("[ドロップ] %s(%s最大%d)\n", "[drop] %s(%smax %d)\n"), drop_what.data(), drop_quality.data(), drop_num));
+}
+
 void display_monster_drops(lore_type *lore_ptr)
 {
     if ((lore_ptr->drop_gold == 0) && (lore_ptr->drop_item == 0)) {

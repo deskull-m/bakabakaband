@@ -218,6 +218,21 @@ void display_kill_numbers(lore_type *lore_ptr)
     hooked_roff("\n");
 }
 
+void display_where_to_appear_summary(lore_type *lore_ptr)
+{
+    if (lore_ptr->r_ptr->level == 0) {
+        hooked_roff(_("出現:町 ", "live:town "));
+        lore_ptr->old = true;
+    } else if (lore_ptr->r_ptr->r_tkills || lore_ptr->know_everything) {
+        if (depth_in_feet) {
+            hooked_roff(format(
+                _("出現:%d フィート ", "depth:%d ft "), lore_ptr->r_ptr->level * 50));
+        } else {
+            hooked_roff(format(_("出現:%d階 ", "depth:%d F "), lore_ptr->r_ptr->level));
+        }
+    }
+}
+
 /*!
  * @brief どこに出没するかを表示する
  * @param lore_ptr モンスターの思い出構造体への参照ポインタ
@@ -255,6 +270,14 @@ bool display_where_to_appear(lore_type *lore_ptr)
     return true;
 }
 
+void display_monster_speed_summary(lore_type *lore_ptr)
+{
+    const int speed = lore_ptr->speed - STANDARD_SPEED;
+    const auto speed_color = lore_ptr->get_speed_color();
+
+    hook_c_roff(speed_color, format(_("速度:%+d ", "speed:%+d "), speed));
+}
+
 void display_monster_move(lore_type *lore_ptr)
 {
     for (const auto &[text, color] : lore_ptr->build_speed_description()) {
@@ -276,6 +299,100 @@ void display_monster_never_move(lore_type *lore_ptr)
     }
 
     hooked_roff(_("侵入者を追跡しない", "does not deign to chase intruders"));
+}
+
+void display_monster_exp_summary(lore_type *lore_ptr)
+{
+    if ((lore_ptr->r_ptr->r_tkills == 0) && !lore_ptr->know_everything) {
+        hooked_roff(_("経験:??? ", "Exp:??? "));
+        return;
+    }
+    hooked_roff(format(_("経験:%d ", "Exp:%d "), lore_ptr->r_ptr->mexp));
+}
+
+void display_monster_kills_summary(lore_type *lore_ptr)
+{
+    if (lore_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
+        if (lore_ptr->r_ptr->r_pkills == 0) {
+            hook_c_roff(TERM_L_GREEN, _("生存 ", "alive "));
+            return;
+        }
+
+        hook_c_roff(TERM_RED, _("死亡 ", "dead "));
+        return;
+    }
+
+    hooked_roff(format(_("殺:%d ", "kill:%d "), lore_ptr->r_ptr->r_pkills));
+
+    if (!lore_ptr->r_ptr->population_flags.has(MonsterPopulationType::NAZGUL)) {
+        return;
+    }
+    hooked_roff(format(_("残:%d ", "remain:%d "), lore_ptr->r_ptr->max_num));
+}
+
+void display_monster_kind_tags(lore_type *lore_ptr)
+{
+    if (lore_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
+        hooked_roff(_("[ユニーク]", "[UNIQ]"));
+    }
+
+    if (lore_ptr->misc_flags.has(MonsterMiscType::ELDRITCH_HORROR)) {
+        hook_c_roff(TERM_VIOLET, _("[狂気]", "[sanity-blasting]"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::ANIMAL)) {
+        hook_c_roff(TERM_L_GREEN, _("[自然界]", "[natural]"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::EVIL)) {
+        hook_c_roff(TERM_L_DARK, _("[邪悪]", "[evil]"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::GOOD)) {
+        hook_c_roff(TERM_YELLOW, _("[善良]", "[good]"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::UNDEAD)) {
+        hook_c_roff(TERM_VIOLET, _("[アンデッド]", "[undead]"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::AMBERITE)) {
+        hook_c_roff(TERM_VIOLET, _("[アンバー]", "[Amberite]"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::DRAGON)) {
+        hook_c_roff(TERM_ORANGE, _("[ドラゴン]", "[dragon]"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::DEMON)) {
+        hook_c_roff(TERM_VIOLET, _("[デーモン]", "[demon]"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::GIANT)) {
+        hook_c_roff(TERM_L_UMBER, _("[巨人]", "[giant]"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::TROLL)) {
+        hook_c_roff(TERM_BLUE, _("[トロル]", "[troll]"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::ORC)) {
+        hook_c_roff(TERM_UMBER, _("[オーク]", "[orc]"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::HUMAN)) {
+        hook_c_roff(TERM_L_WHITE, _("[人間]", "[human]"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::QUANTUM)) {
+        hook_c_roff(TERM_VIOLET, _("[量子生物]", "[quantum]"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::ANGEL)) {
+        hook_c_roff(TERM_YELLOW, _("[天使]", "[angel]"));
+    }
+
+    hooked_roff("\n");
 }
 
 void display_monster_kind(lore_type *lore_ptr)
@@ -1079,6 +1196,29 @@ void display_monster_exp(CreatureEntity &creature, lore_type *lore_ptr)
 
     hooked_roff(format(" for a%s %d%s level character.  ", vowel, creature.level, ordinal));
 #endif
+}
+
+void set_monster_aura_summary(lore_type *lore_ptr)
+{
+    auto has_fire_aura = lore_ptr->aura_flags.has(MonsterAuraType::FIRE);
+    auto has_cold_aura = lore_ptr->aura_flags.has(MonsterAuraType::COLD);
+    auto has_elec_aura = lore_ptr->aura_flags.has(MonsterAuraType::ELEC);
+
+    if (has_fire_aura || has_elec_aura || has_cold_aura) {
+        lore_ptr->lore_msgs.emplace_back(_("オーラ:", "aura:"), TERM_WHITE);
+    }
+    if (has_fire_aura) {
+        lore_ptr->lore_msgs.emplace_back(_("炎", "fire"), TERM_RED);
+    }
+    if (has_cold_aura) {
+        lore_ptr->lore_msgs.emplace_back(_("氷", "cold"), TERM_BLUE);
+    }
+    if (has_elec_aura) {
+        lore_ptr->lore_msgs.emplace_back(_("電", "elec"), TERM_L_BLUE);
+    }
+    if (has_fire_aura || has_elec_aura || has_cold_aura) {
+        lore_ptr->lore_msgs.emplace_back(" | ", TERM_WHITE);
+    }
 }
 
 void display_monster_aura(lore_type *lore_ptr)

@@ -149,6 +149,8 @@ const std::vector<GameOption> option_info = {
 
     { &show_actual_value, true, 2, 17, "show_actual_value", _("技能値等に実値を並記する", "Show actual values of skills or etc."), GameOptionPage::TEXT },
 
+    { &show_lore_summary, true, 2, 18, "show_lore_summary", _("モンスターの思い出を要約表記にする", " Show a summary of monster lore."), GameOptionPage::TEXT },
+
     /*** Game-Play ***/
     { &stack_force_notes, true, 0, 8, "stack_force_notes", _("異なる銘のアイテムをまとめる", "Merge inscriptions when stacking"), GameOptionPage::GAMEPLAY },
 
