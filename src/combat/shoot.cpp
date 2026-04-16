@@ -33,6 +33,7 @@
 #include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
 #include "monster/monster-update.h"
+#include "monster/monster-util.h"
 #include "object/object-broken.h"
 #include "object/object-info.h"
 #include "object/object-mark-types.h"
@@ -885,8 +886,6 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
                             //!< @details プレイヤーの場所が同一であることが保証できないので変数を再宣言する.
                             const auto p_pos1 = creature.get_position();
                             auto n = randint1(5) + 3;
-                            const auto n0 = n;
-                            const auto m_idx = c_mon_ptr->m_idx;
                             for (; cur_dis <= tdis;) {
                                 const Pos2D pos_orig = { y, x };
                                 if (n == 0) {
@@ -911,17 +910,10 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
                                     break;
                                 }
 
-                                floor.get_grid(pos_to).m_idx = m_idx;
-                                floor.get_grid(pos_orig).m_idx = 0;
-                                monster.set_position(pos_to);
-                                update_monster(creature, m_idx, true);
+                                move_monster_to(creature, monster, pos_to);
                                 if (delay_factor > 0) {
-                                    lite_spot(creature, pos_to);
-                                    lite_spot(creature, pos_orig);
                                     term_fresh();
                                     term_xtra(TERM_XTRA_DELAY, delay_factor);
-                                } else if (n == n0) {
-                                    lite_spot(creature, pos_orig);
                                 }
 
                                 x = pos_to.x;
