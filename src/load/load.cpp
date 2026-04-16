@@ -52,6 +52,7 @@
 #include "world/world.h"
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 /*!
@@ -384,18 +385,51 @@ bool load_savedata(CreatureEntity &creature, bool *new_game)
         return false;
     }
 
-    fd_close(fd);
+    if (!err) {
+        // v0.0.X～v3.0.0 Alpha51までは、セーブデータの第1バイトがFAKE_MAJOR_VERというZangbandと互換性を取ったバージョン番号フィールドだった.
+        // v3.0.0 Alpha52以降は、バリアント名の長さフィールドとして再定義した.
+        // 10～13はその名残。変愚蛮怒から更にバリアントを切ったらこの評価は不要.
+        auto &system = AngbandSystem::get_instance();
+        auto tmp_major = tmp_ver[0];
+        auto is_old_ver = (10 <= tmp_major) && (tmp_major <= 13);
+        if (tmp_major == variant_length) {
+            if (std::string_view(&tmp_ver[1], variant_length) != VARIANT_NAME) {
+                THROW_EXCEPTION(std::runtime_error, _("セーブデータのバリアントは Bakabaka 以外です", "The variant of save data is other than Bakabaka!"));
+            }
+
+            system.savefile_key = tmp_ver[version_length - 1];
+            (void)fd_close(fd);
+        } else if (is_old_ver) {
+            system.savefile_key = tmp_ver[3];
+            (void)fd_close(fd);
+        } else {
+            (void)fd_close(fd);
+            THROW_EXCEPTION(std::runtime_error, _("異常なバージョンが検出されました！", "Invalid version is detected!"));
+        }
+    }
 
     if (!err) {
         term_clear();
         auto ret_rd_savefile = rd_savefile(creature);
-        if (ret_rd_savefile != 0 && ret_rd_savefile != 11) {
+        // SAVEFILE_VERSION 47 以降は checksum エラー (11) をエラーとして扱う。
+        // 46 以前は XOR 鎖バグで v_check が必ずズレていたため許容する互換処理。
+        const auto ignore_checksum_error = loading_savefile_version_is_older_than(47);
+        const auto is_fatal = [ignore_checksum_error](errr ret) {
+            if (ret == 0) {
+                return false;
+            }
+            if (ret == 11 && ignore_checksum_error) {
+                return false;
+            }
+            return true;
+        };
+        if (is_fatal(ret_rd_savefile)) {
             err = true;
         }
 
         if (ret_rd_savefile < 0) {
             what = _("セーブファイルを解析出来ません。", "Cannot parse savefile");
-        } else if (ret_rd_savefile > 0 && ret_rd_savefile != 11) {
+        } else if (ret_rd_savefile > 0 && is_fatal(ret_rd_savefile)) {
             return on_read_save_data_not_supported(creature, new_game);
         }
     }
