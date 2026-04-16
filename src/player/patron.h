@@ -7,12 +7,13 @@
 #include <tl/optional.hpp>
 #include <vector>
 
-#define MAX_PATRON 18 /*!< パトロンの最大定義数 / The number of "patrons" available (for Chaos Warriors) */
+#define MAX_PATRON 19 /*!< パトロンの最大定義数 / The number of "patrons" available (for Chaos Warriors) */
 
 enum class PatronType : int16_t {
     NONE = -1, //!< なし
     KHORNE = 11, //!< コーン
     GETTER = 16, //!< ゲッター
+    EFU = 18, //!< 衛府
 };
 
 /* パトロンからの報酬種別定義 / Chaos Warrior: Reward types: */
