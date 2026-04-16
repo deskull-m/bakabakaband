@@ -22,7 +22,7 @@
 #include "view/display-messages.h"
 
 /*!
- * @brief monspeak.txt において、発話ではなく行動のみが描写されているモンスターであるかを調べる
+ * @brief MonsterMessages.jsonc において、発話ではなく行動のみが描写されているモンスターであるかを調べる
  * @param r_idx モンスター種族ID
  * @return 会話内容が行動のみのモンスターか否か
  */
