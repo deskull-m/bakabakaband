@@ -6,6 +6,7 @@
 
 #include "lore/monster-lore.h"
 #include "game-option/cheat-options.h"
+#include "game-option/text-display-options.h"
 #include "lore/lore-calculator.h"
 #include "lore/lore-util.h"
 #include "lore/magic-types-setter.h"
@@ -587,13 +588,34 @@ void process_monster_lore(CreatureEntity &creature, MonraceId r_idx, monster_lor
     if (cheat_know || (mode == MONSTER_LORE_RESEARCH) || (mode == MONSTER_LORE_DEBUG)) {
         lore_ptr->know_everything = true;
     }
-
     set_flags_for_full_knowledge(lore_ptr);
     set_msex_flags(lore_ptr);
     set_flags1(lore_ptr);
     set_race_flags(lore_ptr);
-    display_kill_numbers(lore_ptr);
     const auto &text = lore_ptr->r_ptr->text;
+
+    if (show_lore_summary) {
+        display_monster_kind_tags(lore_ptr);
+        display_monster_hp_ac_summary(lore_ptr);
+        display_monster_speed_summary(lore_ptr);
+        display_monster_alert_summary(lore_ptr);
+        display_monster_kills_summary(lore_ptr);
+        display_where_to_appear_summary(lore_ptr);
+        display_monster_exp_summary(lore_ptr);
+        display_monster_evolution_summary(lore_ptr);
+        hooked_roff("\n");
+        set_monster_aura_summary(lore_ptr);
+        display_monster_behavior_summary(lore_ptr);
+        display_monster_drops_summary(lore_ptr);
+        display_monster_melee_summary_line(lore_ptr);
+        display_monster_magic_rate(lore_ptr);
+        display_monster_magic_tables(creature, lore_ptr);
+        display_monster_resistance_table(lore_ptr);
+        hook_c_roff(TERM_L_DARK, "------------------------------------------------------------\n");
+    }
+
+    display_kill_numbers(lore_ptr);
+
     if (!text.empty()) {
         hooked_roff(text);
         hooked_roff("\n");

@@ -88,6 +88,7 @@ struct lore_type {
     bool has_reinforce() const;
     bool is_details_known() const;
     bool is_blow_damage_known(int num_blow) const;
+    term_color_type get_speed_color() const;
 
     tl::optional<std::vector<lore_msg>> build_kill_unique_description() const;
     std::string build_revenge_description(bool has_defeated) const;

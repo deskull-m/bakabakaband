@@ -73,6 +73,7 @@ Y:show_ammo_detail
 X:show_ammo_no_crit
 X:show_ammo_crit_ratio
 Y:show_actual_value
+X:show_lore_summary
 
 ##### Game-Play #####
 

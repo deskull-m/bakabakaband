@@ -45,6 +45,19 @@ std::string dice_to_string(int base_damage, int dice_num, int dice_side, int dic
     return ss.str();
 }
 
+std::string get_skill_damage(CreatureEntity &creature, lore_type *lore_ptr, MonsterAbilityType ms_type)
+{
+    const auto monrace_id = lore_ptr->monrace_id;
+    const auto base_damage = monspell_race_damage(creature, ms_type, monrace_id, BASE_DAM);
+    const auto dice_num = monspell_race_damage(creature, ms_type, monrace_id, DICE_NUM);
+    const auto dice_side = monspell_race_damage(creature, ms_type, monrace_id, DICE_SIDE);
+    const auto dice_mult = monspell_race_damage(creature, ms_type, monrace_id, DICE_MULT);
+    const auto dice_div = monspell_race_damage(creature, ms_type, monrace_id, DICE_DIV);
+    std::stringstream dam_info;
+    dam_info << '(' << dice_to_string(base_damage, dice_num, dice_side, dice_mult, dice_div) << ')';
+    return dam_info.str();
+}
+
 /*!
  * @brief lore_ptrにダメージを与えるスキルの情報を追加する
  * @param lore_ptr 知識情報
@@ -68,7 +81,7 @@ void add_lore_of_damage_skill(CreatureEntity &creature, lore_type *lore_ptr, Mon
     const auto dice_div = monspell_race_damage(creature, ms_type, monrace_id, DICE_DIV);
     std::stringstream dam_info;
     dam_info << '(' << dice_to_string(base_damage, dice_num, dice_side, dice_mult, dice_div) << ')';
-    lore_ptr->lore_msgs.emplace_back(format(msg, dam_info.str().data()), color);
+    lore_ptr->lore_msgs.emplace_back(format(msg, get_skill_damage(creature, lore_ptr, ms_type).data()), color);
 }
 
 void set_flags_for_full_knowledge(lore_type *lore_ptr)

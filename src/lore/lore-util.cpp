@@ -76,9 +76,55 @@ bool lore_type::is_blow_damage_known(int num_blow) const
     return MonraceList::get_instance().get_monrace(this->monrace_id).is_blow_damage_known(num_blow);
 }
 
+term_color_type lore_type::get_speed_color() const
+{
+    if (this->speed > 199) {
+        return TERM_YELLOW;
+    } else if (this->speed > 189) {
+        return TERM_YELLOW;
+    } else if (this->speed > STANDARD_SPEED) {
+        if (this->speed > 149) {
+            return TERM_VIOLET;
+        } else if (this->speed > 144) {
+            return TERM_RED;
+        } else if (this->speed > 139) {
+            return TERM_L_RED;
+        } else if (this->speed > 134) {
+            return TERM_ORANGE;
+        } else if (this->speed > 129) {
+            return TERM_UMBER;
+        } else if (this->speed > 124) {
+            return TERM_L_UMBER;
+        } else if (this->speed < 115) {
+            return TERM_L_GREEN;
+        } else if (this->speed < 120) {
+            return TERM_YELLOW;
+        } else {
+            return TERM_L_RED;
+        }
+    } else if (this->speed < STANDARD_SPEED) {
+        if (this->speed < 86) {
+            return TERM_L_GREEN;
+        } else if (this->speed < 91) {
+            return TERM_GREEN;
+        } else if (this->speed < 96) {
+            return TERM_L_BLUE;
+        } else if (this->speed > 105) {
+            return TERM_WHITE;
+        } else if (this->speed > 100) {
+            return TERM_BLUE;
+        } else {
+            return TERM_L_BLUE;
+        }
+    } else {
+        return TERM_WHITE;
+    }
+}
+
 std::vector<lore_msg> lore_type::build_speed_description() const
 {
     std::vector<lore_msg> texts;
+    const auto speed_color = this->get_speed_color();
 #ifdef JP
 #else
     texts.emplace_back("moves");
@@ -86,43 +132,43 @@ std::vector<lore_msg> lore_type::build_speed_description() const
     const auto random_movement_description = this->build_random_movement_description();
     texts.insert(texts.end(), random_movement_description.begin(), random_movement_description.end());
     if (this->speed > 199) {
-        texts.emplace_back(_("光速で", " at light speed"), TERM_YELLOW);
+        texts.emplace_back(_("光速で", " at light speed"), speed_color);
     } else if (this->speed > 189) {
-        texts.emplace_back(_("亜光速で", " at sub-light speed"), TERM_YELLOW);
+        texts.emplace_back(_("亜光速で", " at sub-light speed"), speed_color);
     } else if (this->speed > STANDARD_SPEED) {
         if (this->speed > 149) {
-            texts.emplace_back(_("信じ難いほど", " incredibly"), TERM_VIOLET);
+            texts.emplace_back(_("信じ難いほど", " incredibly"), speed_color);
         } else if (this->speed > 144) {
-            texts.emplace_back(_("音速よりも", " inexplicably"), TERM_RED);
+            texts.emplace_back(_("音速よりも", " inexplicably"), speed_color);
         } else if (this->speed > 139) {
-            texts.emplace_back(_("悪夢的に", " nightmarely"), TERM_L_RED);
+            texts.emplace_back(_("悪夢的に", " nightmarely"), speed_color);
         } else if (this->speed > 134) {
-            texts.emplace_back(_("猛烈に", " extremely"), TERM_ORANGE);
+            texts.emplace_back(_("猛烈に", " extremely"), speed_color);
         } else if (this->speed > 129) {
-            texts.emplace_back(_("非常に", " very"), TERM_UMBER);
+            texts.emplace_back(_("非常に", " very"), speed_color);
         } else if (this->speed > 124) {
-            texts.emplace_back(_("かなり", " fairly"), TERM_L_UMBER);
+            texts.emplace_back(_("かなり", " fairly"), speed_color);
         } else if (this->speed < 115) {
-            texts.emplace_back(_("僅かに", " slightly"), TERM_L_GREEN);
+            texts.emplace_back(_("僅かに", " slightly"), speed_color);
         } else if (this->speed < 120) {
-            texts.emplace_back(_("やや", " somewhat"), TERM_YELLOW);
+            texts.emplace_back(_("やや", " somewhat"), speed_color);
         }
-        texts.emplace_back(_("素早く", " quickly"), TERM_L_RED);
+        texts.emplace_back(_("素早く", " quickly"), speed_color);
     } else if (this->speed < STANDARD_SPEED) {
         if (this->speed < 86) {
-            texts.emplace_back(_("信じ難いほど", " incredibly"), TERM_L_GREEN);
+            texts.emplace_back(_("信じ難いほど", " incredibly"), speed_color);
         } else if (this->speed < 91) {
-            texts.emplace_back(_("非常に", " very"), TERM_GREEN);
+            texts.emplace_back(_("非常に", " very"), speed_color);
         } else if (this->speed < 96) {
-            texts.emplace_back(_("かなり", " fairly"), TERM_L_BLUE);
+            texts.emplace_back(_("かなり", " fairly"), speed_color);
         } else if (this->speed > 105) {
-            texts.emplace_back(_("僅かに", " slightly"));
+            texts.emplace_back(_("僅かに", " slightly"), speed_color);
         } else if (this->speed > 100) {
-            texts.emplace_back(_("やや", " somewhat"), TERM_BLUE);
+            texts.emplace_back(_("やや", " somewhat"), speed_color);
         }
-        texts.emplace_back(_("ゆっくりと", " slowly"), TERM_L_BLUE);
+        texts.emplace_back(_("ゆっくりと", " slowly"), speed_color);
     } else {
-        texts.emplace_back(_("普通の速さで", " at normal speed"));
+        texts.emplace_back(_("普通の速さで", " at normal speed"), speed_color);
     }
 
 #ifdef JP
