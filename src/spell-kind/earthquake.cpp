@@ -11,6 +11,7 @@
 #include "monster/monster-description-types.h"
 #include "monster/monster-status-setter.h"
 #include "monster/monster-update.h"
+#include "monster/monster-util.h"
 #include "player/player-damage.h"
 #include "player/player-move.h"
 #include "player/player-status-flags.h"
@@ -174,19 +175,6 @@ tl::optional<Pos2D> decide_monster_dodge_position(const FloorType &floor, const 
         ranges::to<std::vector<Pos2D>>();
 
     return pos_candidates.empty() ? tl::nullopt : tl::make_optional(rand_choice(pos_candidates));
-}
-
-void move_monster_to(CreatureEntity &creature, CreatureEntity &monster, const Pos2D &pos_to)
-{
-    auto &floor = *creature.get_floor();
-    const auto pos_from = monster.get_position();
-    auto &grid_from = floor.get_grid(pos_from);
-    auto &grid_to = floor.get_grid(pos_to);
-    grid_to.m_idx = std::exchange(grid_from.m_idx, {});
-    monster.set_position(pos_to);
-    update_monster(creature, grid_to.m_idx, true);
-    lite_spot(creature, pos_from);
-    lite_spot(creature, pos_to);
 }
 
 bool process_monster_damage(CreatureEntity &creature, CreatureEntity &monster, bool has_dodged)

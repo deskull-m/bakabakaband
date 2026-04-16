@@ -57,3 +57,4 @@ void get_mon_num_prep_bounty(CreatureEntity &creature);
 void mark_monsters_present(CreatureEntity &creature);
 bool is_player(MONSTER_IDX m_idx);
 bool is_monster(MONSTER_IDX m_idx);
+void move_monster_to(CreatureEntity &creature, CreatureEntity &monster, const Pos2D &pos_to);

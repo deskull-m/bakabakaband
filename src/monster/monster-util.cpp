@@ -2,6 +2,7 @@
 #include "dungeon/dungeon-flag-types.h"
 #include "dungeon/quest.h"
 #include "game-option/cheat-options.h"
+#include "grid/grid.h"
 #include "monster-floor/place-monster-types.h"
 #include "monster-race/monster-kind-mask.h"
 #include "monster-race/monster-race-hook.h"
@@ -9,6 +10,7 @@
 #include "monster-race/race-flags-resistance.h"
 #include "monster-race/race-misc-flags.h"
 #include "monster/monster-info.h"
+#include "monster/monster-update.h"
 #include "mspell/summon-checker.h"
 #include "spell/summon-types.h"
 #include "system/angband-exceptions.h"
@@ -742,4 +744,23 @@ bool is_player(MONSTER_IDX m_idx)
 bool is_monster(MONSTER_IDX m_idx)
 {
     return m_idx > 0;
+}
+
+/*!
+ * @brief モンスターを指定位置へ移動する（ノックバック・地震逃げ共通処理）
+ * @param creature プレイヤー（視点クリーチャー）
+ * @param monster 移動するモンスター
+ * @param pos_to 移動先座標
+ */
+void move_monster_to(CreatureEntity &creature, CreatureEntity &monster, const Pos2D &pos_to)
+{
+    auto &floor = *creature.get_floor();
+    const auto pos_from = monster.get_position();
+    auto &grid_from = floor.get_grid(pos_from);
+    auto &grid_to = floor.get_grid(pos_to);
+    grid_to.m_idx = std::exchange(grid_from.m_idx, {});
+    monster.set_position(pos_to);
+    update_monster(creature, grid_to.m_idx, true);
+    lite_spot(creature, pos_from);
+    lite_spot(creature, pos_to);
 }
