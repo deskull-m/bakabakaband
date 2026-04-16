@@ -96,6 +96,7 @@
 #include "io/files-util.h"
 #include "locale/japanese.h"
 #include "locale/utf-8.h"
+#include "main-unix/unix-music.h"
 #include "main-unix/x11-type-string.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
@@ -1907,6 +1908,51 @@ static errr game_term_xtra_x11_sound(int v)
 }
 
 /*
+ * @brief Initialize music
+ * @detail this function called when music play requested first
+ *  because it must be called after init_angband() and store the game data
+ */
+static void init_music()
+{
+    return unix_music::init_music(path_build(ANGBAND_DIR_XTRA, "music"));
+}
+
+/*
+ * Hack -- play a music
+ */
+static auto is_musicplayer_initialized = false;
+
+static errr game_term_xtra_x11_music(int n, int v)
+{
+    if (!use_music) {
+        return false;
+    }
+
+    if (!is_musicplayer_initialized) {
+        init_music();
+    }
+
+    return unix_music::play_music(n, v);
+}
+
+/*!
+ * @brief Hack -- play a music matches a situation
+ */
+static bool game_term_xtra_x11_scene(int v)
+{
+    if (!use_music) {
+        return false;
+    }
+
+    if (!is_musicplayer_initialized) {
+        init_music();
+    }
+
+    unix_music::play_music_scene(v);
+    return true;
+}
+
+/*
  * Handle "activation" of a term
  */
 static errr game_term_xtra_x11_level(int v)
@@ -1956,6 +2002,21 @@ static errr game_term_xtra_x11(int n, int v)
         return 0;
     case TERM_XTRA_SOUND:
         return game_term_xtra_x11_sound(v);
+
+        // music volume is not implemented for now
+    case TERM_XTRA_MUSIC_BASIC:
+    case TERM_XTRA_MUSIC_DUNGEON:
+    case TERM_XTRA_MUSIC_QUEST:
+    case TERM_XTRA_MUSIC_TOWN:
+    case TERM_XTRA_MUSIC_MONSTER: {
+        return game_term_xtra_x11_music(n, v) ? 0 : 1;
+    }
+    case TERM_XTRA_MUSIC_MUTE:
+        unix_music::stop_music();
+        return 0;
+    case TERM_XTRA_SCENE: {
+        return game_term_xtra_x11_scene(v) ? 0 : 1;
+    }
 #ifdef USE_XFT
     case TERM_XTRA_FRESH:
         Metadpy_update(1, 1, 0);
@@ -2236,6 +2297,10 @@ static void game_term_nuke_x11(term_type *)
         }
 #endif
         angband_terms[i] = nullptr;
+    }
+
+    if (use_music) {
+        unix_music::stop_music();
     }
 
     if (Metadpy->xim) {
@@ -2595,6 +2660,7 @@ errr init_x11(int argc, char *argv[])
     if (arg_sound) {
         init_sound();
     }
+    use_music = arg_music;
 
 #ifndef USE_XFT
     char filename[1024]{};
