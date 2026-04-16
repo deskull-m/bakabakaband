@@ -97,6 +97,7 @@
 #include "locale/japanese.h"
 #include "locale/utf-8.h"
 #include "main-unix/unix-music.h"
+#include "main-unix/unix-sound.h"
 #include "main-unix/x11-type-string.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
@@ -1868,25 +1869,13 @@ static errr CheckEvent(bool wait)
 }
 
 /*
- * An array of sound file names
- */
-static std::map<SoundKind, std::string> sound_files;
-
-/*
  * Initialize sound
  */
 static void init_sound()
 {
-    const auto &dir_xtra_sound = path_build(ANGBAND_DIR_XTRA, "sound");
-    constexpr EnumRange<SoundKind> sound_kinds(SoundKind::HIT, SoundKind::MAX);
-    for (const auto sk : sound_kinds) {
-        std::string wav = sound_names.at(sk);
-        wav.append(".wav");
-        const auto &path = path_build(dir_xtra_sound, wav);
-        sound_files[sk] = std::filesystem::exists(path) ? path.string() : "";
-    }
+    const std::filesystem::path sound_player = "./playwave.sh";
 
-    use_sound = true;
+    use_sound = unix_sound::init_sound(path_build(ANGBAND_DIR_XTRA, "sound"), sound_player);
     return;
 }
 
@@ -1898,13 +1887,11 @@ static errr game_term_xtra_x11_sound(int v)
     if (!use_sound) {
         return 1;
     }
-    if ((v < 0) || (v >= enum2i(SoundKind::MAX))) {
-        return 1;
+    auto ret = unix_sound::play_sound(v);
+    if (ret) {
+        return 0;
     }
-
-    std::string buf = "./playwave.sh ";
-    buf.append(sound_files.at(i2enum<SoundKind>(v))).append("\n");
-    return system(buf.data()) < 0;
+    return 1;
 }
 
 /*
@@ -2301,6 +2288,10 @@ static void game_term_nuke_x11(term_type *)
 
     if (use_music) {
         unix_music::stop_music();
+    }
+
+    if (use_sound) {
+        unix_sound::finalize_sound();
     }
 
     if (Metadpy->xim) {
