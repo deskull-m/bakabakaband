@@ -99,11 +99,11 @@ static void erase_wall(FloorType &floor, const Pos2D &pos)
     auto &grid = floor.get_grid(pos);
     const auto &terrain = grid.get_terrain(TerrainKind::MIMIC_RAW);
     grid.info &= ~(CAVE_ROOM | CAVE_ICKY);
-    if ((grid.mimic == 0) || terrain.flags.has_not(TerrainCharacteristics::HURT_DISI)) {
+    if ((grid.mimic == 0) || terrain.flags.has_not(TerrainCharacteristics::CAN_DISINTEGRATE)) {
         return;
     }
 
-    grid.mimic = floor.get_dungeon_definition().convert_terrain_id(grid.mimic, TerrainCharacteristics::HURT_DISI);
+    grid.mimic = floor.get_dungeon_definition().convert_terrain_id(grid.mimic, TerrainCharacteristics::CAN_DISINTEGRATE);
     const auto &terrain_changed = grid.get_terrain(TerrainKind::MIMIC_RAW);
     if (terrain_changed.flags.has_not(TerrainCharacteristics::REMEMBER)) {
         grid.info &= ~(CAVE_MARK);
@@ -150,8 +150,8 @@ bool vanish_dungeon(CreatureEntity &creature)
             }
         }
 
-        if (terrrain.flags.has(TerrainCharacteristics::HURT_DISI)) {
-            cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::HURT_DISI);
+        if (terrrain.flags.has(TerrainCharacteristics::CAN_DISINTEGRATE)) {
+            cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::CAN_DISINTEGRATE);
         }
     }
 

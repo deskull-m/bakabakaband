@@ -460,7 +460,7 @@ void change_floor(CreatureEntity &creature)
             const auto &terrain = grid.get_terrain();
 
             // 階段かどうかをチェック
-            if (terrain.flags.has_any_of({ TerrainCharacteristics::LESS, TerrainCharacteristics::MORE })) {
+            if (terrain.flags.has_any_of({ TerrainCharacteristics::UP_STAIRS, TerrainCharacteristics::DOWN_STAIRS })) {
                 const auto floor_terrain_id = dungeon.select_floor_terrain_id();
                 set_terrain_id_to_grid(creature, p_pos, floor_terrain_id);
                 msg_print(_("階段が消え去った。", "The staircase vanishes."));

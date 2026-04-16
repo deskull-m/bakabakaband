@@ -306,12 +306,12 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
                 do_cmd_attack(creature, pos.y, pos.x, HISSATSU_HAGAN);
             }
 
-            if (!floor.has_terrain_characteristics(pos, TerrainCharacteristics::HURT_ROCK)) {
+            if (!floor.has_terrain_characteristics(pos, TerrainCharacteristics::STONE)) {
                 break;
             }
 
             /* Destroy the feature */
-            cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::HURT_ROCK);
+            cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::STONE);
             RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         }
         break;
