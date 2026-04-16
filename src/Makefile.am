@@ -698,6 +698,7 @@ hengband_SOURCES = \
 	info-reader/random-grid-effect-types.h \
 	info-reader/skill-reader.cpp info-reader/skill-reader.h \
 	info-reader/spell-reader.cpp info-reader/spell-reader.h \
+	info-reader/terrain-reader.cpp info-reader/terrain-reader.h \
 	info-reader/vault-reader.cpp info-reader/vault-reader.h \
 	info-reader/vault-info-tokens-table.h \
 	\
