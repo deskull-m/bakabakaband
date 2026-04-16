@@ -74,7 +74,7 @@ static bool process_wall(CreatureEntity &creature, turn_flags *turn_flags_ptr, c
     const auto &monrace = monster.get_monrace();
     auto can_kill_wall = monrace.feature_flags.has(Mft::KILL_WALL);
     can_kill_wall &= can_cross ? terrain.flags.has_not(Tc::LOS) : !turn_flags_ptr->is_riding_mon;
-    can_kill_wall &= terrain.flags.has(Tc::HURT_DISI);
+    can_kill_wall &= terrain.flags.has(Tc::CAN_DISINTEGRATE);
     can_kill_wall &= terrain.flags.has_not(Tc::PERMANENT);
     can_kill_wall &= check_hp_for_terrain_destruction(terrain, monster);
     if (can_kill_wall) {
@@ -321,7 +321,7 @@ static bool process_post_dig_wall(CreatureEntity &creature, turn_flags *turn_fla
         }
     }
 
-    cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::HURT_DISI);
+    cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::CAN_DISINTEGRATE);
 
     if (!monster.is_valid()) {
         auto &rfu = RedrawingFlagsUpdater::get_instance();

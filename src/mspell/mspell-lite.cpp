@@ -124,7 +124,7 @@ static void feature_projection(const FloorType &floor, msa_type *msa_ptr)
         return;
     }
 
-    if (msa_ptr->ability_flags.has(MonsterAbilityType::BR_DISI) && terrain.flags.has(TerrainCharacteristics::HURT_DISI) && one_in_(2)) {
+    if (msa_ptr->ability_flags.has(MonsterAbilityType::BR_DISI) && terrain.flags.has(TerrainCharacteristics::CAN_DISINTEGRATE) && one_in_(2)) {
         msa_ptr->do_spell = DO_SPELL_BR_DISI;
         return;
     }

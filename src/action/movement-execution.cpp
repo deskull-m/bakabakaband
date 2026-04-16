@@ -143,7 +143,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
 
     auto &terrain = grid.get_terrain();
     auto p_can_kill_walls = has_kill_wall(creature);
-    p_can_kill_walls &= terrain.flags.has(TerrainCharacteristics::HURT_DISI);
+    p_can_kill_walls &= terrain.flags.has(TerrainCharacteristics::CAN_DISINTEGRATE);
     p_can_kill_walls &= !p_can_enter || terrain.flags.has_not(TerrainCharacteristics::LOS);
     p_can_kill_walls &= terrain.flags.has_not(TerrainCharacteristics::PERMANENT);
     std::string m_name;
@@ -347,7 +347,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
     }
 
     if (p_can_kill_walls) {
-        cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::HURT_DISI);
+        cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::CAN_DISINTEGRATE);
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
     }
 

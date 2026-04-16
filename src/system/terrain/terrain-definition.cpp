@@ -17,8 +17,8 @@ const std::unordered_map<TerrainCharacteristics, EnumClassFlagGroup<TerrainActio
     { TerrainCharacteristics::BASH, { TerrainAction::CRASH_GLASS } },
     { TerrainCharacteristics::DISARM, { TerrainAction::DESTROY } },
     { TerrainCharacteristics::TUNNEL, { TerrainAction::DESTROY, TerrainAction::CRASH_GLASS } },
-    { TerrainCharacteristics::HURT_ROCK, { TerrainAction::DESTROY, TerrainAction::CRASH_GLASS } },
-    { TerrainCharacteristics::HURT_DISI, { TerrainAction::DESTROY, TerrainAction::NO_DROP, TerrainAction::CRASH_GLASS } },
+    { TerrainCharacteristics::STONE, { TerrainAction::DESTROY, TerrainAction::CRASH_GLASS } },
+    { TerrainCharacteristics::CAN_DISINTEGRATE, { TerrainAction::DESTROY, TerrainAction::NO_DROP, TerrainAction::CRASH_GLASS } },
 };
 }
 

@@ -92,7 +92,7 @@ void do_cmd_go_up(CreatureEntity &creature)
         return;
     }
 
-    if (terrain.flags.has_not(TerrainCharacteristics::LESS)) {
+    if (terrain.flags.has_not(TerrainCharacteristics::UP_STAIRS)) {
         msg_print(_("ここには上り階段が見当たらない。", "I see no up staircase here."));
         return;
     }
@@ -230,7 +230,7 @@ void do_cmd_go_down(CreatureEntity &creature)
         return;
     }
 
-    if (terrain.flags.has_not(TerrainCharacteristics::MORE)) {
+    if (terrain.flags.has_not(TerrainCharacteristics::DOWN_STAIRS)) {
         msg_print(_("ここには下り階段が見当たらない。", "I see no down staircase here."));
         return;
     }

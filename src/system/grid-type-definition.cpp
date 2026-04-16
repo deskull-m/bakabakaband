@@ -174,8 +174,8 @@ bool Grid::is_hidden_door() const
 
 bool Grid::is_acceptable_target() const
 {
-    auto is_acceptable = this->has(TerrainCharacteristics::LESS);
-    is_acceptable |= this->has(TerrainCharacteristics::MORE);
+    auto is_acceptable = this->has(TerrainCharacteristics::UP_STAIRS);
+    is_acceptable |= this->has(TerrainCharacteristics::DOWN_STAIRS);
     is_acceptable |= this->has(TerrainCharacteristics::QUEST_ENTER);
     is_acceptable |= this->has(TerrainCharacteristics::QUEST_EXIT);
     is_acceptable |= this->has(TerrainCharacteristics::STORE);
@@ -247,7 +247,7 @@ bool Grid::has_special_terrain() const
 bool Grid::can_block_disintegration() const
 {
     const auto can_reach = this->has(TerrainCharacteristics::PROJECTION);
-    auto can_disintegrate = this->has(TerrainCharacteristics::HURT_DISI);
+    auto can_disintegrate = this->has(TerrainCharacteristics::CAN_DISINTEGRATE);
     can_disintegrate &= !this->has(TerrainCharacteristics::PERMANENT);
     return !can_reach && !can_disintegrate;
 }

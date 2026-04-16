@@ -27,8 +27,8 @@ enum class TerrainCharacteristics {
     TRAP = 19, /*!< トラップのある地形である */
     STAIRS = 20, /*!< 階段のある地形である */
     RUNE_PROTECTION = 21, /*!< 守りのルーンが張られた地形である */
-    LESS = 22, /*!< 階上に通じる地形である */
-    MORE = 23, /*!< 階下に通じる地形である */
+    UP_STAIRS = 22, /*!< 階上に通じる地形である */
+    DOWN_STAIRS = 23, /*!< 階下に通じる地形である */
     AVOID_RUN = 24, /*!< 自動移動機能時に障害として迂回すべき地形である */
     FLOOR = 25, /*!< 床のある地形である */
     WALL = 26, /*!< 壁のある地形である */
@@ -43,7 +43,7 @@ enum class TerrainCharacteristics {
     SHALLOW = 41, /*!< 浅い地形である */
     DEEP = 42, /*!< 深い地形である */
     POISON_PUDDLE = 43, /*!< 毒溜まりがある */
-    HURT_ROCK = 44, /*!< 岩石溶解の対象となる地形である */
+    STONE = 44, /*!< 岩石溶解の対象となる地形である */
     COLD_PUDDLE = 48, /*!< 冷気溜まりがある */
     ACID_PUDDLE = 49, /*!< 酸溜まりがある */
     ELEC_PUDDLE = 51, /*!< 接地部が帯電している */
@@ -54,7 +54,7 @@ enum class TerrainCharacteristics {
     TREE = 83, /*!< 木の生えた地形である */
     PLANT = 88, //!< 植物の生えた地形である
     SPECIAL = 96, /*!< クエストやダンジョンに関わる特別な地形である */
-    HURT_DISI = 97, /*!< 分解属性の対象となる地形である */
+    CAN_DISINTEGRATE = 97, /*!< 分解属性の対象となる地形である */
     QUEST_ENTER = 98, /*!< クエストの入り口である */
     QUEST_EXIT = 99, /*!< クエストの出口である */
     QUEST = 100, /*!< クエストに関する地形である */

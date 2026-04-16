@@ -484,7 +484,7 @@ TerrainTag FloorType::select_random_trap() const
             continue;
         }
 
-        if (terrain.flags.has_not(TerrainCharacteristics::MORE)) {
+        if (terrain.flags.has_not(TerrainCharacteristics::DOWN_STAIRS)) {
             return tag;
         }
 
