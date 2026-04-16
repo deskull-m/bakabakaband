@@ -545,6 +545,7 @@
     <ClCompile Include="..\..\src\info-reader\race-reader.cpp" />
     <ClCompile Include="..\..\src\info-reader\skill-reader.cpp" />
     <ClCompile Include="..\..\src\info-reader\spell-reader.cpp" />
+    <ClCompile Include="..\..\src\info-reader\terrain-reader.cpp" />
     <ClCompile Include="..\..\src\info-reader\vault-reader.cpp" />
     <ClCompile Include="..\..\src\inventory\floor-item-getter.cpp" />
     <ClCompile Include="..\..\src\inventory\item-selection-util.cpp" />
@@ -1448,6 +1449,7 @@
     <ClInclude Include="..\..\src\info-reader\random-grid-effect-types.h" />
     <ClInclude Include="..\..\src\info-reader\skill-reader.h" />
     <ClInclude Include="..\..\src\info-reader\spell-reader.h" />
+    <ClInclude Include="..\..\src\info-reader\terrain-reader.h" />
     <ClInclude Include="..\..\src\info-reader\vault-reader.h" />
     <ClInclude Include="..\..\src\inventory\floor-item-getter.h" />
     <ClInclude Include="..\..\src\inventory\inventory-slot-types.h" />

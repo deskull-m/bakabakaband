@@ -10,7 +10,6 @@
 #include "info-reader/baseitem-reader.h"
 #include "info-reader/dungeon-reader.h"
 #include "info-reader/ego-reader.h"
-#include "info-reader/feature-reader.h"
 #include "info-reader/fixed-map-parser.h"
 #include "info-reader/general-parser.h"
 #include "info-reader/info-reader-util.h"
@@ -19,6 +18,7 @@
 #include "info-reader/party-reader.h"
 #include "info-reader/race-reader.h"
 #include "info-reader/skill-reader.h"
+#include "info-reader/terrain-reader.h"
 #include "info-reader/vault-reader.h"
 #include "io/files-util.h"
 #include "io/uid-checker.h"
@@ -132,7 +132,7 @@ static void init_info(std::string_view filename, angband_header &head, InfoType 
  * even if the string happens to be empty (everyone has a unique '\0').
  */
 template <typename InfoType>
-static void init_json(std::string_view filename, std::string_view keyname, angband_header &head, InfoType &info, JSONParser parser)
+static void init_json(std::string_view filename, std::string_view keyname, angband_header &head, InfoType &info, JSONParser parser, std::function<void()> retouch = nullptr)
 {
     const auto path = path_build(ANGBAND_DIR_EDIT, filename);
     std::ifstream ifs(path);
@@ -161,6 +161,10 @@ static void init_json(std::string_view filename, std::string_view keyname, angba
 
     if constexpr (HasShrinkToFit<InfoType>) {
         info.shrink_to_fit();
+    }
+
+    if (retouch) {
+        retouch();
     }
 }
 
@@ -226,9 +230,8 @@ void init_egos_info()
 void init_terrains_info()
 {
     init_header(&terrains_header);
-    auto *parser = parse_terrains_info;
     auto &terrains = TerrainList::get_instance();
-    init_info("TerrainDefinitions.txt", terrains_header, terrains, parser, [&terrains] { terrains.retouch(); });
+    init_json("TerrainDefinitions.jsonc", "terrains", terrains_header, terrains, parse_terrains_json_info, [&terrains] { terrains.retouch(); });
 }
 
 /*!
