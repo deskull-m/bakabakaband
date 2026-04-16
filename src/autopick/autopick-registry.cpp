@@ -165,9 +165,11 @@ bool autopick_autoregister(CreatureEntity &creature, const ItemEntity *o_ptr)
         creature.autopick_autoregister = false;
     }
 
-    pref_fff = angband_fopen(path_pref, FileOpenMode::APPEND);
+    /* ファイルが存在しなかった場合はプレイヤー個別の新規ファイルを作成する */
+    const auto path_pref_append = !path_pref.empty() ? path_pref : path_build(ANGBAND_DIR_USER, pickpref_filename(creature.base_name, PT_WITH_PNAME));
+    pref_fff = angband_fopen(path_pref_append, FileOpenMode::APPEND);
     if (!pref_fff) {
-        const auto filename_pref = path_pref.string();
+        const auto filename_pref = path_pref_append.string();
         msg_format(_("%s を開くことができませんでした。", "Failed to open %s."), filename_pref.data());
         msg_erase();
         return false;
