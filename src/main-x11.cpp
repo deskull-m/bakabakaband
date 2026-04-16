@@ -90,6 +90,7 @@
  */
 
 #include "cmd-io/macro-util.h"
+#include "core/special-internal-keys.h"
 #include "game-option/runtime-arguments.h"
 #include "game-option/special-options.h"
 #include "io/files-util.h"
@@ -1396,7 +1397,8 @@ static void copy_x11_end(const Time time)
     }
 }
 
-static Atom xa_targets, xa_timestamp, xa_text, xa_compound_text, xa_utf8;
+static Atom xa_targets, xa_timestamp, xa_text, xa_compound_text, xa_utf8,
+    xa_wm_protocols, xa_delete_window;
 
 /*
  * Set the required variable atoms at start-up to avoid errors later.
@@ -1408,6 +1410,17 @@ static void set_atoms(void)
     xa_text = XInternAtom(DPY, "TEXT", False);
     xa_compound_text = XInternAtom(DPY, "COMPOUND_TEXT", False);
     xa_utf8 = XInternAtom(DPY, "UTF8_STRING", False);
+    xa_wm_protocols = XInternAtom(DPY, "WM_PROTOCOLS", False);
+    xa_delete_window = XInternAtom(DPY, "WM_DELETE_WINDOW", False);
+}
+
+/*!
+ * @brief Register window manager protocols
+ */
+static void set_wm_protocols(Window xid)
+{
+    Atom protocols[] = { xa_delete_window };
+    XSetWMProtocols(DPY, xid, protocols, 1);
 }
 
 static Atom request_target = 0;
@@ -1777,6 +1790,21 @@ static errr CheckEvent(bool wait)
     case UnmapNotify: {
         Infowin->mapped = 0;
         game_term->mapped_flag = false;
+        break;
+    }
+    case ClientMessage: {
+        /*!
+         * @brief ウィンドウ閉じるボタンの処理
+         * @note X11 にはウィンドウ強制終了時に発生する DestroyNotify イベントもあるが、
+         *  追加のキー入力が不可能になるため通常の終了シーケンスを実行できない。
+         *  メインウィンドウの閉じるボタンが押された場合に SPECIAL_KEY_QUIT を送る。
+         */
+        if (xev->xclient.message_type == xa_wm_protocols && (Atom)xev->xclient.data.l[0] == xa_delete_window) {
+            if (td == &data[0]) { // メインウィンドウへのリクエストか確認
+                term_activate(&old_td->t);
+                term_key_push(SPECIAL_KEY_QUIT);
+            }
+        }
         break;
     }
     case ConfigureNotify: {
@@ -2545,6 +2573,7 @@ errr init_x11(int argc, char *argv[])
     for (i = 0; i < num_term; i++) {
         term_data *td = &data[i];
         term_data_init(td, i);
+        set_wm_protocols(td->win->win);
         angband_terms[i] = game_term;
     }
 
