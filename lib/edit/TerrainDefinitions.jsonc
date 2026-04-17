@@ -470,7 +470,7 @@
       },
       "symbol": {
         "character": "^",
-        "color": "Slate",
+        "color": "Gray",
         "lit": true,
       },
       "mimic": null,
@@ -504,7 +504,7 @@
       },
       "symbol": {
         "character": "^",
-        "color": "Slate",
+        "color": "Gray",
         "lit": true,
       },
       "mimic": "TRAP_PIT",
@@ -538,7 +538,7 @@
       },
       "symbol": {
         "character": "^",
-        "color": "Slate",
+        "color": "Gray",
         "lit": true,
       },
       "mimic": "TRAP_PIT",
@@ -1584,7 +1584,7 @@
       },
       "symbol": {
         "character": "%",
-        "color": "Slate",
+        "color": "Gray",
         "lit": true,
       },
       "mimic": null,
@@ -1642,7 +1642,7 @@
       },
       "symbol": {
         "character": "%",
-        "color": "Slate",
+        "color": "Gray",
         "lit": true,
       },
       "mimic": "MAGMA_VEIN",
@@ -2071,7 +2071,7 @@
       },
       "symbol": {
         "character": "*",
-        "color": "Light Slate",
+        "color": "Light Gray",
         "lit": false,
       },
       "mimic": null,
@@ -2097,7 +2097,7 @@
       },
       "symbol": {
         "character": "*",
-        "color": "Light Slate",
+        "color": "Light Gray",
         "lit": false,
       },
       "mimic": null,
@@ -2149,7 +2149,7 @@
       },
       "symbol": {
         "character": "*",
-        "color": "Light Dark",
+        "color": "Dark Gray",
         "lit": false,
       },
       "mimic": null,
@@ -2202,7 +2202,7 @@
       },
       "symbol": {
         "character": "2",
-        "color": "Slate",
+        "color": "Gray",
         "lit": false,
       },
       "mimic": null,
@@ -2337,7 +2337,7 @@
       },
       "symbol": {
         "character": "7",
-        "color": "Light Dark",
+        "color": "Dark Gray",
         "lit": false,
       },
       "mimic": null,
@@ -2540,7 +2540,7 @@
       },
       "symbol": {
         "character": "#",
-        "color": "Light Dark",
+        "color": "Dark Gray",
         "lit": false,
       },
       "mimic": null,
@@ -2602,7 +2602,7 @@
       },
       "symbol": {
         "character": "^",
-        "color": "Light Dark",
+        "color": "Dark Gray",
         "lit": true,
       },
       "mimic": null,
@@ -3879,7 +3879,7 @@
       },
       "symbol": {
         "character": "*",
-        "color": "Light Slate",
+        "color": "Light Gray",
         "lit": false,
       },
       "mimic": null,
@@ -3993,7 +3993,7 @@
       },
       "symbol": {
         "character": "x",
-        "color": "Light Dark",
+        "color": "Dark Gray",
         "lit": false,
       },
       "mimic": null,
@@ -4142,7 +4142,7 @@
       },
       "symbol": {
         "character": "'",
-        "color": "Light Slate",
+        "color": "Light Gray",
         "lit": false,
       },
       "mimic": null,
@@ -4889,7 +4889,7 @@
       },
       "symbol": {
         "character": "%",
-        "color": "Slate",
+        "color": "Gray",
         "lit": true,
       },
       "mimic": null,
@@ -5245,7 +5245,7 @@
       },
       "symbol": {
         "character": "^",
-        "color": "Slate",
+        "color": "Gray",
         "lit": false,
       },
       "mimic": null,
@@ -5578,7 +5578,7 @@
       },
       "symbol": {
         "character": "#",
-        "color": "Light Slate",
+        "color": "Light Gray",
         "lit": false,
       },
       "mimic": null,
@@ -5660,7 +5660,7 @@
       },
       "symbol": {
         "character": ":",
-        "color": "Slate",
+        "color": "Gray",
         "lit": true,
       },
       "mimic": null,
@@ -5902,7 +5902,7 @@
       },
       "symbol": {
         "character": "~",
-        "color": "Slate",
+        "color": "Gray",
         "lit": true,
       },
       "mimic": null,
@@ -5930,7 +5930,7 @@
       },
       "symbol": {
         "character": "~",
-        "color": "Light Slate",
+        "color": "Light Gray",
         "lit": true,
       },
       "mimic": null,
@@ -6529,7 +6529,7 @@
       },
       "symbol": {
         "character": "#",
-        "color": "Light Slate",
+        "color": "Light Gray",
         "lit": true,
       },
       "mimic": null,
@@ -6555,7 +6555,7 @@
       },
       "symbol": {
         "character": "#",
-        "color": "Slate",
+        "color": "Gray",
         "lit": true,
       },
       "mimic": null,
@@ -6660,7 +6660,7 @@
       },
       "symbol": {
         "character": ":",
-        "color": "Slate",
+        "color": "Gray",
         "lit": true,
       },
       "mimic": null,
@@ -6732,7 +6732,7 @@
       },
       "symbol": {
         "character": ".",
-        "color": "Slate",
+        "color": "Gray",
         "lit": true,
       },
       "mimic": null,
@@ -6878,7 +6878,7 @@
       },
       "symbol": {
         "character": "^",
-        "color": "Slate",
+        "color": "Gray",
         "lit": true,
       },
       "mimic": "TRAP_JUMP_VOID",
@@ -6954,7 +6954,7 @@
       },
       "symbol": {
         "character": ".",
-        "color": "Slate",
+        "color": "Gray",
         "lit": true,
       },
       "mimic": null,
@@ -7483,7 +7483,7 @@
       },
       "symbol": {
         "character": "#",
-        "color": "Slate",
+        "color": "Gray",
         "lit": true,
       },
       "mimic": null,
@@ -7645,7 +7645,7 @@
       },
       "symbol": {
         "character": "#",
-        "color": "Light Dark",
+        "color": "Dark Gray",
         "lit": true,
       },
       "mimic": null,
@@ -7696,7 +7696,7 @@
       },
       "symbol": {
         "character": "^",
-        "color": "Slate",
+        "color": "Gray",
         "lit": true,
       },
       "mimic": null,
@@ -7753,7 +7753,7 @@
       },
       "symbol": {
         "character": "%",
-        "color": "Slate",
+        "color": "Gray",
         "lit": true,
       },
       "mimic": null,
