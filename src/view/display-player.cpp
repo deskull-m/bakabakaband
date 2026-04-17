@@ -48,6 +48,76 @@
 #include <string>
 
 /*!
+ * @brief モンスターのステータスを簡易表示する（プレイヤー表示フォーマットを流用）
+ * @param monster モンスターへの参照
+ */
+static void display_monster_status(CreatureEntity &monster)
+{
+    term_clear();
+
+    const auto &monrace = monster.get_monrace();
+    c_put_str(TERM_L_BLUE, monrace.name, 1, 1);
+
+    if (monster.is_named()) {
+        c_put_str(TERM_YELLOW, format(_("名前: %s", "Name: %s"), monster.name.data()), 2, 1);
+    } else {
+        c_put_str(TERM_SLATE, _("名前: 名無し", "Name: No Name"), 2, 1);
+    }
+
+    put_str(format(_("レベル: %d", "Level: %d"), monster.get_level()), 1, 40);
+    put_str(format(_("HP: %d/%d", "HP: %d/%d"), monster.hp, monster.maxhp), 3, 40);
+
+    int row_offset = 1;
+    if (monster.race != nullptr) {
+        put_str(format(_("種族: %s", "Race: %s"), monster.race->title.data()), 3 + row_offset, 1);
+    }
+
+    if (monster.pclass_ref != nullptr) {
+        put_str(format(_("職業: %s", "Class: %s"), monster.pclass_ref->title.data()), 3 + row_offset, 40);
+    }
+
+    put_str(format(_("経験値: %ld", "Exp: %ld"), (long)monster.exp), 4 + row_offset, 1);
+    put_str(format(_("所持金: %ld", "Gold: %ld"), (long)monster.au), 4 + row_offset, 40);
+
+    if (monster.race != nullptr && monster.ht > 0) {
+#ifdef JP
+        put_str(format("身長: %dcm  体重: %dkg", inch_to_cm(monster.ht), lb_to_kg(monster.wt)), 5 + row_offset, 1);
+#else
+        put_str(format("Height: %d  Weight: %d", monster.ht, monster.wt), 5 + row_offset, 1);
+#endif
+    }
+
+    int stat_col = 22;
+    int row = 6 + row_offset;
+
+    c_put_str(TERM_WHITE, _("能力", "Stat"), row, stat_col + 1);
+    c_put_str(TERM_BLUE, _("  基本", "  Base"), row, stat_col + 7);
+    c_put_str(TERM_L_GREEN, _("合計", "Total"), row, stat_col + _(21, 19));
+    c_put_str(TERM_YELLOW, _("現在", "Current"), row, stat_col + _(28, 26));
+
+    for (int i = 0; i < A_MAX; i++) {
+        if (monster.stat_cur[i] < monster.stat_max[i]) {
+            c_put_str(TERM_WHITE, stat_names_reduced[i], row + i + 1, stat_col + 1);
+        } else {
+            c_put_str(TERM_WHITE, stat_names[i], row + i + 1, stat_col + 1);
+        }
+
+        if (monster.stat_max[i] == monster.stat_max_max[i]) {
+            c_put_str(TERM_WHITE, "!", row + i + 1, _(stat_col + 6, stat_col + 4));
+        }
+
+        const auto stat_str = cnv_stat(monster.stat_max[i]);
+        c_put_str(TERM_BLUE, stat_str, row + i + 1, stat_col + 13 - stat_str.length());
+
+        c_put_str(TERM_L_GREEN, cnv_stat(monster.stat_max[i]), row + i + 1, stat_col + _(21, 19));
+
+        if (monster.stat_cur[i] < monster.stat_max[i]) {
+            c_put_str(TERM_YELLOW, cnv_stat(monster.stat_cur[i]), row + i + 1, stat_col + _(28, 26));
+        }
+    }
+}
+
+/*!
  * @brief
  * @param creature クリーチャーへの参照
  * @param mode ステータス表示モード
@@ -55,6 +125,11 @@
  */
 static bool display_player_info(CreatureEntity &creature, int mode)
 {
+    if (!creature.is_player()) {
+        display_monster_status(creature);
+        return true;
+    }
+
     if (mode == 2) {
         display_player_misc_info(creature);
         display_player_stat_info(creature);
@@ -299,20 +374,7 @@ tl::optional<int> display_player(CreatureEntity *creature_ptr, const int tmp_mod
     }
 
     display_player_basic_info(*creature_ptr);
-
-    // モンスターの場合も種族と職業を表示
-    if (!creature_ptr->is_player()) {
-        if (creature_ptr->race != nullptr) {
-            display_player_one_line(ENTRY_RACE, creature_ptr->race->title, TERM_L_BLUE);
-        }
-        if (creature_ptr->pclass_ref != nullptr) {
-            display_player_one_line(ENTRY_CLASS, creature_ptr->pclass_ref->title, TERM_L_BLUE);
-        }
-    }
-
-    if (creature_ptr->is_player()) {
-        display_magic_realms(*creature_ptr);
-    }
+    display_magic_realms(*creature_ptr);
     if (CreatureClass(*creature_ptr).equals(PlayerClassType::CHAOS_WARRIOR) || (creature_ptr->muta.has(PlayerMutationType::CHAOS_GIFT))) {
         display_player_one_line(ENTRY_PATRON, patron_list[creature_ptr->patron].name, TERM_L_BLUE);
     }
@@ -330,9 +392,7 @@ tl::optional<int> display_player(CreatureEntity *creature_ptr, const int tmp_mod
     display_player_stats(*creature_ptr);
     if (mode == 0) {
         display_player_middle(*creature_ptr);
-        if (creature_ptr->is_player()) {
-            display_player_various(*creature_ptr);
-        }
+        display_player_various(*creature_ptr);
         return tl::nullopt;
     }
 

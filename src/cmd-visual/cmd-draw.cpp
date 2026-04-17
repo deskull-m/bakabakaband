@@ -8,15 +8,10 @@
 #include "locale/japanese.h"
 #include "main/sound-of-music.h"
 #include "player-base/player-race.h"
-#include "player-info/class-info.h"
-#include "player-info/race-info.h"
 #include "player-info/race-types.h"
-#include "player/player-status-table.h"
-#include "player/player-status.h"
 #include "player/process-name.h"
 #include "racial/racial-android.h"
 #include "system/creature-entity.h"
-#include "system/monrace/monrace-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
@@ -163,103 +158,15 @@ static tl::optional<int> input_status_command(CreatureEntity &creature, int page
 }
 
 /*!
- * @brief モンスターのステータスを簡易表示する（プレイヤー表示フォーマットを流用）
- * @param monster_ptr モンスターへの参照ポインタ
- */
-static void display_monster_status(CreatureEntity *monster_ptr)
-{
-    term_clear();
-
-    // モンスター名とレベルを表示
-    const auto &monrace = monster_ptr->get_monrace();
-    c_put_str(TERM_L_BLUE, monrace.name, 1, 1);
-
-    // 名前を表示（名前がない場合はグレーアウトで「名無し」）
-    if (monster_ptr->is_named()) {
-        c_put_str(TERM_YELLOW, format(_("名前: %s", "Name: %s"), monster_ptr->name.data()), 2, 1);
-    } else {
-        c_put_str(TERM_SLATE, _("名前: 名無し", "Name: No Name"), 2, 1);
-    }
-
-    put_str(format(_("レベル: %d", "Level: %d"), monster_ptr->get_level()), 1, 40);
-    put_str(format(_("HP: %d/%d", "HP: %d/%d"), monster_ptr->hp, monster_ptr->maxhp), 3, 40);
-
-    // 種族情報を表示
-    int row_offset = 1;
-    if (monster_ptr->race != nullptr) {
-        put_str(format(_("種族: %s", "Race: %s"), monster_ptr->race->title.data()), 3 + row_offset, 1);
-    }
-
-    // 職業情報を表示
-    if (monster_ptr->pclass_ref != nullptr) {
-        put_str(format(_("職業: %s", "Class: %s"), monster_ptr->pclass_ref->title.data()), 3 + row_offset, 40);
-    }
-
-    // 経験値を表示
-    put_str(format(_("経験値: %ld", "Exp: %ld"), (long)monster_ptr->exp), 4 + row_offset, 1);
-
-    // 所持金を表示
-    put_str(format(_("所持金: %ld", "Gold: %ld"), (long)monster_ptr->au), 4 + row_offset, 40);
-
-    // 身長・体重を表示（種族が設定されている場合のみ）
-    if (monster_ptr->race != nullptr && monster_ptr->ht > 0) {
-#ifdef JP
-        put_str(format("身長: %dcm  体重: %dkg", inch_to_cm(monster_ptr->ht), lb_to_kg(monster_ptr->wt)), 5 + row_offset, 1);
-#else
-        put_str(format("Height: %d  Weight: %d", monster_ptr->ht, monster_ptr->wt), 5 + row_offset, 1);
-#endif
-    }
-
-    // 能力値表示（プレイヤーと同じフォーマット）
-    int stat_col = 22;
-    int row = 6 + row_offset;
-
-    // ヘッダー行
-    c_put_str(TERM_WHITE, _("能力", "Stat"), row, stat_col + 1);
-    c_put_str(TERM_BLUE, _("  基本", "  Base"), row, stat_col + 7);
-    c_put_str(TERM_L_GREEN, _("合計", "Total"), row, stat_col + _(21, 19));
-    c_put_str(TERM_YELLOW, _("現在", "Current"), row, stat_col + _(28, 26));
-
-    // 各能力値
-    for (int i = 0; i < A_MAX; i++) {
-        // 能力値名
-        if (monster_ptr->stat_cur[i] < monster_ptr->stat_max[i]) {
-            c_put_str(TERM_WHITE, stat_names_reduced[i], row + i + 1, stat_col + 1);
-        } else {
-            c_put_str(TERM_WHITE, stat_names[i], row + i + 1, stat_col + 1);
-        }
-
-        // 最大値マーク
-        if (monster_ptr->stat_max[i] == monster_ptr->stat_max_max[i]) {
-            c_put_str(TERM_WHITE, "!", row + i + 1, _(stat_col + 6, stat_col + 4));
-        }
-
-        // 基本値（stat_max）
-        const auto stat_str = cnv_stat(monster_ptr->stat_max[i]);
-        c_put_str(TERM_BLUE, stat_str, row + i + 1, stat_col + 13 - stat_str.length());
-
-        // 合計値
-        c_put_str(TERM_L_GREEN, cnv_stat(monster_ptr->stat_max[i]), row + i + 1, stat_col + _(21, 19));
-
-        // 現在値（一時的減少がある場合）
-        if (monster_ptr->stat_cur[i] < monster_ptr->stat_max[i]) {
-            c_put_str(TERM_YELLOW, cnv_stat(monster_ptr->stat_cur[i]), row + i + 1, stat_col + _(28, 26));
-        }
-    }
-
-    // 終了メッセージ
-    put_str(_("[ESCで終了]", "[Press ESC to exit]"), 23, 25);
-}
-
-/*!
  * @brief プレイヤーのステータス表示
  */
 void do_cmd_player_status(CreatureEntity *creature_ptr)
 {
-    // モンスターの場合は専用の表示
+    // モンスターの場合は display_player() に共通化した簡易表示のみを行う
     if (!creature_ptr->is_player()) {
         screen_save();
-        display_monster_status(creature_ptr);
+        (void)display_player(creature_ptr, 0);
+        put_str(_("[ESCで終了]", "[Press ESC to exit]"), 23, 25);
         inkey();
         screen_load();
         return;
