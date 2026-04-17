@@ -589,6 +589,15 @@ void make_character_dump(CreatureEntity &creature, FILE *fff)
     fmt::println(fff, fmt, AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL));
 
     dump_aux_player_status(creature, fff);
+
+    // モンスターはプレイヤー固有のダンプ項目を持たないため、最低限のダンプのみ出力する
+    if (!creature.is_player()) {
+        dump_aux_mutations(creature, fff);
+        const std::string checksum = get_check_sum().erase(48);
+        fmt::println(fff, _("  [チェックサム: \"{}\"]\n", "  [Check Sum: \"{}\"]\n"), checksum);
+        return;
+    }
+
     dump_aux_last_message(creature, fff);
     dump_aux_options(fff);
     dump_aux_recall(fff);

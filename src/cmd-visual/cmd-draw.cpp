@@ -106,6 +106,11 @@ static tl::optional<int> input_status_command(CreatureEntity &creature, int page
     auto c = inkey();
     switch (c) {
     case 'c':
+        // 名前変更はプレイヤー専用（モンスターにはグローバル sp_ptr 等に依存する描画処理が不可）
+        if (!creature.is_player()) {
+            bell();
+            return page;
+        }
         get_name(creature);
         process_player_name(creature);
         return page;
@@ -158,23 +163,15 @@ static tl::optional<int> input_status_command(CreatureEntity &creature, int page
 }
 
 /*!
- * @brief プレイヤーのステータス表示
+ * @brief プレイヤー／モンスターのステータス表示
  */
 void do_cmd_player_status(CreatureEntity *creature_ptr)
 {
-    // モンスターの場合は display_player() に共通化した簡易表示のみを行う
-    if (!creature_ptr->is_player()) {
-        screen_save();
-        (void)display_player(creature_ptr, 0);
-        put_str(_("[ESCで終了]", "[Press ESC to exit]"), 23, 25);
-        inkey();
-        screen_load();
-        return;
-    }
-
     auto page = 0;
     screen_save();
-    constexpr auto prompt = _("['c'で名前変更, 'f'でファイルへ書出, 'g'でJSON書出, 'h'でモード変更, ESCで終了]", "['c' to change name, 'f' to file, 'g' to JSON, 'h' to change mode, or ESC]");
+    constexpr auto player_prompt = _("['c'で名前変更, 'f'でファイルへ書出, 'g'でJSON書出, 'h'でモード変更, ESCで終了]", "['c' to change name, 'f' to file, 'g' to JSON, 'h' to change mode, or ESC]");
+    constexpr auto monster_prompt = _("['f'でファイルへ書出, 'g'でJSON書出, ESCで終了]", "['f' to file, 'g' to JSON, or ESC]");
+    const auto prompt = creature_ptr->is_player() ? player_prompt : monster_prompt;
     auto &world = AngbandWorld::get_instance();
     while (true) {
         TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);

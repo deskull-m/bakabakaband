@@ -14,6 +14,7 @@
 #include "system/dungeon/dungeon-record.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
+#include "system/monrace/monrace-definition.h"
 #include "util/enum-converter.h"
 #include "world/world.h"
 #include <sstream>
@@ -51,33 +52,41 @@ static std::string localized_to_utf8_safe(const LocalizedString &ls)
 static void add_basic_info_to_json(nlohmann::json &j, CreatureEntity &creature)
 {
     j["basic"]["name"] = to_utf8_safe(creature.name);
-    j["basic"]["sex"] = localized_to_utf8_safe(sex_info[creature.psex].title);
-    j["basic"]["race"] = localized_to_utf8_safe(creature.race->title);
-    j["basic"]["class"] = localized_to_utf8_safe(class_info.at(creature.pclass).title);
-    j["basic"]["level"] = creature.level;
+    j["basic"]["level"] = creature.get_level();
     j["basic"]["experience"] = creature.exp;
     j["basic"]["max_experience"] = creature.max_exp;
+    j["basic"]["age"] = creature.age;
+    j["basic"]["height"] = creature.ht;
+    j["basic"]["weight"] = creature.wt;
+    j["basic"]["prestige"] = creature.prestige;
+
+    if (creature.race != nullptr) {
+        j["basic"]["race"] = localized_to_utf8_safe(creature.race->title);
+    }
+    if (creature.pclass_ref != nullptr) {
+        j["basic"]["class"] = localized_to_utf8_safe(creature.pclass_ref->title);
+    }
+
+    // モンスターはプレイヤー固有の性別・性格・魔法領域・変身形態を持たない
+    if (!creature.is_player()) {
+        const auto &monrace = creature.get_monrace();
+        j["basic"]["monrace"] = localized_to_utf8_safe(monrace.name);
+        return;
+    }
+
+    j["basic"]["sex"] = localized_to_utf8_safe(sex_info[creature.psex].title);
+    j["basic"]["personality"] = localized_to_utf8_safe(personality_info[creature.ppersonality].title);
 
     if (creature.get_mimic_form() != MimicKindType::NONE) {
         j["basic"]["mimic_form"] = localized_to_utf8_safe(mimic_info.at(creature.get_mimic_form()).title);
     }
 
-    // 性格
-    j["basic"]["personality"] = localized_to_utf8_safe(personality_info[creature.ppersonality].title);
-
-    // 領域
     if (creature.realm1 != RealmType::NONE) {
         j["basic"]["realm1"] = localized_to_utf8_safe(PlayerRealm::get_name(creature.realm1));
     }
     if (creature.realm2 != RealmType::NONE) {
         j["basic"]["realm2"] = localized_to_utf8_safe(PlayerRealm::get_name(creature.realm2));
     }
-
-    // 年齢、身長、体重
-    j["basic"]["age"] = creature.age;
-    j["basic"]["height"] = creature.ht;
-    j["basic"]["weight"] = creature.wt;
-    j["basic"]["prestige"] = creature.prestige;
 }
 
 /*!

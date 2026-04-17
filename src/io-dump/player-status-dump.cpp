@@ -50,6 +50,13 @@ static void dump_player_status_with_screen_num(CreatureEntity &creature, FILE *f
 void dump_aux_player_status(CreatureEntity &creature, FILE *fff)
 {
     dump_player_status_with_screen_num(creature, fff, 0, 1, 22, false);
+
+    // モンスターは mode 0 で共通フォーマットの簡易ステータス画面のみを描画するため、追加ページは出力しない
+    if (!creature.is_player()) {
+        fprintf(fff, "\n");
+        return;
+    }
+
     dump_player_status_with_screen_num(creature, fff, 1, 10, 17, false);
     fprintf(fff, "\n");
     dump_player_status_with_screen_num(creature, fff, 2, 2, 22, true);
