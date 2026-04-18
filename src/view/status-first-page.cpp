@@ -525,6 +525,11 @@ static void display_first_page(CreatureEntity &creature, int xthb, int *damage, 
  */
 void display_player_various(CreatureEntity &creature)
 {
+    // 弓・武器スロットを前提とした戦闘能力表示はプレイヤー固有
+    if (!creature.is_player()) {
+        return;
+    }
+
     ItemEntity *o_ptr;
     o_ptr = creature.inventory[INVEN_BOW].get();
     int tmp = creature.to_h_b + o_ptr->to_h;

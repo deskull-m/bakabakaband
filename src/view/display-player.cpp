@@ -48,86 +48,16 @@
 #include <string>
 
 /*!
- * @brief モンスターのステータスを簡易表示する（プレイヤー表示フォーマットを流用）
- * @param monster モンスターへの参照
- */
-static void display_monster_status(CreatureEntity &monster)
-{
-    term_clear();
-
-    const auto &monrace = monster.get_monrace();
-    c_put_str(TERM_L_BLUE, monrace.name, 1, 1);
-
-    if (monster.is_named()) {
-        c_put_str(TERM_YELLOW, format(_("名前: %s", "Name: %s"), monster.name.data()), 2, 1);
-    } else {
-        c_put_str(TERM_SLATE, _("名前: 名無し", "Name: No Name"), 2, 1);
-    }
-
-    put_str(format(_("レベル: %d", "Level: %d"), monster.get_level()), 1, 40);
-    put_str(format(_("HP: %d/%d", "HP: %d/%d"), monster.hp, monster.maxhp), 3, 40);
-
-    int row_offset = 1;
-    if (monster.race != nullptr) {
-        put_str(format(_("種族: %s", "Race: %s"), monster.race->title.data()), 3 + row_offset, 1);
-    }
-
-    if (monster.pclass_ref != nullptr) {
-        put_str(format(_("職業: %s", "Class: %s"), monster.pclass_ref->title.data()), 3 + row_offset, 40);
-    }
-
-    put_str(format(_("経験値: %ld", "Exp: %ld"), (long)monster.exp), 4 + row_offset, 1);
-    put_str(format(_("所持金: %ld", "Gold: %ld"), (long)monster.au), 4 + row_offset, 40);
-
-    if (monster.race != nullptr && monster.ht > 0) {
-#ifdef JP
-        put_str(format("身長: %dcm  体重: %dkg", inch_to_cm(monster.ht), lb_to_kg(monster.wt)), 5 + row_offset, 1);
-#else
-        put_str(format("Height: %d  Weight: %d", monster.ht, monster.wt), 5 + row_offset, 1);
-#endif
-    }
-
-    int stat_col = 22;
-    int row = 6 + row_offset;
-
-    c_put_str(TERM_WHITE, _("能力", "Stat"), row, stat_col + 1);
-    c_put_str(TERM_BLUE, _("  基本", "  Base"), row, stat_col + 7);
-    c_put_str(TERM_L_GREEN, _("合計", "Total"), row, stat_col + _(21, 19));
-    c_put_str(TERM_YELLOW, _("現在", "Current"), row, stat_col + _(28, 26));
-
-    for (int i = 0; i < A_MAX; i++) {
-        if (monster.stat_cur[i] < monster.stat_max[i]) {
-            c_put_str(TERM_WHITE, stat_names_reduced[i], row + i + 1, stat_col + 1);
-        } else {
-            c_put_str(TERM_WHITE, stat_names[i], row + i + 1, stat_col + 1);
-        }
-
-        if (monster.stat_max[i] == monster.stat_max_max[i]) {
-            c_put_str(TERM_WHITE, "!", row + i + 1, _(stat_col + 6, stat_col + 4));
-        }
-
-        const auto stat_str = cnv_stat(monster.stat_max[i]);
-        c_put_str(TERM_BLUE, stat_str, row + i + 1, stat_col + 13 - stat_str.length());
-
-        c_put_str(TERM_L_GREEN, cnv_stat(monster.stat_max[i]), row + i + 1, stat_col + _(21, 19));
-
-        if (monster.stat_cur[i] < monster.stat_max[i]) {
-            c_put_str(TERM_YELLOW, cnv_stat(monster.stat_cur[i]), row + i + 1, stat_col + _(28, 26));
-        }
-    }
-}
-
-/*!
  * @brief
  * @param creature クリーチャーへの参照
  * @param mode ステータス表示モード
  * @return どれかの処理をこなしたらTRUE、何もしなかったらFALSE
+ * @details モード 2〜5 はプレイヤー固有の描画のためモンスターでは呼び出さない
  */
 static bool display_player_info(CreatureEntity &creature, int mode)
 {
     if (!creature.is_player()) {
-        display_monster_status(creature);
-        return true;
+        return false;
     }
 
     if (mode == 2) {
@@ -364,7 +294,8 @@ static std::string decide_current_floor(CreatureEntity &creature)
 tl::optional<int> display_player(CreatureEntity *creature_ptr, const int tmp_mode)
 {
     auto has_any_mutation = (creature_ptr->muta.any() || has_good_luck(*creature_ptr) || has_pervert_attraction(*creature_ptr)) && display_mutations;
-    auto mode = has_any_mutation ? tmp_mode % 6 : tmp_mode % 5;
+    // モンスターはプレイヤー固有のページ (history, misc/stat/flag info) を持たないため mode 0 固定で描画する
+    auto mode = creature_ptr->is_player() ? (has_any_mutation ? tmp_mode % 6 : tmp_mode % 5) : 0;
     {
         TermOffsetSetter tos(0, 0);
         clear_from(0);
