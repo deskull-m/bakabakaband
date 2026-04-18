@@ -5,6 +5,7 @@
 #include "inventory/inventory-slot-types.h"
 #include "market/arena-entry.h"
 #include "monster-race/race-kind-flags.h"
+#include "monster-race/race-sex-const.h"
 #include "monster/monster-flag-types.h"
 #include "monster/monster-pain-describer.h"
 #include "monster/monster-timed-effects.h"
@@ -143,6 +144,23 @@ MonraceId CreatureEntity::get_real_monrace_id() const
 MonraceDefinition &CreatureEntity::get_real_monrace() const
 {
     return MonraceList::get_instance().get_monrace(this->get_real_monrace_id());
+}
+
+const player_sex_type &CreatureEntity::get_sex_info() const
+{
+    if (this->is_player()) {
+        return sex_info[this->psex];
+    }
+
+    switch (this->get_monrace().sex) {
+    case MonsterSex::MALE:
+        return sex_info[SEX_MALE];
+    case MonsterSex::FEMALE:
+        return sex_info[SEX_FEMALE];
+    case MonsterSex::NONE:
+    default:
+        return sex_info[SEX_ASEXUAL];
+    }
 }
 
 bool CreatureEntity::has_living_flag(bool is_appearance) const

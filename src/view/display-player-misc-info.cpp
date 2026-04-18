@@ -49,7 +49,7 @@ void display_player_misc_info(CreatureEntity &creature)
     put_str(_("種族  :", "Race  :"), 4, 1);
     put_str(_("職業  :", "Class :"), 5, 1);
 
-    c_put_str(TERM_L_BLUE, sp_ptr->title, 3, 9);
+    c_put_str(TERM_L_BLUE, creature.get_sex_info().title, 3, 9);
     c_put_str(TERM_L_BLUE, (creature.get_mimic_form() != MimicKindType::NONE ? mimic_info.at(creature.get_mimic_form()).title : creature.race->title), 4, 9);
     c_put_str(TERM_L_BLUE, (*creature.pclass_ref).title, 5, 9);
 

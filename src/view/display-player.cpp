@@ -163,7 +163,7 @@ static bool display_player_info(CreatureEntity &creature, int mode)
 static void display_player_basic_info(CreatureEntity &creature)
 {
     display_player_name(creature);
-    display_player_one_line(ENTRY_SEX, sp_ptr->title, TERM_L_BLUE);
+    display_player_one_line(ENTRY_SEX, creature.get_sex_info().title, TERM_L_BLUE);
     if (creature.race != nullptr) {
         display_player_one_line(ENTRY_RACE, (creature.get_mimic_form() != MimicKindType::NONE ? mimic_info.at(creature.get_mimic_form()).title : creature.race->title), TERM_L_BLUE);
     }

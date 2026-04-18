@@ -353,6 +353,14 @@ public:
      */
     MonraceDefinition &get_real_monrace() const;
 
+    /*!
+     * @brief クリーチャーの性別表記情報を取得する
+     * @return 性別表記情報への参照
+     * @details プレイヤーは psex フィールドをそのまま用いる。
+     * モンスターの場合は種族定義の MonsterSex から player_sex_type へマップする。
+     */
+    const player_sex_type &get_sex_info() const;
+
     bool has_living_flag(bool is_appearance = false) const;
     bool has_demon_flag(bool is_appearance = false) const;
     bool has_undead_flag(bool is_appearance = false) const;
