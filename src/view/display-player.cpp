@@ -52,9 +52,14 @@
  * @param creature クリーチャーへの参照
  * @param mode ステータス表示モード
  * @return どれかの処理をこなしたらTRUE、何もしなかったらFALSE
+ * @details モード 2〜5 はプレイヤー固有の描画のためモンスターでは呼び出さない
  */
 static bool display_player_info(CreatureEntity &creature, int mode)
 {
+    if (!creature.is_player()) {
+        return false;
+    }
+
     if (mode == 2) {
         display_player_misc_info(creature);
         display_player_stat_info(creature);
@@ -88,7 +93,7 @@ static bool display_player_info(CreatureEntity &creature, int mode)
 static void display_player_basic_info(CreatureEntity &creature)
 {
     display_player_name(creature);
-    display_player_one_line(ENTRY_SEX, sp_ptr->title, TERM_L_BLUE);
+    display_player_one_line(ENTRY_SEX, creature.get_sex_info().title, TERM_L_BLUE);
     if (creature.race != nullptr) {
         display_player_one_line(ENTRY_RACE, (creature.get_mimic_form() != MimicKindType::NONE ? mimic_info.at(creature.get_mimic_form()).title : creature.race->title), TERM_L_BLUE);
     }
@@ -289,7 +294,8 @@ static std::string decide_current_floor(CreatureEntity &creature)
 tl::optional<int> display_player(CreatureEntity *creature_ptr, const int tmp_mode)
 {
     auto has_any_mutation = (creature_ptr->muta.any() || has_good_luck(*creature_ptr) || has_pervert_attraction(*creature_ptr)) && display_mutations;
-    auto mode = has_any_mutation ? tmp_mode % 6 : tmp_mode % 5;
+    // モンスターはプレイヤー固有のページ (history, misc/stat/flag info) を持たないため mode 0 固定で描画する
+    auto mode = creature_ptr->is_player() ? (has_any_mutation ? tmp_mode % 6 : tmp_mode % 5) : 0;
     {
         TermOffsetSetter tos(0, 0);
         clear_from(0);
@@ -299,20 +305,7 @@ tl::optional<int> display_player(CreatureEntity *creature_ptr, const int tmp_mod
     }
 
     display_player_basic_info(*creature_ptr);
-
-    // モンスターの場合も種族と職業を表示
-    if (!creature_ptr->is_player()) {
-        if (creature_ptr->race != nullptr) {
-            display_player_one_line(ENTRY_RACE, creature_ptr->race->title, TERM_L_BLUE);
-        }
-        if (creature_ptr->pclass_ref != nullptr) {
-            display_player_one_line(ENTRY_CLASS, creature_ptr->pclass_ref->title, TERM_L_BLUE);
-        }
-    }
-
-    if (creature_ptr->is_player()) {
-        display_magic_realms(*creature_ptr);
-    }
+    display_magic_realms(*creature_ptr);
     if (CreatureClass(*creature_ptr).equals(PlayerClassType::CHAOS_WARRIOR) || (creature_ptr->muta.has(PlayerMutationType::CHAOS_GIFT))) {
         display_player_one_line(ENTRY_PATRON, patron_list[creature_ptr->patron].name, TERM_L_BLUE);
     }
@@ -330,9 +323,7 @@ tl::optional<int> display_player(CreatureEntity *creature_ptr, const int tmp_mod
     display_player_stats(*creature_ptr);
     if (mode == 0) {
         display_player_middle(*creature_ptr);
-        if (creature_ptr->is_player()) {
-            display_player_various(*creature_ptr);
-        }
+        display_player_various(*creature_ptr);
         return tl::nullopt;
     }
 
