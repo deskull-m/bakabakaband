@@ -302,6 +302,11 @@ static void display_playtime_in_game(CreatureEntity &creature)
         display_player_one_line(ENTRY_HP, format("%4d/%4d", creature.hp, creature.maxhp), TERM_RED);
     }
 
+    // MP を持たないクリーチャー（多くのモンスター等）は SP 行を描画しない
+    if (creature.msp <= 0) {
+        return;
+    }
+
     if (creature.csp >= creature.msp) {
         display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.csp, creature.msp), TERM_L_GREEN);
     } else if (creature.csp > (creature.msp * mana_warn) / 10) {
