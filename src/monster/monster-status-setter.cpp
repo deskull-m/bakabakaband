@@ -85,7 +85,7 @@ bool set_monster_csleep(FloorType &floor, MONSTER_IDX m_idx, int v)
         }
     }
 
-    monster.get_monster_profile().mtimed[CreatureTimedEffect::SLEEP_OR_PARALYSIS] = (int16_t)v;
+    monster.set_timed_effect(CreatureTimedEffect::SLEEP_OR_PARALYSIS, (int16_t)v);
     if (!notice) {
         return false;
     }
@@ -130,7 +130,7 @@ bool set_monster_fast(FloorType &floor, MONSTER_IDX m_idx, int v)
         }
     }
 
-    monster.get_monster_profile().mtimed[CreatureTimedEffect::ACCELERATION] = (int16_t)v;
+    monster.set_timed_effect(CreatureTimedEffect::ACCELERATION, (int16_t)v);
     if (!notice) {
         return false;
     }
@@ -167,7 +167,7 @@ bool set_monster_slow(FloorType &floor, MONSTER_IDX m_idx, int v)
         }
     }
 
-    monster.get_monster_profile().mtimed[CreatureTimedEffect::DECELERATION] = (int16_t)v;
+    monster.set_timed_effect(CreatureTimedEffect::DECELERATION, (int16_t)v);
     if (!notice) {
         return false;
     }
@@ -204,7 +204,7 @@ bool set_monster_stunned(FloorType &floor, MONSTER_IDX m_idx, int v)
         }
     }
 
-    monster.get_monster_profile().mtimed[CreatureTimedEffect::STUN] = (int16_t)v;
+    monster.set_timed_effect(CreatureTimedEffect::STUN, (int16_t)v);
     return notice;
 }
 
@@ -233,7 +233,7 @@ bool set_monster_confused(FloorType &floor, MONSTER_IDX m_idx, int v)
         }
     }
 
-    monster.get_monster_profile().mtimed[CreatureTimedEffect::CONFUSION] = (int16_t)v;
+    monster.set_timed_effect(CreatureTimedEffect::CONFUSION, (int16_t)v);
     return notice;
 }
 
@@ -268,7 +268,7 @@ bool set_monster_monfear(FloorType &floor, MONSTER_IDX m_idx, int v)
         }
     }
 
-    monster.get_monster_profile().mtimed[CreatureTimedEffect::FEAR] = (int16_t)v;
+    monster.set_timed_effect(CreatureTimedEffect::FEAR, (int16_t)v);
 
     if (!notice) {
         return false;
@@ -313,7 +313,7 @@ bool set_monster_invulner(FloorType &floor, MONSTER_IDX m_idx, int v, bool energ
         }
     }
 
-    monster.get_monster_profile().mtimed[CreatureTimedEffect::INVULNERABILITY] = (int16_t)v;
+    monster.set_timed_effect(CreatureTimedEffect::INVULNERABILITY, (int16_t)v);
     if (!notice) {
         return false;
     }
