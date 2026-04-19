@@ -125,7 +125,7 @@ static MonraceDefinition &set_pet_params(CreatureEntity &creature, const int cur
     monster.x = cx;
     monster.set_floor(creature.get_floor());
     monster.get_monster_profile().ml = true;
-    monster.get_monster_profile().mtimed[CreatureTimedEffect::SLEEP_OR_PARALYSIS] = 0;
+    monster.set_timed_effect(CreatureTimedEffect::SLEEP_OR_PARALYSIS, 0);
     monster.get_monster_profile().hold_o_idx_list.clear();
     monster.reset_target();
     auto &r_ref = monster.get_real_monrace();

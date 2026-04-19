@@ -378,7 +378,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     m_ptr->set_floor(&floor);
 
     for (const auto mte : MONSTER_TIMED_EFFECT_LIST) {
-        m_ptr->get_monster_profile().mtimed[mte] = 0;
+        m_ptr->set_timed_effect(mte, 0);
     }
 
     m_ptr->reset_target();
@@ -434,7 +434,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         }
     }
 
-    m_ptr->get_monster_profile().mtimed[CreatureTimedEffect::SLEEP_OR_PARALYSIS] = 0;
+    m_ptr->set_timed_effect(CreatureTimedEffect::SLEEP_OR_PARALYSIS, 0);
     if (any_bits(mode, PM_ALLOW_SLEEP) && new_monrace.sleep && !ironman_nightmare) {
         int val = new_monrace.sleep;
         (void)set_monster_csleep(floor, g_ptr->m_idx, (val * 2) + randint1(val * 10));

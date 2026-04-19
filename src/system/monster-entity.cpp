@@ -5,7 +5,7 @@ MonsterEntity::MonsterEntity()
 {
     this->monster_profile.emplace();
     for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
-        this->get_monster_profile().mtimed[mte] = 0;
+        this->set_timed_effect(mte, 0);
     }
 
     // CreatureEntityの基本メンバーを初期化

@@ -989,7 +989,7 @@ void CreatureEntity::init_monster_profile()
 {
     this->monster_profile.emplace();
     for (const auto mte : MONSTER_TIMED_EFFECT_LIST) {
-        this->get_monster_profile().mtimed[mte] = 0;
+        this->set_timed_effect(mte, 0);
     }
 }
 

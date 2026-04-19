@@ -40,7 +40,7 @@ void MonsterEntityWriter::write_to_savedata() const
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::SLEEP)) {
-        wr_s16b(this->monster.get_monster_profile().mtimed.at(CreatureTimedEffect::SLEEP_OR_PARALYSIS));
+        wr_s16b(this->monster.get_timed_effect(CreatureTimedEffect::SLEEP_OR_PARALYSIS));
     }
 
     wr_byte((byte)this->monster.speed);
@@ -156,27 +156,27 @@ void MonsterEntityWriter::write_monster_info(uint32_t flags) const
 {
     byte tmp8u;
     if (any_bits(flags, SaveDataMonsterFlagType::FAST)) {
-        tmp8u = (byte)this->monster.get_monster_profile().mtimed.at(CreatureTimedEffect::ACCELERATION);
+        tmp8u = (byte)this->monster.get_timed_effect(CreatureTimedEffect::ACCELERATION);
         wr_byte(tmp8u);
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::SLOW)) {
-        tmp8u = (byte)this->monster.get_monster_profile().mtimed.at(CreatureTimedEffect::DECELERATION);
+        tmp8u = (byte)this->monster.get_timed_effect(CreatureTimedEffect::DECELERATION);
         wr_byte(tmp8u);
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::STUNNED)) {
-        tmp8u = (byte)this->monster.get_monster_profile().mtimed.at(CreatureTimedEffect::STUN);
+        tmp8u = (byte)this->monster.get_timed_effect(CreatureTimedEffect::STUN);
         wr_byte(tmp8u);
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::CONFUSED)) {
-        tmp8u = (byte)this->monster.get_monster_profile().mtimed.at(CreatureTimedEffect::CONFUSION);
+        tmp8u = (byte)this->monster.get_timed_effect(CreatureTimedEffect::CONFUSION);
         wr_byte(tmp8u);
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::MONFEAR)) {
-        tmp8u = (byte)this->monster.get_monster_profile().mtimed.at(CreatureTimedEffect::FEAR);
+        tmp8u = (byte)this->monster.get_timed_effect(CreatureTimedEffect::FEAR);
         wr_byte(tmp8u);
     }
 
@@ -189,7 +189,7 @@ void MonsterEntityWriter::write_monster_info(uint32_t flags) const
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::INVULNER)) {
-        tmp8u = (byte)this->monster.get_monster_profile().mtimed.at(CreatureTimedEffect::INVULNERABILITY);
+        tmp8u = (byte)this->monster.get_timed_effect(CreatureTimedEffect::INVULNERABILITY);
         wr_byte(tmp8u);
     }
 

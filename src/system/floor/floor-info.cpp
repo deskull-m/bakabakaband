@@ -551,7 +551,7 @@ void FloorType::reset_mproc()
         }
 
         for (const auto mte : MONSTER_TIMED_EFFECT_LIST) {
-            if (monster.get_monster_profile().mtimed.at(mte) > 0) {
+            if (monster.get_timed_effect(mte) > 0) {
                 this->add_mproc(i, mte);
             }
         }
