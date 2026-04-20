@@ -1,7 +1,7 @@
 #include "floor/party-monsters.h"
+#include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "world/world.h"
 
 PartyMonsters party_monsters;

@@ -763,7 +763,7 @@ public:
     /*!
      * @brief モンスター固有データ（MonsterProfile）を初期化する
      * @details monster_profile を emplace し、時限効果を 0 で初期化する。
-     * 旧 MonsterEntity のコンストラクタ相当の処理。フロアの m_list 初期化等から呼ぶ。
+     * モンスター生成時にフロアの m_list 初期化等から呼ぶ。
      */
     void init_monster_profile();
 
