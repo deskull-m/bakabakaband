@@ -1,4 +1,4 @@
-#include "save/monster-entity-writer.h"
+#include "save/monster-writer.h"
 #include "load/old/monster-flag-types-savefile50.h"
 #include "player-info/class-types.h"
 #include "player-info/race-types.h"
@@ -9,7 +9,7 @@
 #include "system/monrace/monrace-list.h"
 #include "util/enum-converter.h"
 
-MonsterEntityWriter::MonsterEntityWriter(const CreatureEntity &monster)
+MonsterWriter::MonsterWriter(const CreatureEntity &monster)
     : monster(monster)
 {
 }
@@ -17,7 +17,7 @@ MonsterEntityWriter::MonsterEntityWriter(const CreatureEntity &monster)
 /*!
  * @brief モンスター情報をセーブデータに書き込む
  */
-void MonsterEntityWriter::write_to_savedata() const
+void MonsterWriter::write_to_savedata() const
 {
     const auto flags = this->write_monster_flags();
 
@@ -49,7 +49,7 @@ void MonsterEntityWriter::write_to_savedata() const
     this->write_monster_info(flags);
 }
 
-uint32_t MonsterEntityWriter::write_monster_flags() const
+uint32_t MonsterWriter::write_monster_flags() const
 {
     uint32_t flags = 0x00000000;
     if (!this->monster.is_original_ap()) {
@@ -152,7 +152,7 @@ uint32_t MonsterEntityWriter::write_monster_flags() const
     return flags;
 }
 
-void MonsterEntityWriter::write_monster_info(uint32_t flags) const
+void MonsterWriter::write_monster_info(uint32_t flags) const
 {
     byte tmp8u;
     if (any_bits(flags, SaveDataMonsterFlagType::FAST)) {

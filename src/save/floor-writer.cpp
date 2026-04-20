@@ -9,7 +9,7 @@
 #include "load/floor-loader.h"
 #include "monster/monster-compaction.h"
 #include "save/item-writer.h"
-#include "save/monster-entity-writer.h"
+#include "save/monster-writer.h"
 #include "save/save-util.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
@@ -148,7 +148,7 @@ void wr_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
     /*** Dump the monsters ***/
     wr_u16b(floor.m_max);
     for (int i = 1; i < floor.m_max; i++) {
-        MonsterEntityWriter(floor.m_list[i]).write_to_savedata();
+        MonsterWriter(floor.m_list[i]).write_to_savedata();
     }
 }
 
