@@ -79,5 +79,9 @@ enum class CreatureTimedEffect {
     TIM_EMISSION, /*!< 放射 / Player Emission */
     TIM_EXORCISM, /*!< 退魔 / Exorcism */
 
+    // --- プレイヤー専用：世界操作系 ---
+    WORD_RECALL, /*!< 帰還のカウントダウン / Word of Recall counter */
+    ALTER_REALITY, /*!< 現実改変のカウントダウン / Alter Reality counter */
+
     MAX,
 };

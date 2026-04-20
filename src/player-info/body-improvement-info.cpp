@@ -45,11 +45,11 @@ void set_body_improvement_info_2(CreatureEntity &creature, self_info_type *self_
         self_ptr->info_list.emplace_back(_("あなたは呪文や祈りを学ぶことができる。", "You can learn some spells/prayers."));
     }
 
-    if (creature.word_recall) {
+    if (creature.get_timed_effect(CreatureTimedEffect::WORD_RECALL)) {
         self_ptr->info_list.emplace_back(_("あなたはすぐに帰還するだろう。", "You will soon be recalled."));
     }
 
-    if (creature.alter_reality) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ALTER_REALITY)) {
         self_ptr->info_list.emplace_back(_("あなたはすぐにこの世界を離れるだろう。", "You will soon be altered."));
     }
 

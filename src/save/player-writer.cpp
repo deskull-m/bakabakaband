@@ -207,9 +207,9 @@ void wr_player(CreatureEntity &creature)
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::SHIELD));
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::BLESSED));
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_INVIS));
-    wr_s16b(creature.word_recall);
+    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::WORD_RECALL));
     wr_s16b(static_cast<int16_t>(creature.recall_dungeon));
-    wr_s16b(creature.alter_reality);
+    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::ALTER_REALITY));
     wr_s16b(creature.see_infra);
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_INFRA));
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE));
