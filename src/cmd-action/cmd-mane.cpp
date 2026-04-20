@@ -359,13 +359,12 @@ static int get_mane_power(CreatureEntity &creature, int *sn, bool baigaesi)
 /*!
  * @brief ものまね処理の発動 /
  * do_cmd_cast calls this function if the creature's class is 'imitator'.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param spell 発動するモンスター攻撃のID
  * @return 処理を実行したらTRUE、キャンセルした場合FALSEを返す。
  */
 static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
 {
-    auto *player_ptr = &creature;
     PLAYER_LEVEL plev = creature.get_level();
     BIT_FLAGS mode = (PM_ALLOW_GROUP | PM_FORCE_PET);
     BIT_FLAGS u_mode = 0L;
@@ -695,23 +694,23 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
         break;
     case MonsterAbilityType::SCARE:
         msg_print(_("恐ろしげな幻覚を作り出した。", "You cast a fearful illusion."));
-        fear_monster(*player_ptr, dir, plev + 10);
+        fear_monster(creature, dir, plev + 10);
         break;
     case MonsterAbilityType::BLIND:
-        confuse_monster(*player_ptr, dir, plev * 2);
+        confuse_monster(creature, dir, plev * 2);
         break;
     case MonsterAbilityType::CONF:
         msg_print(_("誘惑的な幻覚をつくり出した。", "You cast a mesmerizing illusion."));
-        confuse_monster(*player_ptr, dir, plev * 2);
+        confuse_monster(creature, dir, plev * 2);
         break;
     case MonsterAbilityType::SLOW:
-        slow_monster(*player_ptr, dir, plev);
+        slow_monster(creature, dir, plev);
         break;
     case MonsterAbilityType::HOLD:
-        sleep_monster(*player_ptr, dir, plev);
+        sleep_monster(creature, dir, plev);
         break;
     case MonsterAbilityType::HASTE:
-        (void)set_acceleration(*player_ptr, randint1(20 + plev) + plev, false);
+        (void)set_acceleration(creature, randint1(20 + plev) + plev, false);
         break;
     case MonsterAbilityType::HAND_DOOM: {
         msg_print(_("<破滅の手>を放った！", "You invoke the Hand of Doom!"));
@@ -720,7 +719,7 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
     }
     case MonsterAbilityType::HEAL: {
         msg_print(_("自分の傷に念を集中した。", "You concentrate on your wounds!"));
-        (void)hp_player(*player_ptr, plev * 6);
+        (void)hp_player(creature, plev * 6);
         BadStatusSetter bss(creature);
         (void)bss.set_stun(0);
         (void)bss.set_cut(0);
@@ -728,16 +727,16 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
     }
     case MonsterAbilityType::INVULNER:
         msg_print(_("無傷の球の呪文を唱えた。", "You cast a Globe of Invulnerability."));
-        (void)set_invuln(*player_ptr, randint1(7) + 7, false);
+        (void)set_invuln(creature, randint1(7) + 7, false);
         break;
     case MonsterAbilityType::BLINK:
-        teleport_player(*player_ptr, 10, TELEPORT_SPONTANEOUS);
+        teleport_player(creature, 10, TELEPORT_SPONTANEOUS);
         break;
     case MonsterAbilityType::TPORT:
-        teleport_player(*player_ptr, plev * 5, TELEPORT_SPONTANEOUS);
+        teleport_player(creature, plev * 5, TELEPORT_SPONTANEOUS);
         break;
     case MonsterAbilityType::WORLD:
-        (void)time_walk(*player_ptr);
+        (void)time_walk(creature);
         break;
     case MonsterAbilityType::SPECIAL:
         break;
@@ -797,7 +796,7 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
 
     case MonsterAbilityType::DARKNESS:
         msg_print(_("暗闇の中で手を振った。", "You gesture in shadow."));
-        (void)unlite_area(*player_ptr, 10, 3);
+        (void)unlite_area(creature, 10, 3);
         break;
 
     case MonsterAbilityType::TRAPS: {

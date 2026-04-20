@@ -37,10 +37,9 @@
  */
 void pattern_teleport(CreatureEntity &creature)
 {
-    auto *player_ptr = &creature;
     auto min_level = 0;
     auto max_level = 99;
-    auto &floor = *player_ptr->get_floor();
+    auto &floor = *creature.get_floor();
     auto current_level = static_cast<short>(floor.dun_level);
     if (input_check(_("他の階にテレポートしますか？", "Teleport level? "))) {
         if (ironman_downward) {
@@ -67,7 +66,7 @@ void pattern_teleport(CreatureEntity &creature)
 
         command_arg = *input_level;
     } else if (input_check(_("通常テレポート？", "Normal teleport? "))) {
-        teleport_player(*player_ptr, 200, TELEPORT_SPONTANEOUS);
+        teleport_player(creature, 200, TELEPORT_SPONTANEOUS);
         return;
     } else {
         return;
@@ -75,17 +74,17 @@ void pattern_teleport(CreatureEntity &creature)
 
     msg_format(_("%d 階にテレポートしました。", "You teleport to dungeon level %d."), command_arg);
     if (autosave_l) {
-        do_cmd_save_game(*player_ptr, true);
+        do_cmd_save_game(creature, true);
     }
 
     floor.dun_level = command_arg;
-    leave_quest_check(*player_ptr);
+    leave_quest_check(creature);
     if (record_stair) {
         exe_write_diary(floor, DiaryKind::PAT_TELE, 0);
     }
 
-    player_ptr->get_floor()->quest_number = QuestId::NONE;
-    PlayerEnergy(*player_ptr).reset_player_turn();
+    creature.get_floor()->quest_number = QuestId::NONE;
+    PlayerEnergy(creature).reset_player_turn();
 
     /*
      * Clear all saved floors
@@ -93,9 +92,9 @@ void pattern_teleport(CreatureEntity &creature)
      */
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::FIRST_FLOOR);
 
-    check_random_quest_auto_failure(*player_ptr);
+    check_random_quest_auto_failure(creature);
 
-    player_ptr->leaving = true;
+    creature.leaving = true;
 }
 
 /*!
@@ -104,27 +103,26 @@ void pattern_teleport(CreatureEntity &creature)
  */
 bool pattern_effect(CreatureEntity &creature)
 {
-    auto *player_ptr = &creature;
-    const auto &floor = *player_ptr->get_floor();
-    const auto p_pos = player_ptr->get_position();
+    const auto &floor = *creature.get_floor();
+    const auto p_pos = creature.get_position();
     const auto &grid = floor.get_grid(p_pos);
     if (!grid.has(TerrainCharacteristics::PATTERN)) {
         return false;
     }
 
-    const auto is_cut = player_ptr->effects()->cut().is_cut();
-    if ((CreatureRace(player_ptr).equals(PlayerRaceType::AMBERITE)) && is_cut && one_in_(10)) {
-        wreck_the_pattern(*player_ptr);
+    const auto is_cut = creature.effects()->cut().is_cut();
+    if ((CreatureRace(&creature).equals(PlayerRaceType::AMBERITE)) && is_cut && one_in_(10)) {
+        wreck_the_pattern(creature);
     }
 
     switch (grid.get_terrain().subtype) {
     case PATTERN_TILE_END:
-        (void)BadStatusSetter(*player_ptr).hallucination(0);
-        (void)restore_all_status(*player_ptr);
-        (void)restore_level(static_cast<CreatureEntity &>(*player_ptr));
-        (void)cure_critical_wounds(*player_ptr, 1000);
+        (void)BadStatusSetter(creature).hallucination(0);
+        (void)restore_all_status(creature);
+        (void)restore_level(creature);
+        (void)cure_critical_wounds(creature, 1000);
 
-        set_terrain_id_to_grid(*player_ptr, player_ptr->get_position(), TerrainTag::PATTERN_OLD);
+        set_terrain_id_to_grid(creature, creature.get_position(), TerrainTag::PATTERN_OLD);
         msg_print(_("「パターン」のこの部分は他の部分より強力でないようだ。", "This section of the Pattern looks less powerful."));
 
         /*
@@ -144,16 +142,16 @@ bool pattern_effect(CreatureEntity &creature)
         break;
 
     case PATTERN_TILE_WRECKED:
-        if (!player_ptr->is_invulnerable()) {
-            take_hit(*player_ptr, DAMAGE_NOESCAPE, 200, _("壊れた「パターン」を歩いたダメージ", "walking the corrupted Pattern"));
+        if (!creature.is_invulnerable()) {
+            take_hit(creature, DAMAGE_NOESCAPE, 200, _("壊れた「パターン」を歩いたダメージ", "walking the corrupted Pattern"));
         }
         break;
 
     default:
-        if (CreatureRace(player_ptr).equals(PlayerRaceType::AMBERITE) && !one_in_(2)) {
+        if (CreatureRace(&creature).equals(PlayerRaceType::AMBERITE) && !one_in_(2)) {
             return true;
-        } else if (!player_ptr->is_invulnerable()) {
-            take_hit(*player_ptr, DAMAGE_NOESCAPE, Dice::roll(1, 3), _("「パターン」を歩いたダメージ", "walking the Pattern"));
+        } else if (!creature.is_invulnerable()) {
+            take_hit(creature, DAMAGE_NOESCAPE, Dice::roll(1, 3), _("「パターン」を歩いたダメージ", "walking the Pattern"));
         }
         break;
     }
@@ -163,15 +161,14 @@ bool pattern_effect(CreatureEntity &creature)
 
 /*!
  * @brief パターンによる移動制限処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos プレイヤーの移動先座標
  * @return 移動処理が可能である場合（可能な場合に選択した場合）TRUEを返す。
  */
 bool pattern_seq(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto *player_ptr = &creature;
-    const auto &floor = *player_ptr->get_floor();
-    const auto &grid_current = floor.get_grid(player_ptr->get_position());
+    const auto &floor = *creature.get_floor();
+    const auto &grid_current = floor.get_grid(creature.get_position());
     const auto &grid_new = floor.get_grid(pos);
     const auto &terrain_current = grid_current.get_terrain();
     const auto &terrain_new = grid_new.get_terrain();
@@ -184,9 +181,9 @@ bool pattern_seq(CreatureEntity &creature, const Pos2D &pos)
     int pattern_type_cur = is_pattern_tile_cur ? terrain_current.subtype : NOT_PATTERN_TILE;
     int pattern_type_new = is_pattern_tile_new ? terrain_new.subtype : NOT_PATTERN_TILE;
     if (pattern_type_new == PATTERN_TILE_START) {
-        const auto effects = player_ptr->effects();
-        const auto is_stunned = player_ptr->is_stunned();
-        const auto is_confused = player_ptr->is_confused();
+        const auto effects = creature.effects();
+        const auto is_stunned = creature.is_stunned();
+        const auto is_confused = creature.is_confused();
         const auto is_hallucinated = effects->hallucination().is_hallucinated();
         if (is_pattern_tile_cur || is_confused || is_stunned || is_hallucinated) {
             return true;
