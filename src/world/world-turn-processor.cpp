@@ -302,7 +302,7 @@ void WorldTurnProcessor::process_world_monsters()
 
     for (const auto mte : MONSTER_TIMED_EFFECT_LIST) {
         if (this->creature.get_floor()->mproc_max[mte] > 0) {
-            process_monsters_mtimed(this->creature, mte);
+            process_monsters_timed_effect(this->creature, mte);
         }
     }
 }

@@ -14,4 +14,4 @@ void dispel_monster_status(CreatureEntity &creature, MONSTER_IDX m_idx);
 void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId s_idx);
 
 enum class CreatureTimedEffect;
-void process_monsters_mtimed(CreatureEntity &creature, CreatureTimedEffect mte);
+void process_monsters_timed_effect(CreatureEntity &creature, CreatureTimedEffect mte);

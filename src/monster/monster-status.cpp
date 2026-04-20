@@ -107,7 +107,7 @@ int mon_damage_mod(CreatureEntity &creature, const CreatureEntity &target, int d
  * @param m_idx モンスター参照ID
  * @param mte 更新するモンスターの時限ステータスID
  */
-static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_idx, CreatureTimedEffect mte)
+static void process_monsters_timed_effect_aux(CreatureEntity &creature, MONSTER_IDX m_idx, CreatureTimedEffect mte)
 {
     auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
@@ -281,7 +281,7 @@ static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_
  * Process the counters of monsters (once per 10 game turns)\n
  * These functions are to process monsters' counters same as player's.
  */
-void process_monsters_mtimed(CreatureEntity &creature, CreatureTimedEffect mte)
+void process_monsters_timed_effect(CreatureEntity &creature, CreatureTimedEffect mte)
 {
     const auto &floor = *creature.get_floor();
     const auto &cur_mproc_list = floor.mproc_list.at(mte);
@@ -294,7 +294,7 @@ void process_monsters_mtimed(CreatureEntity &creature, CreatureTimedEffect mte)
     /* Process the monsters (backwards) */
     for (auto i = floor.mproc_max.at(mte) - 1; i >= 0; i--) {
         const auto m_idx = cur_mproc_list[i];
-        process_monsters_mtimed_aux(creature, m_idx, mte);
+        process_monsters_timed_effect_aux(creature, m_idx, mte);
         HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
     }
 }
