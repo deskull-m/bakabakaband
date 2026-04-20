@@ -244,11 +244,10 @@ void wiz_restore_aware_flag_of_fixed_arfifact(FixedArtifactId reset_artifact_idx
  */
 void wiz_modify_item_activation(CreatureEntity &creature)
 {
-    auto *player_ptr = &creature;
     constexpr auto q = _("どのアイテムの発動を変更しますか？ ", "Which item? ");
     constexpr auto s = _("発動を変更するアイテムがない。", "Nothing to do with.");
     short i_idx;
-    auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT);
+    auto *o_ptr = choose_object(creature, &i_idx, q, s, USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT);
     if (!o_ptr) {
         return;
     }
@@ -734,11 +733,10 @@ static void wiz_quantity_item(ItemEntity *o_ptr)
  */
 void wiz_modify_item(CreatureEntity &creature)
 {
-    auto *player_ptr = &creature;
     constexpr auto q = "Play with which object? ";
     constexpr auto s = "You have nothing to play with.";
     short i_idx;
-    auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT);
+    auto *o_ptr = choose_object(creature, &i_idx, q, s, USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT);
     if (!o_ptr) {
         return;
     }
