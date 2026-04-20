@@ -274,7 +274,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
         floor.quest_number = i2enum<QuestId>(grid_new.special);
         floor.dun_level = 0;
         if (!floor.is_in_quest()) {
-            creature.word_recall = 0;
+            creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, 0);
         }
         creature.oldpx = 0;
         creature.oldpy = 0;

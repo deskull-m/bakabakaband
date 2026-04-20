@@ -62,8 +62,8 @@ bool CreatureEntity::is_fully_healthy() const
     is_healthy &= !effects->deceleration().is_slow();
     is_healthy &= !effects->paralysis().is_paralyzed();
     is_healthy &= !effects->hallucination().is_hallucinated();
-    is_healthy &= !this->word_recall;
-    is_healthy &= !this->alter_reality;
+    is_healthy &= !this->get_timed_effect(CreatureTimedEffect::WORD_RECALL);
+    is_healthy &= !this->get_timed_effect(CreatureTimedEffect::ALTER_REALITY);
     return is_healthy;
 }
 

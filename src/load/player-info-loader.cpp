@@ -475,9 +475,9 @@ static void rd_player_status(CreatureEntity &creature)
     creature.set_timed_effect(CreatureTimedEffect::SHIELD, rd_s16b());
     creature.set_timed_effect(CreatureTimedEffect::BLESSED, rd_s16b());
     creature.set_timed_effect(CreatureTimedEffect::TIM_INVIS, rd_s16b());
-    creature.word_recall = rd_s16b();
+    creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, rd_s16b());
     creature.recall_dungeon = i2enum<DungeonId>(rd_s16b());
-    creature.alter_reality = rd_s16b();
+    creature.set_timed_effect(CreatureTimedEffect::ALTER_REALITY, rd_s16b());
     creature.see_infra = rd_s16b();
     creature.set_timed_effect(CreatureTimedEffect::TIM_INFRA, rd_s16b());
     creature.set_timed_effect(CreatureTimedEffect::OPPOSE_FIRE, rd_s16b());

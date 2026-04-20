@@ -384,13 +384,13 @@ void report_magics(CreatureEntity &subject)
         info.emplace_back(7, _("あなたの手は赤く輝いている", "Your hands are glowing dull red."));
     }
 
-    if (subject.word_recall) {
-        info.emplace_back(report_magics_aux(subject.word_recall),
+    if (const auto recall = subject.get_timed_effect(CreatureTimedEffect::WORD_RECALL); recall != 0) {
+        info.emplace_back(report_magics_aux(recall),
             _("この後帰還の詔が発動する", "You are waiting to be recalled"));
     }
 
-    if (subject.alter_reality) {
-        info.emplace_back(report_magics_aux(subject.alter_reality),
+    if (const auto alter = subject.get_timed_effect(CreatureTimedEffect::ALTER_REALITY); alter != 0) {
+        info.emplace_back(report_magics_aux(alter),
             _("この後現実変容が発動する", "You waiting to be altered"));
     }
 

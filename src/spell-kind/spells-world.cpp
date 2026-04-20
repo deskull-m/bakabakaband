@@ -351,14 +351,14 @@ void reserve_alter_reality(CreatureEntity &creature, TIME_EFFECT turns)
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (creature.alter_reality || turns == 0) {
-        creature.alter_reality = 0;
+    if (creature.get_timed_effect(CreatureTimedEffect::ALTER_REALITY) || turns == 0) {
+        creature.set_timed_effect(CreatureTimedEffect::ALTER_REALITY, 0);
         msg_print(_("景色が元に戻った...", "The view around you returns to normal..."));
         rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
         return;
     }
 
-    creature.alter_reality = turns;
+    creature.set_timed_effect(CreatureTimedEffect::ALTER_REALITY, turns);
     msg_print(_("回りの景色が変わり始めた...", "The view around you begins to change..."));
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
 }
@@ -438,7 +438,7 @@ bool recall_player(CreatureEntity &creature, TIME_EFFECT turns)
     auto is_special_floor = floor.is_underground();
     is_special_floor &= dungeon_record.get_max_level() > floor.dun_level;
     is_special_floor &= !floor.is_in_quest();
-    is_special_floor &= !creature.word_recall;
+    is_special_floor &= !creature.get_timed_effect(CreatureTimedEffect::WORD_RECALL);
     if (is_special_floor) {
         if (input_check(_("ここは最深到達階より浅い階です。この階に戻って来ますか？ ", "Reset recall depth? "))) {
             dungeon_record.set_max_level(floor.dun_level);
@@ -449,8 +449,8 @@ bool recall_player(CreatureEntity &creature, TIME_EFFECT turns)
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (creature.word_recall || turns == 0) {
-        creature.word_recall = 0;
+    if (creature.get_timed_effect(CreatureTimedEffect::WORD_RECALL) || turns == 0) {
+        creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, 0);
         msg_print(_("張りつめた大気が流れ去った...", "A tension leaves the air around you..."));
         rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
         return true;
@@ -471,7 +471,7 @@ bool recall_player(CreatureEntity &creature, TIME_EFFECT turns)
         creature.recall_dungeon = *select_dungeon;
     }
 
-    creature.word_recall = turns;
+    creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, turns);
     msg_print(_("回りの大気が張りつめてきた...", "The air about you becomes charged..."));
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     return true;
@@ -503,7 +503,7 @@ bool free_level_recall(CreatureEntity &creature)
         return false;
     }
 
-    creature.word_recall = 1;
+    creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, 1);
     creature.recall_dungeon = *select_dungeon;
     const auto dun_level = (amt > dungeon.maxdepth) ? dungeon.maxdepth : (amt < dungeon.mindepth) ? dungeon.mindepth
                                                                                                   : amt;

@@ -576,11 +576,11 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_RESPOIS);
     }
 
-    if (creature.word_recall) {
+    if (creature.get_timed_effect(CreatureTimedEffect::WORD_RECALL)) {
         ADD_BAR_FLAG(BAR_RECALL);
     }
 
-    if (creature.alter_reality) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ALTER_REALITY)) {
         ADD_BAR_FLAG(BAR_ALTER);
     }
 

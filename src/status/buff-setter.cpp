@@ -86,9 +86,10 @@ void reset_tim_flags(CreatureEntity &creature)
     creature.set_timed_effect(CreatureTimedEffect::OPPOSE_COLD, 0);
     creature.set_timed_effect(CreatureTimedEffect::OPPOSE_POIS, 0);
 
+    creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, 0);
+    creature.set_timed_effect(CreatureTimedEffect::ALTER_REALITY, 0);
+
     // 非 CreatureTimedEffect のリセット
-    creature.word_recall = 0;
-    creature.alter_reality = 0;
     creature.sutemi = false;
     creature.counter = false;
     creature.special_attack = 0L;

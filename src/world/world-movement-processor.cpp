@@ -63,17 +63,18 @@ void check_random_quest_auto_failure(CreatureEntity &creature)
  */
 void execute_recall(CreatureEntity &creature)
 {
-    if (creature.word_recall == 0) {
+    const auto recall = creature.get_timed_effect(CreatureTimedEffect::WORD_RECALL);
+    if (recall == 0) {
         return;
     }
 
-    if (autosave_l && (creature.word_recall == 1) && !AngbandSystem::get_instance().is_phase_out()) {
+    if (autosave_l && (recall == 1) && !AngbandSystem::get_instance().is_phase_out()) {
         do_cmd_save_game(creature, true);
     }
 
-    creature.word_recall--;
+    creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, recall - 1);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (creature.word_recall != 0) {
+    if (creature.get_timed_effect(CreatureTimedEffect::WORD_RECALL) != 0) {
         return;
     }
 
@@ -147,17 +148,18 @@ void execute_recall(CreatureEntity &creature)
 void execute_floor_reset(CreatureEntity &creature)
 {
     const auto &floor = *creature.get_floor();
-    if (creature.alter_reality == 0) {
+    const auto alter = creature.get_timed_effect(CreatureTimedEffect::ALTER_REALITY);
+    if (alter == 0) {
         return;
     }
 
-    if (autosave_l && (creature.alter_reality == 1) && !AngbandSystem::get_instance().is_phase_out()) {
+    if (autosave_l && (alter == 1) && !AngbandSystem::get_instance().is_phase_out()) {
         do_cmd_save_game(creature, true);
     }
 
-    creature.alter_reality--;
+    creature.set_timed_effect(CreatureTimedEffect::ALTER_REALITY, alter - 1);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (creature.alter_reality != 0) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ALTER_REALITY) != 0) {
         return;
     }
 

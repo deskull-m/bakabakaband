@@ -374,7 +374,7 @@ static void exit_to_wilderness(CreatureEntity &creature)
     }
 
     creature.recall_dungeon = floor.dungeon_id;
-    creature.word_recall = 0;
+    creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, 0);
     floor.reset_dungeon_index();
     FloorChangeModesStore::get_instace()->reset(FloorChangeMode::SAVE_FLOORS);
 }

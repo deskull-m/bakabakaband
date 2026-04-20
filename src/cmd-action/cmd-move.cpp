@@ -125,7 +125,7 @@ void do_cmd_go_up(CreatureEntity &creature)
 
         if (!inside_quest(quest_id)) {
             floor.dun_level = 0;
-            creature.word_recall = 0;
+            creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, 0);
         }
 
         creature.leaving = true;
@@ -199,7 +199,7 @@ void do_cmd_go_up(CreatureEntity &creature)
         } else {
             msg_print(_("地上に戻った。", "You go back to the surface."));
         }
-        creature.word_recall = 0;
+        creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, 0);
     } else {
         if (creature.is_echizen()) {
             msg_print(_("なんだこの階段は！", "What's this STAIRWAY!"));
@@ -271,7 +271,7 @@ void do_cmd_go_down(CreatureEntity &creature)
 
         if (!floor.is_in_quest()) {
             floor.dun_level = 0;
-            creature.word_recall = 0;
+            creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, 0);
         }
 
         creature.leaving = true;
