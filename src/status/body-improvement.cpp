@@ -14,7 +14,7 @@
 #include "view/display-messages.h"
 
 BodyImprovement::BodyImprovement(CreatureEntity &creature)
-    : player_ptr(&creature)
+    : creature_ptr(&creature)
 {
 }
 
@@ -25,7 +25,7 @@ bool BodyImprovement::has_effect() const
 
 void BodyImprovement::mod_protection(short v, bool is_decrease)
 {
-    this->set_protection(this->player_ptr->effects()->protection().current() + v, is_decrease);
+    this->set_protection(this->creature_ptr->effects()->protection().current() + v, is_decrease);
 }
 
 /*!
@@ -40,11 +40,11 @@ void BodyImprovement::set_protection(short v, bool is_decrease)
     auto notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
-    if (this->player_ptr->is_dead()) {
+    if (this->creature_ptr->is_dead()) {
         return;
     }
 
-    auto &protection = this->player_ptr->effects()->protection();
+    auto &protection = this->creature_ptr->effects()->protection();
     const auto is_protected = protection.is_protected();
     if (v) {
         if (is_protected && !is_decrease) {
@@ -69,10 +69,10 @@ void BodyImprovement::set_protection(short v, bool is_decrease)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(*player_ptr, false, true);
+        disturb(*this->creature_ptr, false, true);
     }
 
-    handle_stuff(*player_ptr);
+    handle_stuff(*this->creature_ptr);
     this->is_affected = true;
 }
 
