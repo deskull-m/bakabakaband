@@ -63,10 +63,8 @@ short PlayerType::get_timed_effect(CreatureTimedEffect effect) const
         return eff.paralysis().current();
     case CreatureTimedEffect::BLINDNESS:
         return eff.blindness().current();
-    default: {
-        const auto it = this->timed_effects_map.find(effect);
-        return (it != this->timed_effects_map.end()) ? it->second : 0;
-    }
+    default:
+        return CreatureEntity::get_timed_effect(effect);
     }
 }
 
@@ -97,7 +95,7 @@ void PlayerType::set_timed_effect(CreatureTimedEffect effect, short value)
         eff.blindness().set(value);
         break;
     default:
-        this->timed_effects_map[effect] = value;
+        CreatureEntity::set_timed_effect(effect, value);
         break;
     }
 }

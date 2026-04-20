@@ -425,22 +425,13 @@ bool CreatureEntity::is_echizen() const
 
 short CreatureEntity::get_timed_effect(CreatureTimedEffect effect) const
 {
-    if (!this->has_monster_profile()) {
-        return 0;
-    }
-
-    const auto &mtimed = this->get_monster_profile().mtimed;
-    const auto it = mtimed.find(effect);
-    return (it != mtimed.end()) ? it->second : 0;
+    const auto it = this->timed_effects_map.find(effect);
+    return (it != this->timed_effects_map.end()) ? it->second : 0;
 }
 
 void CreatureEntity::set_timed_effect(CreatureTimedEffect effect, short value)
 {
-    if (!this->has_monster_profile()) {
-        return;
-    }
-
-    this->get_monster_profile().mtimed[effect] = value;
+    this->timed_effects_map[effect] = value;
 }
 
 void CreatureEntity::make_lore_treasure(int num_item, int num_gold) const

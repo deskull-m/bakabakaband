@@ -459,8 +459,10 @@ public:
      * @brief クリーチャーの時限効果の残りターン数を取得
      * @param effect 取得する時限効果の種別
      * @return 残りターン数（0なら効果なし）
-     * @details デフォルト実装は MonsterProfile::mtimed を参照する（モンスター用）。
-     *          PlayerType はオーバーライドして TimedEffects を使う。
+     * @details デフォルト実装は CreatureEntity::timed_effects_map を参照する。
+     *          PlayerType は STUN / CONFUSION / FEAR / ACCELERATION / DECELERATION /
+     *          PARALYSIS / BLINDNESS に限り TimedEffects オブジェクト経由で管理し、
+     *          それ以外はデフォルト実装（= map）へフォールバックする。
      */
     virtual short get_timed_effect(CreatureTimedEffect effect) const;
 
@@ -469,8 +471,8 @@ public:
      * @param effect 設定する時限効果の種別
      * @param value 設定するターン数
      * @note メッセージや副作用は発生しない。ゲームロジックからの呼び出しには専用セッターを使うこと。
-     * @details デフォルト実装は MonsterProfile::mtimed を更新する（モンスター用）。
-     *          PlayerType はオーバーライドして TimedEffects を使う。
+     * @details デフォルト実装は CreatureEntity::timed_effects_map を更新する。
+     *          PlayerType は get_timed_effect と同様に特定の効果だけ TimedEffects 経由。
      */
     virtual void set_timed_effect(CreatureTimedEffect effect, short value);
 
@@ -1273,8 +1275,7 @@ protected:
     std::shared_ptr<TimedEffects> timed_effects; /*!< 時限効果管理オブジェクト */
 
     // 時限効果の統一ストレージ（外部からは get/set_timed_effect() 経由でアクセスすること）
-    // モンスターは従来通り MonsterProfile::mtimed を使うが、
-    // プレイヤー側は個別フィールドからこの map に統一した。
+    // プレイヤー・モンスター共通。PlayerType の STUN / CONFUSION 等は TimedEffects オブジェクト経由。
     std::map<CreatureTimedEffect, TIME_EFFECT> timed_effects_map{};
 
     // 変身形態（外部からは get_mimic_form() / set_mimic_form() 経由でアクセスすること）
