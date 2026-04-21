@@ -258,7 +258,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     m_ptr->wipe(); // モンスターを初期化（古いデータをクリア）
 
     // モンスターの能力値をランダムに初期化
-    get_stats(m_ptr);
+    get_stats(*m_ptr);
 
     m_ptr->get_monster_profile().alliance_idx = monrace.alliance_idx;
 
@@ -412,10 +412,10 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     m_ptr->initialize_equivalent_player_classes();
 
     // 種族が指定されている場合、身長・体重を設定
-    get_height_weight(m_ptr);
+    get_height_weight(*m_ptr);
 
     // 所持金を初期化（能力値に基づいて計算）
-    get_money_for_creature(m_ptr);
+    get_money_for_creature(*m_ptr);
 
     m_ptr->get_monster_profile().ml = false;
     if (any_bits(mode, PM_FORCE_PET)) {

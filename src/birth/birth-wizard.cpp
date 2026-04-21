@@ -452,7 +452,7 @@ static bool display_auto_roller_count(CreatureEntity &creature, const int col)
 static void exe_auto_roller(CreatureEntity &creature, chara_limit_type chara_limit, const int col)
 {
     while (autoroller || autochara) {
-        get_stats(&creature);
+        get_stats(creature);
         auto_round++;
         auto_roller_count();
         bool accept = decide_initial_stat(creature);
@@ -548,7 +548,7 @@ static bool display_auto_roller(CreatureEntity &creature, chara_limit_type chara
             put_str(_("回数 :", "Round:"), 10, col + 10);
             put_str(_("(ESCで停止)", "(Hit ESC to stop)"), 13, col + 13);
         } else {
-            get_stats(&creature);
+            get_stats(creature);
             get_ahw(creature);
             get_history(creature);
         }

@@ -85,7 +85,7 @@ void change_race(CreatureEntity &creature, PlayerRaceType new_race, concptr effe
         creature.expfact -= 15;
     }
 
-    get_height_weight(&creature);
+    get_height_weight(creature);
 
     const auto r_mhp = pc.equals(PlayerClassType::SORCERER) ? creature.race->r_mhp / 2 : creature.race->r_mhp;
     creature.hit_dice = Dice(1, r_mhp + (*creature.pclass_ref).c_mhp + (*creature.personality).a_mhp);
