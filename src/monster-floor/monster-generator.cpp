@@ -75,7 +75,7 @@ tl::optional<Pos2D> mon_scatter(CreatureEntity &creature, MonraceId monrace_id, 
 
             if (MonraceList::is_valid(monrace_id)) {
                 const auto &monrace = monraces.get_monrace(monrace_id);
-                if (!monster_can_enter(&creature, pos_neighbor.y, pos_neighbor.x, monrace, 0)) {
+                if (!monster_can_enter(creature, pos_neighbor.y, pos_neighbor.x, monrace, 0)) {
                     continue;
                 }
             } else {
@@ -416,7 +416,7 @@ bool alloc_guardian(CreatureEntity &creature, bool def_val)
             continue;
         }
 
-        if (!monster_can_cross_terrain(&creature, floor.get_grid(pos).feat, monrace, 0)) {
+        if (!monster_can_cross_terrain(creature, floor.get_grid(pos).feat, monrace, 0)) {
             try_count++;
             continue;
         }

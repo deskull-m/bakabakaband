@@ -573,7 +573,7 @@ static bool monster_hook_chameleon_lord(CreatureEntity &creature, const Chameleo
         return false;
     }
 
-    if (!monster_can_cross_terrain(&creature, ct.terrain_id, monrace, 0)) {
+    if (!monster_can_cross_terrain(creature, ct.terrain_id, monrace, 0)) {
         return false;
     }
 
@@ -614,7 +614,7 @@ static bool monster_hook_chameleon(CreatureEntity &creature, const ChameleonTran
         return false;
     }
 
-    if (!monster_can_cross_terrain(&creature, ct.terrain_id, monrace, 0)) {
+    if (!monster_can_cross_terrain(creature, ct.terrain_id, monrace, 0)) {
         return false;
     }
 

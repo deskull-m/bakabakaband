@@ -40,7 +40,7 @@ static coordinate_candidate sweep_safe_coordinate(CreatureEntity &creature, MONS
         const auto &monrace = monster.get_monrace();
         const auto &grid = floor.get_grid(pos);
         BIT_FLAGS16 riding_mode = monster.is_riding() ? CEM_RIDING : 0;
-        if (!monster_can_cross_terrain(&creature, grid.feat, monrace, riding_mode)) {
+        if (!monster_can_cross_terrain(creature, grid.feat, monrace, riding_mode)) {
             continue;
         }
 
@@ -122,7 +122,7 @@ static void sweep_hiding_candidate(
         if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
             continue;
         }
-        if (!monster_can_enter(&creature, pos.y, pos.x, monrace, 0)) {
+        if (!monster_can_enter(creature, pos.y, pos.x, monrace, 0)) {
             continue;
         }
         if (projectable(floor, p_pos, pos) || !clean_shot(creature, monster.y, monster.x, pos.y, pos.x, false)) {

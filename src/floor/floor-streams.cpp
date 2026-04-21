@@ -292,7 +292,7 @@ void build_streamer(CreatureEntity &creature, FEAT_IDX feat, int chance)
             }
 
             const auto &monrace = floor.get_monster(grid.m_idx).get_monrace();
-            if (grid.has_monster() && !(streamer.flags.has(TerrainCharacteristics::PLACE) && monster_can_cross_terrain(&creature, feat, monrace, 0))) {
+            if (grid.has_monster() && !(streamer.flags.has(TerrainCharacteristics::PLACE) && monster_can_cross_terrain(creature, feat, monrace, 0))) {
                 /* Delete the monster (if any) */
                 delete_monster(creature, pos);
             }

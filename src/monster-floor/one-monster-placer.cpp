@@ -234,7 +234,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         return tl::nullopt;
     }
 
-    if (none_bits(mode, PM_IGNORE_TERRAIN) && (g_ptr->has(TerrainCharacteristics::PATTERN) || !monster_can_enter(&player, pos.y, pos.x, monrace, 0))) {
+    if (none_bits(mode, PM_IGNORE_TERRAIN) && (g_ptr->has(TerrainCharacteristics::PATTERN) || !monster_can_enter(player, pos.y, pos.x, monrace, 0))) {
         return tl::nullopt;
     }
 
