@@ -577,9 +577,10 @@ static std::string get_check_sum()
 
 /*!
  * @brief ダンプ出力のメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
- * @return エラーコード
+ * @details プレイヤーは装備・所持品・クエスト履歴等のフル情報を、
+ * モンスターはステータス画面と突然変異情報のみを出力する。
  */
 void make_character_dump(CreatureEntity &creature, FILE *fff)
 {

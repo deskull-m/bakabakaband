@@ -47,14 +47,13 @@ std::filesystem::path savefile;
 std::filesystem::path savefile_base;
 
 /*!
- * @brief プレイヤーステータスをファイルダンプ出力する
+ * @brief クリーチャー（プレイヤー・モンスター）のステータスをファイルダンプ出力する
  * Hack -- Dump a character description file
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param name 出力ファイル名
- * @return エラーコード
+ * @param creature クリーチャーへの参照
+ * @param filename 出力ファイル名
  * @details
- * Allow the "full" flag to dump additional info,
- * and trigger its usage from various places in the code.
+ * プレイヤーは従来通りフル情報（種族史・魔法履歴・徳・装備・所持品・我が家の内容等）を
+ * 出力し、モンスターはステータス画面 (mode 0) と突然変異情報だけを出力する。
  */
 void file_character(CreatureEntity &creature, std::string_view filename)
 {
