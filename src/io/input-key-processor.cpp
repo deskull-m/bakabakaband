@@ -588,7 +588,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case 'C': {
-        do_cmd_player_status(&creature);
+        do_cmd_player_status(creature);
         break;
     }
     case '!':

@@ -444,7 +444,7 @@ void show_death_info(CreatureEntity &creature)
     }
 
     export_player_info(creature);
-    (void)display_player(&creature, 0);
+    (void)display_player(creature, 0);
     prt(_("何かキーを押すとさらに情報が続きます (ESCで中断): ", "Hit any key to see more information (ESC to abort): "), 23, 0);
     if (inkey() == ESCAPE) {
         return;

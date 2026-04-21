@@ -18,7 +18,7 @@ static void dump_player_status_with_screen_num(CreatureEntity &creature, FILE *f
     const int mode, const TERM_LEN start_y, const TERM_LEN tmp_end_y, const bool change_color)
 {
     char buf[1024]{};
-    auto num_lines = display_player(&creature, mode);
+    auto num_lines = display_player(creature, mode);
     auto end_y = tmp_end_y + num_lines.value_or(0);
     for (auto y = start_y; y < end_y; y++) {
         TERM_LEN x;

@@ -190,7 +190,7 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
     }
     case 'C': {
         creature.town_num = old_town_num;
-        do_cmd_player_status(&creature);
+        do_cmd_player_status(creature);
         creature.town_num = inner_town_num;
         display_store(creature, store_num);
         break;
