@@ -293,17 +293,16 @@ bool choose_ele_immune(CreatureEntity &creature, TIME_EFFECT immune_turn)
  */
 bool pulish_shield(CreatureEntity &creature)
 {
-    auto &player_ptr = creature;
     constexpr auto q = _("どの盾を磨きますか？", "Polish which shield? ");
     constexpr auto s = _("磨く盾がありません。", "You have no shield to polish.");
     const auto options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
     short i_idx;
-    auto *o_ptr = choose_object(player_ptr, &i_idx, q, s, options, TvalItemTester(ItemKindType::SHIELD));
+    auto *o_ptr = choose_object(creature, &i_idx, q, s, options, TvalItemTester(ItemKindType::SHIELD));
     if (o_ptr == nullptr) {
         return false;
     }
 
-    const auto item_name = describe_flavor(player_ptr, *o_ptr, OD_OMIT_PREFIX | OD_NAME_ONLY);
+    const auto item_name = describe_flavor(creature, *o_ptr, OD_OMIT_PREFIX | OD_NAME_ONLY);
     auto is_pulish_successful = o_ptr->is_valid() && !o_ptr->is_fixed_or_random_artifact() && !o_ptr->is_ego();
     is_pulish_successful &= !o_ptr->is_cursed();
     is_pulish_successful &= (o_ptr->bi_key.sval() != SV_MIRROR_SHIELD);
@@ -326,6 +325,6 @@ bool pulish_shield(CreatureEntity &creature)
 
     msg_print(_("失敗した。", "Failed."));
     chg_virtue(creature, Virtue::ENCHANT, -2);
-    calc_android_exp(player_ptr);
+    calc_android_exp(creature);
     return false;
 }
