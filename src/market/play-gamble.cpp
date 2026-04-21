@@ -254,10 +254,10 @@ void gamble_comm(CreatureEntity &creature, int cmd)
     prt("", 18, 37);
     if (creature.au >= oldgold) {
         msg_print(_("「今回は儲けたな！でも次はこっちが勝ってやるからな、絶対に！」", "You came out a winner! We'll win next time, I'm sure."));
-        chg_virtue(static_cast<CreatureEntity &>(creature), Virtue::CHANCE, 3);
+        chg_virtue(creature, Virtue::CHANCE, 3);
     } else {
         msg_print(_("「金をスッてしまったな、わはは！うちに帰った方がいいぜ。」", "You lost gold! Haha, better head home."));
-        chg_virtue(static_cast<CreatureEntity &>(creature), Virtue::CHANCE, -3);
+        chg_virtue(creature, Virtue::CHANCE, -3);
     }
 
     msg_erase();

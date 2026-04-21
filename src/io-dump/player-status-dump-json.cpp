@@ -74,7 +74,7 @@ static void add_basic_info_to_json(nlohmann::json &j, CreatureEntity &creature)
         return;
     }
 
-    j["basic"]["sex"] = localized_to_utf8_safe(sex_info[creature.psex].title);
+    j["basic"]["sex"] = localized_to_utf8_safe(creature.get_sex_info().title);
     j["basic"]["personality"] = localized_to_utf8_safe(personality_info[creature.ppersonality].title);
 
     if (creature.get_mimic_form() != MimicKindType::NONE) {
