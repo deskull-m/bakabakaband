@@ -425,7 +425,7 @@ bool QuaffEffects::death()
  */
 bool QuaffEffects::speed()
 {
-    if (this->creature.effects()->acceleration().is_fast()) {
+    if (this->creature.is_accelerated()) {
         (void)mod_acceleration(this->creature, 5, false);
         return false;
     }

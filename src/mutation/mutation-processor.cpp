@@ -267,14 +267,14 @@ void process_world_aux_mutation(CreatureEntity &creature)
         disturb(creature, false, true);
         if (one_in_(2)) {
             msg_print(_("精力的でなくなった気がする。", "You feel less energetic."));
-            if (creature.effects()->acceleration().is_fast()) {
+            if (creature.is_accelerated()) {
                 set_acceleration(creature, 0, true);
             } else {
                 (void)bss.set_deceleration(randint1(30) + 10, false);
             }
         } else {
             msg_print(_("精力的になった気がする。", "You feel more energetic."));
-            if (creature.effects()->deceleration().is_slow()) {
+            if (creature.is_decelerated()) {
                 (void)bss.set_deceleration(0, true);
             } else {
                 set_acceleration(creature, randint1(30) + 10, false);
