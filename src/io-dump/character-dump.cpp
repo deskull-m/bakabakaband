@@ -245,7 +245,6 @@ static void dump_aux_options(FILE *fff)
 
 /*!
  * @brief 闘技場の情報をファイルにダンプする
- * @param player_ptr プレイヤーへの参照ポインタ
  * @param fff ファイルポインタ
  * @details 旧バージョン (v1.5.0.1より前)では何回戦で敗北したか記録していないので、便宜的に1回戦で敗北したことにする.
  */
