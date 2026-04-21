@@ -167,11 +167,11 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
         // 疫病の使者召喚
         /*
         for (int i = 0; i < 2; i++) {
-            MONSTER_IDX m_idx = summon_specific(&player_ptr, 0, player_ptr.y, player_ptr.x,
-                player_ptr.get_floor()->dun_level + 5,
+            MONSTER_IDX m_idx = summon_specific(&creature, 0, creature.y, creature.x,
+                creature.get_floor()->dun_level + 5,
                 SUMMON_DEMON, PM_FORCE_PET | PM_ALLOW_GROUP);
             if (m_idx) {
-                player_ptr.get_floor()->m_list[m_idx].set_hostile();
+                creature.get_floor()->m_list[m_idx].set_hostile();
             }
         }
         return;
@@ -202,11 +202,11 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
         // より強力な悪魔軍団
         /*
         for (int i = 0; i < 4; i++) {
-            MONSTER_IDX m_idx = summon_specific(&player_ptr, 0, player_ptr.y, player_ptr.x,
-                player_ptr.get_floor()->dun_level + 10,
+            MONSTER_IDX m_idx = summon_specific(&creature, 0, creature.y, creature.x,
+                creature.get_floor()->dun_level + 10,
                 SUMMON_DEMON, PM_FORCE_PET | PM_ALLOW_GROUP);
             if (m_idx) {
-                player_ptr.get_floor()->m_list[m_idx].set_hostile();
+                creature.get_floor()->m_list[m_idx].set_hostile();
             }
         }
         return;
@@ -237,11 +237,11 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
     // 大軍団召喚
     /*
     for (int i = 0; i < 8; i++) {
-        MONSTER_IDX m_idx = summon_specific(&player_ptr, 0, player_ptr.y, player_ptr.x,
-            player_ptr.get_floor()->dun_level + 15,
+        MONSTER_IDX m_idx = summon_specific(&creature, 0, creature.y, creature.x,
+            creature.get_floor()->dun_level + 15,
             SUMMON_DEMON, PM_FORCE_PET | PM_ALLOW_GROUP);
         if (m_idx) {
-            player_ptr.get_floor()->m_list[m_idx].set_hostile();
+            creature.get_floor()->m_list[m_idx].set_hostile();
         }
     }
     */

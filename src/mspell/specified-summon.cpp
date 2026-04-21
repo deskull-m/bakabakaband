@@ -73,7 +73,6 @@ MONSTER_NUMBER summon_EDGE(CreatureEntity &creature, POSITION y, POSITION x, int
  */
 MONSTER_NUMBER summon_guardian(CreatureEntity &creature, POSITION y, POSITION x, int rlev, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = creature;
     int num = 2 + randint1(3);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
@@ -82,12 +81,12 @@ MONSTER_NUMBER summon_guardian(CreatureEntity &creature, POSITION y, POSITION x,
         mspell_cast_msg_simple msg(_("地面から水が吹き出した！", "Water blew off from the ground!"),
             _("地面から水が吹き出した！", "Water blew off from the ground!"));
 
-        simple_monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+        simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
 
         if (mon_to_player) {
-            fire_ball_hide(player_ptr, AttributeType::WATER_FLOW, Direction::self(), 3, 8);
+            fire_ball_hide(creature, AttributeType::WATER_FLOW, Direction::self(), 3, 8);
         } else if (mon_to_mon) {
-            project(player_ptr, t_idx, 8, y, x, 3, AttributeType::WATER_FLOW, PROJECT_GRID | PROJECT_HIDE);
+            project(creature, t_idx, 8, y, x, 3, AttributeType::WATER_FLOW, PROJECT_GRID | PROJECT_HIDE);
         }
     }
 
@@ -179,25 +178,24 @@ MONSTER_NUMBER summon_DEMON_SLAYER(CreatureEntity &creature, POSITION y, POSITIO
  */
 MONSTER_NUMBER summon_NAZGUL(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx)
 {
-    auto &player_ptr = creature;
     BIT_FLAGS mode = 0L;
     Pos2D pos_initial(y, x);
     auto pos = pos_initial;
     auto pos_scat = pos_initial;
-    const auto m_name = monster_name(player_ptr, m_idx);
+    const auto m_name = monster_name(creature, m_idx);
 
-    if (player_ptr.is_blind()) {
+    if (creature.is_blind()) {
         msg_format(_("%s^が何かをつぶやいた。", "%s^ mumbles."), m_name.data());
     } else {
         msg_format(_("%s^が魔法で幽鬼戦隊を召喚した！", "%s^ magically summons rangers of Nazgul!"), m_name.data());
     }
 
     msg_erase();
-    const auto &floor = *player_ptr.get_floor();
-    const auto p_pos = player_ptr.get_position();
+    const auto &floor = *creature.get_floor();
+    const auto p_pos = creature.get_position();
     auto count = 0;
     for (auto k = 0; k < 30; k++) {
-        if (!summon_possible(player_ptr, pos_scat.y, pos_scat.x) || !floor.is_empty_at(pos_scat) || (pos_scat == p_pos)) {
+        if (!summon_possible(creature, pos_scat.y, pos_scat.x) || !floor.is_empty_at(pos_scat) || (pos_scat == p_pos)) {
             int j;
             for (j = 100; j > 0; j--) {
                 pos_scat = scatter(floor, pos, 2, PROJECT_NONE);
@@ -350,8 +348,7 @@ MONSTER_NUMBER summon_PLASMA(CreatureEntity &creature, POSITION y, POSITION x, i
  */
 MONSTER_NUMBER summon_LAFFEY_II(CreatureEntity &creature, const Pos2D &position, MONSTER_IDX m_idx)
 {
-    auto &player_ptr = creature;
-    auto &floor = *player_ptr.get_floor();
+    auto &floor = *creature.get_floor();
     auto count = 0;
     constexpr auto summon_num = 2;
     auto real_num = summon_num - MonraceList::get_instance().get_monrace(MonraceId::BUNBUN_STRIKERS).cur_num;

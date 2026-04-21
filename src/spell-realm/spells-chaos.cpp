@@ -27,13 +27,12 @@
  */
 void call_the_void(CreatureEntity &creature)
 {
-    auto &player_ptr = creature;
     auto do_call = true;
-    const auto &floor = *player_ptr.get_floor();
+    const auto &floor = *creature.get_floor();
     /* 虚無招来そのものを唱えることによる時空崩壊度進行(*破壊*とは別) */
     wc_ptr->plus_perm_collapsion(150);
     for (const auto &d : Direction::directions()) {
-        const auto p_pos_neighbor = player_ptr.get_neighbor(d);
+        const auto p_pos_neighbor = creature.get_neighbor(d);
         const auto &grid = floor.get_grid(p_pos_neighbor);
         if (!grid.has(TerrainCharacteristics::PROJECTION)) {
             if (!grid.mimic || grid.get_terrain(TerrainKind::MIMIC_RAW).flags.has_not(TerrainCharacteristics::PROJECTION) || !grid.get_terrain().is_permanent_wall()) {
@@ -45,13 +44,13 @@ void call_the_void(CreatureEntity &creature)
 
     if (do_call) {
         for (const auto &dir : Direction::directions_8()) {
-            fire_ball(player_ptr, AttributeType::ROCKET, dir, 175, 2);
+            fire_ball(creature, AttributeType::ROCKET, dir, 175, 2);
         }
         for (const auto &dir : Direction::directions_8()) {
-            fire_ball(player_ptr, AttributeType::MANA, dir, 175, 3);
+            fire_ball(creature, AttributeType::MANA, dir, 175, 3);
         }
         for (const auto &dir : Direction::directions_8()) {
-            fire_ball(player_ptr, AttributeType::NUKE, dir, 175, 4);
+            fire_ball(creature, AttributeType::NUKE, dir, 175, 4);
         }
 
         return;
@@ -76,16 +75,16 @@ void call_the_void(CreatureEntity &creature)
         if (!vanish_dungeon(creature)) {
             msg_print(_("ダンジョンは一瞬静まり返った。", "The dungeon becomes quiet for a moment."));
         }
-        take_hit(player_ptr, DAMAGE_NOESCAPE, 100 + randint1(150), _("自殺的な虚無招来", "a suicidal Call the Void"));
+        take_hit(creature, DAMAGE_NOESCAPE, 100 + randint1(150), _("自殺的な虚無招来", "a suicidal Call the Void"));
         return;
     }
 
-    if (destroy_area(creature, player_ptr.y, player_ptr.x, 15 + player_ptr.level + randint0(11), false)) {
+    if (destroy_area(creature, creature.y, creature.x, 15 + creature.level + randint0(11), false)) {
         msg_print(_("ダンジョンが崩壊した...", "The dungeon collapses..."));
     } else {
         msg_print(_("ダンジョンは大きく揺れた。", "The dungeon trembles."));
     }
-    take_hit(player_ptr, DAMAGE_NOESCAPE, 100 + randint1(150), _("自殺的な虚無招来", "a suicidal Call the Void"));
+    take_hit(creature, DAMAGE_NOESCAPE, 100 + randint1(150), _("自殺的な虚無招来", "a suicidal Call the Void"));
 }
 
 /*!

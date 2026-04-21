@@ -116,7 +116,7 @@ void PlayerBasicStatistics::update_top_status()
  * @param 通常処理されたステータスの値
  * @returns 例外処理されたステータスの値
  * @details
- * * player_ptrのステータス現在値を更新する際の例外処理
+ * * クリーチャーのステータス現在値を更新する際の例外処理
  * * 派生クラスでoverrideして使用する。
  */
 int16_t PlayerBasicStatistics::set_exception_use_status(int16_t value)

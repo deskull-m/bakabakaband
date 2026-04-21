@@ -60,8 +60,8 @@ void AllianceKhorne::panishment(CreatureEntity &creature)
     }
     /*
     if (one_in_(15)) {
-        Pos2D m_pos(player_ptr.get_position());
-        m_pos = scatter(*player_ptr.get_floor(), m_pos, 15, PROJECT_NONE);
+        Pos2D m_pos(creature.get_position());
+        m_pos = scatter(*creature.get_floor(), m_pos, 15, PROJECT_NONE);
 
         // コーンの怒りレベルに応じて異なる復讐者を派遣
         MonraceId avenger_id;
@@ -79,14 +79,14 @@ void AllianceKhorne::panishment(CreatureEntity &creature)
                 "\"For Khorne!\" Berserkers charge at you for revenge!"));
         }
 
-        const auto m_idx = place_monster_one(player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_KHORNE);
+        const auto m_idx = place_monster_one(creature, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_KHORNE);
         if (m_idx) {
-            disturb(player_ptr, true, true);
+            disturb(creature, true, true);
 
             // 追加の配下召喚（血と戦いの混沌）
             for (int k = 0; k < 3 + (impression < -300 ? 2 : 0); k++) {
-                summon_specific(&player_ptr, m_pos.y, m_pos.x,
-                    std::max(player_ptr.get_floor()->monster_level, 10),
+                summon_specific(&creature, m_pos.y, m_pos.x,
+                    std::max(creature.get_floor()->monster_level, 10),
                     SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }

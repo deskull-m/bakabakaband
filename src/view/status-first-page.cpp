@@ -251,12 +251,11 @@ static void calc_two_hands(CreatureEntity &creature, int *damage, int *to_h)
             damage[i] += o_ptr->to_d * 100;
             to_h[i] += o_ptr->to_h;
         }
-        auto &player_ptr = creature;
-        const auto mindice = (o_ptr->damage_dice.num + player_ptr.damage_dice_bonus[i].num);
-        const auto maxdice = mindice * (o_ptr->damage_dice.sides + player_ptr.damage_dice_bonus[i].sides);
+        const auto mindice = (o_ptr->damage_dice.num + creature.damage_dice_bonus[i].num);
+        const auto maxdice = mindice * (o_ptr->damage_dice.sides + creature.damage_dice_bonus[i].sides);
 
-        basedam = calc_expect_dice(player_ptr, mindice, creature.to_h[i], o_ptr);
-        basedam += calc_expect_dice(player_ptr, maxdice, creature.to_h[i], o_ptr);
+        basedam = calc_expect_dice(creature, mindice, creature.to_h[i], o_ptr);
+        basedam += calc_expect_dice(creature, maxdice, creature.to_h[i], o_ptr);
         damage[i] += basedam * 50; // x100 for display
 
         if (o_ptr->bi_key == BaseitemKey(ItemKindType::SWORD, SV_POISON_NEEDLE)) {
