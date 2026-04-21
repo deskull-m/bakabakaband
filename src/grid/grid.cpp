@@ -866,7 +866,7 @@ bool cave_monster_teleportable_bold(CreatureEntity &creature, MONSTER_IDX m_idx,
     }
 
     const auto &monster = floor.get_monster(m_idx);
-    return monster_can_cross_terrain(&creature, grid.feat, monster.get_monrace(), 0);
+    return monster_can_cross_terrain(creature, grid.feat, monster.get_monrace(), 0);
 }
 
 /*!
@@ -940,7 +940,7 @@ bool player_can_enter(CreatureEntity &creature, FEAT_IDX feature, BIT_FLAGS16 mo
     const auto &terrain = TerrainList::get_instance().get_terrain(feature);
     if (creature.riding) {
         return monster_can_cross_terrain(
-            &creature, feature, creature.get_floor()->get_monster(creature.riding).get_monrace(), mode | CEM_RIDING);
+            creature, feature, creature.get_floor()->get_monster(creature.riding).get_monrace(), mode | CEM_RIDING);
     }
 
     if (terrain.flags.has(TerrainCharacteristics::PATTERN)) {

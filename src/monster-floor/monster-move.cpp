@@ -399,7 +399,7 @@ bool process_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_p
         auto &grid = floor.get_grid(pos_neighbor);
         auto &monster = floor.get_monster(m_idx);
         auto &monrace = monster.get_monrace();
-        auto can_cross = monster_can_cross_terrain(&creature, grid.feat, monrace, turn_flags_ptr->is_riding_mon ? CEM_RIDING : 0);
+        auto can_cross = monster_can_cross_terrain(creature, grid.feat, monrace, turn_flags_ptr->is_riding_mon ? CEM_RIDING : 0);
         if (!process_wall(creature, turn_flags_ptr, monster, pos_neighbor, can_cross)) {
             if (!process_door(creature, turn_flags_ptr, monster, pos_neighbor)) {
                 return false;
@@ -429,7 +429,7 @@ bool process_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_p
         }
 
         if (turn_flags_ptr->must_alter_to_move && monrace.feature_flags.has(MonsterFeatureType::AQUATIC)) {
-            if (!monster_can_cross_terrain(&creature, grid.feat, monrace, turn_flags_ptr->is_riding_mon ? CEM_RIDING : 0)) {
+            if (!monster_can_cross_terrain(creature, grid.feat, monrace, turn_flags_ptr->is_riding_mon ? CEM_RIDING : 0)) {
                 turn_flags_ptr->do_move = false;
             }
         }

@@ -173,7 +173,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
             if ((creature.is_wielding(FixedArtifactId::STORMBRINGER) && (randint1(1000) > 666)) || CreatureClass(creature).equals(PlayerClassType::BERSERKER)) {
                 do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
                 can_move = false;
-            } else if (monster_can_cross_terrain(&creature, floor.get_grid(creature.get_position()).feat, monrace, 0)) {
+            } else if (monster_can_cross_terrain(creature, floor.get_grid(creature.get_position()).feat, monrace, 0)) {
                 do_past = true;
             } else {
                 msg_format(_("%s^が邪魔だ！", "%s^ is in your way!"), m_name.data());

@@ -39,7 +39,7 @@
  * @param mode オプション
  * @return 踏破可能ならばTRUEを返す
  */
-bool monster_can_cross_terrain(CreatureEntity *creature_ptr, FEAT_IDX feat, const MonraceDefinition &monrace, BIT_FLAGS16 mode)
+bool monster_can_cross_terrain(CreatureEntity &creature, FEAT_IDX feat, const MonraceDefinition &monrace, BIT_FLAGS16 mode)
 {
     const auto &terrain = TerrainList::get_instance().get_terrain(feat);
     if (terrain.flags.has(TerrainCharacteristics::PATTERN)) {
@@ -61,7 +61,7 @@ bool monster_can_cross_terrain(CreatureEntity *creature_ptr, FEAT_IDX feat, cons
         return true;
     }
     if (terrain.flags.has(TerrainCharacteristics::CAN_PASS)) {
-        if (monrace.feature_flags.has(MonsterFeatureType::PASS_WALL) && (!(mode & CEM_RIDING) || has_pass_wall(*creature_ptr))) {
+        if (monrace.feature_flags.has(MonsterFeatureType::PASS_WALL) && (!(mode & CEM_RIDING) || has_pass_wall(creature))) {
             return true;
         }
     }
@@ -154,18 +154,18 @@ bool monster_can_cross_terrain(CreatureEntity *creature_ptr, FEAT_IDX feat, cons
  * @param mode オプション
  * @return 踏破可能ならばTRUEを返す
  */
-bool monster_can_enter(CreatureEntity *creature_ptr, POSITION y, POSITION x, const MonraceDefinition &monrace, BIT_FLAGS16 mode)
+bool monster_can_enter(CreatureEntity &creature, POSITION y, POSITION x, const MonraceDefinition &monrace, BIT_FLAGS16 mode)
 {
     const Pos2D pos(y, x);
-    auto &grid = creature_ptr->get_floor()->get_grid(pos);
-    if (creature_ptr->is_located_at(pos)) {
+    auto &grid = creature.get_floor()->get_grid(pos);
+    if (creature.is_located_at(pos)) {
         return false;
     }
     if (grid.has_monster()) {
         return false;
     }
 
-    return monster_can_cross_terrain(creature_ptr, grid.feat, monrace, mode);
+    return monster_can_cross_terrain(creature, grid.feat, monrace, mode);
 }
 
 static uint8_t get_recial_sub_align(const MonraceDefinition &monrace)

@@ -213,7 +213,7 @@ public:
             }
 
             const auto &grid = floor.get_grid(p_pos_neighbor);
-            if (monster_can_cross_terrain(this->creature_ptr, grid.feat, monrace, 0)) {
+            if (monster_can_cross_terrain(*this->creature_ptr, grid.feat, monrace, 0)) {
                 room++;
             }
         }
@@ -265,7 +265,7 @@ public:
                 return p_pos;
             }
 
-            if (!floor.contains(pos_move, FloorBoundary::OUTER_WALL_INCLUSIVE) || !monster_can_enter(this->creature_ptr, pos_move.y, pos_move.x, monrace, 0)) {
+            if (!floor.contains(pos_move, FloorBoundary::OUTER_WALL_INCLUSIVE) || !monster_can_enter(*this->creature_ptr, pos_move.y, pos_move.x, monrace, 0)) {
                 continue;
             }
 

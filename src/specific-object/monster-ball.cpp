@@ -96,7 +96,7 @@ static bool release_monster(CreatureEntity &creature, ItemEntity &item, const Di
 {
     const auto &monrace = item.get_monrace();
     const auto pos = creature.get_neighbor(dir);
-    if (!monster_can_enter(&creature, pos.y, pos.x, monrace, 0)) {
+    if (!monster_can_enter(creature, pos.y, pos.x, monrace, 0)) {
         return false;
     }
 

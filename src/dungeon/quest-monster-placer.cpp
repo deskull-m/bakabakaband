@@ -54,7 +54,7 @@ bool place_quest_monsters(CreatureEntity &creature)
                         continue;
                     }
 
-                    if (!monster_can_enter(&creature, pos.y, pos.x, monrace, 0)) {
+                    if (!monster_can_enter(creature, pos.y, pos.x, monrace, 0)) {
                         continue;
                     }
 
