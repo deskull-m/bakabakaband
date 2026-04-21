@@ -394,7 +394,7 @@ void fix_player(CreatureEntity &creature)
     AngbandWorld::get_instance().play_time.update();
     display_sub_windows(SubWindowRedrawingFlag::PLAYER,
         [&creature] {
-            display_player(&creature, 0);
+            display_player(creature, 0);
         });
 }
 

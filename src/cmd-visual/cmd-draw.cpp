@@ -165,26 +165,26 @@ static tl::optional<int> input_status_command(CreatureEntity &creature, int page
 /*!
  * @brief プレイヤー／モンスターのステータス表示
  */
-void do_cmd_player_status(CreatureEntity *creature_ptr)
+void do_cmd_player_status(CreatureEntity &creature)
 {
     auto page = 0;
     screen_save();
     constexpr auto player_prompt = _("['c'で名前変更, 'f'でファイルへ書出, 'g'でJSON書出, 'h'でモード変更, ESCで終了]", "['c' to change name, 'f' to file, 'g' to JSON, 'h' to change mode, or ESC]");
     constexpr auto monster_prompt = _("['f'でファイルへ書出, 'g'でJSON書出, ESCで終了]", "['f' to file, 'g' to JSON, or ESC]");
-    const auto prompt = creature_ptr->is_player() ? player_prompt : monster_prompt;
+    const auto prompt = creature.is_player() ? player_prompt : monster_prompt;
     auto &world = AngbandWorld::get_instance();
     while (true) {
         TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
 
         world.play_time.update();
-        (void)display_player(creature_ptr, page);
+        (void)display_player(creature, page);
         if (page == 5) {
             page = 0;
-            (void)display_player(creature_ptr, page);
+            (void)display_player(creature, page);
         }
 
         term_putstr(2, 23, -1, TERM_WHITE, prompt);
-        auto next_page = input_status_command(*creature_ptr, page);
+        auto next_page = input_status_command(creature, page);
         if (!next_page.has_value()) {
             break;
         }
@@ -203,7 +203,7 @@ void do_cmd_player_status(CreatureEntity *creature_ptr)
         MainWindowRedrawingFlag::MAP,
     };
     rfu.set_flags(flags_mwrf);
-    handle_stuff(*creature_ptr);
+    handle_stuff(creature);
 }
 
 /*!

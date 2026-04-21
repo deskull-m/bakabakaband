@@ -311,48 +311,48 @@ static std::string decide_current_floor(CreatureEntity &creature)
  * Mode 4 = mutations.
  * Mode 5 = ??? (コード上の定義より6で割った余りは5になりうるが元のコメントに記載なし).
  */
-tl::optional<int> display_player(CreatureEntity *creature_ptr, const int tmp_mode)
+tl::optional<int> display_player(CreatureEntity &creature, const int tmp_mode)
 {
-    auto has_any_mutation = (creature_ptr->muta.any() || has_good_luck(*creature_ptr) || has_pervert_attraction(*creature_ptr)) && display_mutations;
+    auto has_any_mutation = (creature.muta.any() || has_good_luck(creature) || has_pervert_attraction(creature)) && display_mutations;
     // モンスターはプレイヤー固有のページ (history, misc/stat/flag info) を持たないため mode 0 固定で描画する
-    auto mode = creature_ptr->is_player() ? (has_any_mutation ? tmp_mode % 6 : tmp_mode % 5) : 0;
+    auto mode = creature.is_player() ? (has_any_mutation ? tmp_mode % 6 : tmp_mode % 5) : 0;
     {
         TermOffsetSetter tos(0, 0);
         clear_from(0);
     }
-    if (display_player_info(*creature_ptr, mode)) {
+    if (display_player_info(creature, mode)) {
         return tl::nullopt;
     }
 
-    display_player_basic_info(*creature_ptr);
-    display_magic_realms(*creature_ptr);
-    if (CreatureClass(*creature_ptr).equals(PlayerClassType::CHAOS_WARRIOR) || (creature_ptr->muta.has(PlayerMutationType::CHAOS_GIFT))) {
-        display_player_one_line(ENTRY_PATRON, patron_list[creature_ptr->patron].name, TERM_L_BLUE);
+    display_player_basic_info(creature);
+    display_magic_realms(creature);
+    if (CreatureClass(creature).equals(PlayerClassType::CHAOS_WARRIOR) || (creature.muta.has(PlayerMutationType::CHAOS_GIFT))) {
+        display_player_one_line(ENTRY_PATRON, patron_list[creature.patron].name, TERM_L_BLUE);
     }
 
     // 実際の種族と見かけの種族を表示
-    const auto &actual_monrace = MonraceList::get_instance().get_monrace(creature_ptr->r_idx);
+    const auto &actual_monrace = MonraceList::get_instance().get_monrace(creature.r_idx);
     display_player_one_line(ENTRY_ACTUAL_RACE, actual_monrace.name, TERM_L_GREEN);
-    if (creature_ptr->r_idx != creature_ptr->ap_r_idx) {
-        const auto &apparent_monrace = MonraceList::get_instance().get_monrace(creature_ptr->ap_r_idx);
-        auto color = (creature_ptr->r_idx == creature_ptr->ap_r_idx) ? TERM_L_GREEN : TERM_YELLOW;
+    if (creature.r_idx != creature.ap_r_idx) {
+        const auto &apparent_monrace = MonraceList::get_instance().get_monrace(creature.ap_r_idx);
+        auto color = (creature.r_idx == creature.ap_r_idx) ? TERM_L_GREEN : TERM_YELLOW;
         display_player_one_line(ENTRY_APPARENT_RACE, apparent_monrace.name, color);
     }
 
-    display_phisique(*creature_ptr);
-    display_player_stats(*creature_ptr);
+    display_phisique(creature);
+    display_player_stats(creature);
     if (mode == 0) {
-        display_player_middle(*creature_ptr);
-        display_player_various(*creature_ptr);
+        display_player_middle(creature);
+        display_player_various(creature);
         return tl::nullopt;
     }
 
     put_str(_("(キャラクターの生い立ち)", "(Character Background)"), 11, 25);
     for (auto i = 0; i < 4; i++) {
-        put_str(creature_ptr->history[i], i + 12, 10);
+        put_str(creature.history[i], i + 12, 10);
     }
 
-    auto statmsg = decide_current_floor(*creature_ptr);
+    auto statmsg = decide_current_floor(creature);
     if (statmsg.empty()) {
         return tl::nullopt;
     }

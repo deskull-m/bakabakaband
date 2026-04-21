@@ -479,7 +479,7 @@ static bool display_auto_roller_result(CreatureEntity &creature, bool prev, char
         update_creature(creature);
         creature.hp = creature.maxhp;
         creature.csp = creature.msp;
-        (void)display_player(&creature, mode);
+        (void)display_player(creature, mode);
         term_gotoxy(2, 23);
         const char b1 = '[';
         term_addch({ TERM_WHITE, b1 });
