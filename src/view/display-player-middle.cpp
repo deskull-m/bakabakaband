@@ -248,12 +248,14 @@ static void display_player_speed(CreatureEntity &creature, TERM_COLOR attr, int 
     }
 
     display_player_one_line(ENTRY_SPEED, buf, attr);
-    display_player_one_line(ENTRY_LEVEL, format("%d", creature.level), TERM_L_GREEN);
+    display_player_one_line(ENTRY_LEVEL, format("%d", creature.get_level()), TERM_L_GREEN);
 }
 
 /*!
  * @brief プレイヤーの現在経験値・最大経験値・次のレベルまでに必要な経験値を表示する
  * @param creature クリーチャーへの参照
+ * @details モンスターは経験値テーブルを持たないため、次レベル経験値は表示しない
+ * (level == 0 のとき player_exp[level - 1] が配列範囲外となるのを防ぐ)。
  */
 static void display_player_exp(CreatureEntity &creature)
 {
@@ -270,6 +272,12 @@ static void display_player_exp(CreatureEntity &creature)
     }
 
     e = pr.equals(PlayerRaceType::ANDROID) ? ENTRY_EXP_TO_ADV_ANDR : ENTRY_EXP_TO_ADV;
+
+    if (!creature.is_player() || creature.level <= 0) {
+        // モンスター (または無効レベル) は player_exp テーブルを参照できない
+        display_player_one_line(e, "-----", TERM_L_GREEN);
+        return;
+    }
 
     if (creature.level >= PY_MAX_LEVEL) {
         display_player_one_line(e, "*****", TERM_L_GREEN);
