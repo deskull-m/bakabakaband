@@ -9,27 +9,27 @@
 
 /*!
  * @brief クリーチャーの身長体重を決める / Get creature's height and weight
- * @param creature_ptr クリーチャーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details 種族情報に基づいて身長・体重を設定する。PlayerTypeもCreatureEntityを継承しているため、プレイヤーにも使用可能。
  */
-void get_height_weight(CreatureEntity *creature_ptr)
+void get_height_weight(CreatureEntity &creature)
 {
     // 種族情報が設定されていない場合は何もしない
-    if (creature_ptr->race == nullptr) {
+    if (creature.race == nullptr) {
         return;
     }
 
     int deviation;
-    switch (creature_ptr->psex) {
+    switch (creature.psex) {
     case SEX_MALE:
-        creature_ptr->ht = randnor(creature_ptr->race->m_b_ht, creature_ptr->race->m_m_ht);
-        deviation = (int)(creature_ptr->ht) * 100 / (int)(creature_ptr->race->m_b_ht);
-        creature_ptr->wt = randnor((int)(creature_ptr->race->m_b_wt) * deviation / 100, (int)(creature_ptr->race->m_m_wt) * deviation / 300);
+        creature.ht = randnor(creature.race->m_b_ht, creature.race->m_m_ht);
+        deviation = (int)(creature.ht) * 100 / (int)(creature.race->m_b_ht);
+        creature.wt = randnor((int)(creature.race->m_b_wt) * deviation / 100, (int)(creature.race->m_m_wt) * deviation / 300);
         return;
     case SEX_FEMALE:
-        creature_ptr->ht = randnor(creature_ptr->race->f_b_ht, creature_ptr->race->f_m_ht);
-        deviation = (int)(creature_ptr->ht) * 100 / (int)(creature_ptr->race->f_b_ht);
-        creature_ptr->wt = randnor((int)(creature_ptr->race->f_b_wt) * deviation / 100, (int)(creature_ptr->race->f_m_wt) * deviation / 300);
+        creature.ht = randnor(creature.race->f_b_ht, creature.race->f_m_ht);
+        deviation = (int)(creature.ht) * 100 / (int)(creature.race->f_b_ht);
+        creature.wt = randnor((int)(creature.race->f_b_wt) * deviation / 100, (int)(creature.race->f_m_wt) * deviation / 300);
         return;
     default:
         return;
@@ -43,7 +43,7 @@ void get_height_weight(CreatureEntity *creature_ptr)
 void get_ahw(CreatureEntity &creature)
 {
     creature.age = creature.race->b_age + randint1(creature.race->m_age);
-    get_height_weight(&creature);
+    get_height_weight(creature);
 }
 
 /*!
