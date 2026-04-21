@@ -124,7 +124,7 @@ static bool is_revealed_wall(const FloorType &floor, const Pos2D &pos)
 
 /*!
  * @brief 指定した座標の地形の表示属性を取得する
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 階の中の座標
  * @return シンボル表記
  * @todo 強力発動コピペの嵐…ポインタ引数の嵐……Fuuu^h^hck!!

@@ -364,7 +364,7 @@ tl::optional<int> display_player(CreatureEntity &creature, const int tmp_mode)
 /*!
  * @brief プレイヤーの装備一覧をシンボルで並べる
  * Equippy chars
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 表示するコンソールの行
  * @param x 表示するコンソールの列
  * @param mode オプション

@@ -354,7 +354,7 @@ static void display_mutation_compensation(CreatureEntity &creature, int row, int
 /*!
  * @brief プレイヤーの特性フラグ一覧表示2b /
  * Special display, part 2b
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * <pre>
  * How to print out the modifications and sustains.
