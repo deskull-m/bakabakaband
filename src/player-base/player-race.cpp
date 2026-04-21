@@ -88,7 +88,7 @@ const player_race_info *CreatureRace::get_info() const
 
 /*!
  * @brief 種族の生命形態を返す
- * @param creature_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 生命形態
  */
 PlayerRaceLifeType CreatureRace::life() const
@@ -98,7 +98,7 @@ PlayerRaceLifeType CreatureRace::life() const
 
 /*!
  * @brief 種族の食料形態を返す
- * @param creature_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param base_race ミミック中も元種族の情報を返すならtrue
  * @return 食料形態
  */
@@ -265,7 +265,7 @@ int16_t CreatureRace::additional_constitution() const
 
 /*!
  * @brief 救援召喚時のモンスターシンボルを返す
- * @param creature_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return シンボル文字
  */
 char CreatureRace::get_summon_symbol() const

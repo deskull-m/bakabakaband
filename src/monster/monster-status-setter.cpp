@@ -27,7 +27,7 @@
 
 /*!
  * @brief モンスターをペットにする
- * @param PlayerType プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_ptr モンスター情報構造体の参照ポインタ
  */
 void set_pet(CreatureEntity &creature, CreatureEntity &target)

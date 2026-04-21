@@ -23,7 +23,7 @@ AllianceNantoOrthodox::AllianceNantoOrthodox(AllianceType id, std::string tag, s
 
 /*!
  * @brief 南斗正統派におけるプレイヤーの印象度を算出する
- * @param creature_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 印象度
  */
 int AllianceNantoOrthodox::calcImpressionPoint(const CreatureEntity &creature) const

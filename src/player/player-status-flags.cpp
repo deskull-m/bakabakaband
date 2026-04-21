@@ -1492,7 +1492,7 @@ BIT_FLAGS has_resist_water(CreatureEntity &creature)
 
 /*!
  * @brief 呪力耐性を所持しているかどうか
- * @param プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 呪力耐性を所持していればTRUE、なければFALSE
  */
 BIT_FLAGS has_resist_curse(CreatureEntity &creature)
@@ -1508,7 +1508,7 @@ BIT_FLAGS has_resist_curse(CreatureEntity &creature)
 
 /*!
  * @brief 呪力弱点を所持しているかどうか
- * @param プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 呪力弱点を所持していればTRUE、なければFALSE
  */
 BIT_FLAGS has_vuln_curse(CreatureEntity &creature)
@@ -1533,7 +1533,7 @@ BIT_FLAGS has_vuln_curse(CreatureEntity &creature)
 
 /*!
  * @brief 呪力弱点かつ重く呪われている装備の有無
- * @param プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 呪力弱点かつ重く呪われている装備があればTRUE、なければFALSE
  */
 BIT_FLAGS has_heavy_vuln_curse(CreatureEntity &creature)

@@ -155,7 +155,7 @@ void wr_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
 /*!
  * @brief 現在フロアの書き込み /
  * Write the current dungeon (new method)
- * @player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 保存に成功したらTRUE
  */
 bool wr_dungeon(CreatureEntity &creature)

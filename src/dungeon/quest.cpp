@@ -173,7 +173,7 @@ void determine_random_questor(CreatureEntity &creature, QuestType &quest)
 
 /*!
  * @brief クエストの最終状態を記録する(成功or失敗、時間)
- * @param PlayerType プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param q_ptr クエスト情報への参照ポインタ
  * @param stat ステータス(成功or失敗)
  */

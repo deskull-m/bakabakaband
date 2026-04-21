@@ -6,7 +6,7 @@
 /*!
  * @brief カインのアライアンス印象値を計算する
  * パトロンリストでのboost_statがA_STRなので、STRベースの印象値計算を行う
- * @param creature_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 印象値
  */
 int AllianceKhaine::calcImpressionPoint(const CreatureEntity &creature) const

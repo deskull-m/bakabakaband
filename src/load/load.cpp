@@ -282,7 +282,7 @@ static errr rd_savefile(CreatureEntity &creature)
 
 /*!
  * @brief 死亡した、または互換性のないセーブデータを読み込んだ時にやりなおさせる
- * @param plyaer_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param new_game 新しくゲームを始めさせるフラグ
  * @return 常にtrue (前後の処理上都合が良いため)
  */

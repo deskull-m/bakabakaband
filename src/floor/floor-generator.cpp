@@ -431,7 +431,7 @@ void wipe_generate_random_floor_flags(FloorType &floor)
 
 /*!
  * @brief フロアの全情報を初期化する / Clear and empty floor.
- * @parama player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void clear_cave(CreatureEntity &creature)
 {
@@ -562,7 +562,7 @@ static bool floor_is_connected(const FloorType &floor, const IsWallFunc is_wall)
 
 /*!
  * ダンジョンのランダムフロアを生成する / Generates a random dungeon level -RAK-
- * @parama player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @note Hack -- regenerate any "overflow" levels
  */
 void generate_floor(CreatureEntity &creature)

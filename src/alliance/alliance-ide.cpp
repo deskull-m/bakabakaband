@@ -9,7 +9,7 @@
 /*!
  * @brief イデのアライアンス印象値を計算する
  * 無限力の存在として、INTとWISをベースとした印象値計算を行う
- * @param creature_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 印象値
  */
 int AllianceIde::calcImpressionPoint(const CreatureEntity &creature) const

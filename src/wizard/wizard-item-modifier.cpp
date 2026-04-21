@@ -240,7 +240,7 @@ void wiz_restore_aware_flag_of_fixed_arfifact(FixedArtifactId reset_artifact_idx
 
 /*!
  * @brief オブジェクトに発動を追加する/変更する
- * @param catser_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void wiz_modify_item_activation(CreatureEntity &creature)
 {
@@ -266,7 +266,7 @@ void wiz_modify_item_activation(CreatureEntity &creature)
 
 /*!
  * @brief インベントリ内のアイテムを全て*鑑定*済みにする
- * @param catser_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void wiz_identify_full_inventory(CreatureEntity &creature)
 {

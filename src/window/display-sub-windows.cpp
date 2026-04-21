@@ -456,7 +456,7 @@ void fix_overhead(CreatureEntity &creature)
 
 /*!
  * @brief 自分の周辺の地形をTermに表示する
- * @param プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void display_dungeon(CreatureEntity &creature)
 {
@@ -541,7 +541,7 @@ static bool is_seeing_monster_on(const FloorType &floor, const Grid &grid)
 
 /*!
  * @brief 床上のアイテム一覧を作成し、表示する
- * @param プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 参照する座標グリッドのy座標
  * @param x 参照する座標グリッドのx座標
  */
@@ -628,7 +628,7 @@ void fix_floor_item_list(CreatureEntity &creature, const Pos2D &pos)
 
 /*!
  * @brief 発見済みのアイテム一覧を作成し、表示する
- * @param プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void display_found_item_list(CreatureEntity &creature)
 {

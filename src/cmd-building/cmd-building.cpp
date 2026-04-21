@@ -358,7 +358,7 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
 
 /*!
  * @brief 施設入り口にプレイヤーが乗った際の処理 / Do building commands
- * @param プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void do_cmd_building(CreatureEntity &creature)
 {
