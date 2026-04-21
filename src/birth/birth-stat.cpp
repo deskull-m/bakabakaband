@@ -55,13 +55,13 @@ int adjust_stat(int value, int amount)
 
 /*!
  * @brief クリーチャー（プレイヤーやモンスター等）の能力値を一通りロールする。 / Roll for a creature's stats
- * @param creature_ptr クリーチャーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * プレイヤーのキャラメイクと同じロジックで能力値を生成する。
  * calc_bonuses()による、独立ステータスからの副次ステータス算出も行っている。
  * For efficiency, we include a chunk of "calc_bonuses()".\n
  */
-void get_stats(CreatureEntity *creature_ptr)
+void get_stats(CreatureEntity &creature)
 {
     while (true) {
         auto sum = 0;
@@ -71,7 +71,7 @@ void get_stats(CreatureEntity *creature_ptr)
                 auto stat = i * 3 + j;
                 auto val = auto_roller_distribution[tmp % random_distribution];
                 sum += val;
-                creature_ptr->stat_cur[stat] = creature_ptr->stat_max[stat] = val;
+                creature.stat_cur[stat] = creature.stat_max[stat] = val;
                 tmp /= random_distribution;
             }
         }
@@ -84,29 +84,29 @@ void get_stats(CreatureEntity *creature_ptr)
 
     // stat_max_maxは初期化する
     for (auto i = 0; i < A_MAX; i++) {
-        creature_ptr->stat_max_max[i] = creature_ptr->stat_max[i];
+        creature.stat_max_max[i] = creature.stat_max[i];
     }
 }
 
 /*!
  * @brief クリーチャーの初期所持金を決める（プレイヤーと同様のロジック）
- * @param creature_ptr クリーチャーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details プレイヤーのget_money()と同等の処理を行う
  */
-void get_money_for_creature(CreatureEntity *creature_ptr)
+void get_money_for_creature(CreatureEntity &creature)
 {
-    int gold = (creature_ptr->prestige * 6) + randint1(100) + 300;
+    int gold = (creature.prestige * 6) + randint1(100) + 300;
 
     // 能力値に応じて所持金を調整
     for (int i = 0; i < A_MAX; i++) {
-        if (creature_ptr->stat_max[i] >= 680) {
+        if (creature.stat_max[i] >= 680) {
             gold -= 300;
-        } else if (creature_ptr->stat_max[i] >= 380) {
+        } else if (creature.stat_max[i] >= 380) {
             gold -= 200;
-        } else if (creature_ptr->stat_max[i] > 180) {
+        } else if (creature.stat_max[i] > 180) {
             gold -= 150;
         } else {
-            gold -= (creature_ptr->stat_max[i] / 10 - 8) * 10;
+            gold -= (creature.stat_max[i] / 10 - 8) * 10;
         }
     }
 
@@ -115,7 +115,7 @@ void get_money_for_creature(CreatureEntity *creature_ptr)
         gold = minimum_deposit;
     }
 
-    creature_ptr->au = gold;
+    creature.au = gold;
 }
 
 /*!
