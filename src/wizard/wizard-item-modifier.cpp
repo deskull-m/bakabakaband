@@ -142,7 +142,7 @@ static void wiz_item_drop(CreatureEntity &creature, const int num_items, const E
 
 /*!
  * @brief ゲーム設定コマンドの入力を受け付ける
- * @param player_ptr プレイヤーの情報へのポインタ
+ * @param creature クリーチャーへの参照
  */
 void wizard_item_modifier(CreatureEntity &creature)
 {
@@ -240,7 +240,7 @@ void wiz_restore_aware_flag_of_fixed_arfifact(FixedArtifactId reset_artifact_idx
 
 /*!
  * @brief オブジェクトに発動を追加する/変更する
- * @param catser_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void wiz_modify_item_activation(CreatureEntity &creature)
 {
@@ -266,7 +266,7 @@ void wiz_modify_item_activation(CreatureEntity &creature)
 
 /*!
  * @brief インベントリ内のアイテムを全て*鑑定*済みにする
- * @param catser_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void wiz_identify_full_inventory(CreatureEntity &creature)
 {
@@ -373,7 +373,7 @@ static void prt_binary(BIT_FLAGS flags, const int row, int col)
 /*!
  * @brief アイテムの詳細ステータスを表示する /
  * Change various "permanent" creature variables.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 詳細を表示するアイテム情報の参照ポインタ
  */
 static void wiz_display_item(CreatureEntity &creature, ItemEntity *o_ptr)
@@ -447,7 +447,7 @@ static void wiz_display_item(CreatureEntity &creature, ItemEntity *o_ptr)
 /*!
  * @brief 検査対象のアイテムを基準とした生成テストを行う /
  * Try to create an item again. Output some statistics.    -Bernd-
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 生成テストの基準となるアイテム情報の参照ポインタ
  * The statistics are correct now.  We acquire a clean grid, and then
  * repeatedly place an object in this grid, copying it into an item
@@ -662,7 +662,7 @@ static void wiz_reroll_item(CreatureEntity &creature, ItemEntity *o_ptr)
 
 /*!
  * @briefアイテムの基礎能力値を調整する / Tweak an item
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 調整するアイテムの参照ポインタ
  */
 static void wiz_tweak_item(CreatureEntity &creature, ItemEntity *o_ptr)
@@ -885,7 +885,7 @@ static void wishing_puff_of_smoke(void)
 
 /*!
  * @brief 願ったが消えてしまった場合のメッセージ
- * @param player_ptr 願ったプレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param prob ★などを願った場合の生成確率
  * @param art_ok アーティファクトの生成を許すならTRUE
  * @param ego_ok エゴの生成を許すならTRUE

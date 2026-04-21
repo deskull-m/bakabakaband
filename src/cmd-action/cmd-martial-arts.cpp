@@ -20,7 +20,7 @@
 
 /*!
  * @brief 武術スタイル選択メニューを表示
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param current_style 現在のスタイル
  * @return 選択されたスタイル (キャンセル時は MAX)
  */
@@ -61,7 +61,7 @@ static MartialArtsStyleType select_martial_arts_style_menu(MartialArtsStyleType 
 
 /*!
  * @brief 武術スタイル切り替えコマンドのメイン処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void do_cmd_martial_arts_style(CreatureEntity &creature)
 {

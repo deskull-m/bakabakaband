@@ -47,7 +47,7 @@
 
 /*!
  * @brief 地形によるダメージを与える / Deal damage from feature.
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param grid 現在の床の情報への参照
  * @param msg_levitation 浮遊時にダメージを受けた場合に表示するメッセージ
  * @param msg_normal 通常時にダメージを受けた場合に表示するメッセージの述部

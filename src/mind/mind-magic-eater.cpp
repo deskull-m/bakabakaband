@@ -16,7 +16,7 @@
 
 /*!
  * @brief 魔道具術師の魔力取り込み処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 取り込みを実行したらTRUE、キャンセルしたらFALSEを返す
  */
 bool import_magic_device(CreatureEntity &creature)

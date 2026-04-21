@@ -22,7 +22,7 @@
 
 /*!
  * @brief 射撃処理のメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param snipe_type スナイパーの射撃術の種類
  */
 void do_cmd_fire(CreatureEntity &creature, SPELL_IDX snipe_type)

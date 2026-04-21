@@ -80,7 +80,7 @@ static std::pair<tl::optional<short>, char> check_floor_item_tag_aux(const Floor
 
 /*!
  * @brief インベントリのアイテムにタグ付けを試みる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fis 床上アイテムへの参照
  * @param i_idx 選択したアイテムのインベントリ番号
  * @param prev_tag 前回選択したアイテムのタグ (のはず)
@@ -107,7 +107,7 @@ static std::pair<tl::optional<short>, char> get_floor_item_tag_inventory(Creatur
 
 /*!
  * @brief インベントリのアイテムにタグ付けがされているかの調査処理 (のはず)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fis 床上アイテムへの参照
  * @param prev_tag 前回選択したアイテムのタグ (のはず)
  * @return プレイヤーによりアイテムが選択されたならTRUEを返す
@@ -132,7 +132,7 @@ static std::pair<tl::optional<short>, char> check_floor_item_tag_inventory(Creat
 
 /*!
  * @brief 床上アイテムにタグ付けがされているかの調査処理 (のはず)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fis 床上アイテムへの参照
  * @param prev_tag 前回選択したアイテムのタグ (のはず)
  * @return プレイヤーによりアイテムが選択されたならTRUEを返す
@@ -161,7 +161,7 @@ static std::pair<tl::optional<short>, char> check_floor_item_tag(CreatureEntity 
 
 /*!
  * @brief インベントリ内のアイテムが妥当かを判定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fis_ptr 床上アイテムへの参照ポインタ
  */
 static void test_inventory_floor(CreatureEntity &creature, FloorItemSelection *fis_ptr, const ItemTester &item_tester)
@@ -184,7 +184,7 @@ static void test_inventory_floor(CreatureEntity &creature, FloorItemSelection *f
 
 /*!
  * @brief 装備品がが妥当かを判定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fis_ptr 床上アイテムへの参照ポインタ
  */
 static void test_equipment_floor(CreatureEntity &creature, FloorItemSelection *fis_ptr, const ItemTester &item_tester)

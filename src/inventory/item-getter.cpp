@@ -37,7 +37,7 @@
 /*!
  * @brief オブジェクト選択の汎用関数 / General function for the selection of item
  * Let the user select an item, save its "index"
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param cp 選択したオブジェクトのID
  * @param pmt 選択目的のメッセージ
  * @param str 選択できるオブジェクトがない場合のキャンセルメッセージ

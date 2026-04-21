@@ -17,7 +17,7 @@ void birth_quit(void)
 
 /*!
  * @brief 指定されたヘルプファイルを表示する / Show specific help file
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param helpfile ファイル名
  */
 void show_help(CreatureEntity &creature, std::string_view helpfile)

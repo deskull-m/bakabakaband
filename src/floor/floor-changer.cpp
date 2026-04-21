@@ -138,7 +138,7 @@ static MonraceDefinition &set_pet_params(CreatureEntity &creature, const int cur
 
 /*!
  * @brief 移動先のフロアに伴ったペットを配置する / Place preserved pet monsters on new floor
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void place_pet(CreatureEntity &creature)
 {
@@ -316,7 +316,7 @@ static void new_floor_allocation(CreatureEntity &creature, saved_floor_type *sf_
 
 /*!
  * @brief プレイヤー足元に階段を設置する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void set_stairs(CreatureEntity &creature)
 {
@@ -413,7 +413,7 @@ static void update_floor(CreatureEntity &creature)
 
 /*!
  * @brief フロアの切り替え処理 / Enter new floor.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * If the floor is an old saved floor, it will be\n
  * restored from the temporary file.  If the floor is new one, new floor\n

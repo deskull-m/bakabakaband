@@ -13,7 +13,7 @@
 
 /*!
  * @brief モンスター魔法をプレイヤーが使用する場合の換算レベル
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param 換算レベル
  */
 PLAYER_LEVEL get_pseudo_monstetr_level(CreatureEntity &creature)
@@ -41,7 +41,7 @@ static std::string set_bluemage_damage(CreatureEntity &creature, MonsterAbilityT
 
 /*!
  * @brief 受け取ったモンスター魔法のIDに応じて青魔法の効果情報をまとめたフォーマットを返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param power モンスター魔法のID
  * @return std::string パワーについてのコメント
  */

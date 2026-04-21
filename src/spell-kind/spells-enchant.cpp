@@ -21,7 +21,7 @@
 
 /*!
  * @brief アーティファクト生成の巻物処理 /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 生成が実際に試みられたらTRUEを返す
  */
 bool artifact_scroll(CreatureEntity &creature)
@@ -108,7 +108,7 @@ bool artifact_scroll(CreatureEntity &creature)
 /*!
  * @brief アイテム凡庸化のメインルーチン処理 /
  * Identify an object in the inventory (or on the floor)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param only_equip 装備品のみを対象とするならばTRUEを返す
  * @return 実際に凡庸化を行ったならばTRUEを返す
  * @details

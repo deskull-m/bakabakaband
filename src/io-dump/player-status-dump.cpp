@@ -5,9 +5,8 @@
 
 /*!
  * @brief 画面番号を指定してダンプする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
- * @param display_player 画面表示へのコールバック
  * @param mode 表示モード
  * @param start_y ダンプの開始行数
  * @param tmp_end_y ダンプの終了行数 (補正前)
@@ -43,9 +42,10 @@ static void dump_player_status_with_screen_num(CreatureEntity &creature, FILE *f
 }
 
 /*!
- * @brief プレイヤーのステータス表示をファイルにダンプする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @brief クリーチャー（プレイヤー・モンスター）のステータス表示をファイルにダンプする
+ * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
+ * @details モンスターの場合は mode 0 の共通フォーマット簡易ステータス画面のみを出力する。
  */
 void dump_aux_player_status(CreatureEntity &creature, FILE *fff)
 {

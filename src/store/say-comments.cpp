@@ -15,7 +15,7 @@
  * @brief 取引成功時の店主のメッセージ処理 /
  * ブラックマーケットのときは別のメッセージを出す
  * Successful haggle.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void store_owner_says_comment(CreatureEntity &creature, StoreSaleType store_num)
 {

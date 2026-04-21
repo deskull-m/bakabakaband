@@ -53,7 +53,7 @@ void set_score_server_url(const std::string &url)
 
 /*!
  * @brief スコアをワールドスコアサーバーに送信する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 成功した場合true、失敗した場合false
  * @details
  * libcurlを使用してHTTP POSTリクエストでJSONデータをスコアサーバーに送信する。

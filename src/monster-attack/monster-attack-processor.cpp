@@ -21,7 +21,7 @@
 
 /*!
  * @brief モンスターが移動した結果、そこにプレイヤーがいたら直接攻撃を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param turn_flags_ptr ターン経過処理フラグへの参照ポインタ
  * @param m_idx モンスターID
  * @param pos モンスターの移動先座標
@@ -66,7 +66,7 @@ void exe_monster_attack_to_player(CreatureEntity &creature, turn_flags *turn_fla
 
 /*!
  * @brief モンスターからモンスターへの直接攻撃を実行する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @param grid グリッドへの参照
  */
@@ -109,7 +109,7 @@ static bool exe_monster_attack_to_monster(CreatureEntity &creature, MONSTER_IDX 
 
 /*!
  * @brief モンスターからモンスターへの攻撃処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param turn_flags_ptr ターン経過処理フラグへの参照ポインタ
  * @param m_idx モンスターID
  * @param grid グリッドへの参照

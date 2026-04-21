@@ -20,7 +20,7 @@ StoneOfLore::StoneOfLore(CreatureEntity &creature)
 
 /*!
  * @brief 知識の石の発動を実行する / Do activation of the stone of lore.
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 実行したらTRUE、しなかったらFALSE
  * @details
  * 鑑定を実行した後HPを消費する。1/5で混乱し、1/20で追加ダメージ。

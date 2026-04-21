@@ -15,7 +15,7 @@
 
 /*!
  * @brief パーティ形式でモンスターを生成する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos_center パーティの中心座標
  * @return 生成に成功したらtrue
  */

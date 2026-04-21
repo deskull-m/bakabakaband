@@ -27,7 +27,7 @@
 
 /*!
  * @brief モンスターをペットにする
- * @param PlayerType プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_ptr モンスター情報構造体の参照ポインタ
  */
 void set_pet(CreatureEntity &creature, CreatureEntity &target)
@@ -330,7 +330,7 @@ bool set_monster_invulner(FloorType &floor, MONSTER_IDX m_idx, int v, bool energ
 
 /*!
  * @brief モンスターの時間停止処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx 時間停止を行う敵のモンスターID
  * @param num 時間停止を行った敵が行動できる回数
  * @param vs_player TRUEならば時間停止開始処理を行う

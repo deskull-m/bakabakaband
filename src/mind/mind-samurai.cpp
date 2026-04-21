@@ -109,7 +109,7 @@ static void hissatsu_burning_strike(CreatureEntity &creature, samurai_slaying_ty
 }
 /*!
  * @brief サーペンツタン (毒殺スレイ)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param samurai_slaying_ptr スレイ計算に必要なパラメータ群への参照ポインタ
  */
 /*!

@@ -7,7 +7,7 @@
 /*!
  * @brief アノール・ロンドのアライアンス印象値を計算する
  * 太陽と光の都市として、INTとCHRをベースとした印象値計算を行う
- * @param creature_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 印象値
  */
 int AllianceAnorLondo::calcImpressionPoint(const CreatureEntity &creature) const
@@ -29,7 +29,7 @@ int AllianceAnorLondo::calcImpressionPoint(const CreatureEntity &creature) const
 
 /*!
  * @brief アノール・ロンドのアライアンス懲罰処理
- * @param player_ptr プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  */
 void AllianceAnorLondo::panishment([[maybe_unused]] CreatureEntity &creature)
 {

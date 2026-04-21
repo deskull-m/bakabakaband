@@ -232,7 +232,7 @@ bool binding_field(CreatureEntity &creature, int dam)
 
 /*!
  * 幻惑の光 @ 鏡使いだけでなく混沌の戦士も使える
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 常にTRUE
  */
 bool confusing_light(CreatureEntity &creature)

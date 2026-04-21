@@ -183,7 +183,7 @@ void print_gold(CreatureEntity &creature)
 
 /*!
  * @brief 現在のフロアの深さを表示する / Prints depth in stat area
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void print_depth(CreatureEntity &creature)
 {
@@ -245,7 +245,7 @@ void print_depth(CreatureEntity &creature)
 
 /*!
  * @brief プレイヤーのステータスを一括表示する（左側部分） / Display basic info (mostly left of map)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void print_frame_basic(CreatureEntity &creature)
 {
@@ -271,7 +271,7 @@ void print_frame_basic(CreatureEntity &creature)
 
 /*!
  * @brief wizardモード中の闘技場情報を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void print_health_monster_in_arena_for_wizard(CreatureEntity &creature)
 {

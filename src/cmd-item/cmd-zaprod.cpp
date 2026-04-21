@@ -37,7 +37,7 @@
 
 /*!
  * @brief ロッドの効果を発動する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param sval オブジェクトのsval
  * @param dir 発動目標の方向ID
  * @param use_charge チャージを消費したかどうかを返す参照ポインタ
@@ -286,7 +286,7 @@ int rod_effect(CreatureEntity &creature, int sval, const Direction &dir, bool *u
 
 /*!
  * @brief ロッドを使うコマンドのメインルーチン /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void do_cmd_zap_rod(CreatureEntity &creature)
 {

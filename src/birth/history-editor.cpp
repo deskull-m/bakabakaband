@@ -11,7 +11,7 @@
 
 /*!
  * @brief 生い立ちメッセージを編集する。/Character background edit-mode
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void edit_history(CreatureEntity &creature)
 {

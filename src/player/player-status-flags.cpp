@@ -514,7 +514,7 @@ bool has_kill_wall(CreatureEntity &creature)
 
 /*!
  * @brief プレイヤーが壁通過を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたらTRUE
  * @details 騎乗状態でなければ、時限または種族特性で壁抜けできるか否か.
  * 騎乗状態ならば、そのモンスターとプレイヤーが両方壁抜けできるか否か.
@@ -591,7 +591,7 @@ BIT_FLAGS has_esp_homo(CreatureEntity &creature)
 
 /*!
  * @brief プレイヤーがアンデッド感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
 BIT_FLAGS has_esp_undead(CreatureEntity &creature)
@@ -601,7 +601,7 @@ BIT_FLAGS has_esp_undead(CreatureEntity &creature)
 
 /*!
  * @brief プレイヤーが悪魔感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
 BIT_FLAGS has_esp_demon(CreatureEntity &creature)
@@ -611,7 +611,7 @@ BIT_FLAGS has_esp_demon(CreatureEntity &creature)
 
 /*!
  * @brief プレイヤーがオーク感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
 BIT_FLAGS has_esp_orc(CreatureEntity &creature)
@@ -621,7 +621,7 @@ BIT_FLAGS has_esp_orc(CreatureEntity &creature)
 
 /*!
  * @brief プレイヤーがトロル感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
 BIT_FLAGS has_esp_troll(CreatureEntity &creature)
@@ -631,7 +631,7 @@ BIT_FLAGS has_esp_troll(CreatureEntity &creature)
 
 /*!
  * @brief プレイヤーが巨人感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
 BIT_FLAGS has_esp_giant(CreatureEntity &creature)
@@ -641,7 +641,7 @@ BIT_FLAGS has_esp_giant(CreatureEntity &creature)
 
 /*!
  * @brief プレイヤーがドラゴン感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
 BIT_FLAGS has_esp_dragon(CreatureEntity &creature)
@@ -651,7 +651,7 @@ BIT_FLAGS has_esp_dragon(CreatureEntity &creature)
 
 /*!
  * @brief プレイヤーが人間感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
 BIT_FLAGS has_esp_human(CreatureEntity &creature)
@@ -661,7 +661,7 @@ BIT_FLAGS has_esp_human(CreatureEntity &creature)
 
 /*!
  * @brief プレイヤーが善良感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
 BIT_FLAGS has_esp_good(CreatureEntity &creature)
@@ -671,7 +671,7 @@ BIT_FLAGS has_esp_good(CreatureEntity &creature)
 
 /*!
  * @brief プレイヤーが無生物感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
 BIT_FLAGS has_esp_nonliving(CreatureEntity &creature)
@@ -681,7 +681,7 @@ BIT_FLAGS has_esp_nonliving(CreatureEntity &creature)
 
 /*!
  * @brief プレイヤーがユニーク感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
 BIT_FLAGS has_esp_unique(CreatureEntity &creature)
@@ -691,7 +691,7 @@ BIT_FLAGS has_esp_unique(CreatureEntity &creature)
 
 /*!
  * @brief プレイヤーがテレパシーを持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
 BIT_FLAGS has_esp_telepathy(CreatureEntity &creature)
@@ -1492,7 +1492,7 @@ BIT_FLAGS has_resist_water(CreatureEntity &creature)
 
 /*!
  * @brief 呪力耐性を所持しているかどうか
- * @param プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 呪力耐性を所持していればTRUE、なければFALSE
  */
 BIT_FLAGS has_resist_curse(CreatureEntity &creature)
@@ -1508,7 +1508,7 @@ BIT_FLAGS has_resist_curse(CreatureEntity &creature)
 
 /*!
  * @brief 呪力弱点を所持しているかどうか
- * @param プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 呪力弱点を所持していればTRUE、なければFALSE
  */
 BIT_FLAGS has_vuln_curse(CreatureEntity &creature)
@@ -1533,7 +1533,7 @@ BIT_FLAGS has_vuln_curse(CreatureEntity &creature)
 
 /*!
  * @brief 呪力弱点かつ重く呪われている装備の有無
- * @param プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 呪力弱点かつ重く呪われている装備があればTRUE、なければFALSE
  */
 BIT_FLAGS has_heavy_vuln_curse(CreatureEntity &creature)
@@ -1794,7 +1794,7 @@ bool is_wielding_icky_weapon(CreatureEntity &creature, int i)
 
 /*!
  * @brief 乗馬にふさわしくない武器を持って乗馬しているかどうかを返す.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i 武器を持っている手。0ならば利き手、1ならば反対の手
  */
 bool is_wielding_icky_riding_weapon(CreatureEntity &creature, int i)

@@ -55,7 +55,7 @@ void display_wizard_player_modifier_menu()
 
 /*!
  * @brief プレイヤー設定コマンドの入力を受け付ける
- * @param player_ptr プレイヤーの情報へのポインタ
+ * @param creature クリーチャーへの参照
  */
 void wizard_player_modifier(CreatureEntity &creature)
 {

@@ -8,7 +8,7 @@
 
 /*!
  * @brief フロアの指定位置に生成階に応じた財宝オブジェクトの生成を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 配置したい座標
  * @return 生成に成功したらTRUEを返す。
  */

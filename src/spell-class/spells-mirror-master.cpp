@@ -74,7 +74,7 @@ void SpellsMirrorMaster::remove_mirror(int y, int x)
 
 /*!
  * @brief 全鏡の消去 / Remove all mirrors in this floor
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param explode 爆発処理を伴うならばTRUE
  */
 void SpellsMirrorMaster::remove_all_mirrors(bool explode)
@@ -98,7 +98,7 @@ void SpellsMirrorMaster::remove_all_mirrors(bool explode)
 /*!
  * @brief 鏡抜け処理のメインルーチン /
  * Mirror Master's Dimension Door
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return ターンを消費した場合TRUEを返す
  */
 bool SpellsMirrorMaster::mirror_tunnel()
@@ -140,7 +140,7 @@ tl::optional<std::string> SpellsMirrorMaster::place_mirror()
 
 /*!
  * @brief 静水
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return ペットを操っている場合を除きTRUE
  */
 bool SpellsMirrorMaster::mirror_concentration()

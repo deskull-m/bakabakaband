@@ -51,7 +51,7 @@ void rd_dungeons(CreatureEntity &creature)
 
 /*!
  * @brief 現実変容処理の有無及びその残りターン数を読み込む
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void rd_alter_reality(CreatureEntity &creature)
 {

@@ -22,7 +22,7 @@
 
 /*!
  * @brief 日記のタイトル表記と内容出力
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void display_diary(CreatureEntity &creature)
 {
@@ -102,7 +102,7 @@ static void do_cmd_erase_diary()
 
 /*!
  * @brief 日記コマンド
- * @param crerature_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void do_cmd_diary(CreatureEntity &creature)
 {

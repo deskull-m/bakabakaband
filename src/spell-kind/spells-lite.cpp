@@ -24,7 +24,7 @@
 
 /*!
  * @brief 指定した座標全てを照らす。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param positions 明るくすべき座標群
  * @details
  * <pre>
@@ -76,7 +76,7 @@ static void cave_temp_room_lite(CreatureEntity &creature, const std::vector<Pos2
 
 /*!
  * @brief 指定した座標全てを暗くする。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param points 暗くすべき座標群
  */
 /*!< @todo 並び順の都合で連番を付ける。まとめても良いならまとめてしまう予定 */
@@ -177,7 +177,7 @@ static int next_to_walls_adj(const FloorType &floor, const Pos2D &pos_center)
 
 /*!
  * @brief pos が指定条件を満たすかをチェックする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 部屋内の座標
  * @param tc 明るくするならLOS、暗くするならPROJECTION
  * @return 明るくするか暗くするならtrue、何もしないならfalse
@@ -217,7 +217,7 @@ static bool cave_temp_room_aux(const FloorType &floor, const Pos2D &pos, const P
 
 /*!
  * @brief 起点座標が含まれる部屋を照らす (部屋でない場合は起点周辺)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos_start 起点座標
  * @details pos_start を起点として明るくするマスを記録していく. 実質幅優先探索.
  */
@@ -254,7 +254,7 @@ void lite_room(CreatureEntity &creature, const Pos2D &pos_start)
 
 /*!
  * @brief 起点座標が含まれる部屋を暗くする (部屋でない場合は起点周辺)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos_start 指定座標
  * @details pos_start を起点として暗くするマスを記録していく. 実質幅優先探索.
  */
@@ -288,7 +288,7 @@ void unlite_room(CreatureEntity &creature, const Pos2D &pos_start)
 
 /*!
  * @brief スターライトの効果を発生させる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param magic 魔法による効果であればTRUE、スターライトの杖による効果であればFALSE
  * @return 常にTRUE
  */
@@ -323,7 +323,7 @@ bool starlight(CreatureEntity &creature, bool magic)
 
 /*!
  * @brief プレイヤー位置を中心にLITE_WEAK属性を通じた照明処理を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dam 威力
  * @param rad 効果半径
  * @return 作用が実際にあった場合TRUEを返す
@@ -349,7 +349,7 @@ bool lite_area(CreatureEntity &creature, int dam, int rad)
 
 /*!
  * @brief プレイヤー位置を中心にLITE_DARK属性を通じた消灯処理を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dam 威力
  * @param rad 効果半径
  * @return 作用が実際にあった場合TRUEを返す
@@ -370,7 +370,7 @@ bool unlite_area(CreatureEntity &creature, int dam, int rad)
 
 /*!
  * @brief LITE_WEAK属性による光源ビーム処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @param dam 威力
  * @return 作用が実際にあった場合TRUEを返す

@@ -57,7 +57,7 @@
 
 /*!
  * @brief 変愚蛮怒 v2.1.3で追加された街とクエストについて読み込む
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return エラーコード
  * @details 旧海底都市クエスト (クエストNo.18)は廃止済
  */
@@ -253,7 +253,7 @@ static errr exe_reading_savefile(CreatureEntity &creature)
 
 /*!
  * @brief セーブファイル読み込み処理 (UIDチェック等含む) / Reading the savefile (including UID check)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return エラーコード
  */
 static errr rd_savefile(CreatureEntity &creature)
@@ -282,7 +282,7 @@ static errr rd_savefile(CreatureEntity &creature)
 
 /*!
  * @brief 死亡した、または互換性のないセーブデータを読み込んだ時にやりなおさせる
- * @param plyaer_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param new_game 新しくゲームを始めさせるフラグ
  * @return 常にtrue (前後の処理上都合が良いため)
  */
@@ -313,7 +313,7 @@ static bool on_read_save_data_not_supported(CreatureEntity &creature, bool *new_
 /**
  * @brief セーブデータから引き継いでプレイできるかどうか調べる
  *
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 引き継ぎ可能ならtrue、そうでなければfalseを返す
  */
 static bool can_takeover_savefile(CreatureEntity &creature)
@@ -328,7 +328,7 @@ static bool can_takeover_savefile(CreatureEntity &creature)
 /*!
  * @brief セーブデータ読み込みのメインルーチン /
  * Attempt to Load a "savefile"
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param new_game セーブデータの新規作成が必要か否か
  * @return セーブデータが読み込めればtrue
  */

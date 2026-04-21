@@ -22,7 +22,7 @@
 
 /*!
  * 岩石食い
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return コマンドの入力方向に地形があればTRUE
  */
 bool eat_rock(CreatureEntity &creature)

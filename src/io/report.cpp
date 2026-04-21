@@ -231,7 +231,7 @@ std::string make_screen_dump(CreatureEntity &creature)
 
 /*!
  * @brief スコア転送処理のメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 正常にスコアを送信できたらtrue、失敗時に送信を中止したらfalse
  */
 bool report_score(CreatureEntity &creature)

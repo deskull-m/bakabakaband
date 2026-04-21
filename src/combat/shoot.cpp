@@ -1109,7 +1109,7 @@ int critical_shot(CreatureEntity &creature, WEIGHT weight, int plus_ammo, int pl
 
 /*!
  * @brief 射撃時クリティカルによるダメージ期待値修正計算（スナイパーの集中処理と武器経験値） / critical happens at i / 10000
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param plus_ammo 矢弾のダメージ修正
  * @param plus_bow 弓のダメージ修正
  * @return ダメージ期待値
@@ -1191,7 +1191,7 @@ int calc_expect_crit_shot(CreatureEntity &creature, WEIGHT weight, int plus_ammo
 
 /*!
  * @brief 攻撃時クリティカルによるダメージ期待値修正計算（重量と毒針処理） / critical happens at i / 10000
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param weight 武器の重量
  * @param plus 武器の命中修正
  * @param dam 基本ダメージ
@@ -1272,7 +1272,7 @@ static int calc_slaydam(int dam, int mult, int div, bool force)
 
 /*!
  * @brief 攻撃時の期待値計算（スレイ→重量クリティカル→切れ味効果）
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dam 基本ダメージ
  * @param to_h 武器以外の命中修正
  * @param o_ptr 武器への参照ポインタ
@@ -1311,7 +1311,7 @@ uint32_t calc_expect_dice(
 
 /*!
  * @brief 攻撃時の期待値計算（スレイ→重量クリティカル→切れ味効果）
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dam 基本ダメージ
  * @param mult スレイ倍率（掛け算部分）
  * @param div スレイ倍率（割り算部分）

@@ -138,7 +138,7 @@ struct tgt_pt_info {
 
 /*!
  * @brief 指定した記号のシンボルのグリッドにカーソルを移動する
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details 自分 (＠)の位置に戻ってくるような処理に見える.
  * コールバックにも依る？
  */
@@ -194,7 +194,7 @@ void tgt_pt_info::move_to_symbol(CreatureEntity &creature)
 
 /*!
  * @brief 位置を指定するプロンプト
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 指定したらその座標、キャンセルしたらnullopt
  */
 tl::optional<Pos2D> point_target(CreatureEntity &creature)

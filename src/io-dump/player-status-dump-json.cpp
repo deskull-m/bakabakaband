@@ -45,9 +45,9 @@ static std::string localized_to_utf8_safe(const LocalizedString &ls)
 }
 
 /*!
- * @brief プレイヤーの基本情報をJSONに追加
+ * @brief クリーチャーの基本情報を JSON に追加
  * @param j JSON オブジェクト
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void add_basic_info_to_json(nlohmann::json &j, CreatureEntity &creature)
 {
@@ -90,9 +90,9 @@ static void add_basic_info_to_json(nlohmann::json &j, CreatureEntity &creature)
 }
 
 /*!
- * @brief プレイヤーの能力値をJSONに追加
+ * @brief クリーチャーの能力値を JSON に追加
  * @param j JSON オブジェクト
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void add_stats_to_json(nlohmann::json &j, CreatureEntity &creature)
 {
@@ -113,9 +113,9 @@ static void add_stats_to_json(nlohmann::json &j, CreatureEntity &creature)
 }
 
 /*!
- * @brief プレイヤーの状態をJSONに追加
+ * @brief クリーチャーの状態を JSON に追加
  * @param j JSON オブジェクト
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void add_status_to_json(nlohmann::json &j, CreatureEntity &creature)
 {
@@ -140,9 +140,9 @@ static void add_status_to_json(nlohmann::json &j, CreatureEntity &creature)
 }
 
 /*!
- * @brief プレイヤーの戦闘能力をJSONに追加
+ * @brief クリーチャーの戦闘能力を JSON に追加
  * @param j JSON オブジェクト
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void add_combat_to_json(nlohmann::json &j, CreatureEntity &creature)
 {
@@ -157,9 +157,9 @@ static void add_combat_to_json(nlohmann::json &j, CreatureEntity &creature)
 }
 
 /*!
- * @brief プレイヤーのスキルをJSONに追加
+ * @brief クリーチャーのスキルを JSON に追加
  * @param j JSON オブジェクト
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void add_skills_to_json(nlohmann::json &j, CreatureEntity &creature)
 {
@@ -176,9 +176,9 @@ static void add_skills_to_json(nlohmann::json &j, CreatureEntity &creature)
 }
 
 /*!
- * @brief プレイヤーの死亡/勝利情報をJSONに追加
+ * @brief クリーチャーの死亡/勝利情報を JSON に追加
  * @param j JSON オブジェクト
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void add_death_info_to_json(nlohmann::json &j, CreatureEntity &creature)
 {
@@ -199,9 +199,9 @@ static void add_death_info_to_json(nlohmann::json &j, CreatureEntity &creature)
 }
 
 /*!
- * @brief プレイヤーの履歴をJSONに追加
+ * @brief クリーチャーの履歴を JSON に追加
  * @param j JSON オブジェクト
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void add_history_to_json(nlohmann::json &j, CreatureEntity &creature)
 {
@@ -215,9 +215,11 @@ static void add_history_to_json(nlohmann::json &j, CreatureEntity &creature)
 }
 
 /*!
- * @brief プレイヤーのステータス情報をJSON形式で出力する
- * @param player_ptr プレイヤーへの参照ポインタ
- * @return JSON文字列
+ * @brief クリーチャー（プレイヤー・モンスター）のステータス情報を JSON 形式で出力する
+ * @param creature クリーチャーへの参照
+ * @return JSON 文字列
+ * @details モンスターは性別・種族等一部のフィールドのみ出力し、プレイヤー専用のセクション
+ * (sex/personality/realm/mimic_form) はスキップする。
  */
 std::string dump_player_status_json(CreatureEntity &creature)
 {
@@ -255,8 +257,8 @@ std::string dump_player_status_json(CreatureEntity &creature)
 }
 
 /*!
- * @brief プレイヤーのステータス情報をJSON形式でファイルに出力する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @brief クリーチャー（プレイヤー・モンスター）のステータス情報を JSON 形式でファイルに出力する
+ * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
  */
 void dump_player_status_json_to_file(CreatureEntity &creature, FILE *fff)

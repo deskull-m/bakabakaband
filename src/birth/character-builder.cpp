@@ -53,7 +53,7 @@
 
 /*!
  * @brief プレイヤーキャラの作成結果を日記に書く
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void write_birth_diary(CreatureEntity &creature)
 {
@@ -99,7 +99,7 @@ static void write_birth_diary(CreatureEntity &creature)
  * @details
  * Note that we may be called with "junk" leftover in the various
  * fields, so we must be sure to clear them first.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param initial_quest_id ゲーム開始時に突入するクエストID（オプション）
  */
 void player_birth(CreatureEntity &creature, std::optional<QuestId> initial_quest_id)

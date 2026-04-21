@@ -33,7 +33,7 @@
 
 /*!
  * @brief コンストラクタ
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 強化を与えたい/生成したいオブジェクトの構造体参照ポインタ
  * @param power 生成ランク
  * @details power > 2はデバッグ専用.

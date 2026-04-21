@@ -16,7 +16,7 @@
 
 /*!
  * @brief 店置きのアイテムオブジェクトを読み込む / Add the item "o_ptr" to the inventory of the "Home"
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param store_ptr 店舗の参照ポインタ
  * @param o_ptr アイテムオブジェクト参照ポインタ
  * @details
@@ -58,7 +58,7 @@ static void home_carry_load(CreatureEntity &creature, Store *store_ptr, ItemEnti
 
 /*!
  * @brief 店舗情報を読み込む
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param town_number_initial 街ID (v0.3.3以降)
  * @param store_number 店舗ID
  */
@@ -102,7 +102,7 @@ static void rd_store(CreatureEntity &creature, int town_number_initial, StoreSal
 
 /*!
  * @brief 店舗情報を読み込む
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void load_store(CreatureEntity &creature)
 {

@@ -29,7 +29,7 @@ void store_prt_gold(int num_golds)
 /*!
  * @brief 店の商品リストを再表示する /
  * Re-displays a single store entry
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 表示行
  */
 void display_entry(CreatureEntity &creature, int pos, StoreSaleType store_num)
@@ -90,7 +90,7 @@ void display_entry(CreatureEntity &creature, int pos, StoreSaleType store_num)
 /*!
  * @brief 店の商品リストを表示する /
  * Displays a store's inventory -RAK-
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * All prices are listed as "per individual object".  -BEN-
  */
@@ -128,7 +128,7 @@ void display_store_inventory(CreatureEntity &creature, StoreSaleType store_num)
 /*!
  * @brief 店舗情報全体を表示するメインルーチン /
  * Displays store (after clearing screen)		-RAK-
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  */
 void display_store(CreatureEntity &creature, StoreSaleType store_num)

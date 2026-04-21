@@ -43,7 +43,7 @@ static Pos2DVec correct_dir(const Pos2D &pos_start, const Pos2D &pos_end)
 
 /*!
  * @brief 部屋間のトンネルを生成する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos_start 始点
  * @param pos_end 終点
  * @return 生成に成功したらTRUEを返す
@@ -151,7 +151,7 @@ bool build_tunnel(CreatureEntity &creature, DungeonData *dd_ptr, dt_type *dt_ptr
 
 /*!
  * @brief トンネル生成のための基準点を指定する。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param x 基準点を指定するX座標の参照ポインタ、適時値が修正される。
  * @param y 基準点を指定するY座標の参照ポインタ、適時値が修正される。
  * @param affectwall (調査中)
@@ -228,7 +228,7 @@ static bool set_tunnel(CreatureEntity &creature, DungeonData *dd_ptr, POSITION *
 
 /*!
  * @brief 外壁を削って「カタコンベ状」の通路を作成する / This routine creates the catacomb-like tunnels by removing extra rock.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param x 基準点のX座標
  * @param y 基準点のY座標
  */
@@ -253,7 +253,7 @@ static void create_cata_tunnel(CreatureEntity &creature, DungeonData *dd_ptr, PO
 
 /*!
  * @brief トンネル生成処理（詳細調査中）/ This routine does the bulk of the work in creating the new types of tunnels.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @todo 詳細用調査
  */
 static void short_seg_hack(

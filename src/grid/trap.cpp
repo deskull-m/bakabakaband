@@ -117,7 +117,7 @@ const std::vector<EnumClassFlagGroup<ChestTrapType>> chest_traps = {
 
 /*!
  * @brief マスに存在する隠しトラップを公開する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 秘匿したいマスの座標
  */
 void disclose_grid(CreatureEntity &creature, const Pos2D &pos)

@@ -116,7 +116,7 @@ static void show_file_aux_line(std::string_view str, int cy, std::string_view sh
 /*!
  * @brief ファイル内容をコンソールに出力する
  * Recursive file perusal.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param show_version TRUEならばコンソール上にゲームのバージョンを表示する
  * @param name ファイル名の文字列
  * @param what 内容キャプションの文字列

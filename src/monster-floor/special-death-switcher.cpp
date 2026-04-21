@@ -62,7 +62,7 @@ static BIT_FLAGS dead_mode(MonsterDeath *md_ptr)
 
 /*!
  * @brief 死亡時召喚処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param md_ptr モンスター撃破構造体への参照ポインタ
  * @param summon_data 召喚情報
  * @return プレイヤーが死亡時召喚を視認していればtrue, 視認しなければfalse, 召喚失敗時はtl::nullopt
@@ -143,7 +143,7 @@ static void on_dead_spawn_monsters(CreatureEntity &killer, MonsterDeath *md_ptr)
 
 /*
  * @brief 死亡時アイテムドロップ処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param md_ptr モンスター撃破構造体への参照ポインタ
  * @note 馬鹿馬鹿独自処理
  */
@@ -202,7 +202,7 @@ static void on_dead_drop_kind_item(CreatureEntity &killer, MonsterDeath *md_ptr)
 
 /*
  * @brief 死亡時アイテムドロップ処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param md_ptr モンスター撃破構造体への参照ポインタ
  * @note 馬鹿馬鹿独自処理
  */
@@ -415,7 +415,7 @@ static void on_dead_can_angel(CreatureEntity &killer, MonsterDeath *md_ptr)
 
 /*!
  * @brief 装備品の生成を試みる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param drop_mode ドロップ品の質
  * @param restrict ベースアイテム制約関数。特になければnullptrで良い
  * @return 生成した装備品。生成に失敗した場合はtl::nulloptを返す。
@@ -436,7 +436,7 @@ static tl::optional<ItemEntity> make_equipment(CreatureEntity &killer, const BIT
 
 /*!
  * @brief 死亡時ドロップとしてランダムアーティファクトのみを生成する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param md_ptr モンスター撃破構造体への参照ポインタ
  * @param restrict ベースアイテム制約関数。特になければnullptrで良い
  * @return なし

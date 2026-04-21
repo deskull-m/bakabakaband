@@ -36,7 +36,7 @@
 
 /*!
  * @brief
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param tb 自動拾いの構文
  * @param com_id エディタ内で打ったコマンド
  * @return

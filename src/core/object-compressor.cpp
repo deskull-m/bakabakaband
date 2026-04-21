@@ -57,7 +57,7 @@ private:
 
 /*!
  * @brief アイテム配列から優先度の低いものを削除する。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param size 最低でも減らしたいオブジェクト数の水準
  * @details
  * （危険なので使用には注意すること）

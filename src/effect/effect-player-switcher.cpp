@@ -11,7 +11,7 @@
 /*!
  * @brief
  * 魔法の効果によって様々なメッセーを出力したり与えるダメージの増減を行ったりする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr プレイヤー効果構造体への参照ポインタ
  */
 void switch_effects_player(CreatureEntity &creature, EffectPlayerType *ep_ptr)

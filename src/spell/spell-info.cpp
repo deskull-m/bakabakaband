@@ -24,7 +24,7 @@
 /*!
  * @brief 呪文の消費MPを返す /
  * Modify mana consumption rate using spell exp and dec_mana
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param need_mana 基本消費MP
  * @param spell_id 呪文ID
  * @param realm 魔法領域
@@ -59,7 +59,7 @@ MANA_POINT mod_need_mana(CreatureEntity &creature, MANA_POINT need_mana, SPELL_I
  * @brief 呪文の失敗率修正処理1(呪い、消費魔力減少、呪文簡易化) /
  * Modify spell fail rate
  * Using to_m_chance, dec_mana, easy_spell and heavy_spell
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param chance 修正前失敗率
  * @return 失敗率(%)
  * @todo 統合を検討
@@ -87,7 +87,7 @@ PERCENTAGE mod_spell_chance_1(CreatureEntity &creature, PERCENTAGE chance)
  * @brief 呪文の失敗率修正処理2(消費魔力減少、呪い、負値修正) /
  * Modify spell fail rate
  * Using to_m_chance, dec_mana, easy_spell and heavy_spell
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param chance 修正前失敗率
  * @return 失敗率(%)
  * Modify spell fail rate (as "suffix" process)
@@ -109,7 +109,7 @@ PERCENTAGE mod_spell_chance_2(CreatureEntity &creature, PERCENTAGE chance)
 /*!
  * @brief 呪文の失敗率計算メインルーチン /
  * Returns spell chance of failure for spell -RAK-
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param spell_id 呪文ID
  * @param use_realm 魔法領域ID
  * @return 失敗率(%)
@@ -211,7 +211,7 @@ PERCENTAGE spell_chance(CreatureEntity &creature, SPELL_IDX spell_id, RealmType 
 /*!
  * @brief 呪文情報の表示処理 /
  * Print a list of spells (for browsing or casting or viewing)
- * @param player_ptr 術者の参照ポインタ
+ * @param creature 術者への参照
  * @param target_spell_id 呪文ID
  * @param spell_ids 表示するスペルID配列の参照ポインタ
  * @param num 表示するスペルの数(spellsの要素数)

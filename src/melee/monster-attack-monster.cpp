@@ -295,7 +295,7 @@ static void explode_monster_by_melee(CreatureEntity &creature, mam_type *mam_ptr
 
 /*!
  * @brief MonsterRaceDefinitionで定義した攻撃回数の分だけ、モンスターからモンスターへの直接攻撃処理を繰り返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param mam_ptr モンスター乱闘構造体への参照ポインタ
  */
 static void repeat_melee(CreatureEntity &creature, mam_type *mam_ptr)

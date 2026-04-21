@@ -60,7 +60,7 @@
 
 /*!
  * @brief コンストラクタ
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx 打撃を行うモンスターのID
  */
 MonsterAttackPlayer::MonsterAttackPlayer(CreatureEntity &creature, short m_idx)
@@ -242,7 +242,7 @@ bool MonsterAttackPlayer::check_monster_continuous_attack()
 /*!
  * @brief モンスターから直接攻撃を1回受けた時の処理
  * @return 対邪悪結界により攻撃が当たらなかったらFALSE、それ以外はTRUE
- * @param this->player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  * @details 最大4 回/モンスター/ターン、このルーチンを通る
  */
@@ -363,7 +363,7 @@ void MonsterAttackPlayer::calc_player_cut()
 
 /*!
  * @brief 朦朧を蓄積させる
- * @param this->player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monap_ptr モンスター打撃への参照ポインタ
  * @details
  * 痛恨の一撃ならば朦朧蓄積ランクを1上げる.
@@ -422,7 +422,7 @@ void MonsterAttackPlayer::monster_explode()
 
 /*!
  * @brief 一部の打撃種別の場合のみ、避けた旨のメッセージ表示と盾技能スキル向上を行う
- * @param this->player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  */
 void MonsterAttackPlayer::process_monster_attack_evasion()

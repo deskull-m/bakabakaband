@@ -494,7 +494,7 @@ static bool interpret_t_token(char *buf)
 
 /*!
  * @brief 設定ファイルの各行から各種テキスト情報を取得する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param buf データテキストの参照ポインタ
  * @return 解釈に成功したか否か
  * @details

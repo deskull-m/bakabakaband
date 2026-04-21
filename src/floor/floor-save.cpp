@@ -55,7 +55,7 @@ static void check_saved_tmp_files(const int fd, bool *force)
 
 /*!
  * @brief 保存フロア配列を初期化する / Initialize saved_floors array.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param force テンポラリファイルが残っていた場合も警告なしで強制的に削除するフラグ
  * @details Make sure that old temporary files are not remaining as gurbages.
  */
@@ -85,7 +85,7 @@ void init_saved_floors(bool force)
 /*!
  * @brief 保存フロア用テンポラリファイルを削除する / Kill temporary files
  * @details Should be called just before the game quit.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void clear_saved_floor_files(CreatureEntity &creature)
 {
@@ -124,7 +124,7 @@ saved_floor_type *get_sf_ptr(FLOOR_IDX floor_id)
 
 /*!
  * @brief 参照ポインタ先の保存フロアを抹消する / kill a saved floor and get an empty space
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param sf_ptr 保存フロアの参照ポインタ
  */
 void kill_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
@@ -165,7 +165,7 @@ static FLOOR_IDX find_oldest_floor_idx(CreatureEntity &creature)
 
 /*!
  * @brief 新規に利用可能なフロアIDを返す / Initialize new floor and get its floor id.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 利用可能なフロアID
  * @details
  * If number of saved floors are already MAX_SAVED_FLOORS, kill the oldest one.

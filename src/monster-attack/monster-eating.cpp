@@ -72,7 +72,7 @@ void process_eat_gold(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 
 /*!
  * @brief 盗み打撃の時にアイテムが盗まれるかどうかを判定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @monap_ptr モンスターからモンスターへの直接攻撃構造体への参照ポインタ
  * @return 盗まれたらTRUE、何も盗まれなかったらFALSE
  */
@@ -99,7 +99,7 @@ bool check_eat_item(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 
 /*!
  * @brief プレイヤーが持っているアイテムをモンスターに移す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @monap_ptr モンスターからモンスターへの直接攻撃構造体への参照ポインタ
  */
 static void move_item_to_monster(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr, const OBJECT_IDX o_idx)
@@ -123,7 +123,7 @@ static void move_item_to_monster(CreatureEntity &creature, MonsterAttackPlayer *
 
 /*!
  * @brief アイテム盗み処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @monap_ptr モンスターからモンスターへの直接攻撃構造体への参照ポインタ
  * @details eatとあるがお金や食べ物と違ってなくならない、盗んだモンスターを倒せば取り戻せる
  */
@@ -205,7 +205,7 @@ void process_eat_lite(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 
 /*!
  * @brief モンスターからの攻撃による充填魔力吸収処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @monap_ptr モンスターからモンスターへの直接攻撃構造体への参照ポインタ
  * @return 吸収されたらTRUE、されなかったらFALSE
  * @details 魔道具使用能力向上フラグがあれば、吸収量は全部ではない
@@ -319,7 +319,7 @@ void process_drain_mana(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr
 
 /*!
  * @brief モンスターからの空腹進行処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @monap_ptr モンスターからモンスターへの直接攻撃構造体への参照ポインタ
  * @details 空腹、衰弱の一歩手前で止める優しさは残す。
  */

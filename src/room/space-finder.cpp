@@ -26,7 +26,7 @@ static bool get_is_floor(const FloorType &floor, const Pos2D &pos)
 
 /*!
  * @brief 指定のマスを床地形に変える
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 地形を変えたいマスの座標
  */
 static void set_floor(CreatureEntity &creature, const Pos2D &pos)
@@ -48,7 +48,7 @@ static void set_floor(CreatureEntity &creature, const Pos2D &pos)
 
 /*!
  * @brief 指定範囲に通路が通っていることを確認した上で床で埋める
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos1 範囲の左上端
  * @param pos2 範囲の右下端
  */
@@ -161,7 +161,7 @@ static bool find_space_aux(DungeonData *dd_ptr, const Pos2D &max_block_size, con
 
 /*!
  * @brief 部屋生成が可能なスペースを確保する / Find a good spot for the next room.  -LM-
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 部屋の生成が可能な中心Y座標を返す参照ポインタ
  * @param x 部屋の生成が可能な中心X座標を返す参照ポインタ
  * @param height 確保したい領域の高さ

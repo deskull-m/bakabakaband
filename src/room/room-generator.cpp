@@ -25,7 +25,7 @@
 
 /*!
  * @brief 与えられた部屋型IDに応じて部屋の生成処理分岐を行い結果を返す / Attempt to build a room of the given type at the given block
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param type 部屋型ID
  * @note that we restrict the number of "crowded" rooms to reduce the chance of overflowing the monster list during level creation.
  * @return 部屋の生成に成功した場合 TRUE を返す。
@@ -94,7 +94,7 @@ static void move_prob_list(RoomType dst, RoomType src, std::map<RoomType, int> &
 /*!
  * @brief 部屋生成処理のメインルーチン(Sangbandを経由してOangbandからの実装を引用) / Generate rooms in dungeon.  Build bigger rooms at first.　[from SAngband
  * (originally from OAngband)]
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 部屋生成に成功した場合 TRUE を返す。
  */
 bool generate_rooms(CreatureEntity &creature, DungeonData *dd_ptr)

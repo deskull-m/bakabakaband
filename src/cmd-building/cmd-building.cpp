@@ -74,7 +74,7 @@
 
 /*!
  * @brief 町に関するヘルプを表示する / Display town history
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void town_history(CreatureEntity &creature)
 {
@@ -85,7 +85,7 @@ static void town_history(CreatureEntity &creature)
 
 /*!
  * @brief 施設の処理実行メインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param bldg 施設構造体の参照ポインタ
  * @param i 実行したい施設のサービステーブルの添字
  * @return 施設から別フロアへ移動するか否か (アリーナ/モンスター闘技場のみtrue)
@@ -358,7 +358,7 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
 
 /*!
  * @brief 施設入り口にプレイヤーが乗った際の処理 / Do building commands
- * @param プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void do_cmd_building(CreatureEntity &creature)
 {

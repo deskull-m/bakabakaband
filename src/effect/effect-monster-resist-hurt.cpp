@@ -662,7 +662,7 @@ ProcessResult effect_monster_icee_bolt(CreatureEntity &creature, EffectMonster *
 
 /*!
  * @brief 虚無属性の耐性と効果の発動
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @em_ptr 魔法効果情報への参照ポインタ
  * @return 効果処理を続けるかどうか
  * @details
@@ -713,7 +713,7 @@ ProcessResult effect_monster_void(CreatureEntity &creature, EffectMonster *em_pt
 
 /*!
  * @brief 深淵属性の耐性と効果の発動
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @em_ptr 魔法効果情報への参照ポインタ
  * @return 効果処理を続けるかどうか
  * @details
@@ -773,7 +773,7 @@ ProcessResult effect_monster_abyss(CreatureEntity &creature, EffectMonster *em_p
 
 /*!
  * @brief 汚物効果の耐性と効果の発動
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @em_ptr 魔法効果情報への参照ポインタ
  * @return 効果処理を続けるかどうか
  * @details

@@ -27,7 +27,7 @@
 
 /*!
  * @brief モンスターがプレイヤーにダメージを与えるための最適な座標を算出する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monster 技能を使用するモンスターへの参照
  * @param pos 最適な目標地点座標の座標
  * @param tc 射線に入れるのを避ける地形の所持フラグ

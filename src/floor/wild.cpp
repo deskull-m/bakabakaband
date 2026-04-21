@@ -272,7 +272,7 @@ static void generate_wilderness_area(FloorType &floor, const WildernessGrid &wg,
 
 /*!
  * @brief 荒野フロア生成のメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 広域Y座標
  * @param x 広域X座標
  * @param is_border 広域マップの辺部分としての生成ならばTRUE
@@ -369,7 +369,7 @@ static void generate_area(CreatureEntity &creature, const Pos2D &pos, bool is_bo
 
 /*!
  * @brief 地上マップにモンスターを生成する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details '>' キーで普通に入った時と、襲撃を受けた時でモンスター数は異なる.
  * また、集団生成や護衛は、最初に生成された1体だけがカウント対象である.
  * よって、実際に生成されるモンスターは、コードの見た目より多くなる.
@@ -430,7 +430,7 @@ static void generate_wild_monsters(CreatureEntity &creature)
  * @brief 広域マップの生成 /
  * Build the wilderness area outside of the town.
  * @todo 広域マップは恒常生成にする予定、PlayerTypeによる処理分岐は最終的に排除する。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void wilderness_gen(CreatureEntity &creature)
 {

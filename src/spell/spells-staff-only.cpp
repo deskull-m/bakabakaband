@@ -14,7 +14,7 @@
 
 /*!
  * @brief 聖浄の杖の効果
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @magic 魔法の効果である場合TRUE (杖と同じ効果の呪文はあったか？ 要調査)
  * @powerful 効果が増強される時TRUE (TRUEになるタイミングはあるか？ 要調査)
  */
@@ -60,7 +60,7 @@ bool cleansing_nova(CreatureEntity &creature, bool magic, bool powerful)
 
 /*!
  * @brief 魔力の嵐の杖の効果
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @powerful 効果が増強される時TRUE (TRUEになるタイミングはあるか？ 要調査)
  */
 bool unleash_mana_storm(CreatureEntity &creature, bool powerful)

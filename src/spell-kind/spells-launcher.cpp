@@ -10,7 +10,7 @@
 
 /*!
  * @brief ボール系スペルの発動 / Cast a ball spell
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param typ 効果属性
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @param dam 威力
@@ -40,7 +40,7 @@ bool fire_ball(CreatureEntity &creature, AttributeType typ, const Direction &dir
 
 /*!
  * @brief ブレス系スペルの発動 / Cast a breath spell
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param typ 効果属性
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @param dam 威力
@@ -67,7 +67,7 @@ bool fire_breath(CreatureEntity &creature, AttributeType typ, const Direction &d
 
 /*!
  * @brief ロケット系スペルの発動(詳細な差は確認中) / Cast a ball spell
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param typ 効果属性
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @param dam 威力
@@ -90,7 +90,7 @@ bool fire_rocket(CreatureEntity &creature, AttributeType typ, const Direction &d
 
 /*!
  * @brief ボール(ハイド)系スペルの発動 / Cast a ball spell
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param typ 効果属性
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @param dam 威力
@@ -116,7 +116,7 @@ bool fire_ball_hide(CreatureEntity &creature, AttributeType typ, const Direction
 
 /*!
  * @brief メテオ系スペルの発動 / Cast a meteor spell
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param src_idx スぺル詠唱者のモンスターID(0=プレイヤー)
  * @param typ 効果属性
  * @param dam 威力
@@ -141,7 +141,7 @@ bool fire_meteor(CreatureEntity &creature, MONSTER_IDX src_idx, AttributeType ty
 
 /*!
  * @brief ブラスト系スペルの発動 / Cast a blast spell
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param typ 効果属性
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @param dice 威力ダイス
@@ -188,7 +188,7 @@ bool fire_blast(CreatureEntity &creature, AttributeType typ, const Direction &di
 
 /*!
  * @brief ボルト系スペルの発動 / Cast a bolt spell.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param typ 効果属性
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @param dam 威力
@@ -210,7 +210,7 @@ bool fire_bolt(CreatureEntity &creature, AttributeType typ, const Direction &dir
 
 /*!
  * @brief ビーム系スペルの発動 / Cast a beam spell.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param typ 効果属性
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @param dam 威力
@@ -229,7 +229,7 @@ bool fire_beam(CreatureEntity &creature, AttributeType typ, const Direction &dir
 
 /*!
  * @brief 確率に応じたボルト系/ビーム系スペルの発動 / Cast a bolt spell, or rarely, a beam spell.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param prob ビーム化する確率(%)
  * @param typ 効果属性
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
@@ -252,7 +252,7 @@ bool fire_bolt_or_beam(CreatureEntity &creature, PERCENTAGE prob, AttributeType 
 
 /*!
  * @brief 指定方向に飛び道具を飛ばす (フラグ任意指定) / Apply a "project()" in a direction (or at the target)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param typ 効果属性
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @param dam 威力

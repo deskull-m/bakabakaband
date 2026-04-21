@@ -972,7 +972,7 @@ MonsterSpellResult spell_RF6_S_HI_UNDEAD(CreatureEntity &creature, POSITION y, P
 
 /*!
  * @brief RF6_S_HI_DRAGONの処理。古代ドラゴン召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 対象の地点のy座標
  * @param x 対象の地点のx座標
  * @param m_idx 呪文を唱えるモンスターID
@@ -1024,7 +1024,7 @@ MonsterSpellResult spell_RF6_S_HI_DRAGON(CreatureEntity &creature, POSITION y, P
 
 /*!
  * @brief RF6_S_AMBERITESの処理。アンバーの王族召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 対象の地点のy座標
  * @param x 対象の地点のx座標
  * @param m_idx 呪文を唱えるモンスターID
@@ -1070,7 +1070,7 @@ MonsterSpellResult spell_RF6_S_AMBERITES(CreatureEntity &creature, POSITION y, P
 
 /*!
  * @brief RF6_S_CHOASIANSの処理。混沌の王族召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 対象の地点のy座標
  * @param x 対象の地点のx座標
  * @param m_idx 呪文を唱えるモンスターID
@@ -1116,7 +1116,7 @@ MonsterSpellResult spell_RF6_S_CHOASIANS(CreatureEntity &creature, POSITION y, P
 
 /*!
  * @brief RF6_S_UNIQUEの処理。ユニーク・モンスター召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 対象の地点のy座標
  * @param x 対象の地点のx座標
  * @param m_idx 呪文を唱えるモンスターID
@@ -1180,7 +1180,7 @@ MonsterSpellResult spell_RF6_S_UNIQUE(CreatureEntity &creature, POSITION y, POSI
 
 /*!
  * @brief RF6_S_DEAD_UNIQUEの処理。撃破済みユニーク・モンスターをクローンとして召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 対象の地点のy座標
  * @param x 対象の地点のx座標
  * @param m_idx 呪文を唱えるモンスターID
@@ -1225,7 +1225,7 @@ MonsterSpellResult spell_RF6_S_DEAD_UNIQUE(CreatureEntity &creature, POSITION y,
 }
 /*!
  * @brief RF6_S_NASTYの処理。汚いモンスターの召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 対象の地点のy座標
  * @param x 対象の地点のx座標
  * @param m_idx 呪文を唱えるモンスターID
@@ -1267,7 +1267,7 @@ MonsterSpellResult spell_RF6_S_NASTY(CreatureEntity &creature, POSITION y, POSIT
 
 /*!
  * @brief RF6_S_GOLEMの処理。ゴーレム召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 対象の地点のy座標
  * @param x 対象の地点のx座標
  * @param m_idx 呪文を唱えるモンスターID
@@ -1310,7 +1310,7 @@ MonsterSpellResult spell_RF6_S_GOLEM(CreatureEntity &creature, POSITION y, POSIT
 
 /*!
  * @brief RF6_S_CATSの処理。猫召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 対象の地点のy座標
  * @param x 対象の地点のx座標
  * @param m_idx 呪文を唱えるモンスターID
@@ -1352,7 +1352,7 @@ MonsterSpellResult spell_RF6_S_CATS(CreatureEntity &creature, POSITION y, POSITI
 
 /*!
  * @brief RF6_S_PERVERTSの処理。変質者召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 対象の地点のy座標
  * @param x 対象の地点のx座標
  * @param m_idx 呪文を唱えるモンスターID
@@ -1395,7 +1395,7 @@ MonsterSpellResult spell_RF6_S_PERVERTS(CreatureEntity &creature, POSITION y, PO
 
 /*!
  * @brief RF6_S_PUYOの処理。ぷよ召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 対象の地点のy座標
  * @param x 対象の地点のx座標
  * @param m_idx 呪文を唱えるモンスターID
@@ -1437,7 +1437,7 @@ MonsterSpellResult spell_RF6_S_PUYO(CreatureEntity &creature, POSITION y, POSITI
 }
 /*!
  * @brief RF6_S_HOMOの処理。ホモ召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 対象の地点のy座標
  * @param x 対象の地点のx座標
  * @param m_idx 呪文を唱えるモンスターID
@@ -1485,7 +1485,7 @@ MonsterSpellResult spell_RF6_S_HOMO(CreatureEntity &creature, POSITION y, POSITI
 }
 /*!
  * @brief RF6_S_WALLの処理。壁一体召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 対象の地点のy座標
  * @param x 対象の地点のx座標
  * @param m_idx 呪文を唱えるモンスターID
@@ -1530,7 +1530,7 @@ MonsterSpellResult spell_RF6_S_WALL(CreatureEntity &creature, POSITION y, POSITI
 
 /*!
  * @brief RF6_S_INSECTの処理。昆虫召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 対象の地点のy座標
  * @param x 対象の地点のx座標
  * @param m_idx 呪文を唱えるモンスターID
@@ -1575,7 +1575,7 @@ MonsterSpellResult spell_RF6_S_INSECT(CreatureEntity &creature, POSITION y, POSI
 
 /*!
  * @brief RF6_S_ELDRAZIの処理。エルドラージ召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 対象の地点のy座標
  * @param x 対象の地点のx座標
  * @param m_idx 呪文を唱えるモンスターID

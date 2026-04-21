@@ -107,7 +107,7 @@ static void display_identified_resistances_flag(const ItemEntity &item, FILE *ff
 
 /*!
  * @brief アイテム1つ当たりの耐性を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fff 一時ファイルへの参照ポインタ
  * @param item アイテムへの参照
  * @param where アイテムの場所 (手持ち、家等) を示す文字列への参照ポインタ
@@ -168,7 +168,7 @@ static void pad_and_print_header(int label_number, FILE *fff)
 
 /*!
  * 装備中のアイテムについて、耐性を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param tval アイテム主分類番号
  * @param label_number 現在の行数
  * @param fff ファイルへの参照ポインタ
@@ -192,7 +192,7 @@ static int show_wearing_equipment_resistances(CreatureEntity &creature, ItemKind
 
 /*!
  * 手持ち中のアイテムについて、耐性を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param tval アイテム主分類番号
  * @param label_number 現在の行数
  * @param fff ファイルへの参照ポインタ
@@ -216,7 +216,7 @@ static int show_holding_equipment_resistances(CreatureEntity &creature, ItemKind
 
 /*!
  * 我が家のアイテムについて、耐性を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param tval アイテム主分類番号
  * @param label_number 現在の行数
  * @param fff ファイルへの参照ポインタ
@@ -241,7 +241,7 @@ static int show_home_equipment_resistances(CreatureEntity &creature, ItemKindTyp
 
 /*
  * @brief Display *ID* ed weapons/armors's resistances
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void do_cmd_knowledge_inventory(CreatureEntity &creature)
 {

@@ -31,7 +31,7 @@ struct learnt_spell_table {
 
 /*!
  * @brief 魔力喰いを持つクラスの情報をダンプする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
  */
 static void dump_magic_eater(CreatureEntity &creature, FILE *fff)
@@ -94,7 +94,7 @@ static void dump_magic_eater(CreatureEntity &creature, FILE *fff)
 
 /*!
  * @brief 鍛冶師のエッセンス情報をダンプする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
  */
 static void dump_smith(CreatureEntity &creature, FILE *fff)
@@ -159,7 +159,7 @@ static void add_monster_spell_type(char p[][80], int col, BlueMagicType SpellPro
 
 /*!
  * @brief 青魔道士の学習済魔法をダンプする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
  */
 static void dump_blue_mage(CreatureEntity &creature, FILE *fff)
@@ -222,7 +222,7 @@ static void dump_blue_mage(CreatureEntity &creature, FILE *fff)
 
 /*!
  * @brief プレイヤーの職業能力情報をファイルにダンプする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
  */
 void dump_aux_class_special(CreatureEntity &creature, FILE *fff)

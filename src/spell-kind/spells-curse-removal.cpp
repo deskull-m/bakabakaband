@@ -11,7 +11,7 @@
 
 /*!
  * @brief 装備の解呪処理 / Removes curses from items in inventory
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param all 軽い呪いまでの解除ならば0
  * @return 解呪されたアイテムの数
  * @details 永遠の呪いは解呪できない
@@ -53,7 +53,7 @@ static int exe_curse_removal(CreatureEntity &creature, int all)
 /*!
  * @brief 装備の軽い呪い解呪処理 /
  * Remove most curses
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 解呪に成功した装備数
  */
 int remove_curse(CreatureEntity &creature)

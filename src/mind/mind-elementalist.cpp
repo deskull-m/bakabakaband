@@ -346,7 +346,7 @@ const std::string &get_element_name(ElementRealmType realm, int n)
 
 /*!
  * @brief 元素魔法の説明文を取得
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param spell_idx 呪文番号
  * @return 説明文
  */
@@ -360,7 +360,7 @@ static std::string get_element_tip(CreatureEntity &creature, int spell_idx)
 
 /*!
  * @brief 元素魔法の説明文を取得
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param spell_idx 呪文番号
  * @return 説明文
  */
@@ -373,7 +373,7 @@ static int get_elemental_elem(CreatureEntity &creature, int spell_idx)
 
 /*!
  * @brief 元素魔法呪文の難易度データを取得
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param spell_idx 呪文番号
  * @return 説明文
  */
@@ -386,7 +386,7 @@ static mind_type get_elemental_info(CreatureEntity &creature, int spell_idx)
 
 /*!
  * @brief 元素魔法呪文の効果表示文字列を取得
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param spell_idx 呪文番号
  * @return std::string 魔法の効果を表す文字列
  */
@@ -433,7 +433,7 @@ static std::string get_element_effect_info(CreatureEntity &creature, int spell_i
 
 /*!
  * @brief 元素魔法呪文を実行する
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param spell_idx 呪文番号
  * @return 実行したらTRUE、キャンセルならFALSE
  */
@@ -635,7 +635,7 @@ static bool cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx)
 
 /*!
  * @brief 元素魔法呪文の失敗率を計算
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param spell_idx 呪文番号
  * @return 失敗率
  */
@@ -674,7 +674,7 @@ static PERCENTAGE decide_element_chance(CreatureEntity &creature, mind_type spel
 
 /*!
  * @brief 元素魔法呪文の消費MPを計算
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param spell_idx 呪文番号
  * @return 消費MP
  */
@@ -686,7 +686,7 @@ static MANA_POINT decide_element_mana_cost(CreatureEntity &creature, mind_type s
 
 /*!
  * @brief 元素魔法呪文を選択して取得
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param sn 呪文番号
  * @param only_browse 閲覧モードかどうか
  * @return 選んだらTRUE、選ばなかったらFALSE
@@ -831,7 +831,7 @@ bool get_element_power(CreatureEntity &creature, SPELL_IDX *sn, bool only_browse
 
 /*!
  * @brief 元素魔法呪文をMPがなくても挑戦するか確認する
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param mana_cost 消費MP
  * @return 詠唱するならTRUE、しないならFALSE
  */
@@ -851,7 +851,7 @@ static bool check_element_mp_sufficiency(CreatureEntity &creature, int mana_cost
 
 /*!
  * @brief 元素魔法呪文の詠唱を試み、成功なら詠唱し、失敗ならファンブルする
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param spell_idx 呪文番号
  * @param chance 失敗率
  * @return 詠唱して実行したらTRUE、されなかったらFALSE
@@ -894,7 +894,7 @@ static bool try_cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx
 
 /*!
  * @brief 元素魔法コマンドのメインルーチン
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void do_cmd_element(CreatureEntity &creature)
 {
@@ -943,7 +943,7 @@ void do_cmd_element(CreatureEntity &creature)
 
 /*!
  * @brief 現在プレイヤーが使用可能な元素魔法の一覧表示
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void do_cmd_element_browse(CreatureEntity &creature)
 {
@@ -1059,7 +1059,7 @@ static bool is_elemental_genocide_effective(const MonraceDefinition &monrace, At
 
 /*!
  * @brief 元素魔法の単体抹殺の効果を発動する
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr 魔法効果情報への参照ポインタ
  * @return 効果処理を続けるかどうか
  */
@@ -1099,7 +1099,7 @@ ProcessResult effect_monster_elemental_genocide(CreatureEntity &creature, Effect
 
 /*!
  * @brief 元素領域とレベルの条件に見合うかチェックする
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param realm 領域
  * @param lev プレイヤーレベル
  * @return 見合うならTRUE、そうでなければFALSE
@@ -1178,7 +1178,7 @@ static int interpret_realm_select_key(int cs, int n, char c)
 
 /*!
  * @brief 領域選択ループ処理
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param realm 選択中の領域
  * @param n 最後尾の位置
  * @return 領域番号
@@ -1247,7 +1247,7 @@ static tl::optional<ElementRealmType> get_element_realm(CreatureEntity &creature
 
 /*!
  * @brief 領域選択
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 領域番号
  */
 tl::optional<ElementRealmType> select_element_realm(CreatureEntity &creature)
@@ -1286,7 +1286,7 @@ tl::optional<ElementRealmType> select_element_realm(CreatureEntity &creature)
 
 /*!
  * @brief クラスパワー情報を追加
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param rc_ptr レイシャルパワー情報への参照ポインタ
  */
 void switch_element_racial(CreatureEntity &creature, rc_type *rc_ptr)
@@ -1429,7 +1429,7 @@ static bool is_target_grid_dark(const FloorType &floor, const Pos2D &pos)
 
 /*!
  * @breif 暗いところ限定での次元の扉
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static bool door_to_darkness(CreatureEntity &creature, int distance)
 {
@@ -1467,7 +1467,7 @@ static bool door_to_darkness(CreatureEntity &creature, int distance)
 
 /*!
  * @brief クラスパワーを実行
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 実行したらTRUE、しなかったらFALSE
  */
 bool switch_element_execution(CreatureEntity &creature)

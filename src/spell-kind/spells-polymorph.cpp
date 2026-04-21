@@ -29,7 +29,7 @@
 
 /*!
  * @brief 変身処理向けにモンスターの近隣レベル帯モンスターを返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monrace_id 基準となるモンスター種族ID
  * @return 変更先のモンスター種族ID
  */
@@ -67,7 +67,7 @@ static MonraceId select_polymorph_monrace_id(CreatureEntity &creature, MonraceId
 /*!
  * @brief 指定座標にいるモンスターを変身させる /
  * Helper function -- return a "nearby" race for polymorphing
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 指定のY座標
  * @param x 指定のX座標
  * @return 実際に変身したらTRUEを返す
@@ -153,7 +153,7 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
 
 /*!
  * @brief 性転換処理
- * @param player_ptr プレーヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return テレポート処理を決定したか否か
  */
 bool trans_sex(CreatureEntity &creature)

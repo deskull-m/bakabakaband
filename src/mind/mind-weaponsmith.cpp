@@ -116,7 +116,7 @@ static void set_smith_redrawing_flags()
 
 /*!
  * @brief エッセンスの抽出処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void drain_essence(CreatureEntity &creature)
 {

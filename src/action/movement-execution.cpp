@@ -67,7 +67,7 @@ static bool boundary_floor(const Grid &grid, const TerrainType &terrain, const T
 /*!
  * @brief 該当地形のトラップがプレイヤーにとって無効かどうかを判定して返す /
  * Move creature in the given direction, with the given "pickup" flag.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dir 移動方向
  * @param do_pickup 罠解除を試みながらの移動ならばTRUE
  * @param break_trap トラップ粉砕処理を行うならばTRUE

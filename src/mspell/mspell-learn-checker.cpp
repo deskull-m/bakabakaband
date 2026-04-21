@@ -6,7 +6,7 @@
 
 /*!
  * @brief モンスターの唱えた呪文を青魔法で学習できるか判定する /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @return プレイヤーが青魔法で学習できるならTRUE、そうでなければFALSEを返す。
  *

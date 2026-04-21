@@ -35,7 +35,7 @@ static concptr variant = "ZANGBAND";
 /*!
  * @brief 固定マップ (クエスト＆街＆広域マップ)生成時の分岐処理
  * Helper function for "parse_fixed_map()"
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param sp
  * @param fp
  * @return エラーコード
@@ -238,7 +238,7 @@ static std::string parse_fixed_map_expression(CreatureEntity &creature, char **s
 
 /*!
  * @brief 固定マップ (クエスト＆街＆広域マップ)をq_info、t_info、w_infoから読み込んでパースする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param name ファイル名
  * @param ymin 詳細不明
  * @param xmin 詳細不明
@@ -319,7 +319,7 @@ static QuestId parse_quest_number(const std::vector<std::string> &token)
 
 /*!
  * @brief クエスト番号をファイルから読み込んでパースする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param file_name ファイル名
  * @param key_list キーになるQuestIdの配列
  */
@@ -377,7 +377,7 @@ static void parse_quest_info_aux(std::string_view file_name, std::set<QuestId> &
 
 /*!
  * @brief ファイルからパースして作成したクエスト番号配列を返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param file_name ファイル名
  * @return クエスト番号の配列
  */

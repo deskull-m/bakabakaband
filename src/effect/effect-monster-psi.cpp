@@ -21,7 +21,7 @@
 
 /*!
  * @brief 精神のないモンスターのPsi攻撃に対する完全な耐性を発動する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果への参照ポインタ
  * @return 完全な耐性を発動した場合TRUE、そうでなければFALSE
  */
@@ -67,7 +67,7 @@ static bool resisted_psi_because_weird_mind_or_powerful(EffectMonster *em_ptr)
 
 /*!
  * @brief 堕落した精神のモンスターへのPsi攻撃のダメージ反射を発動する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果への参照ポインタ
  * @return ダメージ反射を発動した場合TRUE、そうでなければFALSE
  * @details
@@ -93,7 +93,7 @@ static bool reflects_psi_with_currupted_mind(CreatureEntity &creature, EffectMon
 
 /*!
  * @brief モンスターがPsi攻撃をダメージ反射した場合のプレイヤーへの追加効果を発動する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果への参照ポインタ
  * @details
  * 効果は、混乱、朦朧、恐怖、麻痺
@@ -132,7 +132,7 @@ static void effect_monster_psi_reflect_extra_effect(CreatureEntity &creature, Ef
 
 /*!
  * @brief モンスターのPsi攻撃に対する耐性を発動する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果への参照ポインタ
  * @details
  * 耐性を発動した精神の堕落したモンスターは効力を跳ね返すことがある。
@@ -165,7 +165,7 @@ static void effect_monster_psi_resist(CreatureEntity &creature, EffectMonster *e
 
 /*!
  * @brief モンスターへのPsi攻撃の追加効果を発動する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果への参照ポインタ
  * @details
  * 効果は、混乱、朦朧、恐怖、麻痺(各耐性無効)
@@ -196,7 +196,7 @@ static void effect_monster_psi_extra_effect(EffectMonster *em_ptr)
 
 /*!
  * @brief モンスターへのPsi攻撃(PSI)の効果を発動する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果への参照ポインタ
  * @return PROICESS_CONTINUE
  * @details
@@ -225,7 +225,7 @@ ProcessResult effect_monster_psi(CreatureEntity &creature, EffectMonster *em_ptr
 
 /*!
  * @brief モンスターのPsi攻撃(PSI_DRAIN)に対する耐性を発動する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果への参照ポインタ
  * @details
  * 耐性を発動した精神の堕落したモンスターは効力を跳ね返すことがある。
@@ -271,7 +271,7 @@ static void effect_monster_psi_drain_resist(CreatureEntity &creature, EffectMons
 
 /*!
  * @brief モンスターへのPsi攻撃(PSI_DRAIN)のダメージをMPに変換する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果への参照ポインタ
  */
 static void effect_monster_psi_drain_change_power(CreatureEntity &creature, EffectMonster *em_ptr)
@@ -290,7 +290,7 @@ static void effect_monster_psi_drain_change_power(CreatureEntity &creature, Effe
 
 /*!
  * @brief モンスターへのPsi攻撃(PSI_DRAIN)の効果を発動する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果への参照ポインタ
  * @return PROICESS_CONTINUE
  * @details
@@ -313,7 +313,7 @@ ProcessResult effect_monster_psi_drain(CreatureEntity &creature, EffectMonster *
 
 /*!
  * @brief モンスターへのテレキネシス(TELEKINESIS)の効果を発動する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果への参照ポインタ
  * @return PROICESS_CONTINUE
  * @details

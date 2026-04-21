@@ -44,7 +44,7 @@
 
 /*!
  * @brief デバッグ時にアイテム生成情報をメッセージに出力する / Cheat -- describe a created object for the user
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr デバッグ出力するオブジェクトの構造体参照ポインタ
  */
 static void object_mention(CreatureEntity &creature, ItemEntity &item)
@@ -180,7 +180,7 @@ tl::optional<ItemEntity> make_object(CreatureEntity &subject, BIT_FLAGS mode, Ba
 
 /*!
  * @brief フロア中のアイテムを全て削除する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 削除したフロアマスの座標
  */
 void delete_all_items_from_floor(CreatureEntity &creature, const Pos2D &pos)
@@ -199,7 +199,7 @@ void delete_all_items_from_floor(CreatureEntity &creature, const Pos2D &pos)
 /*!
  * @brief 床上のアイテムの数を増やす /
  * Increase the "number" of an item on the floor
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i_idx 増やしたいアイテムの所持スロット
  * @param num 増やしたいアイテムの数
  */
@@ -227,7 +227,7 @@ void floor_item_increase(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUM
 /*!
  * @brief 床上の数の無くなったアイテムスロットを消去する /
  * Optimize an item on the floor (destroy "empty" items)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i_idx 消去したいアイテムの所持スロット
  */
 void floor_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
@@ -251,7 +251,7 @@ void floor_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
 /*!
  * @brief オブジェクトを削除する /
  * Delete a dungeon object
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_idx 削除対象のオブジェクト構造体ポインタ
  * @details
  * Handle "stacks" of objects correctly.

@@ -147,7 +147,7 @@ static player_hand main_attack_hand(CreatureEntity &creature);
 /*!
  * @brief 遅延描画更新 / Delayed visual update
  * @details update_view(), update_lite(), update_mon_lite() においてのみ更新すること / Only used if update_view(), update_lite() or update_mon_lite() was called
- * @param player_ptr 主観となるプレイヤー構造体参照ポインタ
+ * @param creature 主観となるクリーチャーへの参照
  * @todo 将来独自インターフェース実装にはz-term系に追い出すべきか？
  */
 static void delayed_visual_update(CreatureEntity &creature)
@@ -181,7 +181,7 @@ static bool is_heavy_shoot(CreatureEntity &creature, const ItemEntity *o_ptr)
 
 /*!
  * @brief 所持品総重量を計算する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 総重量
  */
 int calc_inventory_weight(CreatureEntity &creature)
@@ -1015,7 +1015,7 @@ short calc_num_fire(CreatureEntity &creature, const ItemEntity *o_ptr)
 
 /*!
  * @brief 解除能力計算
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 解除能力
  * @details
  * * 種族/職業/性格による加算
@@ -1046,7 +1046,7 @@ static ACTION_SKILL_POWER calc_disarming(CreatureEntity &creature)
 
 /*!
  * @brief 魔道具使用能力計算
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 魔道具使用能力
  * @details
  * * 種族/職業/性格による加算
@@ -1094,7 +1094,7 @@ static ACTION_SKILL_POWER calc_device_ability(CreatureEntity &creature)
 
 /*!
  * @brief 魔法防御計算
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 魔法防御
  * @details
  * * 種族/職業/性格による加算
@@ -1175,7 +1175,7 @@ static ACTION_SKILL_POWER calc_saving_throw(CreatureEntity &creature)
 
 /*!
  * @brief 探索深度計算
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 探索深度
  * @details
  * * 種族/職業/性格による加算
@@ -1225,7 +1225,7 @@ static ACTION_SKILL_POWER calc_search(CreatureEntity &creature)
 
 /*!
  * @brief 探索頻度計算
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 探索頻度
  * @details
  * * 種族/職業/性格による加算
@@ -1274,7 +1274,7 @@ static ACTION_SKILL_POWER calc_search_freq(CreatureEntity &creature)
 
 /*!
  * @brief 打撃命中能力計算
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 打撃命中能力
  * @details
  * * 種族/職業/性格による加算とレベルによる追加加算
@@ -1298,7 +1298,7 @@ static ACTION_SKILL_POWER calc_to_hit_melee(CreatureEntity &creature)
 
 /*!
  * @brief 射撃命中能力計算
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 射撃命中能力
  * @details
  * * 種族/職業/性格による加算とレベルによる追加加算
@@ -1322,7 +1322,7 @@ static ACTION_SKILL_POWER calc_to_hit_shoot(CreatureEntity &creature)
 
 /*!
  * @brief 投擲命中能力計算
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 投擲命中能力
  * @details
  * * 種族/職業/性格による加算とレベルによる追加加算
@@ -1352,7 +1352,7 @@ static ACTION_SKILL_POWER calc_to_hit_throw(CreatureEntity &creature)
 
 /*!
  * @brief 掘削能力計算
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 掘削能力値
  * @details
  * * エントが素手の場合のプラス修正
@@ -1577,7 +1577,7 @@ static int16_t calc_num_blow(CreatureEntity &creature, int i)
 
 /*!
  * @brief 魔法失敗値計算
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 魔法失敗値
  * @details
  * * 性格なまけものなら加算(+10)
@@ -1851,7 +1851,7 @@ static ARMOUR_CLASS calc_to_ac(CreatureEntity &creature, bool is_real_value)
 
 /*!
  * @brief 二刀流ペナルティ量計算
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param slot ペナルティ量を計算する武器スロット
  * @return 二刀流ペナルティ量
  * @details
@@ -3074,7 +3074,7 @@ uint32_t calc_score(CreatureEntity &creature)
 /*!
 
  * @brief 口を使う継続的な処理を中断する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void stop_mouth(CreatureEntity &creature)
 {

@@ -343,7 +343,7 @@ static bool do_cmd_save_screen_text(int wid, int hgt)
 
 /*!
  * @brief 記念撮影のためにグラフィック使用をOFFにする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 記念撮影直前のグラフィックオプション
  */
 static bool update_use_graphics(CreatureEntity &creature)
@@ -368,7 +368,7 @@ static bool update_use_graphics(CreatureEntity &creature)
 
 /*
  * Save a screen dump to a file
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void do_cmd_save_screen(CreatureEntity &creature)
 {

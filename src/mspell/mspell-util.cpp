@@ -51,7 +51,7 @@ bool monster_near_player(const CreatureEntity &creature, MONSTER_IDX m_idx, MONS
 
 /*!
  * @brief モンスターが呪文行使する際のメッセージを処理する汎用関数 /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx 呪文を唱えるモンスターID
  * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
  * @param msgs メッセージの構造体
@@ -101,7 +101,7 @@ bool monspell_message_base(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_
 
 /*!
  * @brief モンスターが呪文行使する際のメッセージを処理する汎用関数。盲目時と通常時のメッセージを切り替える。 /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx 呪文を唱えるモンスターID
  * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
  * @param msgs メッセージの構造体
@@ -117,7 +117,7 @@ bool monspell_message(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t
 
 /*!
  * @brief モンスターが呪文行使する際のメッセージを処理する汎用関数。対モンスターと対プレイヤーのメッセージを切り替える。 /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx 呪文を唱えるモンスターID
  * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
  * @param msgs メッセージの構造体

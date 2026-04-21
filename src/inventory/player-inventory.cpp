@@ -196,7 +196,7 @@ static void py_pickup_floor(CreatureEntity &creature, bool pickup)
  * 「2つ拾って、3つのケーキを持っている」(もともと同じアイテムを持っていてスタックした場合)
  * というふうに表示する。
  *
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param picked_item 拾ったアイテムの参照
  * @param picked_slot_item 拾ったアイテムを格納したスロットの参照
  * @param slot 拾ったアイテムを格納したスロットのID
@@ -233,7 +233,7 @@ static void print_pickup_message(CreatureEntity &creature, [[maybe_unused]] cons
 
 /*!
  * @brief プレイヤーがアイテムを拾う処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_idx 取得したオブジェクトの参照ID
  */
 void process_player_pickup_item(CreatureEntity &creature, OBJECT_IDX o_idx)
@@ -262,7 +262,7 @@ void process_player_pickup_item(CreatureEntity &creature, OBJECT_IDX o_idx)
 
 /*!
  * @brief プレイヤーがオブジェクト上に乗った際の表示処理 / Player "wants" to pick up an object or gold.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pickup 自動拾い処理を行うならばTRUEとする
  */
 void carry(CreatureEntity &creature, bool pickup)

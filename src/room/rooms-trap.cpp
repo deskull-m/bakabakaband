@@ -16,7 +16,7 @@
 
 /*!
  * @brief タイプ14の部屋…特殊トラップ部屋の生成 / Type 14 -- trapped rooms
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * A special trap is placed at center of the room
  */

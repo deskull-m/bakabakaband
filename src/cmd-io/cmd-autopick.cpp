@@ -118,7 +118,7 @@ void text_body_type::update_cursor_column_record(int com_id)
 
 /*
  * In-game editor of Object Auto-picker/Destoryer
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void do_cmd_edit_autopick(CreatureEntity &creature)
 {

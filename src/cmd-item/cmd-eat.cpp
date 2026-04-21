@@ -61,7 +61,7 @@
 
 /*!
  * @brief ゴミみてえなものを食べたときの効果を発動
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 食べるオブジェクト
  * @return 鑑定されるならTRUE、されないならFALSE
  */
@@ -96,7 +96,7 @@ static bool exe_eat_junk_type_object(CreatureEntity &creature, ItemEntity *o_ptr
 
 /*!
  * @brief ソウルを食べたときの効果を発動
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 食べるオブジェクト
  * @return 鑑定されるならTRUE、されないならFALSE
  */
@@ -125,7 +125,7 @@ static bool exe_eat_soul(CreatureEntity &creature, ItemEntity *o_ptr)
 
 /*!
  * @brief 死体を食べたときの効果を発動
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 食べるオブジェクト
  * @return 鑑定されるならTRUE、されないならFALSE
  */
@@ -264,7 +264,7 @@ static bool exe_eat_corpse_type_object(CreatureEntity &creature, ItemEntity *o_p
 
 /*!
  * @brief 食料タイプの食料を食べたときの効果を発動
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 食べるオブジェクト
  * @return 鑑定されるならTRUE、されないならFALSE
  */
@@ -471,7 +471,7 @@ static bool exe_eat_food_type_object(CreatureEntity &creature, const BaseitemKey
 
 /*!
  * @brief 魔法道具のチャージをの食料として食べたときの効果を発動
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 食べるオブジェクト
  * @param i_idx オブジェクトのインベントリ番号
  * @return 食べようとしたらTRUE、しなかったらFALSE

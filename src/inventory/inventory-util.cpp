@@ -79,7 +79,7 @@ static tl::optional<std::pair<short, short>> get_inventory_range(BIT_FLAGS mode)
 
 /*!
  * @brief 所持/装備オブジェクトに選択タグを与える/タグに該当するオブジェクトがあるかを返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param cp 対応するタグIDを与える参照ポインタ
  * @param tag 該当するオブジェクトがあるかを調べたいタグ
  * @param mode 所持、装備の切り替え
@@ -149,7 +149,7 @@ bool get_item_okay(CreatureEntity &creature, OBJECT_IDX i, const ItemTester &ite
 
 /*!
  * @brief 選択したアイテムの確認処理のメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i_idx 選択アイテムID
  * @return 確認がYesならTRUEを返す。
  */
@@ -186,7 +186,7 @@ bool get_item_allow(CreatureEntity &creature, INVENTORY_IDX i_idx)
 
 /*!
  * @brief 選択アルファベットラベルからプレイヤーの装備オブジェクトIDを返す /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * Convert a label into the index of a item in the "equip"
  * @return 対応するID。該当スロットにオブジェクトが存在しなかった場合-1を返す / Return "-1" if the label does not indicate a real item
  */
@@ -212,7 +212,7 @@ INVENTORY_IDX label_to_equipment(CreatureEntity &creature, int c)
 /*!
  * @brief 選択アルファベットラベルからプレイヤーの所持オブジェクトIDを返す /
  * Convert a label into the index of an item in the "inven"
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param c 選択されたアルファベット
  * @return 対応するID。該当スロットにオブジェクトが存在しなかった場合-1を返す / Return "-1" if the label does not indicate a real item
  * @details Note that the label does NOT distinguish inven/equip.
@@ -230,7 +230,7 @@ INVENTORY_IDX label_to_inventory(CreatureEntity &creature, int c)
 
 /*!
  * @brief 選択したアイテムの確認処理の補助
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param prompt メッセージ表示の一部
  * @param i_idx 選択アイテムID
  * @return 確認がYesならTRUEを返す。
@@ -250,7 +250,7 @@ bool verify(CreatureEntity &creature, concptr prompt, INVENTORY_IDX i_idx)
 
 /*!
  * @brief タグIDにあわせてタグアルファベットのリストを返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param mode 所持品リストか装備品リストかの切り替え
  * @param item_tester アイテムの絞り込み条件
  * @return 有効なラベルリスト

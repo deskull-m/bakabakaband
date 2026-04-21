@@ -49,7 +49,7 @@ static bool check_hp_for_terrain_destruction(const TerrainType &terrain, const C
 
 /*!
  * @brief モンスターによる壁の透過・破壊を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monster モンスターへの参照
  * @param pos モンスターの移動先座標
  * @param can_cross モンスターが地形を踏破できるならばTRUE

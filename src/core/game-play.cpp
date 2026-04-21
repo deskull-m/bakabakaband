@@ -417,7 +417,7 @@ static void process_game_turn(CreatureEntity &creature)
 
 /*!
  * @brief 1ゲームプレイの主要ルーチン / Actually play a game
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param new_game 新規にゲームを始めたかどうか
  * @param browsing_movie ムービーモードか
  * @note

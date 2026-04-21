@@ -79,7 +79,7 @@ static void escape_monster(CreatureEntity &player, turn_flags *turn_flags_ptr, c
 
 /*!
  * @brief ペットや友好的なモンスターがフロアから逃げる処理を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @param is_riding_mon 騎乗状態ならばTRUE
  * @param see_m モンスターが視界内にいたらTRUE

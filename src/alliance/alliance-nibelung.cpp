@@ -135,7 +135,7 @@ int AllianceNibelung::calcImpressionPoint(const CreatureEntity &creature) const
 
 /*!
  * @brief ニーベルングの王国アライアンスの制裁処理
- * @param player_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @details 段階的に制裁が厳しくなる
  */
 void AllianceNibelung::panishment([[maybe_unused]] CreatureEntity &creature)

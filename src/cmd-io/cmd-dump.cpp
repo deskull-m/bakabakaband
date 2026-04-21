@@ -45,7 +45,7 @@
 /*!
  * @brief 画面を再描画するコマンドのメインルーチン
  * Hack -- redraw the screen
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * Allow absolute file names?
  */
@@ -301,7 +301,7 @@ void do_cmd_feeling(CreatureEntity &creature)
 
 /*
  * Display the time and date
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void do_cmd_time(CreatureEntity &creature)
 {

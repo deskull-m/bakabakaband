@@ -20,7 +20,7 @@ int AllianceCookieGrandma::calcImpressionPoint([[maybe_unused]] const CreatureEn
 
 /*!
  * @brief クッキーババアアライアンスの制裁処理
- * @param player_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @details 現在は空実装
  */
 void AllianceCookieGrandma::panishment([[maybe_unused]] CreatureEntity &creature)

@@ -20,7 +20,7 @@ int AllianceHide::calcImpressionPoint([[maybe_unused]] const CreatureEntity &cre
 
 /*!
  * @brief ひでアライアンスの制裁処理
- * @param player_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @details 現在は空実装
  */
 void AllianceHide::panishment([[maybe_unused]] CreatureEntity &creature)

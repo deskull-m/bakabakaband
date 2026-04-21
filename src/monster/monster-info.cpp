@@ -182,7 +182,7 @@ static uint8_t get_recial_sub_align(const MonraceDefinition &monrace)
 
 /*!
  * @brief モンスターがプレイヤーに対して敵意を抱くかどうかを返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_good プレイヤーの善傾向値
  * @param pa_evil プレイヤーの悪傾向値
  * @param monrace モンスター種族情報の参照
@@ -252,7 +252,7 @@ bool is_original_ap_and_seen(CreatureEntity &subject, const CreatureEntity &crea
 
 /*!
  * @brief モンスターIDを取り、モンスター名をm_nameに代入する /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @return std::string モンスター名
  */

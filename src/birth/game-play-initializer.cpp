@@ -36,7 +36,7 @@
 
 /*!
  * @brief プレイヤー構造体の内容を初期値で消去する(名前を除く) / Clear all the global "character" data (without name)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details 少し長いが、これ1つで処理が完結しているので分割は見送る
  */
 void player_wipe_without_name(CreatureEntity &creature)
@@ -144,7 +144,7 @@ void player_wipe_without_name(CreatureEntity &creature)
 
 /*!
  * @brief ダンジョン内部のクエストを初期化する / Initialize random quests and final quests
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void init_dungeon_quests(CreatureEntity &creature)
 {
@@ -173,7 +173,7 @@ void init_dungeon_quests(CreatureEntity &creature)
 
 /*!
  * @brief ゲームターンを初期化する / Reset turn
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details アンデッド系種族は開始時刻を夜からにする / Undead start just sunset
  * @details
  */

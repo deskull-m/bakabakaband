@@ -15,7 +15,7 @@
 
 /*!
  * @brief 保存されたフロアを読み込む / Read the dungeon
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return エラーコード
  * @details
  * The monsters/objects must be loaded in the same order

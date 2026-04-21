@@ -10,7 +10,7 @@
 
 /**
  * @brief イークの王国の印象値を計算する
- * @param creature_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 印象値
  * @note イークを多く倒しているほど印象が悪くなる
  * @note ボルドールやオルファックスを殺害した場合は大幅なペナルティ
@@ -66,7 +66,7 @@ bool AllianceYeekKingdom::isAnnihilated()
 
 /**
  * @brief イークの王国の制裁処理
- * @param player_ptr プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  * @note 印象が悪いほど襲撃される確率が高まる
  */
 void AllianceYeekKingdom::panishment([[maybe_unused]] CreatureEntity &creature)

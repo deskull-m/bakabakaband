@@ -32,7 +32,7 @@ static bool is_cave_empty_grid(const CreatureEntity &creature, const Grid &grid)
 
 /*!
  * @brief 特殊な部屋地形向けにモンスターを配置する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos_center 配置したい中心座標
  * @param num 配置したいモンスターの数
  */
@@ -60,7 +60,7 @@ void vault_monsters(CreatureEntity &creature, const Pos2D &pos_center, int num)
 
 /*!
  * @brief 特殊な部屋向けに各種アイテムを配置する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos_center 配置したい中心座標
  * @param num 配置したい数
  */
@@ -138,7 +138,7 @@ static void vault_trap_aux(FloorType &floor, const Pos2D &pos_center, const Pos2
 
 /*!
  * @brief 特殊な部屋向けに各種アイテムを配置する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos_center トラップを配置したいマスの中心座標
  * @param distribution 配置分散
  * @param num 配置したいトラップの数

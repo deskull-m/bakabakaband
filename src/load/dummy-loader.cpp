@@ -28,7 +28,7 @@ void rd_dummy2(void)
 
 /*!
  * @brief 馬鹿馬鹿蛮怒 v1.5.0より大きなバージョンにおいて、ダミーでモンスターを読み込む
- * @param player_ptr プレーヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details もはや何に使われていたのか不明
  */
 void rd_dummy_monsters()

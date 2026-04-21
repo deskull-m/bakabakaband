@@ -45,7 +45,7 @@ void redraw_window()
 
 /*!
  * @brief 現在のマップ名を描画する / Print dungeon
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void print_dungeon(CreatureEntity &creature)
 {
@@ -243,7 +243,7 @@ void redraw_stuff(CreatureEntity &creature)
 
 /*!
  * @brief SubWindowRedrawingFlag のフラグに応じた更新をまとめて行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details 更新処理の対象はサブウィンドウ全て
  */
 void window_stuff(CreatureEntity &creature)

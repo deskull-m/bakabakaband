@@ -40,7 +40,7 @@
 
 /*
  * @brief 啓蒙/陽光召喚処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param ninja 忍者かどうか
  */
 void wiz_lite(CreatureEntity &creature, bool ninja)

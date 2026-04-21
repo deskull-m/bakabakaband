@@ -40,7 +40,7 @@ void reduce_lite_life(CreatureEntity &creature)
 
 /*!
  * @brief 寿命つき光源の警告メッセージ処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 現在光源として使っているオブジェクトの構造体参照ポインタ
  */
 void notice_lite_change(CreatureEntity &creature, ItemEntity *o_ptr)

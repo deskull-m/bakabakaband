@@ -22,7 +22,7 @@ int AllianceFeanorNoldor::calcImpressionPoint(const CreatureEntity &creature) co
 
 /*!
  * @brief フェアノール統ノルドールアライアンスの制裁処理
- * @param player_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @details 現在は空実装
  */
 void AllianceFeanorNoldor::panishment([[maybe_unused]] CreatureEntity &creature)

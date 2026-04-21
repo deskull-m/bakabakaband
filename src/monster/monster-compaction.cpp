@@ -19,7 +19,7 @@
 
 /*!
  * @brief モンスター情報を配列内移動する / Move an object from index i1 to index i2 in the object list
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i1 配列移動元添字
  * @param i2 配列移動先添字
  */
@@ -86,7 +86,7 @@ static void compact_monsters_aux(CreatureEntity &creature, MONSTER_IDX i1, MONST
 
 /*!
  * @brief モンスター情報配列を圧縮する / Compact and Reorder the monster list
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param size 圧縮後のモンスター件数目標
  * @details
  * This function can be very dangerous, use with caution!

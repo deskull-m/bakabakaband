@@ -129,7 +129,7 @@ static void display_repair_success_message(CreatureEntity &creature, const ItemE
 
 /*!
  * @brief アイテム修復処理のメインルーチン / Repair broken weapon
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param bcost 基本修復費用
  * @return 実際にかかった費用
  */

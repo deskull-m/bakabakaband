@@ -1,5 +1,5 @@
 /*!
- * @brief プレイヤーのステータス表示メインルーチン群
+ * @brief クリーチャー（プレイヤー・モンスター）のステータス表示メインルーチン群
  * @date 2020/02/25
  * @author Hourier
  * @details
@@ -297,9 +297,9 @@ static std::string decide_current_floor(CreatureEntity &creature)
 }
 
 /*!
- * @brief プレイヤーのステータス表示メイン処理
+ * @brief クリーチャー（プレイヤー・モンスター）のステータス表示メイン処理
  * Display the character on the screen (various modes)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param tmp_mode 暫定表示モード (突然変異の有無で実際のモードに切り替える)
  * @return 死亡原因となったモンスター名が複数行に亘る場合、表示に必要な行数. それ以外を表示する場合はnullopt
  * @details
@@ -364,7 +364,7 @@ tl::optional<int> display_player(CreatureEntity &creature, const int tmp_mode)
 /*!
  * @brief プレイヤーの装備一覧をシンボルで並べる
  * Equippy chars
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 表示するコンソールの行
  * @param x 表示するコンソールの列
  * @param mode オプション

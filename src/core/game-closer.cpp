@@ -64,7 +64,7 @@ static void send_world_score_on_closing(CreatureEntity &creature, bool do_send)
 
 /*!
  * @brief ゲームクローズ時、プレイヤーが死亡か世界崩壊しているかのしているかのチェックを行いそうならば確認キー入力とスコア表示、現フロアの初期化を行う。
- * @param player_ptr プレイヤー構造体参照ポインタ。
+ * @param creature クリーチャーへの参照
  * @return 死亡していればTRUE, まだ生きているならば各処理を済ませた上ででFALSE。
  */
 static bool check_death(CreatureEntity &creature)
@@ -139,7 +139,7 @@ static void kingly(CreatureEntity &creature)
 /*!
  * @brief ゲーム終了処理 /
  * Close up the current game (player may or may not be dead)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * <pre>
  * This function is called only from "main.c" and "signals.c".

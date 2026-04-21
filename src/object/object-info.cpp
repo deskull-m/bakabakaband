@@ -154,7 +154,7 @@ int16_t wield_slot(CreatureEntity &creature, const ItemEntity *o_ptr)
 
 /*!
  * @brief tval/sval指定のベースアイテムがプレイヤーの使用可能な魔法書かどうかを返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param bi_key ベースアイテム特定キー
  * @return 使用可能な魔法書ならばTRUEを返す。
  */
