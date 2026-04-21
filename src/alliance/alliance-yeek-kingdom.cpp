@@ -72,12 +72,12 @@ bool AllianceYeekKingdom::isAnnihilated()
 void AllianceYeekKingdom::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     /*
-    int impression = this->calcImpressionPoint(player_ptr);
+    int impression = this->calcImpressionPoint(creature);
     // 印象が-100以下で襲撃開始
     if (impression <= -100) {
         int attack_chance = (-impression - 100) / 50 + 1;
         if (one_in_(std::max(1, 20 - attack_chance))) {
-            summon_specific(&player_ptr, player_ptr.y, player_ptr.x, player_ptr.get_floor()->dun_level + 10, SUMMON_YEEK, PM_AMBUSH);
+            summon_specific(&creature, creature.y, creature.x, creature.get_floor()->dun_level + 10, SUMMON_YEEK, PM_AMBUSH);
         }
     }
     */

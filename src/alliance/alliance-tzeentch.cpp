@@ -101,9 +101,9 @@ void AllianceTzeentch::panishment(CreatureEntity &creature)
                 "\"Receive Tzeentch's blessing!\" Pink Horrors appear to bestow the blessing of change upon you!"));
         }
 
-        const auto m_idx = place_monster_one(player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_TZEENTCH);
+        const auto m_idx = place_monster_one(creature, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_TZEENTCH);
         if (m_idx) {
-            disturb(player_ptr, true, true);
+            disturb(creature, true, true);
 
             // 追加の配下召喚（知識と変幻の混沌）
             int summon_count = 1;
@@ -116,8 +116,8 @@ void AllianceTzeentch::panishment(CreatureEntity &creature)
             }
 
             for (int k = 0; k < summon_count; k++) {
-                summon_specific(&player_ptr, m_pos.y, m_pos.x,
-                    std::max(player_ptr.get_floor()->monster_level, 12),
+                summon_specific(&creature, m_pos.y, m_pos.x,
+                    std::max(creature.get_floor()->monster_level, 12),
                     SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }
@@ -133,7 +133,7 @@ void AllianceTzeentch::panishment(CreatureEntity &creature)
         /*
         if (one_in_(3)) {
             msg_print(_("空間が歪み、あなたは別の場所に飛ばされた！", "Space warps and you are teleported elsewhere!"));
-            teleport_player(player_ptr, 50, TELEPORT_NONMAGICAL);
+            teleport_player(creature, 50, TELEPORT_NONMAGICAL);
         }
         */
     }

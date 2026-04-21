@@ -64,8 +64,8 @@ void AllianceSlaanesh::panishment(CreatureEntity &creature)
 
     /*
     if (one_in_(20)) {
-        Pos2D m_pos(player_ptr.get_position());
-        m_pos = scatter(*player_ptr.get_floor(), m_pos, 12, PROJECT_NONE);
+        Pos2D m_pos(creature.get_position());
+        m_pos = scatter(*creature.get_floor(), m_pos, 12, PROJECT_NONE);
 
         // スラーネッシュの怒りレベルに応じて異なる復讐者を派遣
         MonraceId avenger_id;
@@ -83,14 +83,14 @@ void AllianceSlaanesh::panishment(CreatureEntity &creature)
                        "\"Beautiful destruction!\" Daemonettes appear, dancing to seduce you!"));
         }
 
-        const auto m_idx = place_monster_one(player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_SLAANESH);
+        const auto m_idx = place_monster_one(creature, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_SLAANESH);
         if (m_idx) {
-            disturb(player_ptr, true, true);
+            disturb(creature, true, true);
 
             // 追加の配下召喚（快楽と誘惑の混沌）
             for (int k = 0; k < 2 + (impression < -250 ? 3 : 0); k++) {
-                summon_specific(&player_ptr, m_pos.y, m_pos.x,
-                               std::max(player_ptr.get_floor()->monster_level, 8),
+                summon_specific(&creature, m_pos.y, m_pos.x,
+                               std::max(creature.get_floor()->monster_level, 8),
                                SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }

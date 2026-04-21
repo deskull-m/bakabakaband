@@ -64,8 +64,8 @@ void AllianceHafu::panishment(CreatureEntity &creature)
 
     /*
 if (one_in_(18)) {
-    Pos2D m_pos(player_ptr.get_position());
-    m_pos = scatter(*player_ptr.get_floor(), m_pos, 12, PROJECT_NONE);
+    Pos2D m_pos(creature.get_position());
+    m_pos = scatter(*creature.get_floor(), m_pos, 12, PROJECT_NONE);
 
     // 覇府の威信レベルに応じて異なる討伐隊を派遣
     MonraceId avenger_id;
@@ -83,9 +83,9 @@ if (one_in_(18)) {
             "\"In the name of Hafu, commit seppuku!\" A Samurai throws down a challenge to you!"));
     }
 
-    const auto m_idx = place_monster_one(player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_HAFU);
+    const auto m_idx = place_monster_one(creature, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_HAFU);
     if (m_idx) {
-        disturb(player_ptr, true, true);
+        disturb(creature, true, true);
 
         // 従者・家臣の召喚（階級に応じて）
         int retainer_count = 0;
@@ -98,8 +98,8 @@ if (one_in_(18)) {
         }
 
         for (int k = 0; k < retainer_count; k++) {
-            summon_specific(&player_ptr, m_pos.y, m_pos.x,
-                std::max(player_ptr.get_floor()->monster_level, 10),
+            summon_specific(&creature, m_pos.y, m_pos.x,
+                std::max(creature.get_floor()->monster_level, 10),
                 SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
         }
     }

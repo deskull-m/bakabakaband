@@ -2,7 +2,7 @@
 
 enum class MonsterTemporaryFlagType {
     VIEW = 0, /* Monster is in line of sight */
-    LOS = 1, /* Monster is marked for project_all_los(player_ptr, ) */
+    LOS = 1, /* Monster is marked for project_all_los(creature, ) */
     ESP = 2, /* Monster is being sensed by ESP */
     PRESENT_AT_TURN_START = 3, /* Monster on level at start of player's or monster's turn */
     PREVENT_MAGIC = 4, /* Monster is still being no-magic */

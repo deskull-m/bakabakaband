@@ -80,8 +80,8 @@ void AllianceDiabolique::panishment(CreatureEntity &creature)
     if (one_in_(25)) {
 
         /*
-        auto m_pos = player_ptr.get_position();
-        m_pos = scatter(*player_ptr.get_floor(), m_pos, 10, PROJECT_NONE);
+        auto m_pos = creature.get_position();
+        m_pos = scatter(*creature.get_floor(), m_pos, 10, PROJECT_NONE);
         MonraceId avenger_id;
         if (impression < -400) {
             // 極度に嫌われている場合：強力なデーモン
@@ -100,15 +100,15 @@ void AllianceDiabolique::panishment(CreatureEntity &creature)
                 "\"In the name of Diabolique!\" An Imp appears to attack you!"));
         }
 
-        const auto m_idx = place_monster_one(player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP);
+        const auto m_idx = place_monster_one(creature, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP);
         if (m_idx) {
             msg_print(_("デアボリカの復讐者があなたを狙っている！", "Diabolique's avenger is targeting you!"));
-            disturb(player_ptr, true, true);
+            disturb(creature, true, true);
 
             // 復讐者の仲間を呼ぶ（低確率）
             for (int k = 0; k < 2; k++) {
-                summon_specific(&player_ptr, m_pos.y, m_pos.x,
-                    std::max(player_ptr.get_floor()->monster_level, 3),
+                summon_specific(&creature, m_pos.y, m_pos.x,
+                    std::max(creature.get_floor()->monster_level, 3),
                     SUMMON_DEMON, PM_ALLOW_GROUP, m_idx);
             }
         }
