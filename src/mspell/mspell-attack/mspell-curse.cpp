@@ -63,7 +63,7 @@ const std::unordered_map<MonsterAbilityType, CurseData> curse_list = {
 
 /*!
  * @brief RF5_CAUSE_* の処理関数
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param ms_type 呪文の番号
  * @param dam 攻撃に使用するダメージ量
  * @param y 対象の地点のy座標

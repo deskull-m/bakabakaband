@@ -260,7 +260,7 @@ static bool do_hook(CreatureEntity &creature, MonraceHook hook, MonraceId monrac
 
 /*!
  * @brief モンスター生成テーブルの重み修正
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param hook1 生成制約1
  * @param hook2 生成制約2
  * @param summon_specific_type summon_specific によるものの場合、召喚種別を指定する
@@ -388,7 +388,7 @@ static bool place_monster_can_escort(CreatureEntity &creature, MonraceId monrace
 
 /*!
  * @brief モンスター生成テーブルの重み修正
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param escorted_monrace_id 護衛されるモンスターの種族ID
  * @param m_idx 護衛されるモンスターのフロア内インデックス
  * @param hook 生成の地形条件
@@ -495,7 +495,7 @@ static bool summon_specific_okay(CreatureEntity &creature, MonraceId monrace_id,
 
 /*!
  * @brief モンスター生成テーブルの重み修正 (召喚用)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param SummonCondition 生成制約
  */
 void get_mon_num_prep_summon(CreatureEntity &creature, const SummonCondition &condition)
@@ -548,7 +548,7 @@ void get_mon_num_prep_summon(CreatureEntity &creature, const SummonCondition &co
 
 /*!
  * @brief カメレオンの王の変身対象となるモンスターかどうか判定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param ct カメレオンの変身情報
  * @param monrace_id 変身後のモンスター種族ID
  * @return 対象にできるならtrueを返す
@@ -589,7 +589,7 @@ static bool monster_hook_chameleon_lord(CreatureEntity &creature, const Chameleo
 
 /*!
  * @brief カメレオンの変身対象となるモンスターかどうか判定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param ct カメレオンの変身情報
  * @param monrace_id 変身後のモンスター種族ID
  * @return 対象にできるならtrueを返す
@@ -643,7 +643,7 @@ static bool monster_hook_chameleon(CreatureEntity &creature, const ChameleonTran
 
 /*!
  * @brief モンスター生成テーブルの重み修正(カメレオン変身専用)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param ct カメレオンの変身情報
  * @details get_mon_num() を呼ぶ前に get_mon_num_prep 系関数のいずれかを呼ぶこと。
  */

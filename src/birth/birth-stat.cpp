@@ -191,7 +191,7 @@ void get_extra(CreatureEntity &creature, bool roll_hitdie)
 
 /*!
  * @brief プレイヤーの限界ステータスを決める。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details 新生の薬やステータスシャッフルでもこの関数が呼ばれる
  */
 void get_max_stats(CreatureEntity &creature)

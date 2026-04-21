@@ -22,7 +22,7 @@
 
 /*!
  * @brief 日記のタイトル表記と内容出力
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void display_diary(CreatureEntity &creature)
 {

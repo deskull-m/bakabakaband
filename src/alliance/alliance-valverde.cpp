@@ -20,7 +20,7 @@ int AllianceValVerde::calcImpressionPoint([[maybe_unused]] const CreatureEntity 
 
 /*!
  * @brief バルベルデ共和国アライアンスの制裁処理
- * @param player_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @details 現在は空実装
  */
 void AllianceValVerde::panishment([[maybe_unused]] CreatureEntity &creature)

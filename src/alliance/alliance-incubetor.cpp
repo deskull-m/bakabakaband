@@ -19,7 +19,7 @@ int AllianceIncubetor::calcImpressionPoint(const CreatureEntity &creature) const
 
 /*!
  * @brief インキュベーターアライアンスの制裁処理
- * @param player_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @details 契約違反に対する制裁
  */
 void AllianceIncubetor::panishment([[maybe_unused]] CreatureEntity &creature)

@@ -409,7 +409,7 @@ ProcessResult effect_monster_crusade(CreatureEntity &creature, EffectMonster *em
 
 /*!
  * @brief モンスターボールで捕まえられる最大HPを計算する
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_ptr モンスター情報への参照ポインタ
  * @param hp 計算対象のHP
  * @return 捕まえられる最大HP
@@ -429,7 +429,7 @@ static int calcutate_capturable_hp(CreatureEntity &creature, const CreatureEntit
 
 /*!
  * @brief モンスターボールで捕らえた処理
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr 効果情報への参照ポインタ
  */
 static void effect_monster_captured(CreatureEntity &creature, EffectMonster *em_ptr, tl::optional<CapturedMonsterType *> tmp_cap_mon_ptr)
@@ -456,7 +456,7 @@ static void effect_monster_captured(CreatureEntity &creature, EffectMonster *em_
 
 /*!
  * @brief モンスターボールで捕らえる効果(CAPTURE)
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr 効果情報への参照ポインタ
  * @return 効果発動結果
  */

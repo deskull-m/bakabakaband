@@ -6,7 +6,7 @@
 
 /*!
  * @brief チャーム・モンスター(1体)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @param plev パワー
  * @return 作用が実際にあった場合TRUEを返す
@@ -19,7 +19,7 @@ bool charm_monster(CreatureEntity &creature, const Direction &dir, PLAYER_LEVEL 
 
 /*!
  * @brief アンデッド支配(1体)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @param plev パワー
  * @return 作用が実際にあった場合TRUEを返す
@@ -32,7 +32,7 @@ bool control_one_undead(CreatureEntity &creature, const Direction &dir, PLAYER_L
 
 /*!
  * @brief 悪魔支配(1体)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @param plev パワー
  * @return 作用が実際にあった場合TRUEを返す
@@ -45,7 +45,7 @@ bool control_one_demon(CreatureEntity &creature, const Direction &dir, PLAYER_LE
 
 /*!
  * @brief 動物支配(1体)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @param plev パワー
  * @return 作用が実際にあった場合TRUEを返す

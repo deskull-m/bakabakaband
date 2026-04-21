@@ -39,7 +39,7 @@
 
 /*!
  * @brief プレイヤーが売却する時の確認プロンプト / Prompt to sell for the price
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr オブジェクトの構造体参照ポインタ
  * @return 売るなら(true,売値)、売らないなら(false,0)のタプル
  */
@@ -60,7 +60,7 @@ static tl::optional<int> prompt_to_sell(CreatureEntity &creature, ItemEntity *o_
 /*!
  * @brief 店からの売却処理のメインルーチン /
  * Sell an item to the store (or home)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void store_sell(CreatureEntity &creature, StoreSaleType store_num)
 {

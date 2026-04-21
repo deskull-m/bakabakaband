@@ -27,7 +27,7 @@
 
 /*!
  * @brief 優勝時のメッセージを表示し、賞金を与える
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return まだ優勝していないか、挑戦者モンスターとの戦いではFALSE
  */
 static tl::optional<int> process_ostensible_arena_victory()

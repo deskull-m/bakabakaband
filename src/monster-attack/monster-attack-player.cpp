@@ -60,7 +60,7 @@
 
 /*!
  * @brief コンストラクタ
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx 打撃を行うモンスターのID
  */
 MonsterAttackPlayer::MonsterAttackPlayer(CreatureEntity &creature, short m_idx)

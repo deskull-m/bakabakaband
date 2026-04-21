@@ -271,7 +271,7 @@ static errr counts_seek(CreatureEntity &creature, int fd, uint32_t where, bool f
 
 /*!
  * @brief ファイル位置を読み込む
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param where ファイルバイト位置
  * @return エラーコード
  * @details
@@ -291,7 +291,7 @@ uint32_t counts_read(CreatureEntity &creature, int where)
 
 /*!
  * @brief ファイル位置に書き込む /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param where ファイルバイト位置
  * @param count 書き込む値
  * @return エラーコード

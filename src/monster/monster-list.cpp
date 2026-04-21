@@ -34,7 +34,7 @@
 
 /*!
  * @brief 生成モンスター種族を1種生成テーブルから選択する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param min_level 最小生成階
  * @param max_level 最大生成階
  * @return 選択されたモンスター生成種族
@@ -180,7 +180,7 @@ static tl::optional<MonraceId> polymorph_of_chameleon(CreatureEntity &creature, 
 
 /*!
  * @brief カメレオンの変身処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx 変身処理を受けるモンスター情報のID
  * @param grid カメレオンの足元の地形
  * @param summoner_m_idx モンスターの召喚による場合、召喚者のモンスターID
@@ -201,7 +201,7 @@ void choose_chameleon_polymorph(CreatureEntity &creature, short m_idx, short ter
 /*!
  * @brief 指定したモンスターに隣接しているモンスターの数を返す。
  * / Count number of adjacent monsters
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx 隣接数を調べたいモンスターのID
  * @return 隣接しているモンスターの数
  */

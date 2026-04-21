@@ -31,7 +31,7 @@
 
 /*!
  * @brief コンストラクタ
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 ObjectQuaffEntity::ObjectQuaffEntity(CreatureEntity &creature)
     : creature(creature)

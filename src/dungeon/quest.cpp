@@ -188,7 +188,7 @@ void record_quest_final_status(QuestType *q_ptr, PLAYER_LEVEL lev, QuestStatusTy
 
 /*!
  * @brief クエストを達成状態にする /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param quest_id 達成状態にしたいクエストのID
  */
 void complete_quest(CreatureEntity &creature, QuestId quest_id)
@@ -224,7 +224,7 @@ void complete_quest(CreatureEntity &creature, QuestId quest_id)
 /*!
  * @brief 特定のアーティファクトを入手した際のクエスト達成処理 /
  * Check for "Quest" completion when a quest monster is killed or charmed.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 入手したオブジェクトの構造体参照ポインタ
  */
 void check_find_art_quest_completion(CreatureEntity &creature, ItemEntity *o_ptr)
@@ -279,7 +279,7 @@ void quest_discovery(QuestId quest_id)
 
 /*!
  * @brief クエスト階層から離脱する際の処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void leave_quest_check(CreatureEntity &creature)
 {
@@ -367,7 +367,7 @@ void exe_enter_quest(CreatureEntity &creature, QuestId quest_id)
 
 /*!
  * @brief クエスト入り口にプレイヤーが乗った際の処理 / Do building commands
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void do_cmd_quest(CreatureEntity &creature)
 {

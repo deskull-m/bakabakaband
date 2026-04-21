@@ -94,7 +94,7 @@ std::vector<std::string> MeleeArena::build_gladiators_names() const
 
 /*!
  * @brief モンスター闘技場に参加するモンスターを更新する。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void MeleeArena::update_gladiators(CreatureEntity &creature)
 {

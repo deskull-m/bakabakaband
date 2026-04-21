@@ -128,7 +128,7 @@ Pos2D mmove2(const Pos2D &pos_orig, const Pos2D &pos1, const Pos2D &pos2)
 
 /*!
  * @brief Is the monster seen by the player?
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_ptr 個々のモンスターへの参照ポインタ
  * @return 個々のモンスターがプレイヤーが見えたらTRUE
  * @todo is_seen() の関数マクロをバラそうとしたがインクルード関係のコンパイルエラーで失敗

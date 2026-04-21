@@ -217,7 +217,7 @@ bool exchange_cash(CreatureEntity &creature)
 
 /*!
  * @brief 本日の賞金首情報を表示する。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void today_target()
 {

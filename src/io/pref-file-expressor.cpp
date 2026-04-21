@@ -11,7 +11,7 @@
 /*!
  * @brief process_pref_fileのサブルーチンとして条件分岐処理の解釈と結果を返す
  * Helper function for "process_pref_file()"
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param sp テキスト文字列の参照ポインタ
  * @param fp 再帰中のポインタ参照
  * @return

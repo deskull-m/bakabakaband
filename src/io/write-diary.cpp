@@ -53,7 +53,7 @@ static bool open_diary_file(FILE **fff, bool *disable_diary)
 
 /*!
  * @brief フロア情報を日記に追加する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return クエストIDとレベルノートのペア
  */
 static std::pair<QuestId, std::string> write_floor(const FloorType &floor)

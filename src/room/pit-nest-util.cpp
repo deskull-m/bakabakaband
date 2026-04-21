@@ -99,7 +99,7 @@ tl::optional<PitKind> pick_pit_type(const FloorType &floor, const std::map<PitKi
 
 /*!
  * @brief Pit/Nestに格納するモンスターを選択する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param align アライメントが中立に設定されたモンスター実体 (その他の中身は空)
  * @param boost 選択基準となるフロアの増分
  * @return モンスター種族ID (見つからなかったらnullopt)

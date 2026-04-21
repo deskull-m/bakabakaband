@@ -35,7 +35,7 @@ void vary_item(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUMBER num)
 
 /*!
  * @brief アイテムを増減させ残り所持数メッセージを表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i_idx 所持数を増やしたいプレイヤーのアイテム所持スロット
  * @param num 増やしたい量
  */
@@ -85,7 +85,7 @@ void inven_item_increase(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUM
 
 /*!
  * @brief 所持アイテムスロットから所持数のなくなったアイテムを消去する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i_idx 消去したいプレイヤーのアイテム所持スロット
  */
 void inven_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
@@ -132,7 +132,7 @@ void inven_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
 
 /*!
  * @brief 所持スロットから床下にオブジェクトを落とすメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i_idx 所持テーブルのID
  * @param amt 落としたい個数
  */
@@ -234,7 +234,7 @@ void combine_pack(CreatureEntity &creature)
 /*!
  * @brief プレイヤーの所持スロットに存在するオブジェクトを並び替える /
  * Reorder items in the pack
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * Note special handling of the "overflow" slot
  */
@@ -261,7 +261,7 @@ void reorder_pack(CreatureEntity &creature)
 
 /*!
  * @brief オブジェクトをプレイヤーが拾って所持スロットに納めるメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 拾うオブジェクトの構造体参照ポインタ
  * @return 収められた所持スロットのID、拾うことができなかった場合-1を返す。
  */
@@ -344,7 +344,7 @@ bool check_get_item(ItemEntity *o_ptr)
 /*!
  * @brief アイテムを拾う際にザックから溢れずに済むかを判定する /
  * Check if we have space for an item in the pack without overflow
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 拾いたいオブジェクトの構造体参照ポインタ
  * @return 溢れずに済むならTRUEを返す
  */
@@ -370,7 +370,7 @@ bool check_store_item_to_inventory(CreatureEntity &creature, const ItemEntity *o
 
 /*!
  * @brief 装備スロットから装備を外すメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i_idx 装備を外したいインベントリのID
  * @param amt 外したい個数
  * @return 収められた所持スロットのID、拾うことができなかった場合-1を返す。

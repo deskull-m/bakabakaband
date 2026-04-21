@@ -64,7 +64,7 @@ void AllianceJural::panishment(CreatureEntity &creature)
 
 /*!
  * @brief 襲撃時に出現するモンスターのリストを取得する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param impression_point 印象値
  * @return ジュラル星人のモンスターIDのリスト（印象値が低い場合はジュラル星人）
  */

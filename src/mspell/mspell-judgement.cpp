@@ -37,7 +37,7 @@
 
 /*!
  * @brief モンスターが敵対モンスターにビームを当てること可能かを判定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monster 使用するモンスターへの参照
  * @param pos_target 目標座標
  * @return ビームが到達可能ならばTRUEを返す
@@ -188,7 +188,7 @@ Pos2D get_project_point(const FloorType &floor, const Pos2D &p_pos, const Pos2D 
 /*!
  * @brief モンスターが敵モンスターに魔力消去を使うかどうかを返す /
  * Check should monster cast dispel spell at other monster.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx 術者のモンスターID
  * @param t_idx 目標のモンスターID
  * @return 魔力消去を使うべきならばTRUEを変えす。

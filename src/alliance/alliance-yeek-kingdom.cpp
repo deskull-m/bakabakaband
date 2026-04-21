@@ -66,7 +66,7 @@ bool AllianceYeekKingdom::isAnnihilated()
 
 /**
  * @brief イークの王国の制裁処理
- * @param player_ptr プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  * @note 印象が悪いほど襲撃される確率が高まる
  */
 void AllianceYeekKingdom::panishment([[maybe_unused]] CreatureEntity &creature)

@@ -31,7 +31,7 @@ int AllianceIde::calcImpressionPoint(const CreatureEntity &creature) const
 
 /*!
  * @brief イデのアライアンス懲罰処理
- * @param player_ptr プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  */
 void AllianceIde::panishment([[maybe_unused]] CreatureEntity &creature)
 {

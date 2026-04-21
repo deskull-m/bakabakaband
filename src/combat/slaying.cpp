@@ -22,7 +22,7 @@
 
 /*!
  * @brief プレイヤー攻撃の種族スレイング倍率計算
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param mult 算出前の基本倍率(/10倍)
  * @param flags スレイフラグ配列
  * @param m_ptr 目標モンスターの構造体参照ポインタ
@@ -81,7 +81,7 @@ MULTIPLY mult_slaying(CreatureEntity &creature, MULTIPLY mult, const TrFlags &fl
 
 /*!
  * @brief プレイヤー攻撃の属性スレイング倍率計算
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param mult 算出前の基本倍率(/10倍)
  * @param flags スレイフラグ配列
  * @param m_ptr 目標モンスターの構造体参照ポインタ

@@ -20,7 +20,7 @@ int AllianceGondor::calcImpressionPoint([[maybe_unused]] const CreatureEntity &c
 
 /*!
  * @brief ゴンドールアライアンスの制裁処理
- * @param player_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @details 現在は空実装
  */
 void AllianceGondor::panishment([[maybe_unused]] CreatureEntity &creature)

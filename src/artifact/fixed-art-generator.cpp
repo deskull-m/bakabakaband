@@ -183,7 +183,7 @@ static void fixed_artifact_random_abilities(CreatureEntity &creature, const Arti
 
 /*!
  * @brief 固定アーティファクトオブジェクトに呪いフラグを付加する
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param a_ptr 固定アーティファクト情報への参照ポインタ
  * @param q_ptr オブジェクト情報への参照ポインタ
  */

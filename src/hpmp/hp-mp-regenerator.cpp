@@ -219,7 +219,7 @@ void regenerate_monsters(CreatureEntity &creature)
 
 /*!
  * @brief 30ゲームターン毎のボール中モンスターのHP自然回復処理 / Regenerate the captured monsters (once per 30 game turns)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @note Should probably be done during monster turns.
  */
 void regenerate_captured_monsters(CreatureEntity &creature)

@@ -38,7 +38,7 @@
 /*!
  * @brief プレイヤーが購入する時の値切り処理メインルーチン /
  * Haggling routine 				-RAK-
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr オブジェクトの構造体参照ポインタ
  * @param price 最終価格を返す参照ポインタ
  * @return プレイヤーの価格に対して店主が不服ならばTRUEを返す /
@@ -82,7 +82,7 @@ static tl::optional<short> show_store_select_item(const int i, StoreSaleType sto
 
 /*!
  * @brief 家のアイテムを取得する
- * @param player_ptr プレイヤー情報の参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param item_home 取得元オブジェクト
  * @param item_inventory 取得先オブジェクト(指定数量分)
  * @param i_idx 取得先インベントリ番号
@@ -148,7 +148,7 @@ static void switch_store_stock(CreatureEntity &creature, const int i, const COMM
 /*!
  * @brief 店からの購入処理のメインルーチン /
  * Buy an item from a store 			-RAK-
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void store_purchase(CreatureEntity &creature, StoreSaleType store_num)
 {

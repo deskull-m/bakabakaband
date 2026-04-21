@@ -10,7 +10,7 @@
 
 /*!
  * @brief オブジェクト、地形の表示シンボルなど初期化する / Reset the "visual" lists
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void reset_visuals(CreatureEntity &creature)
 {

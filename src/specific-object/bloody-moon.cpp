@@ -81,7 +81,7 @@ void get_bloody_moon_flags(ItemEntity *o_ptr)
 
 /*!
  * @brief Let's dance a RONDO!!
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr ブラッディ・ムーンへの参照ポインタ
  * @return オブジェクト情報に異常がない限りTRUE
  */

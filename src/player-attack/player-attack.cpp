@@ -395,7 +395,7 @@ static void apply_damage_bonus(CreatureEntity &creature, player_attack_type *pa_
 
 /*!
  * @brief 特殊な条件でダメージが減ったり0になったりする処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  * @param is_zantetsu_nullified 斬鉄剣で切れないならばTRUE
  * @param is_ej_nullified 蜘蛛相手ならばTRUE

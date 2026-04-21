@@ -233,7 +233,7 @@ bool Alliance::isFriendly([[maybe_unused]] const CreatureEntity &creature) const
 
 /*!
  * @brief 襲撃時に出現するモンスターのリストを取得する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param impression_point 印象値
  * @return モンスターIDのリスト（デフォルトは空）
  */

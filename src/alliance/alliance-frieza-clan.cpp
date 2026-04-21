@@ -21,7 +21,7 @@ int AllianceFriezaClan::calcImpressionPoint(const CreatureEntity &creature) cons
 
 /*!
  * @brief フリーザ一族アライアンスの制裁処理
- * @param player_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @details 裏切り者に対する厳しい制裁
  */
 void AllianceFriezaClan::panishment([[maybe_unused]] CreatureEntity &creature)

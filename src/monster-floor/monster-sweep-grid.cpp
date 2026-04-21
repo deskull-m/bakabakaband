@@ -510,7 +510,7 @@ public:
 
 /*!
  * @brief コンストラクタ
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx 移動するモンスターの参照ID
  */
 MonsterSweepGrid::MonsterSweepGrid(CreatureEntity *creature_ptr, MONSTER_IDX m_idx)

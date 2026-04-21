@@ -44,7 +44,7 @@
 
 /*!
  * @brief 魔法棒の効果を発動する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param sval オブジェクトのsval
  * @param dir 発動の方向ID
  * @param powerful 強力発動上の処理ならばTRUE

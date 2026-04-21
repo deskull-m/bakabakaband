@@ -61,7 +61,7 @@ struct um_type {
 
 /*!
  * @brief 騎乗中のモンスター情報を更新する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param turn_flags_ptr ターン経過処理フラグへの参照ポインタ
  * @param m_idx モンスターID
  * @param oy 移動前の、モンスターのY座標
@@ -135,7 +135,7 @@ void update_lite_flags(turn_flags *turn_flags_ptr, const MonraceDefinition &monr
 
 /*!
  * @brief モンスターのフラグを更新する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param turn_flags_ptr ターン経過処理フラグへの参照ポインタ
  * @param m_ptr モンスターへの参照ポインタ
  */
@@ -218,7 +218,7 @@ static void update_smart_stupid_flags(MonraceDefinition &monrace)
 
 /*!
  * @brief WEIRD_MINDフラグ持ちのモンスターを1/10の確率でテレパシーに引っかける
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param um_ptr モンスター情報アップデート構造体への参照ポインタ
  * @param m_idx モンスターID
  * @return WEIRD_MINDフラグがあるならTRUE
@@ -447,7 +447,7 @@ static bool check_invisible(CreatureEntity &creature, um_type *um_ptr)
 
 /*!
  * @brief テレパシー・赤外線視力・可視透明によってモンスターを感知できるかどうかの判定
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param um_ptr モンスター情報アップデート構造体への参照ポインタ
  */
 static void decide_sight_invisible_monster(CreatureEntity &creature, um_type *um_ptr, MONSTER_IDX m_idx)
@@ -495,7 +495,7 @@ static void decide_sight_invisible_monster(CreatureEntity &creature, um_type *um
 /*!
  * @brief 壁の向こうにいるモンスターへのテレパシー・赤外線視力による冷血動物以外の透明モンスター・可視透明能力による透明モンスター
  * 以上を感知する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param um_ptr モンスター情報アップデート構造体への参照ポインタ
  * @param m_idx フロアのモンスター番号
  * @details 感知した結果、エルドリッチホラー持ちがいたら精神を破壊する
@@ -615,7 +615,7 @@ void update_monster(CreatureEntity &creature, MONSTER_IDX m_idx, bool full)
 }
 
 /*!
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @brief 単純に生存している全モンスターの更新処理を行う / This function simply updates all the (non-dead) monsters (see above).
  * @param full 距離更新を行うならtrue
  * @todo モンスターの感知状況しか更新していないように見える。関数名変更を検討する

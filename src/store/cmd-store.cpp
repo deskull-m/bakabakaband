@@ -38,7 +38,7 @@
 /*!
  * @brief 店舗処理全体のメインルーチン /
  * Enter a store, and interact with it. *
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @note
  * <pre>
  * Note that we use the standard "request_command()" function

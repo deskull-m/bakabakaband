@@ -262,7 +262,7 @@ void store_examine(CreatureEntity &creature, StoreSaleType store_num)
 /*!
  * @brief 店舗の品揃え変化のためにアイテムを追加する /
  * Creates a random item and gives it to a store
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * <pre>
  * This algorithm needs to be rethought.  A lot.
@@ -351,7 +351,7 @@ static void store_create(CreatureEntity &creature, short fix_k_idx, StoreSaleTyp
 /*!
  * @brief 店の品揃えを変化させる /
  * Maintain the inventory at the stores.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param town_num 町のID
  * @param store_num 店舗種類のID
  * @param chance 更新商品数

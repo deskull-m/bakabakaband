@@ -18,7 +18,7 @@
 
 /*!
  * @brief モンスターが逃げ込める地点を走査する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @param offsets モンスターがいる地点から逃げ込もうとする地点へのオフセットの候補リスト
  * @param d モンスターがいる地点からの距離
@@ -73,7 +73,7 @@ static coordinate_candidate sweep_safe_coordinate(CreatureEntity &creature, MONS
 /*!
  * @brief モンスターが逃げ込める安全な地点を返す /
  * Choose a "safe" location near a monster for it to run toward.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターの参照ID
  * @param yp 移動先のマスのY座標を返す参照ポインタ
  * @param xp 移動先のマスのX座標を返す参照ポインタ
@@ -105,7 +105,7 @@ tl::optional<Pos2D> find_safety(CreatureEntity &creature, short m_idx)
 
 /*!
  * @brief モンスターが隠れられる地点を走査する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @param offsets モンスターがいる地点から隠れようとする地点へのオフセットの候補リスト
  * @param candidate 隠れられる地点の候補地
@@ -139,7 +139,7 @@ static void sweep_hiding_candidate(
 
 /*!
  * @brief モンスターが隠れ潜める地点を返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターの参照ID
  * @return 有効なマスがあった場合、その座標。なかったらnullopt
  */

@@ -39,7 +39,7 @@
 
 /*!
  * @brief 毒ダメージを計算する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  * @details 減衰の計算式がpoisではなくnukeなのは仕様 (1/3では減衰が強すぎると判断したため)
  */
@@ -60,7 +60,7 @@ static void calc_blow_poison(CreatureEntity &creature, MonsterAttackPlayer *mona
 
 /*!
  * @brief 劣化ダメージを計算する (耐性があれば、(1d4 + 4) / 9になる)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  */
 static void calc_blow_disenchant(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
@@ -84,7 +84,7 @@ static void calc_blow_disenchant(CreatureEntity &creature, MonsterAttackPlayer *
 
 /*!
  * @brief 魔道具吸収ダメージを計算する (消費魔力減少、呪文失敗率減少、魔道具使用能力向上があればそれぞれ-7.5%)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  * @detals 魔道具使用能力向上フラグがあれば、吸収対象のアイテムをスキャンされる回数が半分で済む
  */
@@ -126,7 +126,7 @@ static void calc_blow_un_power(CreatureEntity &creature, MonsterAttackPlayer *mo
 
 /*!
  * @brief 盲目ダメージを計算する (耐性があれば、(1d4 + 3) / 8になる)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  */
 static void calc_blow_blind(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
@@ -146,7 +146,7 @@ static void calc_blow_blind(CreatureEntity &creature, MonsterAttackPlayer *monap
 
 /*!
  * @brief 混乱ダメージを計算する (耐性があれば、(1d4 + 3) / 8になる)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  */
 static void calc_blow_confusion(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
@@ -173,7 +173,7 @@ static void calc_blow_confusion(CreatureEntity &creature, MonsterAttackPlayer *m
 
 /*!
  * @brief 恐怖ダメージを計算する (耐性があれば、(1d4 + 3) / 8になる)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  */
 static void calc_blow_fear(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
@@ -193,7 +193,7 @@ static void calc_blow_fear(CreatureEntity &creature, MonsterAttackPlayer *monap_
 
 /*!
  * @brief 麻痺ダメージを計算する (耐性があれば、(1d4 + 3) / 8になる)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  */
 static void calc_blow_paralysis(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
@@ -213,7 +213,7 @@ static void calc_blow_paralysis(CreatureEntity &creature, MonsterAttackPlayer *m
 
 /*!
  * @brief 経験値吸収ダメージを計算する (経験値保持と地獄耐性があれば、それぞれ-7.5%)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  */
 static void calc_blow_drain_exp(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr, const int drain_value, const int hold_exp_prob)
@@ -240,7 +240,7 @@ static void calc_blow_drain_exp(CreatureEntity &creature, MonsterAttackPlayer *m
 
 /*!
  * @brief 時間逆転ダメージを計算する (耐性があれば、(1d4 + 4) / 9になる)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  */
 static void calc_blow_time(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
@@ -259,7 +259,7 @@ static void calc_blow_time(CreatureEntity &creature, MonsterAttackPlayer *monap_
 
 /*!
  * @brief 生命力吸収ダメージを計算する (経験値維持があれば9/10になる)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  */
 static void calc_blow_drain_life(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
@@ -281,7 +281,7 @@ static void calc_blow_drain_life(CreatureEntity &creature, MonsterAttackPlayer *
 
 /*!
  * @brief MPダメージを計算する (消費魔力減少、呪文失敗率減少、魔道具使用能力向上があればそれぞれ-5%)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  */
 static void calc_blow_drain_mana(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)

@@ -159,7 +159,7 @@ void PlayerAlignment::reset_alignment()
 
 /*!
  * @brief プレイヤーの抽象的善悪アライメントの表記名のみを返す。 / Return only alignment title
- * @param player_ptr プレイヤーへの参照ポインタ。
+ * @param creature クリーチャーへの参照。
  * @return アライメントの表記名
  */
 std::string PlayerAlignment::alignment_label() const

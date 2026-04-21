@@ -38,7 +38,7 @@
 
 /*!
  * @brief 特定の与えられた条件に応じてモンスターのIDリストを作成する / Build a list of monster indexes in the given group.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param grp_cur グループ種別。リスト表記中の左一覧（各シンボル及び/ユニーク(-1)/騎乗可能モンスター(-2)/賞金首(-3)/アンバーの王族(-4)）を参照できる
  * @param mode 思い出の扱いに関するモード
  * @return 作成したモンスターのIDリスト
@@ -149,7 +149,7 @@ static std::vector<MonraceId> collect_monsters(short grp_cur, monster_lore_mode 
 /*!
  * @brief 現在のペットを表示するコマンドのメインルーチン /
  * Display current pets
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void do_cmd_knowledge_pets(CreatureEntity &creature)
 {
@@ -188,7 +188,7 @@ void do_cmd_knowledge_pets(CreatureEntity &creature)
 
 /*!
  * @brief 現在までに倒したモンスターを表示するコマンドのメインルーチン /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * Total kill count
  * @note the creature ghosts are ignored.
  */
@@ -308,7 +308,7 @@ static void display_monster_list(int col, int row, int per_page, const std::vect
 
 /*!
  * Display known monsters.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param need_redraw 画面の再描画が必要な時TRUE
  * @param visual_only ？？？
  * @param direct_r_idx モンスターID
@@ -489,7 +489,7 @@ void do_cmd_knowledge_monsters(CreatureEntity &creature, bool *need_redraw, bool
 
 /*
  * List wanted monsters
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void do_cmd_knowledge_bounty(std::string_view player_name)
 {

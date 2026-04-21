@@ -40,7 +40,7 @@ static int next_to_walls(const FloorType &floor, const Pos2D &pos)
 
 /*!
  * @brief alloc_stairs()の補助として指定の位置に階段を生成できるかの判定を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 基準座標
  * @param walls 最低減隣接させたい外壁の数
  * @return 階段を生成して問題がないならばTRUEを返す。
@@ -58,7 +58,7 @@ static bool alloc_stairs_aux(const CreatureEntity &creature, const Pos2D &pos, i
 
 /*!
  * @brief 外壁に隣接させて階段を生成する / Places some staircases near walls
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param feat 配置したい地形ID
  * @param num 配置したい階段の数
  * @param walls 最低減隣接させたい外壁の数
@@ -197,7 +197,7 @@ void alloc_object(CreatureEntity &creature, dap_type set, dungeon_allocation_typ
 
 /*!
  * @brief 特定階層でのダイスベースアイテム生成 / Generate items on specific floors using dice rules
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void alloc_specific_floor_items(CreatureEntity &creature)
 {

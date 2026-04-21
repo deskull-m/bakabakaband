@@ -101,7 +101,7 @@ static void display_sub_windows(SubWindowRedrawingFlag pw_flag, std::invocable a
 
 /*!
  * @brief サブウィンドウに所持品一覧を表示する / Hack -- display inventory in sub-windows
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void fix_inventory(CreatureEntity &creature)
 {
@@ -264,7 +264,7 @@ static void print_pet_list(CreatureEntity &creature, const std::vector<MONSTER_I
 
 /*!
  * @brief 出現中モンスターのリストをサブウィンドウに表示する / Hack -- display monster list in sub-windows
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void fix_monster_list(CreatureEntity &creature)
 {
@@ -374,7 +374,7 @@ static void display_equipment(CreatureEntity &creature, const ItemTester &item_t
 /*!
  * @brief 現在の装備品をサブウィンドウに表示する /
  * Hack -- display equipment in sub-windows
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void fix_equip(CreatureEntity &creature)
 {
@@ -386,7 +386,7 @@ void fix_equip(CreatureEntity &creature)
 
 /*!
  * @brief 現在のプレイヤーステータスをサブウィンドウに表示する /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * Hack -- display character in sub-windows
  */
 void fix_player(CreatureEntity &creature)
@@ -438,7 +438,7 @@ void fix_message(void)
  * @brief 簡易マップをサブウィンドウに表示する /
  * Hack -- display overhead view in sub-windows
  * Adjust for width and split messages
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * Note that the "creature" symbol does NOT appear on the map.
  */
@@ -482,7 +482,7 @@ static void display_dungeon(CreatureEntity &creature)
 
 /*!
  * @brief 自分の周辺のダンジョンの地形をサブウィンドウに表示する / display dungeon view around creature in a sub window
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void fix_dungeon(CreatureEntity &creature)
 {
@@ -494,7 +494,7 @@ void fix_dungeon(CreatureEntity &creature)
 
 /*!
  * @brief モンスターの思い出をサブウィンドウに表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void fix_monster(CreatureEntity &creature)
 {
@@ -511,7 +511,7 @@ void fix_monster(CreatureEntity &creature)
 /*!
  * @brief ベースアイテム情報をサブウィンドウに表示する /
  * Hack -- display object recall in sub-windows
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void fix_object(CreatureEntity &creature)
 {
@@ -707,7 +707,7 @@ void fix_found_item_list(CreatureEntity &creature)
 
 /*!
  * @brief プレイヤーの全既知呪文を表示する / Display all known spells in a window
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * Need to analyze size of the window.
  * Need more color coding.
@@ -854,7 +854,7 @@ static void display_spell_list(CreatureEntity &creature)
 
 /*!
  * @brief 現在の習得済魔法をサブウィンドウに表示する /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * Hack -- display spells in sub-windows
  */
 void fix_spell(CreatureEntity &creature)

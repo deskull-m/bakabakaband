@@ -42,7 +42,7 @@ void inven_item_charges(const ItemEntity &item)
 /*!
  * @brief アイテムの残り所持数メッセージを表示する /
  * Describe an item in the inventory.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param item 残量を表示したいプレイヤーのアイテム所持スロット
  */
 void inven_item_describe(CreatureEntity &creature, short i_idx)
@@ -62,7 +62,7 @@ void inven_item_describe(CreatureEntity &creature, short i_idx)
 
 /*!
  * @brief 現在アクティブになっているウィンドウにオブジェクトの詳細を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details Include list of usable spells for readible books
  */
 void display_koff(CreatureEntity &creature)

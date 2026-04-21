@@ -109,7 +109,7 @@ static int32_t get_autoroller_prob(int *minval)
 
 /*!
  * @brief オートローラの初期設定値を決定する
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param cval 設定能力値配列
  * @details
  * 純戦士系及び腕器耐が魔法の能力の職業は腕器耐17。
@@ -164,7 +164,7 @@ static void decide_initial_stat(CreatureEntity &creature, int *cval)
 
 /*!
  * @brief オートローラの設定能力値行を作成する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param cval 設定能力値配列
  * @param cs カーソル位置(能力値番号)
  * @return カーソル文字列
@@ -201,7 +201,7 @@ static void display_autoroller_chance(int *cval)
 
 /*!
  * @brief オートローラで得たい能力値の基準を決める。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 bool get_stat_limits(CreatureEntity &creature)
 {

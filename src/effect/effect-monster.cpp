@@ -55,7 +55,7 @@
 
 /*!
  * @brief ビーム/ボルト/ボール系魔法によるモンスターへの効果があるかないかを判定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  * @return 効果が何もないならFALSE、何かあるならTRUE
  */
@@ -103,7 +103,7 @@ static ProcessResult is_affective(EffectMonster *em_ptr)
 
 /*!
  * @brief 魔法の効果やモンスター種別(MAKE/FEMALE/なし)に応じて表示するメッセージを変更する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  */
 static void make_description_of_affecred_monster(CreatureEntity &creature, EffectMonster *em_ptr)
@@ -115,7 +115,7 @@ static void make_description_of_affecred_monster(CreatureEntity &creature, Effec
 
 /*!
  * @brief モンスターへの効果属性による耐性及び効果を処理する( / Proccess affecting to monster by effect.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  * @return 完全な耐性が発動したらCONTINUE、そうでないなら効果処理の結果
  * @details
@@ -175,7 +175,7 @@ static ProcessResult exe_affect_monster_by_effect(CreatureEntity &creature, Effe
 
 /*!
  * @brief ペットの死亡を処理する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  */
 static void effect_damage_killed_pet(CreatureEntity &creature, EffectMonster *em_ptr)
@@ -203,7 +203,7 @@ static void effect_damage_killed_pet(CreatureEntity &creature, EffectMonster *em
 
 /*!
  * @brief モンスターの睡眠を処理する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  */
 static void effect_damage_makes_sleep(CreatureEntity &creature, EffectMonster *em_ptr)
@@ -227,7 +227,7 @@ static void effect_damage_makes_sleep(CreatureEntity &creature, EffectMonster *e
 
 /*!
  * @brief モンスターからモンスターへのダメージを処理する / Hurt the monster by damages another monster did.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  * @return ダメージを処理しなかった(モンスターIDがプレイヤー自身)場合はFALSE、処理した(モンスターだった)場合TRUE
  * @details
@@ -257,7 +257,7 @@ static bool deal_effect_damage_from_monster(CreatureEntity &creature, EffectMons
 
 /*!
  * @brief 不潔な病人の治療処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  * @return 大賞モンスターが不潔な病人だった場合はTRUE、それ以外はFALSE
  */
@@ -282,7 +282,7 @@ static bool heal_leaper(CreatureEntity &creature, EffectMonster *em_ptr)
 
 /*!
  * @brief プレイヤー起因の効果によるダメージを処理 / Deal damages from player and fear by them.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  * @return モンスターが死んだらTRUE、生きていたらFALSE
  * @details
@@ -324,7 +324,7 @@ static bool deal_effect_damage_from_player(CreatureEntity &creature, EffectMonst
 
 /*!
  * @brief モンスターに効果のダメージを与える / Deal effect damage to monster.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  * @details
  * 以下のいずれかの処理を行う。
@@ -359,7 +359,7 @@ static void deal_effect_damage_to_monster(CreatureEntity &creature, EffectMonste
 
 /*!
  * @brief プレイヤーが眠っている敵に効果を及ぼした場合の徳の変化
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  */
 static void effect_makes_change_virtues(CreatureEntity &creature, EffectMonster *em_ptr)
@@ -378,7 +378,7 @@ static void effect_makes_change_virtues(CreatureEntity &creature, EffectMonster 
 
 /*!
  * @brief 魔法効果に対する強制処理(変身の強制解除、死なない処理)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  */
 static void affected_monster_prevents_bad_status(EffectMonster *em_ptr)
@@ -401,7 +401,7 @@ static void affected_monster_prevents_bad_status(EffectMonster *em_ptr)
 
 /*!
  * @brief モンスターの朦朧値を蓄積させる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  * @param stun_damage 朦朧値
  */
@@ -433,7 +433,7 @@ static void effect_damage_piles_stun(CreatureEntity &creature, EffectMonster *em
 
 /*!
  * @brief モンスターの混乱値を蓄積させる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  * @param stun_damage 混乱値
  */
@@ -462,7 +462,7 @@ static void effect_damage_piles_confusion(CreatureEntity &creature, EffectMonste
 
 /*!
  * @brief モンスターの恐怖値を蓄積させる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  * @param stun_damage 恐怖値
  * @details
@@ -510,7 +510,7 @@ static void effect_damage_makes_weak(EffectMonster *em_ptr)
 
 /*!
  * @brief モンスターを変身させる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  */
 static void effect_damage_makes_polymorph(CreatureEntity &creature, EffectMonster *em_ptr)
@@ -534,7 +534,7 @@ static void effect_damage_makes_polymorph(CreatureEntity &creature, EffectMonste
 
 /*!
  * @brief モンスターをテレポートさせる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  */
 static void effect_damage_makes_teleport(CreatureEntity &creature, EffectMonster *em_ptr)
@@ -563,7 +563,7 @@ static void effect_damage_makes_teleport(CreatureEntity &creature, EffectMonster
 
 /*!
  * @brief モンスターへのダメージに応じたメッセージを表示させ、異常状態を与える
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  * @details
  * 以下の判定と処理を行う。
@@ -593,7 +593,7 @@ static void effect_damage_gives_bad_status(CreatureEntity &creature, EffectMonst
 
 /*!
  * @brief 効果によるモンスターへのダメージと付随効果を処理する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  * @details
  * 以下の処理を行う。
@@ -616,7 +616,7 @@ static void exe_affect_monster_by_damage(CreatureEntity &creature, EffectMonster
 
 /*!
  * @brief モンスター闘技場にいる場合の画面更新処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  */
 static void update_phase_out_stat(CreatureEntity &creature, EffectMonster *em_ptr)
@@ -631,7 +631,7 @@ static void update_phase_out_stat(CreatureEntity &creature, EffectMonster *em_pt
 
 /*!
  * @brief 魔法効果がペットに及んだ時の処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  */
 static void postprocess_by_effected_pet(CreatureEntity &creature, EffectMonster *em_ptr)
@@ -657,7 +657,7 @@ static void postprocess_by_effected_pet(CreatureEntity &creature, EffectMonster 
 
 /*!
  * @brief 魔法効果が騎乗モンスターに及んだ時の処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  */
 static void postprocess_by_riding_pet_effected(EffectMonster *em_ptr, FallOffHorseEffect *fall_off_horse_effect)
@@ -677,7 +677,7 @@ static void postprocess_by_riding_pet_effected(EffectMonster *em_ptr, FallOffHor
 
 /*!
  * @brief 写真を撮った時の処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  * @details 写真のフラッシュは弱閃光属性
  */
@@ -695,7 +695,7 @@ static void postprocess_by_taking_photo(CreatureEntity &creature, EffectMonster 
 
 /*!
  * @brief モンスター効果の後処理 (ペット関係、記念撮影、グローバル変数更新)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果構造体への参照ポインタ
  */
 static void exe_affect_monster_postprocess(CreatureEntity &creature, EffectMonster *em_ptr, FallOffHorseEffect *fall_off_horse_effect)
@@ -710,7 +710,7 @@ static void exe_affect_monster_postprocess(CreatureEntity &creature, EffectMonst
 
 /*!
  * @brief 汎用的なビーム/ボルト/ボール系によるモンスターへの効果処理 / Handle a beam/bolt/ball causing damage to a monster.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param src_idx 魔法を発動したモンスター(0ならばプレイヤー) / Index of "source" monster (zero for "player")
  * @param r 効果半径(ビーム/ボルト = 0 / ボール = 1以上) / Radius of explosion (0 = beam/bolt, 1 to 9 = ball)
  * @param y 目標y座標 / Target y location (or location to travel "towards")

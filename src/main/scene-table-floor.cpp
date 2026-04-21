@@ -194,7 +194,7 @@ int get_scene_floor_count()
 /*!
  * @brief 現在の条件でフロアのBGM選曲をリストに設定する。
  * @details リストのfrom_indexの位置から、get_scene_floor_count()で得られる個数分設定する。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param list BGM選曲リスト
  * @param from_index リストの更新開始位置
  */

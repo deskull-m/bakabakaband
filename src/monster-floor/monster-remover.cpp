@@ -93,7 +93,7 @@ void delete_monster_idx(CreatureEntity &creature, short m_idx)
 
 /*!
  * @brief プレイヤーのフロア離脱に伴う全モンスター配列の消去
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details 視覚効果なしでdelete_monster() をフロア全体に対して呼び出す.
  */
 void wipe_monsters_list(CreatureEntity &creature)
@@ -123,7 +123,7 @@ void wipe_monsters_list(CreatureEntity &creature)
 
 /*!
  * @brief 指定位置に存在するモンスターを削除する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 削除するモンスターの座標
  */
 void delete_monster(CreatureEntity &creature, const Pos2D &pos)

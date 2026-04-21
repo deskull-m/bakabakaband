@@ -78,7 +78,7 @@ int critical_norm(CreatureEntity &creature, WEIGHT weight, int plus, int dam, in
 
 /*!
  * @brief 忍者ヒットで急所を突く
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  * @details 闇討ち＆追討ちを実施した後に致命傷チェックを行う
  * チェックを通ったら、ユニークならば2倍ダメージ、それ以外は一撃死
@@ -122,7 +122,7 @@ static void ninja_critical(CreatureEntity &creature, player_attack_type *pa_ptr)
 
 /*!
  * @brief 急所を突く
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  */
 void critical_attack(CreatureEntity &creature, player_attack_type *pa_ptr)

@@ -108,7 +108,7 @@ static tl::optional<SelectionResult> select_destroying_item(CreatureEntity &crea
 
 /*!
  * @brief 一部職業で高位魔法書の破壊による経験値上昇の判定
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param destoryed_item 破壊したアイテム
  * return 魔法書の破壊によって経験値が入るならばTRUE
  */
@@ -209,7 +209,7 @@ static void exe_destroy_item(CreatureEntity &creature, ItemEntity &destroying_it
 
 /*!
  * @brief アイテムを破壊するコマンドのメインルーチン / Destroy an item
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void do_cmd_destroy(CreatureEntity &creature)
 {

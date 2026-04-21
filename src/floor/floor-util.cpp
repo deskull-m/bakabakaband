@@ -172,7 +172,7 @@ Pos2D scatter(const FloorType &floor, const Pos2D &pos, int d, uint32_t mode)
 
 /*!
  * @brief 現在のマップ名を返す /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return マップ名の文字列参照ポインタ
  */
 std::string map_name(CreatureEntity &creature)

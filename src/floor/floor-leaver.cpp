@@ -123,7 +123,7 @@ static void record_pet_diary(CreatureEntity &creature)
 
 /*!
  * @brief フロア移動時のペット保存処理 / Preserve_pets
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void preserve_pet(CreatureEntity &creature)
 {
@@ -260,7 +260,7 @@ static void get_out_monster(CreatureEntity &creature)
 
 /*!
  * @brief クエスト・フロア内のモンスター・インベントリ情報を保存する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void preserve_info(CreatureEntity &creature)
 {
@@ -455,7 +455,7 @@ static void exe_leave_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
 /*!
  * @brief 現在のフロアを離れるに伴って行なわれる保存処理
  * / Maintain quest monsters, mark next floor_id at stairs, save current floor, and prepare to enter next floor.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void leave_floor(CreatureEntity &creature)
 {

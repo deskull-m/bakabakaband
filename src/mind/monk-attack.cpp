@@ -191,7 +191,7 @@ WEIGHT calc_monk_attack_weight(CreatureEntity &creature)
 
 /*!
  * @brief 急所攻撃による追加効果を与える
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  * @param stun_effect 朦朧の残りターン
  * @param resist_stun 朦朧への抵抗値
@@ -218,7 +218,7 @@ static void process_attack_vital_spot(CreatureEntity &creature, player_attack_ty
 
 /*!
  * @brief 朦朧効果を受けたモンスターのステータス表示
- * @param player_ptr プレイヤーの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  * @param grid グリッドへの参照
  * @param stun_effect 朦朧の残りターン

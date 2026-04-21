@@ -135,7 +135,7 @@ bool enter_wizard_mode(const FloorType &floor)
 /*!
  * @brief デバッグコマンドへの導入処理
  * / Verify use of "debug" commands
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 実際にデバッグコマンドへ移行したらTRUEを返す。
  */
 static bool enter_debug_mode(const FloorType &floor)

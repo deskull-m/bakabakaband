@@ -47,7 +47,7 @@ void object_kind_track(CreatureEntity &creature, short bi_id)
 
 /*
  * Track a new monster
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx トラッキング対象のモンスターID。0の時キャンセル
  * @param なし
  */

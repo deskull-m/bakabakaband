@@ -6,7 +6,7 @@
 
 /*!
  * @brief レイシャルパワーの説明文を表示する
- * @param player_ptr プレイヤー情報へのポインタ
+ * @param creature クリーチャーへの参照
  * @param self_ptr 自己分析情報へのポインタ
  * @details
  *  使用可能レベル以上を条件とする。

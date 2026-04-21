@@ -12,7 +12,7 @@
 /*!
  * @brief 博物館のアイテムを除去するコマンドのメインルーチン /
  * Remove an item from museum (Originally from TOband)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void museum_remove_object(CreatureEntity &creature)
 {

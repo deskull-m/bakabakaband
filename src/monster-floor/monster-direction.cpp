@@ -21,7 +21,7 @@
 
 /*!
  * @brief ペットが敵に接近するための方向を決定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monster_from 移動を試みているモンスターへの参照ポインタ
  * @param monster_to 移動先モンスターへの参照ポインタ
  * @param plus モンスターIDの増減 (1/2 の確率で+1、1/2の確率で-1)
@@ -50,7 +50,7 @@ static bool decide_pet_approch_direction(CreatureEntity &creature, const Creatur
 
 /*!
  * @brief モンスターが敵に接近するための方向を決定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @param start モンスターIDの開始
  * @param plus モンスターIDの増減 (1/2 の確率で+1、1/2の確率で-1)
@@ -106,7 +106,7 @@ static void decide_enemy_approch_direction(CreatureEntity &creature, MONSTER_IDX
 /*!
  * @brief モンスターが敵に接近するための方向を計算するメインルーチン
  * Calculate the direction to the next enemy
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターの参照ID
  * @return 方向が確定した場合移動方向のリスト、接近する敵がそもそもいない場合tl::nullopt
  */
@@ -149,7 +149,7 @@ static tl::optional<MonsterMovementDirectionList> get_enemy_dir(CreatureEntity &
 
 /*!
  * @brief 不規則歩行フラグを持つモンスターが不規則な方向に移動するかどうかをその確率に基づいて決定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param mosnter モンスターへの参照
  * @return 不規則な方向へ移動するならtrue
  */
@@ -185,7 +185,7 @@ static bool random_walk(CreatureEntity &creature, const CreatureEntity &monster)
 
 /*!
  * @brief ペットの移動方向のリストを決定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @return ペットであれば移動方向のリスト、そうでなければtl::nullopt
  */
@@ -222,7 +222,7 @@ static tl::optional<MonsterMovementDirectionList> decide_pet_movement_direction(
 
 /*!
  * @brief モンスターの移動方向のリストを決定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @param aware モンスターがプレイヤーに気付いているならばTRUE、超隠密状態ならばFALSE
  * @return 移動方向のリスト。移動しない場合はtl::nullopt

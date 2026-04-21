@@ -140,7 +140,7 @@ static int highscore_add(high_score *score)
 
 /*!
  * @brief スコアサーバへの転送処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param do_send 実際に転送ア処置を行うか否か
  * @return 転送が成功したらTRUEを返す
  */
@@ -180,7 +180,7 @@ bool send_world_score(CreatureEntity &creature, bool do_send)
  * @brief スコアの過去二十位内ランキングを表示する
  * Enters a players name on a hi-score table, if "legal", and in any
  * case, displays some relevant portion of the high score list.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return エラーコード
  * @details
  * Assumes "signals_ignore_tstp()" has been called.

@@ -152,7 +152,7 @@ ProcessResult effect_monster_hand_doom(EffectMonster *em_ptr)
 
 /*!
  * @brief 剣術「幻惑」の効果をモンスターに与える
- * @param player_ptr プレイヤーの情報へのポインタ
+ * @param creature クリーチャーへの参照
  * @param EffectMonster モンスターの効果情報へのポインタ
  * @details
  * 精神のないモンスター、寝ているモンスターには無効。

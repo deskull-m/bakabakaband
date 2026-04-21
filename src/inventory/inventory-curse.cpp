@@ -192,7 +192,7 @@ ItemEntity *choose_cursed_obj_name(CreatureEntity &creature, CurseTraitType flag
 
 /*!
  * @brief 呪われている、トランプエゴ等による装備品由来のテレポートを実行する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void curse_teleport(CreatureEntity &creature)
 {
@@ -391,7 +391,7 @@ static void curse_cowardice(CreatureEntity &creature)
 
 /*!
  * @brief 装備による狂戦士化の発作を引き起こす
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void curse_berserk_rage(CreatureEntity &creature)
 {
@@ -515,7 +515,7 @@ static void occur_curse_effects(CreatureEntity &creature)
 /*!
  * @brief 10ゲームターンが進行するごとに装備効果の発動判定を行う処理
  * / Handle curse effects once every 10 game turns
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void execute_cursed_items_effect(CreatureEntity &creature)
 {

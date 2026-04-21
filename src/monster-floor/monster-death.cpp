@@ -170,7 +170,7 @@ static void drop_corpse(CreatureEntity &creature, MonsterDeath *md_ptr)
 
 /*!
  * @brief アーティファクトのドロップ判定処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param md_ptr モンスター死亡構造体への参照ポインタ
  * @return 何かドロップするならドロップしたアーティファクトのID、何もドロップしないなら0
  */
@@ -190,7 +190,7 @@ static void drop_artifact_from_unique(CreatureEntity &creature, MonsterDeath *md
 
 /*!
  * @brief 特定アーティファクトのドロップ処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param md_ptr モンスター死亡構造体への参照ポインタ
  * @param a_ix ドロップを試みるアーティファクトID
  * @return ドロップするならtrue
@@ -345,7 +345,7 @@ static void drop_items_golds(CreatureEntity &creature, MonsterDeath *md_ptr, int
 
 /*!
  * @brief 最終ボス(混沌のサーペント)を倒したときの処理
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void on_defeat_last_boss(CreatureEntity &creature)
 {

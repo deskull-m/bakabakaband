@@ -79,7 +79,7 @@ static MonraceId initial_r_appearance(CreatureEntity &creature, MonraceId r_idx,
 
 /*!
  * @brief ユニークが生成可能か評価する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param r_idx 生成モンスター種族
  * @return ユニークの生成が不可能な条件ならFALSE、それ以外はTRUE
  */

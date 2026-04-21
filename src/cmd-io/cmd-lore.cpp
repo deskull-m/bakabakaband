@@ -75,7 +75,7 @@ std::pair<std::string, std::vector<MonraceId>> collect_monraces(char symbol)
 /*!
  * @brief モンスターの思い出を見るコマンドのメインルーチン
  * Identify a character, allow recall of monsters
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * <pre>
  * Several "special" responses recall "multiple" monsters:

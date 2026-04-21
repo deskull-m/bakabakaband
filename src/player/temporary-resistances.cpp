@@ -16,7 +16,7 @@
 /*!
  * @brief プレイヤーの一時的魔法効果による耐性を返す
  * Prints ratings on certain abilities
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param flags フラグを保管する配列
  */
 void tim_player_flags(CreatureEntity &creature, TrFlags &flags)

@@ -302,7 +302,7 @@ void do_cmd_use(CreatureEntity &creature)
 
 /*!
  * @brief 装備を発動するコマンドのメインルーチン /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void do_cmd_activate(CreatureEntity &creature)
 {

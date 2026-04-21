@@ -126,7 +126,7 @@ void do_cmd_equip(CreatureEntity &creature)
 
 /*!
  * @brief 装備するコマンドのメインルーチン / Wield or wear a single item from the pack or floor
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void do_cmd_wield(CreatureEntity &creature)
 {

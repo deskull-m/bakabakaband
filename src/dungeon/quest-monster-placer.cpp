@@ -13,7 +13,7 @@
 
 /*!
  * @brief クエストに関わるモンスターの配置を行う / Place quest monsters
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 成功したならばTRUEを返す
  */
 bool place_quest_monsters(CreatureEntity &creature)

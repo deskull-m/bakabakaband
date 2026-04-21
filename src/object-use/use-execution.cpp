@@ -30,7 +30,7 @@
 
 /*!
  * @brief コンストラクタ
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i_idx 使うオブジェクトの所持品ID
  */
 ObjectUseEntity::ObjectUseEntity(CreatureEntity &creature, INVENTORY_IDX i_idx)

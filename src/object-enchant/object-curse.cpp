@@ -59,7 +59,7 @@ CurseTraitType get_curse(int power, ItemEntity *o_ptr)
 
 /*!
  * @brief 装備への呪い付加判定と付加処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param chance 呪いの基本確率
  * @param heavy_chance さらに重い呪いとなる確率
  */

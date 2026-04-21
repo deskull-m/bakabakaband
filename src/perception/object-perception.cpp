@@ -9,7 +9,7 @@
 
 /*!
  * @brief オブジェクトを＊鑑定＊済にする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param item ＊鑑定＊済にするアイテムへの参照
  */
 void object_aware(CreatureEntity &creature, const ItemEntity &item)

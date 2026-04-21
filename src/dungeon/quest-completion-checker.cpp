@@ -26,7 +26,7 @@ QuestCompletionChecker::QuestCompletionChecker(CreatureEntity &creature, const C
 /*!
  * @brief 特定の敵を倒した際にクエスト達成処理 /
  * Check for "Quest" completion when a quest monster is killed or charmed.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_ptr 撃破したモンスターの構造体参照ポインタ
  */
 void QuestCompletionChecker::complete()

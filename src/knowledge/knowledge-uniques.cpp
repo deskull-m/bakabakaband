@@ -115,7 +115,7 @@ static void display_uniques(UniqueList *unique_list_ptr, FILE *fff)
 
 /*!
  * @brief 既知の生きているユニークまたは撃破済ユニークの一覧を表示させる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param is_alive 生きているユニークのリストならばTRUE、撃破したユニークのリストならばFALSE
  */
 void do_cmd_knowledge_uniques(CreatureEntity &creature, bool is_alive)

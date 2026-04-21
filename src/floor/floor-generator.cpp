@@ -62,7 +62,7 @@
 
 /*!
  * @brief 闘技場用のアリーナ地形を作成する / Builds the on_defeat_arena_monster after it is entered -KMW-
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static Pos2D build_arena(CreatureEntity &creature)
 {
@@ -134,7 +134,7 @@ static Pos2D build_arena(CreatureEntity &creature)
 
 /*!
  * @brief 挑戦時闘技場への入場処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details 互換性のため、『森トロル』など地上と闘技場の両方に出現するユニークを撃破した際の不戦勝処理を残している
  * @todo v3.0正式版リリース以降に上記を削除する
  */
@@ -175,7 +175,7 @@ static void generate_challenge_arena(CreatureEntity &creature)
 
 /*!
  * @brief モンスター闘技場のフロア生成 / Builds the on_defeat_arena_monster after it is entered -KMW-
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static Pos2D build_battle(CreatureEntity &creature)
 {
@@ -290,7 +290,7 @@ static void generate_gambling_arena(CreatureEntity &creature)
 
 /*!
  * @brief 固定マップクエストのフロア生成 / Generate a quest level
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void generate_fixed_floor(CreatureEntity &creature)
 {
@@ -316,7 +316,7 @@ static void generate_fixed_floor(CreatureEntity &creature)
 
 /*!
  * @brief ダンジョン時のランダムフロア生成 / Make a real level
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param seed 乱数の種（オプショナル）。指定された場合は固定ダンジョンを生成
  * @return フロアの生成に成功したらTRUE
  */

@@ -60,7 +60,7 @@ static void dump_explanation(std::string_view explanation, FILE *fff)
 
 /*!
  * @brief 自分に関する情報を画面に表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
  */
 static void dump_yourself(CreatureEntity &creature, FILE *fff)
@@ -185,7 +185,7 @@ void do_cmd_knowledge_stat(CreatureEntity &creature)
 
 /*
  * List my home
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void do_cmd_knowledge_home(CreatureEntity &creature)
 {

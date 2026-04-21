@@ -321,7 +321,7 @@ static bool get_spike(CreatureEntity &creature, INVENTORY_IDX *ip)
 /*!
  * @brief 「くさびを打つ」動作コマンドのメインルーチン /
  * Jam a closed door with a spike
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * <pre>
  * This command may NOT be repeated

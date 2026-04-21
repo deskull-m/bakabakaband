@@ -673,7 +673,7 @@ void do_cmd_browse(CreatureEntity &creature)
 
 /*!
  * @brief プレイヤーの第二魔法領域を変更する /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pr プレイヤーの魔法領域情報
  * @param next_realm 変更先の魔法領域ID
  */
@@ -896,7 +896,7 @@ void do_cmd_study(CreatureEntity &creature)
 /*!
  * @brief 魔法を詠唱するコマンドのメインルーチン /
  * Cast a spell
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 詠唱したらtrue
  */
 bool do_cmd_cast(CreatureEntity &creature)

@@ -135,7 +135,7 @@ static bool acid_minus_ac(CreatureEntity &creature)
 /*!
  * @brief 酸属性によるプレイヤー損害処理 /
  * Hurt the creature with Acid
- * @param player_ptr 酸を浴びたキャラクタへの参照ポインタ
+ * @param creature 酸を浴びたクリーチャーへの参照
  * @param dam 基本ダメージ量
  * @param kb_str ダメージ原因記述
  * @param monspell 原因となったモンスター特殊攻撃ID
@@ -174,7 +174,7 @@ int acid_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool au
 /*!
  * @brief 電撃属性によるプレイヤー損害処理 /
  * Hurt the creature with electricity
- * @param player_ptr 電撃を浴びたキャラクタへの参照ポインタ
+ * @param creature 電撃を浴びたクリーチャーへの参照
  * @param dam 基本ダメージ量
  * @param kb_str ダメージ原因記述
  * @param monspell 原因となったモンスター特殊攻撃ID
@@ -210,7 +210,7 @@ int elec_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool au
 /*!
  * @brief 火炎属性によるプレイヤー損害処理 /
  * Hurt the creature with Fire
- * @param player_ptr 火炎を浴びたキャラクタへの参照ポインタ
+ * @param creature 火炎を浴びたクリーチャーへの参照
  * @param dam 基本ダメージ量
  * @param kb_str ダメージ原因記述
  * @param monspell 原因となったモンスター特殊攻撃ID
@@ -246,7 +246,7 @@ int fire_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool au
 /*!
  * @brief 冷気属性によるプレイヤー損害処理 /
  * Hurt the creature with Cold
- * @param player_ptr 冷気を浴びたキャラクタへの参照ポインタ
+ * @param creature 冷気を浴びたクリーチャーへの参照
  * @param dam 基本ダメージ量
  * @param kb_str ダメージ原因記述
  * @param monspell 原因となったモンスター特殊攻撃ID
@@ -279,7 +279,7 @@ int cold_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool au
 
 /*!
  * @brief プレイヤーの死亡時強制セーブ処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 static void death_save(CreatureEntity &creature)
 {
@@ -749,7 +749,7 @@ void touch_zap_player(const CreatureEntity &source, CreatureEntity &creature)
 
 /*!
  * @brief プレイヤーの脱糞処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void player_defecate(CreatureEntity &creature)
 {

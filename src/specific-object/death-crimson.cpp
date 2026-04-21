@@ -13,7 +13,7 @@
 
 /*!
  * @brief クリムゾンを発射する / Fire Crimson, evoluting gun.
- @ @param player_ptr プレイヤーへの参照ポインタ
+  * @param creature クリーチャーへの参照
  * @return キャンセルした場合 false.
  * @details
  * Need to analyze size of the window.

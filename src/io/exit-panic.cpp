@@ -19,7 +19,7 @@
 
 /*!
  * @brief Handle abrupt death of the visual system
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return なし
  * @details
  * This routine is called only in very rare situations, and only

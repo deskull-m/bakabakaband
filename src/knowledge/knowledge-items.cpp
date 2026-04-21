@@ -87,7 +87,7 @@ auto collect_known_fixed_artifacts(CreatureEntity &creature)
 
 /*!
  * @brief Check the status of "artifacts"
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void do_cmd_knowledge_artifacts(CreatureEntity &creature)
 {

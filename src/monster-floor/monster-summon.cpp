@@ -99,7 +99,7 @@ tl::optional<MONSTER_IDX> summon_specific(CreatureEntity &subject, POSITION y1, 
 
 /*!
  * @brief 特定モンスター種族を召喚により生成する / A "dangerous" function, creates a pet of the specified type
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param src_idx 召喚主のモンスター情報ID
  * @param oy 目標地点y座標
  * @param ox 目標地点x座標

@@ -130,7 +130,7 @@ int AllianceNurgle::calcImpressionPoint(const CreatureEntity &creature) const
 
 /*!
  * @brief ナーグル神アライアンスの制裁処理
- * @param player_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @details 段階的な疫病と腐敗の制裁
  */
 void AllianceNurgle::panishment(CreatureEntity &creature)

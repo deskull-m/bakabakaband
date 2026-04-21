@@ -26,7 +26,7 @@ int AllianceKhaine::calcImpressionPoint(const CreatureEntity &creature) const
 
 /*!
  * @brief カインのアライアンス懲罰処理
- * @param player_ptr プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  */
 void AllianceKhaine::panishment([[maybe_unused]] CreatureEntity &creature)
 {

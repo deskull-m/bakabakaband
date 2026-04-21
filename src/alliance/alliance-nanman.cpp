@@ -17,7 +17,7 @@ int AllianceNanman::calcImpressionPoint([[maybe_unused]] const CreatureEntity &c
 
 /*!
  * @brief 南蛮アライアンスの制裁処理
- * @param player_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @details 現在は空実装
  */
 void AllianceNanman::panishment([[maybe_unused]] CreatureEntity &creature)

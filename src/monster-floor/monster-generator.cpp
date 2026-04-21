@@ -114,7 +114,7 @@ tl::optional<Pos2D> mon_scatter(CreatureEntity &creature, MonraceId monrace_id, 
 
 /*!
  * @brief モンスターを増殖生成する / Let the given monster attempt to reproduce.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx 増殖するモンスター情報ID
  * @param r_idx 増殖させたいモンスターID
  * @param clone クローン・モンスター処理ならばtrue
@@ -204,7 +204,7 @@ static void place_monster_group(CreatureEntity &creature, const Pos2D &pos_cente
 }
 /*!
  * @brief 特定モンスターを生成する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param src_idx 召喚主のモンスター情報ID
  * @param y 生成地点y座標
  * @param x 生成地点x座標
@@ -286,7 +286,7 @@ tl::optional<MONSTER_IDX> place_specific_monster(CreatureEntity &creature, POSIT
 }
 /*!
  * @brief フロア相当のモンスターを1体生成する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 生成地点y座標
  * @param x 生成地点x座標
  * @param mode 生成オプション
@@ -343,7 +343,7 @@ static tl::optional<MonraceId> select_horde_leader_r_idx(CreatureEntity &creatur
 
 /*!
  * @brief 指定地点に1種類のモンスター種族による群れを生成する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 生成地点y座標
  * @param x 生成地点x座標
  * @return 生成に成功したらtrue
@@ -387,7 +387,7 @@ bool alloc_horde(CreatureEntity &creature, POSITION y, POSITION x, summon_specif
 
 /*!
  * @brief ダンジョンの主生成を試みる / Put the Guardian
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param def_val 現在の主の生成状態
  * @return 生成に成功したらtrue
  */
