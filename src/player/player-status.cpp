@@ -2912,7 +2912,7 @@ void check_experience(CreatureEntity &creature)
         }
 
         /*
-         * 報酬でレベルが上ると再帰的に check_experience(static_cast<CreatureEntity &>(creature)) が
+         * 報酬でレベルが上ると再帰的に check_experience(creature) が
          * 呼ばれるので順番を最後にする。
          */
         if (level_reward) {

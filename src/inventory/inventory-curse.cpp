@@ -269,7 +269,7 @@ static void curse_drain_exp(CreatureEntity &creature)
         creature.max_exp = 0;
     }
 
-    check_experience(static_cast<CreatureEntity &>(creature));
+    check_experience(creature);
 }
 
 static void multiply_low_curse(CreatureEntity &creature)

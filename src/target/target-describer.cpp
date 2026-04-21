@@ -225,7 +225,7 @@ static void describe_grid_monster(CreatureEntity &creature, GridExamination *ge_
         move_cursor_relative(ge_ptr->y, ge_ptr->x);
         ge_ptr->query = inkey();
         if (ge_ptr->query == 'c') {
-            do_cmd_player_status(static_cast<CreatureEntity *>(ge_ptr->m_ptr));
+            do_cmd_player_status(ge_ptr->m_ptr);
             return;
         } else if (ge_ptr->query != 'r') {
             return;
