@@ -14,7 +14,7 @@
 
 /*!
  * @brief その他の情報を読み込む / Read the "extra" information
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void rd_extra(CreatureEntity &creature)
 {

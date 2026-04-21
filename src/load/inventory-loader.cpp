@@ -9,7 +9,7 @@
 
 /*!
  * @brief プレイヤーの所持品情報を読み込む / Read the player inventory
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * Note that the inventory changed in Angband 2.7.4.  Two extra
  * pack slots were added and the equipment was rearranged.  Note
