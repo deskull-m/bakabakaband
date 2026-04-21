@@ -49,7 +49,7 @@
 /*!
  * @brief セーブデータの書き込み /
  * Actually write a save-file
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 成功すればtrue
  */
 static bool wr_savefile_new(CreatureEntity &creature)
@@ -249,7 +249,7 @@ static bool wr_savefile_new(CreatureEntity &creature)
 
 /*!
  * @brief セーブデータ書き込みのサブルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param path セーブデータのフルパス
  * @param type セーブ後の処理種別
  * @return セーブの成功可否
@@ -297,7 +297,7 @@ static bool save_player_aux(CreatureEntity &creature, const std::filesystem::pat
 
 /*!
  * @brief セーブデータ書き込みのメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 成功すればtrue
  * @details 以下の順番で書き込みを実行する.
  * 1. hoge.new にセーブデータを書き込む

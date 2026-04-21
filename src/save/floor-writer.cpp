@@ -220,7 +220,7 @@ bool wr_dungeon(CreatureEntity &creature)
 
 /*!
  * @brief ゲームプレイ中のフロア一時保存出力処理サブルーチン / Actually write a temporary saved floor file
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param sf_ptr 保存フロア参照ポインタ
  */
 static bool save_floor_aux(CreatureEntity &creature, saved_floor_type *sf_ptr)
@@ -243,7 +243,7 @@ static bool save_floor_aux(CreatureEntity &creature, saved_floor_type *sf_ptr)
 }
 /*!
  * @brief ゲームプレイ中のフロア一時保存出力処理メインルーチン / Attempt to save the temporarily saved-floor data
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param sf_ptr 保存フロア参照ポインタ
  * @param mode 保存オプション
  */
