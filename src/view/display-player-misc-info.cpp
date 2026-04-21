@@ -21,7 +21,12 @@ void display_player_name(CreatureEntity &creature, bool name_only)
     if (!name_only && creature.personality != nullptr) {
         ss << (*creature.personality).title << _((*creature.personality).no == 1 ? "の" : "", " ");
     }
-    ss << creature.name;
+    // 無名モンスター（または匿名プレイヤー）の場合は「名無し」表記へフォールバック
+    if (creature.name.empty()) {
+        ss << _("名無し", "No Name");
+    } else {
+        ss << creature.name;
+    }
     const auto display_name = ss.str();
 
     constexpr std::string_view header = _("名前  : ", "Name  : ");
