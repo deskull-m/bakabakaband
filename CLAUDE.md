@@ -179,33 +179,41 @@ tl::optional<MonraceId> select_pit_nest_monrace_id(CreatureEntity &creature, uin
 
 ---
 
-## MonsterEntity 固有フィールドの扱い方針
+## モンスター固有フィールドの扱い方針
 
-モンスター固有フィールドは最終的に以下の方針で整理する。
+モンスター固有フィールドは `MonsterProfile`
+(`src/system/monster-profile.h`) に集約する方針。
 
-### Phase 7: 汎用化できるフィールドを CreatureEntity に移動
+### Phase 7: 汎用化できるフィールドを CreatureEntity に移動 ✅ 完了
 
-| フィールド | 移動方針 |
+| フィールド | 状況 |
 |---|---|
-| `cdis` | テンポラリ変数。`get_floor()` 経由で計算に変更し削除 |
-| `target_y`, `target_x` | `CreatureEntity` に汎用 `target` 座標として移動 |
-| `mflag` (一部) | `CreatureEntity` の汎用フラグ（ペット・フレンドリー等）として移動 |
+| `cdis` | 既にテンポラリ化 (`Grid::calc_distance(...)` 経由のローカル変数) |
+| `target_y`, `target_x` | `CreatureEntity::target`（`Pos2D`）として統合済み |
+| `mflag` (ペット/フレンドリー等) | `is_pet()` / `is_friendly()` / `is_hostile()` を
+  `CreatureEntity` の virtual メソッドとして提供、実体は `MonsterProfile::mflag2` |
 
-### Phase 8: MonsterEntity の完全吸収
+### Phase 8: MonsterEntity の完全吸収 ✅ 完了
 
-最終目標として `MonsterEntity` クラスそのものを廃止し、モンスター固有データを別構造体に切り出す。
-
-**方針:**
-- `MonsterEntity` の残存フィールドを `MonsterSpecificData` 的な構造体にまとめ、`CreatureEntity` の `optional<MonsterSpecificData>` として保持する
-- または `MonsterProfile` として `MonraceDefinition` 側に置き、`CreatureEntity` から `MonraceId` で参照する
+`MonsterEntity` クラスは削除済み。モンスターは `CreatureEntity` インスタンス
+として生成され、固有データは `CreatureEntity::monster_profile`
+(`tl::optional<MonsterProfile>`) に詰める。
 
 ```
-// 最終形イメージ
+// 現状
 CreatureEntity
-├── 共通フィールド（HP, 座標, 速度, 状態...）
-├── optional<PlayerProfile>   // プレイヤー固有データ
-└── optional<MonsterProfile>  // モンスター固有データ（alliance, smart 等）
+├── 共通フィールド（HP, 座標, 速度, 状態, timed_effects_map, ...）
+├── std::shared_ptr<TimedEffects> timed_effects
+│       (プレイヤー用 TimedEffects オブジェクト。stun / confusion 等の
+│        高機能タイマー。モンスターでは nullptr)
+└── tl::optional<MonsterProfile> monster_profile
+        (モンスター固有データ: alliance_idx / mflag / smart /
+         hold_o_idx_list 等)
 ```
+
+今後の残作業としては、プレイヤー固有データを明示的に `PlayerProfile`
+構造体に分離し `CreatureEntity::player_profile` として保持させる形に
+するかを検討（現状はプレイヤー固有フィールドも `CreatureEntity` 直下に残存）。
 
 **移行しない（モンスター種族定義側に残す）フィールド:**
 
