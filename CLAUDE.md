@@ -76,21 +76,27 @@ void some_function(CreatureEntity &creature);
 
 新規関数、または既存関数を修正する際は可能な限り `CreatureEntity &` を使うこと。
 
-### 型キャスト
+### 型キャスト・型分岐
 
-型の分岐が必要な場合は `is_player()` で判定してからキャストする：
+型の分岐が必要な場合は `is_player()` で判定する：
 
 ```cpp
 if (creature.is_player()) {
     auto &player = static_cast<PlayerType &>(creature);
-    // プレイヤー固有の処理
+    // プレイヤー固有の処理（class_specific_data 等にアクセスしたい場合など）
 } else {
-    auto &monster = static_cast<MonsterEntity &>(creature);
     // モンスター固有の処理
+    auto &profile = creature.get_monster_profile(); // MonsterProfile
+    // ...
 }
 ```
 
-キャストは最小限に。可能な限りバーチャルメソッドで処理すること。
+`MonsterEntity` クラスは既に廃止済みのため、モンスター側は
+`creature.get_monster_profile()` 経由で固有データ (`MonsterProfile`) に
+アクセスする。`CreatureEntity` 基底からキャストする必要はない。
+
+キャストは最小限に。可能な限り virtual メソッド (`is_confused()` /
+`get_timed_effect()` / `is_pet()` 等) で処理すること。
 
 ### GCC ビルド注意事項
 
