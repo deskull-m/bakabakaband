@@ -165,19 +165,17 @@ tl::optional<MonraceId> select_pit_nest_monrace_id(CreatureEntity &creature, uin
 - `on_death()` / `on_take_hit()` の virtual フックは既に
   `CreatureEntity` に追加済み（`src/system/creature-entity.h:411-436`）
 
-### Phase 5: AC・防御の統一
+### Phase 5: AC・防御の統一 ✅ 完了
 
-`MonsterEntity::get_ac()` が実装済み。`CreatureEntity` の仮想メソッドとして昇格させる。
+`get_ac()` は `CreatureEntity` の virtual メソッドとして既に実装済み
+（`src/system/creature-entity.{h,cpp}`）。`ac + to_a` をベースに
+モンスターの `NAKED` フラグ等も考慮する。
 
-```cpp
-// CreatureEntity に追加予定
-virtual int get_ac() const = 0;
-```
+### Phase 6: フロアポインタの整理 ✅ 完了
 
-### Phase 6: フロアポインタの整理
-
-`current_floor_ptr` が `MonsterEntity` の直接フィールドとして残存。
-`get_floor()` 仮想メソッドは既に `CreatureEntity` に存在するので、各サブクラスでの実装を整理する。
+`current_floor_ptr` は `CreatureEntity` の protected メンバに整理され、
+アクセスは全て `get_floor()` / `set_floor()` virtual メソッド経由。
+直接参照は残っていない。
 
 ---
 
