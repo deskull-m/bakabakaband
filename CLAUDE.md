@@ -114,57 +114,56 @@ tl::optional<MonraceId> select_pit_nest_monrace_id(CreatureEntity &creature, uin
 
 ---
 
-## 残タスク ロードマップ
+## 統合ロードマップ進捗
 
-### Phase 1: 関数シグネチャの統一（継続中）
+### Phase 1: 関数シグネチャの統一 ✅ 完了
 
-`PlayerType *player_ptr` を引数に取る関数を `CreatureEntity &creature` に変更する。
+`PlayerType *player_ptr` を引数に取る関数を `CreatureEntity &creature` に
+変更する作業は完了済み。
 
-**手順:**
-1. `grep -r "PlayerType \*" src/` で対象を列挙
-2. 関数の呼び出し元を確認
-3. `PlayerType *player_ptr` → `CreatureEntity &creature` に変更
-4. 内部の `player_ptr->` アクセスを `creature.` に変更
-5. `PlayerType` 固有機能が必要な箇所のみキャストを使用
-6. PR は機能単位（例：`do_cmd_xxx` 系、`spell_xxx` 系）でまとめる
+- `PlayerType *player_ptr` 引数は `PlayerType::get_instance_ptr()` の
+  静的アクセサ以外には存在しない
+- `player_ptr` / `p_ptr` 識別子はローカル変数・クラスメンバ・doxygen
+  コメントまで含めて全て `creature` / `creature_ptr` に統一済み
 
-### Phase 2: 状態チェックの仮想化
+新規コードでは引き続き `CreatureEntity &creature` を基本形とすること。
 
-`MonsterEntity` には `is_confused()`, `is_stunned()`, `is_fearful()`, `is_invulnerable()` 等が実装済み。
-これらを `CreatureEntity` の仮想メソッドとして定義し、`PlayerType` にも実装することで両者で共通に扱えるようにする。
+### Phase 2: 状態チェックの仮想化 ✅ 完了
 
-```cpp
-// CreatureEntity に追加予定
-virtual bool is_stunned() const = 0;
-virtual bool is_confused() const = 0;
-virtual bool is_fearful() const = 0;
-virtual bool is_invulnerable() const = 0;
-```
+`is_confused()`, `is_stunned()`, `is_fearful()`, `is_invulnerable()`,
+`is_blind()`, `is_paralyzed()`, `is_fast()`, `is_accelerated()`,
+`is_decelerated()`, `is_blessed()`, `is_hero()`, `is_shero()`,
+`is_asleep()` 等はすべて `CreatureEntity` の virtual メソッドとして
+実装済み（`src/system/creature-entity.h`）。
 
-### Phase 3: タイムドエフェクトの統一
+旧 `is_hero(player_ptr)` / `is_blessed(creature)` 等の自由関数は削除済み
+(13 個)。全ての呼出は `creature.is_hero()` 形式に移行済み。
 
-**現状の不一致:**
-- `PlayerType` のタイムドエフェクトは `CreatureEntity` の直接フィールド（`hero`, `invuln` 等）
-- `MonsterEntity` は `std::map<MonsterTimedEffect, short> mtimed` で管理
+### Phase 3: タイムドエフェクトの統一 ✅ 完了
 
-**方針（検討中）:**
-- 共通インターフェースとして `get_timed_effect(type)` / `set_timed_effect(type, value)` 仮想メソッドを定義
-- または統一列挙型 `CreatureTimedEffect` を作成して両者を同一 map で管理
+全てのタイムドエフェクトは `CreatureEntity::timed_effects_map`
+（`std::map<CreatureTimedEffect, TIME_EFFECT>`）に集約済み。
 
-### Phase 4: ダメージ処理の完全統一
+- 共通列挙型: `CreatureTimedEffect`（`src/system/creature-timed-effect-types.h`）
+- 共通 API: `get_timed_effect(effect)` / `set_timed_effect(effect, value)`
+  (virtual, プレイヤー側は特定効果のみ `TimedEffects` オブジェクト経由)
+- プレイヤーの旧 41 個の直接 `TIME_EFFECT` フィールド (`hero` / `invuln` 等)
+  および `word_recall` / `alter_reality` は削除済み
+- モンスター側の旧 `MonsterProfile::mtimed` も削除済み
+- 全セーブ/ロード・ステータスセッター等が統一 API 経由で動作
 
-**現状:**
-- プレイヤー: `take_hit(CreatureEntity &, int damage_type, int damage, ...)` in `player-damage.cpp`
-- モンスター: `MonsterDamageProcessor(CreatureEntity &).mon_take_hit(...)` in `monster-damage.cpp`
+### Phase 4: ダメージ処理の完全統一 🟡 進行中
 
-**目標:** 単一のエントリポイントから両者を処理できるようにする。
-死亡処理・落とすアイテム・メッセージ等の副作用は仮想メソッドに委譲：
+統一エントリポイント `apply_damage_to_creature(victim, damage, ctx)`
+は `src/combat/damage-dispatcher.{h,cpp}` に実装済み（`is_player()` で
+内部的に `take_hit()` / `MonsterDamageProcessor::mon_take_hit()` に
+振り分ける薄いディスパッチャ）。
 
-```cpp
-// CreatureEntity に追加予定
-virtual void on_death(std::string_view cause) = 0;
-virtual void on_take_hit(int damage) {}
-```
+**残タスク:**
+- 既存の直接呼出 (`take_hit(creature, ...)` が約 200 箇所) を順次
+  `apply_damage_to_creature(...)` に移行
+- `on_death()` / `on_take_hit()` の virtual フックは既に
+  `CreatureEntity` に追加済み（`src/system/creature-entity.h:411-436`）
 
 ### Phase 5: AC・防御の統一
 
