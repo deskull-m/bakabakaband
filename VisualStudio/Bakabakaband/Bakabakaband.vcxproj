@@ -1094,7 +1094,6 @@
     <ClCompile Include="..\..\src\spell\spells-execution.cpp" />
     <ClCompile Include="..\..\src\spell\technic-info-table.cpp" />
     <ClCompile Include="..\..\src\combat\aura-counterattack.cpp" />
-    <ClCompile Include="..\..\src\combat\damage-dispatcher.cpp" />
     <ClCompile Include="..\..\src\window\main-window-equipments.cpp" />
     <ClCompile Include="..\..\src\wizard\artifact-analyzer.cpp" />
     <ClCompile Include="..\..\src\wizard\artifact-bias-table.cpp" />
@@ -2209,7 +2208,6 @@
     <ClInclude Include="..\..\src\locale\localized-string.h" />
     <ClInclude Include="..\..\src\locale\japanese.h" />
     <ClInclude Include="..\..\src\combat\aura-counterattack.h" />
-    <ClInclude Include="..\..\src\combat\damage-dispatcher.h" />
     <ClInclude Include="..\..\src\wizard\tval-descriptions-table.h" />
     <ClInclude Include="..\..\src\load\quest-loader.h" />
     <ClInclude Include="..\..\src\view\display-store.h" />
