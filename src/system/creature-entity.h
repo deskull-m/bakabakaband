@@ -89,7 +89,7 @@ struct DeathRecord {
  */
 class CreatureEntity {
 public:
-    CreatureEntity() = default;
+    CreatureEntity();
     virtual ~CreatureEntity() = default;
 
     // コピー・ムーブを許可

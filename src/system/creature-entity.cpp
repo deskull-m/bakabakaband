@@ -37,6 +37,21 @@
 #include "world/world.h"
 #include <range/v3/algorithm.hpp>
 
+/*!
+ * @brief CreatureEntity のデフォルトコンストラクタ
+ * @details プレイヤー・モンスター共通で inventory と timed_effects を
+ * 初期化する。これによりプレイヤー用経路に流されたモンスターでも
+ * null 参照・out-of-bounds を起こさない。
+ * モンスター固有データ (MonsterProfile) は init_monster_profile() を
+ * 別途呼び出して設定する。
+ */
+CreatureEntity::CreatureEntity()
+{
+    this->inventory.resize(INVEN_TOTAL);
+    ranges::generate(this->inventory, [] { return std::make_shared<ItemEntity>(); });
+    this->timed_effects = std::make_shared<TimedEffects>();
+}
+
 bool CreatureEntity::try_set_position(const Pos2D &pos)
 {
     if (this->get_floor()->get_grid(pos).has_monster()) {
