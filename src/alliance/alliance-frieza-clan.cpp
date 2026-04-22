@@ -5,7 +5,7 @@
 
 /*!
  * @brief フリーザ一族アライアンスの印象ポイント計算
- * @param creature_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @return 印象ポイント
  * @details 宇宙の帝王として高い戦闘力を求める
  */

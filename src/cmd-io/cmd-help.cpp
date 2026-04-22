@@ -6,7 +6,7 @@
 /*!
  * @brief ヘルプを表示するコマンドのメインルーチン
  * Peruse the On-Line-Help
- * @param creature プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  * @details
  */
 void do_cmd_help(CreatureEntity &creature)

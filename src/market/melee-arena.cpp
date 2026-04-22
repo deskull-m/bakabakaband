@@ -39,7 +39,7 @@ void display_gladiators()
 
 /*!
  * @brief モンスター闘技場のメインルーチン
- * @param creature プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  * @return 賭けを開始したか否か
  */
 bool melee_arena_comm(CreatureEntity &creature)

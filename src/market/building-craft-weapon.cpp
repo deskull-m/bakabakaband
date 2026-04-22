@@ -55,7 +55,7 @@ static void show_weapon_dmg(int r, int c, int mindice, int maxdice, int blows, i
 
 /*!
  * @brief 武器一つ毎のダメージ情報を表示する。
- * @param creature プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  * @param o_ptr オブジェクトの構造体の参照ポインタ。
  * @param col 表示する行の上端
  * @param r 表示する列の左端
@@ -247,7 +247,7 @@ static void compare_weapon_aux(CreatureEntity &creature, ItemEntity *o_ptr, int 
 
 /*!
  * @brief 武器匠における武器一つ毎の完全情報を表示する。
- * @param creature プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  * @param item アイテムへの参照
  * @param row 表示する列の左端
  * @param col 表示する行の上端
@@ -292,7 +292,8 @@ static void list_weapon(CreatureEntity &creature, const ItemEntity &item, TERM_L
  * @details
  * Copies the weapons to compare into the weapon-slot and\n
  * compares the values for both weapons.\n
- * 武器1つだけでcreature プレイヤーへの参照
+ * 武器1つだけの場合も扱う.
+ * @param creature クリーチャーへの参照
  * @param bcost 基本鑑定費用
  * @return 最終的にかかった費用
  */

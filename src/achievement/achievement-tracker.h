@@ -44,7 +44,7 @@ public:
 
     /*!
      * @brief 実績を解除する
-     * @param creature プレイヤー情報への参照
+     * @param creature クリーチャーへの参照
      * @param achievement 実績ID
      * @return 新規解除された場合true
      */
@@ -59,7 +59,7 @@ public:
 
     /*!
      * @brief 実績の進捗を更新
-     * @param creature プレイヤー情報への参照
+     * @param creature クリーチャーへの参照
      * @param achievement 実績ID
      * @param value 進捗値
      */
@@ -91,14 +91,14 @@ public:
 
     /*!
      * @brief データをセーブ
-     * @param creature プレイヤー情報への参照
+     * @param creature クリーチャーへの参照
      * @return 成功したらtrue
      */
     bool save_achievements(CreatureEntity &creature);
 
     /*!
      * @brief データをロード
-     * @param creature プレイヤー情報への参照
+     * @param creature クリーチャーへの参照
      * @return 成功したらtrue
      */
     bool load_achievements(CreatureEntity &creature);
@@ -116,7 +116,7 @@ private:
 
     /*!
      * @brief 実績解除通知を表示
-     * @param creature プレイヤー情報への参照
+     * @param creature クリーチャーへの参照
      * @param achievement 実績ID
      */
     void show_achievement_notification(CreatureEntity &creature, AchievementType achievement);

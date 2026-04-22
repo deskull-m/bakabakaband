@@ -5,7 +5,7 @@
 
 /*!
  * @brief 南蛮アライアンスの印象ポイント計算
- * @param creature_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @return 印象ポイント
  * @details 現在は空実装
  */

@@ -4,7 +4,7 @@
 #include "view/display-messages.h"
 /*!
  * @brief インキュベーターアライアンスの印象ポイント計算
- * @param creature_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @return 印象ポイント
  * @details 魔法少女や契約に関連した特殊な評価基準
  */

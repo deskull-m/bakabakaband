@@ -12,7 +12,7 @@
 
 /*!
  * @brief オートロール中のステータスを表示する / Display stat values, subset of "put_stats()"
- * @details See 'display_player(p_ptr, )' for screen layout constraints.
+ * @details See 'display_player(creature, )' for screen layout constraints.
  */
 void birth_put_stats(CreatureEntity &creature)
 {

@@ -14,7 +14,7 @@
 
 /*!
  * @brief カジノ1プレイごとのメインルーチン / gamble_comm
- * @param creature プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  * @param cmd プレイするゲームID
  */
 void gamble_comm(CreatureEntity &creature, int cmd)

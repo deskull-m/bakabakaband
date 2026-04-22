@@ -200,7 +200,7 @@ void effect_player_nether(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 /*!
  * @brief 水流属性によるダメージを受ける
- * @param creature プレイヤー情報への参照
+ * @param creature クリーチャーへの参照
  * @param em_ptr プレイヤー効果情報への参照ポインタ
  * @details
  * 追加効果で朦朧と混乱、冷気同様のインベントリ破壊。
@@ -499,7 +499,7 @@ static void effect_player_time_addition(CreatureEntity &creature)
 
 /*!
  * @brief 時間逆転属性によるダメージを受ける
- * @param creature プレイヤー情報への参照
+ * @param creature クリーチャーへの参照
  * @param em_ptr プレイヤー効果情報への参照ポインタ
  */
 void effect_player_time(CreatureEntity &creature, EffectPlayerType *ep_ptr)
