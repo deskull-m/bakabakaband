@@ -468,11 +468,17 @@ EOF
    アクセサ必須。`.current_floor_ptr` を `.get_floor()` に、`*creature.current_floor_ptr` を
    `*creature.get_floor()` に変換する。
 
-3. **TIME_EFFECT フィールドは `protected`**: 外部コードからは get/set アクセサ経由でないと
-   コンパイルエラーとなる。
+3. **直接 TIME_EFFECT フィールドの廃止**: 上流の
+   `creature.hero` / `creature.invuln` / `creature.oppose_fire` 等の
+   直接フィールド、および `creature.word_recall` / `creature.alter_reality`
+   は bakabakaband では削除済み。全て `creature.get_timed_effect(...)` /
+   `creature.set_timed_effect(...)` 経由で扱うこと。ストレージは
+   `CreatureEntity::timed_effects_map` に集約されている。
 
-4. **`MonsterTimedEffect` enum の廃止**: 上流にはこの enum があるが bakabakaband では削除済み。
-   `CreatureTimedEffect` に統合されているので対応する値にマッピングする。
+4. **`MonsterTimedEffect` enum および `MonsterProfile::mtimed` の廃止**:
+   上流にはこれらがあるが bakabakaband では削除済み。`CreatureTimedEffect`
+   に統合されており、プレイヤー・モンスターとも `timed_effects_map`
+   を共有する。
 
 5. **グローバル `p_ptr` の廃止**: bakabakaband では `extern PlayerType *p_ptr` が存在しない。
    `PlayerType::get_instance()` に置換する必要がある。
