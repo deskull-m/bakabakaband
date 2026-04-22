@@ -36,7 +36,7 @@
 
 /*!
  * @brief ニーベルングの王国アライアンスの印象ポイント計算
- * @param creature_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @return 印象ポイント
  * @details ドワーフ系種族や鍛冶関連要素を重視する
  */

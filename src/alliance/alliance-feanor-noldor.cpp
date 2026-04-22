@@ -8,7 +8,7 @@
 
 /*!
  * @brief フェアノール統ノルドールアライアンスの印象ポイント計算
- * @param creature_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @return 印象ポイント
  */
 int AllianceFeanorNoldor::calcImpressionPoint(const CreatureEntity &creature) const

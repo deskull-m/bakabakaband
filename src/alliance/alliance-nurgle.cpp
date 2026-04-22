@@ -19,7 +19,7 @@
 #include "view/display-messages.h"
 /*!
  * @brief ナーグル神アライアンスの印象ポイント計算
- * @param creature_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @return 印象ポイント
  * @details 腐敗、病気、耐久力を重視し、美しさや清浄さを嫌う
  */
