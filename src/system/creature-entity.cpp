@@ -383,6 +383,17 @@ bool CreatureEntity::is_blind() const
     return this->get_timed_effect(CreatureTimedEffect::BLINDNESS) > 0;
 }
 
+bool CreatureEntity::is_hallucinated() const
+{
+    // モンスターは timed_effects オブジェクトを持たないため、
+    // 幻覚状態は常に false として扱う (PlayerType のみが実体を持つ)
+    const auto eff = this->effects();
+    if (!eff) {
+        return false;
+    }
+    return eff->hallucination().is_hallucinated();
+}
+
 bool CreatureEntity::is_paralyzed() const
 {
     return this->get_timed_effect(CreatureTimedEffect::PARALYSIS) > 0;

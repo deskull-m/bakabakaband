@@ -247,7 +247,7 @@ bool monster_has_hostile_sub_align(uint8_t sub_align, const MonraceDefinition &m
 
 bool is_original_ap_and_seen(CreatureEntity &subject, const CreatureEntity &creature)
 {
-    return creature.has_monster_profile() && creature.get_monster_profile().ml && !subject.effects()->hallucination().is_hallucinated() && creature.is_original_ap();
+    return creature.has_monster_profile() && creature.get_monster_profile().ml && !subject.is_hallucinated() && creature.is_original_ap();
 }
 
 /*!

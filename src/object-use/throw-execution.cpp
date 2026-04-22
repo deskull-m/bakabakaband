@@ -502,7 +502,7 @@ void ObjectThrowEntity::display_attack_racial_power()
 
     msg_format(_("%sが%sに命中した。", "The %s hits %s."), this->o_name.data(), this->hit_monster->m_name.data());
 
-    if (!creature.effects()->hallucination().is_hallucinated()) {
+    if (!creature.is_hallucinated()) {
         LoreTracker::get_instance().set_trackee(this->hit_monster->m_ptr->ap_r_idx);
     }
 

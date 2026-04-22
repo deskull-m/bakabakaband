@@ -55,7 +55,7 @@ bool cmd_limit_confused(const CreatureEntity &creature)
 
 bool cmd_limit_image(const CreatureEntity &creature)
 {
-    if (creature.effects()->hallucination().is_hallucinated()) {
+    if (creature.is_hallucinated()) {
         msg_print(_("幻覚が見えて集中できない！", "Your hallucinations prevent you from concentrating!"));
         return true;
     }

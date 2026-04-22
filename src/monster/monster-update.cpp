@@ -237,7 +237,7 @@ static bool update_weird_telepathy(CreatureEntity &creature, um_type *um_ptr, MO
 
     um_ptr->flag = true;
     monster.get_monster_profile().mflag.set(MonsterTemporaryFlagType::ESP);
-    if (monster.is_original_ap() && !creature.effects()->hallucination().is_hallucinated()) {
+    if (monster.is_original_ap() && !creature.is_hallucinated()) {
         monrace.r_misc_flags.set(MonsterMiscType::WEIRD_MIND);
         update_smart_stupid_flags(monrace);
     }
@@ -249,7 +249,7 @@ static void update_telepathy_sight(CreatureEntity &creature, um_type *um_ptr, MO
 {
     auto &monster = *um_ptr->m_ptr;
     auto &monrace = monster.get_monrace();
-    const auto is_hallucinated = creature.effects()->hallucination().is_hallucinated();
+    const auto is_hallucinated = creature.is_hallucinated();
     if (CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU)) {
         um_ptr->flag = true;
         um_ptr->m_ptr->get_monster_profile().mflag.set(MonsterTemporaryFlagType::ESP);
@@ -287,7 +287,7 @@ static void update_specific_race_telepathy(CreatureEntity &creature, um_type *um
 {
     auto &monster = *um_ptr->m_ptr;
     auto &monrace = monster.get_monrace();
-    const auto is_hallucinated = creature.effects()->hallucination().is_hallucinated();
+    const auto is_hallucinated = creature.is_hallucinated();
     if ((creature.esp_animal) && monrace.kind_flags.has(MonsterKindType::ANIMAL)) {
         um_ptr->flag = true;
         monster.get_monster_profile().mflag.set(MonsterTemporaryFlagType::ESP);
@@ -479,7 +479,7 @@ static void decide_sight_invisible_monster(CreatureEntity &creature, um_type *um
 
     bool do_cold_blood = check_cold_blood(creature, um_ptr, distance);
     bool do_invisible = check_invisible(creature, um_ptr);
-    if (!um_ptr->flag || !monster.is_original_ap() || creature.effects()->hallucination().is_hallucinated()) {
+    if (!um_ptr->flag || !monster.is_original_ap() || creature.is_hallucinated()) {
         return;
     }
 
@@ -515,7 +515,7 @@ static void update_invisible_monster(CreatureEntity &creature, um_type *um_ptr, 
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 
-    if (!creature.effects()->hallucination().is_hallucinated()) {
+    if (!creature.is_hallucinated()) {
         auto &monrace = monster.get_monrace();
         auto &shadower = MonraceList::get_instance().get_monrace(MonraceId::KAGE);
         if ((monster.ap_r_idx == MonraceId::KAGE) && (shadower.r_sights < MAX_SHORT)) {

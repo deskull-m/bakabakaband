@@ -239,7 +239,7 @@ void MonsterDamageProcessor::increase_kill_numbers()
         creature.plus_incident_tree(key, 1);
     }
 
-    const auto is_hallucinated = creature.effects()->hallucination().is_hallucinated();
+    const auto is_hallucinated = creature.is_hallucinated();
     if (((monster.get_monster_profile().ml == 0) || is_hallucinated) && monrace.kind_flags.has_not(MonsterKindType::UNIQUE)) {
         return;
     }

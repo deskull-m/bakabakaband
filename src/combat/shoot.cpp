@@ -787,7 +787,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
                         msg_format(_("%sが%sに命中した。", "The %s hits %s."), item_name.data(), m_name.data());
 
                         if (monster.get_monster_profile().ml) {
-                            if (!creature.effects()->hallucination().is_hallucinated()) {
+                            if (!creature.is_hallucinated()) {
                                 tracker.set_trackee(monster.ap_r_idx);
                             }
 

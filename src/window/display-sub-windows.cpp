@@ -223,7 +223,7 @@ static void print_pet_list_oneline(CreatureEntity &creature, const CreatureEntit
     const auto &monrace = monster.get_appearance_monrace();
     const auto name = monster_desc(creature, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE | MD_NO_OWNER);
     const auto &[bar_color, bar_len] = monster.get_hp_bar_data();
-    const auto is_visible = monster.get_monster_profile().ml && !creature.effects()->hallucination().is_hallucinated();
+    const auto is_visible = monster.get_monster_profile().ml && !creature.is_hallucinated();
 
     term_erase(0, y);
     if (is_visible) {
@@ -560,7 +560,7 @@ static void display_floor_item_list(CreatureEntity &creature, const Pos2D &pos)
     std::string line;
 
     // 先頭行を書く。
-    const auto is_hallucinated = creature.effects()->hallucination().is_hallucinated();
+    const auto is_hallucinated = creature.is_hallucinated();
     if (creature.is_located_at(pos)) {
         line = format(_("(X:%03d Y:%03d) あなたの足元のアイテム一覧", "Items at (%03d,%03d) under you"), pos.x, pos.y);
     } else if (is_seeing_monster_on(*floor_ptr, *g_ptr)) {

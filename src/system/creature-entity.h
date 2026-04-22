@@ -656,6 +656,12 @@ public:
     virtual bool is_blind() const;
 
     /*!
+     * @brief クリーチャーが幻覚状態かどうかを判定
+     * @return 幻覚状態ならtrue（モンスターは常にfalse）
+     */
+    virtual bool is_hallucinated() const;
+
+    /*!
      * @brief クリーチャーが麻痺しているかどうかを判定
      * @return 麻痺していればtrue（モンスターは常にfalse）
      */

@@ -68,7 +68,7 @@ MonsterAttackPlayer::MonsterAttackPlayer(CreatureEntity &creature, short m_idx)
     , m_ptr(&creature.get_floor()->get_monster(m_idx))
     , method(RaceBlowMethodType::NONE)
     , effect(RaceBlowEffectType::NONE)
-    , do_silly_attack(one_in_(2) && creature.effects()->hallucination().is_hallucinated())
+    , do_silly_attack(one_in_(2) && creature.is_hallucinated())
     , creature_ptr(&creature)
 {
 }

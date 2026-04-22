@@ -422,7 +422,7 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
 
     monster.exp = 0;
     if (monster.is_pet() || monster.get_monster_profile().ml) {
-        const auto is_hallucinated = creature.effects()->hallucination().is_hallucinated();
+        const auto is_hallucinated = creature.is_hallucinated();
         if (!ignore_unview || player_can_see_bold(creature, monster.y, monster.x)) {
             if (is_hallucinated) {
                 const auto ids = monraces.search([](const auto &monrace) { return monrace.kind_flags.has_not(MonsterKindType::UNIQUE); });

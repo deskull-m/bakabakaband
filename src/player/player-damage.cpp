@@ -372,7 +372,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
 
         sound(SoundKind::WARN);
         if (record_danger && (old_chp > hp_warning_threshold)) {
-            if (creature.effects()->hallucination().is_hallucinated() && damage_type == DAMAGE_ATTACK) {
+            if (creature.is_hallucinated() && damage_type == DAMAGE_ATTACK) {
                 hit_from = _("何か", "something");
             }
 

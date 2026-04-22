@@ -382,7 +382,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
             if (grid.has_monster()) {
                 auto &monster = floor.get_monster(grid.m_idx);
                 if (monster.get_monster_profile().ml) {
-                    if (!creature.effects()->hallucination().is_hallucinated()) {
+                    if (!creature.is_hallucinated()) {
                         tracker.set_trackee(monster.ap_r_idx);
                     }
 
