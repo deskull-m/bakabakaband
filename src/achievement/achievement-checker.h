@@ -19,47 +19,47 @@ namespace AchievementChecker {
 
 /*!
  * @brief ダンジョン進入時の実績チェック
- * @param creature プレイヤー情報への参照
+ * @param creature クリーチャーへの参照
  */
 void check_dungeon_entry(CreatureEntity &creature);
 
 /*!
  * @brief 階層到達時の実績チェック
- * @param creature プレイヤー情報への参照
+ * @param creature クリーチャーへの参照
  * @param depth 現在の階層
  */
 void check_depth_reached(CreatureEntity &creature, DEPTH depth);
 
 /*!
  * @brief モンスター撃破時の実績チェック
- * @param creature プレイヤー情報への参照
+ * @param creature クリーチャーへの参照
  * @param monrace_id 撃破したモンスターの種族ID
  */
 void check_monster_kill(CreatureEntity &creature, MonraceId monrace_id);
 
 /*!
  * @brief レベルアップ時の実績チェック
- * @param creature プレイヤー情報への参照
+ * @param creature クリーチャーへの参照
  * @param new_level 新しいレベル
  */
 void check_level_up(CreatureEntity &creature, PLAYER_LEVEL new_level);
 
 /*!
  * @brief アイテム入手時の実績チェック
- * @param creature プレイヤー情報への参照
+ * @param creature クリーチャーへの参照
  * @param is_artifact ★かどうか
  */
 void check_item_acquisition(CreatureEntity &creature, bool is_artifact);
 
 /*!
  * @brief 死亡時の実績チェック
- * @param creature プレイヤー情報への参照
+ * @param creature クリーチャーへの参照
  */
 void check_death(CreatureEntity &creature);
 
 /*!
  * @brief ゲームクリア時の実績チェック
- * @param creature プレイヤー情報への参照
+ * @param creature クリーチャーへの参照
  */
 void check_game_win(CreatureEntity &creature);
 

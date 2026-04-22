@@ -71,7 +71,7 @@ static void show_tomb_line(std::string_view str, int row)
 
 /*!
  * @brief 墓に基本情報を表示
- * @param creature プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  */
 static void show_basic_params(CreatureEntity &creature)
 {
@@ -93,7 +93,7 @@ static void show_basic_params(CreatureEntity &creature)
  * のようなタイプの場合で『△△△』の途中で改行される場合○○○を1行目に、『△△△』を2行目に
  * 分割して表示することを試みる。但し『△△△』が1行に入り切らない場合はそのまま表示する。
  *
- * @param creature プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  * @return 続いて死亡した場所を表示するためのオフセット行数
  */
 static int show_killing_monster(CreatureEntity &creature)
@@ -131,7 +131,7 @@ static int show_killing_monster(CreatureEntity &creature)
 
 /*!
  * @brief どこで死んだかを表示する (日本語版専用)
- * @param creature プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  * @param extra_line 追加の行数
  */
 static void show_dead_place(CreatureEntity &creature, int extra_line)
@@ -165,7 +165,7 @@ static void show_dead_place(CreatureEntity &creature, int extra_line)
 
 /*!
  * @brief 墓に刻む言葉を細かく表示 (日本語版専用)
- * @param creature プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  */
 static void show_tomb_detail(CreatureEntity &creature)
 {
@@ -213,7 +213,7 @@ static void show_tomb_detail(CreatureEntity &creature)
 /*!
  * @brief 墓石のアスキーアート表示 /
  * Display a "tomb-stone"
- * @param creature プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  */
 void print_tomb(CreatureEntity &creature)
 {
@@ -292,7 +292,7 @@ void print_monster_tomb(CreatureEntity &creature, CreatureEntity &target)
 
 /*!
  * @brief 死亡/引退/切腹時にインベントリ内のアイテムを*鑑定*する
- * @param creature プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  */
 static void inventory_aware(CreatureEntity &creature)
 {
@@ -310,7 +310,7 @@ static void inventory_aware(CreatureEntity &creature)
 
 /*!
  * @brief 死亡/引退/切腹時に我が家のアイテムを*鑑定*する
- * @param creature プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  */
 static void home_aware(CreatureEntity &creature)
 {
@@ -330,7 +330,7 @@ static void home_aware(CreatureEntity &creature)
 
 /*!
  * @brief プレイヤーの持ち物を表示する
- * @param creature プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  * @return Escキーでゲームを終了する時TRUE
  */
 static bool show_dead_player_items(CreatureEntity &creature)
@@ -359,7 +359,7 @@ static bool show_dead_player_items(CreatureEntity &creature)
 
 /*!
  * @brief 我が家にあったアイテムを表示する
- * @param creature プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  */
 static void show_dead_home_items(CreatureEntity &creature)
 {
@@ -388,7 +388,7 @@ static void show_dead_home_items(CreatureEntity &creature)
 
 /*!
  * @brief キャラクタ情報をファイルに書き出す
- * @param creature プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  * @param file_character ステータスダンプへのコールバック
  */
 static void export_player_info(CreatureEntity &creature)
@@ -426,7 +426,7 @@ static void file_character_auto(CreatureEntity &creature)
 
 /*!
  * @brief 死亡、引退時の簡易ステータス表示
- * @param creature プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  * @param display_player ステータス表示へのコールバック
  */
 void show_death_info(CreatureEntity &creature)

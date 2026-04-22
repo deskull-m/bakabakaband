@@ -15,7 +15,7 @@
 
 /*!
  * @brief アイテムの強化を行う。 / Enchant item
- * @param creature プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  * @param cost 1回毎の費用
  * @param to_hit 命中をアップさせる量
  * @param to_dam ダメージをアップさせる量

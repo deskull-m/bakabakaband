@@ -29,7 +29,7 @@
 
 /*!
  * @brief コンストラクタ
- * @param creature プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  * @param item 使うオブジェクトの所持品ID
  */
 ObjectZapRodEntity::ObjectZapRodEntity(CreatureEntity &creature)

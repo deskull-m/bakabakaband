@@ -72,7 +72,7 @@ static bool check_battle_metal_babble(CreatureEntity &creature)
 
 /*!
  * @brief アリーナへの入場処理
- * @param creature プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  * @return アリーナへ入場するか否か
  */
 static bool go_to_arena(CreatureEntity &creature)
@@ -110,7 +110,7 @@ static bool go_to_arena(CreatureEntity &creature)
 
 /*!
  * @brief アリーナ受付のコマンド処理
- * @param creature プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  * @param cmd アリーナ処理のID
  */
 bool arena_comm(CreatureEntity &creature, int cmd)

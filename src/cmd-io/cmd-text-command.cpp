@@ -311,7 +311,7 @@ static std::vector<TextCommand> get_text_commands()
 
 /*!
  * @brief 文章コマンド入力処理
- * @param creature プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  */
 void do_cmd_text_command(CreatureEntity &creature)
 {
