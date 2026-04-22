@@ -152,18 +152,30 @@ tl::optional<MonraceId> select_pit_nest_monrace_id(CreatureEntity &creature, uin
 - モンスター側の旧 `MonsterProfile::mtimed` も削除済み
 - 全セーブ/ロード・ステータスセッター等が統一 API 経由で動作
 
-### Phase 4: ダメージ処理の完全統一 🟡 進行中
+### Phase 4: ダメージ処理の完全統一 ✅ 完了
 
-統一エントリポイント `apply_damage_to_creature(victim, damage, ctx)`
-は `src/combat/damage-dispatcher.{h,cpp}` に実装済み（`is_player()` で
-内部的に `take_hit()` / `MonsterDamageProcessor::mon_take_hit()` に
-振り分ける薄いディスパッチャ）。
+共通基盤は既に整備済み:
 
-**残タスク:**
-- 既存の直接呼出 (`take_hit(creature, ...)` が約 200 箇所) を順次
-  `apply_damage_to_creature(...)` に移行
-- `on_death()` / `on_take_hit()` の virtual フックは既に
-  `CreatureEntity` に追加済み（`src/system/creature-entity.h:411-436`）
+- `CreatureEntity::apply_raw_damage(damage)` が HP 減算と `on_take_hit()`
+  呼出を行う共通プリミティブとして実装済み。`take_hit()` (プレイヤー経路)
+  と `MonsterDamageProcessor::mon_take_hit()` (モンスター経路) の両方から
+  呼ばれる
+- `on_take_hit(damage)` / `on_death(cause)` は `CreatureEntity` の
+  virtual フックとして実装済み。`PlayerType` が自身のセーブ・ゲームオーバー
+  処理等をこれで行う（`src/player/player-damage.cpp`）
+
+呼出経路は依然プレイヤー専用 (`take_hit`) とモンスター専用
+(`MonsterDamageProcessor`) に分かれているが、これは両者の副次処理
+（プレイヤー: ダメージタイプ別 autosave / インベントリ破壊 / モンスター:
+死亡ドロップ / 経験値 / アライアンス更新）が本質的に異なるためで、
+単一ディスパッチャにまとめても call site は型を分けて使い分ける必要がある。
+
+**当初 `src/combat/damage-dispatcher.{h,cpp}` に薄いディスパッチャ関数
+`apply_damage_to_creature()` を用意していたが、どの call site でも
+自分の被害者型を既に把握しており利用されなかったため削除した。**
+新規コードで被害者型が実行時に不定となるケース（稀）が発生した場合は、
+`is_player()` で分岐して `take_hit()` / `MonsterDamageProcessor` を
+呼び分けるのが現状の方針。
 
 ### Phase 5: AC・防御の統一 ✅ 完了
 
