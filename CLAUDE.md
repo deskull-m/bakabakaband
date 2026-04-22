@@ -3,7 +3,10 @@
 ## プロジェクト概要
 
 bakabakaband は Hengband をベースにした日本語ローグライクゲーム（C++）。
-現在の最重要課題は **PlayerType / MonsterEntity の CreatureEntity への統合リファクタリング**。
+Hengband 派生プロジェクトとして、プレイヤー（`PlayerType`）とモンスター
+(かつての `MonsterEntity`) を共通の `CreatureEntity` スーパークラスで
+扱えるようにする **CreatureEntity 統合リファクタリング** が長期方針として
+進行しており、現在は概ね完了している（詳細はロードマップ節参照）。
 
 ---
 
@@ -11,17 +14,27 @@ bakabakaband は Hengband をベースにした日本語ローグライクゲー
 
 ### 目的
 
-プレイヤー（`PlayerType`）とモンスター（`MonsterEntity`）を共通の `CreatureEntity` スーパークラスで扱えるようにし、ダメージ処理・状態効果・行動 AI などのロジックを両者で共通化する。
+プレイヤー（`PlayerType`）とモンスター（旧 `MonsterEntity`）を共通の
+`CreatureEntity` スーパークラスで扱えるようにし、ダメージ処理・状態効果・
+行動 AI などのロジックを両者で共通化する。
 
-**最終目標:** `MonsterEntity` を `CreatureEntity` に完全吸収し、モンスター固有データは別の軽量構造体（`MonsterProfile` 的な位置づけ）に分離する。将来的にはモンスターも `CreatureEntity` 単体で表現できる状態を目指す。
+**最終目標:** `MonsterEntity` を `CreatureEntity` に完全吸収し、
+モンスター固有データは `MonsterProfile` 構造体に分離する。
 
-### クラス階層
+→ 現状 `MonsterEntity` クラスは既に削除済み。モンスターは
+`CreatureEntity` インスタンスとして `monster_profile`
+(`tl::optional<MonsterProfile>`) を伴って存在する。
+
+### クラス階層（現状）
 
 ```
 CreatureEntity  (基底クラス)  src/system/creature-entity.h
-├── PlayerType               src/system/player-type-definition.h
-└── MonsterEntity            src/system/monster-entity.h
+└── PlayerType               src/system/player-type-definition.h
 ```
+
+モンスターは `CreatureEntity` を直接インスタンス化し、
+`CreatureEntity::monster_profile` に `MonsterProfile`
+（`src/system/monster-profile.h`）を詰めて使用する。
 
 ### 純粋仮想メソッド（必ず両クラスで実装）
 
@@ -63,21 +76,27 @@ void some_function(CreatureEntity &creature);
 
 新規関数、または既存関数を修正する際は可能な限り `CreatureEntity &` を使うこと。
 
-### 型キャスト
+### 型キャスト・型分岐
 
-型の分岐が必要な場合は `is_player()` で判定してからキャストする：
+型の分岐が必要な場合は `is_player()` で判定する：
 
 ```cpp
 if (creature.is_player()) {
     auto &player = static_cast<PlayerType &>(creature);
-    // プレイヤー固有の処理
+    // プレイヤー固有の処理（class_specific_data 等にアクセスしたい場合など）
 } else {
-    auto &monster = static_cast<MonsterEntity &>(creature);
     // モンスター固有の処理
+    auto &profile = creature.get_monster_profile(); // MonsterProfile
+    // ...
 }
 ```
 
-キャストは最小限に。可能な限りバーチャルメソッドで処理すること。
+`MonsterEntity` クラスは既に廃止済みのため、モンスター側は
+`creature.get_monster_profile()` 経由で固有データ (`MonsterProfile`) に
+アクセスする。`CreatureEntity` 基底からキャストする必要はない。
+
+キャストは最小限に。可能な限り virtual メソッド (`is_confused()` /
+`get_timed_effect()` / `is_pet()` 等) で処理すること。
 
 ### GCC ビルド注意事項
 
@@ -95,101 +114,106 @@ tl::optional<MonraceId> select_pit_nest_monrace_id(CreatureEntity &creature, uin
 
 ---
 
-## 残タスク ロードマップ
+## 統合ロードマップ進捗
 
-### Phase 1: 関数シグネチャの統一（継続中）
+### Phase 1: 関数シグネチャの統一 ✅ 完了
 
-`PlayerType *player_ptr` を引数に取る関数を `CreatureEntity &creature` に変更する。
+`PlayerType *player_ptr` を引数に取る関数を `CreatureEntity &creature` に
+変更する作業は完了済み。
 
-**手順:**
-1. `grep -r "PlayerType \*" src/` で対象を列挙
-2. 関数の呼び出し元を確認
-3. `PlayerType *player_ptr` → `CreatureEntity &creature` に変更
-4. 内部の `player_ptr->` アクセスを `creature.` に変更
-5. `PlayerType` 固有機能が必要な箇所のみキャストを使用
-6. PR は機能単位（例：`do_cmd_xxx` 系、`spell_xxx` 系）でまとめる
+- `PlayerType *player_ptr` 引数は `PlayerType::get_instance_ptr()` の
+  静的アクセサ以外には存在しない
+- `player_ptr` / `p_ptr` 識別子はローカル変数・クラスメンバ・doxygen
+  コメントまで含めて全て `creature` / `creature_ptr` に統一済み
 
-### Phase 2: 状態チェックの仮想化
+新規コードでは引き続き `CreatureEntity &creature` を基本形とすること。
 
-`MonsterEntity` には `is_confused()`, `is_stunned()`, `is_fearful()`, `is_invulnerable()` 等が実装済み。
-これらを `CreatureEntity` の仮想メソッドとして定義し、`PlayerType` にも実装することで両者で共通に扱えるようにする。
+### Phase 2: 状態チェックの仮想化 ✅ 完了
 
-```cpp
-// CreatureEntity に追加予定
-virtual bool is_stunned() const = 0;
-virtual bool is_confused() const = 0;
-virtual bool is_fearful() const = 0;
-virtual bool is_invulnerable() const = 0;
-```
+`is_confused()`, `is_stunned()`, `is_fearful()`, `is_invulnerable()`,
+`is_blind()`, `is_paralyzed()`, `is_fast()`, `is_accelerated()`,
+`is_decelerated()`, `is_blessed()`, `is_hero()`, `is_shero()`,
+`is_asleep()` 等はすべて `CreatureEntity` の virtual メソッドとして
+実装済み（`src/system/creature-entity.h`）。
 
-### Phase 3: タイムドエフェクトの統一
+旧 `is_hero(player_ptr)` / `is_blessed(creature)` 等の自由関数は削除済み
+(13 個)。全ての呼出は `creature.is_hero()` 形式に移行済み。
 
-**現状の不一致:**
-- `PlayerType` のタイムドエフェクトは `CreatureEntity` の直接フィールド（`hero`, `invuln` 等）
-- `MonsterEntity` は `std::map<MonsterTimedEffect, short> mtimed` で管理
+### Phase 3: タイムドエフェクトの統一 ✅ 完了
 
-**方針（検討中）:**
-- 共通インターフェースとして `get_timed_effect(type)` / `set_timed_effect(type, value)` 仮想メソッドを定義
-- または統一列挙型 `CreatureTimedEffect` を作成して両者を同一 map で管理
+全てのタイムドエフェクトは `CreatureEntity::timed_effects_map`
+（`std::map<CreatureTimedEffect, TIME_EFFECT>`）に集約済み。
 
-### Phase 4: ダメージ処理の完全統一
+- 共通列挙型: `CreatureTimedEffect`（`src/system/creature-timed-effect-types.h`）
+- 共通 API: `get_timed_effect(effect)` / `set_timed_effect(effect, value)`
+  (virtual, プレイヤー側は特定効果のみ `TimedEffects` オブジェクト経由)
+- プレイヤーの旧 41 個の直接 `TIME_EFFECT` フィールド (`hero` / `invuln` 等)
+  および `word_recall` / `alter_reality` は削除済み
+- モンスター側の旧 `MonsterProfile::mtimed` も削除済み
+- 全セーブ/ロード・ステータスセッター等が統一 API 経由で動作
 
-**現状:**
-- プレイヤー: `take_hit(CreatureEntity &, int damage_type, int damage, ...)` in `player-damage.cpp`
-- モンスター: `MonsterDamageProcessor(CreatureEntity &).mon_take_hit(...)` in `monster-damage.cpp`
+### Phase 4: ダメージ処理の完全統一 🟡 進行中
 
-**目標:** 単一のエントリポイントから両者を処理できるようにする。
-死亡処理・落とすアイテム・メッセージ等の副作用は仮想メソッドに委譲：
+統一エントリポイント `apply_damage_to_creature(victim, damage, ctx)`
+は `src/combat/damage-dispatcher.{h,cpp}` に実装済み（`is_player()` で
+内部的に `take_hit()` / `MonsterDamageProcessor::mon_take_hit()` に
+振り分ける薄いディスパッチャ）。
 
-```cpp
-// CreatureEntity に追加予定
-virtual void on_death(std::string_view cause) = 0;
-virtual void on_take_hit(int damage) {}
-```
+**残タスク:**
+- 既存の直接呼出 (`take_hit(creature, ...)` が約 200 箇所) を順次
+  `apply_damage_to_creature(...)` に移行
+- `on_death()` / `on_take_hit()` の virtual フックは既に
+  `CreatureEntity` に追加済み（`src/system/creature-entity.h:411-436`）
 
-### Phase 5: AC・防御の統一
+### Phase 5: AC・防御の統一 ✅ 完了
 
-`MonsterEntity::get_ac()` が実装済み。`CreatureEntity` の仮想メソッドとして昇格させる。
+`get_ac()` は `CreatureEntity` の virtual メソッドとして既に実装済み
+（`src/system/creature-entity.{h,cpp}`）。`ac + to_a` をベースに
+モンスターの `NAKED` フラグ等も考慮する。
 
-```cpp
-// CreatureEntity に追加予定
-virtual int get_ac() const = 0;
-```
+### Phase 6: フロアポインタの整理 ✅ 完了
 
-### Phase 6: フロアポインタの整理
-
-`current_floor_ptr` が `MonsterEntity` の直接フィールドとして残存。
-`get_floor()` 仮想メソッドは既に `CreatureEntity` に存在するので、各サブクラスでの実装を整理する。
+`current_floor_ptr` は `CreatureEntity` の protected メンバに整理され、
+アクセスは全て `get_floor()` / `set_floor()` virtual メソッド経由。
+直接参照は残っていない。
 
 ---
 
-## MonsterEntity 固有フィールドの扱い方針
+## モンスター固有フィールドの扱い方針
 
-モンスター固有フィールドは最終的に以下の方針で整理する。
+モンスター固有フィールドは `MonsterProfile`
+(`src/system/monster-profile.h`) に集約する方針。
 
-### Phase 7: 汎用化できるフィールドを CreatureEntity に移動
+### Phase 7: 汎用化できるフィールドを CreatureEntity に移動 ✅ 完了
 
-| フィールド | 移動方針 |
+| フィールド | 状況 |
 |---|---|
-| `cdis` | テンポラリ変数。`get_floor()` 経由で計算に変更し削除 |
-| `target_y`, `target_x` | `CreatureEntity` に汎用 `target` 座標として移動 |
-| `mflag` (一部) | `CreatureEntity` の汎用フラグ（ペット・フレンドリー等）として移動 |
+| `cdis` | 既にテンポラリ化 (`Grid::calc_distance(...)` 経由のローカル変数) |
+| `target_y`, `target_x` | `CreatureEntity::target`（`Pos2D`）として統合済み |
+| `mflag` (ペット/フレンドリー等) | `is_pet()` / `is_friendly()` / `is_hostile()` を
+  `CreatureEntity` の virtual メソッドとして提供、実体は `MonsterProfile::mflag2` |
 
-### Phase 8: MonsterEntity の完全吸収
+### Phase 8: MonsterEntity の完全吸収 ✅ 完了
 
-最終目標として `MonsterEntity` クラスそのものを廃止し、モンスター固有データを別構造体に切り出す。
-
-**方針:**
-- `MonsterEntity` の残存フィールドを `MonsterSpecificData` 的な構造体にまとめ、`CreatureEntity` の `optional<MonsterSpecificData>` として保持する
-- または `MonsterProfile` として `MonraceDefinition` 側に置き、`CreatureEntity` から `MonraceId` で参照する
+`MonsterEntity` クラスは削除済み。モンスターは `CreatureEntity` インスタンス
+として生成され、固有データは `CreatureEntity::monster_profile`
+(`tl::optional<MonsterProfile>`) に詰める。
 
 ```
-// 最終形イメージ
+// 現状
 CreatureEntity
-├── 共通フィールド（HP, 座標, 速度, 状態...）
-├── optional<PlayerProfile>   // プレイヤー固有データ
-└── optional<MonsterProfile>  // モンスター固有データ（alliance, smart 等）
+├── 共通フィールド（HP, 座標, 速度, 状態, timed_effects_map, ...）
+├── std::shared_ptr<TimedEffects> timed_effects
+│       (プレイヤー用 TimedEffects オブジェクト。stun / confusion 等の
+│        高機能タイマー。モンスターでは nullptr)
+└── tl::optional<MonsterProfile> monster_profile
+        (モンスター固有データ: alliance_idx / mflag / smart /
+         hold_o_idx_list 等)
 ```
+
+今後の残作業としては、プレイヤー固有データを明示的に `PlayerProfile`
+構造体に分離し `CreatureEntity::player_profile` として保持させる形に
+するかを検討（現状はプレイヤー固有フィールドも `CreatureEntity` 直下に残存）。
 
 **移行しない（モンスター種族定義側に残す）フィールド:**
 
@@ -444,11 +468,17 @@ EOF
    アクセサ必須。`.current_floor_ptr` を `.get_floor()` に、`*creature.current_floor_ptr` を
    `*creature.get_floor()` に変換する。
 
-3. **TIME_EFFECT フィールドは `protected`**: 外部コードからは get/set アクセサ経由でないと
-   コンパイルエラーとなる。
+3. **直接 TIME_EFFECT フィールドの廃止**: 上流の
+   `creature.hero` / `creature.invuln` / `creature.oppose_fire` 等の
+   直接フィールド、および `creature.word_recall` / `creature.alter_reality`
+   は bakabakaband では削除済み。全て `creature.get_timed_effect(...)` /
+   `creature.set_timed_effect(...)` 経由で扱うこと。ストレージは
+   `CreatureEntity::timed_effects_map` に集約されている。
 
-4. **`MonsterTimedEffect` enum の廃止**: 上流にはこの enum があるが bakabakaband では削除済み。
-   `CreatureTimedEffect` に統合されているので対応する値にマッピングする。
+4. **`MonsterTimedEffect` enum および `MonsterProfile::mtimed` の廃止**:
+   上流にはこれらがあるが bakabakaband では削除済み。`CreatureTimedEffect`
+   に統合されており、プレイヤー・モンスターとも `timed_effects_map`
+   を共有する。
 
 5. **グローバル `p_ptr` の廃止**: bakabakaband では `extern PlayerType *p_ptr` が存在しない。
    `PlayerType::get_instance()` に置換する必要がある。
