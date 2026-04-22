@@ -748,7 +748,7 @@ bool is_monster(MONSTER_IDX m_idx)
 
 /*!
  * @brief モンスターを指定位置へ移動する（ノックバック・地震逃げ共通処理）
- * @param creature プレイヤー（視点クリーチャー）
+ * @param creature 視点クリーチャー（通常プレイヤー）
  * @param monster 移動するモンスター
  * @param pos_to 移動先座標
  */

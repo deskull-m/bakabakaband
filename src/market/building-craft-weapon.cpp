@@ -292,7 +292,8 @@ static void list_weapon(CreatureEntity &creature, const ItemEntity &item, TERM_L
  * @details
  * Copies the weapons to compare into the weapon-slot and\n
  * compares the values for both weapons.\n
- * 武器1つだけでcreature プレイヤーへの参照
+ * 武器1つだけの場合も扱う.
+ * @param creature クリーチャーへの参照
  * @param bcost 基本鑑定費用
  * @return 最終的にかかった費用
  */
