@@ -3,7 +3,10 @@
 ## プロジェクト概要
 
 bakabakaband は Hengband をベースにした日本語ローグライクゲーム（C++）。
-現在の最重要課題は **PlayerType / MonsterEntity の CreatureEntity への統合リファクタリング**。
+Hengband 派生プロジェクトとして、プレイヤー（`PlayerType`）とモンスター
+(かつての `MonsterEntity`) を共通の `CreatureEntity` スーパークラスで
+扱えるようにする **CreatureEntity 統合リファクタリング** が長期方針として
+進行しており、現在は概ね完了している（詳細はロードマップ節参照）。
 
 ---
 
@@ -11,17 +14,27 @@ bakabakaband は Hengband をベースにした日本語ローグライクゲー
 
 ### 目的
 
-プレイヤー（`PlayerType`）とモンスター（`MonsterEntity`）を共通の `CreatureEntity` スーパークラスで扱えるようにし、ダメージ処理・状態効果・行動 AI などのロジックを両者で共通化する。
+プレイヤー（`PlayerType`）とモンスター（旧 `MonsterEntity`）を共通の
+`CreatureEntity` スーパークラスで扱えるようにし、ダメージ処理・状態効果・
+行動 AI などのロジックを両者で共通化する。
 
-**最終目標:** `MonsterEntity` を `CreatureEntity` に完全吸収し、モンスター固有データは別の軽量構造体（`MonsterProfile` 的な位置づけ）に分離する。将来的にはモンスターも `CreatureEntity` 単体で表現できる状態を目指す。
+**最終目標:** `MonsterEntity` を `CreatureEntity` に完全吸収し、
+モンスター固有データは `MonsterProfile` 構造体に分離する。
 
-### クラス階層
+→ 現状 `MonsterEntity` クラスは既に削除済み。モンスターは
+`CreatureEntity` インスタンスとして `monster_profile`
+(`tl::optional<MonsterProfile>`) を伴って存在する。
+
+### クラス階層（現状）
 
 ```
 CreatureEntity  (基底クラス)  src/system/creature-entity.h
-├── PlayerType               src/system/player-type-definition.h
-└── MonsterEntity            src/system/monster-entity.h
+└── PlayerType               src/system/player-type-definition.h
 ```
+
+モンスターは `CreatureEntity` を直接インスタンス化し、
+`CreatureEntity::monster_profile` に `MonsterProfile`
+（`src/system/monster-profile.h`）を詰めて使用する。
 
 ### 純粋仮想メソッド（必ず両クラスで実装）
 
