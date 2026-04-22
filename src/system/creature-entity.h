@@ -1165,7 +1165,7 @@ public:
     ENERGY enchant_energy_need{}; /* Energy needed for next upkeep effect	 */
 
     /*
-     * p_ptr->special_attackによるプレイヤーの攻撃状態の定義 / Bit flags for the "p_ptr->special_attack" variable. -LM-
+     * creature.special_attackによるプレイヤーの攻撃状態の定義 / Bit flags for the "creature.special_attack" variable. -LM-
      *
      * Note:  The elemental and poison attacks should be managed using the
      * function "set_ele_attack", in spell2.c.  This provides for timeouts and
