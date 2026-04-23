@@ -5,82 +5,88 @@ Phase 1-8 完了後に残存している統合作業項目を整理したもの�
 新規の統合作業を行う際の指針として参照すること。
 
 作業着手時は該当提案の Issue を立てるか、既存の変愚マージ ISSUE と
-区別可能なタイトル（例: `refactor: PlayerProfile 抽出`）で PR を作成する。
+区別可能なタイトル（例: `refactor: TimedEffects 一本化`）で PR を作成する。
 
 ---
 
-## 提案 1: `PlayerProfile` 抽出（最優先・最大の残タスク）
+## 設計方針: プレイヤー固有フィールドをモンスターにも開放する
+
+本プロジェクトの統合方針として、現状プレイヤー固有となっている
+パラメータ（種族・職業・性格・熟練度・魔法領域・突然変異・ESP 等）は
+**将来モンスターにも積極的に持たせて運用する**ことを想定する。
+したがって `PlayerProfile` のようにプレイヤー専用構造体へ切り出して
+モンスターから隔離する方向は取らない。
+
+言い換えると、これらのフィールドは `CreatureEntity` 直下に保持したまま、
+モンスター側もこれらを活用できる形に発展させていく。モンスターの
+デフォルト値（`prace = HUMAN` 等）は意味不明ではなく「未設定時の
+便宜的な初期値」として扱い、必要なモンスターに対しては明示的に
+設定していく運用とする。
+
+この方針を前提に、以下の提案は「プレイヤー/モンスターで共通活用
+できるようにする」方向の作業のみを列挙する。
+
+---
+
+## 提案 1: プレイヤー専用フィールドのクリーチャー共通化
 
 ### 背景
 
-Phase 8 で `MonsterEntity` 吸収が完了し、モンスター固有データは
-`CreatureEntity::monster_profile` (`tl::optional<MonsterProfile>`) に
-集約された。一方でプレイヤー固有フィールドは依然 `CreatureEntity`
-基底クラス直下に 50+ 残存しており、モンスターインスタンスにとっては
-無意味な領域を消費している。
+現状 `CreatureEntity` 直下には、プレイヤー向けに設計された 50+ の
+フィールド（種族 / 職業 / 性格 / 熟練度 / 魔法領域 / 突然変異 /
+ESP 系 BIT_FLAGS 等）が残存している。モンスターでも将来運用する
+ためには、これらを単に残すだけでなく「モンスターからも読み書き
+可能で意味を持つ」形に整理する必要がある。
 
-また、`prace = PlayerRaceType::HUMAN` / `pclass = PlayerClassType::WARRIOR`
-等のデフォルト値がモンスターにも付与され、意味不明な状態になっている。
+### 対象フィールド
 
-### 方針
+| カテゴリ | フィールド | モンスター運用の想定 |
+|---|---|---|
+| 種族/職業/性格 | `prace`, `pclass`, `ppersonality`, `psex` | 特殊個体（ユニーク / 召喚された英雄系）の種族職業付与 |
+| 熟練度 | `spell_exp[]`, `weapon_exp[][]`, `skill_exp[]` | 経験を積むモンスター・成長するボス |
+| 魔法領域 | `realm1`, `realm2`, `element_realm` | 魔法使い系モンスターのスペル選択根拠 |
+| 突然変異 | `muta`, `trait`, `patron` | 変異個体・カオスパトロン配下 |
+| キャラクタ履歴 | `old_race1/2`, `old_realm`, `history[4][60]`, `player_hp[PY_MAX_LEVEL]` | モンスターのレベル成長履歴 |
+| ESP/特殊能力 BIT_FLAGS | `telepathy`, `esp_*`, `cursed`, `special_defense`, `special_attack`, `dec_mana`, `easy_spell` 等 | モンスターの ESP / 呪い装備 / 特殊攻撃防御 |
+| 休息/旅行 | `resting`, `running`, `action` | モンスターの待機・徘徊行動状態 |
+| その他 | `class_specific_data`, `old_*` 差分検出キャッシュ | 状態キャッシュはそのままクリーチャー共通で利用 |
 
-`MonsterProfile` と対称な `PlayerProfile` 構造体を新設し、
-`CreatureEntity::player_profile` (`tl::optional<PlayerProfile>`) として保持する。
+### 作業方針
 
-```
-CreatureEntity
-├── 共通フィールド (HP, 座標, 速度, timed_effects_map, ...)
-├── std::shared_ptr<TimedEffects> timed_effects
-├── tl::optional<MonsterProfile> monster_profile  (モンスター時のみ)
-└── tl::optional<PlayerProfile> player_profile    (プレイヤー時のみ) ← 新規
-```
-
-### 移動候補フィールド
-
-| カテゴリ | フィールド |
-|---|---|
-| 種族/職業/性格 | `prace`, `pclass`, `ppersonality`, `psex`, `race`/`personality`/`pclass_ref` ポインタ |
-| 熟練度 | `spell_exp[]`, `weapon_exp[][]`, `skill_exp[]` |
-| 魔法領域 | `realm1`, `realm2`, `element_realm` |
-| 突然変異 | `muta`, `trait`, `patron` |
-| キャラクタ履歴 | `old_race1/2`, `old_realm`, `history[4][60]`, `player_hp[PY_MAX_LEVEL]` |
-| ESP/特殊能力 BIT_FLAGS | `telepathy`, `esp_*`, `cursed`, `special_defense`, `special_attack`, `dec_mana`, `easy_spell` 等 |
-| 休息/旅行 | `resting`, `running`, `action` |
-| その他 | `class_specific_data`, 各種 `old_*` 差分検出キャッシュ |
-
-### 想定される影響範囲
-
-- `PlayerType` 自身のフィールドアクセスは `this->player_profile->xxx` に変更
-- 既存の `creature.prace` 等の直接参照は `creature.get_player_profile().prace` 等の経由に
-- セーブ/ロード処理の大規模改修（`PlayerType` の load/save は `PlayerProfile` 経由に）
-- 巨大 diff になるため段階的 PR 推奨（種族/職業系 → 熟練度 → BIT_FLAGS → ...）
+1. **フィールドを移動しない。** モンスターからのアクセスが可能な
+   前提を整備する。具体的には以下:
+   - 初期値の妥当性を再検討（`prace = HUMAN` を `NONE` / `UNDEFINED`
+     相当に変更するなど、モンスターデフォルト時に無意味な挙動を
+     引き起こさない値にする）
+   - アクセサを `CreatureEntity` に virtual で統一提供し、
+     モンスターでも安全に呼べる状態にする
+2. モンスター専用のデフォルト動作（「prace 未設定なら種族ベースの
+   効果は発動しない」等）をフィールド読取り関数にガードとして
+   組み込み、今後のモンスター運用でオプトインできる形にする
 
 ### 期待効果
 
-- モンスターインスタンスのメモリ削減
-- 意味不明なデフォルト値解消
-- `is_player()` 判定で安全に `player_profile` アクセス可能に
-- コード可読性向上（プレイヤー専用か否かが型レベルで明確に）
+- プレイヤー / モンスターの区別なくフィールドが利用できる
+- モンスターに種族・職業・熟練度等の概念を導入する下地が整う
+- コード分岐（`if (creature.is_player()) ...`）の削減
 
 ---
 
-## 提案 2: プレイヤー専用仮想メソッドの追加による安全化
+## 提案 2: プレイヤー専用仮想メソッドのクリーチャー共通化
 
 ### 背景
 
 Phase 2 で基本的な状態チェックは virtual 化済みだが、モンスターから
 呼ぶとクラッシュ／不定値を返す関数が残存している可能性がある。
-
-特に Proposal 1 の PlayerProfile 抽出と併せて、アクセサを virtual 化して
-モンスター側では安全なデフォルト値（`std::nullopt` / `0` / `false`）を
-返すようにする必要がある。
+提案 1 の共通化方針に沿い、これらも `CreatureEntity` の virtual に
+昇格させてモンスターからも意味のある結果を返すようにする。
 
 ### 候補メソッド
 
 - HP/MP 自動回復判定関数群
 - 祝福/呪い関連判定 (`is_cursed_item_used()` 等)
 - ESP 判定 (`has_esp()`, `has_esp_evil()`, `has_esp_undead()` 等)
-- `get_race()`, `get_class()`, `get_personality()` (既存があれば null-safe 化)
+- `get_race()`, `get_class()`, `get_personality()` の null-safe 化
 - `has_special_attack(flag)`, `has_special_defense(flag)`
 
 ### 作業方針
@@ -88,6 +94,8 @@ Phase 2 で基本的な状態チェックは virtual 化済みだが、モンス
 1. `CreatureEntity` に virtual 版を追加、デフォルト実装で安全値を返す
 2. `PlayerType` でオーバーライドして既存ロジック
 3. 呼出側の `is_player()` チェックを徐々に削減
+4. モンスター側の固有実装が必要になったタイミングで `MonsterProfile`
+   経由のロジックを virtual オーバーライドとして追加
 
 ---
 
@@ -132,8 +140,9 @@ Phase 2 で主要な `is_xxx()` 系は仮想化済みだが、以下はまだ自
 ### 作業方針
 
 モンスターにも意味がある判定については `CreatureEntity` の virtual メソッド化。
-プレイヤー専用の判定は `PlayerType` 側に維持しつつ、呼出側を
-`is_player()` 分岐で保護するか、デフォルト false を返す virtual に。
+モンスター側は現時点で対応ロジックがない場合でも、デフォルト実装で
+安全値を返す形にしておき、将来モンスター固有ロジックを差し込める
+状態にしておく。
 
 ---
 
@@ -160,13 +169,13 @@ Phase 2 で主要な `is_xxx()` 系は仮想化済みだが、以下はまだ自
   - 全クリーチャーに shared_ptr が付与される（メモリコスト増）
   - 分岐ロジックが消える
   - `TimedEffects` 内のメッセージ処理等をプレイヤー専用部分から分離する必要あり
+  - 提案 1 の「プレイヤー専用フィールドをモンスターにも開放する」方針とも整合
 
-### 推奨: (a)
+### 推奨: (b)
 
-`timed_effects_map` 側が既に全 enum 対応済みで共通基盤。
-`TimedEffects` の各効果クラス（`PlayerStun` 等）のロジックを
-共通関数（例: `CreatureEntity::process_stun_tick()`）として切り出し、
-マップ側に統合する方針。
+本書の設計方針に合わせ、モンスターにも `TimedEffects` オブジェクトを
+持たせて運用する方向で統一する。メッセージ処理・ティック処理の
+プレイヤー依存部分は virtual メソッド経由で差し替え可能にしておく。
 
 ---
 
@@ -183,7 +192,7 @@ Phase 2 で主要な `is_xxx()` 系は仮想化済みだが、以下はまだ自
 | 現名称 | 候補名 | 備考 |
 |---|---|---|
 | `csp` / `msp` | `current_mp` / `max_mp` | モンスターが MP 使用する設計拡張時に有効 |
-| `exp` / `max_exp` / `max_max_exp` | モンスターは未使用 | PlayerProfile 送り候補でもある |
+| `exp` / `max_exp` / `max_max_exp` | そのままクリーチャー共通で | モンスター側も経験値概念を将来運用 |
 | `hp_frac` / `csp_frac` | `hp_fraction` / `mp_fraction` | 可読性のみ |
 
 ### 注意
@@ -196,15 +205,14 @@ Phase 2 で主要な `is_xxx()` 系は仮想化済みだが、以下はまだ自
 
 ## 推奨実施順序
 
-1. **提案 1** - PlayerProfile 抽出（段階的 PR、最大規模）
-2. **提案 2** - プレイヤー専用 virtual メソッド追加（提案 1 と並行可）
+1. **提案 1** - プレイヤー専用フィールドのクリーチャー共通化（初期値・アクセサ整備）
+2. **提案 2** - プレイヤー専用 virtual メソッドの共通化（提案 1 と並行可）
 3. **提案 5** - TimedEffects 二重管理解消
 4. **提案 4** - 残存状態チェック関数の仮想化
 5. **提案 3** - `PlayerType::get_instance()` 削減
 6. **提案 6** - フィールド命名統一（最後）
 
-各提案は独立した PR として進めること。提案 1 は段階的 PR 必須
-（一度に全フィールドを移すと diff が追えなくなる）。
+各提案は独立した PR として進めること。
 
 ---
 
@@ -215,3 +223,6 @@ Phase 2 で主要な `is_xxx()` 系は仮想化済みだが、以下はまだ自
 - 提案を統合・分割する場合は変更履歴をコメントで残す
 - ビルド確認は必ず `sh .github/scripts/ci-build-test.sh` で実施
 - 変愚マージ作業との競合に注意（`CLAUDE.md` の「変愚蛮怒（上流）からのマージ指針」節参照）
+- **プレイヤー固有フィールドを `PlayerProfile` 等に切り出してモンスター
+  から隔離する方向は取らない。** モンスターにも共通で持たせていく
+  方針を維持すること。
