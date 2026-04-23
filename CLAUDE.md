@@ -227,6 +227,12 @@ CreatureEntity
 構造体に分離し `CreatureEntity::player_profile` として保持させる形に
 するかを検討（現状はプレイヤー固有フィールドも `CreatureEntity` 直下に残存）。
 
+**残タスク詳細は [`docs/creature-entity-refactoring-roadmap.md`](docs/creature-entity-refactoring-roadmap.md) 参照。**
+Phase 1-8 完了後の継続提案（PlayerProfile 抽出、プレイヤー専用
+仮想メソッド追加、TimedEffects 二重管理解消等）を同書で管理する。
+新規の統合作業に着手する際は先に同書を参照し、作業完了後は同書と
+本ファイルの両方に進捗を反映すること。
+
 **移行しない（モンスター種族定義側に残す）フィールド:**
 
 | フィールド | 残す場所 |
