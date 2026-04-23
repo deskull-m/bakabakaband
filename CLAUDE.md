@@ -223,9 +223,17 @@ CreatureEntity
          hold_o_idx_list 等)
 ```
 
-今後の残作業としては、プレイヤー固有データを明示的に `PlayerProfile`
-構造体に分離し `CreatureEntity::player_profile` として保持させる形に
-するかを検討（現状はプレイヤー固有フィールドも `CreatureEntity` 直下に残存）。
+今後の残作業としては、現在 `CreatureEntity` 直下に残存するプレイヤー
+固有フィールド群（種族・職業・熟練度・ESP 等）を、モンスターにも
+共通で持たせて運用できる形に整備していく方針。プレイヤー専用構造体
+（`PlayerProfile` のようなもの）に切り出してモンスターから隔離する
+方向は取らない。
+
+**残タスク詳細は [`docs/creature-entity-refactoring-roadmap.md`](docs/creature-entity-refactoring-roadmap.md) 参照。**
+Phase 1-8 完了後の継続提案（プレイヤー専用フィールドのクリーチャー
+共通化、プレイヤー専用仮想メソッドの共通化、TimedEffects 二重管理
+解消等）を同書で管理する。新規の統合作業に着手する際は先に同書を
+参照し、作業完了後は同書と本ファイルの両方に進捗を反映すること。
 
 **移行しない（モンスター種族定義側に残す）フィールド:**
 
