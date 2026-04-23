@@ -4,6 +4,7 @@
 #include "game-option/birth-options.h"
 #include "inventory/inventory-slot-types.h"
 #include "market/arena-entry.h"
+#include "mind/mind-elementalist.h"
 #include "monster-race/race-kind-flags.h"
 #include "monster-race/race-sex-const.h"
 #include "monster/monster-flag-types.h"
@@ -19,6 +20,7 @@
 #include "player-info/spell-hex-data-type.h"
 #include "player/race-info-table.h"
 #include "realm/realm-song-numbers.h"
+#include "realm/realm-types.h"
 #include "system/angband-system.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -1008,6 +1010,16 @@ void CreatureEntity::init_monster_profile()
     for (const auto mte : MONSTER_TIMED_EFFECT_LIST) {
         this->set_timed_effect(mte, 0);
     }
+
+    // プレイヤー固有フィールドのデフォルト値（HUMAN / WARRIOR 等）は
+    // モンスターに対して意味をなさないため、明示的に無効値に初期化する。
+    // 将来モンスターにも種族・職業・魔法領域を持たせて運用する際は、
+    // 対応する MonsterProfile 側の設定値からここに反映させる。
+    this->prace = PlayerRaceType::NONE;
+    this->pclass = PlayerClassType::NONE;
+    this->realm1 = RealmType::NONE;
+    this->realm2 = RealmType::NONE;
+    this->element_realm = ElementRealmType::NONE;
 }
 
 void CreatureEntity::wipe()
