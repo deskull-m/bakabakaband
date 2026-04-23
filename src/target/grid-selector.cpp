@@ -41,7 +41,7 @@ static std::vector<Pos2D> tgt_pt_prepare(CreatureEntity &creature)
     std::vector<Pos2D> positions;
     const auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
-    const auto is_hallucinated = creature.effects()->hallucination().is_hallucinated();
+    const auto is_hallucinated = creature.is_hallucinated();
     for (const auto &pos : floor.get_area(FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         if (pos == p_pos) {
             positions.push_back(pos);

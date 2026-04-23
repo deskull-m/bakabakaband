@@ -381,7 +381,7 @@ void do_cmd_pet(CreatureEntity &creature)
     power_desc[num] = _("ペットを放す", "dismiss pets");
     powers[num++] = PET_DISMISS;
 
-    const auto is_hallucinated = creature.effects()->hallucination().is_hallucinated();
+    const auto is_hallucinated = creature.is_hallucinated();
     const auto taget_of_pet = creature.get_floor()->get_monster(creature.pet_t_m_idx).get_appearance_monrace().name.data();
     const auto target_of_pet_appearance = is_hallucinated ? _("何か奇妙な物", "something strange") : taget_of_pet;
     const auto mes = _("ペットのターゲットを指定 (現在：%s)", "specify a target of pet (now:%s)");

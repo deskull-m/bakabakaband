@@ -1,9 +1,6 @@
 #include "system/player-type-definition.h"
-#include "inventory/inventory-slot-types.h"
 #include "system/creature-entity.h"
-#include "system/item-entity.h"
 #include "timed-effect/timed-effects.h"
-#include <range/v3/algorithm.hpp>
 
 /*!
  * @brief プレイヤー構造体実体 / Static player info record
@@ -11,12 +8,7 @@
  */
 static PlayerType p_body;
 
-PlayerType::PlayerType()
-{
-    this->inventory.resize(INVEN_TOTAL);
-    ranges::generate(this->inventory, [] { return std::make_shared<ItemEntity>(); });
-    this->timed_effects = std::make_shared<TimedEffects>();
-}
+PlayerType::PlayerType() = default;
 
 PlayerType &PlayerType::get_instance()
 {

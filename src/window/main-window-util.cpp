@@ -114,7 +114,7 @@ static void display_shortened_item_name(CreatureEntity &creature, const ItemEnti
 {
     auto item_name = describe_flavor(creature, item, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NAME_ONLY));
     auto attr = tval_to_attr[enum2i(item.bi_key.tval()) % 128];
-    if (creature.effects()->hallucination().is_hallucinated()) {
+    if (creature.is_hallucinated()) {
         attr = TERM_WHITE;
         item_name = _("何か奇妙な物", "something strange");
     }

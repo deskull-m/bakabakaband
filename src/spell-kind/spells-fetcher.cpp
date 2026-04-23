@@ -157,7 +157,7 @@ bool fetch_monster(CreatureEntity &creature)
     }
 
     if (monster.get_monster_profile().ml) {
-        if (!creature.effects()->hallucination().is_hallucinated()) {
+        if (!creature.is_hallucinated()) {
             LoreTracker::get_instance().set_trackee(monster.ap_r_idx);
         }
 

@@ -168,7 +168,7 @@ static void describe_target(CreatureEntity &creature, GridExamination *ge_ptr)
 
 static ProcessResult describe_hallucinated_target(CreatureEntity &creature, GridExamination *ge_ptr)
 {
-    if (!creature.effects()->hallucination().is_hallucinated()) {
+    if (!creature.is_hallucinated()) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 

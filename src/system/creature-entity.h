@@ -89,7 +89,7 @@ struct DeathRecord {
  */
 class CreatureEntity {
 public:
-    CreatureEntity() = default;
+    CreatureEntity();
     virtual ~CreatureEntity() = default;
 
     // コピー・ムーブを許可
@@ -654,6 +654,12 @@ public:
      * @return 盲目ならtrue（モンスターは常にfalse）
      */
     virtual bool is_blind() const;
+
+    /*!
+     * @brief クリーチャーが幻覚状態かどうかを判定
+     * @return 幻覚状態ならtrue（モンスターは常にfalse）
+     */
+    virtual bool is_hallucinated() const;
 
     /*!
      * @brief クリーチャーが麻痺しているかどうかを判定

@@ -38,7 +38,7 @@ bool target_able(CreatureEntity &creature, MONSTER_IDX m_idx)
         return false;
     }
 
-    if (creature.effects()->hallucination().is_hallucinated()) {
+    if (creature.is_hallucinated()) {
         return false;
     }
 
@@ -72,7 +72,7 @@ static bool target_set_accept(CreatureEntity &creature, const Pos2D &pos)
         return true;
     }
 
-    if (creature.effects()->hallucination().is_hallucinated()) {
+    if (creature.is_hallucinated()) {
         return false;
     }
 
@@ -173,7 +173,7 @@ void target_sensing_monsters_prepare(CreatureEntity &creature, std::vector<MONST
     monster_list.clear();
 
     // 幻覚時は正常に感知できない
-    if (creature.effects()->hallucination().is_hallucinated()) {
+    if (creature.is_hallucinated()) {
         return;
     }
 

@@ -36,7 +36,7 @@
 
 static bool process_mod_hallucination(CreatureEntity &creature, std::string_view m_name, const MonraceDefinition &monrace)
 {
-    if (!creature.effects()->hallucination().is_hallucinated()) {
+    if (!creature.is_hallucinated()) {
         return false;
     }
 
