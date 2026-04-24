@@ -911,7 +911,7 @@ bool cave_player_teleportable_bold(CreatureEntity &creature, POSITION y, POSITIO
     }
 
     if (terrain.flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP })) {
-        if (!creature.levitation && !creature.can_swim) {
+        if (!creature.has_levitation() && !creature.has_can_swim()) {
             return false;
         }
     }
@@ -926,7 +926,7 @@ bool cave_player_teleportable_bold(CreatureEntity &creature, POSITION y, POSITIO
     }
 
     /* Forbid shallow lava when the player don't have levitation */
-    return creature.levitation != 0;
+    return creature.has_levitation() != 0;
 }
 
 /*!
@@ -949,10 +949,10 @@ bool player_can_enter(CreatureEntity &creature, FEAT_IDX feature, BIT_FLAGS16 mo
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::CAN_FLY) && creature.levitation) {
+    if (terrain.flags.has(TerrainCharacteristics::CAN_FLY) && creature.has_levitation()) {
         return true;
     }
-    if (terrain.flags.has(TerrainCharacteristics::CAN_SWIM) && creature.can_swim) {
+    if (terrain.flags.has(TerrainCharacteristics::CAN_SWIM) && creature.has_can_swim()) {
         return true;
     }
     if (terrain.flags.has(TerrainCharacteristics::CAN_PASS) && has_pass_wall(creature)) {

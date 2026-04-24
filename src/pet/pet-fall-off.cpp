@@ -170,7 +170,7 @@ bool process_fall_off_horse(CreatureEntity &creature, int dam, bool force)
     };
     rfu.set_flags(flags_mwrf);
     auto fall_dam = false;
-    if (creature.levitation && !force) {
+    if (creature.has_levitation() && !force) {
         const auto m_name = monster_desc(creature, monster, 0);
         msg_format(_("%sから落ちたが、空中でうまく体勢を立て直して着地した。", "You are thrown from %s but make a good landing."), m_name.data());
     } else {

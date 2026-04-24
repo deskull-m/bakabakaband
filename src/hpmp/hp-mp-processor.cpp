@@ -68,13 +68,13 @@ static bool deal_damege_by_feat(CreatureEntity &creature, const Grid &grid, conc
         damage = 18000 + randint0(12000);
     } else if (terrain.flags.has(TerrainCharacteristics::DEEP)) {
         damage = 6000 + randint0(4000);
-    } else if (!creature.levitation) {
+    } else if (!creature.has_levitation()) {
         damage = 3000 + randint0(2000);
     }
 
     damage *= damage_rate(creature);
     damage /= 100;
-    if (creature.levitation) {
+    if (creature.has_levitation()) {
         damage /= 5;
     }
 
@@ -84,7 +84,7 @@ static bool deal_damege_by_feat(CreatureEntity &creature, const Grid &grid, conc
         return false;
     }
 
-    if (creature.levitation) {
+    if (creature.has_levitation()) {
         msg_print(msg_levitation);
         constexpr auto mes = _("%%s\u306e\u4e0a\u306b\u6d6e\u904a\u3057\u305f\u30c0\u30e1\u30fc\u30b8", "flying over %%s");
         take_hit(creature, DAMAGE_NOESCAPE, damage, format(mes, grid.get_terrain(TerrainKind::MIMIC).name.data()));
@@ -223,7 +223,7 @@ void process_player_hp_mp(CreatureEntity &creature)
     }
 
     const auto can_drown = terrain.flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP });
-    if (can_drown && !creature.levitation && !creature.can_swim && !has_resist_water(creature)) {
+    if (can_drown && !creature.has_levitation() && !creature.has_can_swim() && !has_resist_water(creature)) {
         if (calc_inventory_weight(creature) > calc_weight_limit(creature)) {
             msg_print(_("溺れている！", "You are drowning!"));
             take_hit(creature, DAMAGE_NOESCAPE, randint1(creature.level), _("溺れ", "drowning"));
@@ -232,7 +232,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::THORN) && !creature.levitation && !creature.is_invulnerable()) {
+    if (terrain.flags.has(TerrainCharacteristics::THORN) && !creature.has_levitation() && !creature.is_invulnerable()) {
         int damage;
         msg_print(_("棘に体が突き刺さっている！", "Your body is stuck in a thorn!"));
         if (calc_inventory_weight(creature) > calc_weight_limit(creature)) {

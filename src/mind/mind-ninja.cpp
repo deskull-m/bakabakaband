@@ -284,7 +284,7 @@ bool hayagake(CreatureEntity &creature)
 
     const auto &grid = creature.get_floor()->get_grid(creature.get_position());
     const auto &terrain = grid.get_terrain();
-    if (terrain.flags.has_not(TerrainCharacteristics::PROJECTION) || (!creature.levitation && terrain.flags.has(TerrainCharacteristics::DEEP))) {
+    if (terrain.flags.has_not(TerrainCharacteristics::PROJECTION) || (!creature.has_levitation() && terrain.flags.has(TerrainCharacteristics::DEEP))) {
         msg_print(_("ここでは素早く動けない。", "You cannot run in here."));
     } else {
         set_action(creature, ACTION_HAYAGAKE);

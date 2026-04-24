@@ -57,11 +57,11 @@ void set_body_improvement_info_2(CreatureEntity &creature, self_info_type *self_
         self_ptr->info_list.emplace_back(_("あなたの瞳は赤外線に敏感である。", "Your eyes are sensitive to infrared light."));
     }
 
-    if (creature.see_inv) {
+    if (creature.can_see_invisible()) {
         self_ptr->info_list.emplace_back(_("あなたは透明なモンスターを見ることができる。", "You can see invisible creatures."));
     }
 
-    if (creature.levitation) {
+    if (creature.has_levitation()) {
         self_ptr->info_list.emplace_back(_("あなたは飛ぶことができる。", "You can fly."));
     }
 

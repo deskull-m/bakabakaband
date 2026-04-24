@@ -901,6 +901,29 @@ public:
     }
 
     /*!
+     * @brief 透明視認の可否
+     * @details プレイヤーは装備由来、モンスターは種族フラグ由来（将来）。
+     */
+    virtual bool can_see_invisible() const
+    {
+        return this->see_inv != 0;
+    }
+    /*!
+     * @brief 水中遊泳の可否
+     */
+    virtual bool has_can_swim() const
+    {
+        return this->can_swim;
+    }
+    /*!
+     * @brief 浮遊能力の有無
+     */
+    virtual bool has_levitation() const
+    {
+        return this->levitation != 0;
+    }
+
+    /*!
      * @brief クリーチャーのコピーを返す
      * @return コピーされたクリーチャー
      */

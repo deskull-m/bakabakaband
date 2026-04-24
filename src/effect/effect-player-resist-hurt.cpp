@@ -534,18 +534,18 @@ void effect_player_gravity(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     if (!check_multishadow(creature)) {
         teleport_player(creature, 5, TELEPORT_PASSIVE);
         BadStatusSetter bss(creature);
-        if (!creature.levitation) {
+        if (!creature.has_levitation()) {
             (void)bss.mod_deceleration(randint0(4) + 4, false);
         }
 
-        if (!(has_resist_sound(creature) || creature.levitation)) {
+        if (!(has_resist_sound(creature) || creature.has_levitation())) {
             const auto plus_stun = randnum1<short>((ep_ptr->dam > 90) ? 35 : (ep_ptr->dam / 3 + 5));
             (void)bss.mod_stun(plus_stun);
         }
     }
 
     ep_ptr->dam = ep_ptr->dam * calc_gravity_damage_rate(creature, CALC_RAND) / 100;
-    if (!creature.levitation || one_in_(13)) {
+    if (!creature.has_levitation() || one_in_(13)) {
         inventory_damage(creature, BreakerCold(), 2);
     }
 
@@ -654,12 +654,12 @@ void effect_player_void(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     auto effect_mes = creature.is_blind() ? _("何かに身体が引っ張りこまれる！", "Something absorbs you!")
                                           : _("周辺の空間が歪んだ。", "Sight warps around you.");
     msg_print(effect_mes);
-    if (!check_multishadow(creature) && !creature.levitation && !creature.anti_tele) {
+    if (!check_multishadow(creature) && !creature.has_levitation() && !creature.anti_tele) {
         (void)BadStatusSetter(creature).mod_deceleration(randint0(4) + 4, false);
     }
 
     ep_ptr->dam = ep_ptr->dam * calc_void_damage_rate(creature, CALC_RAND) / 100;
-    if (!creature.levitation || one_in_(13)) {
+    if (!creature.has_levitation() || one_in_(13)) {
         inventory_damage(creature, BreakerCold(), 2);
     }
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
@@ -677,7 +677,7 @@ void effect_player_abyss(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         return;
     }
 
-    if (!creature.levitation) {
+    if (!creature.has_levitation()) {
         (void)bss.mod_deceleration(randint0(4) + 4, false);
     }
 

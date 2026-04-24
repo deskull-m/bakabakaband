@@ -433,7 +433,7 @@ static bool check_invisible(CreatureEntity &creature, um_type *um_ptr)
 
     const auto &monrace = um_ptr->m_ptr->get_monrace();
     if (monrace.misc_flags.has(MonsterMiscType::INVISIBLE)) {
-        if (creature.see_inv) {
+        if (creature.can_see_invisible()) {
             um_ptr->easy = true;
             um_ptr->flag = true;
         }

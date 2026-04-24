@@ -39,7 +39,7 @@ int travel_flow_cost(CreatureEntity &creature, const Pos2D &pos)
         cost += 1;
     }
 
-    if (terrain.flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP }) && !creature.levitation) {
+    if (terrain.flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP }) && !creature.has_levitation()) {
         cost += 5;
     }
 
@@ -49,7 +49,7 @@ int travel_flow_cost(CreatureEntity &creature, const Pos2D &pos)
             lava *= 2;
         }
 
-        if (!creature.levitation) {
+        if (!creature.has_levitation()) {
             lava *= 2;
         }
 
@@ -99,7 +99,7 @@ tl::optional<int> travel_flow_aux(CreatureEntity &creature, const Pos2D pos, int
     is_wall |= terrain.flags.has(TerrainCharacteristics::DOOR) && (grid.mimic > 0);
     auto can_move = terrain.flags.has_not(TerrainCharacteristics::MOVE);
     can_move &= terrain.flags.has(TerrainCharacteristics::CAN_FLY);
-    can_move &= !creature.levitation;
+    can_move &= !creature.has_levitation();
 
     auto add_cost = 1;
     if (is_wall || can_move) {
