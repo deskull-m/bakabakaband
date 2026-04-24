@@ -16,9 +16,6 @@ public:
     void on_death(std::string_view cause) override;
     bool calc_damage_reduction(int &damage, int damage_type) override;
 
-    short get_timed_effect(CreatureTimedEffect effect) const override;
-    void set_timed_effect(CreatureTimedEffect effect, short value) override;
-
     void wipe() override;
 
     /*!

@@ -1,6 +1,5 @@
 #include "system/player-type-definition.h"
 #include "system/creature-entity.h"
-#include "timed-effect/timed-effects.h"
 
 /*!
  * @brief プレイヤー構造体実体 / Static player info record
@@ -33,63 +32,6 @@ bool PlayerType::is_dead() const
 bool PlayerType::is_player() const
 {
     return true;
-}
-
-short PlayerType::get_timed_effect(CreatureTimedEffect effect) const
-{
-    // 一部の時限効果はより高機能な TimedEffects オブジェクト経由で管理している
-    const auto &eff = *this->effects();
-    switch (effect) {
-    case CreatureTimedEffect::STUN:
-        return eff.stun().current();
-    case CreatureTimedEffect::CONFUSION:
-        return eff.confusion().current();
-    case CreatureTimedEffect::FEAR:
-        return eff.fear().current();
-    case CreatureTimedEffect::ACCELERATION:
-        return eff.acceleration().current();
-    case CreatureTimedEffect::DECELERATION:
-        return eff.deceleration().current();
-    case CreatureTimedEffect::SLEEP_OR_PARALYSIS:
-    case CreatureTimedEffect::PARALYSIS:
-        return eff.paralysis().current();
-    case CreatureTimedEffect::BLINDNESS:
-        return eff.blindness().current();
-    default:
-        return CreatureEntity::get_timed_effect(effect);
-    }
-}
-
-void PlayerType::set_timed_effect(CreatureTimedEffect effect, short value)
-{
-    auto &eff = *this->effects();
-    switch (effect) {
-    case CreatureTimedEffect::STUN:
-        eff.stun().set(value);
-        break;
-    case CreatureTimedEffect::CONFUSION:
-        eff.confusion().set(value);
-        break;
-    case CreatureTimedEffect::FEAR:
-        eff.fear().set(value);
-        break;
-    case CreatureTimedEffect::ACCELERATION:
-        eff.acceleration().set(value);
-        break;
-    case CreatureTimedEffect::DECELERATION:
-        eff.deceleration().set(value);
-        break;
-    case CreatureTimedEffect::SLEEP_OR_PARALYSIS:
-    case CreatureTimedEffect::PARALYSIS:
-        eff.paralysis().set(value);
-        break;
-    case CreatureTimedEffect::BLINDNESS:
-        eff.blindness().set(value);
-        break;
-    default:
-        CreatureEntity::set_timed_effect(effect, value);
-        break;
-    }
 }
 
 /*!
