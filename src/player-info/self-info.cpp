@@ -168,55 +168,55 @@ static void set_special_attack_info(CreatureEntity &subject, self_info_type *sel
 
 static void set_esp_info(CreatureEntity &subject, self_info_type *self_ptr)
 {
-    if (subject.telepathy) {
+    if (subject.has_telepathy()) {
         self_ptr->info_list.emplace_back(_("あなたはテレパシー能力を持っている。", "You have ESP."));
     }
 
-    if (subject.esp_animal) {
+    if (subject.has_esp_animal()) {
         self_ptr->info_list.emplace_back(_("あなたは自然界の生物の存在を感じる能力を持っている。", "You sense natural creatures."));
     }
 
-    if (subject.esp_undead) {
+    if (subject.has_esp_undead()) {
         self_ptr->info_list.emplace_back(_("あなたはアンデッドの存在を感じる能力を持っている。", "You sense undead."));
     }
 
-    if (subject.esp_demon) {
+    if (subject.has_esp_demon()) {
         self_ptr->info_list.emplace_back(_("あなたは悪魔の存在を感じる能力を持っている。", "You sense demons."));
     }
 
-    if (subject.esp_orc) {
+    if (subject.has_esp_orc()) {
         self_ptr->info_list.emplace_back(_("あなたはオークの存在を感じる能力を持っている。", "You sense orcs."));
     }
 
-    if (subject.esp_troll) {
+    if (subject.has_esp_troll()) {
         self_ptr->info_list.emplace_back(_("あなたはトロルの存在を感じる能力を持っている。", "You sense trolls."));
     }
 
-    if (subject.esp_giant) {
+    if (subject.has_esp_giant()) {
         self_ptr->info_list.emplace_back(_("あなたは巨人の存在を感じる能力を持っている。", "You sense giants."));
     }
 
-    if (subject.esp_dragon) {
+    if (subject.has_esp_dragon()) {
         self_ptr->info_list.emplace_back(_("あなたはドラゴンの存在を感じる能力を持っている。", "You sense dragons."));
     }
 
-    if (subject.esp_human) {
+    if (subject.has_esp_human()) {
         self_ptr->info_list.emplace_back(_("あなたは人間の存在を感じる能力を持っている。", "You sense humans."));
     }
 
-    if (subject.esp_evil) {
+    if (subject.has_esp_evil()) {
         self_ptr->info_list.emplace_back(_("あなたは邪悪な生き物の存在を感じる能力を持っている。", "You sense evil creatures."));
     }
 
-    if (subject.esp_good) {
+    if (subject.has_esp_good()) {
         self_ptr->info_list.emplace_back(_("あなたは善良な生き物の存在を感じる能力を持っている。", "You sense good creatures."));
     }
 
-    if (subject.esp_nonliving) {
+    if (subject.has_esp_nonliving()) {
         self_ptr->info_list.emplace_back(_("あなたは活動する無生物体の存在を感じる能力を持っている。", "You sense non-living creatures."));
     }
 
-    if (subject.esp_unique) {
+    if (subject.has_esp_unique()) {
         self_ptr->info_list.emplace_back(_("あなたは特別な強敵の存在を感じる能力を持っている。", "You sense unique monsters."));
     }
 }
