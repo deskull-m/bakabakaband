@@ -349,7 +349,7 @@ bool detect_monsters_normal(CreatureEntity &creature, POSITION range)
             continue;
         }
 
-        if (monrace.misc_flags.has_not(MonsterMiscType::INVISIBLE) || creature.see_inv) {
+        if (monrace.misc_flags.has_not(MonsterMiscType::INVISIBLE) || creature.can_see_invisible()) {
             monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
             update_monster(creature, i, false);
             flag = true;

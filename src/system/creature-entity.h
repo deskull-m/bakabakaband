@@ -835,6 +835,95 @@ public:
     virtual bool is_time_limit_stealth() const;
 
     /*!
+     * @brief 汎用テレパシーの有無を返す
+     * @details プレイヤーは装備由来、モンスターは種族フラグ由来（将来）。
+     *          デフォルト実装は BIT_FLAGS フィールドを参照する。
+     */
+    virtual bool has_telepathy() const
+    {
+        return this->telepathy != 0;
+    }
+    virtual bool has_esp_animal() const
+    {
+        return this->esp_animal != 0;
+    }
+    virtual bool has_esp_nasty() const
+    {
+        return this->esp_nasty != 0;
+    }
+    virtual bool has_esp_homo() const
+    {
+        return this->esp_homo != 0;
+    }
+    virtual bool has_esp_undead() const
+    {
+        return this->esp_undead != 0;
+    }
+    virtual bool has_esp_demon() const
+    {
+        return this->esp_demon != 0;
+    }
+    virtual bool has_esp_orc() const
+    {
+        return this->esp_orc != 0;
+    }
+    virtual bool has_esp_troll() const
+    {
+        return this->esp_troll != 0;
+    }
+    virtual bool has_esp_giant() const
+    {
+        return this->esp_giant != 0;
+    }
+    virtual bool has_esp_dragon() const
+    {
+        return this->esp_dragon != 0;
+    }
+    virtual bool has_esp_human() const
+    {
+        return this->esp_human != 0;
+    }
+    virtual bool has_esp_evil() const
+    {
+        return this->esp_evil != 0;
+    }
+    virtual bool has_esp_good() const
+    {
+        return this->esp_good != 0;
+    }
+    virtual bool has_esp_nonliving() const
+    {
+        return this->esp_nonliving != 0;
+    }
+    virtual bool has_esp_unique() const
+    {
+        return this->esp_unique != 0;
+    }
+
+    /*!
+     * @brief 透明視認の可否
+     * @details プレイヤーは装備由来、モンスターは種族フラグ由来（将来）。
+     */
+    virtual bool can_see_invisible() const
+    {
+        return this->see_inv != 0;
+    }
+    /*!
+     * @brief 水中遊泳の可否
+     */
+    virtual bool has_can_swim() const
+    {
+        return this->can_swim;
+    }
+    /*!
+     * @brief 浮遊能力の有無
+     */
+    virtual bool has_levitation() const
+    {
+        return this->levitation != 0;
+    }
+
+    /*!
      * @brief クリーチャーのコピーを返す
      * @return コピーされたクリーチャー
      */

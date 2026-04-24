@@ -238,7 +238,7 @@ static bool run_test(CreatureEntity &creature)
                     notice = false;
                 } else if (terrain.flags.has(TerrainCharacteristics::VOID) && creature.is_invulnerable()) {
                     notice = false;
-                } else if (terrain.flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP }) && (creature.levitation || creature.can_swim || (calc_inventory_weight(creature) <= calc_weight_limit(creature)))) {
+                } else if (terrain.flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP }) && (creature.has_levitation() || creature.has_can_swim() || (calc_inventory_weight(creature) <= calc_weight_limit(creature)))) {
                     notice = false;
                 }
             }

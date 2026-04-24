@@ -444,7 +444,7 @@ tl::optional<std::string> do_arcane_spell(CreatureEntity &creature, SPELL_IDX sp
 
             wiz_lite(creature, false);
 
-            if (!creature.telepathy) {
+            if (!creature.has_telepathy()) {
                 set_tim_esp(creature, dice.roll() + base, false);
             }
         }

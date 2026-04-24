@@ -207,7 +207,7 @@ static void hit_trap_pit(CreatureEntity &creature, TrapType trap_feat_type)
         return;
     }
 
-    if (creature.levitation) {
+    if (creature.has_levitation()) {
         msg_format(_("%sを飛び越えた。", "You fly over %s."), trap_name);
         return;
     }
@@ -302,7 +302,7 @@ void hit_trap(CreatureEntity &creature, bool break_trap)
     /* Analyze */
     switch (trap_feat_type) {
     case TrapType::TRAPDOOR: {
-        if (creature.levitation) {
+        if (creature.has_levitation()) {
             msg_print(_("落とし戸を飛び越えた。", "You fly over a trap door."));
             break;
         }

@@ -162,7 +162,7 @@ int16_t CreatureRace::speed() const
         const auto &terrain = floor.get_grid(this->creature_ptr->get_position()).get_terrain();
         if (terrain.flags.has(TerrainCharacteristics::WATER)) {
             result += (2 + this->creature_ptr->level / 10);
-        } else if (!this->creature_ptr->levitation) {
+        } else if (!this->creature_ptr->has_levitation()) {
             result -= 2;
         }
     }

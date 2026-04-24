@@ -202,7 +202,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
         }
 
         using Tc = TerrainCharacteristics;
-        if ((creature.action == ACTION_HAYAGAKE) && (terrain_new.flags.has_not(Tc::PROJECTION) || (!creature.levitation && terrain_new.flags.has(Tc::DEEP)))) {
+        if ((creature.action == ACTION_HAYAGAKE) && (terrain_new.flags.has_not(Tc::PROJECTION) || (!creature.has_levitation() && terrain_new.flags.has(Tc::DEEP)))) {
             msg_print(_("ここでは素早く動けない。", "You cannot run in here."));
             set_action(creature, ACTION_NONE);
         }
@@ -326,7 +326,7 @@ bool trap_can_be_ignored(CreatureEntity &creature, FEAT_IDX feat)
     case TrapType::PIT:
     case TrapType::SPIKED_PIT:
     case TrapType::POISON_PIT:
-        if (creature.levitation) {
+        if (creature.has_levitation()) {
             return true;
         }
         break;
