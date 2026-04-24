@@ -453,12 +453,65 @@ bool CreatureEntity::is_echizen() const
 
 short CreatureEntity::get_timed_effect(CreatureTimedEffect effect) const
 {
+    // 一部の時限効果は高機能な TimedEffects オブジェクト経由で管理する。
+    // 提案 5 の方針に従い、プレイヤー・モンスター共通でこの分岐を採用。
+    if (this->timed_effects) {
+        const auto &eff = *this->timed_effects;
+        switch (effect) {
+        case CreatureTimedEffect::STUN:
+            return eff.stun().current();
+        case CreatureTimedEffect::CONFUSION:
+            return eff.confusion().current();
+        case CreatureTimedEffect::FEAR:
+            return eff.fear().current();
+        case CreatureTimedEffect::ACCELERATION:
+            return eff.acceleration().current();
+        case CreatureTimedEffect::DECELERATION:
+            return eff.deceleration().current();
+        case CreatureTimedEffect::SLEEP_OR_PARALYSIS:
+        case CreatureTimedEffect::PARALYSIS:
+            return eff.paralysis().current();
+        case CreatureTimedEffect::BLINDNESS:
+            return eff.blindness().current();
+        default:
+            break;
+        }
+    }
     const auto it = this->timed_effects_map.find(effect);
     return (it != this->timed_effects_map.end()) ? it->second : 0;
 }
 
 void CreatureEntity::set_timed_effect(CreatureTimedEffect effect, short value)
 {
+    if (this->timed_effects) {
+        auto &eff = *this->timed_effects;
+        switch (effect) {
+        case CreatureTimedEffect::STUN:
+            eff.stun().set(value);
+            return;
+        case CreatureTimedEffect::CONFUSION:
+            eff.confusion().set(value);
+            return;
+        case CreatureTimedEffect::FEAR:
+            eff.fear().set(value);
+            return;
+        case CreatureTimedEffect::ACCELERATION:
+            eff.acceleration().set(value);
+            return;
+        case CreatureTimedEffect::DECELERATION:
+            eff.deceleration().set(value);
+            return;
+        case CreatureTimedEffect::SLEEP_OR_PARALYSIS:
+        case CreatureTimedEffect::PARALYSIS:
+            eff.paralysis().set(value);
+            return;
+        case CreatureTimedEffect::BLINDNESS:
+            eff.blindness().set(value);
+            return;
+        default:
+            break;
+        }
+    }
     this->timed_effects_map[effect] = value;
 }
 
