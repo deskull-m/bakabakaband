@@ -331,7 +331,7 @@ bool trap_can_be_ignored(CreatureEntity &creature, FEAT_IDX feat)
         }
         break;
     case TrapType::TELEPORT:
-        if (creature.anti_tele) {
+        if (creature.has_anti_tele()) {
             return true;
         }
         break;
@@ -361,7 +361,7 @@ bool trap_can_be_ignored(CreatureEntity &creature, FEAT_IDX feat)
         }
         break;
     case TrapType::SLEEP:
-        if (creature.free_act) {
+        if (creature.has_free_act()) {
             return true;
         }
         break;

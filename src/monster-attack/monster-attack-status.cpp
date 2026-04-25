@@ -76,7 +76,7 @@ void process_paralyze_attack(CreatureEntity &creature, MonsterAttackPlayer *mona
     }
 
     const auto &monrace = monap_ptr->m_ptr->get_monrace();
-    if (creature.free_act) {
+    if (creature.has_free_act()) {
         msg_print(_("しかし効果がなかった！", "You are unaffected!"));
         monap_ptr->obvious = true;
         return;

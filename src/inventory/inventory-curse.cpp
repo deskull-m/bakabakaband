@@ -502,7 +502,7 @@ static void occur_curse_effects(CreatureEntity &creature)
     curse_call_monster(creature);
     curse_cowardice(creature);
     curse_berserk_rage(creature);
-    if (creature.cursed.has(CurseTraitType::TELEPORT) && one_in_(200) && !creature.anti_tele) {
+    if (creature.cursed.has(CurseTraitType::TELEPORT) && one_in_(200) && !creature.has_anti_tele()) {
         disturb(creature, false, true);
         teleport_player(creature, 40, TELEPORT_PASSIVE);
     }
@@ -520,7 +520,7 @@ static void occur_curse_effects(CreatureEntity &creature)
 void execute_cursed_items_effect(CreatureEntity &creature)
 {
     occur_curse_effects(creature);
-    if (!one_in_(999) || creature.anti_magic || (one_in_(2) && has_resist_curse(creature))) {
+    if (!one_in_(999) || creature.has_anti_magic() || (one_in_(2) && has_resist_curse(creature))) {
         return;
     }
 

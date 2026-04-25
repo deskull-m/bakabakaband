@@ -122,7 +122,7 @@ static void effect_monster_psi_reflect_extra_effect(CreatureEntity &creature, Ef
 
         return;
     default:
-        if (!creature.free_act) {
+        if (!creature.has_free_act()) {
             (void)bss.mod_paralysis(randnum1<short>(em_ptr->dam));
         }
 

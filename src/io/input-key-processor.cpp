@@ -432,7 +432,7 @@ void process_command(CreatureEntity &creature)
             break;
         }
 
-        if (creature.anti_magic && !non_magic_class) {
+        if (creature.has_anti_magic() && !non_magic_class) {
             concptr which_power = _("魔法", "magic");
             switch (creature.pclass) {
             case PlayerClassType::MINDCRAFTER:

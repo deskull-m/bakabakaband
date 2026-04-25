@@ -346,7 +346,7 @@ bool QuaffEffects::booze()
  */
 bool QuaffEffects::sleep()
 {
-    if (this->creature.free_act) {
+    if (this->creature.has_free_act()) {
         return false;
     }
 
@@ -365,7 +365,7 @@ bool QuaffEffects::sleep()
  */
 bool QuaffEffects::lose_memories()
 {
-    if (this->creature.hold_exp || (this->creature.exp <= 0)) {
+    if (this->creature.has_hold_exp() || (this->creature.exp <= 0)) {
         return false;
     }
 

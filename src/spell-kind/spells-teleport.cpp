@@ -45,7 +45,7 @@
 bool teleport_swap(CreatureEntity &creature, const Direction &dir)
 {
     const auto pos = dir.get_target_position(creature.get_position());
-    if (creature.anti_tele) {
+    if (creature.has_anti_tele()) {
         msg_print(_("不思議な力がテレポートを防いだ！", "A mysterious force prevents you from teleporting!"));
         return false;
     }
@@ -282,7 +282,7 @@ bool teleport_player_aux(CreatureEntity &creature, POSITION dis, bool is_quantum
         return false;
     }
 
-    if (!is_quantum_effect && creature.anti_tele && !(mode & TELEPORT_NONMAGICAL)) {
+    if (!is_quantum_effect && creature.has_anti_tele() && !(mode & TELEPORT_NONMAGICAL)) {
         msg_print(_("不思議な力がテレポートを防いだ！", "A mysterious force prevents you from teleporting!"));
         return false;
     }
@@ -468,7 +468,7 @@ void teleport_player_away(MONSTER_IDX m_idx, CreatureEntity &creature, POSITION 
  */
 void teleport_player_to(CreatureEntity &creature, POSITION ny, POSITION nx, teleport_flags mode)
 {
-    if (creature.anti_tele && !(mode & TELEPORT_NONMAGICAL)) {
+    if (creature.has_anti_tele() && !(mode & TELEPORT_NONMAGICAL)) {
         msg_print(_("不思議な力がテレポートを防いだ！", "A mysterious force prevents you from teleporting!"));
         return;
     }

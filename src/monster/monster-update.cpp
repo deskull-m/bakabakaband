@@ -184,7 +184,7 @@ static um_type *initialize_um_type(CreatureEntity &creature, um_type *um_ptr, MO
     um_ptr->fx = um_ptr->m_ptr->x;
     um_ptr->flag = false;
     um_ptr->easy = false;
-    um_ptr->in_darkness = floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS) && !creature.see_nocto;
+    um_ptr->in_darkness = floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS) && !creature.has_see_nocto();
     um_ptr->full = full;
     return um_ptr;
 }
@@ -780,7 +780,7 @@ void update_smart_learn(CreatureEntity &creature, MONSTER_IDX m_idx, int what)
 
         break;
     case DRS_FREE:
-        if (creature.free_act) {
+        if (creature.has_free_act()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::IMM_FREE);
         }
 

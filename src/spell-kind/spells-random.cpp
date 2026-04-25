@@ -193,11 +193,11 @@ bool activate_ty_curse(CreatureEntity &creature, bool stop_ty, int *count)
         case 19:
         case 20: {
             auto is_statue = stop_ty;
-            is_statue |= creature.free_act && (randint1(125) < creature.skill_sav);
+            is_statue |= creature.has_free_act() && (randint1(125) < creature.skill_sav);
             is_statue |= CreatureClass(creature).equals(PlayerClassType::BERSERKER);
             if (!is_statue) {
                 msg_print(_("彫像になった気分だ！", "You feel like a statue!"));
-                TIME_EFFECT turns = creature.free_act ? randint1(3) : randint1(13);
+                TIME_EFFECT turns = creature.has_free_act() ? randint1(3) : randint1(13);
                 (void)BadStatusSetter(creature).mod_paralysis(turns);
                 stop_ty = true;
             }

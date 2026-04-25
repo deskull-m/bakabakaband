@@ -434,7 +434,7 @@ MonsterSpellResult spell_RF5_HOLD(MONSTER_IDX m_idx, CreatureEntity &creature, M
     bool resist, saving_throw;
 
     if (target_type == MONSTER_TO_PLAYER) {
-        resist = (creature.free_act != 0);
+        resist = (creature.has_free_act() != 0);
         saving_throw = (randint0(100 + rlev / 2) < creature.skill_sav);
 
         mspell_cast_msg_bad_status_to_player msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),

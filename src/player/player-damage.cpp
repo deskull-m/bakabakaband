@@ -516,7 +516,7 @@ void PlayerType::on_death(std::string_view cause)
         const auto is_hallucinated = effects->hallucination().is_hallucinated();
         auto paralysis_state = "";
         if (effects->paralysis().is_paralyzed()) {
-            paralysis_state = this->free_act ? _("彫像状態で", " while being the statue") : _("麻痺状態で", " while paralyzed");
+            paralysis_state = this->has_free_act() ? _("彫像状態で", " while being the statue") : _("麻痺状態で", " while paralyzed");
         }
 
         const auto hallucintion_state = is_hallucinated ? _("幻覚に歪んだ", "hallucinatingly distorted ") : "";

@@ -135,7 +135,7 @@ void effect_player_brain_smash(CreatureEntity &creature, EffectPlayerType *ep_pt
         (void)bss.mod_confusion(randint0(4) + 4);
     }
 
-    if (!creature.free_act) {
+    if (!creature.has_free_act()) {
         (void)bss.mod_paralysis(randint0(4) + 4);
     }
 

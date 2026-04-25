@@ -653,7 +653,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
                 msg_print(_("失敗！", "You cannot move to that place!"));
                 break;
             }
-            if (creature.anti_tele) {
+            if (creature.has_anti_tele()) {
                 msg_print(_("不思議な力がテレポートを防いだ！", "A mysterious force prevents you from teleporting!"));
                 break;
             }

@@ -40,7 +40,7 @@ void effect_player_old_slow(CreatureEntity &creature)
 
 void effect_player_old_sleep(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (creature.free_act) {
+    if (creature.has_free_act()) {
         return;
     }
 

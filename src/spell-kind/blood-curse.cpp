@@ -113,12 +113,12 @@ void blood_curse_to_enemy(CreatureEntity &creature, MONSTER_IDX m_idx)
         case 23:
         case 24:
         case 25:
-            if (creature.hold_exp && evaluate_percent(75)) {
+            if (creature.has_hold_exp() && evaluate_percent(75)) {
                 break;
             }
 
             msg_print(_("経験値が体から吸い取られた気がする！", "You feel your experience draining away..."));
-            if (creature.hold_exp) {
+            if (creature.has_hold_exp()) {
                 lose_exp(creature, creature.exp / 160);
             } else {
                 lose_exp(creature, creature.exp / 16);
