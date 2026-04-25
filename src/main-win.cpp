@@ -2455,14 +2455,15 @@ static LRESULT PASCAL angband_window_procedure(HWND hWnd, UINT uMsg, WPARAM wPar
         }
 
         msg_flag = false;
-        if (PlayerType::get_instance().hp < 0) {
-            PlayerType::get_instance().is_dead_ = false;
+        auto &creature = PlayerType::get_instance();
+        if (creature.hp < 0) {
+            creature.is_dead_ = false;
         }
-        exe_write_diary(*PlayerType::get_instance().get_floor(), DiaryKind::GAMESTART, 0, _("----ゲーム中断----", "---- Save and Exit Game ----"));
+        exe_write_diary(*creature.get_floor(), DiaryKind::GAMESTART, 0, _("----ゲーム中断----", "---- Save and Exit Game ----"));
         AngbandSystem::get_instance().set_panic_save(true);
         signals_ignore_tstp();
-        PlayerType::get_instance().died_from = _("(緊急セーブ)", "(panic save)");
-        (void)save_player(PlayerType::get_instance(), SaveType::CLOSE_GAME);
+        creature.died_from = _("(緊急セーブ)", "(panic save)");
+        (void)save_player(creature, SaveType::CLOSE_GAME);
         quit("");
         return 0;
     }

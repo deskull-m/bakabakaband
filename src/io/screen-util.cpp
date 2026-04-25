@@ -46,11 +46,12 @@ void resize_map()
         return;
     }
 
+    auto &creature = PlayerType::get_instance();
     panel_row_max = 0;
     panel_col_max = 0;
-    panel_row_min = PlayerType::get_instance().get_floor()->height;
-    panel_col_min = PlayerType::get_instance().get_floor()->width;
-    verify_panel(PlayerType::get_instance());
+    panel_row_min = creature.get_floor()->height;
+    panel_col_min = creature.get_floor()->width;
+    verify_panel(creature);
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags_srf = {
@@ -75,11 +76,11 @@ void resize_map()
         MainWindowRedrawingFlag::EQUIPPY,
     };
     rfu.set_flags(flags_mwrf);
-    handle_stuff(PlayerType::get_instance());
+    handle_stuff(creature);
     term_redraw();
 
     if (can_save) {
-        move_cursor_relative(PlayerType::get_instance().y, PlayerType::get_instance().x);
+        move_cursor_relative(creature.y, creature.x);
     }
 
     term_fresh();
