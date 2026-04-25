@@ -971,6 +971,22 @@ public:
     {
         return this->see_nocto != 0;
     }
+    /*!
+     * @brief 特殊攻撃ビットの保有判定
+     * @param flag 対象の ATTACK_* ビット
+     */
+    virtual bool has_special_attack(BIT_FLAGS flag) const
+    {
+        return (this->special_attack & flag) != 0;
+    }
+    /*!
+     * @brief 特殊防御ビットの保有判定
+     * @param flag 対象の DEFENSE_* ビット
+     */
+    virtual bool has_special_defense(BIT_FLAGS flag) const
+    {
+        return (this->special_defense & flag) != 0;
+    }
 
     /*!
      * @brief クリーチャーのコピーを返す

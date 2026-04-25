@@ -156,19 +156,19 @@ int calc_attack_damage_with_slay(CreatureEntity &creature, ItemEntity *o_ptr, in
     torch_flags(o_ptr, flags); /* torches has secret flags */
 
     if (!thrown) {
-        if (creature.special_attack & (ATTACK_ACID)) {
+        if (creature.has_special_attack(ATTACK_ACID)) {
             flags.set(TR_BRAND_ACID);
         }
-        if (creature.special_attack & (ATTACK_COLD)) {
+        if (creature.has_special_attack(ATTACK_COLD)) {
             flags.set(TR_BRAND_COLD);
         }
-        if (creature.special_attack & (ATTACK_ELEC)) {
+        if (creature.has_special_attack(ATTACK_ELEC)) {
             flags.set(TR_BRAND_ELEC);
         }
-        if (creature.special_attack & (ATTACK_FIRE)) {
+        if (creature.has_special_attack(ATTACK_FIRE)) {
             flags.set(TR_BRAND_FIRE);
         }
-        if (creature.special_attack & (ATTACK_POIS)) {
+        if (creature.has_special_attack(ATTACK_POIS)) {
             flags.set(TR_BRAND_POIS);
         }
     }
@@ -265,19 +265,19 @@ AttributeFlags melee_attribute(CreatureEntity &creature, ItemEntity *o_ptr, comb
 
     auto flags = o_ptr->get_flags();
 
-    if (creature.special_attack & (ATTACK_ACID)) {
+    if (creature.has_special_attack(ATTACK_ACID)) {
         flags.set(TR_BRAND_ACID);
     }
-    if (creature.special_attack & (ATTACK_COLD)) {
+    if (creature.has_special_attack(ATTACK_COLD)) {
         flags.set(TR_BRAND_COLD);
     }
-    if (creature.special_attack & (ATTACK_ELEC)) {
+    if (creature.has_special_attack(ATTACK_ELEC)) {
         flags.set(TR_BRAND_ELEC);
     }
-    if (creature.special_attack & (ATTACK_FIRE)) {
+    if (creature.has_special_attack(ATTACK_FIRE)) {
         flags.set(TR_BRAND_FIRE);
     }
-    if (creature.special_attack & (ATTACK_POIS)) {
+    if (creature.has_special_attack(ATTACK_POIS)) {
         flags.set(TR_BRAND_POIS);
     }
 

@@ -36,27 +36,27 @@ bool set_ele_attack(CreatureEntity &creature, uint32_t attack_type, TIME_EFFECT 
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if ((creature.special_attack & (ATTACK_ACID)) && (attack_type != ATTACK_ACID)) {
+    if ((creature.has_special_attack(ATTACK_ACID)) && (attack_type != ATTACK_ACID)) {
         creature.special_attack &= ~(ATTACK_ACID);
         msg_print(_("酸で攻撃できなくなった。", "Your temporary acidic brand fades away."));
     }
 
-    if ((creature.special_attack & (ATTACK_ELEC)) && (attack_type != ATTACK_ELEC)) {
+    if ((creature.has_special_attack(ATTACK_ELEC)) && (attack_type != ATTACK_ELEC)) {
         creature.special_attack &= ~(ATTACK_ELEC);
         msg_print(_("電撃で攻撃できなくなった。", "Your temporary electrical brand fades away."));
     }
 
-    if ((creature.special_attack & (ATTACK_FIRE)) && (attack_type != ATTACK_FIRE)) {
+    if ((creature.has_special_attack(ATTACK_FIRE)) && (attack_type != ATTACK_FIRE)) {
         creature.special_attack &= ~(ATTACK_FIRE);
         msg_print(_("火炎で攻撃できなくなった。", "Your temporary fiery brand fades away."));
     }
 
-    if ((creature.special_attack & (ATTACK_COLD)) && (attack_type != ATTACK_COLD)) {
+    if ((creature.has_special_attack(ATTACK_COLD)) && (attack_type != ATTACK_COLD)) {
         creature.special_attack &= ~(ATTACK_COLD);
         msg_print(_("冷気で攻撃できなくなった。", "Your temporary frost brand fades away."));
     }
 
-    if ((creature.special_attack & (ATTACK_POIS)) && (attack_type != ATTACK_POIS)) {
+    if ((creature.has_special_attack(ATTACK_POIS)) && (attack_type != ATTACK_POIS)) {
         creature.special_attack &= ~(ATTACK_POIS);
         msg_print(_("毒で攻撃できなくなった。", "Your temporary poison brand fades away."));
     }
@@ -114,27 +114,27 @@ bool set_ele_immune(CreatureEntity &creature, uint32_t immune_type, TIME_EFFECT 
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if ((creature.special_defense & (DEFENSE_ACID)) && (immune_type != DEFENSE_ACID)) {
+    if ((creature.has_special_defense(DEFENSE_ACID)) && (immune_type != DEFENSE_ACID)) {
         creature.special_defense &= ~(DEFENSE_ACID);
         msg_print(_("酸の攻撃で傷つけられるようになった。。", "You are no longer immune to acid."));
     }
 
-    if ((creature.special_defense & (DEFENSE_ELEC)) && (immune_type != DEFENSE_ELEC)) {
+    if ((creature.has_special_defense(DEFENSE_ELEC)) && (immune_type != DEFENSE_ELEC)) {
         creature.special_defense &= ~(DEFENSE_ELEC);
         msg_print(_("電撃の攻撃で傷つけられるようになった。。", "You are no longer immune to electricity."));
     }
 
-    if ((creature.special_defense & (DEFENSE_FIRE)) && (immune_type != DEFENSE_FIRE)) {
+    if ((creature.has_special_defense(DEFENSE_FIRE)) && (immune_type != DEFENSE_FIRE)) {
         creature.special_defense &= ~(DEFENSE_FIRE);
         msg_print(_("火炎の攻撃で傷つけられるようになった。。", "You are no longer immune to fire."));
     }
 
-    if ((creature.special_defense & (DEFENSE_COLD)) && (immune_type != DEFENSE_COLD)) {
+    if ((creature.has_special_defense(DEFENSE_COLD)) && (immune_type != DEFENSE_COLD)) {
         creature.special_defense &= ~(DEFENSE_COLD);
         msg_print(_("冷気の攻撃で傷つけられるようになった。。", "You are no longer immune to cold."));
     }
 
-    if ((creature.special_defense & (DEFENSE_POIS)) && (immune_type != DEFENSE_POIS)) {
+    if ((creature.has_special_defense(DEFENSE_POIS)) && (immune_type != DEFENSE_POIS)) {
         creature.special_defense &= ~(DEFENSE_POIS);
         msg_print(_("毒の攻撃で傷つけられるようになった。。", "You are no longer immune to poison."));
     }

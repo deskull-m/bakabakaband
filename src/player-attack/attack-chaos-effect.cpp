@@ -47,7 +47,7 @@
  */
 static void attack_confuse(CreatureEntity &creature, player_attack_type *pa_ptr, bool can_resist = true)
 {
-    if (creature.special_attack & ATTACK_CONFUSE) {
+    if (creature.has_special_attack(ATTACK_CONFUSE)) {
         creature.special_attack &= ~(ATTACK_CONFUSE);
         msg_print(_("手の輝きがなくなった。", "Your hands stop glowing."));
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);

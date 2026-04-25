@@ -264,7 +264,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
             return true;
         }
 
-        if (creature.special_defense & DEFENSE_ACID) {
+        if (creature.has_special_defense(DEFENSE_ACID)) {
             return true;
         }
     }
@@ -275,7 +275,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
                 return true;
             }
 
-            if (creature.special_defense & DEFENSE_FIRE) {
+            if (creature.has_special_defense(DEFENSE_FIRE)) {
                 return true;
             }
         }
@@ -286,7 +286,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
             return true;
         }
 
-        if (creature.special_defense & DEFENSE_ELEC) {
+        if (creature.has_special_defense(DEFENSE_ELEC)) {
             return true;
         }
     }
@@ -296,7 +296,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
             return true;
         }
 
-        if (creature.special_defense & DEFENSE_COLD) {
+        if (creature.has_special_defense(DEFENSE_COLD)) {
             return true;
         }
     }
@@ -306,7 +306,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
             return true;
         }
 
-        if (creature.special_defense & DEFENSE_POIS) {
+        if (creature.has_special_defense(DEFENSE_POIS)) {
             return true;
         }
     }
@@ -319,23 +319,23 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
         return true;
     }
 
-    if ((creature.special_attack & ATTACK_ACID) && monrace.resistance_flags.has_none_of(RFR_EFF_IM_ACID_MASK)) {
+    if ((creature.has_special_attack(ATTACK_ACID)) && monrace.resistance_flags.has_none_of(RFR_EFF_IM_ACID_MASK)) {
         return true;
     }
 
-    if ((creature.special_attack & ATTACK_FIRE) && monrace.resistance_flags.has_none_of(RFR_EFF_IM_FIRE_MASK)) {
+    if ((creature.has_special_attack(ATTACK_FIRE)) && monrace.resistance_flags.has_none_of(RFR_EFF_IM_FIRE_MASK)) {
         return true;
     }
 
-    if ((creature.special_attack & ATTACK_ELEC) && monrace.resistance_flags.has_none_of(RFR_EFF_IM_ELEC_MASK)) {
+    if ((creature.has_special_attack(ATTACK_ELEC)) && monrace.resistance_flags.has_none_of(RFR_EFF_IM_ELEC_MASK)) {
         return true;
     }
 
-    if ((creature.special_attack & ATTACK_COLD) && monrace.resistance_flags.has_none_of(RFR_EFF_IM_COLD_MASK)) {
+    if ((creature.has_special_attack(ATTACK_COLD)) && monrace.resistance_flags.has_none_of(RFR_EFF_IM_COLD_MASK)) {
         return true;
     }
 
-    if ((creature.special_attack & ATTACK_POIS) && monrace.resistance_flags.has_none_of(RFR_EFF_IM_POISON_MASK)) {
+    if ((creature.has_special_attack(ATTACK_POIS)) && monrace.resistance_flags.has_none_of(RFR_EFF_IM_POISON_MASK)) {
         return true;
     }
 

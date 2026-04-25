@@ -540,7 +540,7 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_KAWARIMI);
     }
 
-    if (creature.special_defense & DEFENSE_ACID) {
+    if (creature.has_special_defense(DEFENSE_ACID)) {
         ADD_BAR_FLAG(BAR_IMMACID);
     }
 
@@ -548,7 +548,7 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_RESACID);
     }
 
-    if (creature.special_defense & DEFENSE_ELEC) {
+    if (creature.has_special_defense(DEFENSE_ELEC)) {
         ADD_BAR_FLAG(BAR_IMMELEC);
     }
 
@@ -556,7 +556,7 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_RESELEC);
     }
 
-    if (creature.special_defense & DEFENSE_FIRE) {
+    if (creature.has_special_defense(DEFENSE_FIRE)) {
         ADD_BAR_FLAG(BAR_IMMFIRE);
     }
 
@@ -564,7 +564,7 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_RESFIRE);
     }
 
-    if (creature.special_defense & DEFENSE_COLD) {
+    if (creature.has_special_defense(DEFENSE_COLD)) {
         ADD_BAR_FLAG(BAR_IMMCOLD);
     }
 
@@ -596,7 +596,7 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_MULTISHADOW);
     }
 
-    if (creature.special_attack & ATTACK_CONFUSE) {
+    if (creature.has_special_attack(ATTACK_CONFUSE)) {
         ADD_BAR_FLAG(BAR_ATTKCONF);
     }
 
@@ -620,23 +620,23 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_DUSTROBE);
     }
 
-    if (creature.special_attack & ATTACK_FIRE) {
+    if (creature.has_special_attack(ATTACK_FIRE)) {
         ADD_BAR_FLAG(BAR_ATTKFIRE);
     }
 
-    if (creature.special_attack & ATTACK_COLD) {
+    if (creature.has_special_attack(ATTACK_COLD)) {
         ADD_BAR_FLAG(BAR_ATTKCOLD);
     }
 
-    if (creature.special_attack & ATTACK_ELEC) {
+    if (creature.has_special_attack(ATTACK_ELEC)) {
         ADD_BAR_FLAG(BAR_ATTKELEC);
     }
 
-    if (creature.special_attack & ATTACK_ACID) {
+    if (creature.has_special_attack(ATTACK_ACID)) {
         ADD_BAR_FLAG(BAR_ATTKACID);
     }
 
-    if (creature.special_attack & ATTACK_POIS) {
+    if (creature.has_special_attack(ATTACK_POIS)) {
         ADD_BAR_FLAG(BAR_ATTKPOIS);
     }
 
