@@ -68,25 +68,26 @@ static void handle_signal_simple(int sig)
     }
 
     signal_count++;
-    auto &floor = *PlayerType::get_instance().get_floor();
-    if (PlayerType::get_instance().is_dead()) {
-        PlayerType::get_instance().died_from = _("強制終了", "Abortion");
+    auto &creature = PlayerType::get_instance();
+    auto &floor = *creature.get_floor();
+    if (creature.is_dead()) {
+        creature.died_from = _("強制終了", "Abortion");
         floor.forget_lite();
         floor.forget_view();
         floor.forget_mon_lite();
-        close_game(PlayerType::get_instance());
+        close_game(creature);
         quit(_("強制終了", "interrupt"));
     } else if (signal_count >= 5) {
-        PlayerType::get_instance().died_from = _("強制終了中", "Interrupting");
+        creature.died_from = _("強制終了中", "Interrupting");
         floor.forget_lite();
         floor.forget_view();
         floor.forget_mon_lite();
-        PlayerType::get_instance().playing = false;
+        creature.playing = false;
         if (!cheat_immortal) {
-            PlayerType::get_instance().is_dead_ = true;
+            creature.is_dead_ = true;
         }
-        PlayerType::get_instance().leaving = true;
-        close_game(PlayerType::get_instance());
+        creature.leaving = true;
+        close_game(creature);
         quit(_("強制終了", "interrupt"));
     } else if (signal_count >= 4) {
         term_xtra(TERM_XTRA_NOISE, 0);
@@ -126,7 +127,8 @@ static void handle_signal_abort(int sig)
         quit("");
     }
 
-    auto &floor = *PlayerType::get_instance().get_floor();
+    auto &creature = PlayerType::get_instance();
+    auto &floor = *creature.get_floor();
     floor.forget_lite();
     floor.forget_view();
     floor.forget_mon_lite();
@@ -140,11 +142,11 @@ static void handle_signal_abort(int sig)
     term_fresh();
 
     AngbandSystem::get_instance().set_panic_save(true);
-    PlayerType::get_instance().died_from = _("(緊急セーブ)", "(panic save)");
+    creature.died_from = _("(緊急セーブ)", "(panic save)");
 
     signals_ignore_tstp();
 
-    if (save_player(PlayerType::get_instance(), SaveType::CLOSE_GAME)) {
+    if (save_player(creature, SaveType::CLOSE_GAME)) {
         term_putstr(45, hgt - 1, -1, TERM_RED, _("緊急セーブ成功！", "Panic save succeeded!"));
     } else {
         term_putstr(45, hgt - 1, -1, TERM_RED, _("緊急セーブ失敗！", "Panic save failed!"));

@@ -338,9 +338,12 @@ int main(int argc, char *argv[])
                 break;
             }
 
-            PlayerType::get_instance().name = &argv[i][2];
-            if (PlayerType::get_instance().name.length() > 40) {
-                PlayerType::get_instance().name.resize(40);
+            {
+                auto &creature = PlayerType::get_instance();
+                creature.name = &argv[i][2];
+                if (creature.name.length() > 40) {
+                    creature.name.resize(40);
+                }
             }
             break;
         case 'm':
