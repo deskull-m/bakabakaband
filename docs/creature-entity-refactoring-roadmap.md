@@ -28,7 +28,7 @@ Phase 1-8 完了後に残存している統合作業項目を整理したもの�
 
 ---
 
-## 提案 1: プレイヤー専用フィールドのクリーチャー共通化
+## 提案 1: プレイヤー専用フィールドのクリーチャー共通化 🚧 一部完了
 
 ### 背景
 
@@ -70,9 +70,15 @@ ESP 系 BIT_FLAGS 等）が残存している。モンスターでも将来運�
 - モンスターに種族・職業・熟練度等の概念を導入する下地が整う
 - コード分岐（`if (creature.is_player()) ...`）の削減
 
+### 進捗
+
+- ✅ モンスター生成時に `prace` / `pclass` / `realm1` / `realm2` /
+  `element_realm` を NONE に明示初期化（`init_monster_profile()`）
+- 🚧 残り: `ppersonality` / `psex` 用の NONE 値追加、virtual アクセサ整備
+
 ---
 
-## 提案 2: プレイヤー専用仮想メソッドのクリーチャー共通化
+## 提案 2: プレイヤー専用仮想メソッドのクリーチャー共通化 🚧 一部完了
 
 ### 背景
 
@@ -112,9 +118,18 @@ Phase 2 で基本的な状態チェックは virtual 化済みだが、能力問
 - プレイヤー / モンスターの分岐コードが削減される
 - 将来モンスターに職業・種族・突然変異を運用する際の API が揃う
 
+### 進捗
+
+- ✅ ESP 判定（`has_telepathy()` / `has_esp_*()`）の virtual 化と
+  読み取り side の call site 移行
+- ✅ 視認・水泳・浮遊（`can_see_invisible()` / `has_can_swim()` /
+  `has_levitation()`）の virtual 化と call site 移行
+- 🚧 残り: 呪い判定（`cursed` 66 箇所）、特殊攻撃防御（`special_*` 31 箇所）、
+  `get_race()` / `get_class()` / `get_personality()` の null-safe 化
+
 ---
 
-## 提案 3: 残存する `PlayerType::get_instance()` 多用箇所の削減
+## 提案 3: 残存する `PlayerType::get_instance()` 多用箇所の削減 ✅ 完了
 
 ### 背景
 
@@ -135,9 +150,17 @@ git grep -n "PlayerType::get_instance()" -- 'src/**/*.cpp' | wc -l
 - ない場合は引数追加 PR を挟む
 - グローバル参照を完全排除することでテスト容易性も向上
 
+### 進捗
+
+- ✅ 同一関数内で複数回呼んでいた箇所をローカル束縛に整理（52 → 32 箇所）
+- ✅ 残り 32 箇所はエントリポイント・シグナルハンドラ・UI
+  コールバックの「プレイヤー参照の根」で正当な使用
+- これ以上の削減は UI 層に `CreatureEntity &` 引数を渡す大規模変更が必要で、
+  費用対効果が低いため現状でクローズとする
+
 ---
 
-## 提案 4: 未統合の状態チェック関数の仮想化
+## 提案 4: 未統合の状態チェック関数の仮想化 🚧 保留
 
 ### 背景
 
@@ -160,9 +183,17 @@ Phase 2 で主要な `is_xxx()` 系は仮想化済みだが、以下はまだ自
 実装で `MonsterProfile` 経由の参照と `PlayerType` 経由の参照を
 統合する。
 
+### 進捗
+
+- 🚧 保留: `has_resist_*()` 等の関数は既に `CreatureEntity &`
+  引数を取るが、実装内部が装備品・ミューテーション・職業特典を
+  参照する大規模ロジック。モンスター向けに分岐を差し込むには
+  各関数を丁寧に書き換える必要があり工数大。
+- `is_time_limit_esp()` / `is_time_limit_stealth()` は既に virtual 化済み
+
 ---
 
-## 提案 5: TimedEffects オブジェクトとの二重管理解消
+## 提案 5: TimedEffects オブジェクトとの二重管理解消 🚧 一部完了
 
 ### 背景
 
@@ -192,6 +223,17 @@ Phase 2 で主要な `is_xxx()` 系は仮想化済みだが、以下はまだ自
 本書の設計方針に合わせ、モンスターにも `TimedEffects` オブジェクトを
 持たせて運用する方向で統一する。メッセージ処理・ティック処理の
 プレイヤー依存部分は virtual メソッド経由で差し替え可能にしておく。
+
+### 進捗
+
+- ✅ 全クリーチャーが `timed_effects` shared_ptr を基底クラス
+  コンストラクタで確保する形に統一（`CreatureEntity()`）
+- ✅ 基底クラス `CreatureEntity::get_timed_effect` / `set_timed_effect` に
+  TimedEffects オブジェクト優先の分岐ロジックを集約。`PlayerType` 側の
+  オーバーライドを廃止し、プレイヤー・モンスターで API 経路を統一
+- 🚧 残り: 残効果（HERO/BLESSED/INVULN 等の map 経由効果）も
+  `TimedEffects` オブジェクトに移すか、`TimedEffects` を縮退させて
+  全て map 経由にするかの方針決定・実装
 
 ---
 
