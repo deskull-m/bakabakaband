@@ -922,6 +922,55 @@ public:
     {
         return this->levitation != 0;
     }
+    /*!
+     * @brief 麻痺耐性の有無
+     */
+    virtual bool has_free_act() const
+    {
+        return this->free_act != 0;
+    }
+    /*!
+     * @brief 反魔法能力の有無
+     */
+    virtual bool has_anti_magic() const
+    {
+        return this->anti_magic != 0;
+    }
+    /*!
+     * @brief テレポート阻害の有無
+     */
+    virtual bool has_anti_tele() const
+    {
+        return this->anti_tele != 0;
+    }
+    /*!
+     * @brief 自動再生能力の有無（フィールド値）
+     */
+    virtual bool has_regen_flag() const
+    {
+        return this->regenerate != 0;
+    }
+    /*!
+     * @brief 経験値吸収耐性の有無
+     */
+    virtual bool has_hold_exp() const
+    {
+        return this->hold_exp != 0;
+    }
+    /*!
+     * @brief 低速消化能力の有無
+     */
+    virtual bool has_slow_digest_flag() const
+    {
+        return this->slow_digest != 0;
+    }
+    /*!
+     * @brief 夜間視能力の有無
+     */
+    virtual bool has_see_nocto() const
+    {
+        return this->see_nocto != 0;
+    }
 
     /*!
      * @brief クリーチャーのコピーを返す

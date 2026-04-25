@@ -302,7 +302,7 @@ static int calculate_hp_regen_rate(CreatureEntity &creature)
     }
 
     // 再生能力
-    if (creature.regenerate) {
+    if (creature.has_regen_flag()) {
         regen_amount = regen_amount * 2;
     }
 
@@ -372,7 +372,7 @@ static int calculate_mp_regen_rate(CreatureEntity &creature)
     }
 
     // 再生能力
-    if (creature.regenerate) {
+    if (creature.has_regen_flag()) {
         regen_amount = regen_amount * 2;
     }
 

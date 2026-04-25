@@ -65,15 +65,15 @@ void set_body_improvement_info_2(CreatureEntity &creature, self_info_type *self_
         self_ptr->info_list.emplace_back(_("あなたは飛ぶことができる。", "You can fly."));
     }
 
-    if (creature.free_act) {
+    if (creature.has_free_act()) {
         self_ptr->info_list.emplace_back(_("あなたは麻痺知らずの効果を持っている。", "You have free action."));
     }
 
-    if (creature.regenerate) {
+    if (creature.has_regen_flag()) {
         self_ptr->info_list.emplace_back(_("あなたは素早く体力を回復する。", "You regenerate quickly."));
     }
 
-    if (creature.slow_digest) {
+    if (creature.has_slow_digest_flag()) {
         self_ptr->info_list.emplace_back(_("あなたは食欲が少ない。", "Your appetite is small."));
     }
 }
@@ -81,7 +81,7 @@ void set_body_improvement_info_2(CreatureEntity &creature, self_info_type *self_
 /*!< @todo 並び順の都合で連番を付ける。まとめても良いならまとめてしまう予定 */
 void set_body_improvement_info_3(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    if (creature.hold_exp) {
+    if (creature.has_hold_exp()) {
         self_ptr->info_list.emplace_back(_("あなたは自己の経験値をしっかりと維持する。", "You have a firm hold on your experience."));
     }
 
@@ -125,11 +125,11 @@ void set_body_improvement_info_3(CreatureEntity &creature, self_info_type *self_
         self_ptr->info_list.emplace_back(_("あなたは闘気のオーラに包まれている。", "You are surrounded with an energy aura."));
     }
 
-    if (creature.anti_magic) {
+    if (creature.has_anti_magic()) {
         self_ptr->info_list.emplace_back(_("あなたは反魔法シールドに包まれている。", "You are surrounded by an anti-magic shell."));
     }
 
-    if (creature.anti_tele) {
+    if (creature.has_anti_tele()) {
         self_ptr->info_list.emplace_back(_("あなたはテレポートできない。", "You cannot teleport."));
     }
 

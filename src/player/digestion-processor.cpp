@@ -34,7 +34,7 @@ void starve_player(CreatureEntity &creature)
         (void)set_food(creature, creature.food - 100);
     } else if (AngbandWorld::get_instance().game_turn % (TURNS_PER_TICK * 5) == 0) {
         int digestion = speed_to_energy(creature.get_speed());
-        if (creature.regenerate) {
+        if (creature.has_regen_flag()) {
             digestion += 20;
         }
         CreatureClass pc(creature);
@@ -45,7 +45,7 @@ void starve_player(CreatureEntity &creature)
             digestion += 30;
         }
 
-        if (creature.slow_digest) {
+        if (creature.has_slow_digest_flag()) {
             digestion -= 5;
         }
 

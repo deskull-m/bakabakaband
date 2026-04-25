@@ -257,7 +257,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
         if (!has_resist_conf(creature)) {
             (void)bss.mod_confusion(randint0(4) + 4);
         }
-        if (!creature.free_act) {
+        if (!creature.has_free_act()) {
             (void)bss.mod_paralysis(randint0(4) + 4);
         }
         if (!has_resist_chaos(creature)) {

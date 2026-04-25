@@ -151,7 +151,7 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
     /* Paralyze */
     if (trap.has(ChestTrapType::PARALYZE)) {
         msg_print(_("突如吹き出した黄色いガスに包み込まれた！", "A puff of yellow gas surrounds you!"));
-        if (!this->creature_ptr->free_act) {
+        if (!this->creature_ptr->has_free_act()) {
             (void)BadStatusSetter(*this->creature_ptr).mod_paralysis(10 + randint1(20));
         }
     }
@@ -253,7 +253,7 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
             }
 
             if (one_in_(4)) {
-                if (!this->creature_ptr->free_act) {
+                if (!this->creature_ptr->has_free_act()) {
                     (void)bss.mod_paralysis(2 + randint0(6));
                 } else {
                     (void)bss.mod_stun(10 + randint0(100));

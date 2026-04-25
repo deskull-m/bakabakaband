@@ -34,7 +34,7 @@ void check_music(CreatureEntity &creature)
         return;
     }
 
-    if (creature.anti_magic) {
+    if (creature.has_anti_magic()) {
         stop_singing(creature);
         return;
     }

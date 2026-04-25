@@ -30,7 +30,7 @@ bool cmd_limit_cast(CreatureEntity &creature)
         return true;
     }
 
-    if (creature.anti_magic) {
+    if (creature.has_anti_magic()) {
         msg_print(_("反魔法バリアが魔法を邪魔した！", "An anti-magic shell disrupts your magic!"));
         return true;
     }

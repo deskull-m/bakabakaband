@@ -413,7 +413,7 @@ void process_player_hp_mp(CreatureEntity &creature)
     if (pattern_effect(creature)) {
         cave_no_regen = true;
     } else {
-        if (creature.regenerate) {
+        if (creature.has_regen_flag()) {
             regen_amount = regen_amount * 2;
         }
 

@@ -78,7 +78,7 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
         return;
     }
 
-    if ((m_idx <= 0) && creature.anti_tele) {
+    if ((m_idx <= 0) && creature.has_anti_tele()) {
         msg_print(_("不思議な力がテレポートを防いだ！", "A mysterious force prevents you from teleporting!"));
         return;
     }

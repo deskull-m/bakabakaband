@@ -189,7 +189,7 @@ void SpellHex::decrease_mana()
     }
 
     auto need_restart = this->check_restart();
-    if (this->creature.anti_magic) {
+    if (this->creature.has_anti_magic()) {
         this->stop_all_spells();
         return;
     }

@@ -266,7 +266,7 @@ static void calc_blow_drain_life(CreatureEntity &creature, MonsterAttackPlayer *
 {
     int32_t d = Dice::roll(60, 6) + (creature.exp / 100) * MON_DRAIN_LIFE;
     monap_ptr->obvious = true;
-    if (creature.hold_exp) {
+    if (creature.has_hold_exp()) {
         monap_ptr->damage = monap_ptr->damage * 9 / 10;
     }
 
@@ -326,10 +326,10 @@ static void calc_blow_inertia(CreatureEntity &creature, MonsterAttackPlayer *mon
  */
 static void calc_blow_hungry(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    if (creature.regenerate) {
+    if (creature.has_regen_flag()) {
         monap_ptr->damage = monap_ptr->damage * 2;
     }
-    if (creature.slow_digest) {
+    if (creature.has_slow_digest_flag()) {
         monap_ptr->damage = monap_ptr->damage / 2;
     }
 
@@ -590,7 +590,7 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
             }
             monap_ptr->obvious = true;
 
-            if (!has_chaos_resist && creature.anti_tele == 0) {
+            if (!has_chaos_resist && creature.has_anti_tele() == 0) {
                 msg_print(_("突然体が浮きだした！", "Your body floats suddenly!"));
                 teleport_player(creature, 50, TELEPORT_PASSIVE);
             }
@@ -635,7 +635,7 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
     }
 
     case RaceBlowEffectType::LOCKUP: { /* AC軽減あり / Player armor reduces total damage */
-        if (creature.anti_tele == 0) {
+        if (creature.has_anti_tele() == 0) {
             teleport_player(creature, 50, TELEPORT_PASSIVE);
             wall_creation(creature, creature.y, creature.x);
         }

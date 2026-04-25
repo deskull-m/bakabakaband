@@ -377,7 +377,7 @@ void note_spot(CreatureEntity &creature, const Pos2D &pos)
         /* Require "perma-lite" of the grid */
         if ((grid.info & (CAVE_GLOW | CAVE_MNDK)) != CAVE_GLOW) {
             /* Not Ninja */
-            if (!creature.see_nocto) {
+            if (!creature.has_see_nocto()) {
                 return;
             }
         }
@@ -398,7 +398,7 @@ void note_spot(CreatureEntity &creature, const Pos2D &pos)
         /* Memorize some "boring" grids */
         if (terrain.flags.has_not(TerrainCharacteristics::REMEMBER)) {
             /* Option -- memorize all torch-lit floors */
-            if (view_torch_grids && ((grid.info & (CAVE_LITE | CAVE_MNLT)) || creature.see_nocto)) {
+            if (view_torch_grids && ((grid.info & (CAVE_LITE | CAVE_MNLT)) || creature.has_see_nocto())) {
                 grid.info |= (CAVE_MARK);
             }
 
@@ -419,7 +419,7 @@ void note_spot(CreatureEntity &creature, const Pos2D &pos)
         }
 
         /* Memorize walls seen by noctovision of Ninja */
-        else if (creature.see_nocto) {
+        else if (creature.has_see_nocto()) {
             grid.info |= (CAVE_MARK);
         }
 

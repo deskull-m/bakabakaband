@@ -123,7 +123,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
     }
 
     if (creature.muta.has(PlayerMutationType::RTELEPORT) && (randint1(5000) == 88)) {
-        if (!has_resist_shard(creature) && creature.muta.has_not(PlayerMutationType::VTELEPORT) && !creature.anti_tele) {
+        if (!has_resist_shard(creature) && creature.muta.has_not(PlayerMutationType::VTELEPORT) && !creature.has_anti_tele()) {
             disturb(creature, false, true);
             msg_print(_("あなたの位置は突然ひじょうに不確定になった...", "Your position suddenly seems very uncertain..."));
             msg_erase();
@@ -204,7 +204,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
         (void)set_acceleration(creature, 10 + randint1(creature.level), false);
     }
 
-    if (creature.muta.has(PlayerMutationType::PROD_MANA) && !creature.anti_magic && one_in_(9000)) {
+    if (creature.muta.has(PlayerMutationType::PROD_MANA) && !creature.has_anti_magic() && one_in_(9000)) {
         disturb(creature, false, true);
         msg_print(_("魔法のエネルギーが突然あなたの中に流れ込んできた！エネルギーを解放しなければならない！",
             "Magical energy flows through you! You must release it!"));
@@ -215,7 +215,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
         fire_ball(creature, AttributeType::MANA, dir ? dir : Direction::self(), creature.level * 2, 3);
     }
 
-    if (creature.muta.has(PlayerMutationType::ATT_DEMON) && !creature.anti_magic && (randint1(6666) == 666)) {
+    if (creature.muta.has(PlayerMutationType::ATT_DEMON) && !creature.has_anti_magic() && (randint1(6666) == 666)) {
         bool pet = one_in_(6);
         BIT_FLAGS mode = PM_ALLOW_GROUP;
 
@@ -231,7 +231,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
         }
     }
 
-    if (creature.muta.has(PlayerMutationType::ATT_NASTY) && !creature.anti_magic && (randint1(6666) == 666)) {
+    if (creature.muta.has(PlayerMutationType::ATT_NASTY) && !creature.has_anti_magic() && (randint1(6666) == 666)) {
         bool pet = one_in_(6);
         BIT_FLAGS mode = PM_ALLOW_GROUP;
 
@@ -247,7 +247,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
         }
     }
 
-    if (has_pervert_attraction(creature) && !creature.anti_magic && (randint1(6666) == 666)) {
+    if (has_pervert_attraction(creature) && !creature.has_anti_magic() && (randint1(6666) == 666)) {
         bool pet = one_in_(6);
         BIT_FLAGS mode = PM_ALLOW_GROUP;
 
@@ -323,7 +323,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
         unlite_area(creature, 50, 10);
     }
 
-    if (creature.muta.has(PlayerMutationType::ATT_ANIMAL) && !creature.anti_magic && one_in_(7000)) {
+    if (creature.muta.has(PlayerMutationType::ATT_ANIMAL) && !creature.has_anti_magic() && one_in_(7000)) {
         bool pet = one_in_(3);
         BIT_FLAGS mode = PM_ALLOW_GROUP;
 
@@ -339,7 +339,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
         }
     }
 
-    if (creature.muta.has(PlayerMutationType::RAW_CHAOS) && !creature.anti_magic && one_in_(8000)) {
+    if (creature.muta.has(PlayerMutationType::RAW_CHAOS) && !creature.has_anti_magic() && one_in_(8000)) {
         disturb(creature, false, true);
         msg_print(_("周りの空間が歪んでいる気がする！", "You feel the world warping around you!"));
         msg_erase();
@@ -352,7 +352,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
         }
     }
 
-    if (creature.muta.has(PlayerMutationType::WRAITH) && !creature.anti_magic && one_in_(3000)) {
+    if (creature.muta.has(PlayerMutationType::WRAITH) && !creature.has_anti_magic() && one_in_(3000)) {
         disturb(creature, false, true);
         msg_print(_("非物質化した！", "You feel insubstantial!"));
         msg_erase();
@@ -411,7 +411,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
         }
     }
 
-    if (creature.muta.has(PlayerMutationType::ATT_DRAGON) && !creature.anti_magic && one_in_(3000)) {
+    if (creature.muta.has(PlayerMutationType::ATT_DRAGON) && !creature.has_anti_magic() && one_in_(3000)) {
         bool pet = one_in_(5);
         BIT_FLAGS mode = PM_ALLOW_GROUP;
         if (pet) {
@@ -426,7 +426,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
         }
     }
 
-    if (creature.muta.has(PlayerMutationType::WEIRD_MIND) && !creature.anti_magic && one_in_(3000)) {
+    if (creature.muta.has(PlayerMutationType::WEIRD_MIND) && !creature.has_anti_magic() && one_in_(3000)) {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_ESP) > 0) {
             msg_print(_("精神にもやがかかった！", "Your mind feels cloudy!"));
             set_tim_esp(creature, 0, true);
@@ -436,7 +436,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
         }
     }
 
-    if (creature.muta.has(PlayerMutationType::NAUSEA) && !creature.slow_digest && one_in_(9000)) {
+    if (creature.muta.has(PlayerMutationType::NAUSEA) && !creature.has_slow_digest_flag() && one_in_(9000)) {
         disturb(creature, false, true);
         msg_print(_("胃が痙攣し、食事を失った！", "Your stomach roils, and you lose your lunch!"));
         msg_erase();
@@ -451,7 +451,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
         }
     }
 
-    if (creature.muta.has(PlayerMutationType::WALK_SHAD) && !creature.anti_magic && one_in_(12000) && !creature.get_floor()->inside_arena) {
+    if (creature.muta.has(PlayerMutationType::WALK_SHAD) && !creature.has_anti_magic() && one_in_(12000) && !creature.get_floor()->inside_arena) {
         reserve_alter_reality(creature, randint0(21) + 15);
     }
 
@@ -484,7 +484,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
         }
     }
 
-    if (creature.muta.has(PlayerMutationType::INVULN) && !creature.anti_magic && one_in_(5000)) {
+    if (creature.muta.has(PlayerMutationType::INVULN) && !creature.has_anti_magic() && one_in_(5000)) {
         disturb(creature, false, true);
         msg_print(_("無敵な気がする！", "You feel invincible!"));
         msg_erase();
@@ -509,7 +509,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
         }
     }
 
-    if (creature.muta.has(PlayerMutationType::HP_TO_SP) && !creature.anti_magic && one_in_(4000)) {
+    if (creature.muta.has(PlayerMutationType::HP_TO_SP) && !creature.has_anti_magic() && one_in_(4000)) {
         int wounds = (int)(creature.msp - creature.csp);
         if (wounds > 0) {
             int healing = creature.hp;

@@ -64,7 +64,7 @@ bool player_can_see_bold(CreatureEntity &creature, POSITION y, POSITION x)
     }
 
     /* Noctovision of Ninja */
-    if (creature.see_nocto) {
+    if (creature.has_see_nocto()) {
         return true;
     }
 

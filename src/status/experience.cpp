@@ -76,12 +76,12 @@ bool drain_exp(CreatureEntity &creature, int32_t drain, int32_t slip, int hold_e
         return false;
     }
 
-    if (creature.hold_exp && evaluate_percent(hold_exp_prob)) {
+    if (creature.has_hold_exp() && evaluate_percent(hold_exp_prob)) {
         msg_print(_("しかし自己の経験値を守りきった！", "You keep hold of your experience!"));
         return false;
     }
 
-    if (creature.hold_exp) {
+    if (creature.has_hold_exp()) {
         msg_print(_("経験値を少し吸い取られた気がする！", "You feel your experience slipping away!"));
         lose_exp(creature, slip);
     } else {

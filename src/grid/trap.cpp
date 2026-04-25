@@ -410,7 +410,7 @@ void hit_trap(CreatureEntity &creature, bool break_trap)
         break;
     case TrapType::SLEEP:
         msg_print(_("奇妙な白い霧に包まれた！", "A strange white mist surrounds you!"));
-        if (creature.free_act) {
+        if (creature.has_free_act()) {
             break;
         }
 

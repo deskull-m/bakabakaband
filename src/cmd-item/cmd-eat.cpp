@@ -154,7 +154,7 @@ static bool exe_eat_corpse_type_object(CreatureEntity &creature, ItemEntity *o_p
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::SLEEP)) {
-        if (!creature.free_act) {
+        if (!creature.has_free_act()) {
             BadStatusSetter(creature).set_paralysis(10 + randint1(10));
         }
     }
@@ -317,7 +317,7 @@ static bool exe_eat_food_type_object(CreatureEntity &creature, const BaseitemKey
         }
         break;
     case SV_FOOD_PARALYSIS:
-        if (!creature.free_act) {
+        if (!creature.has_free_act()) {
             if (bss.set_paralysis(10 + randint1(10))) {
                 creature.plus_incident_tree("EAT_POISON", 1);
                 return true;

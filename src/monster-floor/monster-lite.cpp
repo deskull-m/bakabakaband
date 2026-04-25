@@ -151,7 +151,7 @@ void update_mon_lite(CreatureEntity &creature)
     void (*add_mon_lite)(FloorType &, std::vector<Pos2D> &, const Pos2D &p_pos, const Pos2D &pos, const monster_lite_type &);
     auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
-    const auto dis_lim = (dungeon.flags.has(DungeonFeatureType::DARKNESS) && !creature.see_nocto) ? (MAX_PLAYER_SIGHT / 2 + 1) : (MAX_PLAYER_SIGHT + 3);
+    const auto dis_lim = (dungeon.flags.has(DungeonFeatureType::DARKNESS) && !creature.has_see_nocto()) ? (MAX_PLAYER_SIGHT / 2 + 1) : (MAX_PLAYER_SIGHT + 3);
     floor.reset_mon_lite();
     const auto &world = AngbandWorld::get_instance();
     const auto p_pos = creature.get_position();

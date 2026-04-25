@@ -1102,7 +1102,7 @@ bool do_cmd_cast(CreatureEntity &creature)
                 msg_print(_("痛い！", "It hurts!"));
                 take_hit(creature, DAMAGE_LOSELIFE, Dice::roll(sval + 1, 6), _("暗黒魔法の逆流", "a miscast Death spell"));
 
-                if ((spell_id > 15) && one_in_(6) && !creature.hold_exp) {
+                if ((spell_id > 15) && one_in_(6) && !creature.has_hold_exp()) {
                     lose_exp(creature, spell_id * 250);
                 }
             }
