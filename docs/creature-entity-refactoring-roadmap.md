@@ -131,9 +131,11 @@ Phase 2 で基本的な状態チェックは virtual 化済みだが、能力問
   `has_impact_flag()`, `has_earthquake_flag()`, `has_dec_mana()`,
   `has_easy_spell()`, `has_hard_spell()`, `has_mighty_throw()`,
   `has_xtra_might()` と該当 call site の移行
-- 🚧 残り: 呪い判定（`cursed.has(flag)` 形式 66 箇所）、突然変異
-  （`muta.has(flag)` / `trait.has(flag)` 形式）、`race`/`personality`/
-  `pclass_ref` ポインタの null-safe アクセサ化
+- ✅ EnumClassFlagGroup 構造体メンバの const 参照返し virtual アクセサ:
+  `get_mutations()` / `get_traits()` / `get_cursed_flags()` /
+  `get_cursed_special_flags()` と読取り用途 call site 427 箇所の移行
+- 🚧 残り: `race` / `personality` / `pclass_ref` ポインタの null-safe
+  アクセサ化、書込み系セッターの整備
 
 ---
 
