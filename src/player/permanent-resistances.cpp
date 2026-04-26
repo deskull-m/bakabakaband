@@ -26,33 +26,33 @@ static void add_mutation_flags(CreatureEntity &creature, TrFlags &flags)
         return;
     }
 
-    if (creature.muta.has(PlayerMutationType::FLESH_ROT)) {
+    if (creature.get_mutations().has(PlayerMutationType::FLESH_ROT)) {
         flags.reset(TR_REGEN);
     }
-    if (creature.muta.has_any_of({ PlayerMutationType::XTRA_FAT, PlayerMutationType::XTRA_LEGS, PlayerMutationType::SHORT_LEG, PlayerMutationType::WEAK_LOWER_BODY })) {
+    if (creature.get_mutations().has_any_of({ PlayerMutationType::XTRA_FAT, PlayerMutationType::XTRA_LEGS, PlayerMutationType::SHORT_LEG, PlayerMutationType::WEAK_LOWER_BODY })) {
         flags.set(TR_SPEED);
     }
-    if (creature.muta.has(PlayerMutationType::ELEC_TOUC)) {
+    if (creature.get_mutations().has(PlayerMutationType::ELEC_TOUC)) {
         flags.set(TR_SH_ELEC);
     }
-    if (creature.muta.has(PlayerMutationType::FIRE_BODY)) {
+    if (creature.get_mutations().has(PlayerMutationType::FIRE_BODY)) {
         flags.set(TR_SH_FIRE);
         flags.set(TR_LITE_1);
     }
 
-    if (creature.muta.has(PlayerMutationType::WINGS)) {
+    if (creature.get_mutations().has(PlayerMutationType::WINGS)) {
         flags.set(TR_LEVITATION);
     }
-    if (creature.muta.has(PlayerMutationType::FEARLESS)) {
+    if (creature.get_mutations().has(PlayerMutationType::FEARLESS)) {
         flags.set(TR_RES_FEAR);
     }
-    if (creature.muta.has(PlayerMutationType::REGEN)) {
+    if (creature.get_mutations().has(PlayerMutationType::REGEN)) {
         flags.set(TR_REGEN);
     }
-    if (creature.muta.has(PlayerMutationType::ESP)) {
+    if (creature.get_mutations().has(PlayerMutationType::ESP)) {
         flags.set(TR_TELEPATHY);
     }
-    if (creature.muta.has(PlayerMutationType::MOTION)) {
+    if (creature.get_mutations().has(PlayerMutationType::MOTION)) {
         flags.set(TR_FREE_ACT);
     }
 }

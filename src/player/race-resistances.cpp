@@ -114,7 +114,7 @@ void player_vulnerability_flags(CreatureEntity &creature, TrFlags &flags)
 {
     flags.clear();
 
-    if (creature.muta.has(PlayerMutationType::VULN_ELEM) || CreatureClass(creature).samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
+    if (creature.get_mutations().has(PlayerMutationType::VULN_ELEM) || CreatureClass(creature).samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         flags.set(TR_RES_ACID);
         flags.set(TR_RES_ELEC);
         flags.set(TR_RES_FIRE);

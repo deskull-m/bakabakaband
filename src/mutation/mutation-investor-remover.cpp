@@ -24,7 +24,7 @@ static void sweep_gain_mutation(CreatureEntity &creature, glm_type *gm_ptr)
 
     while (attempts_left--) {
         switch_gain_mutation(creature, gm_ptr);
-        if (gm_ptr->muta_which != PlayerMutationType::MAX && creature.muta.has_not(gm_ptr->muta_which)) {
+        if (gm_ptr->muta_which != PlayerMutationType::MAX && creature.get_mutations().has_not(gm_ptr->muta_which)) {
             gm_ptr->muta_chosen = true;
         }
 
@@ -41,31 +41,31 @@ static void race_dependent_mutation(CreatureEntity &creature, glm_type *gm_ptr)
     }
 
     CreatureRace pr(&creature);
-    if (pr.equals(PlayerRaceType::VAMPIRE) && creature.muta.has_not(PlayerMutationType::HYPN_GAZE) && (randint1(10) < 7)) {
+    if (pr.equals(PlayerRaceType::VAMPIRE) && creature.get_mutations().has_not(PlayerMutationType::HYPN_GAZE) && (randint1(10) < 7)) {
         gm_ptr->muta_which = PlayerMutationType::HYPN_GAZE;
         gm_ptr->muta_desc = _("眼が幻惑的になった...", "Your eyes look mesmerizing...");
         return;
     }
 
-    if (pr.equals(PlayerRaceType::IMP) && creature.muta.has_not(PlayerMutationType::HORNS) && (randint1(10) < 7)) {
+    if (pr.equals(PlayerRaceType::IMP) && creature.get_mutations().has_not(PlayerMutationType::HORNS) && (randint1(10) < 7)) {
         gm_ptr->muta_which = PlayerMutationType::HORNS;
         gm_ptr->muta_desc = _("角が額から生えてきた！", "Horns pop forth into your forehead!");
         return;
     }
 
-    if (pr.equals(PlayerRaceType::YEEK) && creature.muta.has_not(PlayerMutationType::SHRIEK) && (randint1(10) < 7)) {
+    if (pr.equals(PlayerRaceType::YEEK) && creature.get_mutations().has_not(PlayerMutationType::SHRIEK) && (randint1(10) < 7)) {
         gm_ptr->muta_which = PlayerMutationType::SHRIEK;
         gm_ptr->muta_desc = _("声質がかなり強くなった。", "Your vocal cords get much tougher.");
         return;
     }
 
-    if (pr.equals(PlayerRaceType::BEASTMAN) && creature.muta.has_not(PlayerMutationType::POLYMORPH) && (randint1(10) < 2)) {
+    if (pr.equals(PlayerRaceType::BEASTMAN) && creature.get_mutations().has_not(PlayerMutationType::POLYMORPH) && (randint1(10) < 2)) {
         gm_ptr->muta_which = PlayerMutationType::POLYMORPH;
         gm_ptr->muta_desc = _("あなたの肉体は変化できるようになった、", "Your body seems mutable.");
         return;
     }
 
-    if (pr.equals(PlayerRaceType::MIND_FLAYER) && creature.muta.has_not(PlayerMutationType::TENTACLES) && (randint1(10) < 7)) {
+    if (pr.equals(PlayerRaceType::MIND_FLAYER) && creature.get_mutations().has_not(PlayerMutationType::TENTACLES) && (randint1(10) < 7)) {
         gm_ptr->muta_which = PlayerMutationType::TENTACLES;
         gm_ptr->muta_desc = _("邪悪な触手が口の周りに生えた。", "Evil-looking tentacles sprout from your mouth.");
     }
@@ -74,7 +74,7 @@ static void race_dependent_mutation(CreatureEntity &creature, glm_type *gm_ptr)
 static void neutralize_base_status(CreatureEntity &creature, glm_type *gm_ptr)
 {
     if (gm_ptr->muta_which == PlayerMutationType::PUNY) {
-        if (creature.muta.has(PlayerMutationType::HYPER_STR)) {
+        if (creature.get_mutations().has(PlayerMutationType::HYPER_STR)) {
             msg_print(_("あなたはもう超人的に強くはない！", "You no longer feel super-strong!"));
             creature.muta.reset(PlayerMutationType::HYPER_STR);
         }
@@ -83,7 +83,7 @@ static void neutralize_base_status(CreatureEntity &creature, glm_type *gm_ptr)
     }
 
     if (gm_ptr->muta_which == PlayerMutationType::HYPER_STR) {
-        if (creature.muta.has(PlayerMutationType::PUNY)) {
+        if (creature.get_mutations().has(PlayerMutationType::PUNY)) {
             msg_print(_("あなたはもう虚弱ではない！", "You no longer feel puny!"));
             creature.muta.reset(PlayerMutationType::PUNY);
         }
@@ -92,7 +92,7 @@ static void neutralize_base_status(CreatureEntity &creature, glm_type *gm_ptr)
     }
 
     if (gm_ptr->muta_which == PlayerMutationType::MORONIC) {
-        if (creature.muta.has(PlayerMutationType::HYPER_INT)) {
+        if (creature.get_mutations().has(PlayerMutationType::HYPER_INT)) {
             msg_print(_("あなたの脳はもう生体コンピュータではない。", "Your brain is no longer a living computer."));
             creature.muta.reset(PlayerMutationType::HYPER_INT);
         }
@@ -101,7 +101,7 @@ static void neutralize_base_status(CreatureEntity &creature, glm_type *gm_ptr)
     }
 
     if (gm_ptr->muta_which == PlayerMutationType::HYPER_INT) {
-        if (creature.muta.has(PlayerMutationType::MORONIC)) {
+        if (creature.get_mutations().has(PlayerMutationType::MORONIC)) {
             msg_print(_("あなたはもう精神薄弱ではない。", "You are no longer moronic."));
             creature.muta.reset(PlayerMutationType::MORONIC);
         }
@@ -110,17 +110,17 @@ static void neutralize_base_status(CreatureEntity &creature, glm_type *gm_ptr)
     }
 
     if (gm_ptr->muta_which == PlayerMutationType::IRON_SKIN) {
-        if (creature.muta.has(PlayerMutationType::SCALES)) {
+        if (creature.get_mutations().has(PlayerMutationType::SCALES)) {
             msg_print(_("鱗がなくなった。", "You lose your scales."));
             creature.muta.reset(PlayerMutationType::SCALES);
         }
 
-        if (creature.muta.has(PlayerMutationType::FLESH_ROT)) {
+        if (creature.get_mutations().has(PlayerMutationType::FLESH_ROT)) {
             msg_print(_("肉体が腐乱しなくなった。", "Your flesh rots no longer."));
             creature.muta.reset(PlayerMutationType::FLESH_ROT);
         }
 
-        if (creature.muta.has(PlayerMutationType::WART_SKIN)) {
+        if (creature.get_mutations().has(PlayerMutationType::WART_SKIN)) {
             msg_print(_("肌のイボイボがなくなった。", "You lose your warts."));
             creature.muta.reset(PlayerMutationType::WART_SKIN);
         }
@@ -129,7 +129,7 @@ static void neutralize_base_status(CreatureEntity &creature, glm_type *gm_ptr)
     }
 
     if (gm_ptr->muta_which == PlayerMutationType::WART_SKIN || gm_ptr->muta_which == PlayerMutationType::SCALES || gm_ptr->muta_which == PlayerMutationType::FLESH_ROT) {
-        if (creature.muta.has(PlayerMutationType::IRON_SKIN)) {
+        if (creature.get_mutations().has(PlayerMutationType::IRON_SKIN)) {
             msg_print(_("あなたの肌はもう鉄ではない。", "Your skin is no longer made of steel."));
             creature.muta.reset(PlayerMutationType::IRON_SKIN);
         }
@@ -138,7 +138,7 @@ static void neutralize_base_status(CreatureEntity &creature, glm_type *gm_ptr)
     }
 
     if (gm_ptr->muta_which == PlayerMutationType::FEARLESS) {
-        if (creature.muta.has(PlayerMutationType::COWARDICE)) {
+        if (creature.get_mutations().has(PlayerMutationType::COWARDICE)) {
             msg_print(_("臆病でなくなった。", "You are no longer cowardly."));
             creature.muta.reset(PlayerMutationType::COWARDICE);
         }
@@ -147,7 +147,7 @@ static void neutralize_base_status(CreatureEntity &creature, glm_type *gm_ptr)
     }
 
     if (gm_ptr->muta_which == PlayerMutationType::FLESH_ROT) {
-        if (creature.muta.has(PlayerMutationType::REGEN)) {
+        if (creature.get_mutations().has(PlayerMutationType::REGEN)) {
             msg_print(_("急速に回復しなくなった。", "You stop regenerating."));
             creature.muta.reset(PlayerMutationType::REGEN);
         }
@@ -156,7 +156,7 @@ static void neutralize_base_status(CreatureEntity &creature, glm_type *gm_ptr)
     }
 
     if (gm_ptr->muta_which == PlayerMutationType::REGEN) {
-        if (creature.muta.has(PlayerMutationType::FLESH_ROT)) {
+        if (creature.get_mutations().has(PlayerMutationType::FLESH_ROT)) {
             msg_print(_("肉体が腐乱しなくなった。", "Your flesh stops rotting."));
             creature.muta.reset(PlayerMutationType::FLESH_ROT);
         }
@@ -165,7 +165,7 @@ static void neutralize_base_status(CreatureEntity &creature, glm_type *gm_ptr)
     }
 
     if (gm_ptr->muta_which == PlayerMutationType::LIMBER) {
-        if (creature.muta.has(PlayerMutationType::ARTHRITIS)) {
+        if (creature.get_mutations().has(PlayerMutationType::ARTHRITIS)) {
             msg_print(_("関節が痛くなくなった。", "Your joints stop hurting."));
             creature.muta.reset(PlayerMutationType::ARTHRITIS);
         }
@@ -174,7 +174,7 @@ static void neutralize_base_status(CreatureEntity &creature, glm_type *gm_ptr)
     }
 
     if (gm_ptr->muta_which == PlayerMutationType::ARTHRITIS) {
-        if (creature.muta.has(PlayerMutationType::LIMBER)) {
+        if (creature.get_mutations().has(PlayerMutationType::LIMBER)) {
             msg_print(_("あなたはしなやかでなくなった。", "You no longer feel limber."));
             creature.muta.reset(PlayerMutationType::LIMBER);
         }
@@ -186,35 +186,35 @@ static void neutralize_base_status(CreatureEntity &creature, glm_type *gm_ptr)
 static void neutralize_other_status(CreatureEntity &creature, glm_type *gm_ptr)
 {
     if (gm_ptr->muta_which == PlayerMutationType::COWARDICE) {
-        if (creature.muta.has(PlayerMutationType::FEARLESS)) {
+        if (creature.get_mutations().has(PlayerMutationType::FEARLESS)) {
             msg_print(_("恐れ知らずでなくなった。", "You no longer feel fearless."));
             creature.muta.reset(PlayerMutationType::FEARLESS);
         }
     }
 
     if (gm_ptr->muta_which == PlayerMutationType::BEAK) {
-        if (creature.muta.has(PlayerMutationType::TRUNK)) {
+        if (creature.get_mutations().has(PlayerMutationType::TRUNK)) {
             msg_print(_("あなたの鼻はもう象の鼻のようではなくなった。", "Your nose is no longer elephantine."));
             creature.muta.reset(PlayerMutationType::TRUNK);
         }
     }
 
     if (gm_ptr->muta_which == PlayerMutationType::TRUNK) {
-        if (creature.muta.has(PlayerMutationType::BEAK)) {
+        if (creature.get_mutations().has(PlayerMutationType::BEAK)) {
             msg_print(_("硬いクチバシがなくなった。", "You no longer have a hard beak."));
             creature.muta.reset(PlayerMutationType::BEAK);
         }
     }
 
     if (gm_ptr->muta_which == PlayerMutationType::HOMO_SEXUAL) {
-        if (creature.muta.has(PlayerMutationType::BI_SEXUAL)) {
+        if (creature.get_mutations().has(PlayerMutationType::BI_SEXUAL)) {
             msg_print(_("あなたは同性しか興味を持たなくなった。", "You are only interested in the same sex."));
             creature.muta.reset(PlayerMutationType::BI_SEXUAL);
         }
     }
 
     if (gm_ptr->muta_which == PlayerMutationType::BI_SEXUAL) {
-        if (creature.muta.has(PlayerMutationType::HOMO_SEXUAL)) {
+        if (creature.get_mutations().has(PlayerMutationType::HOMO_SEXUAL)) {
             msg_print(_("あなたは同性のみならず、異性にも興味を持ち始めた。", "You have begun to be interested not only in the same sex but also in the opposite sex."));
             creature.muta.reset(PlayerMutationType::HOMO_SEXUAL);
         }
@@ -272,7 +272,7 @@ static void sweep_lose_mutation(CreatureEntity &creature, glm_type *glm_ptr)
     while (attempts_left--) {
         switch_lose_mutation(creature, glm_ptr);
         if (glm_ptr->muta_which != PlayerMutationType::MAX) {
-            if (creature.muta.has(glm_ptr->muta_which)) {
+            if (creature.get_mutations().has(glm_ptr->muta_which)) {
                 glm_ptr->muta_chosen = true;
             }
         }

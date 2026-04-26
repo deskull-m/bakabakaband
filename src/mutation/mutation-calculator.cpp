@@ -23,7 +23,7 @@
  */
 static int count_mutations(CreatureEntity &creature)
 {
-    return creature.muta.count();
+    return creature.get_mutations().count();
 }
 
 /*!

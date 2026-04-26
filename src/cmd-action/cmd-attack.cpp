@@ -365,7 +365,7 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
 
     PlayerEnergy(creature).set_player_turn_energy(100);
 
-    if (!can_attack_with_main_hand(creature) && !can_attack_with_sub_hand(creature) && creature.muta.has_none_of(mutation_attack_methods)) {
+    if (!can_attack_with_main_hand(creature) && !can_attack_with_sub_hand(creature) && creature.get_mutations().has_none_of(mutation_attack_methods)) {
         sound(SoundKind::ATTACK_FAILED);
         msg_print(_(format("%s攻撃できない。", (empty_hands(creature, false) == EMPTY_HAND_NONE) ? "両手がふさがって" : ""), "You cannot attack."));
         return false;
@@ -464,7 +464,7 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
 
     if (!mdeath) {
         for (auto m : mutation_attack_methods) {
-            if (creature.muta.has(m) && !mdeath) {
+            if (creature.get_mutations().has(m) && !mdeath) {
                 natural_attack(creature, grid.m_idx, m, &fear, &mdeath);
             }
         }

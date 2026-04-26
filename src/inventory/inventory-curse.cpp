@@ -172,7 +172,7 @@ ItemEntity *choose_cursed_obj_name(CreatureEntity &creature, CurseTraitType flag
 {
     int choices[INVEN_TOTAL - INVEN_MAIN_HAND];
     int number = 0;
-    if (creature.cursed.has_not(flag)) {
+    if (creature.get_cursed_flags().has_not(flag)) {
         return nullptr;
     }
 
@@ -196,7 +196,7 @@ ItemEntity *choose_cursed_obj_name(CreatureEntity &creature, CurseTraitType flag
  */
 static void curse_teleport(CreatureEntity &creature)
 {
-    if ((creature.cursed_special.has_not(CurseSpecialTraitType::TELEPORT_SELF)) || !one_in_(200)) {
+    if ((creature.get_cursed_special_flags().has_not(CurseSpecialTraitType::TELEPORT_SELF)) || !one_in_(200)) {
         return;
     }
 
@@ -241,7 +241,7 @@ static void curse_teleport(CreatureEntity &creature)
 static void occur_chainsword_effect(CreatureEntity &creature)
 {
     constexpr auto chance_noise = 100;
-    if ((creature.cursed_special.has_not(CurseSpecialTraitType::CHAINSWORD)) || !one_in_(chance_noise)) {
+    if ((creature.get_cursed_special_flags().has_not(CurseSpecialTraitType::CHAINSWORD)) || !one_in_(chance_noise)) {
         return;
     }
 
@@ -255,7 +255,7 @@ static void occur_chainsword_effect(CreatureEntity &creature)
 
 static void curse_drain_exp(CreatureEntity &creature)
 {
-    if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID) || (creature.cursed.has_not(CurseTraitType::DRAIN_EXP)) || !one_in_(4)) {
+    if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID) || (creature.get_cursed_flags().has_not(CurseTraitType::DRAIN_EXP)) || !one_in_(4)) {
         return;
     }
 
@@ -274,7 +274,7 @@ static void curse_drain_exp(CreatureEntity &creature)
 
 static void multiply_low_curse(CreatureEntity &creature)
 {
-    if ((creature.cursed.has_not(CurseTraitType::ADD_L_CURSE)) || !one_in_(2000)) {
+    if ((creature.get_cursed_flags().has_not(CurseTraitType::ADD_L_CURSE)) || !one_in_(2000)) {
         return;
     }
 
@@ -293,7 +293,7 @@ static void multiply_low_curse(CreatureEntity &creature)
 
 static void multiply_high_curse(CreatureEntity &creature)
 {
-    if ((creature.cursed.has_not(CurseTraitType::ADD_H_CURSE)) || !one_in_(2000)) {
+    if ((creature.get_cursed_flags().has_not(CurseTraitType::ADD_H_CURSE)) || !one_in_(2000)) {
         return;
     }
 
@@ -312,7 +312,7 @@ static void multiply_high_curse(CreatureEntity &creature)
 
 static void persist_curse(CreatureEntity &creature)
 {
-    if ((creature.cursed.has_not(CurseTraitType::PERSISTENT_CURSE)) || !one_in_(500)) {
+    if ((creature.get_cursed_flags().has_not(CurseTraitType::PERSISTENT_CURSE)) || !one_in_(500)) {
         return;
     }
 
@@ -333,7 +333,7 @@ static void curse_call_monster(CreatureEntity &creature)
     const int call_type = PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET;
     const int obj_desc_type = OD_OMIT_PREFIX | OD_NAME_ONLY;
     const auto &floor = *creature.get_floor();
-    if (creature.cursed.has(CurseTraitType::CALL_ANIMAL) && one_in_(2500)) {
+    if (creature.get_cursed_flags().has(CurseTraitType::CALL_ANIMAL) && one_in_(2500)) {
         if (summon_specific(creature, creature.y, creature.x, floor.dun_level, SUMMON_ANIMAL, call_type)) {
             const auto item_name = describe_flavor(creature, *choose_cursed_obj_name(creature, CurseTraitType::CALL_ANIMAL), obj_desc_type);
             msg_format(_("%sが動物を引き寄せた！", "Your %s has attracted an animal!"), item_name.data());
@@ -341,7 +341,7 @@ static void curse_call_monster(CreatureEntity &creature)
         }
     }
 
-    if (creature.cursed.has(CurseTraitType::CALL_DEMON) && one_in_(1111)) {
+    if (creature.get_cursed_flags().has(CurseTraitType::CALL_DEMON) && one_in_(1111)) {
         if (summon_specific(creature, creature.y, creature.x, floor.dun_level, SUMMON_DEMON, call_type)) {
             const auto item_name = describe_flavor(creature, *choose_cursed_obj_name(creature, CurseTraitType::CALL_DEMON), obj_desc_type);
             msg_format(_("%sが悪魔を引き寄せた！", "Your %s has attracted a demon!"), item_name.data());
@@ -349,7 +349,7 @@ static void curse_call_monster(CreatureEntity &creature)
         }
     }
 
-    if (creature.cursed.has(CurseTraitType::CALL_DRAGON) && one_in_(800)) {
+    if (creature.get_cursed_flags().has(CurseTraitType::CALL_DRAGON) && one_in_(800)) {
         if (summon_specific(creature, creature.y, creature.x, floor.dun_level, SUMMON_DRAGON, call_type)) {
             const auto item_name = describe_flavor(creature, *choose_cursed_obj_name(creature, CurseTraitType::CALL_DRAGON), obj_desc_type);
             msg_format(_("%sがドラゴンを引き寄せた！", "Your %s has attracted a dragon!"), item_name.data());
@@ -357,7 +357,7 @@ static void curse_call_monster(CreatureEntity &creature)
         }
     }
 
-    if (creature.cursed.has(CurseTraitType::CALL_UNDEAD) && one_in_(1111)) {
+    if (creature.get_cursed_flags().has(CurseTraitType::CALL_UNDEAD) && one_in_(1111)) {
         if (summon_specific(creature, creature.y, creature.x, floor.dun_level, SUMMON_UNDEAD, call_type)) {
             const auto item_name = describe_flavor(creature, *choose_cursed_obj_name(creature, CurseTraitType::CALL_UNDEAD), obj_desc_type);
             msg_format(_("%sが死霊を引き寄せた！", "Your %s has attracted an undead!"), item_name.data());
@@ -368,7 +368,7 @@ static void curse_call_monster(CreatureEntity &creature)
 
 static void curse_cowardice(CreatureEntity &creature)
 {
-    if (creature.cursed.has_not(CurseTraitType::COWARDICE)) {
+    if (creature.get_cursed_flags().has_not(CurseTraitType::COWARDICE)) {
         return;
     }
 
@@ -395,7 +395,7 @@ static void curse_cowardice(CreatureEntity &creature)
  */
 static void curse_berserk_rage(CreatureEntity &creature)
 {
-    if (creature.cursed.has_not(CurseTraitType::BERS_RAGE)) {
+    if (creature.get_cursed_flags().has_not(CurseTraitType::BERS_RAGE)) {
         return;
     }
 
@@ -421,7 +421,7 @@ static void curse_berserk_rage(CreatureEntity &creature)
 
 static void curse_drain_hp(CreatureEntity &creature)
 {
-    if ((creature.cursed.has_not(CurseTraitType::DRAIN_HP)) || !one_in_(666)) {
+    if ((creature.get_cursed_flags().has_not(CurseTraitType::DRAIN_HP)) || !one_in_(666)) {
         return;
     }
 
@@ -433,7 +433,7 @@ static void curse_drain_hp(CreatureEntity &creature)
 
 static void curse_drain_mp(CreatureEntity &creature)
 {
-    if ((creature.cursed.has_not(CurseTraitType::DRAIN_MANA)) || (creature.csp == 0) || !one_in_(666)) {
+    if ((creature.get_cursed_flags().has_not(CurseTraitType::DRAIN_MANA)) || (creature.csp == 0) || !one_in_(666)) {
         return;
     }
 
@@ -481,8 +481,8 @@ static void curse_megaton_coin(CreatureEntity &creature)
 
 static void occur_curse_effects(CreatureEntity &creature)
 {
-    auto is_cursed = creature.cursed.has_any_of(TRC_P_FLAG_MASK);
-    is_cursed |= creature.cursed_special.has_any_of(TRCS_P_FLAG_MASK);
+    auto is_cursed = creature.get_cursed_flags().has_any_of(TRC_P_FLAG_MASK);
+    is_cursed |= creature.get_cursed_special_flags().has_any_of(TRCS_P_FLAG_MASK);
     if (!is_cursed || AngbandSystem::get_instance().is_phase_out() || AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
@@ -490,7 +490,7 @@ static void occur_curse_effects(CreatureEntity &creature)
     curse_teleport(creature);
     occur_chainsword_effect(creature);
     constexpr auto chance_ty_curse = 200;
-    if (creature.cursed.has(CurseTraitType::TY_CURSE) && one_in_(chance_ty_curse)) {
+    if (creature.get_cursed_flags().has(CurseTraitType::TY_CURSE) && one_in_(chance_ty_curse)) {
         int count = 0;
         (void)activate_ty_curse(creature, false, &count);
     }
@@ -502,7 +502,7 @@ static void occur_curse_effects(CreatureEntity &creature)
     curse_call_monster(creature);
     curse_cowardice(creature);
     curse_berserk_rage(creature);
-    if (creature.cursed.has(CurseTraitType::TELEPORT) && one_in_(200) && !creature.has_anti_tele()) {
+    if (creature.get_cursed_flags().has(CurseTraitType::TELEPORT) && one_in_(200) && !creature.has_anti_tele()) {
         disturb(creature, false, true);
         teleport_player(creature, 40, TELEPORT_PASSIVE);
     }

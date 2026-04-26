@@ -420,7 +420,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         if (!pc.monk_stance_is(MonkStanceType::NONE) || !pc.samurai_stance_is(SamuraiStanceType::NONE)) {
             regen_amount /= 2;
         }
-        if (creature.cursed.has(CurseTraitType::SLOW_REGEN)) {
+        if (creature.get_cursed_flags().has(CurseTraitType::SLOW_REGEN)) {
             regen_amount /= 5;
         }
     }

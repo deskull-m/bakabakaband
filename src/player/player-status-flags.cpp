@@ -702,7 +702,7 @@ BIT_FLAGS has_esp_telepathy(CreatureEntity &creature)
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
-    if (creature.muta.has(PlayerMutationType::ESP)) {
+    if (creature.get_mutations().has(PlayerMutationType::ESP)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
@@ -856,7 +856,7 @@ BIT_FLAGS has_sh_fire(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_SH_FIRE);
 
-    if (creature.muta.has(PlayerMutationType::FIRE_BODY)) {
+    if (creature.get_mutations().has(PlayerMutationType::FIRE_BODY)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
@@ -871,7 +871,7 @@ BIT_FLAGS has_sh_elec(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_SH_ELEC);
 
-    if (creature.muta.has(PlayerMutationType::ELEC_TOUC)) {
+    if (creature.get_mutations().has(PlayerMutationType::ELEC_TOUC)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
@@ -938,7 +938,7 @@ BIT_FLAGS has_free_act(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_FREE_ACT);
 
-    if (creature.muta.has(PlayerMutationType::MOTION)) {
+    if (creature.get_mutations().has(PlayerMutationType::MOTION)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
@@ -1019,7 +1019,7 @@ BIT_FLAGS has_levitation(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_LEVITATION);
 
-    if (creature.muta.has(PlayerMutationType::WINGS)) {
+    if (creature.get_mutations().has(PlayerMutationType::WINGS)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
@@ -1071,7 +1071,7 @@ BIT_FLAGS has_regenerate(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_REGEN);
 
-    if (creature.muta.has(PlayerMutationType::REGEN)) {
+    if (creature.get_mutations().has(PlayerMutationType::REGEN)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
@@ -1079,7 +1079,7 @@ BIT_FLAGS has_regenerate(CreatureEntity &creature)
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
-    if (creature.muta.has(PlayerMutationType::FLESH_ROT)) {
+    if (creature.get_mutations().has(PlayerMutationType::FLESH_ROT)) {
         result = 0L;
     }
 
@@ -1189,7 +1189,7 @@ void update_curses(CreatureEntity &creature)
         }
     }
 
-    if (creature.cursed.has(CurseTraitType::TELEPORT)) {
+    if (creature.get_cursed_flags().has(CurseTraitType::TELEPORT)) {
         creature.cursed_special.reset(CurseSpecialTraitType::TELEPORT_SELF);
     }
 }
@@ -1249,7 +1249,7 @@ BIT_FLAGS has_vuln_acid(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_VUL_ACID);
 
-    if (creature.muta.has(PlayerMutationType::VULN_ELEM)) {
+    if (creature.get_mutations().has(PlayerMutationType::VULN_ELEM)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
@@ -1273,7 +1273,7 @@ BIT_FLAGS has_vuln_elec(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_VUL_ELEC);
 
-    if (creature.muta.has(PlayerMutationType::VULN_ELEM)) {
+    if (creature.get_mutations().has(PlayerMutationType::VULN_ELEM)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
@@ -1297,7 +1297,7 @@ BIT_FLAGS has_vuln_fire(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_VUL_FIRE);
 
-    if (creature.muta.has(PlayerMutationType::VULN_ELEM)) {
+    if (creature.get_mutations().has(PlayerMutationType::VULN_ELEM)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
@@ -1321,7 +1321,7 @@ BIT_FLAGS has_vuln_cold(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_VUL_COLD);
 
-    if (creature.muta.has(PlayerMutationType::VULN_ELEM)) {
+    if (creature.get_mutations().has(PlayerMutationType::VULN_ELEM)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
@@ -1560,7 +1560,7 @@ BIT_FLAGS has_resist_fear(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_RES_FEAR);
 
-    if (creature.muta.has(PlayerMutationType::FEARLESS)) {
+    if (creature.get_mutations().has(PlayerMutationType::FEARLESS)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
@@ -1840,12 +1840,12 @@ bool has_not_monk_weapon(CreatureEntity &creature, int i)
 
 bool has_good_luck(CreatureEntity &creature)
 {
-    return (creature.ppersonality == PERSONALITY_LUCKY) || (creature.muta.has(PlayerMutationType::GOOD_LUCK));
+    return (creature.ppersonality == PERSONALITY_LUCKY) || (creature.get_mutations().has(PlayerMutationType::GOOD_LUCK));
 }
 
 bool has_pervert_attraction(CreatureEntity &creature)
 {
-    return (creature.ppersonality == PERSONALITY_MESUGAKI) || (creature.muta.has(PlayerMutationType::ATT_PERVERT));
+    return (creature.ppersonality == PERSONALITY_MESUGAKI) || (creature.get_mutations().has(PlayerMutationType::ATT_PERVERT));
 }
 
 /**
@@ -1855,11 +1855,11 @@ bool has_pervert_attraction(CreatureEntity &creature)
 BIT_FLAGS player_aggravate_state(CreatureEntity &creature)
 {
     auto flags = 0L;
-    if (creature.cursed.has(CurseTraitType::NASTY_AGGRAVATE)) {
+    if (creature.get_cursed_flags().has(CurseTraitType::NASTY_AGGRAVATE)) {
         flags |= NASTY_AGGRAVATE;
     }
 
-    if (creature.cursed.has(CurseTraitType::AGGRAVATE)) {
+    if (creature.get_cursed_flags().has(CurseTraitType::AGGRAVATE)) {
         if ((CreatureRace(&creature).equals(PlayerRaceType::S_FAIRY)) && (creature.ppersonality != PERSONALITY_SEXY)) {
             return flags | AGGRAVATE_S_FAIRY;
         }

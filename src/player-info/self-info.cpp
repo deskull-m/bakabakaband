@@ -66,7 +66,7 @@ static void set_bad_status_info(const TimedEffects &effects, self_info_type *sel
 
 static void set_curse_info(CreatureEntity &subject, self_info_type *self_ptr)
 {
-    if (subject.cursed.has(CurseTraitType::TY_CURSE)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::TY_CURSE)) {
         self_ptr->info_list.emplace_back(_("あなたは邪悪な怨念に包まれている。", "You carry an ancient foul curse."));
     }
 
@@ -74,67 +74,67 @@ static void set_curse_info(CreatureEntity &subject, self_info_type *self_ptr)
         self_ptr->info_list.emplace_back(_("あなたはモンスターを怒らせている。", "You aggravate monsters."));
     }
 
-    if (subject.cursed.has(CurseTraitType::DRAIN_EXP)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::DRAIN_EXP)) {
         self_ptr->info_list.emplace_back(_("あなたは経験値を吸われている。", "You occasionally lose experience for no reason."));
     }
 
-    if (subject.cursed.has(CurseTraitType::SLOW_REGEN)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::SLOW_REGEN)) {
         self_ptr->info_list.emplace_back(_("あなたの回復力は非常に遅い。", "You regenerate slowly."));
     }
 
-    if (subject.cursed.has(CurseTraitType::ADD_L_CURSE)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::ADD_L_CURSE)) {
         self_ptr->info_list.emplace_back(_("あなたの弱い呪いは増える。", "Your weak curses multiply."));
     } /* 暫定的 -- henkma */
 
-    if (subject.cursed.has(CurseTraitType::ADD_H_CURSE)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::ADD_H_CURSE)) {
         self_ptr->info_list.emplace_back(_("あなたの強い呪いは増える。", "Your heavy curses multiply."));
     } /* 暫定的 -- henkma */
 
-    if (subject.cursed.has(CurseTraitType::CALL_ANIMAL)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::CALL_ANIMAL)) {
         self_ptr->info_list.emplace_back(_("あなたは動物に狙われている。", "You attract animals."));
     }
 
-    if (subject.cursed.has(CurseTraitType::CALL_DEMON)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::CALL_DEMON)) {
         self_ptr->info_list.emplace_back(_("あなたは悪魔に狙われている。", "You attract demons."));
     }
 
-    if (subject.cursed.has(CurseTraitType::CALL_DRAGON)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::CALL_DRAGON)) {
         self_ptr->info_list.emplace_back(_("あなたはドラゴンに狙われている。", "You attract dragons."));
     }
 
-    if (subject.cursed.has(CurseTraitType::COWARDICE)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::COWARDICE)) {
         self_ptr->info_list.emplace_back(_("あなたは時々臆病になる。", "You are subject to cowardice."));
     }
 
-    if (subject.cursed.has(CurseTraitType::BERS_RAGE)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::BERS_RAGE)) {
         self_ptr->info_list.emplace_back(_("あなたは狂戦士化の発作を起こす。", "You are subject to berserker fits."));
     }
 
-    if (subject.cursed.has(CurseTraitType::TELEPORT)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::TELEPORT)) {
         self_ptr->info_list.emplace_back(_("あなたの位置はひじょうに不安定だ。", "Your position is very uncertain."));
     }
 
-    if (subject.cursed.has(CurseTraitType::LOW_MELEE)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::LOW_MELEE)) {
         self_ptr->info_list.emplace_back(_("あなたの武器は攻撃を外しやすい。", "Your weapon causes you to miss blows."));
     }
 
-    if (subject.cursed.has(CurseTraitType::LOW_AC)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::LOW_AC)) {
         self_ptr->info_list.emplace_back(_("あなたは攻撃を受けやすい。", "You are subject to be hit."));
     }
 
-    if (subject.cursed.has(CurseTraitType::HARD_SPELL)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::HARD_SPELL)) {
         self_ptr->info_list.emplace_back(_("あなたは魔法を失敗しやすい。", "Your spells fail more frequently."));
     }
 
-    if (subject.cursed.has(CurseTraitType::FAST_DIGEST)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::FAST_DIGEST)) {
         self_ptr->info_list.emplace_back(_("あなたはすぐお腹がへる。", "You have a good appetite."));
     }
 
-    if (subject.cursed.has(CurseTraitType::DRAIN_HP)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::DRAIN_HP)) {
         self_ptr->info_list.emplace_back(_("あなたは体力を吸われている。", "You occasionally lose hit points for no reason."));
     }
 
-    if (subject.cursed.has(CurseTraitType::DRAIN_MANA)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::DRAIN_MANA)) {
         self_ptr->info_list.emplace_back(_("あなたは魔力を吸われている。", "You occasionally lose spell points for no reason."));
     }
 }

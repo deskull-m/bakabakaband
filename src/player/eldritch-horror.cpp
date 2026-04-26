@@ -183,14 +183,14 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
 
     switch (randint1(22)) {
     case 1: {
-        if (creature.muta.has_not(PlayerMutationType::MORONIC)) {
+        if (creature.get_mutations().has_not(PlayerMutationType::MORONIC)) {
             if ((creature.stat_use[A_INT] < 4) && (creature.stat_use[A_WIS] < 4)) {
                 msg_print(_("あなたは完璧な馬鹿になったような気がした。しかしそれは元々だった。", "You turn into an utter moron!"));
             } else {
                 msg_print(_("あなたは完璧な馬鹿になった！", "You turn into an utter moron!"));
             }
 
-            if (creature.muta.has(PlayerMutationType::HYPER_INT)) {
+            if (creature.get_mutations().has(PlayerMutationType::HYPER_INT)) {
                 msg_print(_("あなたの脳は生体コンピュータではなくなった。", "Your brain is no longer a living computer."));
                 creature.muta.reset(PlayerMutationType::HYPER_INT);
             }
@@ -201,9 +201,9 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
         break;
     }
     case 2: {
-        if (creature.muta.has_not(PlayerMutationType::COWARDICE) && !has_resist_fear(creature)) {
+        if (creature.get_mutations().has_not(PlayerMutationType::COWARDICE) && !has_resist_fear(creature)) {
             msg_print(_("あなたはパラノイアになった！", "You become paranoid!"));
-            if (creature.muta.has(PlayerMutationType::FEARLESS)) {
+            if (creature.get_mutations().has(PlayerMutationType::FEARLESS)) {
                 msg_print(_("あなたはもう恐れ知らずではなくなった。", "You are no longer fearless."));
                 creature.muta.reset(PlayerMutationType::FEARLESS);
             }
@@ -214,7 +214,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
         break;
     }
     case 3: {
-        if (creature.muta.has_not(PlayerMutationType::HALLU) && !has_resist_chaos(creature)) {
+        if (creature.get_mutations().has_not(PlayerMutationType::HALLU) && !has_resist_chaos(creature)) {
             msg_print(_("幻覚をひき起こす精神錯乱に陥った！", "You are afflicted by a hallucinatory insanity!"));
             creature.muta.set(PlayerMutationType::HALLU);
         }
@@ -222,7 +222,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
         break;
     }
     case 4: {
-        if (creature.muta.has_not(PlayerMutationType::BERS_RAGE) && !has_resist_conf(creature)) {
+        if (creature.get_mutations().has_not(PlayerMutationType::BERS_RAGE) && !has_resist_conf(creature)) {
             msg_print(_("激烈な感情の発作におそわれるようになった！", "You become subject to fits of berserk rage!"));
             creature.muta.set(PlayerMutationType::BERS_RAGE);
         }

@@ -12,164 +12,164 @@ void set_mutation_info(CreatureEntity &creature, self_info_type *self_ptr)
         return;
     }
 
-    if (creature.muta.has(PlayerMutationType::SPIT_ACID)) {
+    if (creature.get_mutations().has(PlayerMutationType::SPIT_ACID)) {
         self_ptr->info_list.emplace_back(_("あなたは酸を吹きかけることができる。(ダメージ レベルX1)", "You can spit acid (dam lvl)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::BR_FIRE)) {
+    if (creature.get_mutations().has(PlayerMutationType::BR_FIRE)) {
         self_ptr->info_list.emplace_back(_("あなたは炎のブレスを吐くことができる。(ダメージ レベルX2)", "You can breathe fire (dam lvl * 2)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::HYPN_GAZE)) {
+    if (creature.get_mutations().has(PlayerMutationType::HYPN_GAZE)) {
         self_ptr->info_list.emplace_back(_("あなたの睨みは催眠効果をもつ。", "Your gaze is hypnotic."));
     }
 
-    if (creature.muta.has(PlayerMutationType::TELEKINES)) {
+    if (creature.get_mutations().has(PlayerMutationType::TELEKINES)) {
         self_ptr->info_list.emplace_back(_("あなたは念動力をもっている。", "You are telekinetic."));
     }
 
-    if (creature.muta.has(PlayerMutationType::VTELEPORT)) {
+    if (creature.get_mutations().has(PlayerMutationType::VTELEPORT)) {
         self_ptr->info_list.emplace_back(_("あなたは自分の意思でテレポートできる。", "You can teleport at will."));
     }
 
-    if (creature.muta.has(PlayerMutationType::MIND_BLST)) {
+    if (creature.get_mutations().has(PlayerMutationType::MIND_BLST)) {
         self_ptr->info_list.emplace_back(_("あなたは精神攻撃を行える。(ダメージ 3～12d3)", "You can Mind Blast your enemies (3 to 12d3 dam)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::RADIATION)) {
+    if (creature.get_mutations().has(PlayerMutationType::RADIATION)) {
         self_ptr->info_list.emplace_back(_("あなたは自分の意思で強い放射線を発生することができる。(ダメージ レベルX2)", "You can emit hard radiation at will (dam lvl * 2)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::VAMPIRISM)) {
+    if (creature.get_mutations().has(PlayerMutationType::VAMPIRISM)) {
         self_ptr->info_list.emplace_back(_(
             "あなたは吸血鬼のように敵から生命力を吸収することができる。(ダメージ レベルX2)", "Like a vampire, you can drain life from a foe (dam lvl * 2)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::SMELL_MET)) {
+    if (creature.get_mutations().has(PlayerMutationType::SMELL_MET)) {
         self_ptr->info_list.emplace_back(_("あなたは近くにある貴金属をかぎ分けることができる。", "You can smell nearby precious metal."));
     }
 
-    if (creature.muta.has(PlayerMutationType::SMELL_MON)) {
+    if (creature.get_mutations().has(PlayerMutationType::SMELL_MON)) {
         self_ptr->info_list.emplace_back(_("あなたは近くのモンスターの存在をかぎ分けることができる。", "You can smell nearby monsters."));
     }
 
-    if (creature.muta.has(PlayerMutationType::BLINK)) {
+    if (creature.get_mutations().has(PlayerMutationType::BLINK)) {
         self_ptr->info_list.emplace_back(_("あなたは短い距離をテレポートできる。", "You can teleport yourself short distances."));
     }
 
-    if (creature.muta.has(PlayerMutationType::EAT_ROCK)) {
+    if (creature.get_mutations().has(PlayerMutationType::EAT_ROCK)) {
         self_ptr->info_list.emplace_back(_("あなたは硬い岩を食べることができる。", "You can consume solid rock."));
     }
 
-    if (creature.muta.has(PlayerMutationType::SWAP_POS)) {
+    if (creature.get_mutations().has(PlayerMutationType::SWAP_POS)) {
         self_ptr->info_list.emplace_back(_("あなたは他の者と場所を入れ替わることができる。", "You can switch locations with another being."));
     }
 
-    if (creature.muta.has(PlayerMutationType::SHRIEK)) {
+    if (creature.get_mutations().has(PlayerMutationType::SHRIEK)) {
         self_ptr->info_list.emplace_back(_("あなたは身の毛もよだつ叫び声を発することができる。(ダメージ レベルX2)", "You can emit a horrible shriek (dam 2 * lvl)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::ILLUMINE)) {
+    if (creature.get_mutations().has(PlayerMutationType::ILLUMINE)) {
         self_ptr->info_list.emplace_back(_("あなたは明るい光を放つことができる。", "You can emit bright light."));
     }
 
-    if (creature.muta.has(PlayerMutationType::DET_CURSE)) {
+    if (creature.get_mutations().has(PlayerMutationType::DET_CURSE)) {
         self_ptr->info_list.emplace_back(_("あなたは邪悪な魔法の危険を感じとることができる。", "You can feel the danger of evil magic."));
     }
 
-    if (creature.muta.has(PlayerMutationType::BERSERK)) {
+    if (creature.get_mutations().has(PlayerMutationType::BERSERK)) {
         self_ptr->info_list.emplace_back(_("あなたは自分の意思で狂乱戦闘状態になることができる。", "You can drive yourself into a berserk frenzy."));
     }
 
-    if (creature.muta.has(PlayerMutationType::POLYMORPH)) {
+    if (creature.get_mutations().has(PlayerMutationType::POLYMORPH)) {
         self_ptr->info_list.emplace_back(_("あなたは自分の意志で変化できる。", "You can polymorph yourself at will."));
     }
 
-    if (creature.muta.has(PlayerMutationType::MIDAS_TCH)) {
+    if (creature.get_mutations().has(PlayerMutationType::MIDAS_TCH)) {
         self_ptr->info_list.emplace_back(_("あなたは通常アイテムを金に変えることができる。", "You can turn ordinary items to gold."));
     }
 
-    if (creature.muta.has(PlayerMutationType::GROW_MOLD)) {
+    if (creature.get_mutations().has(PlayerMutationType::GROW_MOLD)) {
         self_ptr->info_list.emplace_back(_("あなたは周囲にキノコを生やすことができる。", "You can cause mold to grow near you."));
     }
 
-    if (creature.muta.has(PlayerMutationType::RESIST)) {
+    if (creature.get_mutations().has(PlayerMutationType::RESIST)) {
         self_ptr->info_list.emplace_back(_("あなたは元素の攻撃に対して身を硬くすることができる。", "You can harden yourself to the ravages of the elements."));
     }
 
-    if (creature.muta.has(PlayerMutationType::EARTHQUAKE)) {
+    if (creature.get_mutations().has(PlayerMutationType::EARTHQUAKE)) {
         self_ptr->info_list.emplace_back(_("あなたは周囲のダンジョンを崩壊させることができる。", "You can bring down the dungeon around your ears."));
     }
 
-    if (creature.muta.has(PlayerMutationType::EAT_MAGIC)) {
+    if (creature.get_mutations().has(PlayerMutationType::EAT_MAGIC)) {
         self_ptr->info_list.emplace_back(_("あなたは魔法のエネルギーを自分の物として使用できる。", "You can consume magic energy for your own use."));
     }
 
-    if (creature.muta.has(PlayerMutationType::WEIGH_MAG)) {
+    if (creature.get_mutations().has(PlayerMutationType::WEIGH_MAG)) {
         self_ptr->info_list.emplace_back(_("あなたは自分に影響を与える魔法の力を感じることができる。", "You can feel the strength of the magics affecting you."));
     }
 
-    if (creature.muta.has(PlayerMutationType::STERILITY)) {
+    if (creature.get_mutations().has(PlayerMutationType::STERILITY)) {
         self_ptr->info_list.emplace_back(_("あなたは集団的生殖不能を起こすことができる。", "You can cause mass impotence."));
     }
 
-    if (creature.muta.has(PlayerMutationType::HIT_AND_AWAY)) {
+    if (creature.get_mutations().has(PlayerMutationType::HIT_AND_AWAY)) {
         self_ptr->info_list.emplace_back(_("あなたは攻撃した後身を守るため逃げることができる。", "You can run for your life after hitting something."));
     }
 
-    if (creature.muta.has(PlayerMutationType::DAZZLE)) {
+    if (creature.get_mutations().has(PlayerMutationType::DAZZLE)) {
         self_ptr->info_list.emplace_back(_("あなたは混乱と盲目を引き起こす放射能を発生することができる。 ", "You can emit confusing, blinding radiation."));
     }
 
-    if (creature.muta.has(PlayerMutationType::LASER_EYE)) {
+    if (creature.get_mutations().has(PlayerMutationType::LASER_EYE)) {
         self_ptr->info_list.emplace_back(_("あなたは目からレーザー光線を発することができる。(ダメージ レベルX2)", "Your eyes can fire laser beams (dam 2 * lvl)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::RECALL)) {
+    if (creature.get_mutations().has(PlayerMutationType::RECALL)) {
         self_ptr->info_list.emplace_back(_("あなたは街とダンジョンの間を行き来することができる。", "You can travel between town and the depths."));
     }
 
-    if (creature.muta.has(PlayerMutationType::BANISH)) {
+    if (creature.get_mutations().has(PlayerMutationType::BANISH)) {
         self_ptr->info_list.emplace_back(_("あなたは邪悪なモンスターを地獄に落とすことができる。", "You can send evil creatures directly to Hell."));
     }
 
-    if (creature.muta.has(PlayerMutationType::COLD_TOUCH)) {
+    if (creature.get_mutations().has(PlayerMutationType::COLD_TOUCH)) {
         self_ptr->info_list.emplace_back(_("あなたは敵を触って凍らせることができる。(ダメージ レベルX3)", "You can freeze things with a touch (dam 3 * lvl)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::LAUNCHER)) {
+    if (creature.get_mutations().has(PlayerMutationType::LAUNCHER)) {
         self_ptr->info_list.emplace_back(_("あなたはアイテムを力強く投げることができる。", "You can hurl objects with great force."));
     }
 
-    if (creature.muta.has(PlayerMutationType::BERS_RAGE)) {
+    if (creature.get_mutations().has(PlayerMutationType::BERS_RAGE)) {
         self_ptr->info_list.emplace_back(_("あなたは狂戦士化の発作を起こす。", "You are subject to berserker fits."));
     }
 
-    if (creature.muta.has(PlayerMutationType::COWARDICE)) {
+    if (creature.get_mutations().has(PlayerMutationType::COWARDICE)) {
         self_ptr->info_list.emplace_back(_("あなたは時々臆病になる。", "You are subject to cowardice."));
     }
 
-    if (creature.muta.has(PlayerMutationType::RTELEPORT)) {
+    if (creature.get_mutations().has(PlayerMutationType::RTELEPORT)) {
         self_ptr->info_list.emplace_back(_("あなたはランダムにテレポートする。", "You may randomly teleport."));
     }
 
-    if (creature.muta.has(PlayerMutationType::ALCOHOL)) {
+    if (creature.get_mutations().has(PlayerMutationType::ALCOHOL)) {
         self_ptr->info_list.emplace_back(_("あなたの体はアルコールを分泌する。", "Your body produces alcohol."));
     }
 
-    if (creature.muta.has(PlayerMutationType::HALLU)) {
+    if (creature.get_mutations().has(PlayerMutationType::HALLU)) {
         self_ptr->info_list.emplace_back(_("あなたは幻覚を引き起こす精神錯乱に侵されている。", "You have a hallucinatory insanity."));
     }
 
-    if (creature.muta.has(PlayerMutationType::FLATULENT)) {
+    if (creature.get_mutations().has(PlayerMutationType::FLATULENT)) {
         self_ptr->info_list.emplace_back(_("あなたは制御できない強烈な屁をこく。", "You are subject to uncontrollable flatulence."));
     }
 
-    if (creature.muta.has(PlayerMutationType::IKISUGI)) {
+    if (creature.get_mutations().has(PlayerMutationType::IKISUGI)) {
         self_ptr->info_list.emplace_back(_("あなたは時々イキすぎる。", "You sometimes climax too much."));
     }
 
-    if (creature.muta.has(PlayerMutationType::ATT_NASTY)) {
+    if (creature.get_mutations().has(PlayerMutationType::ATT_NASTY)) {
         self_ptr->info_list.emplace_back(_("あなたはクッソ汚い輩を引きつける。", "You attract nasty creatures."));
     }
 
@@ -177,231 +177,231 @@ void set_mutation_info(CreatureEntity &creature, self_info_type *self_ptr)
         self_ptr->info_list.emplace_back(_("あなたは変質者を引きつける。", "You attract perverts."));
     }
 
-    if (creature.muta.has(PlayerMutationType::PROD_MANA)) {
+    if (creature.get_mutations().has(PlayerMutationType::PROD_MANA)) {
         self_ptr->info_list.emplace_back(_("あなたは制御不能な魔法のエネルギーを発している。", "You produce magical energy uncontrollably."));
     }
 
-    if (creature.muta.has(PlayerMutationType::ATT_DEMON)) {
+    if (creature.get_mutations().has(PlayerMutationType::ATT_DEMON)) {
         self_ptr->info_list.emplace_back(_("あなたはデーモンを引きつける。", "You attract demons."));
     }
 
-    if (creature.muta.has(PlayerMutationType::SCOR_TAIL)) {
+    if (creature.get_mutations().has(PlayerMutationType::SCOR_TAIL)) {
         self_ptr->info_list.emplace_back(_("あなたはサソリの尻尾が生えている。(毒、ダメージ 3d7)", "You have a scorpion tail (poison, 3d7)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::HORNS)) {
+    if (creature.get_mutations().has(PlayerMutationType::HORNS)) {
         self_ptr->info_list.emplace_back(_("あなたは角が生えている。(ダメージ 2d6)", "You have horns (dam. 2d6)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::BEAK)) {
+    if (creature.get_mutations().has(PlayerMutationType::BEAK)) {
         self_ptr->info_list.emplace_back(_("あなたはクチバシが生えている。(ダメージ 2d4)", "You have a beak (dam. 2d4)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::SPEED_FLUX)) {
+    if (creature.get_mutations().has(PlayerMutationType::SPEED_FLUX)) {
         self_ptr->info_list.emplace_back(_("あなたはランダムに早く動いたり遅く動いたりする。", "You move faster or slower randomly."));
     }
 
-    if (creature.muta.has(PlayerMutationType::BANISH_ALL)) {
+    if (creature.get_mutations().has(PlayerMutationType::BANISH_ALL)) {
         self_ptr->info_list.emplace_back(_("あなたは時々近くのモンスターを消滅させる。", "You sometimes cause nearby creatures to vanish."));
     }
 
-    if (creature.muta.has(PlayerMutationType::EAT_LIGHT)) {
+    if (creature.get_mutations().has(PlayerMutationType::EAT_LIGHT)) {
         self_ptr->info_list.emplace_back(_("あなたは時々周囲の光を吸収して栄養にする。", "You sometimes feed off of the light around you."));
     }
 
-    if (creature.muta.has(PlayerMutationType::TRUNK)) {
+    if (creature.get_mutations().has(PlayerMutationType::TRUNK)) {
         self_ptr->info_list.emplace_back(_("あなたは象のような鼻を持っている。(ダメージ 1d4)", "You have an elephantine trunk (dam 1d4)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::ATT_ANIMAL)) {
+    if (creature.get_mutations().has(PlayerMutationType::ATT_ANIMAL)) {
         self_ptr->info_list.emplace_back(_("あなたは動物を引きつける。", "You attract animals."));
     }
 
-    if (creature.muta.has(PlayerMutationType::TENTACLES)) {
+    if (creature.get_mutations().has(PlayerMutationType::TENTACLES)) {
         self_ptr->info_list.emplace_back(_("あなたは邪悪な触手を持っている。(ダメージ 2d5)", "You have evil looking tentacles (dam 2d5)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::RAW_CHAOS)) {
+    if (creature.get_mutations().has(PlayerMutationType::RAW_CHAOS)) {
         self_ptr->info_list.emplace_back(_("あなたはしばしば純カオスに包まれる。", "You occasionally are surrounded with raw chaos."));
     }
 
-    if (creature.muta.has(PlayerMutationType::NORMALITY)) {
+    if (creature.get_mutations().has(PlayerMutationType::NORMALITY)) {
         self_ptr->info_list.emplace_back(_("あなたは変異していたが、回復してきている。", "You may be mutated, but you're recovering."));
     }
 
-    if (creature.muta.has(PlayerMutationType::WRAITH)) {
+    if (creature.get_mutations().has(PlayerMutationType::WRAITH)) {
         self_ptr->info_list.emplace_back(_("あなたの肉体は幽体化したり実体化したりする。", "You fade in and out of physical reality."));
     }
 
-    if (creature.muta.has(PlayerMutationType::POLY_WOUND)) {
+    if (creature.get_mutations().has(PlayerMutationType::POLY_WOUND)) {
         self_ptr->info_list.emplace_back(_("あなたの健康はカオスの力に影響を受ける。", "Your health is subject to chaotic forces."));
     }
 
-    if (creature.muta.has(PlayerMutationType::WASTING)) {
+    if (creature.get_mutations().has(PlayerMutationType::WASTING)) {
         self_ptr->info_list.emplace_back(_("あなたは衰弱する恐ろしい病気にかかっている。", "You have a horrible wasting disease."));
     }
 
-    if (creature.muta.has(PlayerMutationType::ATT_DRAGON)) {
+    if (creature.get_mutations().has(PlayerMutationType::ATT_DRAGON)) {
         self_ptr->info_list.emplace_back(_("あなたはドラゴンを引きつける。", "You attract dragons."));
     }
 
-    if (creature.muta.has(PlayerMutationType::WEIRD_MIND)) {
+    if (creature.get_mutations().has(PlayerMutationType::WEIRD_MIND)) {
         self_ptr->info_list.emplace_back(_("あなたの精神はランダムに拡大したり縮小したりしている。", "Your mind randomly expands and contracts."));
     }
 
-    if (creature.muta.has(PlayerMutationType::NAUSEA)) {
+    if (creature.get_mutations().has(PlayerMutationType::NAUSEA)) {
         self_ptr->info_list.emplace_back(_("あなたの胃は非常に落ち着きがない。", "You have a seriously upset stomach."));
     }
 
-    if (creature.muta.has(PlayerMutationType::CHAOS_GIFT)) {
+    if (creature.get_mutations().has(PlayerMutationType::CHAOS_GIFT)) {
         self_ptr->info_list.emplace_back(_("あなたはカオスの守護悪魔から褒美をうけとる。", "Chaos deities give you gifts."));
     }
 
-    if (creature.muta.has(PlayerMutationType::WALK_SHAD)) {
+    if (creature.get_mutations().has(PlayerMutationType::WALK_SHAD)) {
         self_ptr->info_list.emplace_back(_("あなたはしばしば他の「影」に迷い込む。", "You occasionally stumble into other shadows."));
     }
 
-    if (creature.muta.has(PlayerMutationType::WARNING)) {
+    if (creature.get_mutations().has(PlayerMutationType::WARNING)) {
         self_ptr->info_list.emplace_back(_("あなたは敵に関する警告を感じる。", "You receive warnings about your foes."));
     }
 
-    if (creature.muta.has(PlayerMutationType::INVULN)) {
+    if (creature.get_mutations().has(PlayerMutationType::INVULN)) {
         self_ptr->info_list.emplace_back(_("あなたは時々負け知らずな気分になる。", "You occasionally feel invincible."));
     }
 
-    if (creature.muta.has(PlayerMutationType::SP_TO_HP)) {
+    if (creature.get_mutations().has(PlayerMutationType::SP_TO_HP)) {
         self_ptr->info_list.emplace_back(_("あなたは時々血が筋肉にどっと流れる。", "Your blood sometimes rushes to your muscles."));
     }
 
-    if (creature.muta.has(PlayerMutationType::HP_TO_SP)) {
+    if (creature.get_mutations().has(PlayerMutationType::HP_TO_SP)) {
         self_ptr->info_list.emplace_back(_("あなたは時々頭に血がどっと流れる。", "Your blood sometimes rushes to your head."));
     }
 
-    if (creature.muta.has(PlayerMutationType::DISARM)) {
+    if (creature.get_mutations().has(PlayerMutationType::DISARM)) {
         self_ptr->info_list.emplace_back(_("あなたはよくつまづいて物を落とす。", "You occasionally stumble and drop things."));
     }
 
-    if (creature.muta.has(PlayerMutationType::HYPER_STR)) {
+    if (creature.get_mutations().has(PlayerMutationType::HYPER_STR)) {
         self_ptr->info_list.emplace_back(_("あなたは超人的に強い。(腕力+4)", "You are superhumanly strong (+4 STR)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::PUNY)) {
+    if (creature.get_mutations().has(PlayerMutationType::PUNY)) {
         self_ptr->info_list.emplace_back(_("あなたは虚弱だ。(腕力-4)", "You are puny (-4 STR)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::HYPER_INT)) {
+    if (creature.get_mutations().has(PlayerMutationType::HYPER_INT)) {
         self_ptr->info_list.emplace_back(_("あなたの脳は生体コンピュータだ。(知能＆賢さ+4)", "Your brain is a living computer (+4 INT/WIS)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::MORONIC)) {
+    if (creature.get_mutations().has(PlayerMutationType::MORONIC)) {
         self_ptr->info_list.emplace_back(_("あなたは精神薄弱だ。(知能＆賢さ-4)", "You are moronic (-4 INT/WIS)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::RESILIENT)) {
+    if (creature.get_mutations().has(PlayerMutationType::RESILIENT)) {
         self_ptr->info_list.emplace_back(_("あなたは非常にタフだ。(耐久+4)", "You are very resilient (+4 CON)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::XTRA_FAT)) {
+    if (creature.get_mutations().has(PlayerMutationType::XTRA_FAT)) {
         self_ptr->info_list.emplace_back(_("あなたは極端に太っている。(耐久+2,スピード-2)", "You are extremely fat (+2 CON, -2 speed)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::ALBINO)) {
+    if (creature.get_mutations().has(PlayerMutationType::ALBINO)) {
         self_ptr->info_list.emplace_back(_("あなたはアルビノだ。(耐久-4)", "You are an albino (-4 CON)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::FLESH_ROT)) {
+    if (creature.get_mutations().has(PlayerMutationType::FLESH_ROT)) {
         self_ptr->info_list.emplace_back(_("あなたの肉体は腐敗している。(耐久-2,魅力-1)", "Your flesh is rotting (-2 CON, -1 CHR)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::SILLY_VOI)) {
+    if (creature.get_mutations().has(PlayerMutationType::SILLY_VOI)) {
         self_ptr->info_list.emplace_back(_("あなたの声は間抜けなキーキー声だ。(魅力-4)", "Your voice is a silly squeak (-4 CHR)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::BLANK_FAC)) {
+    if (creature.get_mutations().has(PlayerMutationType::BLANK_FAC)) {
         self_ptr->info_list.emplace_back(_("あなたはのっぺらぼうだ。(魅力-1)", "Your face is featureless (-1 CHR)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::ILL_NORM)) {
+    if (creature.get_mutations().has(PlayerMutationType::ILL_NORM)) {
         self_ptr->info_list.emplace_back(_("あなたは幻影に覆われている。", "Your appearance is masked with illusion."));
     }
 
-    if (creature.muta.has(PlayerMutationType::XTRA_EYES)) {
+    if (creature.get_mutations().has(PlayerMutationType::XTRA_EYES)) {
         self_ptr->info_list.emplace_back(_("あなたは余分に二つの目を持っている。(探索+15)", "You have an extra pair of eyes (+15 search)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::MAGIC_RES)) {
+    if (creature.get_mutations().has(PlayerMutationType::MAGIC_RES)) {
         self_ptr->info_list.emplace_back(_("あなたは魔法への耐性をもっている。", "You are resistant to magic."));
     }
 
-    if (creature.muta.has(PlayerMutationType::XTRA_NOIS)) {
+    if (creature.get_mutations().has(PlayerMutationType::XTRA_NOIS)) {
         self_ptr->info_list.emplace_back(_("あなたは変な音を発している。(隠密-3)", "You make a lot of strange noise (-3 stealth)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::INFRAVIS)) {
+    if (creature.get_mutations().has(PlayerMutationType::INFRAVIS)) {
         self_ptr->info_list.emplace_back(_("あなたは素晴らしい赤外線視力を持っている。(+3)", "You have remarkable infravision (+3)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::XTRA_LEGS)) {
+    if (creature.get_mutations().has(PlayerMutationType::XTRA_LEGS)) {
         self_ptr->info_list.emplace_back(_("あなたは余分に二本の足が生えている。(加速+3)", "You have an extra pair of legs (+3 speed)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::SHORT_LEG)) {
+    if (creature.get_mutations().has(PlayerMutationType::SHORT_LEG)) {
         self_ptr->info_list.emplace_back(_("あなたの足は短い突起だ。(加速-3)", "Your legs are short stubs (-3 speed)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::WEAK_LOWER_BODY)) {
+    if (creature.get_mutations().has(PlayerMutationType::WEAK_LOWER_BODY)) {
         self_ptr->info_list.emplace_back(_("あなたは上半身に比べて下半身が貧弱すぎる。(腕力+2, 加速-2)", "Your lower body is too weak compared to your upper body (+2 STR, -2 speed)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::ELEC_TOUC)) {
+    if (creature.get_mutations().has(PlayerMutationType::ELEC_TOUC)) {
         self_ptr->info_list.emplace_back(_("あなたの血管には電流が流れている。", "Electricity is running through your veins."));
     }
 
-    if (creature.muta.has(PlayerMutationType::FIRE_BODY)) {
+    if (creature.get_mutations().has(PlayerMutationType::FIRE_BODY)) {
         self_ptr->info_list.emplace_back(_("あなたの体は炎につつまれている。", "Your body is enveloped in flames."));
     }
 
-    if (creature.muta.has(PlayerMutationType::WART_SKIN)) {
+    if (creature.get_mutations().has(PlayerMutationType::WART_SKIN)) {
         self_ptr->info_list.emplace_back(_("あなたの肌はイボに被われている。(魅力-2, AC+5)", "Your skin is covered with warts (-2 CHR, +5 AC)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::SCALES)) {
+    if (creature.get_mutations().has(PlayerMutationType::SCALES)) {
         self_ptr->info_list.emplace_back(_("あなたの肌は鱗になっている。(魅力-1, AC+10)", "Your skin has turned into scales (-1 CHR, +10 AC)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::IRON_SKIN)) {
+    if (creature.get_mutations().has(PlayerMutationType::IRON_SKIN)) {
         self_ptr->info_list.emplace_back(_("あなたの肌は鉄でできている。(器用-1, AC+25)", "Your skin is made of steel (-1 DEX, +25 AC)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::WINGS)) {
+    if (creature.get_mutations().has(PlayerMutationType::WINGS)) {
         self_ptr->info_list.emplace_back(_("あなたは羽を持っている。", "You have wings."));
     }
 
-    if (creature.muta.has(PlayerMutationType::FEARLESS)) {
+    if (creature.get_mutations().has(PlayerMutationType::FEARLESS)) {
         /* Unnecessary */
     }
 
-    if (creature.muta.has(PlayerMutationType::REGEN)) {
+    if (creature.get_mutations().has(PlayerMutationType::REGEN)) {
         /* Unnecessary */
     }
 
-    if (creature.muta.has(PlayerMutationType::ESP)) {
+    if (creature.get_mutations().has(PlayerMutationType::ESP)) {
         /* Unnecessary */
     }
 
-    if (creature.muta.has(PlayerMutationType::LIMBER)) {
+    if (creature.get_mutations().has(PlayerMutationType::LIMBER)) {
         self_ptr->info_list.emplace_back(_("あなたの体は非常にしなやかだ。(器用+3)", "Your body is very limber (+3 DEX)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::ARTHRITIS)) {
+    if (creature.get_mutations().has(PlayerMutationType::ARTHRITIS)) {
         self_ptr->info_list.emplace_back(_("あなたはいつも関節に痛みを感じている。(器用-3)", "Your joints ache constantly (-3 DEX)."));
     }
 
-    if (creature.muta.has(PlayerMutationType::VULN_ELEM)) {
+    if (creature.get_mutations().has(PlayerMutationType::VULN_ELEM)) {
         self_ptr->info_list.emplace_back(_("あなたは元素の攻撃に弱い。", "You are susceptible to damage from the elements."));
     }
 
-    if (creature.muta.has(PlayerMutationType::MOTION)) {
+    if (creature.get_mutations().has(PlayerMutationType::MOTION)) {
         self_ptr->info_list.emplace_back(_("あなたの動作は正確で力強い。(隠密+1)", "Your movements are precise and forceful (+1 STL)."));
     }
 
@@ -409,15 +409,15 @@ void set_mutation_info(CreatureEntity &creature, self_info_type *self_ptr)
         self_ptr->info_list.emplace_back(_("あなたは白いオーラにつつまれている。", "There is a white aura surrounding you."));
     }
 
-    if (creature.muta.has(PlayerMutationType::BAD_LUCK)) {
+    if (creature.get_mutations().has(PlayerMutationType::BAD_LUCK)) {
         self_ptr->info_list.emplace_back(_("あなたは黒いオーラにつつまれている。", "There is a black aura surrounding you."));
     }
 
-    if (creature.muta.has(PlayerMutationType::DEFECATION)) {
+    if (creature.get_mutations().has(PlayerMutationType::DEFECATION)) {
         self_ptr->info_list.emplace_back(_("あなたは脱糞を制御できない。", "You are subject to uncontrollable defecation."));
     }
 
-    if (creature.muta.has(PlayerMutationType::ZEERO_VIRUS)) {
+    if (creature.get_mutations().has(PlayerMutationType::ZEERO_VIRUS)) {
         self_ptr->info_list.emplace_back(_("あなたはゼEROウイルスに感染している。", "You've been infected with the ZEERO virus."));
     }
 }

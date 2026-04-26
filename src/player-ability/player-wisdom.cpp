@@ -65,11 +65,11 @@ int16_t PlayerWisdom::mutation_bonus()
     int16_t result = 0;
 
     if (this->creature.muta.any()) {
-        if (this->creature.muta.has(PlayerMutationType::HYPER_INT)) {
+        if (this->creature.get_mutations().has(PlayerMutationType::HYPER_INT)) {
             result += 4;
         }
 
-        if (this->creature.muta.has(PlayerMutationType::MORONIC)) {
+        if (this->creature.get_mutations().has(PlayerMutationType::MORONIC)) {
             result -= 4;
         }
     }
