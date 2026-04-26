@@ -81,7 +81,7 @@ static void dispel_player(CreatureEntity &creature)
     (void)set_tim_exorcism(creature, 0, true);
     (void)set_tim_imm_dark(creature, 0, true);
 
-    if (creature.special_attack & ATTACK_CONFUSE) {
+    if (creature.has_special_attack(ATTACK_CONFUSE)) {
         creature.special_attack &= ~(ATTACK_CONFUSE);
         msg_print(_("手の輝きがなくなった。", "Your hands stop glowing."));
     }

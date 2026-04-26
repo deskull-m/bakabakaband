@@ -86,7 +86,7 @@ tl::optional<std::string> do_chaos_spell(CreatureEntity &creature, SPELL_IDX spe
 
     case 3: {
         if (cast) {
-            if (!(creature.special_attack & ATTACK_CONFUSE)) {
+            if (!(creature.has_special_attack(ATTACK_CONFUSE))) {
                 msg_print(_("あなたの手は光り始めた。", "Your hands start glowing."));
                 creature.special_attack |= ATTACK_CONFUSE;
                 RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);

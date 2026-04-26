@@ -141,27 +141,27 @@ static void set_curse_info(CreatureEntity &subject, self_info_type *self_ptr)
 
 static void set_special_attack_info(CreatureEntity &subject, self_info_type *self_ptr)
 {
-    if (subject.special_attack & ATTACK_CONFUSE) {
+    if (subject.has_special_attack(ATTACK_CONFUSE)) {
         self_ptr->info_list.emplace_back(_("あなたの手は赤く輝いている。", "Your hands are glowing dull red."));
     }
 
-    if (subject.special_attack & ATTACK_FIRE) {
+    if (subject.has_special_attack(ATTACK_FIRE)) {
         self_ptr->info_list.emplace_back(_("あなたの手は火炎に覆われている。", "You can strike the enemy with flame."));
     }
 
-    if (subject.special_attack & ATTACK_COLD) {
+    if (subject.has_special_attack(ATTACK_COLD)) {
         self_ptr->info_list.emplace_back(_("あなたの手は冷気に覆われている。", "You can strike the enemy with cold."));
     }
 
-    if (subject.special_attack & ATTACK_ACID) {
+    if (subject.has_special_attack(ATTACK_ACID)) {
         self_ptr->info_list.emplace_back(_("あなたの手は酸に覆われている。", "You can strike the enemy with acid."));
     }
 
-    if (subject.special_attack & ATTACK_ELEC) {
+    if (subject.has_special_attack(ATTACK_ELEC)) {
         self_ptr->info_list.emplace_back(_("あなたの手は電撃に覆われている。", "You can strike the enemy with electoric shock."));
     }
 
-    if (subject.special_attack & ATTACK_POIS) {
+    if (subject.has_special_attack(ATTACK_POIS)) {
         self_ptr->info_list.emplace_back(_("あなたの手は毒に覆われている。", "You can strike the enemy with poison."));
     }
 }
@@ -380,7 +380,7 @@ void report_magics(CreatureEntity &subject)
             _("あなたは幽体化している", "You are incorporeal"));
     }
 
-    if (subject.special_attack & ATTACK_CONFUSE) {
+    if (subject.has_special_attack(ATTACK_CONFUSE)) {
         info.emplace_back(7, _("あなたの手は赤く輝いている", "Your hands are glowing dull red."));
     }
 

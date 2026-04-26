@@ -57,16 +57,16 @@ void tim_player_immunity(CreatureEntity &creature, TrFlags &flags)
 {
     flags.clear();
 
-    if (creature.special_defense & DEFENSE_ACID) {
+    if (creature.has_special_defense(DEFENSE_ACID)) {
         flags.set(TR_RES_ACID);
     }
-    if (creature.special_defense & DEFENSE_ELEC) {
+    if (creature.has_special_defense(DEFENSE_ELEC)) {
         flags.set(TR_RES_ELEC);
     }
-    if (creature.special_defense & DEFENSE_FIRE) {
+    if (creature.has_special_defense(DEFENSE_FIRE)) {
         flags.set(TR_RES_FIRE);
     }
-    if (creature.special_defense & DEFENSE_COLD) {
+    if (creature.has_special_defense(DEFENSE_COLD)) {
         flags.set(TR_RES_COLD);
     }
     if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
