@@ -145,13 +145,13 @@ void do_cmd_wield(CreatureEntity &creature)
     auto slot = wield_slot(creature, o_ptr);
 
     // 肛門破壊チェック
-    if (slot == INVEN_ASSHOLE && creature.muta.has(PlayerMutationType::DESTROYED_ASSHOLE)) {
+    if (slot == INVEN_ASSHOLE && creature.get_mutations().has(PlayerMutationType::DESTROYED_ASSHOLE)) {
         msg_print(_("あなたの肛門は完全に破壊されており、何も装備できない！", "Your asshole is completely destroyed and cannot equip anything!"));
         return;
     }
 
     // 頭部失失チェック
-    if (slot == INVEN_HEAD && creature.muta.has(PlayerMutationType::LOST_HEAD)) {
+    if (slot == INVEN_HEAD && creature.get_mutations().has(PlayerMutationType::LOST_HEAD)) {
         msg_print(_("あなたは頭がないので、頭に何も装備できない！", "You have no head and cannot equip anything on your head!"));
         return;
     }

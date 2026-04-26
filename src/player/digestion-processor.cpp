@@ -41,7 +41,7 @@ void starve_player(CreatureEntity &creature)
         if (!pc.monk_stance_is(MonkStanceType::NONE) || !pc.samurai_stance_is(SamuraiStanceType::NONE)) {
             digestion += 20;
         }
-        if (creature.cursed.has(CurseTraitType::FAST_DIGEST)) {
+        if (creature.get_cursed_flags().has(CurseTraitType::FAST_DIGEST)) {
             digestion += 30;
         }
 

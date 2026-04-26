@@ -529,7 +529,7 @@ void teleport_away_followable(CreatureEntity &creature, MONSTER_IDX m_idx)
     }
 
     bool follow = false;
-    if (creature.muta.has(PlayerMutationType::VTELEPORT) || CreatureClass(creature).equals(PlayerClassType::IMITATOR)) {
+    if (creature.get_mutations().has(PlayerMutationType::VTELEPORT) || CreatureClass(creature).equals(PlayerClassType::IMITATOR)) {
         follow = true;
     } else {
         ItemEntity *o_ptr;

@@ -219,10 +219,10 @@ static int compensation_stat_by_mutation(CreatureEntity &creature, int stat)
 {
     int compensation = 0;
     if (stat == A_STR) {
-        if (creature.muta.has(PlayerMutationType::HYPER_STR)) {
+        if (creature.get_mutations().has(PlayerMutationType::HYPER_STR)) {
             compensation += 4;
         }
-        if (creature.muta.has(PlayerMutationType::PUNY)) {
+        if (creature.get_mutations().has(PlayerMutationType::PUNY)) {
             compensation -= 4;
         }
         if (creature.get_timed_effect(CreatureTimedEffect::TSUYOSHI)) {
@@ -232,39 +232,39 @@ static int compensation_stat_by_mutation(CreatureEntity &creature, int stat)
     }
 
     if (stat == A_WIS || stat == A_INT) {
-        if (creature.muta.has(PlayerMutationType::HYPER_INT)) {
+        if (creature.get_mutations().has(PlayerMutationType::HYPER_INT)) {
             compensation += 4;
         }
-        if (creature.muta.has(PlayerMutationType::MORONIC)) {
+        if (creature.get_mutations().has(PlayerMutationType::MORONIC)) {
             compensation -= 4;
         }
         return compensation;
     }
 
     if (stat == A_DEX) {
-        if (creature.muta.has(PlayerMutationType::IRON_SKIN)) {
+        if (creature.get_mutations().has(PlayerMutationType::IRON_SKIN)) {
             compensation -= 1;
         }
-        if (creature.muta.has(PlayerMutationType::LIMBER)) {
+        if (creature.get_mutations().has(PlayerMutationType::LIMBER)) {
             compensation += 3;
         }
-        if (creature.muta.has(PlayerMutationType::ARTHRITIS)) {
+        if (creature.get_mutations().has(PlayerMutationType::ARTHRITIS)) {
             compensation -= 3;
         }
         return compensation;
     }
 
     if (stat == A_CON) {
-        if (creature.muta.has(PlayerMutationType::RESILIENT)) {
+        if (creature.get_mutations().has(PlayerMutationType::RESILIENT)) {
             compensation += 4;
         }
-        if (creature.muta.has(PlayerMutationType::XTRA_FAT)) {
+        if (creature.get_mutations().has(PlayerMutationType::XTRA_FAT)) {
             compensation += 2;
         }
-        if (creature.muta.has(PlayerMutationType::ALBINO)) {
+        if (creature.get_mutations().has(PlayerMutationType::ALBINO)) {
             compensation -= 4;
         }
-        if (creature.muta.has(PlayerMutationType::FLESH_ROT)) {
+        if (creature.get_mutations().has(PlayerMutationType::FLESH_ROT)) {
             compensation -= 2;
         }
         if (creature.get_timed_effect(CreatureTimedEffect::TSUYOSHI)) {
@@ -274,22 +274,22 @@ static int compensation_stat_by_mutation(CreatureEntity &creature, int stat)
     }
 
     if (stat == A_CHR) {
-        if (creature.muta.has(PlayerMutationType::SILLY_VOI)) {
+        if (creature.get_mutations().has(PlayerMutationType::SILLY_VOI)) {
             compensation -= 4;
         }
-        if (creature.muta.has(PlayerMutationType::BLANK_FAC)) {
+        if (creature.get_mutations().has(PlayerMutationType::BLANK_FAC)) {
             compensation -= 1;
         }
-        if (creature.muta.has(PlayerMutationType::FLESH_ROT)) {
+        if (creature.get_mutations().has(PlayerMutationType::FLESH_ROT)) {
             compensation -= 1;
         }
-        if (creature.muta.has(PlayerMutationType::SCALES)) {
+        if (creature.get_mutations().has(PlayerMutationType::SCALES)) {
             compensation -= 1;
         }
-        if (creature.muta.has(PlayerMutationType::WART_SKIN)) {
+        if (creature.get_mutations().has(PlayerMutationType::WART_SKIN)) {
             compensation -= 2;
         }
-        if (creature.muta.has(PlayerMutationType::ILL_NORM)) {
+        if (creature.get_mutations().has(PlayerMutationType::ILL_NORM)) {
             compensation = 0;
         }
         return compensation;

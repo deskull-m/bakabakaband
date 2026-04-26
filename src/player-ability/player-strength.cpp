@@ -112,15 +112,15 @@ int16_t PlayerStrength::mutation_bonus()
     int16_t result = 0;
 
     if (this->creature.muta.any()) {
-        if (this->creature.muta.has(PlayerMutationType::HYPER_STR)) {
+        if (this->creature.get_mutations().has(PlayerMutationType::HYPER_STR)) {
             result += 4;
         }
 
-        if (this->creature.muta.has(PlayerMutationType::PUNY)) {
+        if (this->creature.get_mutations().has(PlayerMutationType::PUNY)) {
             result -= 4;
         }
 
-        if (this->creature.muta.has(PlayerMutationType::WEAK_LOWER_BODY)) {
+        if (this->creature.get_mutations().has(PlayerMutationType::WEAK_LOWER_BODY)) {
             result += 2;
         }
     }

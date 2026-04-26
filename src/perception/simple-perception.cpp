@@ -44,7 +44,7 @@ static void sense_inventory_aux(CreatureEntity &creature, INVENTORY_IDX slot, bo
         return;
     }
 
-    if ((creature.muta.has(PlayerMutationType::BAD_LUCK)) && !randint0(13)) {
+    if ((creature.get_mutations().has(PlayerMutationType::BAD_LUCK)) && !randint0(13)) {
         switch (feel) {
         case FEEL_TERRIBLE: {
             feel = FEEL_SPECIAL;

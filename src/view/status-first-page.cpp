@@ -312,7 +312,7 @@ static int calculate_hp_regen_rate(CreatureEntity &creature)
     }
 
     // 呪いによる補正
-    if (creature.cursed.has(CurseTraitType::SLOW_REGEN)) {
+    if (creature.get_cursed_flags().has(CurseTraitType::SLOW_REGEN)) {
         regen_amount /= 5;
     }
 
@@ -383,7 +383,7 @@ static int calculate_mp_regen_rate(CreatureEntity &creature)
     }
 
     // 呪いによる補正
-    if (creature.cursed.has(CurseTraitType::SLOW_REGEN)) {
+    if (creature.get_cursed_flags().has(CurseTraitType::SLOW_REGEN)) {
         regen_amount /= 5;
     }
 
@@ -432,19 +432,19 @@ static void display_first_page(CreatureEntity &creature, int xthb, int *damage, 
     int xthn = creature.skill_thn + (creature.to_h_m * BTH_PLUS_ADJ);
 
     int muta_att = 0;
-    if (creature.muta.has(PlayerMutationType::HORNS)) {
+    if (creature.get_mutations().has(PlayerMutationType::HORNS)) {
         muta_att++;
     }
-    if (creature.muta.has(PlayerMutationType::SCOR_TAIL)) {
+    if (creature.get_mutations().has(PlayerMutationType::SCOR_TAIL)) {
         muta_att++;
     }
-    if (creature.muta.has(PlayerMutationType::BEAK)) {
+    if (creature.get_mutations().has(PlayerMutationType::BEAK)) {
         muta_att++;
     }
-    if (creature.muta.has(PlayerMutationType::TRUNK)) {
+    if (creature.get_mutations().has(PlayerMutationType::TRUNK)) {
         muta_att++;
     }
-    if (creature.muta.has(PlayerMutationType::TENTACLES)) {
+    if (creature.get_mutations().has(PlayerMutationType::TENTACLES)) {
         muta_att++;
     }
 

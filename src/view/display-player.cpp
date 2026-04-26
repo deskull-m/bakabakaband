@@ -326,7 +326,7 @@ tl::optional<int> display_player(CreatureEntity &creature, const int tmp_mode)
 
     display_player_basic_info(creature);
     display_magic_realms(creature);
-    if (CreatureClass(creature).equals(PlayerClassType::CHAOS_WARRIOR) || (creature.muta.has(PlayerMutationType::CHAOS_GIFT))) {
+    if (CreatureClass(creature).equals(PlayerClassType::CHAOS_WARRIOR) || (creature.get_mutations().has(PlayerMutationType::CHAOS_GIFT))) {
         display_player_one_line(ENTRY_PATRON, patron_list[creature.patron].name, TERM_L_BLUE);
     }
 

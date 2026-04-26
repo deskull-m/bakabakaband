@@ -110,19 +110,19 @@ int16_t PlayerConstitution::mutation_bonus()
     int16_t result = 0;
 
     if (this->creature.muta.any()) {
-        if (this->creature.muta.has(PlayerMutationType::RESILIENT)) {
+        if (this->creature.get_mutations().has(PlayerMutationType::RESILIENT)) {
             result += 4;
         }
 
-        if (this->creature.muta.has(PlayerMutationType::ALBINO)) {
+        if (this->creature.get_mutations().has(PlayerMutationType::ALBINO)) {
             result -= 4;
         }
 
-        if (this->creature.muta.has(PlayerMutationType::XTRA_FAT)) {
+        if (this->creature.get_mutations().has(PlayerMutationType::XTRA_FAT)) {
             result += 2;
         }
 
-        if (this->creature.muta.has(PlayerMutationType::FLESH_ROT)) {
+        if (this->creature.get_mutations().has(PlayerMutationType::FLESH_ROT)) {
             result -= 2;
         }
     }

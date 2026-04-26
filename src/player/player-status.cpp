@@ -1128,7 +1128,7 @@ static ACTION_SKILL_POWER calc_saving_throw(CreatureEntity &creature)
     pow = tmp_race_ptr->r_sav + player_class.c_sav + player_personality.a_sav;
     pow += (((*creature.pclass_ref).x_sav * creature.level / 10) + ((*creature.personality).a_sav * creature.level / 50));
 
-    if (creature.muta.has(PlayerMutationType::MAGIC_RES)) {
+    if (creature.get_mutations().has(PlayerMutationType::MAGIC_RES)) {
         pow += (15 + (creature.level / 5));
     }
 
@@ -1212,7 +1212,7 @@ static ACTION_SKILL_POWER calc_search(CreatureEntity &creature)
         }
     }
 
-    if (creature.muta.has(PlayerMutationType::XTRA_EYES)) {
+    if (creature.get_mutations().has(PlayerMutationType::XTRA_EYES)) {
         pow += 15;
     }
 
@@ -1265,7 +1265,7 @@ static ACTION_SKILL_POWER calc_search_freq(CreatureEntity &creature)
         pow -= 15;
     }
 
-    if (creature.muta.has(PlayerMutationType::XTRA_EYES)) {
+    if (creature.get_mutations().has(PlayerMutationType::XTRA_EYES)) {
         pow += 15;
     }
 
@@ -1753,15 +1753,15 @@ static ARMOUR_CLASS calc_to_ac(CreatureEntity &creature, bool is_real_value)
         ac += 5;
     }
 
-    if (creature.muta.has(PlayerMutationType::WART_SKIN)) {
+    if (creature.get_mutations().has(PlayerMutationType::WART_SKIN)) {
         ac += 5;
     }
 
-    if (creature.muta.has(PlayerMutationType::SCALES)) {
+    if (creature.get_mutations().has(PlayerMutationType::SCALES)) {
         ac += 10;
     }
 
-    if (creature.muta.has(PlayerMutationType::IRON_SKIN)) {
+    if (creature.get_mutations().has(PlayerMutationType::IRON_SKIN)) {
         ac += 25;
     }
 
@@ -2834,7 +2834,7 @@ void check_experience(CreatureEntity &creature)
         if (creature.level > creature.max_plv) {
             creature.max_plv = creature.level;
 
-            if (CreatureClass(creature).equals(PlayerClassType::CHAOS_WARRIOR) || creature.muta.has(PlayerMutationType::CHAOS_GIFT)) {
+            if (CreatureClass(creature).equals(PlayerClassType::CHAOS_WARRIOR) || creature.get_mutations().has(PlayerMutationType::CHAOS_GIFT)) {
                 level_reward = true;
             }
             if (pr.equals(PlayerRaceType::BEASTMAN)) {

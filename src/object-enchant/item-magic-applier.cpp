@@ -93,7 +93,7 @@ std::tuple<int, int> ItemMagicApplier::calculate_chances()
     if (has_good_luck(this->creature)) {
         chance_good += 5;
         chance_great += 2;
-    } else if (this->creature.muta.has(PlayerMutationType::BAD_LUCK)) {
+    } else if (this->creature.get_mutations().has(PlayerMutationType::BAD_LUCK)) {
         chance_good -= 5;
         chance_great -= 2;
     }

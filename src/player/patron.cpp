@@ -540,7 +540,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
 
 void Patron::admire(CreatureEntity &creature)
 {
-    if (CreatureClass(creature).equals(PlayerClassType::CHAOS_WARRIOR) || creature.muta.has(PlayerMutationType::CHAOS_GIFT)) {
+    if (CreatureClass(creature).equals(PlayerClassType::CHAOS_WARRIOR) || creature.get_mutations().has(PlayerMutationType::CHAOS_GIFT)) {
         msg_format(_("%sからの声が響いた。", "The voice of %s booms out:"), this->name.data());
         msg_print(_("『よくやった、定命の者よ！』", "'Thou art donst well, mortal!'"));
     }

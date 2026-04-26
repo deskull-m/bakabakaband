@@ -42,6 +42,8 @@ enum class ElementRealmType;
 enum class FixedArtifactId : short;
 enum class ItemKindType : short;
 enum class MimicKindType;
+enum class CurseTraitType;
+enum class CurseSpecialTraitType;
 enum class MonraceId : int16_t;
 enum class MonsterAbilityType;
 enum class PlayerSkillKindType;
@@ -1049,6 +1051,36 @@ public:
     virtual bool has_xtra_might() const
     {
         return this->xtra_might != 0;
+    }
+    /*!
+     * @brief 突然変異フラグ集合への参照
+     * @details プレイヤーは装備・レベル・クラス起因の変異、モンスターは
+     *          将来的に種族由来の変異を返す想定。
+     */
+    virtual const EnumClassFlagGroup<PlayerMutationType> &get_mutations() const
+    {
+        return this->muta;
+    }
+    /*!
+     * @brief 後天特性フラグ集合への参照
+     */
+    virtual const EnumClassFlagGroup<PlayerMutationType> &get_traits() const
+    {
+        return this->trait;
+    }
+    /*!
+     * @brief 呪いフラグ集合への参照（装備由来）
+     */
+    virtual const EnumClassFlagGroup<CurseTraitType> &get_cursed_flags() const
+    {
+        return this->cursed;
+    }
+    /*!
+     * @brief 特殊呪いフラグ集合への参照
+     */
+    virtual const EnumClassFlagGroup<CurseSpecialTraitType> &get_cursed_special_flags() const
+    {
+        return this->cursed_special;
     }
 
     /*!

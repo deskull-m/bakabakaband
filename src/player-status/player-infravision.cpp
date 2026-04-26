@@ -44,7 +44,7 @@ int16_t PlayerInfravision::race_bonus()
 int16_t PlayerInfravision::mutation_bonus()
 {
     int16_t bonus = 0;
-    if (this->creature.muta.has(PlayerMutationType::INFRAVIS)) {
+    if (this->creature.get_mutations().has(PlayerMutationType::INFRAVIS)) {
         bonus += 3;
     }
 
