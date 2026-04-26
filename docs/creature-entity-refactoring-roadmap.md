@@ -124,8 +124,16 @@ Phase 2 で基本的な状態チェックは virtual 化済みだが、能力問
   読み取り side の call site 移行
 - ✅ 視認・水泳・浮遊（`can_see_invisible()` / `has_can_swim()` /
   `has_levitation()`）の virtual 化と call site 移行
-- 🚧 残り: 呪い判定（`cursed` 66 箇所）、特殊攻撃防御（`special_*` 31 箇所）、
-  `get_race()` / `get_class()` / `get_personality()` の null-safe 化
+- ✅ 追加 BIT_FLAGS の virtual 化: `has_free_act()`, `has_anti_magic()`,
+  `has_anti_tele()`, `has_regen_flag()`, `has_hold_exp()`,
+  `has_slow_digest_flag()`, `has_see_nocto()`, `has_special_attack(flag)`,
+  `has_special_defense(flag)`, `has_lite_flag()`, `has_warning_flag()`,
+  `has_impact_flag()`, `has_earthquake_flag()`, `has_dec_mana()`,
+  `has_easy_spell()`, `has_hard_spell()`, `has_mighty_throw()`,
+  `has_xtra_might()` と該当 call site の移行
+- 🚧 残り: 呪い判定（`cursed.has(flag)` 形式 66 箇所）、突然変異
+  （`muta.has(flag)` / `trait.has(flag)` 形式）、`race`/`personality`/
+  `pclass_ref` ポインタの null-safe アクセサ化
 
 ---
 
