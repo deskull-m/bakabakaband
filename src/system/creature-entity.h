@@ -987,6 +987,69 @@ public:
     {
         return (this->special_defense & flag) != 0;
     }
+    /*!
+     * @brief 光源能力の有無 (フィールド値)
+     */
+    virtual bool has_lite_flag() const
+    {
+        return this->lite != 0;
+    }
+    /*!
+     * @brief 警告能力の有無
+     */
+    virtual bool has_warning_flag() const
+    {
+        return this->warning != 0;
+    }
+    /*!
+     * @brief 衝撃付与攻撃の有無 (装備起因)
+     */
+    virtual bool has_impact_flag() const
+    {
+        return this->impact != 0;
+    }
+    /*!
+     * @brief 地震付与攻撃の有無 (装備起因)
+     */
+    virtual bool has_earthquake_flag() const
+    {
+        return this->earthquake != 0;
+    }
+    /*!
+     * @brief 魔法消費軽減能力の有無
+     */
+    virtual bool has_dec_mana() const
+    {
+        return this->dec_mana != 0;
+    }
+    /*!
+     * @brief 易しい呪文能力の有無
+     */
+    virtual bool has_easy_spell() const
+    {
+        return this->easy_spell != 0;
+    }
+    /*!
+     * @brief 難しい呪文フラグの有無
+     */
+    virtual bool has_hard_spell() const
+    {
+        return this->hard_spell != 0;
+    }
+    /*!
+     * @brief 強力投擲能力の有無
+     */
+    virtual bool has_mighty_throw() const
+    {
+        return this->mighty_throw != 0;
+    }
+    /*!
+     * @brief 追加威力弓能力の有無
+     */
+    virtual bool has_xtra_might() const
+    {
+        return this->xtra_might != 0;
+    }
 
     /*!
      * @brief クリーチャーのコピーを返す

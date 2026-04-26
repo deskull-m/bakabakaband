@@ -135,7 +135,7 @@ static void display_shoot_magnification(CreatureEntity &creature)
     int tmul = 0;
     if (creature.inventory[INVEN_BOW]->is_valid()) {
         tmul = creature.inventory[INVEN_BOW]->get_arrow_magnification();
-        if (creature.xtra_might) {
+        if (creature.has_xtra_might()) {
             tmul++;
         }
 

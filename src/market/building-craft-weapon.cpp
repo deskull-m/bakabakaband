@@ -87,7 +87,7 @@ static void compare_weapon_aux(CreatureEntity &creature, ItemEntity *o_ptr, int 
         dokubari = true;
     }
 
-    bool impact = flags.has(TR_IMPACT) || (creature.impact != 0);
+    bool impact = flags.has(TR_IMPACT) || (creature.has_impact_flag() != 0);
     mindam = calc_expect_crit(creature, o_ptr->weight, o_ptr->to_h, mindice, creature.to_h[0], dokubari, impact);
     maxdam = calc_expect_crit(creature, o_ptr->weight, o_ptr->to_h, maxdice, creature.to_h[0], dokubari, impact);
     show_weapon_dmg(r++, col, mindam, maxdam, blow, dmg_bonus, _("会心:", "Critical:"), TERM_L_RED);

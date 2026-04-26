@@ -547,7 +547,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
     auto tmul = j_ptr->get_arrow_magnification();
 
     /* Get extra "power" from "extra might" */
-    if (creature.xtra_might) {
+    if (creature.has_xtra_might()) {
         tmul++;
     }
 
@@ -1282,7 +1282,7 @@ uint32_t calc_expect_dice(
     CreatureEntity &creature, uint32_t dam, int16_t to_h, ItemEntity *o_ptr)
 {
     auto flags = o_ptr->get_flags_known();
-    bool impact = creature.impact != 0;
+    bool impact = creature.has_impact_flag() != 0;
 
     int vorpal_mult = 1;
     int vorpal_div = 1;
