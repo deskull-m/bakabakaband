@@ -173,9 +173,9 @@ static std::string parse_fixed_map_expression(CreatureEntity &creature, char **s
             v = "OFF";
         }
     } else if (streq(b + 1, "RACE")) {
-        v = creature.race->title.en_string();
+        v = creature.get_race_info()->title.en_string();
     } else if (streq(b + 1, "CLASS")) {
-        v = (*creature.pclass_ref).title.en_string();
+        v = (*creature.get_class_info()).title.en_string();
     } else if (streq(b + 1, "REALM1")) {
         v = PlayerRealm(creature).realm1().get_name().en_string();
     } else if (streq(b + 1, "REALM2")) {

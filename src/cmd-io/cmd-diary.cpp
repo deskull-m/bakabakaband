@@ -30,9 +30,9 @@ static void display_diary(CreatureEntity &creature)
     const auto choice = Rand_external(subtitle_candidates.size());
     const auto &subtitle = subtitle_candidates[choice];
 #ifdef JP
-    const auto diary_title = format("「%s%s%sの伝説 -%s-」", (*creature.personality).title.data(), (*creature.personality).no ? "の" : "", creature.name.data(), subtitle.data());
+    const auto diary_title = format("「%s%s%sの伝説 -%s-」", (*creature.get_personality_info()).title.data(), (*creature.get_personality_info()).no ? "の" : "", creature.name.data(), subtitle.data());
 #else
-    const auto diary_title = format("Legend of %s %s '%s'", (*creature.personality).title.data(), creature.name.data(), subtitle.data());
+    const auto diary_title = format("Legend of %s %s '%s'", (*creature.get_personality_info()).title.data(), creature.name.data(), subtitle.data());
 #endif
 
     std::stringstream ss;

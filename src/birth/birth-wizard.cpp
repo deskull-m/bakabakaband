@@ -299,7 +299,7 @@ static void display_initial_options(CreatureEntity &creature)
     const auto expfact_mod = static_cast<int>(get_expfact(creature)) - 100;
     int16_t adj[A_MAX]{};
     for (int i = 0; i < A_MAX; i++) {
-        adj[i] = creature.race->r_adj[i] + (*creature.pclass_ref).c_adj[i] + (*creature.personality).a_adj[i];
+        adj[i] = creature.get_race_info()->r_adj[i] + (*creature.get_class_info()).c_adj[i] + (*creature.get_personality_info()).a_adj[i];
     }
 
     put_str("                                   ", 3, 40);
@@ -309,7 +309,7 @@ static void display_initial_options(CreatureEntity &creature)
     c_put_str(TERM_L_BLUE, stats, 5, 40);
 
     put_str("HD ", 6, 40);
-    const auto hd = format("%2d", creature.race->r_mhp + (*creature.pclass_ref).c_mhp + (*creature.personality).a_mhp);
+    const auto hd = format("%2d", creature.get_race_info()->r_mhp + (*creature.get_class_info()).c_mhp + (*creature.get_personality_info()).a_mhp);
     c_put_str(TERM_L_BLUE, hd, 6, 43);
 
     put_str(_("隠密", "Stealth"), 6, 47);
@@ -317,12 +317,12 @@ static void display_initial_options(CreatureEntity &creature)
     if (CreatureClass(creature).equals(PlayerClassType::BERSERKER)) {
         stealth = "xx";
     } else {
-        stealth = format("%+2d", creature.race->r_stl + (*creature.pclass_ref).c_stl + (*creature.personality).a_stl);
+        stealth = format("%+2d", creature.get_race_info()->r_stl + (*creature.get_class_info()).c_stl + (*creature.get_personality_info()).a_stl);
     }
     c_put_str(TERM_L_BLUE, stealth, 6, _(52, 55));
 
     put_str(_("赤外線視力", "Infra"), 6, _(56, 59));
-    const auto infra = format(_("%%2dft", "%%2dft"), 10 * creature.race->infra);
+    const auto infra = format(_("%%2dft", "%%2dft"), 10 * creature.get_race_info()->infra);
     c_put_str(TERM_L_BLUE, infra, 6, _(67, 65));
 
     clear_from(10);
@@ -355,7 +355,7 @@ static void display_auto_roller_success_rate(CreatureEntity &creature, const int
 
     for (int i = 0; i < A_MAX; i++) {
         put_str(stat_names[i], 3 + i, col + 8);
-        int j = creature.race->r_adj[i] + (*creature.pclass_ref).c_adj[i] + (*creature.personality).a_adj[i];
+        int j = creature.get_race_info()->r_adj[i] + (*creature.get_class_info()).c_adj[i] + (*creature.get_personality_info()).a_adj[i];
         int m = adjust_stat(stat_limit[i], j);
         c_put_str(TERM_L_BLUE, cnv_stat(m), 3 + i, col + 13);
     }

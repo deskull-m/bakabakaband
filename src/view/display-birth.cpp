@@ -22,7 +22,7 @@ void birth_put_stats(CreatureEntity &creature)
 
     const int col = 22;
     for (int i = 0; i < A_MAX; i++) {
-        int j = creature.race->r_adj[i] + (*creature.pclass_ref).c_adj[i] + (*creature.personality).a_adj[i];
+        int j = creature.get_race_info()->r_adj[i] + (*creature.get_class_info()).c_adj[i] + (*creature.get_personality_info()).a_adj[i];
         int m = adjust_stat(creature.stat_max[i], j);
         c_put_str(TERM_L_GREEN, cnv_stat(m), 3 + i, col + 24);
     }

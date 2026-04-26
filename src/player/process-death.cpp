@@ -231,7 +231,7 @@ void print_tomb(CreatureEntity &creature)
 
     show_tomb_line(p, GRAVE_PLAYER_TITLE_ROW);
 
-    show_tomb_line((*creature.pclass_ref).title, GRAVE_PLAYER_CLASS_ROW);
+    show_tomb_line((*creature.get_class_info()).title, GRAVE_PLAYER_CLASS_ROW);
 
     show_basic_params(creature);
 

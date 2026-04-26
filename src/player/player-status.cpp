@@ -420,7 +420,7 @@ static void update_max_hitpoints(CreatureEntity &creature)
     auto is_sorcerer = pc.equals(PlayerClassType::SORCERER);
     if (creature.get_mimic_form() != MimicKindType::NONE) {
         auto r_mhp = mimic_info.at(creature.get_mimic_form()).r_mhp;
-        const auto mimic_hit_dice = Dice(1, (is_sorcerer ? r_mhp / 2 : r_mhp) + (*creature.pclass_ref).c_mhp + (*creature.personality).a_mhp);
+        const auto mimic_hit_dice = Dice(1, (is_sorcerer ? r_mhp / 2 : r_mhp) + (*creature.get_class_info()).c_mhp + (*creature.get_personality_info()).a_mhp);
         mhp = mhp * mimic_hit_dice.maxroll() / creature.hit_dice.maxroll();
     }
 
@@ -714,7 +714,7 @@ static void update_max_mana(CreatureEntity &creature)
     if (pc.equals(PlayerClassType::SAMURAI)) {
         msp = (adj_mag_mana[creature.stat_index[mp_ptr->spell_stat]] + 10) * 2;
         if (msp) {
-            msp += (msp * creature.race->r_adj[mp_ptr->spell_stat] / 20);
+            msp += (msp * creature.get_race_info()->r_adj[mp_ptr->spell_stat] / 20);
         }
     } else {
         msp = adj_mag_mana[creature.stat_index[mp_ptr->spell_stat]] * (levels + 3) / 4;
@@ -722,7 +722,7 @@ static void update_max_mana(CreatureEntity &creature)
             msp++;
         }
         if (msp) {
-            msp += (msp * creature.race->r_adj[mp_ptr->spell_stat] / 20);
+            msp += (msp * creature.get_race_info()->r_adj[mp_ptr->spell_stat] / 20);
         }
         if (msp && (creature.ppersonality == PERSONALITY_MUNCHKIN)) {
             msp += msp / 2;
@@ -1038,7 +1038,7 @@ static ACTION_SKILL_POWER calc_disarming(CreatureEntity &creature)
     const auto &player_personality = personality_info[creature.ppersonality];
 
     pow = tmp_race_ptr->r_dis + player_class.c_dis + player_personality.a_dis;
-    pow += (((*creature.pclass_ref).x_dis * creature.level / 10) + ((*creature.personality).a_dis * creature.level / 50));
+    pow += (((*creature.get_class_info()).x_dis * creature.level / 10) + ((*creature.get_personality_info()).a_dis * creature.level / 50));
     pow += adj_dex_dis[creature.stat_index[A_DEX]];
     pow += adj_int_dis[creature.stat_index[A_INT]];
     return pow;
@@ -1070,7 +1070,7 @@ static ACTION_SKILL_POWER calc_device_ability(CreatureEntity &creature)
     const auto &player_personality = personality_info[creature.ppersonality];
 
     pow = tmp_race_ptr->r_dev + player_class.c_dev + player_personality.a_dev;
-    pow += ((player_class.x_dev * creature.level / 10) + ((*creature.personality).a_dev * creature.level / 50));
+    pow += ((player_class.x_dev * creature.level / 10) + ((*creature.get_personality_info()).a_dev * creature.level / 50));
 
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
         ItemEntity *o_ptr;
@@ -1126,7 +1126,7 @@ static ACTION_SKILL_POWER calc_saving_throw(CreatureEntity &creature)
     const auto &player_personality = personality_info[creature.ppersonality];
 
     pow = tmp_race_ptr->r_sav + player_class.c_sav + player_personality.a_sav;
-    pow += (((*creature.pclass_ref).x_sav * creature.level / 10) + ((*creature.personality).a_sav * creature.level / 50));
+    pow += (((*creature.get_class_info()).x_sav * creature.level / 10) + ((*creature.get_personality_info()).a_sav * creature.level / 50));
 
     if (creature.get_mutations().has(PlayerMutationType::MAGIC_RES)) {
         pow += (15 + (creature.level / 5));

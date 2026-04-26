@@ -123,11 +123,11 @@ void get_money_for_creature(CreatureEntity &creature)
  */
 uint16_t get_expfact(CreatureEntity &creature)
 {
-    uint16_t expfact = creature.race->r_exp;
+    uint16_t expfact = creature.get_race_info()->r_exp;
 
     CreatureRace pr(&creature);
     if (!pr.equals(PlayerRaceType::ANDROID)) {
-        expfact += (*creature.pclass_ref).c_exp;
+        expfact += (*creature.get_class_info()).c_exp;
     }
 
     auto is_race_gaining_additional_speed = pr.equals(PlayerRaceType::KLACKON) || pr.equals(PlayerRaceType::SPRITE);
@@ -180,8 +180,8 @@ void get_extra(CreatureEntity &creature, bool roll_hitdie)
     // 武術スタイルの初期設定
     creature.martial_arts_style = MartialArtsStyleType::TRADITIONAL;
 
-    const auto r_mhp = is_sorcerer ? creature.race->r_mhp / 2 : creature.race->r_mhp;
-    creature.hit_dice = Dice(1, r_mhp + (*creature.pclass_ref).c_mhp + (*creature.personality).a_mhp);
+    const auto r_mhp = is_sorcerer ? creature.get_race_info()->r_mhp / 2 : creature.get_race_info()->r_mhp;
+    creature.hit_dice = Dice(1, r_mhp + (*creature.get_class_info()).c_mhp + (*creature.get_personality_info()).a_mhp);
     if (roll_hitdie) {
         roll_hitdice(creature, SPOP_NO_UPDATE);
     }

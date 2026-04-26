@@ -280,8 +280,8 @@ void load_all_pref_files(CreatureEntity &creature)
     process_pref_file(creature, "user.prf");
     process_pref_file(creature, format("user-%s.prf", ANGBAND_SYS));
     constexpr auto fmt = "%s.prf";
-    process_pref_file(creature, format(fmt, creature.race->title.data()));
-    process_pref_file(creature, format(fmt, (*creature.pclass_ref).title.data()));
+    process_pref_file(creature, format(fmt, creature.get_race_info()->title.data()));
+    process_pref_file(creature, format(fmt, (*creature.get_class_info()).title.data()));
     process_pref_file(creature, format(fmt, creature.base_name.data()));
     PlayerRealm pr(creature);
     if (pr.realm1().is_available()) {

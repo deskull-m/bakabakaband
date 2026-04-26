@@ -25,7 +25,7 @@ static std::string birth_class_label(CreatureEntity &creature, int cs, concptr s
     ss << sym[cs] << p2;
     const auto pclass = i2enum<PlayerClassType>(cs);
     const auto title = class_info.at(pclass).title;
-    if (!(creature.race->choice & (1UL << cs))) {
+    if (!(creature.get_race_info()->choice & (1UL << cs))) {
         ss << '(' << title << ')';
     } else {
         ss << title;
@@ -220,6 +220,6 @@ bool get_player_class(CreatureEntity &creature)
     cp_ptr = &class_info.at(creature.pclass);
     creature.pclass_ref = &class_info.at(creature.pclass);
     mp_ptr = &class_magics_info[enum2i(creature.pclass)];
-    c_put_str(TERM_L_BLUE, creature.pclass_ref->title, 5, 15);
+    c_put_str(TERM_L_BLUE, creature.get_class_info()->title, 5, 15);
     return true;
 }
