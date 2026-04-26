@@ -180,7 +180,7 @@ static bool check_procection_rune(CreatureEntity &creature, MonraceId monrace_id
 
 static void warn_unique_generation(CreatureEntity &creature, MonraceId r_idx)
 {
-    if (!creature.warning || !AngbandWorld::get_instance().character_dungeon) {
+    if (!creature.has_warning_flag() || !AngbandWorld::get_instance().character_dungeon) {
         return;
     }
 

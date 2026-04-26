@@ -271,7 +271,7 @@ static int magical_brand_extra_dice(player_attack_type *pa_ptr)
  */
 static bool does_equip_cause_earthquake(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    if (!creature.earthquake) {
+    if (!creature.has_earthquake_flag()) {
         return false;
     }
 

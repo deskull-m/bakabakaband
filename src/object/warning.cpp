@@ -31,7 +31,7 @@ ItemEntity *choose_warning_item(CreatureEntity &creature)
 {
 
     /* Paranoia -- Player has no warning ability */
-    if (!creature.warning) {
+    if (!creature.has_warning_flag()) {
         return nullptr;
     }
 

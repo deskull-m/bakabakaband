@@ -89,7 +89,7 @@ void update_lite_radius(CreatureEntity &creature)
         creature.cur_lite += o_ptr->get_lite_radius();
     }
 
-    if (creature.cur_lite <= 0 && creature.lite) {
+    if (creature.cur_lite <= 0 && creature.has_lite_flag()) {
         creature.cur_lite++;
     }
 

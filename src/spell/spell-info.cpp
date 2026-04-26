@@ -37,13 +37,13 @@ MANA_POINT mod_need_mana(CreatureEntity &creature, MANA_POINT need_mana, SPELL_I
 #define DEC_MANA_DIV 3
     if (PlayerRealm::is_magic(realm) || PlayerRealm::is_technic(realm)) {
         need_mana = need_mana * (MANA_CONST + PlayerSkill::spell_exp_at(PlayerSkillRank::EXPERT) - PlayerSkill(creature).exp_of_spell(realm, spell_id)) + (MANA_CONST - 1);
-        need_mana *= creature.dec_mana ? DEC_MANA_DIV : MANA_DIV;
+        need_mana *= creature.has_dec_mana() ? DEC_MANA_DIV : MANA_DIV;
         need_mana /= MANA_CONST * MANA_DIV;
         if (need_mana < 1) {
             need_mana = 1;
         }
     } else {
-        if (creature.dec_mana) {
+        if (creature.has_dec_mana()) {
             need_mana = (need_mana + 1) * DEC_MANA_DIV / MANA_DIV;
         }
     }
@@ -68,15 +68,15 @@ PERCENTAGE mod_spell_chance_1(CreatureEntity &creature, PERCENTAGE chance)
 {
     chance += creature.to_m_chance;
 
-    if (creature.hard_spell) {
+    if (creature.has_hard_spell()) {
         chance += 20;
     }
 
-    if (creature.dec_mana && creature.easy_spell) {
+    if (creature.has_dec_mana() && creature.has_easy_spell()) {
         chance -= 4;
-    } else if (creature.easy_spell) {
+    } else if (creature.has_easy_spell()) {
         chance -= 3;
-    } else if (creature.dec_mana) {
+    } else if (creature.has_dec_mana()) {
         chance -= 2;
     }
 
@@ -97,10 +97,10 @@ PERCENTAGE mod_spell_chance_1(CreatureEntity &creature, PERCENTAGE chance)
  */
 PERCENTAGE mod_spell_chance_2(CreatureEntity &creature, PERCENTAGE chance)
 {
-    if (creature.dec_mana) {
+    if (creature.has_dec_mana()) {
         chance--;
     }
-    if (creature.hard_spell) {
+    if (creature.has_hard_spell()) {
         chance += 5;
     }
     return std::max(chance, 0);

@@ -110,7 +110,7 @@ void ObjectThrowEntity::calc_throw_range()
     distribute_charges(this->o_ptr, this->q_ptr, 1);
     this->q_ptr->number = 1;
     this->o_name = describe_flavor(creature, *this->q_ptr, OD_OMIT_PREFIX);
-    if (creature.mighty_throw) {
+    if (creature.has_mighty_throw()) {
         this->mult += 3;
     }
 
