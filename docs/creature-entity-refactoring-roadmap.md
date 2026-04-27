@@ -78,7 +78,7 @@ ESP 系 BIT_FLAGS 等）が残存している。モンスターでも将来運�
 
 ---
 
-## 提案 2: プレイヤー専用仮想メソッドのクリーチャー共通化 🚧 一部完了
+## 提案 2: プレイヤー専用仮想メソッドのクリーチャー共通化 ✅ 主要部分完了
 
 ### 背景
 
@@ -134,8 +134,18 @@ Phase 2 で基本的な状態チェックは virtual 化済みだが、能力問
 - ✅ EnumClassFlagGroup 構造体メンバの const 参照返し virtual アクセサ:
   `get_mutations()` / `get_traits()` / `get_cursed_flags()` /
   `get_cursed_special_flags()` と読取り用途 call site 427 箇所の移行
-- 🚧 残り: `race` / `personality` / `pclass_ref` ポインタの null-safe
-  アクセサ化、書込み系セッターの整備
+- ✅ プレイヤー情報ポインタ (race / personality / pclass_ref) に
+  `get_race_info()` / `get_personality_info()` / `get_class_info()`
+  virtual アクセサ追加・call site 移行
+- ✅ スキル系・赤外線視（`get_skill_save()` / `get_skill_disarm()` /
+  `get_skill_device()` / `get_skill_stealth()` / `get_skill_search()` /
+  `get_skill_perception()` / `get_skill_to_hit_melee()` /
+  `get_skill_to_hit_bow()` / `get_skill_dig()` / `get_infravision()`）
+  の virtual 化と読取り 80 箇所の移行
+- 🚧 残り: 配列系フィールド（`spell_exp[]` / `weapon_exp[][]` /
+  `skill_exp[]` / `stat_cur[]` / `stat_max[]` 等）は virtual 化が
+  構文的に困難で保留。書込み系セッターの整備は setter 間接コスト
+  vs 効果のバランスで現状維持の判断
 
 ---
 
