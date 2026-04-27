@@ -18,6 +18,7 @@
 #include "player-info/race-types.h"
 #include "player-info/sniper-data-type.h"
 #include "player-info/spell-hex-data-type.h"
+#include "player/player-status-flags.h"
 #include "player/race-info-table.h"
 #include "realm/realm-song-numbers.h"
 #include "realm/realm-types.h"
@@ -1083,3 +1084,42 @@ void CreatureEntity::wipe()
         this->init_monster_profile();
     }
 }
+
+// 耐性系 virtual メソッドのデフォルト実装。
+// player-status-flags の自由関数に委譲する形で、プレイヤー用の集計
+// ロジック（装備・職業・種族・時限効果）をそのまま活用。将来
+// モンスター側で MonsterProfile / MonraceDefinition 由来の耐性を
+// 返す形にオーバーライド可能。
+
+// clang-format off
+BIT_FLAGS CreatureEntity::has_resist_fire() { return ::has_resist_fire(*this); }
+BIT_FLAGS CreatureEntity::has_resist_cold() { return ::has_resist_cold(*this); }
+BIT_FLAGS CreatureEntity::has_resist_elec() { return ::has_resist_elec(*this); }
+BIT_FLAGS CreatureEntity::has_resist_acid() { return ::has_resist_acid(*this); }
+BIT_FLAGS CreatureEntity::has_resist_pois() { return ::has_resist_pois(*this); }
+BIT_FLAGS CreatureEntity::has_resist_conf() { return ::has_resist_conf(*this); }
+BIT_FLAGS CreatureEntity::has_resist_sound() { return ::has_resist_sound(*this); }
+BIT_FLAGS CreatureEntity::has_resist_lite() { return ::has_resist_lite(*this); }
+BIT_FLAGS CreatureEntity::has_resist_dark() { return ::has_resist_dark(*this); }
+BIT_FLAGS CreatureEntity::has_resist_chaos() { return ::has_resist_chaos(*this); }
+BIT_FLAGS CreatureEntity::has_resist_disen() { return ::has_resist_disen(*this); }
+BIT_FLAGS CreatureEntity::has_resist_shard() { return ::has_resist_shard(*this); }
+BIT_FLAGS CreatureEntity::has_resist_blind() { return ::has_resist_blind(*this); }
+BIT_FLAGS CreatureEntity::has_resist_neth() { return ::has_resist_neth(*this); }
+BIT_FLAGS CreatureEntity::has_resist_time() { return ::has_resist_time(*this); }
+BIT_FLAGS CreatureEntity::has_resist_water() { return ::has_resist_water(*this); }
+BIT_FLAGS CreatureEntity::has_resist_fear() { return ::has_resist_fear(*this); }
+BIT_FLAGS CreatureEntity::has_resist_curse() { return ::has_resist_curse(*this); }
+BIT_FLAGS CreatureEntity::has_vuln_curse() { return ::has_vuln_curse(*this); }
+BIT_FLAGS CreatureEntity::has_vuln_acid() { return ::has_vuln_acid(*this); }
+BIT_FLAGS CreatureEntity::has_vuln_elec() { return ::has_vuln_elec(*this); }
+BIT_FLAGS CreatureEntity::has_vuln_fire() { return ::has_vuln_fire(*this); }
+BIT_FLAGS CreatureEntity::has_vuln_cold() { return ::has_vuln_cold(*this); }
+BIT_FLAGS CreatureEntity::has_vuln_lite() { return ::has_vuln_lite(*this); }
+BIT_FLAGS CreatureEntity::has_immune_fire() { return ::has_immune_fire(*this); }
+BIT_FLAGS CreatureEntity::has_immune_cold() { return ::has_immune_cold(*this); }
+BIT_FLAGS CreatureEntity::has_immune_acid() { return ::has_immune_acid(*this); }
+BIT_FLAGS CreatureEntity::has_immune_elec() { return ::has_immune_elec(*this); }
+BIT_FLAGS CreatureEntity::has_immune_dark() { return ::has_immune_dark(*this); }
+BIT_FLAGS CreatureEntity::has_immune_lite() { return ::has_immune_lite(*this); }
+// clang-format on
