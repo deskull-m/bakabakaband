@@ -77,7 +77,7 @@ bool exe_tunnel(CreatureEntity &creature, POSITION y, POSITION x)
             msg_print(_("そこは掘れない!", "You can't tunnel through that!"));
         }
     } else if (terrain.flags.has(TerrainCharacteristics::CAN_DIG)) {
-        if (creature.skill_dig > randint0(20 * power)) {
+        if (creature.get_skill_dig() > randint0(20 * power)) {
             sound(SoundKind::DIG_THROUGH);
             msg_format(_("%sをくずした。", "You have removed the %s."), name.data());
             cave_alter_feat(creature, y, x, TerrainCharacteristics::TUNNEL);
@@ -89,7 +89,7 @@ bool exe_tunnel(CreatureEntity &creature, POSITION y, POSITION x)
         }
     } else {
         bool tree = terrain_mimic.flags.has(TerrainCharacteristics::TREE);
-        if (creature.skill_dig > power + randint0(40 * power)) {
+        if (creature.get_skill_dig() > power + randint0(40 * power)) {
             sound(SoundKind::DIG_THROUGH);
             if (tree) {
                 msg_format(_("%sを切り払った。", "You have cleared away the %s."), name.data());

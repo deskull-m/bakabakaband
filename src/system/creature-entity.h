@@ -1106,6 +1106,76 @@ public:
     {
         return this->pclass_ref;
     }
+    /*!
+     * @brief 赤外線視能力の強さ
+     */
+    virtual ACTION_SKILL_POWER get_infravision() const
+    {
+        return this->see_infra;
+    }
+    /*!
+     * @brief 解除能力スキル
+     */
+    virtual ACTION_SKILL_POWER get_skill_disarm() const
+    {
+        return this->skill_dis;
+    }
+    /*!
+     * @brief 魔道具使用スキル
+     */
+    virtual ACTION_SKILL_POWER get_skill_device() const
+    {
+        return this->skill_dev;
+    }
+    /*!
+     * @brief 魔法防御スキル
+     */
+    virtual ACTION_SKILL_POWER get_skill_save() const
+    {
+        return this->skill_sav;
+    }
+    /*!
+     * @brief 隠密スキル
+     */
+    virtual ACTION_SKILL_POWER get_skill_stealth() const
+    {
+        return this->skill_stl;
+    }
+    /*!
+     * @brief 知覚スキル
+     */
+    virtual ACTION_SKILL_POWER get_skill_search() const
+    {
+        return this->skill_srh;
+    }
+    /*!
+     * @brief 探索スキル
+     */
+    virtual ACTION_SKILL_POWER get_skill_perception() const
+    {
+        return this->skill_fos;
+    }
+    /*!
+     * @brief 打撃命中スキル
+     */
+    virtual ACTION_SKILL_POWER get_skill_to_hit_melee() const
+    {
+        return this->skill_thn;
+    }
+    /*!
+     * @brief 射撃命中スキル
+     */
+    virtual ACTION_SKILL_POWER get_skill_to_hit_bow() const
+    {
+        return this->skill_thb;
+    }
+    /*!
+     * @brief 掘削スキル
+     */
+    virtual ACTION_SKILL_POWER get_skill_dig() const
+    {
+        return this->skill_dig;
+    }
 
     /*!
      * @brief クリーチャーのコピーを返す

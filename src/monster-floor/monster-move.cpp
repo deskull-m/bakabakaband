@@ -568,7 +568,7 @@ void process_sound(CreatureEntity &creature, MONSTER_IDX m_idx)
     const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
 
-    if (monster.get_monster_profile().ml || creature.skill_srh < randint1(100)) {
+    if (monster.get_monster_profile().ml || creature.get_skill_search() < randint1(100)) {
         return;
     }
     const auto m_name = std::string(_("それ", "It"));

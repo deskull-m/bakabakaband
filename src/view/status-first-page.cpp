@@ -429,7 +429,7 @@ static int calculate_mp_regen_rate(CreatureEntity &creature)
  */
 static void display_first_page(CreatureEntity &creature, int xthb, int *damage, int shots, int shot_frac)
 {
-    int xthn = creature.skill_thn + (creature.to_h_m * BTH_PLUS_ADJ);
+    int xthn = creature.get_skill_to_hit_melee() + (creature.to_h_m * BTH_PLUS_ADJ);
 
     int muta_att = 0;
     if (creature.get_mutations().has(PlayerMutationType::HORNS)) {
@@ -450,13 +450,13 @@ static void display_first_page(CreatureEntity &creature, int xthb, int *damage, 
 
     int blows1 = can_attack_with_main_hand(creature) ? creature.num_blow[0] : 0;
     int blows2 = can_attack_with_sub_hand(creature) ? creature.num_blow[1] : 0;
-    int xdis = creature.skill_dis;
-    int xdev = creature.skill_dev;
-    int xsav = creature.skill_sav;
-    int xstl = creature.skill_stl;
-    int xsrh = creature.skill_srh;
-    int xfos = creature.skill_fos;
-    int xdig = creature.skill_dig;
+    int xdis = creature.get_skill_disarm();
+    int xdev = creature.get_skill_device();
+    int xsav = creature.get_skill_save();
+    int xstl = creature.get_skill_stealth();
+    int xsrh = creature.get_skill_search();
+    int xfos = creature.get_skill_perception();
+    int xdig = creature.get_skill_dig();
 
     auto sd = likert(xthn, 12);
     display_player_one_line(ENTRY_SKILL_FIGHT, sd.first, sd.second);
@@ -501,7 +501,7 @@ static void display_first_page(CreatureEntity &creature, int xthb, int *damage, 
     }
 
     display_player_one_line(ENTRY_AVG_DMG, desc, TERM_L_BLUE);
-    display_player_one_line(ENTRY_INFRA, format("%d feet", creature.see_infra * 10), TERM_WHITE);
+    display_player_one_line(ENTRY_INFRA, format("%d feet", creature.get_infravision() * 10), TERM_WHITE);
 
     // HP回復量/100ターンの計算
     int hp_regen_amount = calculate_hp_regen_rate(creature);
@@ -532,7 +532,7 @@ void display_player_various(CreatureEntity &creature)
     ItemEntity *o_ptr;
     o_ptr = creature.inventory[INVEN_BOW].get();
     int tmp = creature.to_h_b + o_ptr->to_h;
-    int xthb = creature.skill_thb + (tmp * BTH_PLUS_ADJ);
+    int xthb = creature.get_skill_to_hit_bow() + (tmp * BTH_PLUS_ADJ);
     int shots = 0;
     int shot_frac = 0;
     calc_shot_params(creature, o_ptr, &shots, &shot_frac);

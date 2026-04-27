@@ -65,7 +65,7 @@ void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
         item_level = 50 + (item_level - 50) / 2;
     }
 
-    auto chance = this->creature.skill_dev;
+    auto chance = this->creature.get_skill_device();
     if (this->creature.is_confused()) {
         chance = chance / 2;
     }

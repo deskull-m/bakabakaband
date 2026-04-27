@@ -53,7 +53,7 @@ void set_body_improvement_info_2(CreatureEntity &creature, self_info_type *self_
         self_ptr->info_list.emplace_back(_("あなたはすぐにこの世界を離れるだろう。", "You will soon be altered."));
     }
 
-    if (creature.see_infra) {
+    if (creature.get_infravision()) {
         self_ptr->info_list.emplace_back(_("あなたの瞳は赤外線に敏感である。", "Your eyes are sensitive to infrared light."));
     }
 

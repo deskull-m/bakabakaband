@@ -284,7 +284,7 @@ static void effect_monster_domination_corrupted(CreatureEntity &creature, Effect
     msg_format(_("%s^の堕落した精神は攻撃を跳ね返した！",
                    (em_ptr->seen ? "%s^'s corrupted mind backlashes your attack!" : "%s^s corrupted mind backlashes your attack!")),
         em_ptr->m_name);
-    if (randint0(100 + em_ptr->r_ptr->level / 2) < creature.skill_sav) {
+    if (randint0(100 + em_ptr->r_ptr->level / 2) < creature.get_skill_save()) {
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
         return;
     }

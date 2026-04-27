@@ -425,7 +425,7 @@ void do_cmd_walk(CreatureEntity &creature, bool pickup)
             tmp = 1;
         }
 
-        if (((wild_level + 5) > (creature.level / 2)) && randint0(tmp) < (21 - creature.skill_stl)) {
+        if (((wild_level + 5) > (creature.level / 2)) && randint0(tmp) < (21 - creature.get_skill_stealth())) {
             // TODO: 広域マップの領域ごとのアライアンス情報を取得する機能が未実装のため、
             // 今回はデフォルトメッセージを使用。将来的にはアライアンス固有のメッセージを表示予定
             msg_print(_("襲撃だ！", "You are ambushed !"));

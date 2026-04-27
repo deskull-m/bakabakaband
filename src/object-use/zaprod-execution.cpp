@@ -64,7 +64,7 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
     }
 
     const auto item_level = o_ptr->get_baseitem_level();
-    auto chance = creature.skill_dev;
+    auto chance = creature.get_skill_device();
     if (creature.is_confused()) {
         chance = chance / 2;
     }

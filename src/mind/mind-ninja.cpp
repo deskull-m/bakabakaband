@@ -207,7 +207,7 @@ void process_surprise_attack(CreatureEntity &creature, player_attack_type *pa_pt
         return;
     }
 
-    int tmp = creature.level * 6 + (creature.skill_stl + 10) * 4;
+    int tmp = creature.level * 6 + (creature.get_skill_stealth() + 10) * 4;
     if (creature.monlite && (pa_ptr->mode != HISSATSU_NYUSIN)) {
         tmp /= 3;
     }

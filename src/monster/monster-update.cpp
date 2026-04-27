@@ -411,7 +411,7 @@ static void update_specific_race_telepathy(CreatureEntity &creature, um_type *um
 
 static bool check_cold_blood(CreatureEntity &creature, um_type *um_ptr, const POSITION distance)
 {
-    if (distance > creature.see_infra) {
+    if (distance > creature.get_infravision()) {
         return false;
     }
 
