@@ -528,7 +528,7 @@ ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, in
             break;
         }
         const auto expression = format("?:[AND [EQU $RACE %s] [EQU $CLASS %s] [GEQ $LEVEL %02d]]",
-            creature.race->title.en_string().data(), (*creature.pclass_ref).title.en_string().data(),
+            creature.get_race_info()->title.en_string().data(), (*creature.get_class_info()).title.en_string().data(),
             creature.level);
         tb->cx = 0;
         insert_return_code(tb);

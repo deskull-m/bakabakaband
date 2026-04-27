@@ -237,8 +237,8 @@ std::string make_screen_dump(CreatureEntity &creature)
 bool report_score(CreatureEntity &creature)
 {
     std::stringstream score_ss;
-    std::string personality_desc = (*creature.personality).title.string();
-    personality_desc.append(_((*creature.personality).no ? "の" : "", " "));
+    std::string personality_desc = (*creature.get_personality_info()).title.string();
+    personality_desc.append(_((*creature.get_personality_info()).no ? "の" : "", " "));
 
     PlayerRealm pr(creature);
     const auto &realm1_name = CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST) ? get_element_title(creature.element_realm) : pr.realm1().get_name().string();
@@ -253,8 +253,8 @@ bool report_score(CreatureEntity &creature)
     const auto &igd = InnerGameData::get_instance();
     score_ss << fmt::format("turns: {}\n", igd.get_real_turns(AngbandWorld::get_instance().game_turn))
              << fmt::format("sex: {}\n", enum2i(creature.psex))
-             << fmt::format("race: {}\n", creature.race->title)
-             << fmt::format("class: {}\n", (*creature.pclass_ref).title)
+             << fmt::format("race: {}\n", creature.get_race_info()->title)
+             << fmt::format("class: {}\n", (*creature.get_class_info()).title)
              << fmt::format("seikaku: {}\n", personality_desc)
              << fmt::format("realm1: {}\n", realm1_name)
              << fmt::format("realm2: {}\n", pr.realm2().get_name())

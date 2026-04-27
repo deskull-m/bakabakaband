@@ -22,14 +22,14 @@ void get_height_weight(CreatureEntity &creature)
     int deviation;
     switch (creature.psex) {
     case SEX_MALE:
-        creature.ht = randnor(creature.race->m_b_ht, creature.race->m_m_ht);
-        deviation = (int)(creature.ht) * 100 / (int)(creature.race->m_b_ht);
-        creature.wt = randnor((int)(creature.race->m_b_wt) * deviation / 100, (int)(creature.race->m_m_wt) * deviation / 300);
+        creature.ht = randnor(creature.get_race_info()->m_b_ht, creature.get_race_info()->m_m_ht);
+        deviation = (int)(creature.ht) * 100 / (int)(creature.get_race_info()->m_b_ht);
+        creature.wt = randnor((int)(creature.get_race_info()->m_b_wt) * deviation / 100, (int)(creature.get_race_info()->m_m_wt) * deviation / 300);
         return;
     case SEX_FEMALE:
-        creature.ht = randnor(creature.race->f_b_ht, creature.race->f_m_ht);
-        deviation = (int)(creature.ht) * 100 / (int)(creature.race->f_b_ht);
-        creature.wt = randnor((int)(creature.race->f_b_wt) * deviation / 100, (int)(creature.race->f_m_wt) * deviation / 300);
+        creature.ht = randnor(creature.get_race_info()->f_b_ht, creature.get_race_info()->f_m_ht);
+        deviation = (int)(creature.ht) * 100 / (int)(creature.get_race_info()->f_b_ht);
+        creature.wt = randnor((int)(creature.get_race_info()->f_b_wt) * deviation / 100, (int)(creature.get_race_info()->f_m_wt) * deviation / 300);
         return;
     default:
         return;
@@ -42,7 +42,7 @@ void get_height_weight(CreatureEntity &creature)
  */
 void get_ahw(CreatureEntity &creature)
 {
-    creature.age = creature.race->b_age + randint1(creature.race->m_age);
+    creature.age = creature.get_race_info()->b_age + randint1(creature.get_race_info()->m_age);
     get_height_weight(creature);
 }
 

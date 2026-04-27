@@ -71,23 +71,23 @@ static std::string display_race_stat(CreatureEntity &creature, int cs, int *os, 
         put_str("                                   ", 6, 40);
     } else {
         creature.race = &race_info[cs];
-        c_put_str(TERM_L_BLUE, creature.race->title, 3, 40);
+        c_put_str(TERM_L_BLUE, creature.get_race_info()->title, 3, 40);
         put_str(_("腕力 知能 賢さ 器用 耐久 魅力 経験 ", "Str  Int  Wis  Dex  Con  Chr   EXP "), 4, 40);
-        put_str(_("の種族修正", ": Race modification"), 3, 40 + creature.race->title->length());
+        put_str(_("の種族修正", ": Race modification"), 3, 40 + creature.get_race_info()->title->length());
 
-        const auto stats = format("%+3d  %+3d  %+3d  %+3d  %+3d  %+3d %+4d%% ", creature.race->r_adj[0], creature.race->r_adj[1], creature.race->r_adj[2], creature.race->r_adj[3], creature.race->r_adj[4], creature.race->r_adj[5], (creature.race->r_exp - 100));
+        const auto stats = format("%+3d  %+3d  %+3d  %+3d  %+3d  %+3d %+4d%% ", creature.get_race_info()->r_adj[0], creature.get_race_info()->r_adj[1], creature.get_race_info()->r_adj[2], creature.get_race_info()->r_adj[3], creature.get_race_info()->r_adj[4], creature.get_race_info()->r_adj[5], (creature.get_race_info()->r_exp - 100));
         c_put_str(TERM_L_BLUE, stats, 5, 40);
 
         put_str("HD ", 6, 40);
-        const auto hd = format("%2d", creature.race->r_mhp);
+        const auto hd = format("%2d", creature.get_race_info()->r_mhp);
         c_put_str(TERM_L_BLUE, hd, 6, 43);
 
         put_str(_("隠密", "Stealth"), 6, 47);
-        const auto stealth = format("%+2d", creature.race->r_stl);
+        const auto stealth = format("%+2d", creature.get_race_info()->r_stl);
         c_put_str(TERM_L_BLUE, stealth, 6, _(52, 55));
 
         put_str(_("赤外線視力", "Infra"), 6, _(56, 59));
-        const auto infra = format(_("%%2dft", "%%2dft"), 10 * creature.race->infra);
+        const auto infra = format(_("%%2dft", "%%2dft"), 10 * creature.get_race_info()->infra);
         c_put_str(TERM_L_BLUE, infra, 6, _(67, 65));
     }
 
@@ -203,6 +203,6 @@ bool get_player_race(CreatureEntity &creature)
 
     creature.prace = i2enum<PlayerRaceType>(k);
     creature.race = &race_info[k];
-    c_put_str(TERM_L_BLUE, creature.race->title, 4, 15);
+    c_put_str(TERM_L_BLUE, creature.get_race_info()->title, 4, 15);
     return true;
 }

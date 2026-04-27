@@ -19,7 +19,7 @@ void display_player_name(CreatureEntity &creature, bool name_only)
 {
     std::stringstream ss;
     if (!name_only && creature.personality != nullptr) {
-        ss << (*creature.personality).title << _((*creature.personality).no == 1 ? "の" : "", " ");
+        ss << (*creature.get_personality_info()).title << _((*creature.get_personality_info()).no == 1 ? "の" : "", " ");
     }
     // 無名モンスター（または匿名プレイヤー）の場合は「名無し」表記へフォールバック
     if (creature.name.empty()) {
@@ -55,8 +55,8 @@ void display_player_misc_info(CreatureEntity &creature)
     put_str(_("職業  :", "Class :"), 5, 1);
 
     c_put_str(TERM_L_BLUE, creature.get_sex_info().title, 3, 9);
-    c_put_str(TERM_L_BLUE, (creature.get_mimic_form() != MimicKindType::NONE ? mimic_info.at(creature.get_mimic_form()).title : creature.race->title), 4, 9);
-    c_put_str(TERM_L_BLUE, (*creature.pclass_ref).title, 5, 9);
+    c_put_str(TERM_L_BLUE, (creature.get_mimic_form() != MimicKindType::NONE ? mimic_info.at(creature.get_mimic_form()).title : creature.get_race_info()->title), 4, 9);
+    c_put_str(TERM_L_BLUE, (*creature.get_class_info()).title, 5, 9);
 
     put_str(_("レベル:", "Level :"), 6, 1);
     put_str(_("ＨＰ  :", "Hits  :"), 7, 1);

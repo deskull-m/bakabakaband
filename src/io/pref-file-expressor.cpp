@@ -163,9 +163,9 @@ std::string process_pref_file_expr(CreatureEntity &creature, char **sp, char *fp
             v = "OFF";
         }
     } else if (streq(b + 1, "RACE")) {
-        v = creature.race->title.en_string();
+        v = creature.get_race_info()->title.en_string();
     } else if (streq(b + 1, "CLASS")) {
-        v = (*creature.pclass_ref).title.en_string();
+        v = (*creature.get_class_info()).title.en_string();
     } else if (streq(b + 1, "PLAYER")) {
         static char tmp_player_name[64];
         const char *pn = creature.name.c_str();

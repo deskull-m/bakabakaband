@@ -72,7 +72,7 @@ void change_race(CreatureEntity &creature, PlayerRaceType new_race, concptr effe
 
     creature.prace = new_race;
     creature.race = &race_info[enum2i(creature.prace)];
-    creature.expfact = creature.race->r_exp + (*creature.pclass_ref).c_exp;
+    creature.expfact = creature.get_race_info()->r_exp + (*creature.get_class_info()).c_exp;
 
     CreatureClass pc(creature);
     bool is_special_class = pc.equals(PlayerClassType::MONK);
@@ -87,8 +87,8 @@ void change_race(CreatureEntity &creature, PlayerRaceType new_race, concptr effe
 
     get_height_weight(creature);
 
-    const auto r_mhp = pc.equals(PlayerClassType::SORCERER) ? creature.race->r_mhp / 2 : creature.race->r_mhp;
-    creature.hit_dice = Dice(1, r_mhp + (*creature.pclass_ref).c_mhp + (*creature.personality).a_mhp);
+    const auto r_mhp = pc.equals(PlayerClassType::SORCERER) ? creature.get_race_info()->r_mhp / 2 : creature.get_race_info()->r_mhp;
+    creature.hit_dice = Dice(1, r_mhp + (*creature.get_class_info()).c_mhp + (*creature.get_personality_info()).a_mhp);
 
     roll_hitdice(creature, SPOP_NONE);
     check_experience(creature);

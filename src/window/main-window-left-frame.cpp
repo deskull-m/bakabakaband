@@ -250,7 +250,7 @@ void print_depth(CreatureEntity &creature)
 void print_frame_basic(CreatureEntity &creature)
 {
     const auto &title = creature.get_mimic_form() == MimicKindType::NONE
-                            ? creature.race->title
+                            ? creature.get_race_info()->title
                             : mimic_info.at(creature.get_mimic_form()).title;
     print_field(title, ROW_RACE, COL_RACE);
     print_title(creature);

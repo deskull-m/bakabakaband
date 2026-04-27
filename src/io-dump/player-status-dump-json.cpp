@@ -61,10 +61,10 @@ static void add_basic_info_to_json(nlohmann::json &j, CreatureEntity &creature)
     j["basic"]["prestige"] = creature.prestige;
 
     if (creature.race != nullptr) {
-        j["basic"]["race"] = localized_to_utf8_safe(creature.race->title);
+        j["basic"]["race"] = localized_to_utf8_safe(creature.get_race_info()->title);
     }
     if (creature.pclass_ref != nullptr) {
-        j["basic"]["class"] = localized_to_utf8_safe(creature.pclass_ref->title);
+        j["basic"]["class"] = localized_to_utf8_safe(creature.get_class_info()->title);
     }
 
     // モンスターはプレイヤー固有の性別・性格・魔法領域・変身形態を持たない

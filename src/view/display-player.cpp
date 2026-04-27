@@ -95,10 +95,10 @@ static void display_player_basic_info(CreatureEntity &creature)
     display_player_name(creature);
     display_player_one_line(ENTRY_SEX, creature.get_sex_info().title, TERM_L_BLUE);
     if (creature.race != nullptr) {
-        display_player_one_line(ENTRY_RACE, (creature.get_mimic_form() != MimicKindType::NONE ? mimic_info.at(creature.get_mimic_form()).title : creature.race->title), TERM_L_BLUE);
+        display_player_one_line(ENTRY_RACE, (creature.get_mimic_form() != MimicKindType::NONE ? mimic_info.at(creature.get_mimic_form()).title : creature.get_race_info()->title), TERM_L_BLUE);
     }
     if (creature.pclass_ref != nullptr) {
-        display_player_one_line(ENTRY_CLASS, (*creature.pclass_ref).title, TERM_L_BLUE);
+        display_player_one_line(ENTRY_CLASS, (*creature.get_class_info()).title, TERM_L_BLUE);
     }
 }
 
