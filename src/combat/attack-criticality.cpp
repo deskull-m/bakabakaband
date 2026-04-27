@@ -50,7 +50,7 @@ std::tuple<int, std::string, SoundKind> apply_critical_norm_damage(int k, int ba
 int critical_norm(CreatureEntity &creature, WEIGHT weight, int plus, int dam, int16_t meichuu, combat_options mode, bool impact)
 {
     /* Extract "blow" power */
-    int i = (weight + (meichuu * 3 + plus * 5) + creature.skill_thn);
+    int i = (weight + (meichuu * 3 + plus * 5) + creature.get_skill_to_hit_melee());
 
     /* Chance */
     auto pow = CreatureClass(creature).equals(PlayerClassType::NINJA) ? 4444 : 5000;

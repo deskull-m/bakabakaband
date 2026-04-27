@@ -281,7 +281,7 @@ void update_dungeon_feeling(CreatureEntity &creature)
         return;
     }
 
-    const auto delay = std::max(10, 150 - creature.skill_fos) * (150 - floor.dun_level) * TURNS_PER_TICK / 100;
+    const auto delay = std::max(10, 150 - creature.get_skill_perception()) * (150 - floor.dun_level) * TURNS_PER_TICK / 100;
     const auto &world = AngbandWorld::get_instance();
     auto &df = DungeonFeeling::get_instance();
     if (world.game_turn < df.get_turns() + delay && !cheat_xtra) {

@@ -62,7 +62,7 @@ void ObjectUseEntity::execute()
         item_level = 50 + (item_level - 50) / 2;
     }
 
-    auto chance = creature.skill_dev;
+    auto chance = creature.get_skill_device();
     if (creature.is_confused()) {
         chance = chance / 2;
     }

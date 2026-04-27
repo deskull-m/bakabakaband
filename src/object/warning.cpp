@@ -192,7 +192,7 @@ static void spell_damcalc(CreatureEntity &creature, const CreatureEntity &monste
 
     case AttributeType::MIND_BLAST:
     case AttributeType::BRAIN_SMASH:
-        if (100 + rlev / 2 <= std::max<short>(5, creature.skill_sav)) {
+        if (100 + rlev / 2 <= std::max<short>(5, creature.get_skill_save())) {
             dam = 0;
             ignore_wraith_form = true;
         }
@@ -203,7 +203,7 @@ static void spell_damcalc(CreatureEntity &creature, const CreatureEntity &monste
     case AttributeType::CAUSE_2:
     case AttributeType::CAUSE_3:
     case AttributeType::HAND_DOOM:
-        if (100 + rlev / 2 <= creature.skill_sav) {
+        if (100 + rlev / 2 <= creature.get_skill_save()) {
             dam = 0;
             ignore_wraith_form = true;
         }
@@ -211,7 +211,7 @@ static void spell_damcalc(CreatureEntity &creature, const CreatureEntity &monste
         break;
 
     case AttributeType::CAUSE_4:
-        if ((100 + rlev / 2 <= creature.skill_sav) && (monster.r_idx != MonraceId::KENSHIROU)) {
+        if ((100 + rlev / 2 <= creature.get_skill_save()) && (monster.r_idx != MonraceId::KENSHIROU)) {
             dam = 0;
             ignore_wraith_form = true;
         }

@@ -690,7 +690,7 @@ void apply_nexus(const CreatureEntity &attacker, CreatureEntity &creature)
     }
 
     case 6: {
-        if (evaluate_percent(creature.skill_sav)) {
+        if (evaluate_percent(creature.get_skill_save())) {
             msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
             break;
         }
@@ -700,7 +700,7 @@ void apply_nexus(const CreatureEntity &attacker, CreatureEntity &creature)
     }
 
     case 7: {
-        if (evaluate_percent(creature.skill_sav)) {
+        if (evaluate_percent(creature.get_skill_save())) {
             msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
             break;
         }

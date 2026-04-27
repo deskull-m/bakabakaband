@@ -533,13 +533,13 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
     constexpr auto xbow_magnification = 400;
     int chance;
     if (tval == ItemKindType::NONE) {
-        chance = (creature.skill_thb + ((weapon_exps[0] - median_skill_exp) / bow_magnification + bonus) * BTH_PLUS_ADJ);
+        chance = (creature.get_skill_to_hit_bow() + ((weapon_exps[0] - median_skill_exp) / bow_magnification + bonus) * BTH_PLUS_ADJ);
     } else {
         const auto sval = *j_ptr->bi_key.sval();
         if (j_ptr->is_cross_bow()) {
-            chance = (creature.skill_thb + (weapon_exps[sval] / xbow_magnification + bonus) * BTH_PLUS_ADJ);
+            chance = (creature.get_skill_to_hit_bow() + (weapon_exps[sval] / xbow_magnification + bonus) * BTH_PLUS_ADJ);
         } else {
-            chance = (creature.skill_thb + ((weapon_exps[sval] - median_skill_exp) / bow_magnification + bonus) * BTH_PLUS_ADJ);
+            chance = (creature.get_skill_to_hit_bow() + ((weapon_exps[sval] - median_skill_exp) / bow_magnification + bonus) * BTH_PLUS_ADJ);
         }
     }
 
@@ -1065,14 +1065,14 @@ int critical_shot(CreatureEntity &creature, WEIGHT weight, int plus_ammo, int pl
     constexpr auto xbow_magnification = 400;
     int power;
     if (tval == ItemKindType::NONE) {
-        power = creature.skill_thb + ((weapon_exps[0] - median_skill_exp) / bow_magnification + bonus) * BTH_PLUS_ADJ;
+        power = creature.get_skill_to_hit_bow() + ((weapon_exps[0] - median_skill_exp) / bow_magnification + bonus) * BTH_PLUS_ADJ;
     } else {
         const auto sval = *item.bi_key.sval();
         const auto weapon_exp = weapon_exps[sval];
         if (creature.tval_ammo == ItemKindType::BOLT) {
-            power = (creature.skill_thb + (weapon_exp / xbow_magnification + bonus) * BTH_PLUS_ADJ);
+            power = (creature.get_skill_to_hit_bow() + (weapon_exp / xbow_magnification + bonus) * BTH_PLUS_ADJ);
         } else {
-            power = creature.skill_thb + ((weapon_exp - median_skill_exp) / bow_magnification + bonus) * BTH_PLUS_ADJ;
+            power = creature.get_skill_to_hit_bow() + ((weapon_exp - median_skill_exp) / bow_magnification + bonus) * BTH_PLUS_ADJ;
         }
     }
 
@@ -1124,9 +1124,9 @@ int calc_crit_ratio_shot(CreatureEntity &creature, int plus_ammo, int plus_bow)
     const auto tval = j_ptr->bi_key.tval();
     const auto sval = *j_ptr->bi_key.sval();
     if (creature.tval_ammo == ItemKindType::BOLT) {
-        i = (creature.skill_thb + (creature.weapon_exp[tval][sval] / 400 + i) * BTH_PLUS_ADJ);
+        i = (creature.get_skill_to_hit_bow() + (creature.weapon_exp[tval][sval] / 400 + i) * BTH_PLUS_ADJ);
     } else {
-        i = (creature.skill_thb + ((creature.weapon_exp[tval][sval] - (PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER) / 2)) / 200 + i) * BTH_PLUS_ADJ);
+        i = (creature.get_skill_to_hit_bow() + ((creature.weapon_exp[tval][sval] - (PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER) / 2)) / 200 + i) * BTH_PLUS_ADJ);
     }
 
     CreatureClass pc(creature);
@@ -1207,7 +1207,7 @@ int calc_expect_crit(CreatureEntity &creature, WEIGHT weight, int plus, int dam,
         return dam;
     }
 
-    int i = (weight + (meichuu * 3 + plus * 5) + creature.skill_thn);
+    int i = (weight + (meichuu * 3 + plus * 5) + creature.get_skill_to_hit_melee());
     if (i < 0) {
         i = 0;
     }

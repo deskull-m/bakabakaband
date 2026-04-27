@@ -51,7 +51,7 @@ static bool exe_open_chest(CreatureEntity &creature, const Pos2D &pos, OBJECT_ID
     PlayerEnergy(creature).set_player_turn_energy(100);
     if (o_ptr->pval > 0) {
         flag = false;
-        int i = creature.skill_dis;
+        int i = creature.get_skill_disarm();
         const auto effects = creature.effects();
         if (effects->blindness().is_blind() || no_lite(creature)) {
             i = i / 10;

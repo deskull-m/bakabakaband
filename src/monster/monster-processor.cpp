@@ -321,7 +321,7 @@ bool process_stealth(CreatureEntity &creature, MONSTER_IDX m_idx)
 
     const auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
-    int tmp = creature.level * 6 + (creature.skill_stl + 10) * 4;
+    int tmp = creature.level * 6 + (creature.get_skill_stealth() + 10) * 4;
     if (creature.monlite) {
         tmp /= 3;
     }

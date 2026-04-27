@@ -288,7 +288,7 @@ void process_monsters_timed_effect(CreatureEntity &creature, CreatureTimedEffect
 
     /* Hack -- calculate the "player noise" */
     if (mte == CreatureTimedEffect::SLEEP_OR_PARALYSIS) {
-        csleep_noise = (1U << (30 - creature.skill_stl));
+        csleep_noise = (1U << (30 - creature.get_skill_stealth()));
     }
 
     /* Process the monsters (backwards) */

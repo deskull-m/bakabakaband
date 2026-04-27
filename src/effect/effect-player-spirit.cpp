@@ -73,7 +73,7 @@ void effect_player_drain_mana(CreatureEntity &creature, EffectPlayerType *ep_ptr
 
 void effect_player_mind_blast(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if ((randint0(100 + ep_ptr->rlev / 2) < std::max<short>(5, creature.skill_sav)) && !check_multishadow(creature)) {
+    if ((randint0(100 + ep_ptr->rlev / 2) < std::max<short>(5, creature.get_skill_save())) && !check_multishadow(creature)) {
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
         return;
     }
@@ -105,7 +105,7 @@ void effect_player_mind_blast(CreatureEntity &creature, EffectPlayerType *ep_ptr
 
 void effect_player_brain_smash(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if ((randint0(100 + ep_ptr->rlev / 2) < std::max<short>(5, creature.skill_sav)) && !check_multishadow(creature)) {
+    if ((randint0(100 + ep_ptr->rlev / 2) < std::max<short>(5, creature.get_skill_save())) && !check_multishadow(creature)) {
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
         return;
     }
@@ -141,10 +141,10 @@ void effect_player_brain_smash(CreatureEntity &creature, EffectPlayerType *ep_pt
 
     (void)bss.mod_deceleration(randint0(4) + 4, false);
 
-    while (randint0(100 + ep_ptr->rlev / 2) > (std::max<short>(5, creature.skill_sav))) {
+    while (randint0(100 + ep_ptr->rlev / 2) > (std::max<short>(5, creature.get_skill_save()))) {
         (void)do_dec_stat(creature, A_INT);
     }
-    while (randint0(100 + ep_ptr->rlev / 2) > (std::max<short>(5, creature.skill_sav))) {
+    while (randint0(100 + ep_ptr->rlev / 2) > (std::max<short>(5, creature.get_skill_save()))) {
         (void)do_dec_stat(creature, A_WIS);
     }
 

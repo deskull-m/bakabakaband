@@ -633,7 +633,7 @@ void effect_player_icee(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_hand_doom(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if ((randint0(100 + ep_ptr->rlev / 2) < creature.skill_sav) && !check_multishadow(creature)) {
+    if ((randint0(100 + ep_ptr->rlev / 2) < creature.get_skill_save()) && !check_multishadow(creature)) {
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
     } else {
         if (!check_multishadow(creature)) {

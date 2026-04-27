@@ -150,7 +150,7 @@ static void effect_monster_psi_resist(CreatureEntity &creature, EffectMonster *e
     }
 
     /* プレイヤーの反射判定 */
-    if ((randint0(100 + em_ptr->r_ptr->level / 2) < creature.skill_sav) && !check_multishadow(creature)) {
+    if ((randint0(100 + em_ptr->r_ptr->level / 2) < creature.get_skill_save()) && !check_multishadow(creature)) {
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
         em_ptr->dam = 0;
         return;
@@ -243,7 +243,7 @@ static void effect_monster_psi_drain_resist(CreatureEntity &creature, EffectMons
     }
 
     /* プレイヤーの反射判定 */
-    if ((randint0(100 + em_ptr->r_ptr->level / 2) < creature.skill_sav) && !check_multishadow(creature)) {
+    if ((randint0(100 + em_ptr->r_ptr->level / 2) < creature.get_skill_save()) && !check_multishadow(creature)) {
         msg_print(_("あなたは効力を跳ね返した！", "You resist the effects!"));
         em_ptr->dam = 0;
         return;

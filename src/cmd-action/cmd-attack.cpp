@@ -105,7 +105,7 @@ static void natural_attack(CreatureEntity &creature, MONSTER_IDX m_idx, PlayerMu
 
     const auto m_name = monster_desc(creature, monster, 0);
     int bonus = creature.to_h_m + (creature.level * 6 / 5);
-    int chance = (creature.skill_thn + (bonus * BTH_PLUS_ADJ));
+    int chance = (creature.get_skill_to_hit_melee() + (bonus * BTH_PLUS_ADJ));
 
     creature.plus_incident_tree("ATTACK_EXE_COUNT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
@@ -177,7 +177,7 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
         dice = Dice(4, 8); // より強力なダメージ
     }
 
-    int chance = (creature.skill_thn + (bonus * BTH_PLUS_ADJ));
+    int chance = (creature.get_skill_to_hit_melee() + (bonus * BTH_PLUS_ADJ));
 
     creature.plus_incident_tree("ATTACK_EXE_COUNT", 1);
     creature.plus_incident_tree("HEADBUTT", 1);
@@ -269,7 +269,7 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
         atk_desc = _("勇猛な体当たり", "heroic body slam");
     }
 
-    int chance = (creature.skill_thn + (bonus * BTH_PLUS_ADJ));
+    int chance = (creature.get_skill_to_hit_melee() + (bonus * BTH_PLUS_ADJ));
 
     creature.plus_incident_tree("ATTACK_EXE_COUNT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
@@ -673,7 +673,7 @@ static void enema_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear
     int bonus = creature.to_h_m + (creature.level * 6 / 5) + (creature.level + creature.stat_index[A_DEX]) / 3;
     ;
 
-    int chance = (creature.skill_thn + (bonus * BTH_PLUS_ADJ));
+    int chance = (creature.get_skill_to_hit_melee() + (bonus * BTH_PLUS_ADJ));
 
     creature.plus_incident_tree("ATTACK_EXE_COUNT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);

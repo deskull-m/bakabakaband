@@ -13,7 +13,7 @@
 
 void effect_player_curse_1(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if ((randint0(100 + ep_ptr->rlev / 2) < creature.skill_sav) && !check_multishadow(creature)) {
+    if ((randint0(100 + ep_ptr->rlev / 2) < creature.get_skill_save()) && !check_multishadow(creature)) {
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
     } else {
         if (!check_multishadow(creature)) {
@@ -25,7 +25,7 @@ void effect_player_curse_1(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_curse_2(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if ((randint0(100 + ep_ptr->rlev / 2) < creature.skill_sav) && !check_multishadow(creature)) {
+    if ((randint0(100 + ep_ptr->rlev / 2) < creature.get_skill_save()) && !check_multishadow(creature)) {
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
     } else {
         if (!check_multishadow(creature)) {
@@ -37,7 +37,7 @@ void effect_player_curse_2(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_curse_3(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if ((randint0(100 + ep_ptr->rlev / 2) < creature.skill_sav) && !check_multishadow(creature)) {
+    if ((randint0(100 + ep_ptr->rlev / 2) < creature.get_skill_save()) && !check_multishadow(creature)) {
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
     } else {
         if (!check_multishadow(creature)) {
@@ -49,7 +49,7 @@ void effect_player_curse_3(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_curse_4(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if ((randint0(100 + ep_ptr->rlev / 2) < creature.skill_sav) && (ep_ptr->m_ptr->r_idx != MonraceId::KENSHIROU) && !check_multishadow(creature)) {
+    if ((randint0(100 + ep_ptr->rlev / 2) < creature.get_skill_save()) && (ep_ptr->m_ptr->r_idx != MonraceId::KENSHIROU) && !check_multishadow(creature)) {
         msg_print(_("しかし秘孔を跳ね返した！", "You resist the effects!"));
         return;
     }

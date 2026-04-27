@@ -23,7 +23,7 @@ bool hit_and_away(CreatureEntity &creature)
     const auto pos = creature.get_neighbor(dir);
     if (creature.get_floor()->get_grid(pos).has_monster()) {
         do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
-        if (randint0(creature.skill_dis) < 7) {
+        if (randint0(creature.get_skill_disarm()) < 7) {
             msg_print(_("うまく逃げられなかった。", "You failed to run away."));
         } else {
             teleport_player(creature, 30, TELEPORT_SPONTANEOUS);

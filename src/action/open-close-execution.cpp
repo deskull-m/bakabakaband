@@ -61,7 +61,7 @@ bool exe_open(CreatureEntity &creature, POSITION y, POSITION x)
         return false;
     }
 
-    int i = creature.skill_dis;
+    int i = creature.get_skill_disarm();
     const auto effects = creature.effects();
     if (effects->blindness().is_blind() || no_lite(creature)) {
         i = i / 10;
@@ -164,7 +164,7 @@ bool easy_open_door(CreatureEntity &creature, const Pos2D &pos)
         constexpr auto fmt = _("%sはがっちりと閉じられているようだ。", "The %s appears to be stuck.");
         msg_format(fmt, grid.get_terrain(TerrainKind::MIMIC).name.data());
     } else if (terrain.power) {
-        auto power_disarm = creature.skill_dis;
+        auto power_disarm = creature.get_skill_disarm();
         const auto effects = creature.effects();
         if (effects->blindness().is_blind() || no_lite(creature)) {
             power_disarm = power_disarm / 10;
@@ -219,7 +219,7 @@ bool exe_disarm_chest(CreatureEntity &creature, POSITION y, POSITION x, OBJECT_I
     const Pos2D pos(y, x);
     auto *o_ptr = creature.get_floor()->o_list[o_idx].get();
     PlayerEnergy(creature).set_player_turn_energy(100);
-    int i = creature.skill_dis;
+    int i = creature.get_skill_disarm();
     const auto effects = creature.effects();
     if (effects->blindness().is_blind() || no_lite(creature)) {
         i = i / 10;
@@ -284,7 +284,7 @@ bool exe_disarm(CreatureEntity &creature, POSITION y, POSITION x, const Directio
     const auto &terrain = grid.get_terrain();
     const auto &name = terrain.name;
     int power = terrain.power;
-    int i = creature.skill_dis;
+    int i = creature.get_skill_disarm();
     PlayerEnergy(creature).set_player_turn_energy(100);
     auto effects = creature.effects();
     if (effects->blindness().is_blind() || no_lite(creature)) {

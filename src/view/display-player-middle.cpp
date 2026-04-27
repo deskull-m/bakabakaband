@@ -51,7 +51,7 @@ static void display_player_melee_bonus(CreatureEntity &creature, int hand, int h
         show_todam += o_ptr->to_d;
     }
 
-    show_tohit += creature.skill_thn / BTH_PLUS_ADJ;
+    show_tohit += creature.get_skill_to_hit_melee() / BTH_PLUS_ADJ;
 
     const auto buf = format("(%+d,%+d)", (int)show_tohit, (int)show_todam);
     if (!has_melee_weapon(creature, INVEN_MAIN_HAND) && !has_melee_weapon(creature, INVEN_SUB_HAND)) {
@@ -122,7 +122,7 @@ static void display_bow_hit_damage(CreatureEntity &creature)
         }
     }
 
-    show_tohit += creature.skill_thb / BTH_PLUS_ADJ;
+    show_tohit += creature.get_skill_to_hit_bow() / BTH_PLUS_ADJ;
     display_player_one_line(ENTRY_SHOOT_HIT_DAM, format("(%+d,%+d)", show_tohit, show_todam), TERM_L_BLUE);
 }
 

@@ -96,7 +96,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
             return;
         }
 
-        if (evaluate_percent(creature.skill_sav - power)) {
+        if (evaluate_percent(creature.get_skill_save() - power)) {
             return;
         }
 
@@ -142,7 +142,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
             power *= 2;
         }
 
-        if (evaluate_percent(creature.skill_sav * 100 / power)) {
+        if (evaluate_percent(creature.get_skill_save() * 100 / power)) {
             msg_format(_("夢の中で%sに追いかけられた。", "%s^ chases you through your dreams."), m_name.data());
             return;
         }
@@ -174,7 +174,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
     /* 過去の効果無効率再現のため5回saving_throw 実行 */
     auto save = true;
     for (auto i = 0; i < 5; i++) {
-        save &= evaluate_percent(creature.skill_sav - power);
+        save &= evaluate_percent(creature.get_skill_save() - power);
     }
 
     if (save) {

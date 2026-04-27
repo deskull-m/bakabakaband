@@ -464,7 +464,7 @@ int calc_attack_quality(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
     auto *o_ptr = creature.inventory[INVEN_MAIN_HAND + pa_ptr->hand].get();
     int bonus = creature.to_h[pa_ptr->hand] + o_ptr->to_h;
-    int chance = (creature.skill_thn + (bonus * BTH_PLUS_ADJ));
+    int chance = (creature.get_skill_to_hit_melee() + (bonus * BTH_PLUS_ADJ));
     if (pa_ptr->mode == HISSATSU_IAI) {
         chance += 60;
     }

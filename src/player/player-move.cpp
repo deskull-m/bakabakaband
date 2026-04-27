@@ -96,7 +96,7 @@ static void discover_hidden_things(CreatureEntity &creature, const Pos2D &pos)
  */
 void search(CreatureEntity &creature)
 {
-    PERCENTAGE chance = creature.skill_srh;
+    PERCENTAGE chance = creature.get_skill_search();
     const auto effects = creature.effects();
     if (effects->blindness().is_blind() || no_lite(creature)) {
         chance = chance / 10;
@@ -229,7 +229,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
             }
         }
 
-        if ((creature.skill_fos >= 50) || (0 == randint0(50 - creature.skill_fos))) {
+        if ((creature.get_skill_perception() >= 50) || (0 == randint0(50 - creature.get_skill_perception()))) {
             search(creature);
         }
 
