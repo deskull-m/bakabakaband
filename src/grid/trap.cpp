@@ -228,7 +228,7 @@ static void hit_trap_pit(CreatureEntity &creature, TrapType trap_feat_type)
         return;
     }
 
-    if (has_resist_pois(creature) || is_oppose_pois(creature)) {
+    if (creature.has_resist_pois() || is_oppose_pois(creature)) {
         msg_print(_("しかし毒の影響はなかった！", "The poison does not affect you!"));
         take_hit(creature, DAMAGE_NOESCAPE, dam, trap_name);
         return;
@@ -403,7 +403,7 @@ void hit_trap(CreatureEntity &creature, bool break_trap)
         break;
     case TrapType::POISON:
         msg_print(_("刺激的な緑色のガスに包み込まれた！", "A pungent green gas surrounds you!"));
-        if (has_resist_pois(creature) == 0) {
+        if (creature.has_resist_pois() == 0) {
             (void)BadStatusSetter(creature).mod_poison(randint0(20) + 10);
         }
 

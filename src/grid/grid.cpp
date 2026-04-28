@@ -916,7 +916,7 @@ bool cave_player_teleportable_bold(CreatureEntity &creature, POSITION y, POSITIO
         }
     }
 
-    if (terrain.flags.has_not(TerrainCharacteristics::LAVA) || has_immune_fire(creature) || creature.is_invulnerable()) {
+    if (terrain.flags.has_not(TerrainCharacteristics::LAVA) || creature.has_immune_fire() || creature.is_invulnerable()) {
         return true;
     }
 

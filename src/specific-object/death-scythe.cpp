@@ -90,23 +90,23 @@ static void compensate_death_scythe_reflection_magnification(CreatureEntity &cre
         *magnification = 20;
     }
 
-    if (!(has_resist_acid(creature) || is_oppose_acid(creature) || has_immune_acid(creature)) && (*magnification < 25)) {
+    if (!(creature.has_resist_acid() || is_oppose_acid(creature) || creature.has_immune_acid()) && (*magnification < 25)) {
         *magnification = 25;
     }
 
-    if (!(has_resist_elec(creature) || is_oppose_elec(creature) || has_immune_elec(creature)) && (*magnification < 25)) {
+    if (!(creature.has_resist_elec() || is_oppose_elec(creature) || creature.has_immune_elec()) && (*magnification < 25)) {
         *magnification = 25;
     }
 
-    if (!(has_resist_fire(creature) || is_oppose_fire(creature) || has_immune_fire(creature)) && (*magnification < 25)) {
+    if (!(creature.has_resist_fire() || is_oppose_fire(creature) || creature.has_immune_fire()) && (*magnification < 25)) {
         *magnification = 25;
     }
 
-    if (!(has_resist_cold(creature) || is_oppose_cold(creature) || has_immune_cold(creature)) && (*magnification < 25)) {
+    if (!(creature.has_resist_cold() || is_oppose_cold(creature) || creature.has_immune_cold()) && (*magnification < 25)) {
         *magnification = 25;
     }
 
-    if (!(has_resist_pois(creature) || is_oppose_pois(creature)) && (*magnification < 25)) {
+    if (!(creature.has_resist_pois() || is_oppose_pois(creature)) && (*magnification < 25)) {
         *magnification = 25;
     }
 

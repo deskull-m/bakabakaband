@@ -21,7 +21,7 @@
  */
 void calc_blow_disease(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    if (has_resist_pois(creature)) {
+    if (creature.has_resist_pois()) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 4) / 9;
     }
 
@@ -34,7 +34,7 @@ void calc_blow_disease(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
         return;
     }
 
-    if (!(has_resist_pois(creature) || is_oppose_pois(creature)) && BadStatusSetter(creature).mod_poison(randint1(monap_ptr->rlev) + 5)) {
+    if (!(creature.has_resist_pois() || is_oppose_pois(creature)) && BadStatusSetter(creature).mod_poison(randint1(monap_ptr->rlev) + 5)) {
         monap_ptr->obvious = true;
     }
 

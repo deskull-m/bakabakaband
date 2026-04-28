@@ -53,13 +53,13 @@ void effect_player_poison(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_pois_damage_rate(creature) / 100;
 
-    if ((!(double_resist || has_resist_pois(creature))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE) && !check_multishadow(creature)) {
+    if ((!(double_resist || creature.has_resist_pois())) && one_in_(CHANCE_ABILITY_SCORE_DECREASE) && !check_multishadow(creature)) {
         do_dec_stat(creature, A_CON);
     }
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 
-    if (!(double_resist || has_resist_pois(creature)) && !check_multishadow(creature)) {
+    if (!(double_resist || creature.has_resist_pois()) && !check_multishadow(creature)) {
         (void)BadStatusSetter(creature).mod_poison(randint0(ep_ptr->dam) + 10);
     }
 }
@@ -74,7 +74,7 @@ void effect_player_nuke(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     ep_ptr->dam = ep_ptr->dam * calc_pois_damage_rate(creature) / 100;
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
-    if ((double_resist || has_resist_pois(creature)) || check_multishadow(creature)) {
+    if ((double_resist || creature.has_resist_pois()) || check_multishadow(creature)) {
         return;
     }
 
@@ -160,7 +160,7 @@ void effect_player_plasma(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         (void)BadStatusSetter(creature).mod_stun(plus_stun);
     }
 
-    if (!(has_resist_fire(creature) || is_oppose_fire(creature) || has_immune_fire(creature))) {
+    if (!(creature.has_resist_fire() || is_oppose_fire(creature) || creature.has_immune_fire())) {
         inventory_damage(creature, BreakerAcid(), 3);
     }
 }
@@ -597,7 +597,7 @@ void effect_player_meteor(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
     if (!has_resist_shard(creature) || one_in_(13)) {
-        if (!has_immune_fire(creature)) {
+        if (!creature.has_immune_fire()) {
             inventory_damage(creature, BreakerFire(), 2);
         }
         inventory_damage(creature, BreakerCold(), 2);
@@ -624,8 +624,8 @@ void effect_player_icee(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         (void)bss.mod_stun(randnum1<short>(15));
     }
 
-    if ((!(has_resist_cold(creature) || is_oppose_cold(creature))) || one_in_(12)) {
-        if (!has_immune_cold(creature)) {
+    if ((!(creature.has_resist_cold() || is_oppose_cold(creature))) || one_in_(12)) {
+        if (!creature.has_immune_cold()) {
             inventory_damage(creature, BreakerCold(), 3);
         }
     }

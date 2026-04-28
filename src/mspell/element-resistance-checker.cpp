@@ -10,7 +10,7 @@
 
 void add_cheat_remove_flags_element(CreatureEntity &creature, msr_type *msr_ptr)
 {
-    if (has_resist_acid(creature)) {
+    if (creature.has_resist_acid()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_ACID);
     }
 
@@ -18,11 +18,11 @@ void add_cheat_remove_flags_element(CreatureEntity &creature, msr_type *msr_ptr)
         msr_ptr->smart_flags.set(MonsterSmartLearnType::OPP_ACID);
     }
 
-    if (has_immune_acid(creature)) {
+    if (creature.has_immune_acid()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::IMM_ACID);
     }
 
-    if (has_resist_elec(creature)) {
+    if (creature.has_resist_elec()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_ELEC);
     }
 
@@ -30,11 +30,11 @@ void add_cheat_remove_flags_element(CreatureEntity &creature, msr_type *msr_ptr)
         msr_ptr->smart_flags.set(MonsterSmartLearnType::OPP_ELEC);
     }
 
-    if (has_immune_elec(creature)) {
+    if (creature.has_immune_elec()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::IMM_ELEC);
     }
 
-    if (has_resist_fire(creature)) {
+    if (creature.has_resist_fire()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_FIRE);
     }
 
@@ -42,11 +42,11 @@ void add_cheat_remove_flags_element(CreatureEntity &creature, msr_type *msr_ptr)
         msr_ptr->smart_flags.set(MonsterSmartLearnType::OPP_FIRE);
     }
 
-    if (has_immune_fire(creature)) {
+    if (creature.has_immune_fire()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::IMM_FIRE);
     }
 
-    if (has_resist_cold(creature)) {
+    if (creature.has_resist_cold()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_COLD);
     }
 
@@ -54,11 +54,11 @@ void add_cheat_remove_flags_element(CreatureEntity &creature, msr_type *msr_ptr)
         msr_ptr->smart_flags.set(MonsterSmartLearnType::OPP_COLD);
     }
 
-    if (has_immune_cold(creature)) {
+    if (creature.has_immune_cold()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::IMM_COLD);
     }
 
-    if (has_resist_pois(creature)) {
+    if (creature.has_resist_pois()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_POIS);
     }
 

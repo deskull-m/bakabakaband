@@ -65,7 +65,7 @@ static void spell_damcalc(CreatureEntity &creature, const CreatureEntity &monste
     /* Vulnerability, resistance and immunity */
     switch (typ) {
     case AttributeType::ELEC:
-        if (has_immune_elec(creature)) {
+        if (creature.has_immune_elec()) {
             ignore_wraith_form = true;
         }
         dam = dam * calc_elec_damage_rate(creature) / 100;
@@ -76,7 +76,7 @@ static void spell_damcalc(CreatureEntity &creature, const CreatureEntity &monste
         break;
 
     case AttributeType::ACID:
-        if (has_immune_acid(creature)) {
+        if (creature.has_immune_acid()) {
             ignore_wraith_form = true;
         }
         dam = dam * calc_acid_damage_rate(creature) / 100;
@@ -84,14 +84,14 @@ static void spell_damcalc(CreatureEntity &creature, const CreatureEntity &monste
 
     case AttributeType::COLD:
     case AttributeType::ICE:
-        if (has_immune_cold(creature)) {
+        if (creature.has_immune_cold()) {
             ignore_wraith_form = true;
         }
         dam = dam * calc_cold_damage_rate(creature) / 100;
         break;
 
     case AttributeType::FIRE:
-        if (has_immune_fire(creature)) {
+        if (creature.has_immune_fire()) {
             ignore_wraith_form = true;
         }
         dam = dam * calc_fire_damage_rate(creature) / 100;

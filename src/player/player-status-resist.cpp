@@ -57,11 +57,11 @@ PERCENTAGE calc_acid_damage_rate(CreatureEntity &creature)
 {
     PERCENTAGE per = 100;
 
-    if (has_immune_acid(creature)) {
+    if (creature.has_immune_acid()) {
         return 0;
     }
 
-    BIT_FLAGS flags = has_vuln_acid(creature);
+    BIT_FLAGS flags = creature.has_vuln_acid();
 
     for (BIT_FLAGS check_flag = 0x01U; check_flag < FLAG_CAUSE_MAX; check_flag <<= 1) {
         if (any_bits(flags, check_flag)) {
@@ -73,7 +73,7 @@ PERCENTAGE calc_acid_damage_rate(CreatureEntity &creature)
         }
     }
 
-    if (has_resist_acid(creature)) {
+    if (creature.has_resist_acid()) {
         per = (per + 2) / 3;
     }
     if (is_oppose_acid(creature)) {
@@ -90,11 +90,11 @@ PERCENTAGE calc_elec_damage_rate(CreatureEntity &creature)
 {
     PERCENTAGE per = 100;
 
-    if (has_immune_elec(creature)) {
+    if (creature.has_immune_elec()) {
         return 0;
     }
 
-    BIT_FLAGS flags = has_vuln_elec(creature);
+    BIT_FLAGS flags = creature.has_vuln_elec();
     for (BIT_FLAGS check_flag = 0x01U; check_flag < FLAG_CAUSE_MAX; check_flag <<= 1) {
         if (any_bits(flags, check_flag)) {
             if (check_flag == FLAG_CAUSE_MUTATION) {
@@ -105,7 +105,7 @@ PERCENTAGE calc_elec_damage_rate(CreatureEntity &creature)
         }
     }
 
-    if (has_resist_elec(creature)) {
+    if (creature.has_resist_elec()) {
         per = (per + 2) / 3;
     }
     if (is_oppose_elec(creature)) {
@@ -121,7 +121,7 @@ PERCENTAGE calc_elec_damage_rate(CreatureEntity &creature)
 PERCENTAGE calc_fire_damage_rate(CreatureEntity &creature)
 {
     PERCENTAGE per = 100;
-    BIT_FLAGS flags = has_vuln_fire(creature);
+    BIT_FLAGS flags = creature.has_vuln_fire();
     for (BIT_FLAGS check_flag = 0x01U; check_flag < FLAG_CAUSE_MAX; check_flag <<= 1) {
         if (any_bits(flags, check_flag)) {
             if (check_flag == FLAG_CAUSE_MUTATION) {
@@ -133,7 +133,7 @@ PERCENTAGE calc_fire_damage_rate(CreatureEntity &creature)
     }
 
     /* Resist the damage */
-    if (has_resist_fire(creature)) {
+    if (creature.has_resist_fire()) {
         per = (per + 2) / 3;
     }
     if (is_oppose_fire(creature)) {
@@ -157,7 +157,7 @@ PERCENTAGE calc_plasma_damage_rate(CreatureEntity &creature)
 PERCENTAGE calc_cold_damage_rate(CreatureEntity &creature)
 {
     PERCENTAGE per = 100;
-    BIT_FLAGS flags = has_vuln_cold(creature);
+    BIT_FLAGS flags = creature.has_vuln_cold();
     for (BIT_FLAGS check_flag = 0x01U; check_flag < FLAG_CAUSE_MAX; check_flag <<= 1) {
         if (any_bits(flags, check_flag)) {
             if (check_flag == FLAG_CAUSE_MUTATION) {
@@ -168,7 +168,7 @@ PERCENTAGE calc_cold_damage_rate(CreatureEntity &creature)
         }
     }
 
-    if (has_resist_cold(creature)) {
+    if (creature.has_resist_cold()) {
         per = (per + 2) / 3;
     }
     if (is_oppose_cold(creature)) {
@@ -184,7 +184,7 @@ PERCENTAGE calc_cold_damage_rate(CreatureEntity &creature)
 PERCENTAGE calc_pois_damage_rate(CreatureEntity &creature)
 {
     PERCENTAGE per = 100;
-    if (has_resist_pois(creature)) {
+    if (creature.has_resist_pois()) {
         per = (per + 2) / 3;
     }
     if (is_oppose_pois(creature)) {
@@ -200,7 +200,7 @@ PERCENTAGE calc_pois_damage_rate(CreatureEntity &creature)
 PERCENTAGE calc_nuke_damage_rate(CreatureEntity &creature)
 {
     PERCENTAGE per = 100;
-    if (has_resist_pois(creature)) {
+    if (creature.has_resist_pois()) {
         per = (2 * per + 2) / 5;
     }
     if (is_oppose_pois(creature)) {
