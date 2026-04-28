@@ -714,67 +714,67 @@ void update_smart_learn(CreatureEntity &creature, MONSTER_IDX m_idx, int what)
 
         break;
     case DRS_NETH:
-        if (has_resist_neth(creature)) {
+        if (creature.has_resist_neth()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_NETH);
         }
 
         break;
     case DRS_LITE:
-        if (has_resist_lite(creature)) {
+        if (creature.has_resist_lite()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_LITE);
         }
 
         break;
     case DRS_DARK:
-        if (has_resist_dark(creature) || has_immune_dark(creature)) {
+        if (creature.has_resist_dark() || has_immune_dark(creature)) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_DARK);
         }
 
         break;
     case DRS_FEAR:
-        if (has_resist_fear(creature)) {
+        if (creature.has_resist_fear()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_FEAR);
         }
 
         break;
     case DRS_CONF:
-        if (has_resist_conf(creature)) {
+        if (creature.has_resist_conf()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_CONF);
         }
 
         break;
     case DRS_CHAOS:
-        if (has_resist_chaos(creature)) {
+        if (creature.has_resist_chaos()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_CHAOS);
         }
 
         break;
     case DRS_DISEN:
-        if (has_resist_disen(creature)) {
+        if (creature.has_resist_disen()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_DISEN);
         }
 
         break;
     case DRS_BLIND:
-        if (has_resist_blind(creature)) {
+        if (creature.has_resist_blind()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_BLIND);
         }
 
         break;
     case DRS_NEXUS:
-        if (has_resist_shard(creature)) {
+        if (creature.has_resist_shard()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_NEXUS);
         }
 
         break;
     case DRS_SOUND:
-        if (has_resist_sound(creature)) {
+        if (creature.has_resist_sound()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_SOUND);
         }
 
         break;
     case DRS_SHARD:
-        if (has_resist_shard(creature)) {
+        if (creature.has_resist_shard()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_SHARD);
         }
 

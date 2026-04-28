@@ -65,7 +65,7 @@ int staff_effect(CreatureEntity &creature, int sval, bool *use_charge, bool powe
     BadStatusSetter bss(creature);
     switch (sval) {
     case SV_STAFF_DARKNESS:
-        if (!has_resist_blind(creature) && !has_resist_dark(creature)) {
+        if (!creature.has_resist_blind() && !creature.has_resist_dark()) {
             if (bss.mod_blindness(3 + randint1(5))) {
                 ident = true;
             }

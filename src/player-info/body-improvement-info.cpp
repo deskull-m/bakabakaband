@@ -89,7 +89,7 @@ void set_body_improvement_info_3(CreatureEntity &creature, self_info_type *self_
         self_ptr->info_list.emplace_back(_("あなたは矢の呪文を反射する。", "You reflect bolt spells."));
     }
 
-    if (has_resist_curse(creature)) {
+    if (creature.has_resist_curse()) {
         self_ptr->info_list.emplace_back(_("あなたはより強く呪いに抵抗できる。", "You can resist curses powerfully."));
     }
 
@@ -157,15 +157,15 @@ void set_body_improvement_info_3(CreatureEntity &creature, self_info_type *self_
 /*!< @todo 並び順の都合で連番を付ける。まとめても良いならまとめてしまう予定 */
 void set_body_improvement_info_4(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    if (has_resist_fear(creature)) {
+    if (creature.has_resist_fear()) {
         self_ptr->info_list.emplace_back(_("あなたは全く恐怖を感じない。", "You are completely fearless."));
     }
 
-    if (has_resist_blind(creature)) {
+    if (creature.has_resist_blind()) {
         self_ptr->info_list.emplace_back(_("あなたの目は盲目への耐性を持っている。", "Your eyes are resistant to blindness."));
     }
 
-    if (has_resist_time(creature)) {
+    if (creature.has_resist_time()) {
         self_ptr->info_list.emplace_back(_("あなたは時間逆転への耐性を持っている。", "You are resistant to time."));
     }
 }

@@ -389,14 +389,14 @@ void hit_trap(CreatureEntity &creature, bool break_trap)
         break;
     case TrapType::BLIND:
         msg_print(_("黒いガスに包み込まれた！", "A black gas surrounds you!"));
-        if (has_resist_blind(creature) == 0) {
+        if (creature.has_resist_blind() == 0) {
             (void)BadStatusSetter(creature).mod_blindness(randint0(50) + 25);
         }
 
         break;
     case TrapType::CONFUSE:
         msg_print(_("きらめくガスに包み込まれた！", "A gas of scintillating colors surrounds you!"));
-        if (has_resist_conf(creature) == 0) {
+        if (creature.has_resist_conf() == 0) {
             (void)BadStatusSetter(creature).mod_confusion(randint0(20) + 10);
         }
 

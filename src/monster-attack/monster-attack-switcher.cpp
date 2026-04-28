@@ -69,12 +69,12 @@ static void calc_blow_disenchant(CreatureEntity &creature, MonsterAttackPlayer *
         return;
     }
 
-    if (!has_resist_disen(creature) && !check_multishadow(creature) && apply_disenchant(creature, 0)) {
+    if (!creature.has_resist_disen() && !check_multishadow(creature) && apply_disenchant(creature, 0)) {
         update_creature(creature);
         monap_ptr->obvious = true;
     }
 
-    if (has_resist_disen(creature)) {
+    if (creature.has_resist_disen()) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 4) / 9;
     }
 
@@ -131,7 +131,7 @@ static void calc_blow_un_power(CreatureEntity &creature, MonsterAttackPlayer *mo
  */
 static void calc_blow_blind(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    if (has_resist_blind(creature)) {
+    if (creature.has_resist_blind()) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 3) / 8;
     }
 
@@ -155,7 +155,7 @@ static void calc_blow_confusion(CreatureEntity &creature, MonsterAttackPlayer *m
         return;
     }
 
-    if (has_resist_conf(creature)) {
+    if (creature.has_resist_conf()) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 3) / 8;
     }
 
@@ -164,7 +164,7 @@ static void calc_blow_confusion(CreatureEntity &creature, MonsterAttackPlayer *m
         return;
     }
 
-    if (!has_resist_conf(creature) && !check_multishadow(creature) && BadStatusSetter(creature).mod_confusion(3 + randint1(monap_ptr->rlev))) {
+    if (!creature.has_resist_conf() && !check_multishadow(creature) && BadStatusSetter(creature).mod_confusion(3 + randint1(monap_ptr->rlev))) {
         monap_ptr->obvious = true;
     }
 
@@ -178,7 +178,7 @@ static void calc_blow_confusion(CreatureEntity &creature, MonsterAttackPlayer *m
  */
 static void calc_blow_fear(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    if (has_resist_fear(creature)) {
+    if (creature.has_resist_fear()) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 3) / 8;
     }
 
@@ -225,7 +225,7 @@ static void calc_blow_drain_exp(CreatureEntity &creature, MonsterAttackPlayer *m
         damage_ratio -= 75;
     }
 
-    if (has_resist_neth(creature)) {
+    if (creature.has_resist_neth()) {
         damage_ratio -= 75;
     }
 
@@ -250,7 +250,7 @@ static void calc_blow_time(CreatureEntity &creature, MonsterAttackPlayer *monap_
     }
 
     process_monster_attack_time(creature);
-    if (has_resist_time(creature)) {
+    if (creature.has_resist_time()) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 4) / 9;
     }
 
@@ -542,7 +542,7 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
         monap_ptr->damage = monap_ptr->damage * calc_chaos_damage_rate(creature, CALC_RAND) / 100;
         monap_ptr->get_damage += take_hit(creature, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
 
-        const auto has_chaos_resist = has_resist_chaos(creature);
+        const auto has_chaos_resist = creature.has_resist_chaos();
 
         if (!has_chaos_resist) {
             monap_ptr->obvious = true;
@@ -578,7 +578,7 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
             }
             monap_ptr->obvious = true;
 
-            if (!has_chaos_resist && !has_resist_conf(creature) && !check_multishadow(creature) && BadStatusSetter(creature).mod_confusion(3 + randint1(monap_ptr->rlev))) {
+            if (!has_chaos_resist && !creature.has_resist_conf() && !check_multishadow(creature) && BadStatusSetter(creature).mod_confusion(3 + randint1(monap_ptr->rlev))) {
                 monap_ptr->obvious = true;
             }
             break;

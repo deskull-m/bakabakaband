@@ -140,7 +140,7 @@ void process_player_hp_mp(CreatureEntity &creature)
 
     const CreatureRace race(&creature);
     if (race.life() == PlayerRaceLifeType::UNDEAD && race.tr_flags().has(TR_VUL_LITE)) {
-        if (!floor.is_underground() && !has_resist_lite(creature) && !creature.is_invulnerable() && AngbandWorld::get_instance().is_daytime()) {
+        if (!floor.is_underground() && !creature.has_resist_lite() && !creature.is_invulnerable() && AngbandWorld::get_instance().is_daytime()) {
             if ((floor.grid_array[creature.y][creature.x].info & (CAVE_GLOW | CAVE_MNDK)) == CAVE_GLOW) {
                 msg_print(_("日光があなたのアンデッドの肉体を焼き焦がした！", "The sun's rays scorch your undead flesh!"));
                 take_hit(creature, DAMAGE_NOESCAPE, 1, _("日光", "sunlight"));
@@ -150,7 +150,7 @@ void process_player_hp_mp(CreatureEntity &creature)
 
         const auto &item = *creature.inventory[INVEN_LITE];
         const auto flags = item.get_flags();
-        if ((creature.inventory[INVEN_LITE]->bi_key.tval() != ItemKindType::NONE) && flags.has_not(TR_DARK_SOURCE) && !has_resist_lite(creature)) {
+        if ((creature.inventory[INVEN_LITE]->bi_key.tval() != ItemKindType::NONE) && flags.has_not(TR_DARK_SOURCE) && !creature.has_resist_lite()) {
             const auto item_name = describe_flavor(creature, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
             msg_format(_("%sがあなたのアンデッドの肉体を焼き焦がした！", "The %s scorches your undead flesh!"), item_name.data());
             cave_no_regen = true;
@@ -223,7 +223,7 @@ void process_player_hp_mp(CreatureEntity &creature)
     }
 
     const auto can_drown = terrain.flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP });
-    if (can_drown && !creature.has_levitation() && !creature.has_can_swim() && !has_resist_water(creature)) {
+    if (can_drown && !creature.has_levitation() && !creature.has_can_swim() && !creature.has_resist_water()) {
         if (calc_inventory_weight(creature) > calc_weight_limit(creature)) {
             msg_print(_("溺れている！", "You are drowning!"));
             take_hit(creature, DAMAGE_NOESCAPE, randint1(creature.level), _("溺れ", "drowning"));

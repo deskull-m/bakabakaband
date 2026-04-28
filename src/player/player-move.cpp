@@ -346,12 +346,12 @@ bool trap_can_be_ignored(CreatureEntity &creature, FEAT_IDX feat)
         }
         break;
     case TrapType::BLIND:
-        if (has_resist_blind(creature)) {
+        if (creature.has_resist_blind()) {
             return true;
         }
         break;
     case TrapType::CONFUSE:
-        if (has_resist_conf(creature)) {
+        if (creature.has_resist_conf()) {
             return true;
         }
         break;

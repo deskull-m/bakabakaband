@@ -67,7 +67,7 @@ void set_element_resistance_info(CreatureEntity &creature, self_info_type *self_
 
 void set_high_resistance_info(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    if (has_resist_lite(creature)) {
+    if (creature.has_resist_lite()) {
         self_ptr->info_list.emplace_back(_("あなたは閃光への耐性を持っている。", "You are resistant to bright light."));
     }
 
@@ -77,37 +77,37 @@ void set_high_resistance_info(CreatureEntity &creature, self_info_type *self_ptr
 
     if (has_immune_dark(creature) || creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
         self_ptr->info_list.emplace_back(_("あなたは暗黒に対する完全なる免疫を持っている。", "You are completely immune to darkness."));
-    } else if (has_resist_dark(creature)) {
+    } else if (creature.has_resist_dark()) {
         self_ptr->info_list.emplace_back(_("あなたは暗黒への耐性を持っている。", "You are resistant to darkness."));
     }
 
-    if (has_resist_conf(creature)) {
+    if (creature.has_resist_conf()) {
         self_ptr->info_list.emplace_back(_("あなたは混乱への耐性を持っている。", "You are resistant to confusion."));
     }
 
-    if (has_resist_sound(creature)) {
+    if (creature.has_resist_sound()) {
         self_ptr->info_list.emplace_back(_("あなたは音波の衝撃への耐性を持っている。", "You are resistant to sonic attacks."));
     }
 
-    if (has_resist_disen(creature)) {
+    if (creature.has_resist_disen()) {
         self_ptr->info_list.emplace_back(_("あなたは劣化への耐性を持っている。", "You are resistant to disenchantment."));
     }
 
-    if (has_resist_chaos(creature)) {
+    if (creature.has_resist_chaos()) {
         self_ptr->info_list.emplace_back(_("あなたはカオスの力への耐性を持っている。", "You are resistant to chaos."));
     }
 
-    if (has_resist_shard(creature)) {
+    if (creature.has_resist_shard()) {
         self_ptr->info_list.emplace_back(_("あなたは破片の攻撃への耐性を持っている。", "You are resistant to blasts of shards."));
     }
 
-    if (has_resist_shard(creature)) {
+    if (creature.has_resist_shard()) {
         self_ptr->info_list.emplace_back(_("あなたは因果混乱の攻撃への耐性を持っている。", "You are resistant to nexus attacks."));
     }
 
     if (CreatureRace(&creature).equals(PlayerRaceType::SPECTRE)) {
         self_ptr->info_list.emplace_back(_("あなたは地獄の力を吸収できる。", "You can drain nether forces."));
-    } else if (has_resist_neth(creature)) {
+    } else if (creature.has_resist_neth()) {
         self_ptr->info_list.emplace_back(_("あなたは地獄の力への耐性を持っている。", "You are resistant to nether forces."));
     }
 }

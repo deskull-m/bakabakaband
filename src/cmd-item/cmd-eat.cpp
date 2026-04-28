@@ -285,7 +285,7 @@ static bool exe_eat_food_type_object(CreatureEntity &creature, const BaseitemKey
         }
         break;
     case SV_FOOD_BLINDNESS:
-        if (!has_resist_blind(creature)) {
+        if (!creature.has_resist_blind()) {
             if (bss.mod_blindness(randint0(200) + 200)) {
                 creature.plus_incident_tree("EAT_POISON", 1);
                 return true;
@@ -293,7 +293,7 @@ static bool exe_eat_food_type_object(CreatureEntity &creature, const BaseitemKey
         }
         break;
     case SV_FOOD_PARANOIA:
-        if (!has_resist_fear(creature)) {
+        if (!creature.has_resist_fear()) {
             if (bss.mod_fear(randint0(10) + 10)) {
                 creature.plus_incident_tree("EAT_POISON", 1);
                 return true;
@@ -301,7 +301,7 @@ static bool exe_eat_food_type_object(CreatureEntity &creature, const BaseitemKey
         }
         break;
     case SV_FOOD_CONFUSION:
-        if (!has_resist_conf(creature)) {
+        if (!creature.has_resist_conf()) {
             if (bss.mod_confusion(randint0(10) + 10)) {
                 creature.plus_incident_tree("EAT_POISON", 1);
                 return true;
@@ -309,7 +309,7 @@ static bool exe_eat_food_type_object(CreatureEntity &creature, const BaseitemKey
         }
         break;
     case SV_FOOD_HALLUCINATION:
-        if (!has_resist_chaos(creature)) {
+        if (!creature.has_resist_chaos()) {
             if (bss.mod_hallucination(randint0(250) + 250)) {
                 creature.plus_incident_tree("EAT_POISON", 1);
                 return true;

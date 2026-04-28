@@ -10,47 +10,47 @@
 
 void add_cheat_remove_flags_others(CreatureEntity &creature, msr_type *msr_ptr)
 {
-    if (has_resist_neth(creature)) {
+    if (creature.has_resist_neth()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_NETH);
     }
 
-    if (has_resist_lite(creature)) {
+    if (creature.has_resist_lite()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_LITE);
     }
 
-    if (has_resist_dark(creature)) {
+    if (creature.has_resist_dark()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_DARK);
     }
 
-    if (has_resist_fear(creature)) {
+    if (creature.has_resist_fear()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_FEAR);
     }
 
-    if (has_resist_conf(creature)) {
+    if (creature.has_resist_conf()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_CONF);
     }
 
-    if (has_resist_chaos(creature)) {
+    if (creature.has_resist_chaos()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_CHAOS);
     }
 
-    if (has_resist_disen(creature)) {
+    if (creature.has_resist_disen()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_DISEN);
     }
 
-    if (has_resist_blind(creature)) {
+    if (creature.has_resist_blind()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_BLIND);
     }
 
-    if (has_resist_shard(creature)) {
+    if (creature.has_resist_shard()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_NEXUS);
     }
 
-    if (has_resist_sound(creature)) {
+    if (creature.has_resist_sound()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_SOUND);
     }
 
-    if (has_resist_shard(creature)) {
+    if (creature.has_resist_shard()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_SHARD);
     }
 

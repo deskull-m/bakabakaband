@@ -115,7 +115,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
     }
 
     if (creature.get_mutations().has(PlayerMutationType::COWARDICE) && (randint1(3000) == 13)) {
-        if (!has_resist_fear(creature)) {
+        if (!creature.has_resist_fear()) {
             disturb(creature, false, true);
             msg_print(_("とても暗い... とても恐い！", "It's so dark... so scary!"));
             (void)bss.mod_fear(13 + randint1(26));
@@ -123,7 +123,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
     }
 
     if (creature.get_mutations().has(PlayerMutationType::RTELEPORT) && (randint1(5000) == 88)) {
-        if (!has_resist_shard(creature) && creature.get_mutations().has_not(PlayerMutationType::VTELEPORT) && !creature.has_anti_tele()) {
+        if (!creature.has_resist_shard() && creature.get_mutations().has_not(PlayerMutationType::VTELEPORT) && !creature.has_anti_tele()) {
             disturb(creature, false, true);
             msg_print(_("あなたの位置は突然ひじょうに不確定になった...", "Your position suddenly seems very uncertain..."));
             msg_erase();
@@ -132,17 +132,17 @@ void process_world_aux_mutation(CreatureEntity &creature)
     }
 
     if (creature.get_mutations().has(PlayerMutationType::ALCOHOL) && (randint1(6400) == 321)) {
-        if (!has_resist_conf(creature) && !has_resist_chaos(creature)) {
+        if (!creature.has_resist_conf() && !creature.has_resist_chaos()) {
             disturb(creature, false, true);
             RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::EXTRA);
             msg_print(_("いひきがもーろーとひてきたきがふる...ヒック！", "You feel a SSSCHtupor cOmINg over yOu... *HIC*!"));
         }
 
-        if (!has_resist_conf(creature)) {
+        if (!creature.has_resist_conf()) {
             (void)bss.mod_confusion(randint0(20) + 15);
         }
 
-        if (!has_resist_chaos(creature)) {
+        if (!creature.has_resist_chaos()) {
             if (one_in_(20)) {
                 msg_erase();
                 if (one_in_(3)) {
@@ -164,7 +164,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
     }
 
     if (creature.get_mutations().has(PlayerMutationType::HALLU) && (randint1(6400) == 42)) {
-        if (!has_resist_chaos(creature)) {
+        if (!creature.has_resist_chaos()) {
             disturb(creature, false, true);
             RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::EXTRA);
             (void)bss.mod_hallucination(randint0(50) + 20);
