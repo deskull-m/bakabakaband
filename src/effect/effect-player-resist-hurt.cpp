@@ -155,7 +155,7 @@ void effect_player_plasma(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 
-    if (!has_resist_sound(creature) && !check_multishadow(creature)) {
+    if (!creature.has_resist_sound() && !check_multishadow(creature)) {
         const auto plus_stun = randnum1<short>((ep_ptr->dam > 40) ? 35 : (ep_ptr->dam * 3 / 4 + 5));
         (void)BadStatusSetter(creature).mod_stun(plus_stun);
     }
@@ -191,7 +191,7 @@ void effect_player_nether(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_nether_damage_rate(creature, CALC_RAND) / 100;
 
-    if (!has_resist_neth(creature) && !evaded) {
+    if (!creature.has_resist_neth() && !evaded) {
         drain_exp(creature, 200 + (creature.exp / 100), 200 + (creature.exp / 1000), 75);
     }
 
@@ -218,14 +218,14 @@ void effect_player_water(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_water_damage_rate(creature, CALC_RAND) / 100;
 
-    BIT_FLAGS has_res_water = has_resist_water(creature);
+    BIT_FLAGS has_res_water = creature.has_resist_water();
     BadStatusSetter bss(creature);
     if (!check_multishadow(creature)) {
-        if (!has_resist_sound(creature) && !has_res_water) {
+        if (!creature.has_resist_sound() && !has_res_water) {
             (void)bss.mod_stun(randnum1<short>(40));
         }
 
-        if (!has_resist_conf(creature) && !has_res_water) {
+        if (!creature.has_resist_conf() && !has_res_water) {
             (void)bss.mod_confusion(randint1(5) + 5);
         }
 
@@ -250,22 +250,22 @@ void effect_player_chaos(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     }
 
     BadStatusSetter bss(creature);
-    if (!has_resist_conf(creature) && !has_resist_chaos(creature)) {
+    if (!creature.has_resist_conf() && !creature.has_resist_chaos()) {
         (void)bss.mod_confusion(randint0(20) + 10);
     }
 
-    if (!has_resist_chaos(creature)) {
+    if (!creature.has_resist_chaos()) {
         (void)bss.mod_hallucination(randnum1<short>(10));
         if (one_in_(3)) {
             msg_print(_("あなたの身体はカオスの力で捻じ曲げられた！", "Your body is twisted by chaos!"));
             (void)gain_mutation(creature, 0);
         }
     }
-    if (!has_resist_neth(creature) && !has_resist_chaos(creature)) {
+    if (!creature.has_resist_neth() && !creature.has_resist_chaos()) {
         drain_exp(creature, 5000 + (creature.exp / 100), 500 + (creature.exp / 1000), 75);
     }
 
-    if (!has_resist_chaos(creature) || one_in_(9)) {
+    if (!creature.has_resist_chaos() || one_in_(9)) {
         inventory_damage(creature, BreakerElec(), 2);
         inventory_damage(creature, BreakerFire(), 2);
     }
@@ -281,11 +281,11 @@ void effect_player_shards(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_shards_damage_rate(creature, CALC_RAND) / 100;
 
-    if (!has_resist_shard(creature) && !check_multishadow(creature)) {
+    if (!creature.has_resist_shard() && !check_multishadow(creature)) {
         (void)BadStatusSetter(creature).mod_cut(static_cast<TIME_EFFECT>(ep_ptr->dam));
     }
 
-    if (!has_resist_shard(creature) || one_in_(13)) {
+    if (!creature.has_resist_shard() || one_in_(13)) {
         inventory_damage(creature, BreakerCold(), 2);
     }
 
@@ -300,12 +300,12 @@ void effect_player_sound(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_sound_damage_rate(creature, CALC_RAND) / 100;
 
-    if (!has_resist_sound(creature) && !check_multishadow(creature)) {
+    if (!creature.has_resist_sound() && !check_multishadow(creature)) {
         const auto plus_stun = randnum1<short>((ep_ptr->dam > 90) ? 35 : (ep_ptr->dam / 3 + 5));
         (void)BadStatusSetter(creature).mod_stun(plus_stun);
     }
 
-    if (!has_resist_sound(creature) || one_in_(13)) {
+    if (!creature.has_resist_sound() || one_in_(13)) {
         inventory_damage(creature, BreakerCold(), 2);
     }
 
@@ -320,7 +320,7 @@ void effect_player_confusion(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_conf_damage_rate(creature, CALC_RAND) / 100;
     BadStatusSetter bss(creature);
-    if (!has_resist_conf(creature) && !check_multishadow(creature)) {
+    if (!creature.has_resist_conf() && !check_multishadow(creature)) {
         (void)bss.mod_confusion(randint1(20) + 10);
     }
 
@@ -335,7 +335,7 @@ void effect_player_disenchant(CreatureEntity &creature, EffectPlayerType *ep_ptr
 
     ep_ptr->dam = ep_ptr->dam * calc_disenchant_damage_rate(creature, CALC_RAND) / 100;
 
-    if (!has_resist_disen(creature) && !check_multishadow(creature)) {
+    if (!creature.has_resist_disen() && !check_multishadow(creature)) {
         (void)apply_disenchant(creature, 0);
     }
 
@@ -350,7 +350,7 @@ void effect_player_nexus(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_nexus_damage_rate(creature, CALC_RAND) / 100;
 
-    if (!has_resist_shard(creature) && !check_multishadow(creature)) {
+    if (!creature.has_resist_shard() && !check_multishadow(creature)) {
         apply_nexus(*ep_ptr->m_ptr, creature);
     }
 
@@ -362,7 +362,7 @@ void effect_player_force(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     if (creature.is_blind()) {
         msg_print(_("運動エネルギーで攻撃された！", "You are hit by kinetic force!"));
     }
-    if (!has_resist_sound(creature) && !check_multishadow(creature)) {
+    if (!creature.has_resist_sound() && !check_multishadow(creature)) {
         (void)BadStatusSetter(creature).mod_stun(randnum1<short>(20));
     }
 
@@ -376,16 +376,16 @@ void effect_player_rocket(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     }
 
     BadStatusSetter bss(creature);
-    if (!has_resist_sound(creature) && !check_multishadow(creature)) {
+    if (!creature.has_resist_sound() && !check_multishadow(creature)) {
         (void)bss.mod_stun(randnum1<short>(20));
     }
 
     ep_ptr->dam = ep_ptr->dam * calc_rocket_damage_rate(creature, CALC_RAND) / 100;
-    if (!has_resist_shard(creature) && !check_multishadow(creature)) {
+    if (!creature.has_resist_shard() && !check_multishadow(creature)) {
         (void)bss.mod_cut((ep_ptr->dam / 2));
     }
 
-    if (!has_resist_shard(creature) || one_in_(12)) {
+    if (!creature.has_resist_shard() || one_in_(12)) {
         inventory_damage(creature, BreakerCold(), 3);
     }
 
@@ -412,7 +412,7 @@ void effect_player_lite(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         msg_print(_("何かで攻撃された！", "You are hit by something!"));
     }
 
-    if (!is_blind && !has_resist_lite(creature) && !has_resist_blind(creature) && !check_multishadow(creature)) {
+    if (!is_blind && !creature.has_resist_lite() && !creature.has_resist_blind() && !check_multishadow(creature)) {
         (void)BadStatusSetter(creature).mod_blindness(randint1(5) + 2);
     }
 
@@ -458,8 +458,8 @@ void effect_player_dark(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     ep_ptr->dam = ep_ptr->dam * calc_dark_damage_rate(creature, CALC_RAND) / 100;
 
     auto go_blind = !is_blind;
-    go_blind &= !has_resist_blind(creature);
-    go_blind &= !(has_resist_dark(creature) || has_immune_dark(creature));
+    go_blind &= !creature.has_resist_blind();
+    go_blind &= !(creature.has_resist_dark() || has_immune_dark(creature));
     go_blind &= !check_multishadow(creature);
 
     if (go_blind) {
@@ -512,13 +512,13 @@ void effect_player_time(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     bool evaded = check_multishadow(creature);
 
-    if (has_resist_time(creature) && !evaded) {
+    if (creature.has_resist_time() && !evaded) {
         msg_print(_("時間が通り過ぎていく気がする。", "You feel as if time is passing you by."));
     }
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 
-    if (!has_resist_time(creature) && !evaded) {
+    if (!creature.has_resist_time() && !evaded) {
         effect_player_time_addition(creature);
     }
 }
@@ -538,7 +538,7 @@ void effect_player_gravity(CreatureEntity &creature, EffectPlayerType *ep_ptr)
             (void)bss.mod_deceleration(randint0(4) + 4, false);
         }
 
-        if (!(has_resist_sound(creature) || creature.has_levitation())) {
+        if (!(creature.has_resist_sound() || creature.has_levitation())) {
             const auto plus_stun = randnum1<short>((ep_ptr->dam > 90) ? 35 : (ep_ptr->dam / 3 + 5));
             (void)bss.mod_stun(plus_stun);
         }
@@ -596,7 +596,7 @@ void effect_player_meteor(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     }
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
-    if (!has_resist_shard(creature) || one_in_(13)) {
+    if (!creature.has_resist_shard() || one_in_(13)) {
         if (!creature.has_immune_fire()) {
             inventory_damage(creature, BreakerFire(), 2);
         }
@@ -616,11 +616,11 @@ void effect_player_icee(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     }
 
     BadStatusSetter bss(creature);
-    if (!has_resist_shard(creature)) {
+    if (!creature.has_resist_shard()) {
         (void)bss.mod_cut(static_cast<TIME_EFFECT>(Dice::roll(5, 8)));
     }
 
-    if (!has_resist_sound(creature)) {
+    if (!creature.has_resist_sound()) {
         (void)bss.mod_stun(randnum1<short>(15));
     }
 
@@ -686,15 +686,15 @@ void effect_player_abyss(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     }
 
     msg_print(_("深淵から何かがあなたを覗き込んでいる！", "Something gazes at you from the abyss!"));
-    if (!has_resist_chaos(creature)) {
+    if (!creature.has_resist_chaos()) {
         (void)bss.mod_hallucination(randnum1<short>(10));
     }
 
-    if (!has_resist_conf(creature)) {
+    if (!creature.has_resist_conf()) {
         (void)bss.mod_confusion(randnum1<short>(10));
     }
 
-    if (!has_resist_fear(creature)) {
+    if (!creature.has_resist_fear()) {
         (void)bss.mod_fear(randnum1<short>(10));
     }
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);

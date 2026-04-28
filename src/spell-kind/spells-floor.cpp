@@ -444,7 +444,7 @@ bool destroy_area(CreatureEntity &creature, const POSITION y1, const POSITION x1
 
     if (flag) {
         msg_print(_("燃えるような閃光が発生した！", "There is a searing blast of light!"));
-        if (!has_resist_blind(creature) && !has_resist_lite(creature)) {
+        if (!creature.has_resist_blind() && !creature.has_resist_lite()) {
             (void)BadStatusSetter(creature).mod_blindness(10 + randint1(10));
         }
     }

@@ -356,7 +356,7 @@ bool set_monster_timewalk(CreatureEntity &creature, MONSTER_IDX m_idx, int num, 
         msg_erase();
     }
 
-    if (has_resist_time(creature)) {
+    if (creature.has_resist_time()) {
         msg_print(_("しかし、あなたは時を止める力を打ち消した！", "But, you have countered power of time stop!"));
         return false;
     }

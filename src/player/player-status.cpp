@@ -1132,7 +1132,7 @@ static ACTION_SKILL_POWER calc_saving_throw(CreatureEntity &creature)
         pow += (15 + (creature.level / 5));
     }
 
-    if (has_resist_curse(creature)) {
+    if (creature.has_resist_curse()) {
         pow += 30;
     }
 

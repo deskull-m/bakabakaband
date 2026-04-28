@@ -380,7 +380,7 @@ static void curse_cowardice(CreatureEntity &creature)
         duration *= 2;
     }
 
-    if (!one_in_(chance) || (has_resist_fear(creature) != 0)) {
+    if (!one_in_(chance) || (creature.has_resist_fear() != 0)) {
         return;
     }
 
@@ -520,7 +520,7 @@ static void occur_curse_effects(CreatureEntity &creature)
 void execute_cursed_items_effect(CreatureEntity &creature)
 {
     occur_curse_effects(creature);
-    if (!one_in_(999) || creature.has_anti_magic() || (one_in_(2) && has_resist_curse(creature))) {
+    if (!one_in_(999) || creature.has_anti_magic() || (one_in_(2) && creature.has_resist_curse())) {
         return;
     }
 

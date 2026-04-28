@@ -201,7 +201,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
         break;
     }
     case 2: {
-        if (creature.get_mutations().has_not(PlayerMutationType::COWARDICE) && !has_resist_fear(creature)) {
+        if (creature.get_mutations().has_not(PlayerMutationType::COWARDICE) && !creature.has_resist_fear()) {
             msg_print(_("あなたはパラノイアになった！", "You become paranoid!"));
             if (creature.get_mutations().has(PlayerMutationType::FEARLESS)) {
                 msg_print(_("あなたはもう恐れ知らずではなくなった。", "You are no longer fearless."));
@@ -214,7 +214,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
         break;
     }
     case 3: {
-        if (creature.get_mutations().has_not(PlayerMutationType::HALLU) && !has_resist_chaos(creature)) {
+        if (creature.get_mutations().has_not(PlayerMutationType::HALLU) && !creature.has_resist_chaos()) {
             msg_print(_("幻覚をひき起こす精神錯乱に陥った！", "You are afflicted by a hallucinatory insanity!"));
             creature.muta.set(PlayerMutationType::HALLU);
         }
@@ -222,7 +222,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
         break;
     }
     case 4: {
-        if (creature.get_mutations().has_not(PlayerMutationType::BERS_RAGE) && !has_resist_conf(creature)) {
+        if (creature.get_mutations().has_not(PlayerMutationType::BERS_RAGE) && !creature.has_resist_conf()) {
             msg_print(_("激烈な感情の発作におそわれるようになった！", "You become subject to fits of berserk rage!"));
             creature.muta.set(PlayerMutationType::BERS_RAGE);
         }
@@ -238,11 +238,11 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
     case 11:
     case 12: {
         BadStatusSetter bss(creature);
-        if (!has_resist_conf(creature)) {
+        if (!creature.has_resist_conf()) {
             (void)bss.mod_confusion(randint0(4) + 4);
         }
 
-        if (!has_resist_chaos(creature) && one_in_(3)) {
+        if (!creature.has_resist_chaos() && one_in_(3)) {
             (void)bss.mod_hallucination(randint0(250) + 150);
         }
 
@@ -254,13 +254,13 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
     case 14:
     case 15: {
         BadStatusSetter bss(creature);
-        if (!has_resist_conf(creature)) {
+        if (!creature.has_resist_conf()) {
             (void)bss.mod_confusion(randint0(4) + 4);
         }
         if (!creature.has_free_act()) {
             (void)bss.mod_paralysis(randint0(4) + 4);
         }
-        if (!has_resist_chaos(creature)) {
+        if (!creature.has_resist_chaos()) {
             (void)bss.mod_hallucination(randint0(250) + 150);
         }
 
