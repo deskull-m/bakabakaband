@@ -118,7 +118,7 @@ static void check_dark_resistance(CreatureEntity &creature, msr_type *msr_ptr)
         return;
     }
 
-    if (has_immune_dark(creature)) {
+    if (creature.has_immune_dark()) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BR_DARK);
         msr_ptr->ability_flags.reset(MonsterAbilityType::BA_DARK);
         return;

@@ -1142,7 +1142,7 @@ static ACTION_SKILL_POWER calc_saving_throw(CreatureEntity &creature)
 
     pow += adj_wis_sav[creature.stat_index[A_WIS]];
 
-    if (has_vuln_curse(creature)) {
+    if (creature.has_vuln_curse()) {
         pow -= 10;
     }
 

@@ -246,7 +246,7 @@ PERCENTAGE calc_lite_damage_rate(CreatureEntity &creature, rate_calc_type_mode m
 {
     PERCENTAGE per = 100;
 
-    if (has_immune_lite(creature)) {
+    if (creature.has_immune_lite()) {
         return 0;
     }
 
@@ -282,7 +282,7 @@ PERCENTAGE calc_dark_damage_rate(CreatureEntity &creature, rate_calc_type_mode m
 {
     PERCENTAGE per = 100;
 
-    if (has_immune_dark(creature)) {
+    if (creature.has_immune_dark()) {
         return 0;
     }
 
