@@ -836,6 +836,41 @@ public:
     virtual bool is_time_limit_esp() const;
     virtual bool is_time_limit_stealth() const;
 
+    // 耐性系 virtual メソッド (提案 4)。
+    // プレイヤーは装備・職業・種族・時限効果から集計、モンスターは
+    // 将来 MonsterProfile / MonraceDefinition 経由で override 可能。
+    // 戻り値は BIT_FLAGS_CAUSE_* のビット集合（0 なら非耐性）。
+    virtual BIT_FLAGS has_resist_fire();
+    virtual BIT_FLAGS has_resist_cold();
+    virtual BIT_FLAGS has_resist_elec();
+    virtual BIT_FLAGS has_resist_acid();
+    virtual BIT_FLAGS has_resist_pois();
+    virtual BIT_FLAGS has_resist_conf();
+    virtual BIT_FLAGS has_resist_sound();
+    virtual BIT_FLAGS has_resist_lite();
+    virtual BIT_FLAGS has_resist_dark();
+    virtual BIT_FLAGS has_resist_chaos();
+    virtual BIT_FLAGS has_resist_disen();
+    virtual BIT_FLAGS has_resist_shard();
+    virtual BIT_FLAGS has_resist_blind();
+    virtual BIT_FLAGS has_resist_neth();
+    virtual BIT_FLAGS has_resist_time();
+    virtual BIT_FLAGS has_resist_water();
+    virtual BIT_FLAGS has_resist_fear();
+    virtual BIT_FLAGS has_resist_curse();
+    virtual BIT_FLAGS has_vuln_curse();
+    virtual BIT_FLAGS has_vuln_acid();
+    virtual BIT_FLAGS has_vuln_elec();
+    virtual BIT_FLAGS has_vuln_fire();
+    virtual BIT_FLAGS has_vuln_cold();
+    virtual BIT_FLAGS has_vuln_lite();
+    virtual BIT_FLAGS has_immune_fire();
+    virtual BIT_FLAGS has_immune_cold();
+    virtual BIT_FLAGS has_immune_acid();
+    virtual BIT_FLAGS has_immune_elec();
+    virtual BIT_FLAGS has_immune_dark();
+    virtual BIT_FLAGS has_immune_lite();
+
     /*!
      * @brief 汎用テレパシーの有無を返す
      * @details プレイヤーは装備由来、モンスターは種族フラグ由来（将来）。
