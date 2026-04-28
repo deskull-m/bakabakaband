@@ -726,7 +726,7 @@ void update_smart_learn(CreatureEntity &creature, MONSTER_IDX m_idx, int what)
 
         break;
     case DRS_DARK:
-        if (creature.has_resist_dark() || has_immune_dark(creature)) {
+        if (creature.has_resist_dark() || creature.has_immune_dark()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_DARK);
         }
 

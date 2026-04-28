@@ -114,7 +114,7 @@ static void spell_damcalc(CreatureEntity &creature, const CreatureEntity &monste
 
     case AttributeType::DARK:
         dam = dam * calc_dark_damage_rate(creature, CALC_MAX) / 100;
-        if (has_immune_dark(creature) || creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
+        if (creature.has_immune_dark() || creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
             ignore_wraith_form = true;
         }
         break;

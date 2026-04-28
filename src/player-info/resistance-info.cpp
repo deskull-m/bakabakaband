@@ -71,11 +71,11 @@ void set_high_resistance_info(CreatureEntity &creature, self_info_type *self_ptr
         self_ptr->info_list.emplace_back(_("あなたは閃光への耐性を持っている。", "You are resistant to bright light."));
     }
 
-    if (has_vuln_lite(creature)) {
+    if (creature.has_vuln_lite()) {
         self_ptr->info_list.emplace_back(_("あなたは閃光に弱い。", "You are susceptible to damage from bright light."));
     }
 
-    if (has_immune_dark(creature) || creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
+    if (creature.has_immune_dark() || creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
         self_ptr->info_list.emplace_back(_("あなたは暗黒に対する完全なる免疫を持っている。", "You are completely immune to darkness."));
     } else if (creature.has_resist_dark()) {
         self_ptr->info_list.emplace_back(_("あなたは暗黒への耐性を持っている。", "You are resistant to darkness."));

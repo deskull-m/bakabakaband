@@ -459,7 +459,7 @@ void effect_player_dark(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     auto go_blind = !is_blind;
     go_blind &= !creature.has_resist_blind();
-    go_blind &= !(creature.has_resist_dark() || has_immune_dark(creature));
+    go_blind &= !(creature.has_resist_dark() || creature.has_immune_dark());
     go_blind &= !check_multishadow(creature);
 
     if (go_blind) {
