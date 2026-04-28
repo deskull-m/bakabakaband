@@ -648,7 +648,7 @@ void update_smart_learn(CreatureEntity &creature, MONSTER_IDX m_idx, int what)
 
     switch (what) {
     case DRS_ACID:
-        if (has_resist_acid(creature)) {
+        if (creature.has_resist_acid()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_ACID);
         }
 
@@ -656,13 +656,13 @@ void update_smart_learn(CreatureEntity &creature, MONSTER_IDX m_idx, int what)
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::OPP_ACID);
         }
 
-        if (has_immune_acid(creature)) {
+        if (creature.has_immune_acid()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::IMM_ACID);
         }
 
         break;
     case DRS_ELEC:
-        if (has_resist_elec(creature)) {
+        if (creature.has_resist_elec()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_ELEC);
         }
 
@@ -670,13 +670,13 @@ void update_smart_learn(CreatureEntity &creature, MONSTER_IDX m_idx, int what)
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::OPP_ELEC);
         }
 
-        if (has_immune_elec(creature)) {
+        if (creature.has_immune_elec()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::IMM_ELEC);
         }
 
         break;
     case DRS_FIRE:
-        if (has_resist_fire(creature)) {
+        if (creature.has_resist_fire()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_FIRE);
         }
 
@@ -684,13 +684,13 @@ void update_smart_learn(CreatureEntity &creature, MONSTER_IDX m_idx, int what)
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::OPP_FIRE);
         }
 
-        if (has_immune_fire(creature)) {
+        if (creature.has_immune_fire()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::IMM_FIRE);
         }
 
         break;
     case DRS_COLD:
-        if (has_resist_cold(creature)) {
+        if (creature.has_resist_cold()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_COLD);
         }
 
@@ -698,13 +698,13 @@ void update_smart_learn(CreatureEntity &creature, MONSTER_IDX m_idx, int what)
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::OPP_COLD);
         }
 
-        if (has_immune_cold(creature)) {
+        if (creature.has_immune_cold()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::IMM_COLD);
         }
 
         break;
     case DRS_POIS:
-        if (has_resist_pois(creature)) {
+        if (creature.has_resist_pois()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_POIS);
         }
 

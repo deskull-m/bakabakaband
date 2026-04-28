@@ -28,16 +28,16 @@ void tim_player_flags(CreatureEntity &creature, TrFlags &flags)
 
     flags.clear();
 
-    if (is_oppose_acid(creature) && none_bits(has_immune_acid(creature), (race_class_flag | tmp_effect_flag))) {
+    if (is_oppose_acid(creature) && none_bits(creature.has_immune_acid(), (race_class_flag | tmp_effect_flag))) {
         flags.set(TR_RES_ACID);
     }
-    if (is_oppose_elec(creature) && none_bits(has_immune_elec(creature), (race_class_flag | tmp_effect_flag))) {
+    if (is_oppose_elec(creature) && none_bits(creature.has_immune_elec(), (race_class_flag | tmp_effect_flag))) {
         flags.set(TR_RES_ELEC);
     }
-    if (is_oppose_fire(creature) && none_bits(has_immune_fire(creature), (race_class_flag | tmp_effect_flag))) {
+    if (is_oppose_fire(creature) && none_bits(creature.has_immune_fire(), (race_class_flag | tmp_effect_flag))) {
         flags.set(TR_RES_FIRE);
     }
-    if (is_oppose_cold(creature) && none_bits(has_immune_cold(creature), (race_class_flag | tmp_effect_flag))) {
+    if (is_oppose_cold(creature) && none_bits(creature.has_immune_cold(), (race_class_flag | tmp_effect_flag))) {
         flags.set(TR_RES_COLD);
     }
     if (is_oppose_pois(creature)) {

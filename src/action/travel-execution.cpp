@@ -45,7 +45,7 @@ int travel_flow_cost(CreatureEntity &creature, const Pos2D &pos)
 
     if (terrain.flags.has(TerrainCharacteristics::LAVA)) {
         int lava = 2;
-        if (!has_resist_fire(creature)) {
+        if (!creature.has_resist_fire()) {
             lava *= 2;
         }
 

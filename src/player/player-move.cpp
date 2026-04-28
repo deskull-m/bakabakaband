@@ -336,12 +336,12 @@ bool trap_can_be_ignored(CreatureEntity &creature, FEAT_IDX feat)
         }
         break;
     case TrapType::FIRE:
-        if (has_immune_fire(creature)) {
+        if (creature.has_immune_fire()) {
             return true;
         }
         break;
     case TrapType::ACID:
-        if (has_immune_acid(creature)) {
+        if (creature.has_immune_acid()) {
             return true;
         }
         break;
@@ -356,7 +356,7 @@ bool trap_can_be_ignored(CreatureEntity &creature, FEAT_IDX feat)
         }
         break;
     case TrapType::POISON:
-        if (has_resist_pois(creature)) {
+        if (creature.has_resist_pois()) {
             return true;
         }
         break;

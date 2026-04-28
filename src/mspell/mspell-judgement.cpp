@@ -260,7 +260,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
     const auto &monster = floor_ref.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     if (monrace.ability_flags.has(MonsterAbilityType::BR_ACID)) {
-        if (!has_immune_acid(creature) && (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ACID) || music_singing(creature, MUSIC_RESIST))) {
+        if (!creature.has_immune_acid() && (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ACID) || music_singing(creature, MUSIC_RESIST))) {
             return true;
         }
 
@@ -271,7 +271,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
 
     if (monrace.ability_flags.has(MonsterAbilityType::BR_FIRE)) {
         if (!(CreatureRace(&creature).equals(PlayerRaceType::BALROG) && creature.level > 44)) {
-            if (!has_immune_fire(creature) && (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE) || music_singing(creature, MUSIC_RESIST))) {
+            if (!creature.has_immune_fire() && (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE) || music_singing(creature, MUSIC_RESIST))) {
                 return true;
             }
 
@@ -282,7 +282,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
     }
 
     if (monrace.ability_flags.has(MonsterAbilityType::BR_ELEC)) {
-        if (!has_immune_elec(creature) && (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ELEC) || music_singing(creature, MUSIC_RESIST))) {
+        if (!creature.has_immune_elec() && (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ELEC) || music_singing(creature, MUSIC_RESIST))) {
             return true;
         }
 
@@ -292,7 +292,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
     }
 
     if (monrace.ability_flags.has(MonsterAbilityType::BR_COLD)) {
-        if (!has_immune_cold(creature) && (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD) || music_singing(creature, MUSIC_RESIST))) {
+        if (!creature.has_immune_cold() && (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD) || music_singing(creature, MUSIC_RESIST))) {
             return true;
         }
 

@@ -163,7 +163,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::LAVA) && !creature.is_invulnerable() && !has_immune_fire(creature)) {
+    if (terrain.flags.has(TerrainCharacteristics::LAVA) && !creature.is_invulnerable() && !creature.has_immune_fire()) {
         constexpr auto mes_leviation = _("熱で火傷した！", "The heat burns you!");
         constexpr auto mes_normal = _("で火傷した！", "burns you!");
         if (deal_damege_by_feat(creature, grid, mes_leviation, mes_normal, calc_fire_damage_rate, nullptr)) {
@@ -172,7 +172,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::COLD_PUDDLE) && !creature.is_invulnerable() && !has_immune_cold(creature)) {
+    if (terrain.flags.has(TerrainCharacteristics::COLD_PUDDLE) && !creature.is_invulnerable() && !creature.has_immune_cold()) {
         constexpr auto mes_leviation = _("冷気に覆われた！", "The cold engulfs you!");
         constexpr auto mes_normal = _("に凍えた！", "frostbites you!");
         if (deal_damege_by_feat(creature, grid, mes_leviation, mes_normal, calc_cold_damage_rate, nullptr)) {
@@ -181,7 +181,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::ELEC_PUDDLE) && !creature.is_invulnerable() && !has_immune_elec(creature)) {
+    if (terrain.flags.has(TerrainCharacteristics::ELEC_PUDDLE) && !creature.is_invulnerable() && !creature.has_immune_elec()) {
         constexpr auto mes_leviation = _("電撃を受けた！", "The electricity shocks you!");
         constexpr auto mes_normal = _("に感電した！", "shocks you!");
         if (deal_damege_by_feat(creature, grid, mes_leviation, mes_normal, calc_elec_damage_rate, nullptr)) {
@@ -190,7 +190,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::ACID_PUDDLE) && !creature.is_invulnerable() && !has_immune_acid(creature)) {
+    if (terrain.flags.has(TerrainCharacteristics::ACID_PUDDLE) && !creature.is_invulnerable() && !creature.has_immune_acid()) {
         constexpr auto mes_leviation = _("酸が飛び散った！", "The acid melts you!");
         constexpr auto mes_normal = _("に溶かされた！", "melts you!");
         if (deal_damege_by_feat(creature, grid, mes_leviation, mes_normal, calc_acid_damage_rate, nullptr)) {
@@ -204,7 +204,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         constexpr auto mes_normal = _("に毒された！", "poisons you!");
         if (deal_damege_by_feat(creature, grid, mes_leviation, mes_normal, calc_pois_damage_rate,
                 [](CreatureEntity &creature, int damage) {
-                    if (!has_resist_pois(creature)) {
+                    if (!creature.has_resist_pois()) {
                         (void)BadStatusSetter(creature).mod_poison(static_cast<TIME_EFFECT>(damage));
                     }
                 })) {
@@ -216,7 +216,7 @@ void process_player_hp_mp(CreatureEntity &creature)
     if (terrain.flags.has(TerrainCharacteristics::DUNG_POOL) && !creature.is_invulnerable()) {
         cave_no_regen = deal_damege_by_feat(creature, grid, _("糞が飛び散った！", "The feced scatter to you!"), _("に浸かった！", "tainted you!"),
             calc_acid_damage_rate, [](CreatureEntity &creature, int damage) {
-                if (!has_resist_pois(creature)) {
+                if (!creature.has_resist_pois()) {
                     (void)BadStatusSetter(creature).mod_poison(static_cast<TIME_EFFECT>(damage));
                 }
             });
@@ -262,13 +262,13 @@ void process_player_hp_mp(CreatureEntity &creature)
         sound(SoundKind::TERRAIN_DAMAGE);
     }
 
-    if (get_player_flags(creature, TR_SELF_FIRE) && !has_immune_fire(creature)) {
+    if (get_player_flags(creature, TR_SELF_FIRE) && !creature.has_immune_fire()) {
         int damage;
         damage = creature.level;
         if (race.tr_flags().has(TR_VUL_FIRE)) {
             damage += damage / 3;
         }
-        if (has_resist_fire(creature)) {
+        if (creature.has_resist_fire()) {
             damage = damage / 3;
         }
         if (is_oppose_fire(creature)) {
@@ -280,13 +280,13 @@ void process_player_hp_mp(CreatureEntity &creature)
         take_hit(creature, DAMAGE_NOESCAPE, damage, _("炎のオーラ", "Fire aura"));
     }
 
-    if (get_player_flags(creature, TR_SELF_ELEC) && !has_immune_elec(creature)) {
+    if (get_player_flags(creature, TR_SELF_ELEC) && !creature.has_immune_elec()) {
         int damage;
         damage = creature.level;
         if (race.tr_flags().has(TR_VUL_ELEC)) {
             damage += damage / 3;
         }
-        if (has_resist_elec(creature)) {
+        if (creature.has_resist_elec()) {
             damage = damage / 3;
         }
         if (is_oppose_elec(creature)) {
@@ -298,13 +298,13 @@ void process_player_hp_mp(CreatureEntity &creature)
         take_hit(creature, DAMAGE_NOESCAPE, damage, _("電気のオーラ", "Elec aura"));
     }
 
-    if (get_player_flags(creature, TR_SELF_COLD) && !has_immune_cold(creature)) {
+    if (get_player_flags(creature, TR_SELF_COLD) && !creature.has_immune_cold()) {
         int damage;
         damage = creature.level;
         if (race.tr_flags().has(TR_VUL_COLD)) {
             damage += damage / 3;
         }
-        if (has_resist_cold(creature)) {
+        if (creature.has_resist_cold()) {
             damage = damage / 3;
         }
         if (is_oppose_cold(creature)) {
@@ -319,12 +319,12 @@ void process_player_hp_mp(CreatureEntity &creature)
     if (creature.riding) {
         int damage;
         auto auras = floor.get_monster(creature.riding).get_monrace().aura_flags;
-        if (auras.has(MonsterAuraType::FIRE) && !has_immune_fire(creature)) {
+        if (auras.has(MonsterAuraType::FIRE) && !creature.has_immune_fire()) {
             damage = floor.get_monster(creature.riding).get_monrace().level / 2;
             if (race.tr_flags().has(TR_VUL_FIRE)) {
                 damage += damage / 3;
             }
-            if (has_resist_fire(creature)) {
+            if (creature.has_resist_fire()) {
                 damage = damage / 3;
             }
             if (is_oppose_fire(creature)) {
@@ -336,12 +336,12 @@ void process_player_hp_mp(CreatureEntity &creature)
             take_hit(creature, DAMAGE_NOESCAPE, damage, _("炎のオーラ", "Fire aura"));
         }
 
-        if (auras.has(MonsterAuraType::ELEC) && !has_immune_elec(creature)) {
+        if (auras.has(MonsterAuraType::ELEC) && !creature.has_immune_elec()) {
             damage = floor.get_monster(creature.riding).get_monrace().level / 2;
             if (race.tr_flags().has(TR_VUL_ELEC)) {
                 damage += damage / 3;
             }
-            if (has_resist_elec(creature)) {
+            if (creature.has_resist_elec()) {
                 damage = damage / 3;
             }
             if (is_oppose_elec(creature)) {
@@ -353,12 +353,12 @@ void process_player_hp_mp(CreatureEntity &creature)
             take_hit(creature, DAMAGE_NOESCAPE, damage, _("電気のオーラ", "Elec aura"));
         }
 
-        if (auras.has(MonsterAuraType::COLD) && !has_immune_cold(creature)) {
+        if (auras.has(MonsterAuraType::COLD) && !creature.has_immune_cold()) {
             damage = floor.get_monster(creature.riding).get_monrace().level / 2;
             if (race.tr_flags().has(TR_VUL_COLD)) {
                 damage += damage / 3;
             }
-            if (has_resist_cold(creature)) {
+            if (creature.has_resist_cold()) {
                 damage = damage / 3;
             }
             if (is_oppose_cold(creature)) {

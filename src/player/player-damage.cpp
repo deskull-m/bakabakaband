@@ -154,7 +154,7 @@ int acid_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool au
     }
 
     if (aura || !check_multishadow(creature)) {
-        if ((!(double_resist || has_resist_acid(creature))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
+        if ((!(double_resist || creature.has_resist_acid())) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
             (void)do_dec_stat(creature, A_CHR);
         }
 
@@ -164,7 +164,7 @@ int acid_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool au
     }
 
     int get_damage = take_hit(creature, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
-    if (!aura && !(double_resist && has_resist_acid(creature))) {
+    if (!aura && !(double_resist && creature.has_resist_acid())) {
         inventory_damage(creature, BreakerAcid(), inv);
     }
 
@@ -194,13 +194,13 @@ int elec_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool au
     }
 
     if (aura || !check_multishadow(creature)) {
-        if ((!(double_resist || has_resist_elec(creature))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
+        if ((!(double_resist || creature.has_resist_elec())) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
             (void)do_dec_stat(creature, A_DEX);
         }
     }
 
     int get_damage = take_hit(creature, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
-    if (!aura && !(double_resist && has_resist_elec(creature))) {
+    if (!aura && !(double_resist && creature.has_resist_elec())) {
         inventory_damage(creature, BreakerElec(), inv);
     }
 
@@ -224,19 +224,19 @@ int fire_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool au
     bool double_resist = is_oppose_fire(creature);
 
     /* Totally immune */
-    if (has_immune_fire(creature) || (dam <= 0)) {
+    if (creature.has_immune_fire() || (dam <= 0)) {
         return 0;
     }
 
     dam = dam * calc_fire_damage_rate(creature) / 100;
     if (aura || !check_multishadow(creature)) {
-        if ((!(double_resist || has_resist_fire(creature))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
+        if ((!(double_resist || creature.has_resist_fire())) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
             (void)do_dec_stat(creature, A_STR);
         }
     }
 
     int get_damage = take_hit(creature, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
-    if (!aura && !(double_resist && has_resist_fire(creature))) {
+    if (!aura && !(double_resist && creature.has_resist_fire())) {
         inventory_damage(creature, BreakerFire(), inv);
     }
 
@@ -258,19 +258,19 @@ int cold_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool au
     int inv = (dam < 30) ? 1 : (dam < 60) ? 2
                                           : 3;
     bool double_resist = is_oppose_cold(creature);
-    if (has_immune_cold(creature) || (dam <= 0)) {
+    if (creature.has_immune_cold() || (dam <= 0)) {
         return 0;
     }
 
     dam = dam * calc_cold_damage_rate(creature) / 100;
     if (aura || !check_multishadow(creature)) {
-        if ((!(double_resist || has_resist_cold(creature))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
+        if ((!(double_resist || creature.has_resist_cold())) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
             (void)do_dec_stat(creature, A_STR);
         }
     }
 
     int get_damage = take_hit(creature, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
-    if (!aura && !(double_resist && has_resist_cold(creature))) {
+    if (!aura && !(double_resist && creature.has_resist_cold())) {
         inventory_damage(creature, BreakerCold(), inv);
     }
 
@@ -742,9 +742,9 @@ void touch_zap_player(const CreatureEntity &source, CreatureEntity &creature)
     constexpr auto fire_mes = _("突然とても熱くなった！", "You are suddenly very hot!");
     constexpr auto cold_mes = _("突然とても寒くなった！", "You are suddenly very cold!");
     constexpr auto elec_mes = _("電撃をくらった！", "You get zapped!");
-    process_aura_damage(source, creature, has_immune_fire(creature) != 0, MonsterAuraType::FIRE, fire_dam, fire_mes);
-    process_aura_damage(source, creature, has_immune_cold(creature) != 0, MonsterAuraType::COLD, cold_dam, cold_mes);
-    process_aura_damage(source, creature, has_immune_elec(creature) != 0, MonsterAuraType::ELEC, elec_dam, elec_mes);
+    process_aura_damage(source, creature, creature.has_immune_fire() != 0, MonsterAuraType::FIRE, fire_dam, fire_mes);
+    process_aura_damage(source, creature, creature.has_immune_cold() != 0, MonsterAuraType::COLD, cold_dam, cold_mes);
+    process_aura_damage(source, creature, creature.has_immune_elec() != 0, MonsterAuraType::ELEC, elec_dam, elec_mes);
 }
 
 /*!
