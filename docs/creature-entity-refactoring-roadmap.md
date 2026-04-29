@@ -180,7 +180,7 @@ git grep -n "PlayerType::get_instance()" -- 'src/**/*.cpp' | wc -l
 
 ---
 
-## 提案 4: 未統合の状態チェック関数の仮想化 🚧 保留
+## 提案 4: 未統合の状態チェック関数の仮想化 ✅ 主要部分完了
 
 ### 背景
 
@@ -205,11 +205,17 @@ Phase 2 で主要な `is_xxx()` 系は仮想化済みだが、以下はまだ自
 
 ### 進捗
 
-- 🚧 保留: `has_resist_*()` 等の関数は既に `CreatureEntity &`
-  引数を取るが、実装内部が装備品・ミューテーション・職業特典を
-  参照する大規模ロジック。モンスター向けに分岐を差し込むには
-  各関数を丁寧に書き換える必要があり工数大。
-- `is_time_limit_esp()` / `is_time_limit_stealth()` は既に virtual 化済み
+- ✅ `is_time_limit_esp()` / `is_time_limit_stealth()` は初期から virtual 化済み
+- ✅ 耐性/免疫/弱点系 30 種 (has_resist_fire/cold/elec/acid/pois/conf/
+  sound/lite/dark/chaos/disen/shard/blind/neth/time/water/fear/curse,
+  has_vuln_curse/acid/elec/fire/cold/lite, has_immune_fire/cold/acid/
+  elec/dark/lite) を virtual メソッド化。自由関数 (player-status-flags)
+  に委譲する形でデフォルト実装を提供
+- ✅ call site 263 箇所を `creature.has_resist_X()` 形式に一括移行
+  (38 ファイル)
+- 🚧 残り: 自由関数本体の削除 or virtual 実装への完全移植。モンスター
+  種族フラグ由来の耐性を返すよう MonsterProfile 経由での override
+  実装は後続。`has_lite()` など残る少数の自由関数も同様に移行予定。
 
 ---
 
