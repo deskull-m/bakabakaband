@@ -16,6 +16,7 @@
 #include "status/bad-status-setter.h"
 #include "store/rumor.h"
 #include "system/creature-entity.h"
+#include "system/creature-timed-effect-types.h"
 #include "system/inner-game-data.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
@@ -114,7 +115,7 @@ static void back_to_health(CreatureEntity &creature)
     BadStatusSetter bss(creature);
     (void)bss.set_blindness(0);
     (void)bss.set_confusion(0);
-    creature.effects()->stun().reset();
+    creature.set_timed_effect(CreatureTimedEffect::STUN, 0);
     creature.hp = creature.maxhp;
     creature.csp = creature.msp;
 }
