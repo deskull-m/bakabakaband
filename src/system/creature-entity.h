@@ -864,6 +864,7 @@ public:
     virtual BIT_FLAGS has_resist_chaos();
     virtual BIT_FLAGS has_resist_disen();
     virtual BIT_FLAGS has_resist_shard();
+    virtual BIT_FLAGS has_resist_nexus();
     virtual BIT_FLAGS has_resist_blind();
     virtual BIT_FLAGS has_resist_neth();
     virtual BIT_FLAGS has_resist_time();

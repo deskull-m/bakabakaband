@@ -1228,6 +1228,13 @@ BIT_FLAGS CreatureEntity::has_resist_shard()
     }
     return ::has_resist_shard(*this);
 }
+BIT_FLAGS CreatureEntity::has_resist_nexus()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_cause(*this, MonsterResistanceType::RESIST_NEXUS);
+    }
+    return ::has_resist_nexus(*this);
+}
 BIT_FLAGS CreatureEntity::has_resist_blind()
 {
     if (this->has_monster_profile()) {
