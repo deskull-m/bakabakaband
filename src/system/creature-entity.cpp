@@ -5,7 +5,10 @@
 #include "inventory/inventory-slot-types.h"
 #include "market/arena-entry.h"
 #include "mind/mind-elementalist.h"
+#include "monster-race/race-feature-flags.h"
+#include "monster-race/race-flags-resistance.h"
 #include "monster-race/race-kind-flags.h"
+#include "monster-race/race-misc-flags.h"
 #include "monster-race/race-sex-const.h"
 #include "monster/monster-flag-types.h"
 #include "monster/monster-pain-describer.h"
@@ -1111,42 +1114,246 @@ void CreatureEntity::wipe()
 }
 
 // 耐性系 virtual メソッドのデフォルト実装。
-// player-status-flags の自由関数に委譲する形で、プレイヤー用の集計
-// ロジック（装備・職業・種族・時限効果）をそのまま活用。将来
-// モンスター側で MonsterProfile / MonraceDefinition 由来の耐性を
-// 返す形にオーバーライド可能。
+// モンスター (monster_profile 保持) の場合は種族 resistance_flags を参照。
+// プレイヤー (or monster_profile なし) の場合は player-status-flags 自由関数に
+// 委譲してプレイヤー装備・職業・種族・時限効果から集計。
+// 戻り値は BIT_FLAGS_CAUSE_* のビット集合で、0 は非耐性。
+
+namespace {
+
+// モンスターの種族フラグから BIT_FLAGS_CAUSE_RACE を返すヘルパ
+static inline BIT_FLAGS monster_race_flag_cause(CreatureEntity &creature, MonsterResistanceType flag)
+{
+    const auto &monrace = creature.get_monrace();
+    return monrace.resistance_flags.has(flag) ? static_cast<BIT_FLAGS>(FLAG_CAUSE_RACE) : 0U;
+}
+
+// RESIST/IMMUNE いずれかが立っている場合、RACE 起因として扱う
+static inline BIT_FLAGS monster_race_flag_any(CreatureEntity &creature, std::initializer_list<MonsterResistanceType> flags)
+{
+    const auto &monrace = creature.get_monrace();
+    for (auto f : flags) {
+        if (monrace.resistance_flags.has(f)) {
+            return static_cast<BIT_FLAGS>(FLAG_CAUSE_RACE);
+        }
+    }
+    return 0U;
+}
+
+}
 
 // clang-format off
-BIT_FLAGS CreatureEntity::has_resist_fire() { return ::has_resist_fire(*this); }
-BIT_FLAGS CreatureEntity::has_resist_cold() { return ::has_resist_cold(*this); }
-BIT_FLAGS CreatureEntity::has_resist_elec() { return ::has_resist_elec(*this); }
-BIT_FLAGS CreatureEntity::has_resist_acid() { return ::has_resist_acid(*this); }
-BIT_FLAGS CreatureEntity::has_resist_pois() { return ::has_resist_pois(*this); }
-BIT_FLAGS CreatureEntity::has_resist_conf() { return ::has_resist_conf(*this); }
-BIT_FLAGS CreatureEntity::has_resist_sound() { return ::has_resist_sound(*this); }
-BIT_FLAGS CreatureEntity::has_resist_lite() { return ::has_resist_lite(*this); }
-BIT_FLAGS CreatureEntity::has_resist_dark() { return ::has_resist_dark(*this); }
-BIT_FLAGS CreatureEntity::has_resist_chaos() { return ::has_resist_chaos(*this); }
-BIT_FLAGS CreatureEntity::has_resist_disen() { return ::has_resist_disen(*this); }
-BIT_FLAGS CreatureEntity::has_resist_shard() { return ::has_resist_shard(*this); }
-BIT_FLAGS CreatureEntity::has_resist_blind() { return ::has_resist_blind(*this); }
-BIT_FLAGS CreatureEntity::has_resist_neth() { return ::has_resist_neth(*this); }
-BIT_FLAGS CreatureEntity::has_resist_time() { return ::has_resist_time(*this); }
-BIT_FLAGS CreatureEntity::has_resist_water() { return ::has_resist_water(*this); }
-BIT_FLAGS CreatureEntity::has_resist_fear() { return ::has_resist_fear(*this); }
-BIT_FLAGS CreatureEntity::has_resist_curse() { return ::has_resist_curse(*this); }
-BIT_FLAGS CreatureEntity::has_vuln_curse() { return ::has_vuln_curse(*this); }
-BIT_FLAGS CreatureEntity::has_vuln_acid() { return ::has_vuln_acid(*this); }
-BIT_FLAGS CreatureEntity::has_vuln_elec() { return ::has_vuln_elec(*this); }
-BIT_FLAGS CreatureEntity::has_vuln_fire() { return ::has_vuln_fire(*this); }
-BIT_FLAGS CreatureEntity::has_vuln_cold() { return ::has_vuln_cold(*this); }
-BIT_FLAGS CreatureEntity::has_vuln_lite() { return ::has_vuln_lite(*this); }
-BIT_FLAGS CreatureEntity::has_immune_fire() { return ::has_immune_fire(*this); }
-BIT_FLAGS CreatureEntity::has_immune_cold() { return ::has_immune_cold(*this); }
-BIT_FLAGS CreatureEntity::has_immune_acid() { return ::has_immune_acid(*this); }
-BIT_FLAGS CreatureEntity::has_immune_elec() { return ::has_immune_elec(*this); }
-BIT_FLAGS CreatureEntity::has_immune_dark() { return ::has_immune_dark(*this); }
-BIT_FLAGS CreatureEntity::has_immune_lite() { return ::has_immune_lite(*this); }
+BIT_FLAGS CreatureEntity::has_resist_fire()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_any(*this, { MonsterResistanceType::RESIST_FIRE, MonsterResistanceType::IMMUNE_FIRE });
+    }
+    return ::has_resist_fire(*this);
+}
+BIT_FLAGS CreatureEntity::has_resist_cold()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_any(*this, { MonsterResistanceType::RESIST_COLD, MonsterResistanceType::IMMUNE_COLD });
+    }
+    return ::has_resist_cold(*this);
+}
+BIT_FLAGS CreatureEntity::has_resist_elec()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_any(*this, { MonsterResistanceType::RESIST_ELEC, MonsterResistanceType::IMMUNE_ELEC });
+    }
+    return ::has_resist_elec(*this);
+}
+BIT_FLAGS CreatureEntity::has_resist_acid()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_any(*this, { MonsterResistanceType::RESIST_ACID, MonsterResistanceType::IMMUNE_ACID });
+    }
+    return ::has_resist_acid(*this);
+}
+BIT_FLAGS CreatureEntity::has_resist_pois()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_any(*this, { MonsterResistanceType::RESIST_POISON, MonsterResistanceType::IMMUNE_POISON });
+    }
+    return ::has_resist_pois(*this);
+}
+BIT_FLAGS CreatureEntity::has_resist_conf()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_cause(*this, MonsterResistanceType::NO_CONF);
+    }
+    return ::has_resist_conf(*this);
+}
+BIT_FLAGS CreatureEntity::has_resist_sound()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_cause(*this, MonsterResistanceType::RESIST_SOUND);
+    }
+    return ::has_resist_sound(*this);
+}
+BIT_FLAGS CreatureEntity::has_resist_lite()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_cause(*this, MonsterResistanceType::RESIST_LITE);
+    }
+    return ::has_resist_lite(*this);
+}
+BIT_FLAGS CreatureEntity::has_resist_dark()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_cause(*this, MonsterResistanceType::RESIST_DARK);
+    }
+    return ::has_resist_dark(*this);
+}
+BIT_FLAGS CreatureEntity::has_resist_chaos()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_cause(*this, MonsterResistanceType::RESIST_CHAOS);
+    }
+    return ::has_resist_chaos(*this);
+}
+BIT_FLAGS CreatureEntity::has_resist_disen()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_cause(*this, MonsterResistanceType::RESIST_DISENCHANT);
+    }
+    return ::has_resist_disen(*this);
+}
+BIT_FLAGS CreatureEntity::has_resist_shard()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_cause(*this, MonsterResistanceType::RESIST_SHARDS);
+    }
+    return ::has_resist_shard(*this);
+}
+BIT_FLAGS CreatureEntity::has_resist_blind()
+{
+    if (this->has_monster_profile()) {
+        // モンスターの盲目耐性は NO_CONF の準用として扱う（専用フラグなし）
+        return 0;
+    }
+    return ::has_resist_blind(*this);
+}
+BIT_FLAGS CreatureEntity::has_resist_neth()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_cause(*this, MonsterResistanceType::RESIST_NETHER);
+    }
+    return ::has_resist_neth(*this);
+}
+BIT_FLAGS CreatureEntity::has_resist_time()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_cause(*this, MonsterResistanceType::RESIST_TIME);
+    }
+    return ::has_resist_time(*this);
+}
+BIT_FLAGS CreatureEntity::has_resist_water()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_cause(*this, MonsterResistanceType::RESIST_WATER);
+    }
+    return ::has_resist_water(*this);
+}
+BIT_FLAGS CreatureEntity::has_resist_fear()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_cause(*this, MonsterResistanceType::NO_FEAR);
+    }
+    return ::has_resist_fear(*this);
+}
+BIT_FLAGS CreatureEntity::has_resist_curse()
+{
+    if (this->has_monster_profile()) {
+        return 0; // モンスターは装備呪いの概念なし
+    }
+    return ::has_resist_curse(*this);
+}
+BIT_FLAGS CreatureEntity::has_vuln_curse()
+{
+    if (this->has_monster_profile()) {
+        return 0;
+    }
+    return ::has_vuln_curse(*this);
+}
+BIT_FLAGS CreatureEntity::has_vuln_acid()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_cause(*this, MonsterResistanceType::HURT_ACID);
+    }
+    return ::has_vuln_acid(*this);
+}
+BIT_FLAGS CreatureEntity::has_vuln_elec()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_cause(*this, MonsterResistanceType::HURT_ELEC);
+    }
+    return ::has_vuln_elec(*this);
+}
+BIT_FLAGS CreatureEntity::has_vuln_fire()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_cause(*this, MonsterResistanceType::HURT_FIRE);
+    }
+    return ::has_vuln_fire(*this);
+}
+BIT_FLAGS CreatureEntity::has_vuln_cold()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_cause(*this, MonsterResistanceType::HURT_COLD);
+    }
+    return ::has_vuln_cold(*this);
+}
+BIT_FLAGS CreatureEntity::has_vuln_lite()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_cause(*this, MonsterResistanceType::HURT_LITE);
+    }
+    return ::has_vuln_lite(*this);
+}
+BIT_FLAGS CreatureEntity::has_immune_fire()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_cause(*this, MonsterResistanceType::IMMUNE_FIRE);
+    }
+    return ::has_immune_fire(*this);
+}
+BIT_FLAGS CreatureEntity::has_immune_cold()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_cause(*this, MonsterResistanceType::IMMUNE_COLD);
+    }
+    return ::has_immune_cold(*this);
+}
+BIT_FLAGS CreatureEntity::has_immune_acid()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_cause(*this, MonsterResistanceType::IMMUNE_ACID);
+    }
+    return ::has_immune_acid(*this);
+}
+BIT_FLAGS CreatureEntity::has_immune_elec()
+{
+    if (this->has_monster_profile()) {
+        return monster_race_flag_cause(*this, MonsterResistanceType::IMMUNE_ELEC);
+    }
+    return ::has_immune_elec(*this);
+}
+BIT_FLAGS CreatureEntity::has_immune_dark()
+{
+    if (this->has_monster_profile()) {
+        return 0; // モンスター側には暗闇免疫フラグなし
+    }
+    return ::has_immune_dark(*this);
+}
+BIT_FLAGS CreatureEntity::has_immune_lite()
+{
+    if (this->has_monster_profile()) {
+        return 0; // モンスター側には光免疫フラグなし
+    }
+    return ::has_immune_lite(*this);
+}
 bool CreatureEntity::has_pass_wall() { return ::has_pass_wall(*this); }
 bool CreatureEntity::has_kill_wall() { return ::has_kill_wall(*this); }
 BIT_FLAGS CreatureEntity::has_reflect() { return ::has_reflect(*this); }
