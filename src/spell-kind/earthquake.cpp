@@ -133,7 +133,7 @@ void process_player_damage_dodged(CreatureEntity &creature, int m_idx)
 void process_hit_to_player(CreatureEntity &creature, std::span<const Pos2D> pos_collapses, int m_idx)
 {
     const auto has_hit = ranges::contains(pos_collapses, creature.get_position());
-    if (!has_hit || has_pass_wall(creature) || has_kill_wall(creature)) {
+    if (!has_hit || creature.has_pass_wall() || creature.has_kill_wall()) {
         return;
     }
 

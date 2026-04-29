@@ -482,7 +482,7 @@ static void dump_aux_equipment_inventory(CreatureEntity &creature, FILE *fff)
             auto item_name = describe_flavor(creature, *creature.inventory[i], 0);
             auto is_two_handed = ((i == INVEN_MAIN_HAND) && can_attack_with_sub_hand(creature));
             is_two_handed |= ((i == INVEN_SUB_HAND) && can_attack_with_main_hand(creature));
-            if (is_two_handed && has_two_handed_weapons(creature)) {
+            if (is_two_handed && creature.has_two_handed_weapons()) {
                 item_name = _("(武器を両手持ち)", "(wielding with two-hands)");
             }
 

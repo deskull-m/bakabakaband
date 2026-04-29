@@ -955,7 +955,7 @@ bool player_can_enter(CreatureEntity &creature, FEAT_IDX feature, BIT_FLAGS16 mo
     if (terrain.flags.has(TerrainCharacteristics::CAN_SWIM) && creature.has_can_swim()) {
         return true;
     }
-    if (terrain.flags.has(TerrainCharacteristics::CAN_PASS) && has_pass_wall(creature)) {
+    if (terrain.flags.has(TerrainCharacteristics::CAN_PASS) && creature.has_pass_wall()) {
         return true;
     }
 

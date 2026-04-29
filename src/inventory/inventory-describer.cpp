@@ -23,7 +23,7 @@ concptr mention_use(CreatureEntity &creature, int i)
     case INVEN_MAIN_HAND:
         p = creature.heavy_wield[0]
                 ? "運搬中"
-                : ((has_two_handed_weapons(creature) && can_attack_with_main_hand(creature)) ? " 両手" : (left_hander ? " 左手" : " 右手"));
+                : ((creature.has_two_handed_weapons() && can_attack_with_main_hand(creature)) ? " 両手" : (left_hander ? " 左手" : " 右手"));
         break;
 #else
     case INVEN_MAIN_HAND:
@@ -35,7 +35,7 @@ concptr mention_use(CreatureEntity &creature, int i)
     case INVEN_SUB_HAND:
         p = creature.heavy_wield[1]
                 ? "運搬中"
-                : ((has_two_handed_weapons(creature) && can_attack_with_sub_hand(creature)) ? " 両手" : (left_hander ? " 右手" : " 左手"));
+                : ((creature.has_two_handed_weapons() && can_attack_with_sub_hand(creature)) ? " 両手" : (left_hander ? " 右手" : " 左手"));
         break;
 #else
     case INVEN_SUB_HAND:
@@ -100,8 +100,8 @@ concptr describe_use(CreatureEntity &creature, int i)
     case INVEN_MAIN_HAND:
         p = creature.heavy_wield[0]
                 ? "運搬中の"
-                : ((has_two_handed_weapons(creature) && can_attack_with_main_hand(creature)) ? "両手に装備している"
-                                                                                             : (left_hander ? "左手に装備している" : "右手に装備している"));
+                : ((creature.has_two_handed_weapons() && can_attack_with_main_hand(creature)) ? "両手に装備している"
+                                                                                              : (left_hander ? "左手に装備している" : "右手に装備している"));
         break;
 #else
     case INVEN_MAIN_HAND:
@@ -113,8 +113,8 @@ concptr describe_use(CreatureEntity &creature, int i)
     case INVEN_SUB_HAND:
         p = creature.heavy_wield[1]
                 ? "運搬中の"
-                : ((has_two_handed_weapons(creature) && can_attack_with_sub_hand(creature)) ? "両手に装備している"
-                                                                                            : (left_hander ? "右手に装備している" : "左手に装備している"));
+                : ((creature.has_two_handed_weapons() && can_attack_with_sub_hand(creature)) ? "両手に装備している"
+                                                                                             : (left_hander ? "右手に装備している" : "左手に装備している"));
         break;
 #else
     case INVEN_SUB_HAND:

@@ -142,7 +142,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
     const auto &monster = floor.get_monster(grid.m_idx);
 
     auto &terrain = grid.get_terrain();
-    auto p_can_kill_walls = has_kill_wall(creature);
+    auto p_can_kill_walls = creature.has_kill_wall();
     p_can_kill_walls &= terrain.flags.has(TerrainCharacteristics::CAN_DISINTEGRATE);
     p_can_kill_walls &= !p_can_enter || terrain.flags.has_not(TerrainCharacteristics::LOS);
     p_can_kill_walls &= terrain.flags.has_not(TerrainCharacteristics::PERMANENT);

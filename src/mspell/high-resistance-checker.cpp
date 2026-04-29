@@ -54,7 +54,7 @@ void add_cheat_remove_flags_others(CreatureEntity &creature, msr_type *msr_ptr)
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_SHARD);
     }
 
-    if (has_reflect(creature)) {
+    if (creature.has_reflect()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::IMM_REFLECT);
     }
 

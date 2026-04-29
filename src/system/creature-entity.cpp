@@ -1122,4 +1122,14 @@ BIT_FLAGS CreatureEntity::has_immune_acid() { return ::has_immune_acid(*this); }
 BIT_FLAGS CreatureEntity::has_immune_elec() { return ::has_immune_elec(*this); }
 BIT_FLAGS CreatureEntity::has_immune_dark() { return ::has_immune_dark(*this); }
 BIT_FLAGS CreatureEntity::has_immune_lite() { return ::has_immune_lite(*this); }
+bool CreatureEntity::has_pass_wall() { return ::has_pass_wall(*this); }
+bool CreatureEntity::has_kill_wall() { return ::has_kill_wall(*this); }
+BIT_FLAGS CreatureEntity::has_reflect() { return ::has_reflect(*this); }
+bool CreatureEntity::has_two_handed_weapons() { return ::has_two_handed_weapons(*this); }
+BIT_FLAGS CreatureEntity::has_sh_fire() { return ::has_sh_fire(*this); }
+BIT_FLAGS CreatureEntity::has_sh_elec() { return ::has_sh_elec(*this); }
+BIT_FLAGS CreatureEntity::has_sh_cold() { return ::has_sh_cold(*this); }
+BIT_FLAGS CreatureEntity::has_down_saving() { return ::has_down_saving(*this); }
+BIT_FLAGS CreatureEntity::has_no_ac() { return ::has_no_ac(*this); }
+BIT_FLAGS CreatureEntity::has_easy2_weapon() { return ::has_easy2_weapon(*this); }
 // clang-format on

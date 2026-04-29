@@ -85,7 +85,7 @@ void set_body_improvement_info_3(CreatureEntity &creature, self_info_type *self_
         self_ptr->info_list.emplace_back(_("あなたは自己の経験値をしっかりと維持する。", "You have a firm hold on your experience."));
     }
 
-    if (has_reflect(creature)) {
+    if (creature.has_reflect()) {
         self_ptr->info_list.emplace_back(_("あなたは矢の呪文を反射する。", "You reflect bolt spells."));
     }
 
@@ -93,7 +93,7 @@ void set_body_improvement_info_3(CreatureEntity &creature, self_info_type *self_
         self_ptr->info_list.emplace_back(_("あなたはより強く呪いに抵抗できる。", "You can resist curses powerfully."));
     }
 
-    if (has_sh_fire(creature)) {
+    if (creature.has_sh_fire()) {
         self_ptr->info_list.emplace_back(_("あなたは炎のオーラに包まれている。", "You are surrounded with a fiery aura."));
     }
 
@@ -101,7 +101,7 @@ void set_body_improvement_info_3(CreatureEntity &creature, self_info_type *self_
         self_ptr->info_list.emplace_back(_("あなたは身を焼く炎に包まれている。", "You are being damaged with fire."));
     }
 
-    if (has_sh_elec(creature)) {
+    if (creature.has_sh_elec()) {
         self_ptr->info_list.emplace_back(_("あなたは電気のオーラに包まれている。", "You are surrounded with an electricity aura."));
     }
 
@@ -109,7 +109,7 @@ void set_body_improvement_info_3(CreatureEntity &creature, self_info_type *self_
         self_ptr->info_list.emplace_back(_("あなたは身を焦がす電撃に包まれている。", "You are being damaged with electricity."));
     }
 
-    if (has_sh_cold(creature)) {
+    if (creature.has_sh_cold()) {
         self_ptr->info_list.emplace_back(_("あなたは冷気のオーラに包まれている。", "You are surrounded with an aura of coldness."));
     }
 

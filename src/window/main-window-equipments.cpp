@@ -46,7 +46,7 @@ COMMAND_CODE show_equipment(CreatureEntity &creature, int target_item, BIT_FLAGS
         auto only_slot = !(creature.select_ring_slot ? is_ring_slot(i) : (item_tester.okay(&item) || any_bits(mode, USE_FULL)));
         auto is_any_hand = (i == INVEN_MAIN_HAND) && can_attack_with_sub_hand(creature);
         is_any_hand |= (i == INVEN_SUB_HAND) && can_attack_with_main_hand(creature);
-        auto is_two_handed = is_any_hand && has_two_handed_weapons(creature);
+        auto is_two_handed = is_any_hand && creature.has_two_handed_weapons();
         only_slot &= !is_two_handed || any_bits(mode, IGNORE_BOTHHAND_SLOT);
         if (only_slot) {
             continue;

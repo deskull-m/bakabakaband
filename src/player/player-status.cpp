@@ -281,9 +281,9 @@ static void update_bonuses(CreatureEntity &creature)
     creature.esp_unique = has_esp_unique(creature);
     creature.telepathy = has_esp_telepathy(creature);
     creature.bless_blade = has_bless_blade(creature);
-    creature.easy_2weapon = has_easy2_weapon(creature);
-    creature.down_saving = has_down_saving(creature);
-    creature.yoiyami = has_no_ac(creature);
+    creature.easy_2weapon = creature.has_easy2_weapon();
+    creature.down_saving = creature.has_down_saving();
+    creature.yoiyami = creature.has_no_ac();
     creature.mighty_throw = has_mighty_throw(creature);
     creature.dec_mana = has_dec_mana(creature);
     creature.see_nocto = has_see_nocto(creature);
@@ -1461,7 +1461,7 @@ static int16_t calc_num_blow(CreatureEntity &creature, int i)
             div = ((o_ptr->weight < wgt) ? wgt : o_ptr->weight);
             str_index = (adj_str_blow[creature.stat_index[A_STR]] * mul / div);
 
-            if (has_two_handed_weapons(creature) && !has_disable_two_handed_bonus(creature, 0)) {
+            if (creature.has_two_handed_weapons() && !has_disable_two_handed_bonus(creature, 0)) {
                 str_index += pc.equals(PlayerClassType::WARRIOR) || pc.equals(PlayerClassType::BERSERKER) ? (creature.level / 23 + 1) : 1;
             }
             if (pc.equals(PlayerClassType::NINJA)) {
@@ -1901,7 +1901,7 @@ static bool is_riding_two_hands(CreatureEntity &creature)
         return false;
     }
 
-    if (has_two_handed_weapons(creature) || (empty_hands(creature, false) == EMPTY_HAND_NONE)) {
+    if (creature.has_two_handed_weapons() || (empty_hands(creature, false) == EMPTY_HAND_NONE)) {
         return true;
     }
 
@@ -2071,7 +2071,7 @@ static short calc_to_damage(CreatureEntity &creature, INVENTORY_IDX slot, bool i
         damage -= 2;
     } else if (pc.equals(PlayerClassType::BERSERKER)) {
         damage += creature.level / 6;
-        if (((calc_hand == PLAYER_HAND_MAIN) && !can_attack_with_sub_hand(creature)) || has_two_handed_weapons(creature)) {
+        if (((calc_hand == PLAYER_HAND_MAIN) && !can_attack_with_sub_hand(creature)) || creature.has_two_handed_weapons()) {
             damage += creature.level / 6;
         }
     } else if (pc.equals(PlayerClassType::SORCERER)) {
@@ -2308,7 +2308,7 @@ static short calc_to_hit(CreatureEntity &creature, INVENTORY_IDX slot, bool is_r
             hit -= 2;
         } else if (pc.equals(PlayerClassType::BERSERKER)) {
             hit += creature.level / 5;
-            if (((calc_hand == PLAYER_HAND_MAIN) && !can_attack_with_sub_hand(creature)) || has_two_handed_weapons(creature)) {
+            if (((calc_hand == PLAYER_HAND_MAIN) && !can_attack_with_sub_hand(creature)) || creature.has_two_handed_weapons()) {
                 hit += creature.level / 5;
             }
         } else if (pc.equals(PlayerClassType::SORCERER)) {
@@ -3090,7 +3090,7 @@ void stop_mouth(CreatureEntity &creature)
 int calc_weapon_weight_limit(CreatureEntity &creature)
 {
     auto weight = adj_str_hold[creature.stat_index[A_STR]];
-    if (has_two_handed_weapons(creature)) {
+    if (creature.has_two_handed_weapons()) {
         weight *= 2;
     }
 

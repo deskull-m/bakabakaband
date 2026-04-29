@@ -871,6 +871,18 @@ public:
     virtual BIT_FLAGS has_immune_dark();
     virtual BIT_FLAGS has_immune_lite();
 
+    // その他の装備集計系 virtual メソッド (提案 4)。
+    virtual bool has_pass_wall();
+    virtual bool has_kill_wall();
+    virtual BIT_FLAGS has_reflect();
+    virtual bool has_two_handed_weapons();
+    virtual BIT_FLAGS has_sh_fire();
+    virtual BIT_FLAGS has_sh_elec();
+    virtual BIT_FLAGS has_sh_cold();
+    virtual BIT_FLAGS has_down_saving();
+    virtual BIT_FLAGS has_no_ac();
+    virtual BIT_FLAGS has_easy2_weapon();
+
     /*!
      * @brief 汎用テレパシーの有無を返す
      * @details プレイヤーは装備由来、モンスターは種族フラグ由来（将来）。
