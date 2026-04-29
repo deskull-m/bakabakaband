@@ -39,7 +39,6 @@
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "util/dice.h"
 #include "view/display-messages.h"
@@ -119,7 +118,7 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
     case SV_POTION_DETECT_INVIS:
         return set_tim_invis(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::TIM_INVIS) + 12 + randint1(12), false);
     case SV_POTION_SLOW_POISON:
-        return BadStatusSetter(this->creature).set_poison(this->creature.effects()->poison().current() / 2);
+        return BadStatusSetter(this->creature).set_poison(this->creature.get_remaining_poison() / 2);
     case SV_POTION_CURE_POISON:
         return BadStatusSetter(this->creature).set_poison(0);
     case SV_POTION_BOLDNESS:

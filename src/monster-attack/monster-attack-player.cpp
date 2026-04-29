@@ -47,13 +47,13 @@
 #include "status/bad-status-setter.h"
 #include "system/angband.h"
 #include "system/creature-entity.h"
+#include "timed-effect/timed-effects.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -282,7 +282,7 @@ bool MonsterAttackPlayer::effect_protecion_from_evil()
 {
     auto &creature = *this->creature_ptr;
     auto &monrace = this->m_ptr->get_monrace();
-    auto is_protected = creature.effects()->protection().is_protected();
+    auto is_protected = creature.is_protected_from_evil();
     is_protected &= monrace.kind_flags.has(MonsterKindType::EVIL);
     is_protected &= (randint0(100) + creature.level - this->rlev) > 50;
     if (!is_protected) {

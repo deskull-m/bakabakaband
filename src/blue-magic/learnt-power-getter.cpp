@@ -25,7 +25,6 @@
 #include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "util/enum-converter.h"
 #include "util/flag-group.h"
 #include "util/int-char-converter.h"
@@ -269,7 +268,7 @@ int calculate_blue_magic_failure_probability(CreatureEntity &creature, const mon
         chance = minfail;
     }
 
-    chance += creature.effects()->stun().get_magic_chance_penalty();
+    chance += creature.get_stun_magic_chance_penalty();
     if (chance > 95) {
         chance = 95;
     }

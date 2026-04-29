@@ -49,7 +49,6 @@
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
 #include "view/display-util.h"
@@ -189,7 +188,7 @@ static void decide_mind_chance(CreatureEntity &creature, cm_type *cm_ptr)
         cm_ptr->chance = cm_ptr->minfail;
     }
 
-    cm_ptr->chance += creature.effects()->stun().get_magic_chance_penalty();
+    cm_ptr->chance += creature.get_stun_magic_chance_penalty();
     if (cm_ptr->use_mind != MindKindType::KI) {
         return;
     }

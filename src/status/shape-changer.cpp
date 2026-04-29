@@ -23,7 +23,6 @@
 #include "status/base-status.h"
 #include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
 
@@ -32,8 +31,7 @@ void do_poly_wounds(CreatureEntity &creature)
     int16_t hit_p = (creature.maxhp - creature.hp);
     auto change = static_cast<TIME_EFFECT>(Dice::roll(creature.level, 5));
     auto nasty_effect = one_in_(5);
-    const auto &player_cut = creature.effects()->cut();
-    if (!player_cut.is_cut() && (hit_p == 0) && !nasty_effect) {
+    if (!creature.is_cut() && (hit_p == 0) && !nasty_effect) {
         return;
     }
 

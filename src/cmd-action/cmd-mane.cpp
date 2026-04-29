@@ -62,7 +62,6 @@
 #include "target/target-types.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
-#include "timed-effect/timed-effects.h"
 #include "util/enum-converter.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
@@ -293,7 +292,7 @@ static int get_mane_power(CreatureEntity &creature, int *sn, bool baigaesi)
                         chance = minfail;
                     }
 
-                    chance += creature.effects()->stun().get_magic_chance_penalty();
+                    chance += creature.get_stun_magic_chance_penalty();
                     if (chance > 95) {
                         chance = 95;
                     }
@@ -1239,7 +1238,7 @@ bool do_cmd_mane(CreatureEntity &creature, bool baigaesi)
         chance = minfail;
     }
 
-    chance += creature.effects()->stun().get_magic_chance_penalty();
+    chance += creature.get_stun_magic_chance_penalty();
     if (chance > 95) {
         chance = 95;
     }

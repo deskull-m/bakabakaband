@@ -54,7 +54,7 @@
 #include "target/grid-selector.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
+#include "term/term-color-types.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 #include "view/display-util.h"
@@ -652,7 +652,7 @@ static PERCENTAGE decide_element_chance(CreatureEntity &creature, mind_type spel
         chance = minfail;
     }
 
-    chance += creature.effects()->stun().get_magic_chance_penalty();
+    chance += creature.get_stun_magic_chance_penalty();
     if (heavy_armor(creature)) {
         chance += 5;
     }

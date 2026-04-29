@@ -48,7 +48,6 @@
 #include "system/item-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
@@ -407,7 +406,7 @@ bool cure_serious_wounds(CreatureEntity &creature, int pow)
         ident = true;
     }
 
-    if (bss.set_cut((creature.effects()->cut().current() / 2) - 50)) {
+    if (bss.set_cut((creature.get_remaining_cut() / 2) - 50)) {
         ident = true;
     }
 
