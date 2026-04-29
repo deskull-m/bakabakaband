@@ -213,9 +213,15 @@ Phase 2 で主要な `is_xxx()` 系は仮想化済みだが、以下はまだ自
   に委譲する形でデフォルト実装を提供
 - ✅ call site 263 箇所を `creature.has_resist_X()` 形式に一括移行
   (38 ファイル)
+- ✅ 装備集計系 10 種 (has_pass_wall / has_kill_wall / has_reflect /
+  has_two_handed_weapons / has_sh_fire / has_sh_elec / has_sh_cold /
+  has_down_saving / has_no_ac / has_easy2_weapon) を virtual 化し
+  call site 移行 (22 ファイル、約 50 箇所)
 - 🚧 残り: 自由関数本体の削除 or virtual 実装への完全移植。モンスター
   種族フラグ由来の耐性を返すよう MonsterProfile 経由での override
-  実装は後続。`has_lite()` など残る少数の自由関数も同様に移行予定。
+  実装は後続。既存フィールド値アクセサ (例: `has_free_act()` bool) と
+  自由関数 virtual 化 (例: `has_free_act()` BIT_FLAGS) の名称衝突を
+  整理する必要あり。
 
 ---
 
