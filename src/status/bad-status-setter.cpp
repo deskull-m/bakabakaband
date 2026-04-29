@@ -104,7 +104,7 @@ bool BadStatusSetter::set_blindness(const TIME_EFFECT tmp_v)
 
 bool BadStatusSetter::mod_blindness(const TIME_EFFECT tmp_v)
 {
-    return this->set_blindness(this->creature.effects()->blindness().current() + tmp_v);
+    return this->set_blindness(this->creature.get_timed_effect(CreatureTimedEffect::BLINDNESS) + tmp_v);
 }
 
 /*!
@@ -179,7 +179,7 @@ bool BadStatusSetter::set_confusion(const TIME_EFFECT tmp_v)
 
 bool BadStatusSetter::mod_confusion(const TIME_EFFECT tmp_v)
 {
-    return this->set_confusion(this->creature.effects()->confusion().current() + tmp_v);
+    return this->set_confusion(this->creature.get_timed_effect(CreatureTimedEffect::CONFUSION) + tmp_v);
 }
 
 /*!
@@ -276,7 +276,7 @@ bool BadStatusSetter::set_fear(const TIME_EFFECT tmp_v)
 
 bool BadStatusSetter::mod_fear(const TIME_EFFECT tmp_v)
 {
-    return this->set_fear(this->creature.effects()->fear().current() + tmp_v);
+    return this->set_fear(this->creature.get_timed_effect(CreatureTimedEffect::FEAR) + tmp_v);
 }
 
 /*!
@@ -330,7 +330,7 @@ bool BadStatusSetter::set_paralysis(const TIME_EFFECT tmp_v)
 
 bool BadStatusSetter::mod_paralysis(const TIME_EFFECT tmp_v)
 {
-    return this->set_paralysis(this->creature.effects()->paralysis().current() + tmp_v);
+    return this->set_paralysis(this->creature.get_timed_effect(CreatureTimedEffect::PARALYSIS) + tmp_v);
 }
 
 /*!
@@ -448,7 +448,7 @@ bool BadStatusSetter::set_deceleration(const TIME_EFFECT tmp_v, bool do_dec)
 
 bool BadStatusSetter::mod_deceleration(const TIME_EFFECT tmp_v, bool do_dec)
 {
-    return this->set_deceleration(this->creature.effects()->deceleration().current() + tmp_v, do_dec);
+    return this->set_deceleration(this->creature.get_timed_effect(CreatureTimedEffect::DECELERATION) + tmp_v, do_dec);
 }
 
 /*!
@@ -488,7 +488,7 @@ bool BadStatusSetter::set_stun(const TIME_EFFECT tmp_v)
 
 bool BadStatusSetter::mod_stun(const TIME_EFFECT tmp_v)
 {
-    return this->set_stun(this->creature.effects()->stun().current() + tmp_v);
+    return this->set_stun(this->creature.get_timed_effect(CreatureTimedEffect::STUN) + tmp_v);
 }
 
 /*!
