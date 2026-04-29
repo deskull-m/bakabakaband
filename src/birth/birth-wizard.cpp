@@ -34,7 +34,6 @@
 #include "player/player-status.h"
 #include "player/process-name.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
