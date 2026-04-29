@@ -443,6 +443,26 @@ bakabakaband 側と上流側でよくある構造的差異を以下のルール�
 | `is_hero(player_ptr)` 等の古い自由関数 | `creature.is_hero()` 等の仮想メソッド |
 | `take_hit(player_ptr, ...)` | `take_hit(creature, ...)` |
 | `mon_take_hit_mon(...)` | `MonsterDamageProcessor(creature, ...).mon_take_hit(...)` |
+| `has_resist_fire(creature)` 等の自由関数呼出 | `creature.has_resist_fire()` 等の virtual メンバ |
+| `has_immune_fire(creature)` / `has_vuln_fire(creature)` | `creature.has_immune_fire()` / `creature.has_vuln_fire()` |
+| `has_pass_wall(creature)` / `has_two_handed_weapons(creature)` 等の装備集計 | `creature.has_pass_wall()` / `creature.has_two_handed_weapons()` 等 |
+| `has_reflect(creature)` / `has_sh_fire(creature)` / `has_down_saving(creature)` 等 | `creature.has_reflect()` / `creature.has_sh_fire()` / `creature.has_down_saving()` 等 |
+| `creature.muta.has(X)` / `creature.cursed.has(X)` 等の構造体メンバ直接 | `creature.get_mutations().has(X)` / `creature.get_cursed_flags().has(X)` 等の virtual アクセサ |
+| `creature.race->X` / `(*creature.personality).X` / `(*creature.pclass_ref).X` | `creature.get_race_info()->X` / `(*creature.get_personality_info()).X` / `(*creature.get_class_info()).X` |
+| `creature.skill_sav` / `creature.skill_dis` 等の直接読み取り | `creature.get_skill_save()` / `creature.get_skill_disarm()` 等 |
+| `creature.see_infra` の直接読み取り | `creature.get_infravision()` |
+| `creature.telepathy` / `creature.esp_*` の直接読み取り | `creature.has_telepathy()` / `creature.has_esp_*()` (代入は直接フィールドのまま) |
+| `creature.see_inv` / `creature.can_swim` / `creature.levitation` の直接読み取り | `creature.can_see_invisible()` / `creature.has_can_swim()` / `creature.has_levitation()` |
+| `creature.free_act` / `creature.anti_magic` / `creature.anti_tele` 等の BIT_FLAGS 読み取り | `creature.has_free_act()` / `creature.has_anti_magic()` / `creature.has_anti_tele()` 等 |
+| `creature.regenerate` / `creature.hold_exp` / `creature.slow_digest` 等 | `creature.has_regen_flag()` / `creature.has_hold_exp()` / `creature.has_slow_digest_flag()` 等 (フィールド値読取り、`_flag` 等のサフィックス注意) |
+| `creature.lite` / `creature.warning` / `creature.impact` / `creature.earthquake` の読み取り | `creature.has_lite_flag()` / `creature.has_warning_flag()` / `creature.has_impact_flag()` / `creature.has_earthquake_flag()` (FLAG_CAUSE_* ビットマスクとして使う場合は直接フィールドのまま残置) |
+| `creature.see_nocto` / `creature.dec_mana` / `creature.easy_spell` 等 | `creature.has_see_nocto()` / `creature.has_dec_mana()` / `creature.has_easy_spell()` 等 |
+| `creature.special_attack & ATTACK_XXX` | `creature.has_special_attack(ATTACK_XXX)` (代入は直接フィールドのまま) |
+| `creature.special_defense & DEFENSE_XXX` | `creature.has_special_defense(DEFENSE_XXX)` |
+| `creature.effects()->stun().current()` 等の値読取り | `creature.get_timed_effect(CreatureTimedEffect::STUN)` 等 (HALLUCINATION/CUT/POISON も enum に追加済み) |
+| `creature.effects()->stun().reset()` の値クリア | `creature.set_timed_effect(CreatureTimedEffect::STUN, 0)` |
+| `creature.effects()->cut().is_cut()` / `effects()->poison().is_poisoned()` | `creature.is_cut()` / `creature.is_poisoned()` (Phase 2 系の virtual) |
+| `PlayerType::get_timed_effect()` / `set_timed_effect()` のオーバーライド | bakabakaband 側では基底クラスに分岐ロジック統一済みのため不要 (PlayerType オーバーライドは廃止) |
 
 **GCC 固有の注意**:
 上流は MSVC 前提のことが多く、`<cstdint>` 等のインクルード漏れがあれば追加する。
@@ -503,6 +523,44 @@ EOF
 5. **グローバル `p_ptr` の廃止**: bakabakaband では `extern PlayerType *p_ptr` が存在しない。
    `PlayerType::get_instance()` に置換する必要がある。
 
+6. **状態チェック自由関数の virtual メンバ化**: `has_resist_*(creature)` /
+   `has_immune_*(creature)` / `has_vuln_*(creature)` / `has_pass_wall(creature)` 等の
+   引数 1 個の状態チェック自由関数は bakabakaband では `creature.has_resist_X()` の
+   ような virtual メンバに変換済み。自由関数自体は player-status-flags.cpp に残存し
+   委譲に使われているため動作はするが、新規 call site は virtual メンバ形式で書くこと。
+   モンスター時は MonraceDefinition の resistance_flags / feature_flags / misc_flags /
+   brightness_flags 由来の値を返すため、プレイヤーと同じ呼出形でモンスター情報も取れる。
+
+7. **構造体メンバへの直接アクセスから virtual アクセサへ**:
+   - `creature.muta.has(X)` → `creature.get_mutations().has(X)`
+   - `creature.cursed.has(X)` → `creature.get_cursed_flags().has(X)`
+   - `creature.race->X` → `creature.get_race_info()->X`
+   - `(*creature.personality).X` → `(*creature.get_personality_info()).X`
+   - `(*creature.pclass_ref).X` → `(*creature.get_class_info()).X`
+
+   読み取り箇所は virtual アクセサ経由が標準。書き込み (`creature.muta.set(X)` 等) は
+   フィールド直接のままで OK。
+
+8. **スキル・赤外線視・テレパシー・特殊攻撃防御の読取りは virtual 経由**:
+   `creature.skill_sav` / `creature.see_infra` / `creature.telepathy` /
+   `creature.special_attack & FLAG` 等の読取りは
+   `creature.get_skill_save()` / `creature.get_infravision()` /
+   `creature.has_telepathy()` / `creature.has_special_attack(FLAG)` に変換済み。
+   書き込み (代入・ビットマスク更新) は直接フィールドのまま。
+
+9. **PlayerType::get_timed_effect() オーバーライドの廃止**: 上流では PlayerType が
+   この virtual を override して TimedEffects オブジェクト経由でアクセスしているが、
+   bakabakaband では基底クラス CreatureEntity::get_timed_effect() に分岐ロジック
+   (TimedEffects オブジェクト優先 / フォールバック map) を集約済みで、PlayerType
+   オーバーライドは削除されている。上流からこのオーバーライドを取り込もうとする
+   差分は無視するか基底クラス側で吸収すること。
+
+10. **HALLUCINATION/CUT/POISON が CreatureTimedEffect に追加済み**:
+    上流ではこれらは TimedEffects オブジェクト経由のみだが、bakabakaband では
+    `CreatureTimedEffect` enum に追加されており、`get/set_timed_effect()` 統一 API
+    でも扱える。マージ時は `effects()->cut().current()` 等の単純呼出は
+    `get_timed_effect(CreatureTimedEffect::CUT)` に置換可能。
+
 ### 差分吸収を Claude Code に委譲する場合のプロンプト雛形
 
 ```
@@ -516,6 +574,21 @@ EOF
 - current_floor_ptr → get_floor() / set_floor()
 - MonsterTimedEffect → CreatureTimedEffect
 - mimic_form → get_mimic_form() / set_mimic_form()
+- has_resist_X(creature) → creature.has_resist_X() (耐性/免疫/弱点系全 31 種)
+- has_pass_wall/has_two_handed_weapons/has_reflect/has_sh_*/has_down_saving 等の
+  装備集計系 → creature.has_X() (10 種)
+- creature.muta.has(X)/.cursed.has(X) → creature.get_mutations().has(X) /
+  get_cursed_flags().has(X) など (読取りのみ)
+- creature.race->X / (*creature.personality).X → creature.get_race_info()->X /
+  (*creature.get_personality_info()).X
+- creature.skill_X / creature.see_infra → creature.get_skill_X() /
+  creature.get_infravision()
+- creature.telepathy/esp_X/see_inv/can_swim/levitation 等の読取り →
+  creature.has_telepathy()/has_esp_X()/can_see_invisible()/has_can_swim()/
+  has_levitation() 等
+- creature.special_attack & FLAG → creature.has_special_attack(FLAG)
+- creature.effects()->X().current() → creature.get_timed_effect(...)
+- HALLUCINATION/CUT/POISON も CreatureTimedEffect 経由 OK
 
 作業後:
 1. 変更ファイルをコンパイルチェック
