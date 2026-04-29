@@ -670,6 +670,18 @@ public:
     virtual bool is_paralyzed() const;
 
     /*!
+     * @brief クリーチャーが切り傷状態かどうかを判定
+     * @return 切り傷を受けていればtrue
+     */
+    virtual bool is_cut() const;
+
+    /*!
+     * @brief クリーチャーが毒状態かどうかを判定
+     * @return 毒に侵されていればtrue
+     */
+    virtual bool is_poisoned() const;
+
+    /*!
      * @brief クリーチャーが加速しているかどうかを判定
      * @return 加速中ならtrue
      */

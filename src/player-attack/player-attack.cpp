@@ -387,7 +387,7 @@ static void apply_damage_bonus(CreatureEntity &creature, player_attack_type *pa_
         pa_ptr->attack_damage = 0;
     }
 
-    auto is_cut = creature.effects()->cut().is_cut();
+    auto is_cut = creature.is_cut();
     if ((pa_ptr->mode == HISSATSU_SEKIRYUKA) && !is_cut) {
         pa_ptr->attack_damage /= 2;
     }
