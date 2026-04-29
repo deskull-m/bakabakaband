@@ -217,11 +217,18 @@ Phase 2 で主要な `is_xxx()` 系は仮想化済みだが、以下はまだ自
   has_two_handed_weapons / has_sh_fire / has_sh_elec / has_sh_cold /
   has_down_saving / has_no_ac / has_easy2_weapon) を virtual 化し
   call site 移行 (22 ファイル、約 50 箇所)
-- 🚧 残り: 自由関数本体の削除 or virtual 実装への完全移植。モンスター
-  種族フラグ由来の耐性を返すよう MonsterProfile 経由での override
-  実装は後続。既存フィールド値アクセサ (例: `has_free_act()` bool) と
-  自由関数 virtual 化 (例: `has_free_act()` BIT_FLAGS) の名称衝突を
-  整理する必要あり。
+- ✅ モンスター側 override を実装: 耐性/免疫/弱点系 30 virtual に
+  `MonraceDefinition::resistance_flags` (RESIST_X / IMMUNE_X /
+  HURT_X / NO_FEAR / NO_CONF) 経路を追加。has_pass_wall /
+  has_kill_wall / has_can_swim / has_levitation に `feature_flags`
+  (PASS_WALL / KILL_WALL / CAN_SWIM / CAN_FLY) 経路、
+  has_reflect / has_regen_flag に `misc_flags` (REFLECTING /
+  REGENERATE) 経路を追加。これでモンスターから耐性・特殊能力の
+  問合せを呼ぶと種族フラグ由来の意味ある応答が返る。
+- 🚧 残り: 自由関数本体 (player-status-flags.cpp) の virtual メソッド
+  実装への完全移植。現状は virtual → 自由関数へ委譲する形だが、
+  構造的には重複。`common_cause_flags` など内部ヘルパの整理も
+  必要。工数大で効果は限定的のため優先度低。
 
 ---
 
@@ -273,8 +280,12 @@ Phase 2 で主要な `is_xxx()` 系は仮想化済みだが、以下はまだ自
   統一 API 経由に置換 (10 箇所超)
 - 🚧 残り: 残効果（HERO/BLESSED/INVULN 等の map 経由効果）も
   `TimedEffects` オブジェクトに移すか、`TimedEffects` を縮退させて
-  全て map 経由にするかの方針決定・実装。PlayerStun::get_rank() 等の
-  高機能 API を呼ぶ箇所は現状維持（プレイヤー固有機能のため）。
+  全て map 経由にするかの方針決定・実装。PlayerStun::get_rank() /
+  PlayerCut::get_accumulation() 等の高機能 API を呼ぶ箇所は
+  プレイヤー固有機能として残存 (17 箇所)。完全統合にはこれらを
+  static ユーティリティに分離してから map 値と組み合わせる再設計が
+  必要で、工数大。現状の「API 経路統一 + 個別高機能 API 残置」で
+  機能上問題ないため、優先度低。
 
 ---
 
