@@ -280,8 +280,12 @@ Phase 2 で主要な `is_xxx()` 系は仮想化済みだが、以下はまだ自
   統一 API 経由に置換 (10 箇所超)
 - 🚧 残り: 残効果（HERO/BLESSED/INVULN 等の map 経由効果）も
   `TimedEffects` オブジェクトに移すか、`TimedEffects` を縮退させて
-  全て map 経由にするかの方針決定・実装。PlayerStun::get_rank() 等の
-  高機能 API を呼ぶ箇所は現状維持（プレイヤー固有機能のため）。
+  全て map 経由にするかの方針決定・実装。PlayerStun::get_rank() /
+  PlayerCut::get_accumulation() 等の高機能 API を呼ぶ箇所は
+  プレイヤー固有機能として残存 (17 箇所)。完全統合にはこれらを
+  static ユーティリティに分離してから map 値と組み合わせる再設計が
+  必要で、工数大。現状の「API 経路統一 + 個別高機能 API 残置」で
+  機能上問題ないため、優先度低。
 
 ---
 
