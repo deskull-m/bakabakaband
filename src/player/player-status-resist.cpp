@@ -513,7 +513,7 @@ PERCENTAGE calc_void_damage_rate(CreatureEntity &creature, rate_calc_type_mode m
 {
     (void)mode; // unused
     PERCENTAGE per = 100;
-    if (has_pass_wall(creature)) {
+    if (creature.has_pass_wall()) {
         per = per * 3 / 2;
     } else if (has_anti_tele(creature) != 0) {
         per *= 400;

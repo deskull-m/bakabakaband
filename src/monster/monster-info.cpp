@@ -61,7 +61,7 @@ bool monster_can_cross_terrain(CreatureEntity &creature, FEAT_IDX feat, const Mo
         return true;
     }
     if (terrain.flags.has(TerrainCharacteristics::CAN_PASS)) {
-        if (monrace.feature_flags.has(MonsterFeatureType::PASS_WALL) && (!(mode & CEM_RIDING) || has_pass_wall(creature))) {
+        if (monrace.feature_flags.has(MonsterFeatureType::PASS_WALL) && (!(mode & CEM_RIDING) || creature.has_pass_wall())) {
             return true;
         }
     }

@@ -382,12 +382,12 @@ void process_player_hp_mp(CreatureEntity &creature)
         auto should_damage = !creature.is_invulnerable();
         should_damage &= creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM) == 0;
         should_damage &= creature.get_timed_effect(CreatureTimedEffect::TIM_PASS_WALL) == 0;
-        should_damage &= (creature.hp > (creature.level / 5)) || !has_pass_wall(creature);
+        should_damage &= (creature.hp > (creature.level / 5)) || !creature.has_pass_wall();
         if (should_damage) {
             concptr dam_desc;
             cave_no_regen = true;
 
-            if (has_pass_wall(creature)) {
+            if (creature.has_pass_wall()) {
                 msg_print(_("体の分子が分解した気がする！", "Your molecules feel disrupted!"));
                 dam_desc = _("密度", "density");
             } else {

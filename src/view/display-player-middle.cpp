@@ -56,7 +56,7 @@ static void display_player_melee_bonus(CreatureEntity &creature, int hand, int h
     const auto buf = format("(%+d,%+d)", (int)show_tohit, (int)show_todam);
     if (!has_melee_weapon(creature, INVEN_MAIN_HAND) && !has_melee_weapon(creature, INVEN_SUB_HAND)) {
         display_player_one_line(ENTRY_BARE_HAND, buf, TERM_L_BLUE);
-    } else if (has_two_handed_weapons(creature)) {
+    } else if (creature.has_two_handed_weapons()) {
         display_player_one_line(ENTRY_TWO_HANDS, buf, TERM_L_BLUE);
     } else {
         display_player_one_line(hand_entry, buf, TERM_L_BLUE);

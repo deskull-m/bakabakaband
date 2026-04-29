@@ -70,7 +70,7 @@ bool EffectPlayerType::is_monster() const
  */
 static bool process_bolt_reflection(CreatureEntity &creature, EffectPlayerType *ep_ptr, project_func project)
 {
-    auto can_reflect = (has_reflect(creature)) != 0;
+    auto can_reflect = (creature.has_reflect()) != 0;
     can_reflect &= any_bits(ep_ptr->flag, PROJECT_REFLECTABLE);
     can_reflect &= !one_in_(10);
     if (!can_reflect) {

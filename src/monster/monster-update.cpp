@@ -792,7 +792,7 @@ void update_smart_learn(CreatureEntity &creature, MONSTER_IDX m_idx, int what)
 
         break;
     case DRS_REFLECT:
-        if (has_reflect(creature)) {
+        if (creature.has_reflect()) {
             monster.get_monster_profile().smart.set(MonsterSmartLearnType::IMM_REFLECT);
         }
 

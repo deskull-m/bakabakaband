@@ -92,7 +92,7 @@ static bool process_wall(CreatureEntity &creature, turn_flags *turn_flags_ptr, c
     }
 
     turn_flags_ptr->do_move = true;
-    if ((monrace.feature_flags.has(Mft::PASS_WALL)) && (!turn_flags_ptr->is_riding_mon || has_pass_wall(creature)) && terrain.flags.has(Tc::CAN_PASS)) {
+    if ((monrace.feature_flags.has(Mft::PASS_WALL)) && (!turn_flags_ptr->is_riding_mon || creature.has_pass_wall()) && terrain.flags.has(Tc::CAN_PASS)) {
         turn_flags_ptr->did_pass_wall = true;
     }
 

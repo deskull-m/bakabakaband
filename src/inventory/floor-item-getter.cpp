@@ -243,7 +243,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
     fis.e1 = INVEN_MAIN_HAND;
     fis.e2 = INVEN_TOTAL - 1;
     test_equipment_floor(creature, &fis, item_tester);
-    if (has_two_handed_weapons(creature) && !(fis.mode & IGNORE_BOTHHAND_SLOT)) {
+    if (creature.has_two_handed_weapons() && !(fis.mode & IGNORE_BOTHHAND_SLOT)) {
         fis.max_equip++;
     }
 
@@ -255,7 +255,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
         fis.e2--;
     }
 
-    if (fis.equip && has_two_handed_weapons(creature) && !(fis.mode & IGNORE_BOTHHAND_SLOT)) {
+    if (fis.equip && creature.has_two_handed_weapons() && !(fis.mode & IGNORE_BOTHHAND_SLOT)) {
         if (can_attack_with_main_hand(creature)) {
             if (fis.e2 < INVEN_SUB_HAND) {
                 fis.e2 = INVEN_SUB_HAND;
