@@ -417,6 +417,16 @@ bool CreatureEntity::is_paralyzed() const
     return this->get_timed_effect(CreatureTimedEffect::PARALYSIS) > 0;
 }
 
+bool CreatureEntity::is_cut() const
+{
+    return this->get_timed_effect(CreatureTimedEffect::CUT) > 0;
+}
+
+bool CreatureEntity::is_poisoned() const
+{
+    return this->get_timed_effect(CreatureTimedEffect::POISON) > 0;
+}
+
 bool CreatureEntity::is_blessed() const
 {
     if (this->get_timed_effect(CreatureTimedEffect::BLESSED) > 0) {

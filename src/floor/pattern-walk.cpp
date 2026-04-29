@@ -110,7 +110,7 @@ bool pattern_effect(CreatureEntity &creature)
         return false;
     }
 
-    const auto is_cut = creature.effects()->cut().is_cut();
+    const auto is_cut = creature.is_cut();
     if ((CreatureRace(&creature).equals(PlayerRaceType::AMBERITE)) && is_cut && one_in_(10)) {
         wreck_the_pattern(creature);
     }
