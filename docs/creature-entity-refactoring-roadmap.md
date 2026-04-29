@@ -263,9 +263,18 @@ Phase 2 で主要な `is_xxx()` 系は仮想化済みだが、以下はまだ自
 - ✅ 基底クラス `CreatureEntity::get_timed_effect` / `set_timed_effect` に
   TimedEffects オブジェクト優先の分岐ロジックを集約。`PlayerType` 側の
   オーバーライドを廃止し、プレイヤー・モンスターで API 経路を統一
+- ✅ `CreatureTimedEffect` enum に `HALLUCINATION` / `CUT` / `POISON`
+  を追加し、これまで TimedEffects オブジェクト経由でのみアクセス
+  できた効果も `get/set_timed_effect()` 統一 API からアクセス可能に
+- ✅ `is_cut()` / `is_poisoned()` を virtual メソッド化 (既存
+  `is_blind()` / `is_paralyzed()` 等と同等のデフォルト実装)
+- ✅ `bad-status-setter.cpp` / `buff-setter.cpp` / `cmd-inn.cpp`
+  の単純な `effects()->X().current()` / `reset()` / `is_X()` 呼出を
+  統一 API 経由に置換 (10 箇所超)
 - 🚧 残り: 残効果（HERO/BLESSED/INVULN 等の map 経由効果）も
   `TimedEffects` オブジェクトに移すか、`TimedEffects` を縮退させて
-  全て map 経由にするかの方針決定・実装
+  全て map 経由にするかの方針決定・実装。PlayerStun::get_rank() 等の
+  高機能 API を呼ぶ箇所は現状維持（プレイヤー固有機能のため）。
 
 ---
 
