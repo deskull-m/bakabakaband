@@ -904,6 +904,8 @@ public:
     {
         return this->telepathy != 0;
     }
+    // 種別 ESP 群: プレイヤーは装備由来 (esp_* フィールドを player-status.cpp が更新)。
+    // モンスター側に対応概念なしのため、フィールド初期値 0 で常に false を返す。
     virtual bool has_esp_animal() const
     {
         return this->esp_animal != 0;
