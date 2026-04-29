@@ -971,18 +971,16 @@ public:
     }
     /*!
      * @brief 水中遊泳の可否
+     * @details プレイヤーは装備由来 (can_swim フィールド)、モンスターは
+     *          種族 feature_flags の CAN_SWIM から判定。
      */
-    virtual bool has_can_swim() const
-    {
-        return this->can_swim;
-    }
+    virtual bool has_can_swim() const;
     /*!
      * @brief 浮遊能力の有無
+     * @details プレイヤーは装備由来 (levitation フィールド)、モンスターは
+     *          種族 feature_flags の CAN_FLY から判定。
      */
-    virtual bool has_levitation() const
-    {
-        return this->levitation != 0;
-    }
+    virtual bool has_levitation() const;
     /*!
      * @brief 麻痺耐性の有無
      */
@@ -1006,11 +1004,9 @@ public:
     }
     /*!
      * @brief 自動再生能力の有無（フィールド値）
+     * @details プレイヤーは装備由来、モンスターは MonsterMiscType::REGENERATE。
      */
-    virtual bool has_regen_flag() const
-    {
-        return this->regenerate != 0;
-    }
+    virtual bool has_regen_flag() const;
     /*!
      * @brief 経験値吸収耐性の有無
      */

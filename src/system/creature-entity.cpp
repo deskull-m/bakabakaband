@@ -1354,14 +1354,100 @@ BIT_FLAGS CreatureEntity::has_immune_lite()
     }
     return ::has_immune_lite(*this);
 }
-bool CreatureEntity::has_pass_wall() { return ::has_pass_wall(*this); }
-bool CreatureEntity::has_kill_wall() { return ::has_kill_wall(*this); }
-BIT_FLAGS CreatureEntity::has_reflect() { return ::has_reflect(*this); }
-bool CreatureEntity::has_two_handed_weapons() { return ::has_two_handed_weapons(*this); }
-BIT_FLAGS CreatureEntity::has_sh_fire() { return ::has_sh_fire(*this); }
-BIT_FLAGS CreatureEntity::has_sh_elec() { return ::has_sh_elec(*this); }
-BIT_FLAGS CreatureEntity::has_sh_cold() { return ::has_sh_cold(*this); }
-BIT_FLAGS CreatureEntity::has_down_saving() { return ::has_down_saving(*this); }
-BIT_FLAGS CreatureEntity::has_no_ac() { return ::has_no_ac(*this); }
-BIT_FLAGS CreatureEntity::has_easy2_weapon() { return ::has_easy2_weapon(*this); }
+
+// 装備集計系 virtual メソッドにもモンスター経路を実装。
+bool CreatureEntity::has_pass_wall()
+{
+    if (this->has_monster_profile()) {
+        return this->get_monrace().feature_flags.has(MonsterFeatureType::PASS_WALL);
+    }
+    return ::has_pass_wall(*this);
+}
+bool CreatureEntity::has_kill_wall()
+{
+    if (this->has_monster_profile()) {
+        return this->get_monrace().feature_flags.has(MonsterFeatureType::KILL_WALL);
+    }
+    return ::has_kill_wall(*this);
+}
+BIT_FLAGS CreatureEntity::has_reflect()
+{
+    if (this->has_monster_profile()) {
+        return this->get_monrace().misc_flags.has(MonsterMiscType::REFLECTING) ? static_cast<BIT_FLAGS>(FLAG_CAUSE_RACE) : 0U;
+    }
+    return ::has_reflect(*this);
+}
+bool CreatureEntity::has_two_handed_weapons()
+{
+    if (this->has_monster_profile()) {
+        return false;
+    }
+    return ::has_two_handed_weapons(*this);
+}
+BIT_FLAGS CreatureEntity::has_sh_fire()
+{
+    if (this->has_monster_profile()) {
+        return 0; // モンスターの炎オーラは別系統 (AuraType) で管理
+    }
+    return ::has_sh_fire(*this);
+}
+BIT_FLAGS CreatureEntity::has_sh_elec()
+{
+    if (this->has_monster_profile()) {
+        return 0;
+    }
+    return ::has_sh_elec(*this);
+}
+BIT_FLAGS CreatureEntity::has_sh_cold()
+{
+    if (this->has_monster_profile()) {
+        return 0;
+    }
+    return ::has_sh_cold(*this);
+}
+BIT_FLAGS CreatureEntity::has_down_saving()
+{
+    if (this->has_monster_profile()) {
+        return 0;
+    }
+    return ::has_down_saving(*this);
+}
+BIT_FLAGS CreatureEntity::has_no_ac()
+{
+    if (this->has_monster_profile()) {
+        return 0;
+    }
+    return ::has_no_ac(*this);
+}
+BIT_FLAGS CreatureEntity::has_easy2_weapon()
+{
+    if (this->has_monster_profile()) {
+        return 0;
+    }
+    return ::has_easy2_weapon(*this);
+}
+
+bool CreatureEntity::has_can_swim() const
+{
+    if (this->has_monster_profile()) {
+        return this->get_monrace().feature_flags.has(MonsterFeatureType::CAN_SWIM);
+    }
+    return this->can_swim;
+}
+
+bool CreatureEntity::has_levitation() const
+{
+    if (this->has_monster_profile()) {
+        return this->get_monrace().feature_flags.has(MonsterFeatureType::CAN_FLY);
+    }
+    return this->levitation != 0;
+}
+
+bool CreatureEntity::has_regen_flag() const
+{
+    if (this->has_monster_profile()) {
+        return this->get_monrace().misc_flags.has(MonsterMiscType::REGENERATE);
+    }
+    return this->regenerate != 0;
+}
 // clang-format on
