@@ -5,6 +5,7 @@
 #include "inventory/inventory-slot-types.h"
 #include "market/arena-entry.h"
 #include "mind/mind-elementalist.h"
+#include "monster-race/race-brightness-flags.h"
 #include "monster-race/race-feature-flags.h"
 #include "monster-race/race-flags-resistance.h"
 #include "monster-race/race-kind-flags.h"
@@ -1449,5 +1450,23 @@ bool CreatureEntity::has_regen_flag() const
         return this->get_monrace().misc_flags.has(MonsterMiscType::REGENERATE);
     }
     return this->regenerate != 0;
+}
+
+bool CreatureEntity::has_lite_flag() const
+{
+    if (this->has_monster_profile()) {
+        const auto &flags = this->get_monrace().brightness_flags;
+        return flags.has_any_of({ MonsterBrightnessType::HAS_LITE_1, MonsterBrightnessType::HAS_LITE_2,
+            MonsterBrightnessType::SELF_LITE_1, MonsterBrightnessType::SELF_LITE_2 });
+    }
+    return this->lite != 0;
+}
+
+bool CreatureEntity::has_anti_tele() const
+{
+    if (this->has_monster_profile()) {
+        return this->get_monrace().resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT);
+    }
+    return this->anti_tele != 0;
 }
 // clang-format on

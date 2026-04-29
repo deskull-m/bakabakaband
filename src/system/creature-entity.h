@@ -897,8 +897,8 @@ public:
 
     /*!
      * @brief 汎用テレパシーの有無を返す
-     * @details プレイヤーは装備由来、モンスターは種族フラグ由来（将来）。
-     *          デフォルト実装は BIT_FLAGS フィールドを参照する。
+     * @details プレイヤーは装備由来 (telepathy フィールドを player-status.cpp が更新)。
+     *          モンスター側は対応概念なし（モンスターの感知は別経路）のため常に false。
      */
     virtual bool has_telepathy() const
     {
@@ -963,7 +963,8 @@ public:
 
     /*!
      * @brief 透明視認の可否
-     * @details プレイヤーは装備由来、モンスターは種族フラグ由来（将来）。
+     * @details プレイヤーは装備由来 (see_inv フィールド)。モンスター側は
+     *          対応フラグなし（透明モンスターの認知は AI 側で別判定）。
      */
     virtual bool can_see_invisible() const
     {
@@ -983,6 +984,9 @@ public:
     virtual bool has_levitation() const;
     /*!
      * @brief 麻痺耐性の有無
+     * @details プレイヤーは装備由来。モンスターは状態耐性が個別フラグ
+     *          (NO_SLEEP / NO_STUN) で表現されるためこの統一値での
+     *          単純な対応は持たず、現状 false 相当を返す。
      */
     virtual bool has_free_act() const
     {
@@ -990,6 +994,7 @@ public:
     }
     /*!
      * @brief 反魔法能力の有無
+     * @details プレイヤーは装備由来。モンスター側に対応フラグなし。
      */
     virtual bool has_anti_magic() const
     {
@@ -997,11 +1002,9 @@ public:
     }
     /*!
      * @brief テレポート阻害の有無
+     * @details プレイヤーは装備由来、モンスターは MonsterResistanceType::RESIST_TELEPORT。
      */
-    virtual bool has_anti_tele() const
-    {
-        return this->anti_tele != 0;
-    }
+    virtual bool has_anti_tele() const;
     /*!
      * @brief 自動再生能力の有無（フィールド値）
      * @details プレイヤーは装備由来、モンスターは MonsterMiscType::REGENERATE。
@@ -1046,11 +1049,10 @@ public:
     }
     /*!
      * @brief 光源能力の有無 (フィールド値)
+     * @details プレイヤーは装備由来 (lite フィールド)、モンスターは
+     *          MonsterBrightnessType::HAS_LITE_1/2 / SELF_LITE_1/2 から判定。
      */
-    virtual bool has_lite_flag() const
-    {
-        return this->lite != 0;
-    }
+    virtual bool has_lite_flag() const;
     /*!
      * @brief 警告能力の有無
      */
