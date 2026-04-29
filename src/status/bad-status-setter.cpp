@@ -225,7 +225,7 @@ bool BadStatusSetter::set_poison(const TIME_EFFECT tmp_v)
 
 bool BadStatusSetter::mod_poison(const TIME_EFFECT tmp_v)
 {
-    return this->set_poison(this->creature.effects()->poison().current() + tmp_v);
+    return this->set_poison(this->creature.get_timed_effect(CreatureTimedEffect::POISON) + tmp_v);
 }
 
 /*!
@@ -397,7 +397,7 @@ bool BadStatusSetter::hallucination(const TIME_EFFECT tmp_v)
 
 bool BadStatusSetter::mod_hallucination(const TIME_EFFECT tmp_v)
 {
-    return this->hallucination(this->creature.effects()->hallucination().current() + tmp_v);
+    return this->hallucination(this->creature.get_timed_effect(CreatureTimedEffect::HALLUCINATION) + tmp_v);
 }
 
 /*!
@@ -528,7 +528,7 @@ bool BadStatusSetter::set_cut(const TIME_EFFECT tmp_v)
 
 bool BadStatusSetter::mod_cut(const TIME_EFFECT tmp_v)
 {
-    return this->set_cut(this->creature.effects()->cut().current() + tmp_v);
+    return this->set_cut(this->creature.get_timed_effect(CreatureTimedEffect::CUT) + tmp_v);
 }
 
 bool BadStatusSetter::process_stun_effect(const short v)

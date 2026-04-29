@@ -19,6 +19,9 @@ enum class CreatureTimedEffect {
     // --- プレイヤー専用：状態異常系 ---
     BLINDNESS, /*!< 盲目 / Blindness */
     PARALYSIS, /*!< 麻痺 / Paralysis */
+    HALLUCINATION, /*!< 幻覚 / Hallucination */
+    CUT, /*!< 切り傷 / Cut */
+    POISON, /*!< 毒 / Poison */
 
     // --- プレイヤー専用：戦闘バフ系 ---
     HERO, /*!< 士気高揚 / Heroism */
