@@ -167,7 +167,7 @@ bool set_acceleration(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 
 bool mod_acceleration(CreatureEntity &creature, const TIME_EFFECT v, const bool do_dec)
 {
-    return set_acceleration(creature, creature.effects()->acceleration().current() + v, do_dec);
+    return set_acceleration(creature, creature.get_timed_effect(CreatureTimedEffect::ACCELERATION) + v, do_dec);
 }
 
 /*!
