@@ -34,7 +34,6 @@
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
@@ -272,9 +271,8 @@ static void hissatsu_lightning_eagle(CreatureEntity &creature, samurai_slaying_t
  */
 static void hissatsu_bloody_maelstroem(CreatureEntity &creature, samurai_slaying_type *samurai_slaying_ptr)
 {
-    const auto &player_cut = creature.effects()->cut();
-    if ((samurai_slaying_ptr->mode == HISSATSU_SEKIRYUKA) && player_cut.is_cut() && samurai_slaying_ptr->m_ptr->has_living_flag()) {
-        auto tmp = std::min<short>(100, std::max<short>(10, player_cut.current() / 10));
+    if ((samurai_slaying_ptr->mode == HISSATSU_SEKIRYUKA) && creature.is_cut() && samurai_slaying_ptr->m_ptr->has_living_flag()) {
+        auto tmp = std::min<short>(100, std::max<short>(10, creature.get_remaining_cut() / 10));
         if (samurai_slaying_ptr->mult < tmp) {
             samurai_slaying_ptr->mult = tmp;
         }
@@ -378,13 +376,12 @@ bool choose_samurai_stance(CreatureEntity &creature)
         return false;
     }
 
-    const auto effects = creature.effects();
-    if (effects->stun().is_stunned()) {
+    if (creature.is_stunned()) {
         msg_print(_("意識がはっきりとしない。", "You are not clear-headed"));
         return false;
     }
 
-    if (effects->fear().is_fearful()) {
+    if (creature.is_fearful()) {
         msg_print(_("体が震えて構えられない！", "You are trembling with fear!"));
         return false;
     }

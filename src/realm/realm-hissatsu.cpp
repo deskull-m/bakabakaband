@@ -48,7 +48,6 @@
 #include "target/projection-path-calculator.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -417,7 +416,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 19:
         if (cast) {
-            const auto current_cut = creature.effects()->cut().current();
+            const auto current_cut = creature.get_remaining_cut();
             short new_cut = current_cut < 300 ? current_cut + 300 : current_cut * 2;
             (void)BadStatusSetter(creature).set_cut(new_cut);
             const auto &floor = *creature.get_floor();

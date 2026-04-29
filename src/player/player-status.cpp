@@ -103,7 +103,6 @@
 #include "system/services/dungeon-service.h"
 #include "system/terrain/terrain-definition.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
@@ -2064,7 +2063,7 @@ static short calc_to_damage(CreatureEntity &creature, INVENTORY_IDX slot, bool i
         damage += 3 + (creature.level / 5);
     }
 
-    damage -= creature.effects()->stun().get_damage_penalty();
+    damage -= creature.get_stun_damage_penalty();
     CreatureClass pc(creature);
     const auto tval = o_ptr->bi_key.tval();
     if (pc.equals(PlayerClassType::PRIEST) && (o_ptr->get_flags().has_not(TR_BLESSED)) && ((tval == ItemKindType::SWORD) || (tval == ItemKindType::POLEARM))) {
@@ -2221,7 +2220,7 @@ static short calc_to_hit(CreatureEntity &creature, INVENTORY_IDX slot, bool is_r
         hit += 12;
     }
 
-    hit -= creature.effects()->stun().get_damage_penalty();
+    hit -= creature.get_stun_damage_penalty();
     player_hand calc_hand = PLAYER_HAND_OTHER;
     if (slot == INVEN_MAIN_HAND) {
         calc_hand = PLAYER_HAND_MAIN;
@@ -2456,7 +2455,7 @@ static int16_t calc_to_hit_bow(CreatureEntity &creature, bool is_real_value)
         }
     }
 
-    pow -= creature.effects()->stun().get_damage_penalty();
+    pow -= creature.get_stun_damage_penalty();
     if (creature.is_blessed()) {
         pow += 10;
     }
@@ -2539,7 +2538,7 @@ static int16_t calc_to_damage_misc(CreatureEntity &creature)
         to_dam += 3 + (creature.level / 5);
     }
 
-    to_dam -= creature.effects()->stun().get_damage_penalty();
+    to_dam -= creature.get_stun_damage_penalty();
     to_dam += ((int)(adj_str_td[creature.stat_index[A_STR]]) - 128);
     return to_dam;
 }
@@ -2577,7 +2576,7 @@ static int16_t calc_to_hit_misc(CreatureEntity &creature)
         to_hit += 12;
     }
 
-    to_hit -= creature.effects()->stun().get_damage_penalty();
+    to_hit -= creature.get_stun_damage_penalty();
     to_hit += ((int)(adj_dex_th[creature.stat_index[A_DEX]]) - 128);
     to_hit += ((int)(adj_str_th[creature.stat_index[A_STR]]) - 128);
 

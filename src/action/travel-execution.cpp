@@ -16,7 +16,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/terrain/terrain-definition.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 #include <queue>
 #include <vector>
@@ -129,8 +128,7 @@ Direction decide_travel_step_dir(CreatureEntity &creature, const Direction &prev
         return Direction::none();
     }
 
-    const auto &blindness = creature.effects()->blindness();
-    if (blindness.is_blind() || no_lite(creature)) {
+    if (creature.is_blind() || no_lite(creature)) {
         msg_print(_("目が見えない！", "You cannot see!"));
         return Direction::none();
     }

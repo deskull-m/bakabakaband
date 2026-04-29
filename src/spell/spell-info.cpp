@@ -15,7 +15,6 @@
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
@@ -190,7 +189,7 @@ PERCENTAGE spell_chance(CreatureEntity &creature, SPELL_IDX spell_id, RealmType 
         chance = minfail;
     }
 
-    chance += creature.effects()->stun().get_magic_chance_penalty();
+    chance += creature.get_stun_magic_chance_penalty();
     if (chance > 95) {
         chance = 95;
     }

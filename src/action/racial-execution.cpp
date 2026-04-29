@@ -17,7 +17,6 @@
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
 /*!
@@ -56,9 +55,8 @@ PERCENTAGE racial_chance(CreatureEntity &creature, rpi_type *rpi_ptr)
         return 100;
     }
 
-    const auto &player_stun = creature.effects()->stun();
-    if (player_stun.is_stunned()) {
-        difficulty += player_stun.current();
+    if (creature.is_stunned()) {
+        difficulty += creature.get_remaining_stun();
     } else if (creature.level > rpi_ptr->min_level) {
         PERCENTAGE lev_adj = (PERCENTAGE)((creature.level - rpi_ptr->min_level) / 3);
         if (lev_adj > 10) {
@@ -98,9 +96,8 @@ static void adjust_racial_power_difficulty(CreatureEntity &creature, rpi_type *r
         return;
     }
 
-    const auto &player_stun = creature.effects()->stun();
-    if (player_stun.is_stunned()) {
-        *difficulty += player_stun.current();
+    if (creature.is_stunned()) {
+        *difficulty += creature.get_remaining_stun();
     } else if (creature.level > rpi_ptr->min_level) {
         int lev_adj = ((creature.level - rpi_ptr->min_level) / 3);
         if (lev_adj > 10) {
