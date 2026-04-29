@@ -474,6 +474,12 @@ short CreatureEntity::get_timed_effect(CreatureTimedEffect effect) const
             return eff.paralysis().current();
         case CreatureTimedEffect::BLINDNESS:
             return eff.blindness().current();
+        case CreatureTimedEffect::HALLUCINATION:
+            return eff.hallucination().current();
+        case CreatureTimedEffect::CUT:
+            return eff.cut().current();
+        case CreatureTimedEffect::POISON:
+            return eff.poison().current();
         default:
             break;
         }
@@ -508,6 +514,15 @@ void CreatureEntity::set_timed_effect(CreatureTimedEffect effect, short value)
             return;
         case CreatureTimedEffect::BLINDNESS:
             eff.blindness().set(value);
+            return;
+        case CreatureTimedEffect::HALLUCINATION:
+            eff.hallucination().set(value);
+            return;
+        case CreatureTimedEffect::CUT:
+            eff.cut().set(value);
+            return;
+        case CreatureTimedEffect::POISON:
+            eff.poison().set(value);
             return;
         default:
             break;
