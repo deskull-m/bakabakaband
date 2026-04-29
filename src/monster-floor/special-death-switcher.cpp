@@ -100,7 +100,7 @@ static tl::optional<bool> final_summon(CreatureEntity &creature, MonsterDeath *m
         }
 
         BIT_FLAGS mode = dead_mode(md_ptr);
-        const auto summon_src = md_ptr->m_ptr->is_pet() ? -1 : md_ptr->m_idx;
+        const short summon_src = md_ptr->m_ptr->is_pet() ? -1 : md_ptr->m_idx;
         if (summon_named_creature(creature, summon_src, m_pos.y, m_pos.x, summon_data.id, mode) && player_can_see_bold(creature, m_pos.y, m_pos.x)) {
             notice = true;
         }

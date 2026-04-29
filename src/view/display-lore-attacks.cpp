@@ -157,10 +157,10 @@ void display_monster_melee_summary_line(lore_type *lore_ptr)
     }
 
     // lore_ptr の作業領域(p/q/色)を壊さないよう退避
-    const char *saved_p = lore_ptr->p;
-    const char *saved_q = lore_ptr->q;
-    const int saved_pc = lore_ptr->pc;
-    const int saved_qc = lore_ptr->qc;
+    const auto *saved_p = lore_ptr->p;
+    const auto *saved_q = lore_ptr->q;
+    const auto saved_pc = lore_ptr->pc;
+    const auto saved_qc = lore_ptr->qc;
 
     const int max_attack_numbers = 4;
     bool any = false;

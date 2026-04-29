@@ -86,10 +86,10 @@ static std::string prepare_label_string_floor(const FloorType &floor, const std:
 COMMAND_CODE show_floor_items(CreatureEntity &creature, int target_item, POSITION y, POSITION x, TERM_LEN *min_width, const ItemTester &item_tester)
 {
     const Pos2D pos(y, x);
-    constexpr auto max_items = 23; //!< @todo 1マスに落ちているアイテムの最大数. ヘッダに移したい.
+    constexpr size_t max_items = 23; //!< @todo 1マスに落ちているアイテムの最大数. ヘッダに移したい.
     COMMAND_CODE m;
     int j, l;
-    COMMAND_CODE out_index[max_items]{};
+    short out_index[max_items]{};
     TERM_COLOR out_color[max_items]{};
     std::array<std::string, max_items> descriptions{};
     COMMAND_CODE target_item_label = 0;
@@ -102,7 +102,7 @@ COMMAND_CODE show_floor_items(CreatureEntity &creature, int target_item, POSITIO
     for (size_t i = 0; (i < floor_item_index.size()) && (i < max_items); i++) {
         const auto &item = *floor.o_list[floor_item_index[i]];
         const auto item_name = describe_flavor(creature, item, 0);
-        out_index[k] = i;
+        out_index[k] = static_cast<short>(i);
         const auto tval = item.bi_key.tval();
         out_color[k] = tval_to_attr[enum2i(tval) & 0x7F];
         descriptions[k] = item_name;
