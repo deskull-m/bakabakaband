@@ -22,6 +22,7 @@
 #include "player-info/race-types.h"
 #include "player-info/sniper-data-type.h"
 #include "player-info/spell-hex-data-type.h"
+#include "player/player-personality.h"
 #include "player/player-status-flags.h"
 #include "player/race-info-table.h"
 #include "realm/realm-song-numbers.h"
@@ -183,6 +184,16 @@ const player_sex_type &CreatureEntity::get_sex_info() const
     default:
         return sex_info[SEX_ASEXUAL];
     }
+}
+
+const player_personality *CreatureEntity::get_personality_info() const
+{
+    if (this->personality) {
+        return this->personality;
+    }
+
+    static const player_personality null_personality{};
+    return &null_personality;
 }
 
 bool CreatureEntity::has_living_flag(bool is_appearance) const
@@ -1137,6 +1148,7 @@ void CreatureEntity::init_monster_profile()
     // 対応する MonsterProfile 側の設定値からここに反映させる。
     this->prace = PlayerRaceType::NONE;
     this->pclass = PlayerClassType::NONE;
+    this->ppersonality = PERSONALITY_NONE;
     this->realm1 = RealmType::NONE;
     this->realm2 = RealmType::NONE;
     this->element_realm = ElementRealmType::NONE;
