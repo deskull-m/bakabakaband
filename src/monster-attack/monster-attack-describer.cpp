@@ -13,7 +13,6 @@
 #include "system/angband.h"
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
-#include "system/player-type-definition.h"
 
 static void show_jaian_song(MonsterAttackPlayer *monap_ptr)
 {

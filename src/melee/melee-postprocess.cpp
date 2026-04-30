@@ -37,7 +37,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/bit-flags-calculator.h"
