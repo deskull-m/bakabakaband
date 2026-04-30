@@ -1,6 +1,7 @@
 #pragma once
 
 enum player_personality_type {
+    PERSONALITY_NONE = -1,
     PERSONALITY_ORDINARY = 0,
     PERSONALITY_MIGHTY = 1,
     PERSONALITY_SHREWD = 2,

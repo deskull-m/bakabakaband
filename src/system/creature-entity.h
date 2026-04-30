@@ -1180,10 +1180,8 @@ public:
     /*!
      * @brief 性格情報ポインタ
      */
-    virtual const player_personality *get_personality_info() const
-    {
-        return this->personality;
-    }
+    virtual const player_personality *get_personality_info() const;
+
     /*!
      * @brief 職業情報ポインタ
      */
