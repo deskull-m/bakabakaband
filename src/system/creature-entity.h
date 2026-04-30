@@ -25,6 +25,7 @@
 #include <string>
 #include <string_view>
 #include <tl/optional.hpp>
+#include <utility>
 #include <vector>
 
 constexpr int MONSTER_MAXHP = 10000000; //!< モンスターの最大HP
@@ -598,6 +599,21 @@ public:
         return this->get_timed_effect(CreatureTimedEffect::OPPOSE_POIS);
     }
 
+    short get_remaining_cut() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::CUT);
+    }
+
+    short get_remaining_poison() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::POISON);
+    }
+
+    short get_remaining_blindness() const
+    {
+        return this->get_timed_effect(CreatureTimedEffect::BLINDNESS);
+    }
+
     tl::optional<std::string> get_pain_message(std::string_view monster_name, int damage) const;
 
     /*!
@@ -680,6 +696,15 @@ public:
      * @return 毒に侵されていればtrue
      */
     virtual bool is_poisoned() const;
+
+    virtual bool is_protected_from_evil() const;
+
+    virtual int get_stun_magic_chance_penalty() const;
+    virtual int get_stun_item_chance_penalty() const;
+    virtual short get_stun_damage_penalty() const;
+    virtual std::pair<TERM_COLOR, std::string> get_stun_expr() const;
+    virtual std::pair<TERM_COLOR, std::string> get_cut_expr() const;
+    virtual int get_cut_damage_per_turn() const;
 
     /*!
      * @brief クリーチャーが加速しているかどうかを判定

@@ -282,7 +282,7 @@ bool MonsterAttackPlayer::effect_protecion_from_evil()
 {
     auto &creature = *this->creature_ptr;
     auto &monrace = this->m_ptr->get_monrace();
-    auto is_protected = creature.effects()->protection().is_protected();
+    auto is_protected = creature.is_protected_from_evil();
     is_protected &= monrace.kind_flags.has(MonsterKindType::EVIL);
     is_protected &= (randint0(100) + creature.level - this->rlev) > 50;
     if (!is_protected) {

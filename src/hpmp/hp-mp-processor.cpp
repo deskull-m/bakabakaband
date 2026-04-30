@@ -38,7 +38,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -118,21 +117,18 @@ void process_player_hp_mp(CreatureEntity &creature)
     bool cave_no_regen = false;
     int upkeep_factor = 0;
     int regen_amount = PY_REGEN_NORMAL;
-    const auto effects = creature.effects();
     if (terrain.flags.has(TerrainCharacteristics::RUNE_HEALING)) {
         hp_player(creature, 2 + creature.level / 6);
     }
 
-    const auto &player_poison = effects->poison();
-    if (player_poison.is_poisoned() && !creature.is_invulnerable()) {
+    if (creature.is_poisoned() && !creature.is_invulnerable()) {
         if (take_hit(creature, DAMAGE_NOESCAPE, 1, _("毒", "poison")) > 0) {
             sound(SoundKind::DAMAGE_OVER_TIME);
         }
     }
 
-    const auto &player_cut = effects->cut();
-    if (player_cut.is_cut() && !creature.is_invulnerable()) {
-        const auto dam = player_cut.get_damage();
+    if (creature.is_cut() && !creature.is_invulnerable()) {
+        const auto dam = creature.get_cut_damage_per_turn();
         if (take_hit(creature, DAMAGE_NOESCAPE, dam, _("致命傷", "a mortal wound")) > 0) {
             sound(SoundKind::DAMAGE_OVER_TIME);
         }
@@ -452,10 +448,10 @@ void process_player_hp_mp(CreatureEntity &creature)
         }
     }
 
-    if (player_poison.is_poisoned()) {
+    if (creature.is_poisoned()) {
         regen_amount = 0;
     }
-    if (player_cut.is_cut()) {
+    if (creature.is_cut()) {
         regen_amount = 0;
     }
     if (cave_no_regen) {

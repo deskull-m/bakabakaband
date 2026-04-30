@@ -431,6 +431,43 @@ bool CreatureEntity::is_poisoned() const
     return this->get_timed_effect(CreatureTimedEffect::POISON) > 0;
 }
 
+bool CreatureEntity::is_protected_from_evil() const
+{
+    return this->effects()->protection().is_protected();
+}
+
+int CreatureEntity::get_stun_magic_chance_penalty() const
+{
+    return this->effects()->stun().get_magic_chance_penalty();
+}
+
+int CreatureEntity::get_stun_item_chance_penalty() const
+{
+    return this->effects()->stun().get_item_chance_penalty();
+}
+
+short CreatureEntity::get_stun_damage_penalty() const
+{
+    return this->effects()->stun().get_damage_penalty();
+}
+
+std::pair<TERM_COLOR, std::string> CreatureEntity::get_stun_expr() const
+{
+    const auto [color, text] = this->effects()->stun().get_expr();
+    return { color, std::string(text) };
+}
+
+std::pair<TERM_COLOR, std::string> CreatureEntity::get_cut_expr() const
+{
+    const auto [color, text] = this->effects()->cut().get_expr();
+    return { color, text };
+}
+
+int CreatureEntity::get_cut_damage_per_turn() const
+{
+    return this->effects()->cut().get_damage();
+}
+
 bool CreatureEntity::is_blessed() const
 {
     if (this->get_timed_effect(CreatureTimedEffect::BLESSED) > 0) {

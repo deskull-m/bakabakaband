@@ -79,7 +79,6 @@
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
-#include "timed-effect/timed-effects.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 #include "view/display-util.h"
@@ -273,7 +272,7 @@ static tl::optional<BaseitemKey> select_magic_eater(CreatureEntity &creature, bo
                 }
                 chance = mod_spell_chance_1(creature, chance);
                 chance = std::max<int>(chance, adj_mag_fail[creature.stat_index[mp_ptr->spell_stat]]);
-                chance += creature.effects()->stun().get_magic_chance_penalty();
+                chance += creature.get_stun_magic_chance_penalty();
                 if (chance > 95) {
                     chance = 95;
                 }
@@ -514,7 +513,7 @@ bool do_cmd_magic_eater(CreatureEntity &creature, bool only_browse, bool powerfu
     }
     chance = mod_spell_chance_1(creature, chance);
     chance = std::max<int>(chance, adj_mag_fail[creature.stat_index[mp_ptr->spell_stat]]);
-    chance += creature.effects()->stun().get_magic_chance_penalty();
+    chance += creature.get_stun_magic_chance_penalty();
     if (chance > 95) {
         chance = 95;
     }
