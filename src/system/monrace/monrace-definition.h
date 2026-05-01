@@ -285,7 +285,7 @@ public:
     void increment_tkills();
 
     void decrement_mob_numbers();
-    void emplace_final_summon(MonraceId id, int probability, int min_num, int max_num, int radius);
+    void emplace_final_summon(MonraceId id, int probability, int min_summon_num, int max_summon_num, int radius);
     const std::vector<MonsterSummon> &get_final_summons() const;
 
 private:

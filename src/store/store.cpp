@@ -376,12 +376,12 @@ void store_maintenance(CreatureEntity &creature, int town_num, StoreSaleType sto
     }
 
     const int level = store_level(store_num);
-    const int store_max_keep = (store_num == StoreSaleType::BLACK) ? STORE_MAX_KEEP * (level + 60) / 20 : STORE_MAX_KEEP;
-    const int store_min_keep = (store_num == StoreSaleType::BLACK) ? STORE_MIN_KEEP * (level + 60) / 20 : STORE_MIN_KEEP;
-    const int store_turnover = (store_num == StoreSaleType::BLACK) ? STORE_TURNOVER * (level + 60) / 20 : STORE_TURNOVER;
+    const short store_max_keep = (store_num == StoreSaleType::BLACK) ? STORE_MAX_KEEP * (level + 60) / 20 : STORE_MAX_KEEP;
+    const short store_min_keep = (store_num == StoreSaleType::BLACK) ? STORE_MIN_KEEP * (level + 60) / 20 : STORE_MIN_KEEP;
+    const short store_turnover = (store_num == StoreSaleType::BLACK) ? STORE_TURNOVER * (level + 60) / 20 : STORE_TURNOVER;
     chance = (store_num == StoreSaleType::BLACK) ? chance * (level + 60) / 20 : chance;
 
-    INVENTORY_IDX j = st_ptr->stock_num;
+    auto j = st_ptr->stock_num;
     int remain = store_turnover + std::max(0, j - store_max_keep);
     int turn_over = 1;
     for (int i = 0; i < chance; i++) {
