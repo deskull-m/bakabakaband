@@ -7,6 +7,10 @@ class ItemEntity;
 class ObjectQuaffEntity {
 public:
     ObjectQuaffEntity(CreatureEntity &creature);
+    ObjectQuaffEntity(const ObjectQuaffEntity &) = delete;
+    ObjectQuaffEntity(ObjectQuaffEntity &&) = delete;
+    ObjectQuaffEntity &operator=(const ObjectQuaffEntity &) = delete;
+    ObjectQuaffEntity &operator=(ObjectQuaffEntity &&) = delete;
     virtual ~ObjectQuaffEntity() = default;
 
     void execute(INVENTORY_IDX i_idx, bool is_rectal = false);

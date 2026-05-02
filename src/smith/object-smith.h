@@ -28,6 +28,10 @@ public:
     using DrainEssenceResult = std::vector<std::tuple<SmithEssenceType, int>>;
 
     Smith(CreatureEntity &creature);
+    Smith(const Smith &) = delete;
+    Smith(Smith &&) = delete;
+    Smith &operator=(const Smith &) = delete;
+    Smith &operator=(Smith &&) = delete;
 
     static const std::vector<SmithEssenceType> &get_essence_list();
     static concptr get_essence_name(SmithEssenceType essence);

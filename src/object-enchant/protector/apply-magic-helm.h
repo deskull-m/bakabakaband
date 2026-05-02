@@ -8,6 +8,10 @@ class ItemEntity;
 class HelmEnchanter : public AbstractProtectorEnchanter {
 public:
     HelmEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power);
+    HelmEnchanter(const HelmEnchanter &) = delete;
+    HelmEnchanter(HelmEnchanter &&) = delete;
+    HelmEnchanter &operator=(const HelmEnchanter &) = delete;
+    HelmEnchanter &operator=(HelmEnchanter &&) = delete;
     void apply_magic() override;
 
 protected:

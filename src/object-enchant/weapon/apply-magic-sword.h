@@ -8,6 +8,10 @@ class ItemEntity;
 class SwordEnchanter : public MeleeWeaponEnchanter {
 public:
     SwordEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power);
+    SwordEnchanter(const SwordEnchanter &) = delete;
+    SwordEnchanter(SwordEnchanter &&) = delete;
+    SwordEnchanter &operator=(const SwordEnchanter &) = delete;
+    SwordEnchanter &operator=(SwordEnchanter &&) = delete;
 
     void apply_magic() override;
 

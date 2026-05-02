@@ -5,6 +5,10 @@ class CreatureEntity;
 class PlayerSpeed : public PlayerStatusBase {
 public:
     PlayerSpeed(CreatureEntity &creature);
+    PlayerSpeed(const PlayerSpeed &) = delete;
+    PlayerSpeed(PlayerSpeed &&) = delete;
+    PlayerSpeed &operator=(const PlayerSpeed &) = delete;
+    PlayerSpeed &operator=(PlayerSpeed &&) = delete;
 
 protected:
     void set_locals() override;

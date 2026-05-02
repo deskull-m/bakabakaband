@@ -8,6 +8,10 @@ class CreatureEntity;
 class ItemMagicApplier {
 public:
     ItemMagicApplier(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH lev, BIT_FLAGS mode);
+    ItemMagicApplier(const ItemMagicApplier &) = delete;
+    ItemMagicApplier(ItemMagicApplier &&) = delete;
+    ItemMagicApplier &operator=(const ItemMagicApplier &) = delete;
+    ItemMagicApplier &operator=(ItemMagicApplier &&) = delete;
     void execute();
 
 private:

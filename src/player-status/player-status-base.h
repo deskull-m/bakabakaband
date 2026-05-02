@@ -5,6 +5,11 @@
 class CreatureEntity;
 class PlayerStatusBase {
 public:
+    PlayerStatusBase(const PlayerStatusBase &) = delete;
+    PlayerStatusBase(PlayerStatusBase &&) = delete;
+    PlayerStatusBase &operator=(const PlayerStatusBase &) = delete;
+    PlayerStatusBase &operator=(PlayerStatusBase &&) = delete;
+
     virtual ~PlayerStatusBase() = default;
     virtual int16_t get_value();
     virtual BIT_FLAGS get_all_flags();

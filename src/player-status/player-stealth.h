@@ -5,6 +5,10 @@ class CreatureEntity;
 class PlayerStealth : public PlayerStatusBase {
 public:
     PlayerStealth(CreatureEntity &creature);
+    PlayerStealth(const PlayerStealth &) = delete;
+    PlayerStealth(PlayerStealth &&) = delete;
+    PlayerStealth &operator=(const PlayerStealth &) = delete;
+    PlayerStealth &operator=(PlayerStealth &&) = delete;
 
     BIT_FLAGS get_bad_flags() override;
 

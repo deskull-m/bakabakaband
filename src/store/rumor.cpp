@@ -153,6 +153,10 @@ public:
         , tokens(tokens)
     {
     }
+    ProcessRumor(const ProcessRumor &) = delete;
+    ProcessRumor(ProcessRumor &&) = delete;
+    ProcessRumor &operator=(const ProcessRumor &) = delete;
+    ProcessRumor &operator=(ProcessRumor &&) = delete;
 
     void operator()(const ArtifactRumor &artifact_rumor)
     {

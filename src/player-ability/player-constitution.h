@@ -6,6 +6,10 @@ class CreatureEntity;
 class PlayerConstitution : public PlayerBasicStatistics {
 public:
     PlayerConstitution(CreatureEntity &creature);
+    PlayerConstitution(const PlayerConstitution &) = delete;
+    PlayerConstitution(PlayerConstitution &&) = delete;
+    PlayerConstitution &operator=(const PlayerConstitution &) = delete;
+    PlayerConstitution &operator=(PlayerConstitution &&) = delete;
 
 protected:
     void set_locals() override;

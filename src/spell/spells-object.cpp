@@ -99,6 +99,10 @@ struct AmusementRewardItemVisitor {
         , flag(flag)
     {
     }
+    AmusementRewardItemVisitor(const AmusementRewardItemVisitor &) = delete;
+    AmusementRewardItemVisitor(AmusementRewardItemVisitor &&) = delete;
+    AmusementRewardItemVisitor &operator=(const AmusementRewardItemVisitor &) = delete;
+    AmusementRewardItemVisitor &operator=(AmusementRewardItemVisitor &&) = delete;
 
     tl::optional<ItemEntity> operator()(const FixedArtifactId &fa_id) const
     {

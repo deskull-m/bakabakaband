@@ -8,6 +8,10 @@ class ItemEntity;
 class BootsEnchanter : public AbstractProtectorEnchanter {
 public:
     BootsEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power);
+    BootsEnchanter(const BootsEnchanter &) = delete;
+    BootsEnchanter(BootsEnchanter &&) = delete;
+    BootsEnchanter &operator=(const BootsEnchanter &) = delete;
+    BootsEnchanter &operator=(BootsEnchanter &&) = delete;
     void apply_magic() override;
 
 protected:
