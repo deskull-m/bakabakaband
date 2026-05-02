@@ -52,14 +52,12 @@
  * @param creature クリーチャーへの参照
  * @param mode ステータス表示モード
  * @return どれかの処理をこなしたらTRUE、何もしなかったらFALSE
- * @details モード 2〜5 はプレイヤー固有の描画のためモンスターでは呼び出さない
+ * @details モード 2〜5 はプレイヤー由来の項目を多く含むが、モンスター閲覧時も
+ * ページ送りで参照できるようにする。モンスター時はプレイヤー前提の値が
+ * 0/空で表示されるが、各サブ関数が CreatureEntity API 経由のため安全。
  */
 static bool display_player_info(CreatureEntity &creature, int mode)
 {
-    if (!creature.is_player()) {
-        return false;
-    }
-
     if (mode == 2) {
         display_player_misc_info(creature);
         display_player_stat_info(creature);
@@ -338,8 +336,9 @@ static std::string decide_current_floor(CreatureEntity &creature)
 tl::optional<int> display_player(CreatureEntity &creature, const int tmp_mode)
 {
     auto has_any_mutation = (creature.muta.any() || has_good_luck(creature) || has_pervert_attraction(creature)) && display_mutations;
-    // モンスターはプレイヤー固有のページ (history, misc/stat/flag info) を持たないため mode 0 固定で描画する
-    auto mode = creature.is_player() ? (has_any_mutation ? tmp_mode % 6 : tmp_mode % 5) : 0;
+    // モンスター閲覧時もページ送りを許可。プレイヤー前提の値はサブ関数側で
+    // 0/空フォールバックされる（ENTRY_RACE/CLASS が「なし」になるなど）。
+    auto mode = has_any_mutation ? tmp_mode % 6 : tmp_mode % 5;
     {
         TermOffsetSetter tos(0, 0);
         clear_from(0);
