@@ -37,7 +37,9 @@ void print_title(CreatureEntity &creature)
 {
     std::string p;
     const auto &world = AngbandWorld::get_instance();
-    if (world.wizard) {
+    if (!creature.is_player()) {
+        // モンスター閲覧時は職業称号を持たないため空欄
+    } else if (world.wizard) {
         p = _("［ウィザード］", "[=-WIZARD-=]");
     } else if (world.total_winner) {
         if (world.is_player_true_winner()) {
@@ -75,7 +77,11 @@ void print_exp(CreatureEntity &creature)
     std::string out_val;
 
     CreatureRace pr(&creature);
-    if ((!exp_need) || pr.equals(PlayerRaceType::ANDROID)) {
+    if (!creature.is_player()) {
+        // モンスターは player_exp 表に該当エントリを持たないため、
+        // 現在経験値のみ表示する。
+        out_val = format("%8d", creature.exp);
+    } else if ((!exp_need) || pr.equals(PlayerRaceType::ANDROID)) {
         out_val = format("%8d", creature.exp);
     } else {
         if (creature.level >= PY_MAX_LEVEL) {
@@ -249,9 +255,15 @@ void print_depth(CreatureEntity &creature)
  */
 void print_frame_basic(CreatureEntity &creature)
 {
-    const auto &title = creature.get_mimic_form() == MimicKindType::NONE
-                            ? creature.get_race_info()->title
-                            : mimic_info.at(creature.get_mimic_form()).title;
+    // モンスター時 race_info は nullptr なので種族名は monrace.name を使う。
+    std::string_view title;
+    if (creature.get_mimic_form() != MimicKindType::NONE) {
+        title = mimic_info.at(creature.get_mimic_form()).title;
+    } else if (const auto *race_info = creature.get_race_info(); race_info != nullptr) {
+        title = race_info->title;
+    } else if (creature.has_monster_profile()) {
+        title = creature.get_monrace().name;
+    }
     print_field(title, ROW_RACE, COL_RACE);
     print_title(creature);
     print_level(creature);
