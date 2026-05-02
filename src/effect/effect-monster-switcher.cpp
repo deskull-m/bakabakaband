@@ -298,7 +298,7 @@ ProcessResult effect_monster_social_genocide(CreatureEntity &creature, EffectMon
     }
 
     // MALE かつ HUMAN のモンスターのみが対象
-    if (!monrace.is_male() || !monrace.kind_flags.has(MonsterKindType::HUMAN)) {
+    if (!em_ptr->m_ptr->is_male() || !monrace.kind_flags.has(MonsterKindType::HUMAN)) {
         em_ptr->skipped = true;
         return ProcessResult::PROCESS_CONTINUE;
     }

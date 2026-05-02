@@ -98,12 +98,12 @@ bool MonraceDefinition::is_valid() const
 
 bool MonraceDefinition::is_male() const
 {
-    return this->sex == MonsterSex::MALE;
+    return (this->sex == MonsterSex::MALE) || this->kind_flags.has(MonsterKindType::MALE);
 }
 
 bool MonraceDefinition::is_female() const
 {
-    return this->sex == MonsterSex::FEMALE;
+    return (this->sex == MonsterSex::FEMALE) || this->kind_flags.has(MonsterKindType::FEMALE);
 }
 
 /*!
