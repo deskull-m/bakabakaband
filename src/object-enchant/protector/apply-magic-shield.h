@@ -8,6 +8,8 @@ class ItemEntity;
 class ShieldEnchanter : public AbstractProtectorEnchanter {
 public:
     ShieldEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power);
+    ShieldEnchanter(const ShieldEnchanter &) = default;
+    ShieldEnchanter(ShieldEnchanter &&) = default;
     ShieldEnchanter &operator=(const ShieldEnchanter &) = delete;
     ShieldEnchanter &operator=(ShieldEnchanter &&) = delete;
     void apply_magic() override;

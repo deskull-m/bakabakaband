@@ -5,6 +5,8 @@ class CreatureEntity;
 class PlayerStealth : public PlayerStatusBase {
 public:
     PlayerStealth(CreatureEntity &creature);
+    PlayerStealth(const PlayerStealth &) = default;
+    PlayerStealth(PlayerStealth &&) = default;
     PlayerStealth &operator=(const PlayerStealth &) = delete;
     PlayerStealth &operator=(PlayerStealth &&) = delete;
 

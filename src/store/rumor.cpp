@@ -153,6 +153,8 @@ public:
         , tokens(tokens)
     {
     }
+    ProcessRumor(const ProcessRumor &) = default;
+    ProcessRumor(ProcessRumor &&) = default;
     ProcessRumor &operator=(const ProcessRumor &) = delete;
     ProcessRumor &operator=(ProcessRumor &&) = delete;
 

@@ -4,6 +4,8 @@ class CreatureEntity;
 class WorldTurnProcessor {
 public:
     WorldTurnProcessor(CreatureEntity &creature);
+    WorldTurnProcessor(const WorldTurnProcessor &) = default;
+    WorldTurnProcessor(WorldTurnProcessor &&) = default;
     WorldTurnProcessor &operator=(const WorldTurnProcessor &) = delete;
     WorldTurnProcessor &operator=(WorldTurnProcessor &&) = delete;
     virtual ~WorldTurnProcessor() = default;

@@ -6,6 +6,8 @@ class CreatureEntity;
 class PlayerStrength : public PlayerBasicStatistics {
 public:
     PlayerStrength(CreatureEntity &creature);
+    PlayerStrength(const PlayerStrength &) = default;
+    PlayerStrength(PlayerStrength &&) = default;
     PlayerStrength &operator=(const PlayerStrength &) = delete;
     PlayerStrength &operator=(PlayerStrength &&) = delete;
 

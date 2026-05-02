@@ -7,6 +7,8 @@ class ItemEntity;
 class ObjectQuaffEntity {
 public:
     ObjectQuaffEntity(CreatureEntity &creature);
+    ObjectQuaffEntity(const ObjectQuaffEntity &) = default;
+    ObjectQuaffEntity(ObjectQuaffEntity &&) = default;
     ObjectQuaffEntity &operator=(const ObjectQuaffEntity &) = delete;
     ObjectQuaffEntity &operator=(ObjectQuaffEntity &&) = delete;
     virtual ~ObjectQuaffEntity() = default;

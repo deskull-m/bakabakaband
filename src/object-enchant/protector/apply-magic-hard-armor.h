@@ -8,6 +8,8 @@ class ItemEntity;
 class HardArmorEnchanter : public ArmorEnchanter {
 public:
     HardArmorEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power);
+    HardArmorEnchanter(const HardArmorEnchanter &) = default;
+    HardArmorEnchanter(HardArmorEnchanter &&) = default;
     HardArmorEnchanter &operator=(const HardArmorEnchanter &) = delete;
     HardArmorEnchanter &operator=(HardArmorEnchanter &&) = delete;
     void apply_magic() override;

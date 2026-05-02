@@ -6,6 +6,8 @@ class CreatureEntity;
 class PlayerCharisma : public PlayerBasicStatistics {
 public:
     PlayerCharisma(CreatureEntity &creature);
+    PlayerCharisma(const PlayerCharisma &) = default;
+    PlayerCharisma(PlayerCharisma &&) = default;
     PlayerCharisma &operator=(const PlayerCharisma &) = delete;
     PlayerCharisma &operator=(PlayerCharisma &&) = delete;
 

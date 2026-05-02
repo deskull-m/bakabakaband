@@ -28,6 +28,8 @@ public:
     using DrainEssenceResult = std::vector<std::tuple<SmithEssenceType, int>>;
 
     Smith(CreatureEntity &creature);
+    Smith(const Smith &) = default;
+    Smith(Smith &&) = default;
     Smith &operator=(const Smith &) = delete;
     Smith &operator=(Smith &&) = delete;
 

@@ -7,6 +7,8 @@ class ItemEntity;
 class ObjectReadEntity {
 public:
     ObjectReadEntity(CreatureEntity &creature, INVENTORY_IDX i_idx);
+    ObjectReadEntity(const ObjectReadEntity &) = default;
+    ObjectReadEntity(ObjectReadEntity &&) = default;
     ObjectReadEntity &operator=(const ObjectReadEntity &) = delete;
     ObjectReadEntity &operator=(ObjectReadEntity &&) = delete;
     virtual ~ObjectReadEntity() = default;

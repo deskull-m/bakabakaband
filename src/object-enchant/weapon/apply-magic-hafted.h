@@ -8,6 +8,8 @@ class ItemEntity;
 class HaftedEnchanter : public MeleeWeaponEnchanter {
 public:
     HaftedEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power);
+    HaftedEnchanter(const HaftedEnchanter &) = default;
+    HaftedEnchanter(HaftedEnchanter &&) = default;
     HaftedEnchanter &operator=(const HaftedEnchanter &) = delete;
     HaftedEnchanter &operator=(HaftedEnchanter &&) = delete;
 

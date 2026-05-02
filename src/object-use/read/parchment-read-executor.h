@@ -7,6 +7,8 @@ class ItemEntity;
 class ParchmentReadExecutor : public ReadExecutorBase {
 public:
     ParchmentReadExecutor(CreatureEntity &creature, ItemEntity *o_ptr);
+    ParchmentReadExecutor(const ParchmentReadExecutor &) = default;
+    ParchmentReadExecutor(ParchmentReadExecutor &&) = default;
     ParchmentReadExecutor &operator=(const ParchmentReadExecutor &) = delete;
     ParchmentReadExecutor &operator=(ParchmentReadExecutor &&) = delete;
     bool read() override;

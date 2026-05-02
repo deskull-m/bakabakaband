@@ -99,6 +99,8 @@ struct AmusementRewardItemVisitor {
         , flag(flag)
     {
     }
+    AmusementRewardItemVisitor(const AmusementRewardItemVisitor &) = default;
+    AmusementRewardItemVisitor(AmusementRewardItemVisitor &&) = default;
     AmusementRewardItemVisitor &operator=(const AmusementRewardItemVisitor &) = delete;
     AmusementRewardItemVisitor &operator=(AmusementRewardItemVisitor &&) = delete;
 

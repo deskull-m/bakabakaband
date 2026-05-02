@@ -14,6 +14,8 @@ class MonsterDamageProcessor {
 public:
     MonsterDamageProcessor(CreatureEntity &creature, MONSTER_IDX m_idx, int dam, bool *fear, AttributeType type);
     MonsterDamageProcessor(CreatureEntity &creature, MONSTER_IDX m_idx, int dam, bool *fear, AttributeFlags attribute_flags);
+    MonsterDamageProcessor(const MonsterDamageProcessor &) = default;
+    MonsterDamageProcessor(MonsterDamageProcessor &&) = default;
     MonsterDamageProcessor &operator=(const MonsterDamageProcessor &) = delete;
     MonsterDamageProcessor &operator=(MonsterDamageProcessor &&) = delete;
     virtual ~MonsterDamageProcessor() = default;

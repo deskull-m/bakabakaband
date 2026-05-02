@@ -6,6 +6,8 @@ class CreatureEntity;
 class ItemUseChecker {
 public:
     ItemUseChecker(CreatureEntity &creature);
+    ItemUseChecker(const ItemUseChecker &) = default;
+    ItemUseChecker(ItemUseChecker &&) = default;
     ItemUseChecker &operator=(const ItemUseChecker &) = delete;
     ItemUseChecker &operator=(ItemUseChecker &&) = delete;
     virtual ~ItemUseChecker() = default;

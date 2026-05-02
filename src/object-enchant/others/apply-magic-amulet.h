@@ -8,6 +8,8 @@ class ItemEntity;
 class AmuletEnchanter : public EnchanterBase {
 public:
     AmuletEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power);
+    AmuletEnchanter(const AmuletEnchanter &) = default;
+    AmuletEnchanter(AmuletEnchanter &&) = default;
     AmuletEnchanter &operator=(const AmuletEnchanter &) = delete;
     AmuletEnchanter &operator=(AmuletEnchanter &&) = delete;
     virtual ~AmuletEnchanter() = default;

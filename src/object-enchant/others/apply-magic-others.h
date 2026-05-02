@@ -7,6 +7,8 @@ class ItemEntity;
 class OtherItemsEnchanter : public EnchanterBase {
 public:
     OtherItemsEnchanter(CreatureEntity &creature, ItemEntity *o_ptr);
+    OtherItemsEnchanter(const OtherItemsEnchanter &) = default;
+    OtherItemsEnchanter(OtherItemsEnchanter &&) = default;
     OtherItemsEnchanter &operator=(const OtherItemsEnchanter &) = delete;
     OtherItemsEnchanter &operator=(OtherItemsEnchanter &&) = delete;
     void apply_magic() override;

@@ -5,6 +5,8 @@ class CreatureEntity;
 class PlayerSpeed : public PlayerStatusBase {
 public:
     PlayerSpeed(CreatureEntity &creature);
+    PlayerSpeed(const PlayerSpeed &) = default;
+    PlayerSpeed(PlayerSpeed &&) = default;
     PlayerSpeed &operator=(const PlayerSpeed &) = delete;
     PlayerSpeed &operator=(PlayerSpeed &&) = delete;
 

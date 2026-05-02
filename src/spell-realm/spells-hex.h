@@ -17,6 +17,8 @@ struct spell_hex_data_type;
 class SpellHex {
 public:
     SpellHex(CreatureEntity &creature);
+    SpellHex(const SpellHex &) = default;
+    SpellHex(SpellHex &&) = default;
     SpellHex &operator=(const SpellHex &) = delete;
     SpellHex &operator=(SpellHex &&) = delete;
     virtual ~SpellHex() = default;

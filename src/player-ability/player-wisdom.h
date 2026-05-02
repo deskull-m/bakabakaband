@@ -6,6 +6,8 @@ class CreatureEntity;
 class PlayerWisdom : public PlayerBasicStatistics {
 public:
     PlayerWisdom(CreatureEntity &creature);
+    PlayerWisdom(const PlayerWisdom &) = default;
+    PlayerWisdom(PlayerWisdom &&) = default;
     PlayerWisdom &operator=(const PlayerWisdom &) = delete;
     PlayerWisdom &operator=(PlayerWisdom &&) = delete;
 
