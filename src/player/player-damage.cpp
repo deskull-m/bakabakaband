@@ -560,9 +560,9 @@ void PlayerType::on_death(std::string_view cause)
     DeathRecord death_record;
     death_record.game_turn = world.game_turn;
     const auto [day, hour, min] = world.extract_date_time(this->prace);
-    death_record.day = day;
-    death_record.hour = hour;
-    death_record.min = min;
+    death_record.day = static_cast<int16_t>(day);
+    death_record.hour = static_cast<int16_t>(hour);
+    death_record.min = static_cast<int16_t>(min);
     death_record.player_level = this->level;
     death_record.cause = this->died_from;
     death_record.killer_monrace_id = this->killer_monrace_id;

@@ -5,6 +5,10 @@ class ItemEntity;
 class QuaffEffects {
 public:
     QuaffEffects(CreatureEntity &creature);
+    QuaffEffects(const QuaffEffects &) = default;
+    QuaffEffects(QuaffEffects &&) = default;
+    QuaffEffects &operator=(const QuaffEffects &) = delete;
+    QuaffEffects &operator=(QuaffEffects &&) = delete;
 
     bool influence(const ItemEntity &item, const bool is_rectal);
 

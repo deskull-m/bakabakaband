@@ -754,13 +754,13 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
         case '8':
         case '9': {
             if (command_wrk != USE_FLOOR) {
-                const auto i_idx = get_tag(creature, fis.which, command_wrk, item_tester);
-                if (!i_idx) {
+                const auto tag_opt = get_tag(creature, fis.which, command_wrk, item_tester);
+                if (!tag_opt) {
                     bell();
                     break;
                 }
 
-                fis.k = *i_idx;
+                fis.k = *tag_opt;
                 if ((fis.k < INVEN_MAIN_HAND) ? !fis.inven : !fis.equip) {
                     bell();
                     break;
@@ -804,11 +804,11 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
             bool tag_not_found = false;
 
             if (command_wrk != USE_FLOOR) {
-                const auto i_idx = get_tag(creature, fis.which, command_wrk, item_tester);
-                if (!i_idx) {
+                const auto tag_opt = get_tag(creature, fis.which, command_wrk, item_tester);
+                if (!tag_opt) {
                     tag_not_found = true;
                 } else {
-                    fis.k = *i_idx;
+                    fis.k = *tag_opt;
                     if ((fis.k < INVEN_MAIN_HAND) ? !fis.inven : !fis.equip) {
                         tag_not_found = true;
                     }
@@ -847,14 +847,15 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
                         fis.k = label_to_equipment(creature, which);
                     }
                 } else if (command_wrk == USE_FLOOR) {
+                    const auto floor_item_index_size = static_cast<short>(fis.floor_item_index.size());
                     if (which == '(') {
                         fis.k = 0;
                     } else if (which == ')') {
-                        fis.k = fis.floor_item_index.size() - 1;
+                        fis.k = floor_item_index_size - 1;
                     } else {
                         fis.k = islower(which) ? A2I(which) : -1;
                     }
-                    if (fis.k < 0 || fis.k >= static_cast<short>(fis.floor_item_index.size()) || fis.k >= 23) {
+                    if (fis.k < 0 || fis.k >= floor_item_index_size || fis.k >= 23) {
                         bell();
                         break;
                     }

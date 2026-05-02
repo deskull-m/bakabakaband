@@ -97,7 +97,7 @@ std::string build_killer_on_earthquake(CreatureEntity &creature, int m_idx)
         return _("地震", "an earthquake");
     }
 
-    const auto &monster = creature.get_floor()->get_monster(m_idx);
+    const auto &monster = creature.get_floor()->get_monster(static_cast<MONSTER_IDX>(m_idx));
     const auto m_name = monster_desc(creature, monster, MD_WRONGDOER_NAME);
     return format(_("%sの起こした地震", "an earthquake caused by %s"), m_name.data());
 }

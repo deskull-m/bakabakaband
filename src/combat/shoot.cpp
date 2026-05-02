@@ -1022,7 +1022,7 @@ bool test_hit_fire(CreatureEntity &creature, int chance, CreatureEntity &target,
         return false;
     }
 
-    ac = target.get_ac();
+    ac = static_cast<ARMOUR_CLASS>(target.get_ac());
     ac = ac * (8 - sniper_concent) / 8;
 
     if (target.r_idx == MonraceId::GOEMON && !target.is_asleep()) {

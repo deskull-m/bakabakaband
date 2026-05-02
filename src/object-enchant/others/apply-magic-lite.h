@@ -8,6 +8,10 @@ class ItemEntity;
 class LiteEnchanter : public EnchanterBase {
 public:
     LiteEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, int power);
+    LiteEnchanter(const LiteEnchanter &) = default;
+    LiteEnchanter(LiteEnchanter &&) = default;
+    LiteEnchanter &operator=(const LiteEnchanter &) = delete;
+    LiteEnchanter &operator=(LiteEnchanter &&) = delete;
     void apply_magic() override;
 
 protected:

@@ -211,7 +211,7 @@ static void write_item_info(const ItemEntity &item, const BIT_FLAGS flags)
     }
 
     if (any_bits(flags, SaveDataItemFlagType::XTRA5)) {
-        wr_s16b(item.captured_monster_max_hp);
+        wr_s16b(static_cast<int16_t>(item.captured_monster_max_hp));
     }
 
     if (any_bits(flags, SaveDataItemFlagType::FEELING)) {

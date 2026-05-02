@@ -671,7 +671,7 @@ void do_cmd_pet(CreatureEntity &creature)
     {
         /* Check pets (backwards) */
         for (pet_ctr = creature.get_floor()->m_max - 1; pet_ctr >= 1; pet_ctr--) {
-            const auto &m_ref = creature.get_floor()->get_monster(pet_ctr);
+            const auto &m_ref = creature.get_floor()->get_monster(static_cast<MONSTER_IDX>(pet_ctr));
             if (m_ref.is_pet()) {
                 break;
             }
@@ -744,7 +744,7 @@ void do_cmd_pet(CreatureEntity &creature)
         if (creature.pet_extra_flags & PF_PICKUP_ITEMS) {
             creature.pet_extra_flags &= ~(PF_PICKUP_ITEMS);
             for (pet_ctr = creature.get_floor()->m_max - 1; pet_ctr >= 1; pet_ctr--) {
-                auto &monster = creature.get_floor()->get_monster(pet_ctr);
+                auto &monster = creature.get_floor()->get_monster(static_cast<MONSTER_IDX>(pet_ctr));
                 if (monster.is_pet()) {
                     monster_drop_carried_objects(creature, monster);
                 }

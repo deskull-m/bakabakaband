@@ -94,7 +94,7 @@ errr parse_vaults_info(std::string_view buf, angband_header *)
                     }
                     if (v_ptr->place_monster_list.count(c) == 0) {
                         try {
-                            std::stoi(s_tokens[1]);
+                            (void)std::stoi(s_tokens[1]);
                             info_set_value(v_ptr->place_monster_list[c], s_tokens[1]);
                             break;
                         } catch (const std::invalid_argument &) {

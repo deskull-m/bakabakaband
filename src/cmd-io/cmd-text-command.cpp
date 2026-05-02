@@ -53,8 +53,8 @@ static std::string normalize_string(const std::string &str)
 {
     std::string result;
     for (char c : str) {
-        if (!std::isspace(c)) {
-            result += std::tolower(c);
+        if (!std::isspace(static_cast<unsigned char>(c))) {
+            result += static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
         }
     }
     return result;

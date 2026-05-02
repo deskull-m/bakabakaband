@@ -1052,30 +1052,30 @@ tl::optional<std::string> CreatureEntity::get_pain_message(std::string_view mons
 
 byte CreatureEntity::get_temporary_speed() const
 {
-    auto speed = this->speed;
+    auto current_speed = this->speed;
     if (ironman_nightmare) {
-        speed += 5;
+        current_speed += 5;
     }
 
     if (this->is_accelerated()) {
-        speed += 10;
+        current_speed += 10;
     }
 
     if (this->is_decelerated()) {
-        speed -= 10;
+        current_speed -= 10;
     }
 
     if (this->has_monster_profile()) {
         if (this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FAT)) {
-            speed -= 5;
+            current_speed -= 5;
         }
 
         if (this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FRENZY)) {
-            speed += 10;
+            current_speed += 10;
         }
     }
 
-    return speed;
+    return static_cast<byte>(current_speed);
 }
 
 int CreatureEntity::calc_life_rating() const
@@ -1109,20 +1109,20 @@ void CreatureEntity::set_individual_speed(bool force_fixed_speed)
     }
 
     const auto &monrace = this->get_monrace();
-    auto speed = monrace.speed;
+    auto new_speed = monrace.speed;
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && !force_fixed_speed) {
         /* Allow some small variation per monster */
         int i = speed_to_energy(monrace.speed) / (one_in_(4) ? 3 : 10);
         if (i) {
-            speed += static_cast<uint8_t>(rand_spread(0, i));
+            new_speed += static_cast<uint8_t>(rand_spread(0, i));
         }
     }
 
-    if (speed > STANDARD_SPEED + 99) {
-        speed = STANDARD_SPEED + 99;
+    if (new_speed > STANDARD_SPEED + 99) {
+        new_speed = STANDARD_SPEED + 99;
     }
 
-    this->speed = speed;
+    this->speed = new_speed;
 }
 
 bool CreatureEntity::can_ring_boss_call_nazgul() const

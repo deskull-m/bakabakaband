@@ -223,7 +223,7 @@ void MonsterWriter::write_monster_info(uint32_t flags) const
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::RACE)) {
-        wr_byte(enum2i(this->monster.prace));
+        wr_byte(static_cast<byte>(enum2i(this->monster.prace)));
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::CLASS)) {
@@ -231,8 +231,8 @@ void MonsterWriter::write_monster_info(uint32_t flags) const
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::TRANSFORM)) {
-        wr_s16b(enum2i(this->monster.get_monster_profile().transform_r_idx));
-        wr_byte(this->monster.get_monster_profile().transform_hp_threshold);
+        wr_s16b(static_cast<int16_t>(enum2i(this->monster.get_monster_profile().transform_r_idx)));
+        wr_byte(static_cast<byte>(this->monster.get_monster_profile().transform_hp_threshold));
         wr_byte(this->monster.get_monster_profile().has_transformed ? 1 : 0);
     }
 

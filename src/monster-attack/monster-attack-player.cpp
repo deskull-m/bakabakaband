@@ -167,7 +167,7 @@ bool MonsterAttackPlayer::process_monster_blows()
         }
 
         // フレーバーの打撃は必中扱い。それ以外は通常の命中判定を行う。
-        this->ac = creature.get_ac();
+        this->ac = static_cast<ARMOUR_CLASS>(creature.get_ac());
         bool hit;
         if (this->effect == RaceBlowEffectType::FLAVOR) {
             hit = true;

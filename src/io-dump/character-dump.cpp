@@ -62,7 +62,7 @@ static void dump_aux_pet(CreatureEntity &creature, FILE *fff)
     auto pet = false;
     auto pet_settings = false;
     for (auto i = floor.m_max - 1; i >= 1; i--) {
-        const auto &monster = floor.get_monster(i);
+        const auto &monster = floor.get_monster(static_cast<MONSTER_IDX>(i));
         if (!monster.is_valid()) {
             continue;
         }

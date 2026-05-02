@@ -13,6 +13,10 @@ enum class PlayerClassType : short;
 class CreatureClass {
 public:
     CreatureClass(CreatureEntity &creature);
+    CreatureClass(const CreatureClass &) = default;
+    CreatureClass(CreatureClass &&) = default;
+    CreatureClass &operator=(const CreatureClass &) = delete;
+    CreatureClass &operator=(CreatureClass &&) = delete;
     virtual ~CreatureClass() = default;
 
     bool equals(PlayerClassType type) const;

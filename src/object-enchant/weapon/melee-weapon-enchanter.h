@@ -7,6 +7,10 @@ class CreatureEntity;
 class ItemEntity;
 class MeleeWeaponEnchanter : public AbstractWeaponEnchanter {
 public:
+    MeleeWeaponEnchanter(const MeleeWeaponEnchanter &) = default;
+    MeleeWeaponEnchanter(MeleeWeaponEnchanter &&) = default;
+    MeleeWeaponEnchanter &operator=(const MeleeWeaponEnchanter &) = delete;
+    MeleeWeaponEnchanter &operator=(MeleeWeaponEnchanter &&) = delete;
     virtual ~MeleeWeaponEnchanter() = default;
 
     void apply_magic() override;

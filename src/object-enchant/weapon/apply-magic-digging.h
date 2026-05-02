@@ -8,6 +8,10 @@ class ItemEntity;
 class DiggingEnchanter : public AbstractWeaponEnchanter {
 public:
     DiggingEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power);
+    DiggingEnchanter(const DiggingEnchanter &) = default;
+    DiggingEnchanter(DiggingEnchanter &&) = default;
+    DiggingEnchanter &operator=(const DiggingEnchanter &) = delete;
+    DiggingEnchanter &operator=(DiggingEnchanter &&) = delete;
     void apply_magic() override;
 
 protected:

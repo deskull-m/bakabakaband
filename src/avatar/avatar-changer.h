@@ -6,6 +6,10 @@ class CreatureEntity;
 class AvatarChanger {
 public:
     AvatarChanger(CreatureEntity &creature, const CreatureEntity &target);
+    AvatarChanger(const AvatarChanger &) = default;
+    AvatarChanger(AvatarChanger &&) = default;
+    AvatarChanger &operator=(const AvatarChanger &) = delete;
+    AvatarChanger &operator=(AvatarChanger &&) = delete;
     virtual ~AvatarChanger() = default;
     void change_virtue();
 

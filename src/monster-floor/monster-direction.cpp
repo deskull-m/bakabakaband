@@ -69,7 +69,7 @@ static void decide_enemy_approch_direction(CreatureEntity &creature, MONSTER_IDX
         }
 
         const auto t_idx = dummy;
-        const auto &monster_to = floor.get_monster(t_idx);
+        const auto &monster_to = floor.get_monster(static_cast<MONSTER_IDX>(t_idx));
         if (&monster_to == &monster_from) {
             continue;
         }

@@ -334,7 +334,7 @@ void mitokohmon(CreatureEntity &creature)
         const auto &floor = *creature.get_floor();
         const auto p_pos = creature.get_position();
         for (auto i = floor.m_max - 1; i > 0; i--) {
-            const auto &monster = floor.get_monster(i);
+            const auto &monster = floor.get_monster(static_cast<MONSTER_IDX>(i));
             if (!monster.is_valid()) {
                 continue;
             }

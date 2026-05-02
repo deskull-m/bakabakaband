@@ -441,7 +441,7 @@ static void effect_monster_captured(CreatureEntity &creature, EffectMonster *em_
     msg_format(_("%sを捕えた！", "You capture %s^!"), em_ptr->m_name);
     auto cap_mon_ptr = tmp_cap_mon_ptr.value();
     cap_mon_ptr->r_idx = em_ptr->m_ptr->r_idx;
-    cap_mon_ptr->speed = em_ptr->m_ptr->speed;
+    cap_mon_ptr->speed = static_cast<byte>(em_ptr->m_ptr->speed);
     cap_mon_ptr->current_hp = static_cast<short>(em_ptr->m_ptr->hp);
     cap_mon_ptr->max_hp = static_cast<short>(em_ptr->m_ptr->max_maxhp);
     cap_mon_ptr->name = em_ptr->m_ptr->name;

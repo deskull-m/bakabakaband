@@ -6,6 +6,10 @@ class CreatureEntity;
 class PlayerIntelligence : public PlayerBasicStatistics {
 public:
     PlayerIntelligence(CreatureEntity &creature);
+    PlayerIntelligence(const PlayerIntelligence &) = default;
+    PlayerIntelligence(PlayerIntelligence &&) = default;
+    PlayerIntelligence &operator=(const PlayerIntelligence &) = delete;
+    PlayerIntelligence &operator=(PlayerIntelligence &&) = delete;
 
 protected:
     void set_locals() override;

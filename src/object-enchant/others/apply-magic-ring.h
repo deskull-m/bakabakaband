@@ -8,6 +8,10 @@ class ItemEntity;
 class RingEnchanter : public EnchanterBase {
 public:
     RingEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power);
+    RingEnchanter(const RingEnchanter &) = default;
+    RingEnchanter(RingEnchanter &&) = default;
+    RingEnchanter &operator=(const RingEnchanter &) = delete;
+    RingEnchanter &operator=(RingEnchanter &&) = delete;
     virtual ~RingEnchanter() = default;
     void apply_magic() override;
 

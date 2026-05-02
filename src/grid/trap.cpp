@@ -170,7 +170,7 @@ static int check_hit_from_monster_to_player(CreatureEntity &creature, int power)
     }
 
     /* Total armor */
-    ac = creature.get_ac();
+    ac = static_cast<ARMOUR_CLASS>(creature.get_ac());
 
     /* Power competes against Armor */
     if (randint1(power) > ((ac * 3) / 4)) {
@@ -465,8 +465,8 @@ void hit_trap(CreatureEntity &creature, bool break_trap)
 
                 /* Let them fight each other */
                 if (evil_idx && good_idx) {
-                    auto &monster_evil = floor.get_monster(evil_idx);
-                    auto &monster_good = floor.get_monster(good_idx);
+                    auto &monster_evil = floor.get_monster(static_cast<MONSTER_IDX>(evil_idx));
+                    auto &monster_good = floor.get_monster(static_cast<MONSTER_IDX>(good_idx));
                     monster_evil.set_target(monster_good.get_position());
                     monster_good.set_target(monster_evil.get_position());
                 }

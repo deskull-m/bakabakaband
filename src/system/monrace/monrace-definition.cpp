@@ -1028,9 +1028,9 @@ void MonraceDefinition::decrement_mob_numbers()
     }
 }
 
-void MonraceDefinition::emplace_final_summon(MonraceId id, int probability, int min_num, int max_num, int radius)
+void MonraceDefinition::emplace_final_summon(MonraceId id, int probability, int min_summon_num, int max_summon_num, int radius)
 {
-    this->final_summons.emplace_back(MonsterSummon(id, probability, min_num, max_num, radius));
+    this->final_summons.emplace_back(MonsterSummon(id, probability, min_summon_num, max_summon_num, radius));
 }
 
 const std::vector<MonsterSummon> &MonraceDefinition::get_final_summons() const

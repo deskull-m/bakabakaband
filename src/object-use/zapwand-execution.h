@@ -6,6 +6,10 @@ class CreatureEntity;
 class ObjectZapWandEntity {
 public:
     ObjectZapWandEntity(CreatureEntity &creature);
+    ObjectZapWandEntity(const ObjectZapWandEntity &) = default;
+    ObjectZapWandEntity(ObjectZapWandEntity &&) = default;
+    ObjectZapWandEntity &operator=(const ObjectZapWandEntity &) = delete;
+    ObjectZapWandEntity &operator=(ObjectZapWandEntity &&) = delete;
     virtual ~ObjectZapWandEntity() = default;
 
     void execute(INVENTORY_IDX i_idx);

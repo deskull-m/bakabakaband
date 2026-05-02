@@ -458,7 +458,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
     if (creature.get_mutations().has(PlayerMutationType::WARNING) && one_in_(1000)) {
         int danger_amount = 0;
         for (auto m_idx = 0; m_idx < creature.get_floor()->m_max; m_idx++) {
-            const auto &monster = creature.get_floor()->get_monster(m_idx);
+            const auto &monster = creature.get_floor()->get_monster(static_cast<MONSTER_IDX>(m_idx));
             const auto &monrace = monster.get_monrace();
             if (!monster.is_valid()) {
                 continue;

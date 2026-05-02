@@ -34,6 +34,10 @@
 class TargetSetter {
 public:
     TargetSetter(CreatureEntity &creature, target_type mode);
+    TargetSetter(const TargetSetter &) = default;
+    TargetSetter(TargetSetter &&) = default;
+    TargetSetter &operator=(const TargetSetter &) = delete;
+    TargetSetter &operator=(TargetSetter &&) = delete;
     void sweep_target_grids();
     const Target &get_target() const
     {

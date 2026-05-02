@@ -403,8 +403,8 @@ bool vanish_summoned_children(CreatureEntity &creature, MONSTER_IDX m_idx, bool 
     }
 
     if (record_named_pet && monster.is_named_pet()) {
-        const auto m_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
-        exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_LOSE_PARENT, m_name);
+        const auto pet_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
+        exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_LOSE_PARENT, pet_name);
     }
 
     delete_monster_idx(creature, m_idx);
