@@ -32,6 +32,7 @@
 #include "monster/monster-update.h"
 #include "monster/monster-util.h"
 #include "object/warning.h"
+#include "player/player-sex.h"
 #include "player/player-status.h"
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -376,6 +377,22 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     m_ptr->y = y;
     m_ptr->x = x;
     m_ptr->set_floor(&floor);
+
+    // 種族の MALE/FEMALE kind_flags からモンスターの性別を決定する。
+    // 両方持つ → 両性、片方のみ → 該当性別、どちらもなし → 無性。
+    {
+        const auto has_male = new_monrace.kind_flags.has(MonsterKindType::MALE);
+        const auto has_female = new_monrace.kind_flags.has(MonsterKindType::FEMALE);
+        if (has_male && has_female) {
+            m_ptr->psex = SEX_BISEXUAL;
+        } else if (has_male) {
+            m_ptr->psex = SEX_MALE;
+        } else if (has_female) {
+            m_ptr->psex = SEX_FEMALE;
+        } else {
+            m_ptr->psex = SEX_ASEXUAL;
+        }
+    }
 
     for (const auto mte : MONSTER_TIMED_EFFECT_LIST) {
         m_ptr->set_timed_effect(mte, 0);
