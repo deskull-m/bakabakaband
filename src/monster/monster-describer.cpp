@@ -1,7 +1,6 @@
 #include "monster/monster-describer.h"
 #include "io/files-util.h"
 #include "locale/english.h"
-#include "monster-race/race-sex-const.h"
 #include "monster/monster-description-types.h"
 #include "monster/monster-flag-types.h"
 #include "monster/monster-info.h"
@@ -20,16 +19,15 @@
 #include <string_view>
 #include <tl/optional.hpp>
 
-// @todo 性別をEnumFlags に切り替えたら引数の型も変えること.
-static int get_monster_pronoun_kind(const MonraceDefinition &monrace, const bool pron)
+static int get_monster_pronoun_kind(const CreatureEntity &monster, const bool pron)
 {
     if (!pron) {
         return 0x00;
     }
-    if (monrace.sex == MonsterSex::FEMALE) {
+    if (monster.is_female()) {
         return 0x20;
     }
-    if (monrace.sex == MonsterSex::MALE) {
+    if (monster.is_male()) {
         return 0x10;
     }
     return 0x00;
@@ -99,8 +97,7 @@ static tl::optional<std::string> decide_monster_personal_pronoun(const CreatureE
         return tl::nullopt;
     }
 
-    const auto &monrace = monster.get_appearance_monrace();
-    const auto kind = get_monster_pronoun_kind(monrace, pron);
+    const auto kind = get_monster_pronoun_kind(monster, pron);
     return get_monster_personal_pronoun(kind, mode);
 }
 

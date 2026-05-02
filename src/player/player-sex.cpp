@@ -14,11 +14,17 @@ const player_sex_type *sp_ptr;
  *      Title,
  *      Winner
  * </pre>
+ * 配列の並びは player_sex enum (SEX_FEMALE=0, SEX_MALE=1,
+ * SEX_BISEXUAL=2, SEX_ASEXUAL=3) と必ず一致させること。
  */
 const player_sex_type sex_info[MAX_SEXES] = {
     {
         { "女性", "Female" },
         { "クイーン", "Queen" },
+    },
+    {
+        { "男性", "Male" },
+        { "キング", "King" },
     },
     {
         { "両性", "Bisexual" },
@@ -27,9 +33,5 @@ const player_sex_type sex_info[MAX_SEXES] = {
     {
         { "無性", "Asexual" },
         { "ロード", "Lord" },
-    },
-    {
-        { "男性", "Male" },
-        { "キング", "King" },
     },
 };

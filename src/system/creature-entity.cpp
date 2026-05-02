@@ -171,19 +171,9 @@ MonraceDefinition &CreatureEntity::get_real_monrace() const
 
 const player_sex_type &CreatureEntity::get_sex_info() const
 {
-    if (this->is_player()) {
-        return sex_info[this->psex];
-    }
-
-    switch (this->get_monrace().sex) {
-    case MonsterSex::MALE:
-        return sex_info[SEX_MALE];
-    case MonsterSex::FEMALE:
-        return sex_info[SEX_FEMALE];
-    case MonsterSex::NONE:
-    default:
-        return sex_info[SEX_ASEXUAL];
-    }
+    // モンスターの psex は one_monster_placer で kind_flags MALE/FEMALE
+    // から計算済み。プレイヤーは birth で選択済み。両者ともそのまま参照する。
+    return sex_info[this->psex];
 }
 
 const player_personality *CreatureEntity::get_personality_info() const
@@ -226,13 +216,13 @@ std::string CreatureEntity::get_died_message() const
 
 bool CreatureEntity::is_male() const
 {
-    return this->get_monrace().is_male();
+    return (this->psex == SEX_MALE) || (this->psex == SEX_BISEXUAL);
 }
 
 bool CreatureEntity::is_female() const
 {
-    const auto &monrace = this->get_monrace();
-    return monrace.is_female() || (this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::WAIFUIZED));
+    const auto has_female_psex = (this->psex == SEX_FEMALE) || (this->psex == SEX_BISEXUAL);
+    return has_female_psex || (this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::WAIFUIZED));
 }
 
 std::pair<TERM_COLOR, int> CreatureEntity::get_hp_bar_data() const
