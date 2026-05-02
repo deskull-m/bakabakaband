@@ -698,7 +698,7 @@ void apply_vestige_terrain_replacement(CreatureEntity &creature)
         // 4%の確率で地形を差し替え
         if (one_in_(replacement_chance)) {
             const auto terrain = rand_choice(replaceable_terrain_ids);
-            set_terrain_id_to_grid(creature, pos, terrain);
+            set_terrain_id_to_grid(creature, pos, static_cast<short>(terrain));
             replacement_count++;
         }
     }

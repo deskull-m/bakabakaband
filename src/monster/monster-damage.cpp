@@ -432,7 +432,7 @@ void MonsterDamageProcessor::get_exp_from_mon(const CreatureEntity &target, int 
 
     /* Use (average maxhp * 2) as a denominator */
     int compensation = monrace.misc_flags.has(MonsterMiscType::FORCE_MAXHP) ? monrace.hit_dice.maxroll() * 2 : monrace.hit_dice.floored_expected_value_multiplied_by(2);
-    s64b_mul(&div_h, &div_l, 0, (ironman_nightmare ? 2 : 1) * compensation);
+    s64b_mul(&div_h, &div_l, 0, static_cast<uint32_t>((ironman_nightmare ? 2 : 1) * compensation));
 
     /* Special penalty in the wilderness */
     if (!this->creature.get_floor()->is_underground()) {

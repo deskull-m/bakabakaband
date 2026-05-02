@@ -286,7 +286,7 @@ static void print_health_monster_in_arena_for_wizard(CreatureEntity &creature)
 
         term_putstr(col - 2, row + row_offset, 12, TERM_WHITE, "      /     ");
 
-        auto &monster = creature.get_floor()->get_monster(monster_list_index);
+        auto &monster = creature.get_floor()->get_monster(static_cast<MONSTER_IDX>(monster_list_index));
         if (monster.is_valid()) {
             const auto &monrace = monster.get_monrace();
             const auto &symbol_config = monrace.symbol_config;

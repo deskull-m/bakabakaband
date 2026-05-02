@@ -33,7 +33,7 @@ void starve_player(CreatureEntity &creature)
     if (creature.food >= PY_FOOD_MAX) {
         (void)set_food(creature, creature.food - 100);
     } else if (AngbandWorld::get_instance().game_turn % (TURNS_PER_TICK * 5) == 0) {
-        int digestion = speed_to_energy(creature.get_speed());
+        int digestion = speed_to_energy(static_cast<byte>(creature.get_speed()));
         if (creature.has_regen_flag()) {
             digestion += 20;
         }

@@ -13,7 +13,7 @@ bool activate_charm_directional(CreatureEntity &creature, SpellFunc spell, int p
         return false;
     }
 
-    (void)spell(creature, dir, power);
+    (void)spell(creature, dir, static_cast<PLAYER_LEVEL>(power));
     return true;
 }
 }

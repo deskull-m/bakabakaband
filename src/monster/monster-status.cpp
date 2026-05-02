@@ -149,7 +149,7 @@ static void process_monsters_timed_effect_aux(CreatureEntity &creature, MONSTER_
         auto d = (cdis < MAX_MONSTER_SENSING / 2) ? (MAX_MONSTER_SENSING / cdis) : 1;
 
         /* Hack -- amount of "waking" is affected by speed of player */
-        d = (d * speed_to_energy(creature.get_speed())) / 10;
+        d = (d * speed_to_energy(static_cast<byte>(creature.get_speed()))) / 10;
         if (d < 0) {
             d = 1;
         }

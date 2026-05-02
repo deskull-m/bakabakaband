@@ -69,7 +69,7 @@ PERCENTAGE calculate_upkeep(CreatureEntity &creature)
     DEPTH total_friend_levels = 0;
     total_friends = 0;
     for (auto m_idx = creature.get_floor()->m_max - 1; m_idx >= 1; m_idx--) {
-        const auto &monster = creature.get_floor()->get_monster(m_idx);
+        const auto &monster = creature.get_floor()->get_monster(static_cast<MONSTER_IDX>(m_idx));
         if (!monster.is_valid()) {
             continue;
         }

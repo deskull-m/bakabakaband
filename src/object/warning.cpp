@@ -267,7 +267,7 @@ static int blow_damcalc(const CreatureEntity &monster, CreatureEntity &creature,
         return dam;
     }
 
-    ARMOUR_CLASS ac = creature.get_ac();
+    ARMOUR_CLASS ac = static_cast<ARMOUR_CLASS>(creature.get_ac());
     bool check_wraith_form = true;
     switch (blow.effect) {
     case RaceBlowEffectType::SUPERHURT: {

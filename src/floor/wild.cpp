@@ -862,7 +862,7 @@ bool change_wild_mode(CreatureEntity &creature, bool encount)
     bool has_pet = false;
     PlayerEnergy energy(creature);
     for (int i = 1; i < creature.get_floor()->m_max; i++) {
-        const auto &monster = creature.get_floor()->get_monster(i);
+        const auto &monster = creature.get_floor()->get_monster(static_cast<MONSTER_IDX>(i));
         if (!monster.is_valid()) {
             continue;
         }

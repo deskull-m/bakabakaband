@@ -101,7 +101,7 @@ void wipe_monsters_list(CreatureEntity &creature)
     auto &monraces = MonraceList::get_instance();
     auto &floor = *creature.get_floor();
     for (auto i = floor.m_max - 1; i >= 1; i--) {
-        auto &monster = floor.get_monster(i);
+        auto &monster = floor.get_monster(static_cast<MONSTER_IDX>(i));
         if (!monster.is_valid()) {
             continue;
         }

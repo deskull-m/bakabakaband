@@ -621,7 +621,7 @@ bool QuaffEffects::mesudachi()
     for (int i = 0; i < 10; i++) {
         skill_gain += randint1(10);
     }
-    this->creature.skill_exp[PlayerSkillKindType::ASSHOLE] += skill_gain;
+    this->creature.skill_exp[PlayerSkillKindType::ASSHOLE] += static_cast<SUB_EXP>(skill_gain);
     msg_format(_("尻の穴技能が%d向上した！", "Your asshole skill increased by %d!"), skill_gain);
 
     // 1/36の確率で性別が女になる（両性の場合は無効）

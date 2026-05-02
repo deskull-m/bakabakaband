@@ -32,7 +32,7 @@ mam_type *initialize_mam_type(CreatureEntity &creature, mam_type *mam_ptr, MONST
     mam_ptr->touched = false;
 
     const auto &monrace = mam_ptr->m_ptr->get_monrace();
-    mam_ptr->ac = mam_ptr->t_ptr->get_ac();
+    mam_ptr->ac = static_cast<ARMOUR_CLASS>(mam_ptr->t_ptr->get_ac());
     mam_ptr->rlev = ((monrace.level >= 1) ? monrace.level : 1);
     mam_ptr->blinked = false;
     mam_ptr->power = 0;

@@ -276,7 +276,7 @@ int16_t PlayerSpeed::mutation_bonus()
 int16_t PlayerSpeed::riding_bonus()
 {
     const auto &monster = (&this->creature)->get_floor()->get_monster(this->creature.riding);
-    int16_t speed = monster.speed;
+    int16_t speed = static_cast<int16_t>(monster.speed);
     int16_t bonus = 0;
     if (!this->creature.riding) {
         return 0;

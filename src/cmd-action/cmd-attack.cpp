@@ -109,7 +109,7 @@ static void natural_attack(CreatureEntity &creature, MONSTER_IDX m_idx, PlayerMu
 
     creature.plus_incident_tree("ATTACK_EXE_COUNT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
-    is_hit &= test_hit_norm(creature, chance, monster.get_ac(), monster.get_monster_profile().ml);
+    is_hit &= test_hit_norm(creature, chance, static_cast<ARMOUR_CLASS>(monster.get_ac()), monster.get_monster_profile().ml);
     if (!is_hit) {
         sound(SoundKind::MISS);
         msg_format(_("ミス！ %sにかわされた。", "You miss %s."), m_name.data());
@@ -182,7 +182,7 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     creature.plus_incident_tree("ATTACK_EXE_COUNT", 1);
     creature.plus_incident_tree("HEADBUTT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
-    is_hit &= test_hit_norm(creature, chance, monster.get_ac(), monster.get_monster_profile().ml);
+    is_hit &= test_hit_norm(creature, chance, static_cast<ARMOUR_CLASS>(monster.get_ac()), monster.get_monster_profile().ml);
 
     if (!is_hit) {
         sound(SoundKind::MISS);
@@ -273,7 +273,7 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
 
     creature.plus_incident_tree("ATTACK_EXE_COUNT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
-    is_hit &= test_hit_norm(creature, chance, monster.get_ac(), monster.get_monster_profile().ml);
+    is_hit &= test_hit_norm(creature, chance, static_cast<ARMOUR_CLASS>(monster.get_ac()), monster.get_monster_profile().ml);
 
     if (!is_hit) {
         sound(SoundKind::MISS);
@@ -677,7 +677,7 @@ static void enema_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear
 
     creature.plus_incident_tree("ATTACK_EXE_COUNT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
-    is_hit &= test_hit_norm(creature, chance, monster.get_ac(), monster.get_monster_profile().ml);
+    is_hit &= test_hit_norm(creature, chance, static_cast<ARMOUR_CLASS>(monster.get_ac()), monster.get_monster_profile().ml);
 
     if (!is_hit) {
         sound(SoundKind::MISS);

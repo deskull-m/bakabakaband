@@ -161,7 +161,7 @@ void do_cmd_knowledge_pets(CreatureEntity &creature)
 
     int t_friends = 0;
     for (int i = creature.get_floor()->m_max - 1; i >= 1; i--) {
-        const auto &monster = creature.get_floor()->get_monster(i);
+        const auto &monster = creature.get_floor()->get_monster(static_cast<MONSTER_IDX>(i));
         if (!monster.is_valid() || !monster.is_pet()) {
             continue;
         }

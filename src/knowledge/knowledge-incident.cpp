@@ -237,7 +237,7 @@ void do_cmd_knowledge_incident(CreatureEntity &creature)
                     // アイテムを再構成
                     ItemEntity item;
                     item.bi_key = BaseitemKey(static_cast<ItemKindType>(tval), sval);
-                    item.pval = pval;
+                    item.pval = static_cast<PARAMETER_VALUE>(pval);
                     item.mark_as_known();
 
                     auto item_name = describe_flavor(creature, item, 0);

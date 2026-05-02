@@ -167,7 +167,7 @@ bool get_player_patron(CreatureEntity &creature)
         return false;
     }
 
-    creature.patron = k;
+    creature.patron = static_cast<int16_t>(k);
     display_player_name(creature);
     return true;
 }

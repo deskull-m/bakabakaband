@@ -1075,7 +1075,7 @@ byte CreatureEntity::get_temporary_speed() const
         }
     }
 
-    return current_speed;
+    return static_cast<byte>(current_speed);
 }
 
 int CreatureEntity::calc_life_rating() const

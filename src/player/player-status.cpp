@@ -258,7 +258,7 @@ static void update_bonuses(CreatureEntity &creature)
     BIT_FLAGS old_esp_unique = creature.esp_unique;
     BIT_FLAGS old_see_inv = creature.see_inv;
     BIT_FLAGS old_mighty_throw = creature.mighty_throw;
-    int16_t old_speed = creature.get_speed();
+    int16_t old_speed = static_cast<int16_t>(creature.get_speed());
 
     ARMOUR_CLASS old_dis_ac = creature.dis_ac;
     ARMOUR_CLASS old_dis_to_a = creature.dis_to_a;
@@ -1662,7 +1662,7 @@ static ARMOUR_CLASS calc_base_ac(CreatureEntity &creature)
         // 装備がより軽いほどボーナスが大きくなる（最大で2倍）
         auto weight_ratio = (300 - equipment_weight) / 300.0;
         evasion_bonus = static_cast<int>(evasion_bonus * (1.0 + weight_ratio));
-        ac += evasion_bonus;
+        ac += static_cast<ARMOUR_CLASS>(evasion_bonus);
     }
 
     return ac;

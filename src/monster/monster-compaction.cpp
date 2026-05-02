@@ -65,7 +65,7 @@ static void compact_monsters_aux(CreatureEntity &creature, MONSTER_IDX i1, MONST
 
     if (monster.is_pet()) {
         for (int i = 1; i < floor.m_max; i++) {
-            CreatureEntity *m2_ptr = &floor.get_monster(i);
+            CreatureEntity *m2_ptr = &floor.get_monster(static_cast<MONSTER_IDX>(i));
 
             if (m2_ptr->get_monster_profile().parent_m_idx == i1) {
                 m2_ptr->get_monster_profile().parent_m_idx = i2;

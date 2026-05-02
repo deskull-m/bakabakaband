@@ -156,7 +156,7 @@ static int damage;
  */
 static std::string mane_info(CreatureEntity &creature, MonsterAbilityType power, int dam)
 {
-    PLAYER_LEVEL plev = creature.get_level();
+    PLAYER_LEVEL plev = static_cast<PLAYER_LEVEL>(creature.get_level());
 
     const auto power_int = enum2i(power);
     using Mat = MonsterAbilityType;
@@ -211,7 +211,7 @@ static int get_mane_power(CreatureEntity &creature, int *sn, bool baigaesi)
     TERM_LEN y = 1;
     TERM_LEN x = 18;
     PERCENTAGE minfail = 0;
-    PLAYER_LEVEL plev = creature.get_level();
+    PLAYER_LEVEL plev = static_cast<PLAYER_LEVEL>(creature.get_level());
     PERCENTAGE chance = 0;
     char choice;
     concptr p = _("能力", "power");
@@ -364,7 +364,7 @@ static int get_mane_power(CreatureEntity &creature, int *sn, bool baigaesi)
  */
 static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
 {
-    PLAYER_LEVEL plev = creature.get_level();
+    PLAYER_LEVEL plev = static_cast<PLAYER_LEVEL>(creature.get_level());
     BIT_FLAGS mode = (PM_ALLOW_GROUP | PM_FORCE_PET);
     BIT_FLAGS u_mode = 0L;
 
@@ -1192,7 +1192,7 @@ bool do_cmd_mane(CreatureEntity &creature, bool baigaesi)
     int n = 0;
     PERCENTAGE chance;
     PERCENTAGE minfail = 0;
-    PLAYER_LEVEL plev = creature.get_level();
+    PLAYER_LEVEL plev = static_cast<PLAYER_LEVEL>(creature.get_level());
     monster_power spell;
     bool cast;
 

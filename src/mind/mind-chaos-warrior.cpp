@@ -83,7 +83,7 @@ void acquire_hafted_weapon(CreatureEntity &creature)
         item.pval = 1;
         item.to_h = 3 + randint1(18);
         item.to_d = 3 + randint1(18);
-        item.to_a = randint1(5);
+        item.to_a = static_cast<ARMOUR_CLASS>(randint1(5));
 
         switch (randint1(21)) {
         case 1:
