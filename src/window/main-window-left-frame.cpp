@@ -149,20 +149,21 @@ void print_hp(CreatureEntity &creature)
 }
 
 /*!
- * @brief プレイヤーのMPを表示する / Prints players max/cur spell points
+ * @brief MPを表示する / Prints max/cur spell points
  * @param creature クリーチャーへの参照
+ * @details プレイヤー職業や msp の値に関わらず常に表示する。
+ * モンスターは生成時に msp/csp とも 0 で初期化されるため 0/0 と表示される。
  */
 void print_sp(CreatureEntity &creature)
 {
     char tmp[32];
     byte color;
-    if ((mp_ptr->spell_book == ItemKindType::NONE) && mp_ptr->spell_first == SPELL_FIRST_NO_SPELL) {
-        return;
-    }
 
     put_str(_("MP", "SP"), ROW_CURSP, COL_CURSP);
     sprintf(tmp, "%4ld", (long int)creature.csp);
-    if (creature.csp >= creature.msp) {
+    if (creature.msp <= 0) {
+        color = TERM_SLATE;
+    } else if (creature.csp >= creature.msp) {
         color = TERM_L_GREEN;
     } else if (creature.csp > (creature.msp * mana_warn) / 10) {
         color = TERM_YELLOW;
@@ -173,7 +174,7 @@ void print_sp(CreatureEntity &creature)
     c_put_str(color, format("%4d", creature.csp), ROW_CURSP, COL_CURSP + 3);
     put_str("/", ROW_CURSP, COL_CURSP + 7);
     sprintf(tmp, "%4ld", (long int)creature.msp);
-    color = TERM_L_GREEN;
+    color = (creature.msp <= 0) ? TERM_SLATE : TERM_L_GREEN;
     c_put_str(color, format("%4d", creature.msp), ROW_CURSP, COL_CURSP + 8);
 }
 
