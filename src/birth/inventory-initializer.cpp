@@ -155,18 +155,18 @@ void player_outfit(CreatureEntity &creature)
 {
 
     const auto &baseitems = BaseitemList::get_instance();
-    ItemEntity item;
+    ItemEntity parchment;
     decide_initial_items(creature);
 
     // アンナタールの羊皮紙
-    item.generate(baseitems.lookup_baseitem_id({ ItemKindType::READING_MATTER, 0 }));
-    item.number = 1;
-    add_outfit(creature, item);
+    parchment.generate(baseitems.lookup_baseitem_id({ ItemKindType::READING_MATTER, 0 }));
+    parchment.number = 1;
+    add_outfit(creature, parchment);
 
     // メルコールの羊皮紙
-    item.generate(baseitems.lookup_baseitem_id({ ItemKindType::READING_MATTER, 3 }));
-    item.number = 1;
-    add_outfit(creature, item);
+    parchment.generate(baseitems.lookup_baseitem_id({ ItemKindType::READING_MATTER, 3 }));
+    parchment.number = 1;
+    add_outfit(creature, parchment);
 
     CreatureClass pc(creature);
     CreatureRace pr(&creature);
