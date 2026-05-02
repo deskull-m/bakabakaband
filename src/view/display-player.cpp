@@ -96,9 +96,13 @@ static void display_player_basic_info(CreatureEntity &creature)
     display_player_one_line(ENTRY_SEX, creature.get_sex_info().title, TERM_L_BLUE);
     if (creature.race != nullptr) {
         display_player_one_line(ENTRY_RACE, (creature.get_mimic_form() != MimicKindType::NONE ? mimic_info.at(creature.get_mimic_form()).title : creature.get_race_info()->title), TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_RACE, _("なし", "None"), TERM_SLATE);
     }
     if (creature.pclass_ref != nullptr) {
         display_player_one_line(ENTRY_CLASS, (*creature.get_class_info()).title, TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_CLASS, _("なし", "None"), TERM_SLATE);
     }
 }
 
@@ -110,6 +114,7 @@ static void display_magic_realms(CreatureEntity &creature)
 {
     PlayerRealm pr(creature);
     if (!pr.realm1().is_available() && creature.element_realm == ElementRealmType::NONE) {
+        display_player_one_line(ENTRY_REALM, _("なし", "None"), TERM_SLATE);
         return;
     }
 
@@ -136,37 +141,56 @@ static void display_magic_realms(CreatureEntity &creature)
 static void display_phisique(CreatureEntity &creature)
 {
     const auto is_player = creature.is_player();
+    constexpr auto unset_numeric = "----";
 #ifdef JP
     if (is_player) {
         display_player_one_line(ENTRY_AGE, format("%d才", (int)creature.age), TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_AGE, unset_numeric, TERM_SLATE);
     }
     if (is_player || creature.ht > 0) {
         display_player_one_line(ENTRY_HEIGHT, format("%dcm", inch_to_cm(creature.ht)), TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_HEIGHT, unset_numeric, TERM_SLATE);
     }
     if (is_player || creature.wt > 0) {
         display_player_one_line(ENTRY_WEIGHT, format("%dkg", lb_to_kg(creature.wt)), TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_WEIGHT, unset_numeric, TERM_SLATE);
     }
     if (is_player) {
         display_player_one_line(ENTRY_SOCIAL, format("%d  ", (int)creature.prestige), TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_SOCIAL, unset_numeric, TERM_SLATE);
     }
 #else
     if (is_player) {
         display_player_one_line(ENTRY_AGE, format("%d", (int)creature.age), TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_AGE, unset_numeric, TERM_SLATE);
     }
     if (is_player || creature.ht > 0) {
         display_player_one_line(ENTRY_HEIGHT, format("%d", (int)creature.ht), TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_HEIGHT, unset_numeric, TERM_SLATE);
     }
     if (is_player || creature.wt > 0) {
         display_player_one_line(ENTRY_WEIGHT, format("%d", (int)creature.wt), TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_WEIGHT, unset_numeric, TERM_SLATE);
     }
     if (is_player) {
         display_player_one_line(ENTRY_SOCIAL, format("%d", (int)creature.prestige), TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_SOCIAL, unset_numeric, TERM_SLATE);
     }
 #endif
     std::string alg = PlayerAlignment(creature).get_alignment_description();
     display_player_one_line(ENTRY_ALIGN, format("%s", alg.data()), TERM_L_BLUE);
     if (is_player) {
         display_player_one_line(ENTRY_DEATH_COUNT, format("%d  ", (int)creature.death_count), TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_DEATH_COUNT, unset_numeric, TERM_SLATE);
     }
 }
 
@@ -328,6 +352,8 @@ tl::optional<int> display_player(CreatureEntity &creature, const int tmp_mode)
     display_magic_realms(creature);
     if (CreatureClass(creature).equals(PlayerClassType::CHAOS_WARRIOR) || (creature.get_mutations().has(PlayerMutationType::CHAOS_GIFT))) {
         display_player_one_line(ENTRY_PATRON, patron_list[creature.patron].name, TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_PATRON, _("なし", "None"), TERM_SLATE);
     }
 
     // 実際の種族と見かけの種族を表示
