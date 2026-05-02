@@ -237,11 +237,10 @@ static void describe_grid_monster(CreatureEntity &creature, GridExamination *ge_
 
 static void describe_monster_person(GridExamination *ge_ptr)
 {
-    const auto &monrace = ge_ptr->m_ptr->get_appearance_monrace();
     ge_ptr->s1 = _("それは", "It is ");
-    if (monrace.sex == MonsterSex::FEMALE) {
+    if (ge_ptr->m_ptr->is_female()) {
         ge_ptr->s1 = _("彼女は", "She is ");
-    } else if (monrace.sex == MonsterSex::MALE) {
+    } else if (ge_ptr->m_ptr->is_male()) {
         ge_ptr->s1 = _("彼は", "He is ");
     }
 

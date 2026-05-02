@@ -384,10 +384,8 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     //   2) MonraceDefinition::kind_flags の MALE/FEMALE     例: 一般人間モンスター
     // 両系統で OR 集約し、両方真→両性、片方→該当、なし→無性とする。
     {
-        const auto has_male = new_monrace.kind_flags.has(MonsterKindType::MALE)
-            || (new_monrace.sex == MonsterSex::MALE);
-        const auto has_female = new_monrace.kind_flags.has(MonsterKindType::FEMALE)
-            || (new_monrace.sex == MonsterSex::FEMALE);
+        const auto has_male = new_monrace.kind_flags.has(MonsterKindType::MALE) || (new_monrace.sex == MonsterSex::MALE);
+        const auto has_female = new_monrace.kind_flags.has(MonsterKindType::FEMALE) || (new_monrace.sex == MonsterSex::FEMALE);
         if (has_male && has_female) {
             m_ptr->psex = SEX_BISEXUAL;
         } else if (has_male) {

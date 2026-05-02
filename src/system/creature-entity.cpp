@@ -16,7 +16,6 @@
 #include "monster/monster-timed-effects.h"
 #include "monster/monster-util.h"
 #include "player-ability/player-ability-types.h"
-#include "player/player-personality.h"
 #include "player-info/bard-data-type.h"
 #include "player-info/class-info.h"
 #include "player-info/class-types.h"
