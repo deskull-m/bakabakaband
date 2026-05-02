@@ -8,8 +8,6 @@ class ItemEntity;
 class CrownEnchanter : public AbstractProtectorEnchanter {
 public:
     CrownEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power);
-    CrownEnchanter(const CrownEnchanter &) = delete;
-    CrownEnchanter(CrownEnchanter &&) = delete;
     CrownEnchanter &operator=(const CrownEnchanter &) = delete;
     CrownEnchanter &operator=(CrownEnchanter &&) = delete;
     void apply_magic() override;

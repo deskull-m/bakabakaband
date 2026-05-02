@@ -22,8 +22,6 @@ public:
         , distance_threshold(5 * (20 - try_count))
     {
     }
-    ItemCompactionChecker(const ItemCompactionChecker &) = delete;
-    ItemCompactionChecker(ItemCompactionChecker &&) = delete;
     ItemCompactionChecker &operator=(const ItemCompactionChecker &) = delete;
     ItemCompactionChecker &operator=(ItemCompactionChecker &&) = delete;
 

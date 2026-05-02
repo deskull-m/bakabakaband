@@ -7,8 +7,6 @@ class ItemEntity;
 class ScrollReadExecutor : public ReadExecutorBase {
 public:
     ScrollReadExecutor(CreatureEntity &creature, ItemEntity *o_ptr, bool known);
-    ScrollReadExecutor(const ScrollReadExecutor &) = delete;
-    ScrollReadExecutor(ScrollReadExecutor &&) = delete;
     ScrollReadExecutor &operator=(const ScrollReadExecutor &) = delete;
     ScrollReadExecutor &operator=(ScrollReadExecutor &&) = delete;
     bool is_identified() const override;

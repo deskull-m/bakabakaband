@@ -8,8 +8,6 @@ class ItemEntity;
 class ArrowEnchanter : public AbstractWeaponEnchanter {
 public:
     ArrowEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power);
-    ArrowEnchanter(const ArrowEnchanter &) = delete;
-    ArrowEnchanter(ArrowEnchanter &&) = delete;
     ArrowEnchanter &operator=(const ArrowEnchanter &) = delete;
     ArrowEnchanter &operator=(ArrowEnchanter &&) = delete;
     void apply_magic() override;

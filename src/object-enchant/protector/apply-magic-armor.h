@@ -7,8 +7,6 @@ class CreatureEntity;
 class ItemEntity;
 class ArmorEnchanter : public AbstractProtectorEnchanter {
 public:
-    ArmorEnchanter(const ArmorEnchanter &) = delete;
-    ArmorEnchanter(ArmorEnchanter &&) = delete;
     ArmorEnchanter &operator=(const ArmorEnchanter &) = delete;
     ArmorEnchanter &operator=(ArmorEnchanter &&) = delete;
     virtual ~ArmorEnchanter() = default;

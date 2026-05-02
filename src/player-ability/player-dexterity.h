@@ -6,8 +6,6 @@ class CreatureEntity;
 class PlayerDexterity : public PlayerBasicStatistics {
 public:
     PlayerDexterity(CreatureEntity &creature);
-    PlayerDexterity(const PlayerDexterity &) = delete;
-    PlayerDexterity(PlayerDexterity &&) = delete;
     PlayerDexterity &operator=(const PlayerDexterity &) = delete;
     PlayerDexterity &operator=(PlayerDexterity &&) = delete;
 

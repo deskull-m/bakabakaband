@@ -6,8 +6,6 @@ class CreatureEntity;
 class PlayerIntelligence : public PlayerBasicStatistics {
 public:
     PlayerIntelligence(CreatureEntity &creature);
-    PlayerIntelligence(const PlayerIntelligence &) = delete;
-    PlayerIntelligence(PlayerIntelligence &&) = delete;
     PlayerIntelligence &operator=(const PlayerIntelligence &) = delete;
     PlayerIntelligence &operator=(PlayerIntelligence &&) = delete;
 

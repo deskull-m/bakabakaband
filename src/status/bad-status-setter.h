@@ -14,8 +14,6 @@ class CreatureEntity;
 class BadStatusSetter {
 public:
     BadStatusSetter(CreatureEntity &creature);
-    BadStatusSetter(const BadStatusSetter &) = delete;
-    BadStatusSetter(BadStatusSetter &&) = delete;
     BadStatusSetter &operator=(const BadStatusSetter &) = delete;
     BadStatusSetter &operator=(BadStatusSetter &&) = delete;
     ~BadStatusSetter() = default;

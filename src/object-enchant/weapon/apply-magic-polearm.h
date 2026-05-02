@@ -8,8 +8,6 @@ class ItemEntity;
 class PolearmEnchanter : public MeleeWeaponEnchanter {
 public:
     PolearmEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power);
-    PolearmEnchanter(const PolearmEnchanter &) = delete;
-    PolearmEnchanter(PolearmEnchanter &&) = delete;
     PolearmEnchanter &operator=(const PolearmEnchanter &) = delete;
     PolearmEnchanter &operator=(PolearmEnchanter &&) = delete;
 

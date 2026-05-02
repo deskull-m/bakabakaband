@@ -5,8 +5,6 @@
 class CreatureEntity;
 class PlayerStatusBase {
 public:
-    PlayerStatusBase(const PlayerStatusBase &) = delete;
-    PlayerStatusBase(PlayerStatusBase &&) = delete;
     PlayerStatusBase &operator=(const PlayerStatusBase &) = delete;
     PlayerStatusBase &operator=(PlayerStatusBase &&) = delete;
 
