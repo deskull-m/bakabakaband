@@ -128,7 +128,6 @@ bool MonsterDamageProcessor::mon_take_hit(std::string_view note)
 
 bool MonsterDamageProcessor::genocide_patron()
 {
-    auto &creature = this->creature;
     const auto &monster = creature.get_floor()->get_monster(this->m_idx);
     if (!monster.is_valid()) {
         this->m_idx = 0;
@@ -143,7 +142,6 @@ bool MonsterDamageProcessor::genocide_patron()
 
 bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, const CreatureEntity &exp_target)
 {
-    auto &creature = this->creature;
     auto &monster = creature.get_floor()->get_monster(this->m_idx);
     auto &monrace = monster.get_real_monrace();
     if (monster.hp >= 0) {
@@ -180,7 +178,6 @@ bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, cons
  */
 void MonsterDamageProcessor::death_special_flag_monster()
 {
-    auto &creature = this->creature;
     auto &monster = creature.get_floor()->get_monster(this->m_idx);
     auto monrace_id = monster.r_idx;
     auto &monrace = monster.get_monrace();
@@ -216,7 +213,6 @@ void MonsterDamageProcessor::death_special_flag_monster()
 
 void MonsterDamageProcessor::increase_kill_numbers()
 {
-    auto &creature = this->creature;
     auto &monster = creature.get_floor()->get_monster(this->m_idx);
     auto &monrace = monster.get_real_monrace();
     monrace.increment_akills();
@@ -320,7 +316,6 @@ void MonsterDamageProcessor::death_choasians(std::string_view m_name)
 
 void MonsterDamageProcessor::dying_scream(std::string_view m_name)
 {
-    auto &creature = this->creature;
     const auto &monster = creature.get_floor()->get_monster(this->m_idx);
     const auto &r_ref = monster.get_real_monrace();
     if (r_ref.speak_flags.has_none_of({ MonsterSpeakType::SPEAK_ALL, MonsterSpeakType::SPEAK_DEATH })) {
@@ -390,7 +385,6 @@ void MonsterDamageProcessor::show_explosion_message(std::string_view died_mes, s
 
 void MonsterDamageProcessor::show_bounty_message(std::string_view m_name)
 {
-    auto &creature = this->creature;
     auto &floor = *creature.get_floor();
     auto &monster = floor.get_monster(this->m_idx);
     const auto &monrace = monster.get_real_monrace();
@@ -421,7 +415,6 @@ void MonsterDamageProcessor::show_bounty_message(std::string_view m_name)
  */
 void MonsterDamageProcessor::get_exp_from_mon(const CreatureEntity &target, int exp_dam)
 {
-    auto &creature = this->creature;
     const auto &monrace = target.get_monrace();
     if (!target.is_valid() || target.is_pet() || AngbandSystem::get_instance().is_phase_out()) {
         return;
@@ -486,7 +479,6 @@ void MonsterDamageProcessor::get_exp_from_mon(const CreatureEntity &target, int 
 
 void MonsterDamageProcessor::set_redraw()
 {
-    auto &creature = this->creature;
     auto &monster = creature.get_floor()->get_monster(this->m_idx);
     HealthBarTracker::get_instance().set_flag_if_tracking(this->m_idx);
     if (monster.is_riding()) {
@@ -496,7 +488,6 @@ void MonsterDamageProcessor::set_redraw()
 
 void MonsterDamageProcessor::add_monster_fear()
 {
-    auto &creature = this->creature;
     const auto &monster = creature.get_floor()->get_monster(this->m_idx);
     if (monster.is_fearful() && (this->dam > 0)) {
         auto fear_remining = monster.get_remaining_fear() - randint1(this->dam);
@@ -528,7 +519,6 @@ void MonsterDamageProcessor::add_monster_fear()
  */
 void MonsterDamageProcessor::process_masochist_reaction()
 {
-    auto &creature = this->creature;
     auto &monster = creature.get_floor()->get_monster(this->m_idx);
     const auto &monrace = monster.get_monrace();
 
@@ -558,7 +548,6 @@ void MonsterDamageProcessor::process_masochist_reaction()
  */
 void MonsterDamageProcessor::process_sadist_reaction()
 {
-    auto &creature = this->creature;
     auto &monster = creature.get_floor()->get_monster(this->m_idx);
     const auto &monrace = monster.get_monrace();
 
@@ -586,7 +575,6 @@ void MonsterDamageProcessor::process_sadist_reaction()
  */
 bool MonsterDamageProcessor::check_and_process_hp_transform()
 {
-    auto &creature = this->creature;
     auto &monster = creature.get_floor()->get_monster(this->m_idx);
 
     // 変身条件のチェック

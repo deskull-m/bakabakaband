@@ -42,7 +42,6 @@ bool CreatureClass::equals(PlayerClassType type) const
     if (!this->creature.is_player()) {
         return false;
     }
-    auto &creature = this->creature;
     return creature.pclass == type;
 }
 
@@ -54,7 +53,6 @@ TrFlags CreatureClass::tr_flags() const
     if (!this->creature.is_player()) {
         return TrFlags();
     }
-    auto &creature = this->creature;
 
     TrFlags flags;
     const auto plev = creature.level;
@@ -234,7 +232,6 @@ TrFlags CreatureClass::stance_tr_flags() const
     if (!this->creature.is_player()) {
         return TrFlags();
     }
-    auto &creature = this->creature;
 
     TrFlags flags;
 
@@ -284,7 +281,6 @@ bool CreatureClass::has_stun_immunity() const
     if (!this->creature.is_player()) {
         return false;
     }
-    auto &creature = this->creature;
     return this->equals(PlayerClassType::BERSERKER) && (creature.level > 34);
 }
 
@@ -293,7 +289,6 @@ bool CreatureClass::has_poison_resistance() const
     if (!this->creature.is_player()) {
         return false;
     }
-    auto &creature = this->creature;
     return this->equals(PlayerClassType::NINJA) && (creature.level > 44);
 }
 
@@ -411,7 +406,6 @@ bool CreatureClass::lose_balance()
     if (!this->creature.is_player()) {
         return false;
     }
-    auto &creature = this->creature;
     if (creature.pclass != PlayerClassType::SAMURAI) {
         return false;
     }
@@ -516,7 +510,6 @@ void CreatureClass::init_specific_data()
     if (!this->creature.is_player()) {
         return;
     }
-    auto &creature = this->creature;
 
     switch (creature.pclass) {
     case PlayerClassType::SMITH:
@@ -567,7 +560,6 @@ bool CreatureClass::has_ninja_speed() const
     if (!this->creature.is_player()) {
         return false;
     }
-    auto &creature = this->creature;
 
     auto has_ninja_speed_main = !creature.inventory[INVEN_MAIN_HAND]->is_valid();
     has_ninja_speed_main |= can_attack_with_main_hand(creature);
