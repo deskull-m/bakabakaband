@@ -378,11 +378,16 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     m_ptr->x = x;
     m_ptr->set_floor(&floor);
 
-    // 種族の MALE/FEMALE kind_flags からモンスターの性別を決定する。
-    // 両方持つ → 両性、片方のみ → 該当性別、どちらもなし → 無性。
+    // 種族の MALE/FEMALE 指定からモンスターの性別を決定する。
+    // データソースは 2 系統:
+    //   1) MonraceDefinition::sex (MonsterSex enum)         例: 女王ベトベト
+    //   2) MonraceDefinition::kind_flags の MALE/FEMALE     例: 一般人間モンスター
+    // 両系統で OR 集約し、両方真→両性、片方→該当、なし→無性とする。
     {
-        const auto has_male = new_monrace.kind_flags.has(MonsterKindType::MALE);
-        const auto has_female = new_monrace.kind_flags.has(MonsterKindType::FEMALE);
+        const auto has_male = new_monrace.kind_flags.has(MonsterKindType::MALE)
+            || (new_monrace.sex == MonsterSex::MALE);
+        const auto has_female = new_monrace.kind_flags.has(MonsterKindType::FEMALE)
+            || (new_monrace.sex == MonsterSex::FEMALE);
         if (has_male && has_female) {
             m_ptr->psex = SEX_BISEXUAL;
         } else if (has_male) {
