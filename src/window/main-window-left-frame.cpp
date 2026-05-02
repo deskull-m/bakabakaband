@@ -38,7 +38,7 @@ void print_title(CreatureEntity &creature)
     std::string p;
     const auto &world = AngbandWorld::get_instance();
     if (!creature.is_player()) {
-        // モンスター閲覧時は職業称号を持たないため空欄
+        p = _("なし", "None");
     } else if (world.wizard) {
         p = _("［ウィザード］", "[=-WIZARD-=]");
     } else if (world.total_winner) {
@@ -256,6 +256,7 @@ void print_depth(CreatureEntity &creature)
 void print_frame_basic(CreatureEntity &creature)
 {
     // モンスター時 race_info は nullptr なので種族名は monrace.name を使う。
+    // どちらも取れない場合は「なし」表記。
     std::string_view title;
     if (creature.get_mimic_form() != MimicKindType::NONE) {
         title = mimic_info.at(creature.get_mimic_form()).title;
@@ -263,6 +264,8 @@ void print_frame_basic(CreatureEntity &creature)
         title = race_info->title;
     } else if (creature.has_monster_profile()) {
         title = creature.get_monrace().name;
+    } else {
+        title = _("なし", "None");
     }
     print_field(title, ROW_RACE, COL_RACE);
     print_title(creature);
