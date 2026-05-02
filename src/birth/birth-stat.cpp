@@ -82,9 +82,12 @@ void get_stats(CreatureEntity &creature)
         }
     }
 
-    // stat_max_maxは初期化する
+    // stat_max_max は初期化、stat_use はロール結果と同値を初期表示にする。
+    // プレイヤーは後段の calc_bonuses() で stat_use を再計算するが、
+    // モンスターは calc_bonuses() を呼ばないので stat_use がここで確定する。
     for (auto i = 0; i < A_MAX; i++) {
         creature.stat_max_max[i] = creature.stat_max[i];
+        creature.stat_use[i] = creature.stat_max[i];
     }
 }
 
