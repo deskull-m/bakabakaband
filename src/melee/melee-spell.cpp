@@ -36,7 +36,7 @@ static bool try_melee_spell(CreatureEntity &creature, melee_spell_type *ms_ptr)
 
     disturb(creature, true, true);
     if (ms_ptr->see_m) {
-        msg_format(_(" %s^は呢文を唱えようとしたが失敗した。", "%s^ tries to cast a spell, but fails."), ms_ptr->m_name.data());
+        msg_format(_(" %s^は呪文を唱えようとしたが失敗した。", "%s^ tries to cast a spell, but fails."), ms_ptr->m_name.data());
     }
 
     return true;

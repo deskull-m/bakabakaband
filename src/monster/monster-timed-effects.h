@@ -10,7 +10,7 @@
  * @details CreatureTimedEffect のうちモンスター側で扱う 7 種。
  * プレイヤー専用効果（HERO/BLESSED 等）はここに含まれない。
  */
-constexpr std::array<CreatureTimedEffect, 7> MONSTER_TIMED_EFFECT_LIST = {
+constexpr std::array<CreatureTimedEffect, 7> MONSTER_TIMED_EFFECT_LIST = { {
     CreatureTimedEffect::SLEEP_OR_PARALYSIS,
     CreatureTimedEffect::ACCELERATION,
     CreatureTimedEffect::DECELERATION,
@@ -18,6 +18,6 @@ constexpr std::array<CreatureTimedEffect, 7> MONSTER_TIMED_EFFECT_LIST = {
     CreatureTimedEffect::CONFUSION,
     CreatureTimedEffect::FEAR,
     CreatureTimedEffect::INVULNERABILITY,
-};
+} };
 
 extern const std::map<CreatureTimedEffect, std::string> effect_type_to_label;
