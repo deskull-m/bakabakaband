@@ -12,8 +12,8 @@
 #include "game-option/cheat-options.h"
 #include "game-option/cheat-types.h"
 #include "grid/grid.h"
+#include "inventory/floor-item-getter.h"
 #include "inventory/inventory-slot-types.h"
-#include "inventory/item-getter.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
 #include "object-enchant/item-apply-magic.h"
@@ -570,18 +570,18 @@ ItemEntity *choose_object(CreatureEntity &creature, short *initial_i_idx, concpt
     const auto enable_repeat = util::make_finalizer([&] { creature.get_floor()->prevent_repeat_floor_item_idx = false; });
 
     FixItemTesterSetter setter(item_tester);
-    short i_idx;
-    if (!get_item(creature, &i_idx, q, s, option, item_tester)) {
+    const auto i_idx = get_item_floor(creature, q, s, option, item_tester);
+    if (!i_idx) {
         return nullptr;
     }
 
     if (initial_i_idx) {
-        *initial_i_idx = i_idx;
+        *initial_i_idx = *i_idx;
     }
 
-    if (i_idx == INVEN_FORCE) {
+    if (*i_idx == INVEN_FORCE) {
         return nullptr;
     }
 
-    return ref_item(creature, i_idx);
+    return ref_item(creature, *i_idx);
 }
