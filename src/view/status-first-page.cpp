@@ -13,6 +13,8 @@
 #include "hpmp/hp-mp-regenerator.h"
 #include "inventory/inventory-slot-types.h"
 #include "mind/monk-attack.h"
+#include "monster-race/race-behavior-flags.h"
+#include "monster-race/race-misc-flags.h"
 #include "mutation/mutation-flag-types.h"
 #include "object-enchant/special-object-flags.h"
 #include "object-enchant/tr-types.h"
@@ -34,6 +36,8 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/terrain/terrain-definition.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
@@ -515,6 +519,103 @@ static void display_first_page(CreatureEntity &creature, int xthb, int *damage, 
 }
 
 /*!
+ * @brief モンスターの隠密・知覚・探索スキルを種族定義から推定計算する
+ * @param monrace モンスター種族定義
+ * @param skill_stl 出力: 隠密スキル
+ * @param skill_srh 出力: 探索スキル
+ * @param skill_fos 出力: 知覚スキル
+ * @details
+ * モンスター種族には専用の skill_stl / skill_srh / skill_fos フィールドが
+ * 存在しないため、種族レベル・感知範囲(aaf)・睡眠値(sleep)・各種フラグ
+ * (INVISIBLE / STALKER / COLD_BLOOD / EMPTY_MIND / SMART / STUPID 等) と
+ * 速度から推定値を導出してプレイヤーと同じ尺度で表示する。
+ */
+static void calc_monster_action_skills(const MonraceDefinition &monrace, int *skill_stl, int *skill_srh, int *skill_fos)
+{
+    // 隠密: レベルとステルス系フラグ・速度から推定
+    int stl = monrace.level / 4;
+    if (monrace.misc_flags.has(MonsterMiscType::INVISIBLE)) {
+        stl += 10;
+    }
+    if (monrace.misc_flags.has(MonsterMiscType::STALKER)) {
+        stl += 5;
+    }
+    if (monrace.misc_flags.has(MonsterMiscType::COLD_BLOOD)) {
+        stl += 3;
+    }
+    if (monrace.misc_flags.has(MonsterMiscType::EMPTY_MIND)) {
+        stl += 2;
+    }
+    if (monrace.behavior_flags.has(MonsterBehaviorType::TIMID)) {
+        stl += 3;
+    }
+    if (monrace.behavior_flags.has(MonsterBehaviorType::STUPID)) {
+        stl -= 3;
+    }
+    const int speed_diff = static_cast<int>(monrace.speed) - 110;
+    if (speed_diff > 0) {
+        stl += speed_diff / 5;
+    }
+    if (stl < 0) {
+        stl = 0;
+    }
+    *skill_stl = stl;
+
+    // 知覚 (skill_fos): 感知範囲 aaf を主軸に、知能と覚醒度で補正
+    int fos = static_cast<int>(monrace.aaf) * 2;
+    if (monrace.behavior_flags.has(MonsterBehaviorType::SMART)) {
+        fos += 20;
+    }
+    if (monrace.behavior_flags.has(MonsterBehaviorType::STUPID)) {
+        fos -= 10;
+    }
+    fos -= static_cast<int>(monrace.sleep) / 4;
+    if (fos < 0) {
+        fos = 0;
+    }
+    *skill_fos = fos;
+
+    // 探索 (skill_srh): 知覚と同じ系統だが感度は控えめ
+    int srh = static_cast<int>(monrace.aaf);
+    if (monrace.behavior_flags.has(MonsterBehaviorType::SMART)) {
+        srh += 10;
+    }
+    if (monrace.behavior_flags.has(MonsterBehaviorType::STUPID)) {
+        srh -= 5;
+    }
+    srh -= static_cast<int>(monrace.sleep) / 8;
+    if (srh < 0) {
+        srh = 0;
+    }
+    *skill_srh = srh;
+}
+
+/*!
+ * @brief モンスターの行動技能 (隠密・知覚・探索) をステータス画面に表示する
+ * @param creature 表示対象のクリーチャー (モンスター)
+ * @details
+ * プレイヤーと同じ likert 尺度で表示する。モンスター種族定義から都度計算するため、
+ * モンスターの skill_stl / skill_srh / skill_fos フィールドは使用しない。
+ */
+static void display_monster_first_page(CreatureEntity &creature)
+{
+    const auto &monrace = MonraceList::get_instance().get_monrace(creature.r_idx);
+    int skill_stl = 0;
+    int skill_srh = 0;
+    int skill_fos = 0;
+    calc_monster_action_skills(monrace, &skill_stl, &skill_srh, &skill_fos);
+
+    auto sd = likert((skill_stl > 0) ? skill_stl : -1, 1);
+    display_player_one_line(ENTRY_SKILL_STEALTH, sd.first, sd.second);
+
+    sd = likert(skill_fos, 6);
+    display_player_one_line(ENTRY_SKILL_PERCEP, sd.first, sd.second);
+
+    sd = likert(skill_srh, 6);
+    display_player_one_line(ENTRY_SKILL_SEARCH, sd.first, sd.second);
+}
+
+/*!
  * @brief プレイヤーステータスの1ページ目各種詳細をまとめて表示する
  * Prints ratings on certain abilities
  * @param creature クリーチャーへの参照
@@ -526,6 +627,7 @@ void display_player_various(CreatureEntity &creature)
 {
     // 弓・武器スロットを前提とした戦闘能力表示はプレイヤー固有
     if (!creature.is_player()) {
+        display_monster_first_page(creature);
         return;
     }
 
