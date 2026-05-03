@@ -402,7 +402,13 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     }
 
     m_ptr->reset_target();
-    m_ptr->name.clear();
+    // UNIQUE モンスターはペットでなくとも creature.name に種族名を保持し、
+    // ペットの個体名と同じ変数 (CreatureEntity::name) で名前を扱えるようにする。
+    if (new_monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
+        m_ptr->name = new_monrace.name.string();
+    } else {
+        m_ptr->name.clear();
+    }
     m_ptr->exp = 0;
 
     if (is_summoned) {
