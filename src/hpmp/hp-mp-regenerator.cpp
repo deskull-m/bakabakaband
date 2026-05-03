@@ -3,10 +3,13 @@
 #include "core/window-redrawer.h"
 #include "inventory/inventory-slot-types.h"
 #include "monster/monster-status.h"
+#include "object-enchant/trc-types.h"
 #include "player-base/player-class.h"
 #include "player-info/magic-eater-data-type.h"
+#include "player-info/monk-data-type.h"
 #include "player-info/samurai-data-type.h"
 #include "player/attack-defense-types.h"
+#include "player/digestion-processor.h"
 #include "player/player-status-table.h"
 #include "player/special-defense-types.h"
 #include "system/creature-entity.h"
@@ -20,6 +23,82 @@
 
 /*!<広域マップ移動時の自然回復処理カウンタ（広域マップ1マス毎に20回処理を基本とする）*/
 int wild_regen = 20;
+
+/*!
+ * @brief 共通の自然回復量を算出する。プレイヤー基準の計算に揃え、モンスターでも同形で
+ *        評価できる係数 (regen_amount) を返す。
+ *
+ * - PY_REGEN_NORMAL を起点に、満腹度・スタンス・呪い・ミュータント体質などの
+ *   プレイヤー固有要因は is_player() ガードで適用する。
+ * - 再生種族フラグ (regen)・毒・切り傷・行動 (search/rest)・地形衛生は
+ *   モンスターでも同等のロジックで適用される。
+ * - regenhp() / regenmana() / 表示用 calculate_*_regen_rate() で同じ値を使うことで
+ *   プレイヤー・モンスター・c画面表示を一貫させる。
+ */
+int compute_regen_amount(CreatureEntity &creature)
+{
+    if (creature.is_player()) {
+        CreatureClass pc(creature);
+        if (pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
+            return 0;
+        }
+        if (creature.action == ACTION_HAYAGAKE) {
+            return 0;
+        }
+    }
+
+    int regen_amount = PY_REGEN_NORMAL;
+
+    if (creature.is_player()) {
+        if (creature.food < PY_FOOD_WEAK) {
+            if (creature.food < PY_FOOD_STARVE) {
+                regen_amount = 0;
+            } else if (creature.food < PY_FOOD_FAINT) {
+                regen_amount = PY_REGEN_FAINT;
+            } else {
+                regen_amount = PY_REGEN_WEAK;
+            }
+        }
+    }
+
+    if (creature.is_poisoned() || creature.is_cut()) {
+        regen_amount = 0;
+    }
+
+    if (creature.has_regen_flag()) {
+        regen_amount = regen_amount * 2;
+    }
+
+    if (creature.is_player()) {
+        CreatureClass pc(creature);
+        if (!pc.monk_stance_is(MonkStanceType::NONE) || !pc.samurai_stance_is(SamuraiStanceType::NONE)) {
+            regen_amount /= 2;
+        }
+        if (creature.get_cursed_flags().has(CurseTraitType::SLOW_REGEN)) {
+            regen_amount /= 5;
+        }
+    }
+
+    if ((creature.action == ACTION_SEARCH) || (creature.action == ACTION_REST)) {
+        regen_amount = regen_amount * 2;
+    }
+
+    const auto &grid = creature.get_floor()->get_grid(creature.get_position());
+    const auto &terrain = grid.get_terrain();
+    if (regen_amount > 0 && terrain.hygiene != 0) {
+        const int hygiene_modifier = 100 + terrain.hygiene;
+        regen_amount = (regen_amount * hygiene_modifier) / 100;
+        if (regen_amount < 0) {
+            regen_amount = 0;
+        }
+    }
+
+    if (creature.is_player()) {
+        regen_amount = (regen_amount * creature.mutant_regenerate_mod) / 100;
+    }
+
+    return regen_amount;
+}
 
 /*!
  * @brief プレイヤーのHP自然回復処理 / Regenerate hit points -RAK-
@@ -166,49 +245,41 @@ void regenmagic(CreatureEntity &creature, int regen_amount)
 }
 
 /*!
- * @brief 100ゲームターン毎のモンスターのHP自然回復処理 / Regenerate the monsters (once per 100 game turns)
+ * @brief 100ゲームターン毎のモンスターのHP/MP自然回復処理 / Regenerate the monsters (once per 100 game turns)
  * @param creature クリーチャーへの参照
  * @note Should probably be done during monster turns.
+ * @details
+ * プレイヤー側 (process_player_hp_mp) と同じ compute_regen_amount() で
+ * regen_amount を算出し、regenhp() / regenmana() に流す。
+ * 本処理は 100 ターン毎、プレイヤー側は 10 ターン毎に走るため
+ * 1 回あたりの強度を 10 倍してプレイヤーの 10 ティック分を一度に補正する
+ * (1 ターン平均の回復速度はプレイヤー基準と一致)。
  */
 void regenerate_monsters(CreatureEntity &creature)
 {
+    constexpr int monster_regen_tick_scale = 10;
     auto &tracker = HealthBarTracker::get_instance();
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     for (short i = 1; i < creature.get_floor()->m_max; i++) {
         auto &monster = creature.get_floor()->get_monster(i);
-        const auto &monrace = monster.get_monrace();
         if (!monster.is_valid()) {
             continue;
         }
 
+        const auto regen_amount = compute_regen_amount(monster) * monster_regen_tick_scale;
+        if (regen_amount <= 0) {
+            continue;
+        }
+
+        const auto old_hp = monster.hp;
         if (monster.hp < monster.maxhp) {
-            int frac = monster.maxhp / 100;
-            if (!frac) {
-                if (one_in_(2)) {
-                    frac = 1;
-                }
-            }
+            regenhp(monster, regen_amount);
+        }
+        if (monster.csp < monster.msp) {
+            regenmana(monster, 0, regen_amount);
+        }
 
-            if (monrace.misc_flags.has(MonsterMiscType::REGENERATE)) {
-                frac *= 2;
-            }
-
-            // Apply hygiene-based regeneration modifier
-            const auto &grid = creature.get_floor()->get_grid(monster.get_position());
-            const auto &terrain = grid.get_terrain();
-            if (terrain.hygiene != 0) {
-                const int hygiene_modifier = 100 + terrain.hygiene;
-                frac = (frac * hygiene_modifier) / 100;
-                if (frac < 0) {
-                    frac = 0;
-                }
-            }
-
-            monster.hp += frac;
-            if (monster.hp > monster.maxhp) {
-                monster.hp = monster.maxhp;
-            }
-
+        if (old_hp != monster.hp) {
             tracker.set_flag_if_tracking(i);
             if (monster.is_riding()) {
                 rfu.set_flag(MainWindowRedrawingFlag::UHEALTH);
