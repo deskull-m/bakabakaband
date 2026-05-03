@@ -21,10 +21,12 @@
 #include "monster-race/race-special-flags.h"
 #include "monster-race/race-visual-flags.h"
 #include "monster-race/race-wilderness-flags.h"
+#include "player-ability/player-ability-types.h"
 #include "system/angband.h"
 #include "util/dice.h"
 #include "util/flag-group.h"
 #include "view/display-symbol.h"
+#include <array>
 #include <string>
 #include <string_view>
 #include <tl/optional.hpp>
@@ -191,6 +193,10 @@ public:
     REAL_TIME defeat_time{}; //!< 倒した時間(ユニーク用) / time at which defeated this race
     PERCENTAGE cur_hp_per{}; //!< 生成時現在HP率(%)
     AllianceType alliance_idx = AllianceType::NONE;
+    //! 6 能力値 (STR/INT/WIS/DEX/CON/CHR) の生成時補正値 (内部 10 単位 = 表示 1.0 単位)。
+    //! 値が無い (tl::nullopt) 場合はダイスロールの結果をそのまま使う。
+    //! 値がある場合は get_stats() で振った結果に加算する。
+    std::array<tl::optional<int>, A_MAX> stat_modifiers{};
 
     bool is_valid() const;
     bool is_male() const;
