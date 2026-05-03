@@ -45,6 +45,7 @@
 #include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
 #include "world/world.h"
+#include <algorithm>
 #include <range/v3/algorithm.hpp>
 #include <time.h>
 
@@ -286,6 +287,24 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     }
 
     const auto &new_monrace = m_ptr->get_monrace();
+    // 種族側で能力値補正が指定されていれば、ロール結果に加算する。
+    // 補正値は内部 10 単位 (表示 1.0 = 10) で格納されており、tl::nullopt の能力値は補正しない。
+    constexpr short stat_min = 30;
+    constexpr short stat_max = 400;
+    for (auto stat = 0; stat < A_MAX; ++stat) {
+        const auto &mod = new_monrace.stat_modifiers[stat];
+        if (!mod.has_value()) {
+            continue;
+        }
+        auto adjusted = static_cast<int>(m_ptr->stat_max[stat]) + *mod;
+        adjusted = std::clamp(adjusted, static_cast<int>(stat_min), static_cast<int>(stat_max));
+        m_ptr->stat_max[stat] = static_cast<short>(adjusted);
+        m_ptr->stat_cur[stat] = static_cast<short>(adjusted);
+        if (m_ptr->stat_max_max[stat] < m_ptr->stat_max[stat]) {
+            m_ptr->stat_max_max[stat] = m_ptr->stat_max[stat];
+        }
+        m_ptr->stat_use[stat] = m_ptr->stat_max[stat];
+    }
     const auto is_summoned = summoner_m_idx.has_value();
     const CreatureEntity &summoner = floor.m_list[summoner_m_idx.value_or(0)];
 
