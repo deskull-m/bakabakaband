@@ -197,6 +197,50 @@ static errr set_mon_speed(const nlohmann::json &speed_data, MonraceDefinition &m
 }
 
 /*!
+ * @brief JSON Objectからモンスターの能力値補正をセットする
+ * @param stat_data 能力値補正情報の格納された JSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details
+ * "stat_modifiers": { "STR": 5, "INT": -2, "WIS": 0, "DEX": 3, "CON": 4, "CHR": -1 }
+ * 各値は表示単位 (1 = 内部 10 単位 = +1.0) で記述する。
+ * 指定されていないキーは tl::nullopt のままとなり、生成時に補正されない。
+ */
+static errr set_mon_stat_modifiers(const nlohmann::json &stat_data, MonraceDefinition &monrace)
+{
+    if (stat_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!stat_data.is_object()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    constexpr std::array<std::pair<std::string_view, int>, A_MAX> stat_keys = { {
+        { "STR", A_STR },
+        { "INT", A_INT },
+        { "WIS", A_WIS },
+        { "DEX", A_DEX },
+        { "CON", A_CON },
+        { "CHR", A_CHR },
+    } };
+
+    for (const auto &[key, idx] : stat_keys) {
+        const auto key_str = std::string(key);
+        if (!stat_data.contains(key_str)) {
+            continue;
+        }
+        int modifier = 0;
+        if (auto err = info_set_integer(stat_data[key_str], modifier, true, Range(-40, 40))) {
+            return err;
+        }
+        // 表示単位 (1.0) → 内部 10 単位
+        monrace.stat_modifiers[idx] = modifier * 10;
+    }
+
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief JSON Objectからモンスターの進化をセットする
  * @param evolve_data 進化情報の格納されたJSON Object
  * @param monrace 保管先のモンスター種族構造体
@@ -1238,6 +1282,11 @@ errr parse_monraces_info(nlohmann::json &mon_data, angband_header *)
     err = info_set_integer(mon_data["start_hp_percentage"], monrace.cur_hp_per, false, Range(0, 99));
     if (err) {
         msg_format(_("モンスター初期体力読込失敗。ID: '%d'。", "Failed to load monster starting HP. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_stat_modifiers(mon_data["stat_modifiers"], monrace);
+    if (err) {
+        msg_format(_("モンスター能力値補正読込失敗。ID: '%d'。", "Failed to load monster stat modifiers. ID: '%d'."), error_idx);
         return err;
     }
     err = info_set_integer(mon_data["mob"], monrace.mob_num, false, Range(0, 9999999));
