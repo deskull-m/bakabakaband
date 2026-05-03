@@ -116,7 +116,7 @@ void process_player_hp_mp(CreatureEntity &creature)
     const auto &terrain = grid.get_terrain();
     bool cave_no_regen = false;
     int upkeep_factor = 0;
-    int regen_amount = PY_REGEN_NORMAL;
+    int regen_amount = 0; // compute_regen_amount() で後段に確定
     if (terrain.flags.has(TerrainCharacteristics::RUNE_HEALING)) {
         hp_player(creature, 2 + creature.level / 6);
     }
@@ -395,35 +395,14 @@ void process_player_hp_mp(CreatureEntity &creature)
         }
     }
 
-    if (creature.food < PY_FOOD_WEAK) {
-        if (creature.food < PY_FOOD_STARVE) {
-            regen_amount = 0;
-        } else if (creature.food < PY_FOOD_FAINT) {
-            regen_amount = PY_REGEN_FAINT;
-        } else {
-            regen_amount = PY_REGEN_WEAK;
-        }
-    }
-
     CreatureClass pc(creature);
     if (pattern_effect(creature)) {
         cave_no_regen = true;
-    } else {
-        if (creature.has_regen_flag()) {
-            regen_amount = regen_amount * 2;
-        }
-
-        if (!pc.monk_stance_is(MonkStanceType::NONE) || !pc.samurai_stance_is(SamuraiStanceType::NONE)) {
-            regen_amount /= 2;
-        }
-        if (creature.get_cursed_flags().has(CurseTraitType::SLOW_REGEN)) {
-            regen_amount /= 5;
-        }
     }
 
-    if ((creature.action == ACTION_SEARCH) || (creature.action == ACTION_REST)) {
-        regen_amount = regen_amount * 2;
-    }
+    // 統一ヘルパでベースの regen_amount を算出
+    // (満腹度・再生種族・スタンス・呪い・行動・地形衛生・ミュータント体質まで反映済み)
+    regen_amount = compute_regen_amount(creature);
 
     upkeep_factor = calculate_upkeep(creature);
     if ((creature.action == ACTION_LEARN) || (creature.action == ACTION_HAYAGAKE) || pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
@@ -448,26 +427,10 @@ void process_player_hp_mp(CreatureEntity &creature)
         }
     }
 
-    if (creature.is_poisoned()) {
-        regen_amount = 0;
-    }
-    if (creature.is_cut()) {
-        regen_amount = 0;
-    }
     if (cave_no_regen) {
         regen_amount = 0;
     }
 
-    // Apply hygiene-based regeneration modifier
-    if (regen_amount > 0 && terrain.hygiene != 0) {
-        const int hygiene_modifier = 100 + terrain.hygiene;
-        regen_amount = (regen_amount * hygiene_modifier) / 100;
-        if (regen_amount < 0) {
-            regen_amount = 0;
-        }
-    }
-
-    regen_amount = (regen_amount * creature.mutant_regenerate_mod) / 100;
     if ((creature.hp < creature.maxhp) && !cave_no_regen) {
         regenhp(creature, regen_amount);
     }

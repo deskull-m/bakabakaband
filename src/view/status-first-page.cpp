@@ -281,67 +281,8 @@ static void calc_two_hands(CreatureEntity &creature, int *damage, int *to_h)
  */
 static int calculate_hp_regen_rate(CreatureEntity &creature)
 {
-    CreatureClass pc(creature);
-    if (pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
-        return 0;
-    }
-    if (creature.action == ACTION_HAYAGAKE) {
-        return 0;
-    }
-
-    int regen_amount = PY_REGEN_NORMAL;
-
-    // 満腹度による補正
-    if (creature.food < PY_FOOD_WEAK) {
-        if (creature.food < PY_FOOD_STARVE) {
-            regen_amount = 0;
-        } else if (creature.food < PY_FOOD_FAINT) {
-            regen_amount = PY_REGEN_FAINT;
-        } else {
-            regen_amount = PY_REGEN_WEAK;
-        }
-    }
-
-    // 毒・切り傷で回復しない
-    const auto effects = creature.effects();
-    if (effects->poison().is_poisoned() || effects->cut().is_cut()) {
-        regen_amount = 0;
-    }
-
-    // 再生能力
-    if (creature.has_regen_flag()) {
-        regen_amount = regen_amount * 2;
-    }
-
-    // 構え・型による補正
-    if (!pc.monk_stance_is(MonkStanceType::NONE) || !pc.samurai_stance_is(SamuraiStanceType::NONE)) {
-        regen_amount /= 2;
-    }
-
-    // 呪いによる補正
-    if (creature.get_cursed_flags().has(CurseTraitType::SLOW_REGEN)) {
-        regen_amount /= 5;
-    }
-
-    // 探索・休息中は2倍
-    if ((creature.action == ACTION_SEARCH) || (creature.action == ACTION_REST)) {
-        regen_amount = regen_amount * 2;
-    }
-
-    // 地形による衛生補正
-    const auto &floor = *creature.get_floor();
-    const auto &grid = floor.get_grid(creature.get_position());
-    const auto &terrain = grid.get_terrain();
-    if (regen_amount > 0 && terrain.hygiene != 0) {
-        const int hygiene_modifier = 100 + terrain.hygiene;
-        regen_amount = (regen_amount * hygiene_modifier) / 100;
-        if (regen_amount < 0) {
-            regen_amount = 0;
-        }
-    }
-
-    // ミュータント補正
-    regen_amount = (regen_amount * creature.mutant_regenerate_mod) / 100;
+    // プレイヤー基準の統一ヘルパ。モンスターでも同じ計算式が使える。
+    const int regen_amount = compute_regen_amount(creature);
 
     // 実際の回復量を計算 (10ターンごとに処理されるので1ターンあたりの量に変換)
     // percent = regen_amount は 1/2^16 単位なので、実際のHP回復量は:
@@ -359,50 +300,17 @@ static int calculate_hp_regen_rate(CreatureEntity &creature)
  */
 static int calculate_mp_regen_rate(CreatureEntity &creature)
 {
-    int regen_amount = PY_REGEN_NORMAL;
+    // プレイヤー基準の統一ヘルパ。モンスターでも同じ計算式が使える。
+    const int regen_amount = compute_regen_amount(creature);
 
-    // 満腹度による補正
-    if (creature.food < PY_FOOD_WEAK) {
-        if (creature.food < PY_FOOD_STARVE) {
-            regen_amount = 0;
-        } else if (creature.food < PY_FOOD_FAINT) {
-            regen_amount = PY_REGEN_FAINT;
-        } else {
-            regen_amount = PY_REGEN_WEAK;
-        }
-    }
-
-    // 毒で回復しない
-    const auto effects = creature.effects();
-    if (effects->poison().is_poisoned()) {
-        regen_amount = 0;
-    }
-
-    // 再生能力
-    if (creature.has_regen_flag()) {
-        regen_amount = regen_amount * 2;
-    }
-
-    // 構え・型による補正
-    CreatureClass pc(creature);
-    if (!pc.monk_stance_is(MonkStanceType::NONE) || !pc.samurai_stance_is(SamuraiStanceType::NONE)) {
-        regen_amount /= 2;
-    }
-
-    // 呪いによる補正
-    if (creature.get_cursed_flags().has(CurseTraitType::SLOW_REGEN)) {
-        regen_amount /= 5;
-    }
-
-    // 探索・休息中は2倍
-    if ((creature.action == ACTION_SEARCH) || (creature.action == ACTION_REST)) {
-        regen_amount = regen_amount * 2;
-    }
-
-    // ペットの維持コスト
+    // ペットの維持コスト (モンスターでも calculate_upkeep は flore m_list を巡回するが
+    // 通常モンスターはペットを持たないため 0 となる)
     int upkeep_factor = calculate_upkeep(creature);
-    if ((creature.action == ACTION_LEARN) || (creature.action == ACTION_HAYAGAKE) || pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
-        upkeep_factor += 100;
+    if (creature.is_player()) {
+        CreatureClass pc(creature);
+        if ((creature.action == ACTION_LEARN) || (creature.action == ACTION_HAYAGAKE) || pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
+            upkeep_factor += 100;
+        }
     }
 
     // 回復率を計算 (100分率)
@@ -716,6 +624,15 @@ static void display_monster_first_page(CreatureEntity &creature)
 
     sd = likert(skills.skill_dig, 4);
     display_player_one_line(ENTRY_SKILL_DIG, sd.first, sd.second);
+
+    // HP/MP 回復量はプレイヤーと共通の calculate_*_regen_rate() 経由で算出 (compute_regen_amount を共有)。
+    int hp_regen_amount = calculate_hp_regen_rate(creature);
+    std::string hp_regen_desc = format("%+d.%05d", hp_regen_amount / 100000, hp_regen_amount % 100000);
+    display_player_one_line(ENTRY_HP_REGEN, hp_regen_desc, TERM_L_BLUE);
+
+    int mp_regen_amount = calculate_mp_regen_rate(creature);
+    std::string mp_regen_desc = format("%+d.%05d", mp_regen_amount / 100000, mp_regen_amount % 100000);
+    display_player_one_line(ENTRY_MP_REGEN, mp_regen_desc, TERM_L_BLUE);
 }
 
 /*!
