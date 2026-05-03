@@ -206,9 +206,9 @@ static void warn_unique_generation(CreatureEntity &creature, MonraceId r_idx)
         color = _("白く", "white");
     }
 
-    auto *o_ptr = choose_warning_item(creature);
-    if (o_ptr != nullptr) {
-        const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto &item = choose_warning_item(creature);
+    if (item) {
+        const auto item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
         msg_format(_("%sは%s光った。", "%s glows %s."), item_name.data(), color.data());
     } else {
         msg_format(_("%s光る物が頭に浮かんだ。", "A %s image forms in your mind."), color.data());

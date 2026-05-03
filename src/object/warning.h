@@ -1,8 +1,9 @@
 #pragma once
 
-#include "system/angband.h"
+#include "util/point-2d.h"
+#include <memory>
 
 class ItemEntity;
 class CreatureEntity;
-ItemEntity *choose_warning_item(CreatureEntity &creature);
-bool process_warning(CreatureEntity &creature, POSITION xx, POSITION yy);
+std::shared_ptr<ItemEntity> choose_warning_item(CreatureEntity &creature);
+bool process_warning(CreatureEntity &creature, const Pos2D &pos);

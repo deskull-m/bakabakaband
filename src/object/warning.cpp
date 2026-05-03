@@ -22,30 +22,24 @@
 #include <vector>
 
 /*!
- * @brief 警告を放つアイテムを選択する /
- * Choose one of items that have warning flag
- * Calculate spell damages
- * @return 警告を行う
+ * @brief 警告を放つアイテムを選択する
+ * @return 装備品へのポインタ。警告を放つアイテムがない場合はnullptr
  */
-ItemEntity *choose_warning_item(CreatureEntity &creature)
+std::shared_ptr<ItemEntity> choose_warning_item(CreatureEntity &creature)
 {
-
-    /* Paranoia -- Player has no warning ability */
     if (!creature.has_warning_flag()) {
         return nullptr;
     }
 
-    /* Search Inventory */
     std::vector<int> candidates;
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        const auto *o_ptr = creature.inventory[i].get();
-        if (o_ptr->get_flags().has(TR_WARNING)) {
+        const auto &item = creature.inventory[i];
+        if (item->get_flags().has(TR_WARNING)) {
             candidates.push_back(i);
         }
     }
 
-    /* Choice one of them */
-    return candidates.empty() ? nullptr : creature.inventory[rand_choice(candidates)].get();
+    return candidates.empty() ? nullptr : creature.inventory[rand_choice(candidates)];
 }
 
 /*!
@@ -326,23 +320,20 @@ static int blow_damcalc(const CreatureEntity &monster, CreatureEntity &creature,
 }
 
 /*!
- * @brief プレイヤーが特定地点へ移動した場合に警告を発する処理 /
- * Examine the grid (xx,yy) and warn the player if there are any danger
- * @param xx 危険性を調査するマスのX座標
- * @param yy 危険性を調査するマスのY座標
+ * @brief プレイヤーが特定地点へ移動した場合に警告を発する処理
+ * @param pos 危険性を調査する座標
  * @return 警告を無視して進むことを選択するかか問題が無ければTRUE、警告に従ったならFALSEを返す。
  */
-bool process_warning(CreatureEntity &creature, POSITION xx, POSITION yy)
+bool process_warning(CreatureEntity &creature, const Pos2D &pos)
 {
-    const Pos2D pos(yy, xx);
     constexpr auto warning_aware_range = 12;
     int dam_max = 0;
     static int old_damage = 0;
 
     auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
-    for (auto mx = xx - warning_aware_range; mx < xx + warning_aware_range + 1; mx++) {
-        for (auto my = yy - warning_aware_range; my < yy + warning_aware_range + 1; my++) {
+    for (auto mx = pos.x - warning_aware_range; mx < pos.x + warning_aware_range + 1; mx++) {
+        for (auto my = pos.y - warning_aware_range; my < pos.y + warning_aware_range + 1; my++) {
             const Pos2D pos_neighbor(my, mx);
             int dam_max0 = 0;
             if (!floor.contains(pos_neighbor, FloorBoundary::OUTER_WALL_EXCLUSIVE) || (Grid::calc_distance(pos_neighbor, pos) > warning_aware_range)) {
@@ -482,7 +473,7 @@ bool process_warning(CreatureEntity &creature, POSITION xx, POSITION yy)
                 continue;
             }
 
-            if (!(mx <= xx + 1 && mx >= xx - 1 && my <= yy + 1 && my >= yy - 1)) {
+            if (!(mx <= pos.x + 1 && mx >= pos.x - 1 && my <= pos.y + 1 && my >= pos.y - 1)) {
                 dam_max += dam_max0;
                 continue;
             }
@@ -513,10 +504,10 @@ bool process_warning(CreatureEntity &creature, POSITION xx, POSITION yy)
         old_damage = dam_max * 3 / 2;
 
         if (dam_max > creature.hp / 2) {
-            auto *o_ptr = choose_warning_item(creature);
+            const auto &item = choose_warning_item(creature);
             std::string item_name;
-            if (o_ptr != nullptr) {
-                item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+            if (item) {
+                item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
             } else {
                 item_name = _("体", "body");
             }
@@ -536,10 +527,10 @@ bool process_warning(CreatureEntity &creature, POSITION xx, POSITION yy)
         return true;
     }
 
-    auto *o_ptr = choose_warning_item(creature);
+    const auto &item = choose_warning_item(creature);
     std::string item_name;
-    if (o_ptr != nullptr) {
-        item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    if (item) {
+        item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     } else {
         item_name = _("体", "body");
     }
