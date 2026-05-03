@@ -327,7 +327,9 @@ std::string monster_desc(CreatureEntity &subject, const CreatureEntity &monster,
         ss << describe_non_pet(subject, monster, name, mode);
     }
 
-    if (monster.is_named()) {
+    // UNIQUE モンスターは生成時に creature.name = monrace.name が入っているため、
+    // 種族名と一致する場合は「called」表記を抑止して "X called X" の重複を防ぐ。
+    if (monster.is_named() && monster.name != monster.get_monrace().name.string()) {
         ss << _("「", " called ") << monster.name << _("」", "");
     }
 
