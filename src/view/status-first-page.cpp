@@ -13,7 +13,10 @@
 #include "hpmp/hp-mp-regenerator.h"
 #include "inventory/inventory-slot-types.h"
 #include "mind/monk-attack.h"
+#include "monster-race/race-ability-flags.h"
 #include "monster-race/race-behavior-flags.h"
+#include "monster-race/race-feature-flags.h"
+#include "monster-race/race-flags-resistance.h"
 #include "monster-race/race-misc-flags.h"
 #include "mutation/mutation-flag-types.h"
 #include "object-enchant/special-object-flags.h"
@@ -519,21 +522,82 @@ static void display_first_page(CreatureEntity &creature, int xthb, int *damage, 
 }
 
 /*!
- * @brief モンスターの隠密・知覚・探索スキルを種族定義から推定計算する
+ * @brief モンスターの行動技能値を種族定義から推定計算する
  * @param monrace モンスター種族定義
- * @param skill_stl 出力: 隠密スキル
- * @param skill_srh 出力: 探索スキル
- * @param skill_fos 出力: 知覚スキル
+ * @param skills 出力: スキル値の構造体
  * @details
- * モンスター種族には専用の skill_stl / skill_srh / skill_fos フィールドが
- * 存在しないため、種族レベル・感知範囲(aaf)・睡眠値(sleep)・各種フラグ
- * (INVISIBLE / STALKER / COLD_BLOOD / EMPTY_MIND / SMART / STUPID 等) と
- * 速度から推定値を導出してプレイヤーと同じ尺度で表示する。
+ * モンスター種族には専用の skill_* フィールドが存在しないため、
+ * 種族レベル・感知範囲(aaf)・睡眠値(sleep)・各種フラグ
+ * (INVISIBLE / STALKER / COLD_BLOOD / EMPTY_MIND / SMART / STUPID
+ * / NO_FEAR / NO_CONF / NO_SLEEP / NO_STUN / RESIST_ALL
+ * / KILL_WALL / PASS_WALL / SHOOT 等) と速度から推定値を導出して
+ * プレイヤーと同じ尺度で表示する。
  */
-static void calc_monster_action_skills(const MonraceDefinition &monrace, int *skill_stl, int *skill_srh, int *skill_fos)
+struct MonsterActionSkills {
+    int skill_thn{}; //!< 打撃命中
+    int skill_thb{}; //!< 射撃命中
+    int skill_sav{}; //!< 魔法防御
+    int skill_stl{}; //!< 隠密
+    int skill_srh{}; //!< 探索
+    int skill_fos{}; //!< 知覚
+    int skill_dis{}; //!< 解除
+    int skill_dev{}; //!< 魔道具使用
+    int skill_dig{}; //!< 掘削
+};
+
+static MonsterActionSkills calc_monster_action_skills(const MonraceDefinition &monrace)
 {
+    MonsterActionSkills skills{};
+
+    const auto has_smart = monrace.behavior_flags.has(MonsterBehaviorType::SMART);
+    const auto has_stupid = monrace.behavior_flags.has(MonsterBehaviorType::STUPID);
+    const auto level = static_cast<int>(monrace.level);
+    const int speed_diff = static_cast<int>(monrace.speed) - 110;
+
+    // 打撃命中: レベルを基軸に知能で補正
+    int thn = level * 4;
+    if (has_smart) {
+        thn += 10;
+    }
+    if (has_stupid) {
+        thn -= 10;
+    }
+    skills.skill_thn = std::max(0, thn);
+
+    // 射撃命中: SHOOT 能力を持つ種族のみレベルに比例
+    int thb = 0;
+    if (monrace.ability_flags.has(MonsterAbilityType::SHOOT)) {
+        thb = level * 4;
+        if (has_smart) {
+            thb += 10;
+        }
+        if (has_stupid) {
+            thb -= 10;
+        }
+    }
+    skills.skill_thb = std::max(0, thb);
+
+    // 魔法防御: レベル + 状態異常無効化フラグの数
+    int sav = level;
+    if (monrace.resistance_flags.has(MonsterResistanceType::NO_FEAR)) {
+        sav += 10;
+    }
+    if (monrace.resistance_flags.has(MonsterResistanceType::NO_CONF)) {
+        sav += 10;
+    }
+    if (monrace.resistance_flags.has(MonsterResistanceType::NO_SLEEP)) {
+        sav += 10;
+    }
+    if (monrace.resistance_flags.has(MonsterResistanceType::NO_STUN)) {
+        sav += 10;
+    }
+    if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
+        sav += 50;
+    }
+    skills.skill_sav = std::max(0, sav);
+
     // 隠密: レベルとステルス系フラグ・速度から推定
-    int stl = monrace.level / 4;
+    int stl = level / 4;
     if (monrace.misc_flags.has(MonsterMiscType::INVISIBLE)) {
         stl += 10;
     }
@@ -549,70 +613,109 @@ static void calc_monster_action_skills(const MonraceDefinition &monrace, int *sk
     if (monrace.behavior_flags.has(MonsterBehaviorType::TIMID)) {
         stl += 3;
     }
-    if (monrace.behavior_flags.has(MonsterBehaviorType::STUPID)) {
+    if (has_stupid) {
         stl -= 3;
     }
-    const int speed_diff = static_cast<int>(monrace.speed) - 110;
     if (speed_diff > 0) {
         stl += speed_diff / 5;
     }
-    if (stl < 0) {
-        stl = 0;
-    }
-    *skill_stl = stl;
+    skills.skill_stl = std::max(0, stl);
 
     // 知覚 (skill_fos): 感知範囲 aaf を主軸に、知能と覚醒度で補正
     int fos = static_cast<int>(monrace.aaf) * 2;
-    if (monrace.behavior_flags.has(MonsterBehaviorType::SMART)) {
+    if (has_smart) {
         fos += 20;
     }
-    if (monrace.behavior_flags.has(MonsterBehaviorType::STUPID)) {
+    if (has_stupid) {
         fos -= 10;
     }
     fos -= static_cast<int>(monrace.sleep) / 4;
-    if (fos < 0) {
-        fos = 0;
-    }
-    *skill_fos = fos;
+    skills.skill_fos = std::max(0, fos);
 
     // 探索 (skill_srh): 知覚と同じ系統だが感度は控えめ
     int srh = static_cast<int>(monrace.aaf);
-    if (monrace.behavior_flags.has(MonsterBehaviorType::SMART)) {
+    if (has_smart) {
         srh += 10;
     }
-    if (monrace.behavior_flags.has(MonsterBehaviorType::STUPID)) {
+    if (has_stupid) {
         srh -= 5;
     }
     srh -= static_cast<int>(monrace.sleep) / 8;
-    if (srh < 0) {
-        srh = 0;
+    skills.skill_srh = std::max(0, srh);
+
+    // 解除: レベル + 知能補正
+    int dis = level;
+    if (has_smart) {
+        dis += 20;
     }
-    *skill_srh = srh;
+    if (has_stupid) {
+        dis -= 10;
+    }
+    skills.skill_dis = std::max(0, dis);
+
+    // 魔道具使用: レベル + 魔法/特殊能力の保有数 + 知能補正
+    int dev = level;
+    const auto ability_count = static_cast<int>(monrace.ability_flags.count());
+    dev += ability_count * 2;
+    if (has_smart) {
+        dev += 20;
+    }
+    if (has_stupid) {
+        dev -= 10;
+    }
+    skills.skill_dev = std::max(0, dev);
+
+    // 掘削: レベル + 壁関連フラグ
+    int dig = level * 2;
+    if (monrace.feature_flags.has(MonsterFeatureType::KILL_WALL)) {
+        dig += 100;
+    }
+    if (monrace.feature_flags.has(MonsterFeatureType::PASS_WALL)) {
+        dig += 50;
+    }
+    skills.skill_dig = std::max(0, dig);
+
+    return skills;
 }
 
 /*!
- * @brief モンスターの行動技能 (隠密・知覚・探索) をステータス画面に表示する
+ * @brief モンスターの行動技能値をステータス画面に表示する
  * @param creature 表示対象のクリーチャー (モンスター)
  * @details
  * プレイヤーと同じ likert 尺度で表示する。モンスター種族定義から都度計算するため、
- * モンスターの skill_stl / skill_srh / skill_fos フィールドは使用しない。
+ * モンスターの skill_* フィールドは使用しない。
  */
 static void display_monster_first_page(CreatureEntity &creature)
 {
     const auto &monrace = MonraceList::get_instance().get_monrace(creature.r_idx);
-    int skill_stl = 0;
-    int skill_srh = 0;
-    int skill_fos = 0;
-    calc_monster_action_skills(monrace, &skill_stl, &skill_srh, &skill_fos);
+    const auto skills = calc_monster_action_skills(monrace);
 
-    auto sd = likert((skill_stl > 0) ? skill_stl : -1, 1);
+    auto sd = likert(skills.skill_thn, 12);
+    display_player_one_line(ENTRY_SKILL_FIGHT, sd.first, sd.second);
+
+    sd = likert(skills.skill_thb, 12);
+    display_player_one_line(ENTRY_SKILL_SHOOT, sd.first, sd.second);
+
+    sd = likert(skills.skill_sav, 7);
+    display_player_one_line(ENTRY_SKILL_SAVING, sd.first, sd.second);
+
+    sd = likert((skills.skill_stl > 0) ? skills.skill_stl : -1, 1);
     display_player_one_line(ENTRY_SKILL_STEALTH, sd.first, sd.second);
 
-    sd = likert(skill_fos, 6);
+    sd = likert(skills.skill_fos, 6);
     display_player_one_line(ENTRY_SKILL_PERCEP, sd.first, sd.second);
 
-    sd = likert(skill_srh, 6);
+    sd = likert(skills.skill_srh, 6);
     display_player_one_line(ENTRY_SKILL_SEARCH, sd.first, sd.second);
+
+    sd = likert(skills.skill_dis, 8);
+    display_player_one_line(ENTRY_SKILL_DISARM, sd.first, sd.second);
+
+    sd = likert(skills.skill_dev, 6);
+    display_player_one_line(ENTRY_SKILL_DEVICE, sd.first, sd.second);
+
+    sd = likert(skills.skill_dig, 4);
+    display_player_one_line(ENTRY_SKILL_DIG, sd.first, sd.second);
 }
 
 /*!
