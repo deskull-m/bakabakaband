@@ -1618,7 +1618,6 @@
     <ClInclude Include="..\..\src\room\lake-types.h" />
     <ClInclude Include="..\..\src\room\room-generator.h" />
     <ClInclude Include="..\..\src\room\room-info-table.h" />
-    <ClInclude Include="..\..\src\room\room-types.h" />
     <ClInclude Include="..\..\src\room\rooms-maze-vault.h" />
     <ClInclude Include="..\..\src\room\space-finder.h" />
     <ClInclude Include="..\..\src\room\treasure-deployment.h" />

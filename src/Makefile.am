@@ -1209,7 +1209,7 @@ hengband_SOURCES = \
 	\
 	room/cave-filler.cpp room/cave-filler.h \
 	room/door-definition.cpp room/door-definition.h \
-	room/lake-types.h room/room-types.h \
+	room/lake-types.h \
 	room/pit-nest-util.cpp room/pit-nest-util.h \
 	room/room-generator.cpp room/room-generator.h \
 	room/room-info-table.cpp room/room-info-table.h \
