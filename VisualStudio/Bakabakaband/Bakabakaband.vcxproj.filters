@@ -1340,9 +1340,6 @@
     <ClCompile Include="..\..\src\inventory\floor-item-getter.cpp">
       <Filter>inventory</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\inventory\item-getter.cpp">
-      <Filter>inventory</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\floor\object-scanner.cpp">
       <Filter>floor</Filter>
     </ClCompile>
@@ -4361,9 +4358,6 @@
       <Filter>inventory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\inventory\floor-item-getter.h">
-      <Filter>inventory</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\inventory\item-getter.h">
       <Filter>inventory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\floor\object-scanner.h">
