@@ -136,7 +136,7 @@ void do_cmd_wield(CreatureEntity &creature)
 
     constexpr auto selection_q = _("どれを装備しますか? ", "Wear/Wield which item? ");
     constexpr auto selection_s = _("装備可能なアイテムがない。", "You have nothing you can wear or wield.");
-    const auto &[item_chosen, i_idx] = choose_object(creature, selection_q, selection_s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_wear, creature));
+    const auto &[item_chosen, i_idx] = choose_item(creature, selection_q, selection_s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_wear, creature));
     if (!item_chosen) {
         return;
     }
@@ -164,7 +164,7 @@ void do_cmd_wield(CreatureEntity &creature)
         if (has_melee_weapon(creature, INVEN_MAIN_HAND) && has_melee_weapon(creature, INVEN_SUB_HAND)) {
             constexpr auto q = _("どちらの武器と取り替えますか?", "Replace which weapon? ");
             constexpr auto s = _("おっと。", "Oops.");
-            const auto &[item_replace, slot_replace] = choose_object(creature, q, s, (USE_EQUIP | IGNORE_BOTHHAND_SLOT), FuncItemTester(&ItemEntity::is_melee_weapon));
+            const auto &[item_replace, slot_replace] = choose_item(creature, q, s, (USE_EQUIP | IGNORE_BOTHHAND_SLOT), FuncItemTester(&ItemEntity::is_melee_weapon));
             if (!item_replace) {
                 return;
             }
@@ -179,7 +179,7 @@ void do_cmd_wield(CreatureEntity &creature)
                    ((tval == ItemKindType::CAPTURE) || (!o_ptr_mh->is_melee_weapon() && !o_ptr_sh->is_melee_weapon()))) {
             constexpr auto q = _("どちらの手に装備しますか?", "Equip which hand? ");
             constexpr auto s = _("おっと。", "Oops.");
-            const auto &[item_replace, slot_new] = choose_object(creature, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_wieldable_in_etheir_hand));
+            const auto &[item_replace, slot_new] = choose_item(creature, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_wieldable_in_etheir_hand));
             if (!item_replace) {
                 return;
             }
@@ -203,7 +203,7 @@ void do_cmd_wield(CreatureEntity &creature)
         } else if (o_ptr_mh->is_valid() && o_ptr_sh->is_valid()) {
             constexpr auto q = _("どちらの手に装備しますか?", "Equip which hand? ");
             constexpr auto s = _("おっと。", "Oops.");
-            const auto &[item_new, slot_new] = choose_object(creature, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_wieldable_in_etheir_hand));
+            const auto &[item_new, slot_new] = choose_item(creature, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_wieldable_in_etheir_hand));
             if (!item_new) {
                 return;
             }
@@ -225,7 +225,7 @@ void do_cmd_wield(CreatureEntity &creature)
 
         constexpr auto s = _("おっと。", "Oops.");
         creature.select_ring_slot = true;
-        const auto &[item_replace, slot_replace] = choose_object(creature, q, s, (USE_EQUIP | IGNORE_BOTHHAND_SLOT));
+        const auto &[item_replace, slot_replace] = choose_item(creature, q, s, (USE_EQUIP | IGNORE_BOTHHAND_SLOT));
         if (!item_replace) {
             creature.select_ring_slot = false;
             return;
@@ -386,7 +386,7 @@ void do_cmd_takeoff(CreatureEntity &creature)
 
     constexpr auto q = _("どれを装備からはずしますか? ", "Take off which item? ");
     constexpr auto s = _("はずせる装備がない。", "You are not wearing anything to take off.");
-    const auto &[item, i_idx] = choose_object(creature, q, s, (USE_EQUIP | IGNORE_BOTHHAND_SLOT));
+    const auto &[item, i_idx] = choose_item(creature, q, s, (USE_EQUIP | IGNORE_BOTHHAND_SLOT));
     if (!item) {
         return;
     }

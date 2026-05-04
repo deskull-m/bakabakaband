@@ -56,7 +56,7 @@ bool get_object_for_search(CreatureEntity &creature, AutopickSearch &as)
 {
     constexpr auto q = _("どのアイテムを検索しますか? ", "Enter which item? ");
     constexpr auto s = _("アイテムを持っていない。", "You have nothing to enter.");
-    const auto &[item, _] = choose_object(creature, q, s, USE_INVEN | USE_FLOOR | USE_EQUIP);
+    const auto &[item, _] = choose_item(creature, q, s, USE_INVEN | USE_FLOOR | USE_EQUIP);
     if (!item) {
         return false;
     }

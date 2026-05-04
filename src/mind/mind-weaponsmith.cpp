@@ -123,7 +123,7 @@ static void drain_essence(CreatureEntity &creature)
     constexpr auto q = _("どのアイテムから抽出しますか？", "Extract from which item? ");
     constexpr auto s = _("抽出できるアイテムがありません。", "You have nothing you can extract from.");
     constexpr auto options = USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    const auto &[item, i_idx] = choose_object(creature, q, s, options, FuncItemTester(&ItemEntity::is_weapon_armour_ammo));
+    const auto &[item, i_idx] = choose_item(creature, q, s, options, FuncItemTester(&ItemEntity::is_weapon_armour_ammo));
     if (!item) {
         return;
     }
@@ -440,7 +440,7 @@ static void add_essence(CreatureEntity &creature, SmithCategoryType mode)
 
     constexpr auto q = _("どのアイテムを改良しますか？", "Improve which item? ");
     constexpr auto s = _("改良できるアイテムがありません。", "You have nothing to improve.");
-    const auto &[item, i_idx] = choose_object(creature, q, s, (USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
+    const auto &[item, i_idx] = choose_item(creature, q, s, (USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
     if (!item) {
         return;
     }
@@ -516,7 +516,7 @@ static void erase_essence(CreatureEntity &creature)
 {
     constexpr auto q = _("どのアイテムのエッセンスを消去しますか？", "Remove from which item? ");
     constexpr auto s = _("エッセンスを付加したアイテムがありません。", "You have nothing with added essence to remove.");
-    const auto &[item, i_idx] = choose_object(creature, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::is_smith));
+    const auto &[item, i_idx] = choose_item(creature, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::is_smith));
     if (!item) {
         return;
     }

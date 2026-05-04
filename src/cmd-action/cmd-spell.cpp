@@ -601,7 +601,7 @@ void do_cmd_browse(CreatureEntity &creature)
     constexpr auto q = _("どの本を読みますか? ", "Browse which book? ");
     constexpr auto s = _("読める本がない。", "You have no books that you can read.");
     constexpr auto options = USE_INVEN | USE_FLOOR;
-    const auto &[item, i_idx] = choose_object(creature, q, s, options | (pc.equals(PlayerClassType::FORCETRAINER) ? USE_FORCE : 0), item_tester);
+    const auto &[item, i_idx] = choose_item(creature, q, s, options | (pc.equals(PlayerClassType::FORCETRAINER) ? USE_FORCE : 0), item_tester);
     if (!item) {
         if (i_idx == INVEN_FORCE) /* the_force */
         {
@@ -745,7 +745,7 @@ void do_cmd_study(CreatureEntity &creature)
 
     constexpr auto q = _("どの本から学びますか? ", "Study which book? ");
     constexpr auto s = _("読める本がない。", "You have no books that you can read.");
-    const auto &[item, i_idx] = choose_object(creature, q, s, (USE_INVEN | USE_FLOOR), item_tester);
+    const auto &[item, i_idx] = choose_item(creature, q, s, (USE_INVEN | USE_FLOOR), item_tester);
     if (!item) {
         return;
     }
@@ -954,7 +954,7 @@ bool do_cmd_cast(CreatureEntity &creature)
     constexpr auto s = _("呪文書がない！", "You have no spell books!");
     auto item_tester = get_castable_spellbook_tester(creature);
     const auto options = USE_INVEN | USE_FLOOR | (pc.equals(PlayerClassType::FORCETRAINER) ? USE_FORCE : 0);
-    const auto &[item, i_idx] = choose_object(creature, q, s, options, item_tester);
+    const auto &[item, i_idx] = choose_item(creature, q, s, options, item_tester);
     if (!item) {
         if (i_idx == INVEN_FORCE) {
             do_cmd_mind(creature);

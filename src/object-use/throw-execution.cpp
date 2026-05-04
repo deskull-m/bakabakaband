@@ -359,7 +359,7 @@ bool ObjectThrowEntity::check_what_throw()
 
     constexpr auto q = _("どのアイテムを投げますか? ", "Throw which item? ");
     constexpr auto s = _("投げるアイテムがない。", "You have nothing to throw.");
-    std::tie(this->item, this->i_idx) = choose_object(*this->creature_ptr, q, s, USE_INVEN | USE_FLOOR | USE_EQUIP);
+    std::tie(this->item, this->i_idx) = choose_item(*this->creature_ptr, q, s, USE_INVEN | USE_FLOOR | USE_EQUIP);
     if (!this->item) {
         flush();
         return false;
@@ -373,7 +373,7 @@ bool ObjectThrowEntity::check_throw_boomerang()
     if (has_melee_weapon(*this->creature_ptr, INVEN_MAIN_HAND) && has_melee_weapon(*this->creature_ptr, INVEN_SUB_HAND)) {
         constexpr auto q = _("どの武器を投げますか? ", "Throw which item? ");
         constexpr auto s = _("投げる武器がない。", "You have nothing to throw.");
-        std::tie(this->item, this->i_idx) = choose_object(*this->creature_ptr, q, s, USE_EQUIP, FuncItemTester(&ItemEntity::is_throwable));
+        std::tie(this->item, this->i_idx) = choose_item(*this->creature_ptr, q, s, USE_EQUIP, FuncItemTester(&ItemEntity::is_throwable));
         if (!this->item) {
             flush();
             return false;

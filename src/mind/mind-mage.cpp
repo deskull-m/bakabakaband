@@ -30,7 +30,7 @@ bool eat_magic(CreatureEntity &creature, int power)
     byte fail_type = 1;
     constexpr auto q = _("どのアイテムから魔力を吸収しますか？", "Drain which item? ");
     constexpr auto s = _("魔力を吸収できるアイテムがありません。", "You have nothing to drain.");
-    auto [item, i_idx] = choose_object(creature, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::can_recharge));
+    auto [item, i_idx] = choose_item(creature, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::can_recharge));
     if (!item) {
         return false;
     }

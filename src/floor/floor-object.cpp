@@ -561,7 +561,7 @@ void floor_item_describe(CreatureEntity &creature, INVENTORY_IDX i_idx)
  * @brief Choose an item and get auto-picker entry from it.
  * @todo initial_i_idx をポインタではなく値に変え、戻り値をstd::pairに変える
  */
-std::pair<std::shared_ptr<ItemEntity>, short> choose_object(CreatureEntity &creature, std::string_view q, std::string_view s, BIT_FLAGS option, const ItemTester &item_tester)
+std::pair<std::shared_ptr<ItemEntity>, short> choose_item(CreatureEntity &creature, std::string_view q, std::string_view s, BIT_FLAGS option, const ItemTester &item_tester)
 {
     const auto enable_repeat = util::make_finalizer([&] { creature.get_floor()->prevent_repeat_floor_item_idx = false; });
 

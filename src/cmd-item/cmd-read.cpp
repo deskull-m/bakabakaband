@@ -40,7 +40,7 @@ void do_cmd_read_scroll(CreatureEntity &creature)
 
     constexpr auto q = _("どの巻物を読みますか? ", "Read which scroll? ");
     constexpr auto s = _("読める巻物がない。", "You have no scrolls to read.");
-    const auto &[item, i_idx] = choose_object(creature, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::is_readable));
+    const auto &[item, i_idx] = choose_item(creature, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::is_readable));
     if (!item) {
         return;
     }

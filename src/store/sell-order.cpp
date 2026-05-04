@@ -86,7 +86,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
     }
 
     const auto options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    const auto &[item, i_idx] = choose_object(creature, q, s_none, options, FuncItemTester([](CreatureEntity *c, const ItemEntity *o, StoreSaleType st) { return store_will_buy(*c, o, st); }, creature, store_num));
+    const auto &[item, i_idx] = choose_item(creature, q, s_none, options, FuncItemTester([](CreatureEntity *c, const ItemEntity *o, StoreSaleType st) { return store_will_buy(*c, o, st); }, creature, store_num));
     if (!item) {
         return;
     }

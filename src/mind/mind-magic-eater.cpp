@@ -23,7 +23,7 @@ bool import_magic_device(CreatureEntity &creature)
 {
     constexpr auto q = _("どのアイテムの魔力を取り込みますか? ", "Gain power of which item? ");
     constexpr auto s = _("魔力を取り込めるアイテムがない。", "There's nothing with power to absorb.");
-    const auto &[item, i_idx] = choose_object(creature, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::can_recharge));
+    const auto &[item, i_idx] = choose_item(creature, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::can_recharge));
     if (!item) {
         return false;
     }

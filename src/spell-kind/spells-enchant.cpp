@@ -28,7 +28,7 @@ bool artifact_scroll(CreatureEntity &creature)
 {
     constexpr auto q = _("どのアイテムを強化しますか? ", "Enchant which item? ");
     constexpr auto s = _("強化できるアイテムがない。", "You have nothing to enchant.");
-    const auto &[item, i_idx] = choose_object(creature, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), FuncItemTester(object_is_nameless_weapon_armour));
+    const auto &[item, i_idx] = choose_item(creature, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), FuncItemTester(object_is_nameless_weapon_armour));
     if (!item) {
         return false;
     }
@@ -125,7 +125,7 @@ bool mundane_spell(CreatureEntity &creature, bool only_equip)
 
     constexpr auto q = _("どのアイテムを凡庸化しますか？", "Mundanify which item? ");
     constexpr auto s = _("凡庸化できるアイテムがない。", "You have nothing to mundanify.");
-    const auto &[item, i_idx] = choose_object(creature, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
+    const auto &[item, i_idx] = choose_item(creature, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
     if (!item) {
         return false;
     }

@@ -28,7 +28,7 @@ bool bless_weapon(CreatureEntity &creature)
     constexpr auto q = _("どのアイテムを祝福しますか？", "Bless which weapon? ");
     constexpr auto s = _("祝福できる武器がありません。", "You have no weapon to bless.");
     constexpr BIT_FLAGS options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    const auto &[item, i_idx] = choose_object(creature, q, s, options, FuncItemTester(&ItemEntity::is_weapon));
+    const auto &[item, i_idx] = choose_item(creature, q, s, options, FuncItemTester(&ItemEntity::is_weapon));
     if (!item) {
         return false;
     }
