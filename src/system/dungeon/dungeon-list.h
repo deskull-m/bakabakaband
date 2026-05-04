@@ -21,10 +21,8 @@ public:
     ~DungeonList() = default;
 
     static DungeonList &get_instance();
-    DungeonDefinition &get_dungeon(DungeonId dungeon_id);
     const DungeonDefinition &get_dungeon(DungeonId dungeon_id) const;
-    std::shared_ptr<DungeonDefinition> get_dungeon_shared(DungeonId dungeon_id);
-    std::shared_ptr<const DungeonDefinition> get_dungeon_shared(DungeonId dungeon_id) const;
+    const std::shared_ptr<const DungeonDefinition> get_dungeon_shared(DungeonId dungeon_id) const;
     void emplace(DungeonId dungeon_id, DungeonDefinition &&definition);
     void retouch();
 
