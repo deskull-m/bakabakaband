@@ -54,33 +54,6 @@
 #include "view/display-messages.h"
 #include "world/world.h"
 
-/*!
- * @brief アイテムの発動難度の設定
- * @todo ランダムアーティファクトに破損率を指定する実装をそのうちするかも知れない。当分は0に。
- */
-static void decide_activation_level(ae_type *ae_ptr)
-{
-    if (ae_ptr->o_ptr->is_fixed_artifact()) {
-        ae_ptr->lev = ae_ptr->o_ptr->get_fixed_artifact().level;
-        return;
-    }
-
-    if (ae_ptr->o_ptr->is_random_artifact()) {
-        const auto it_activation = ae_ptr->o_ptr->find_activation_info();
-        if (it_activation != activation_info.end()) {
-            ae_ptr->lev = it_activation->level;
-        }
-
-        return;
-    }
-
-    const auto tval = ae_ptr->o_ptr->bi_key.tval();
-    if (((tval == ItemKindType::RING) || (tval == ItemKindType::AMULET)) && ae_ptr->o_ptr->is_ego()) {
-        ae_ptr->lev = ae_ptr->o_ptr->get_ego().level;
-        ae_ptr->broken = egos_info[ae_ptr->o_ptr->ego_idx].broken_rate;
-    }
-}
-
 static void decide_chance_fail(CreatureEntity &creature, ae_type *ae_ptr)
 {
     ae_ptr->chance = creature.get_skill_device();
@@ -140,12 +113,12 @@ static bool check_activation_conditions(CreatureEntity &creature, ae_type *ae_pt
         return false;
     }
 
-    if (ae_ptr->o_ptr->timeout) {
+    if (ae_ptr->item->timeout) {
         msg_print(_("それは微かに音を立て、輝き、消えた...", "It whines, glows and fades..."));
         return false;
     }
 
-    if (ae_ptr->o_ptr->is_fuel() && (ae_ptr->o_ptr->fuel == 0)) {
+    if (ae_ptr->item->is_fuel() && (ae_ptr->item->fuel == 0)) {
         msg_print(_("燃料がない。", "It has no fuel."));
         PlayerEnergy(creature).reset_player_turn();
         return false;
@@ -202,7 +175,7 @@ static bool activate_artifact(CreatureEntity &creature, ItemEntity *o_ptr)
 
 static bool activate_whistle(CreatureEntity &user, ae_type *ae_ptr)
 {
-    if (ae_ptr->o_ptr->bi_key.tval() != ItemKindType::WHISTLE) {
+    if (ae_ptr->item->bi_key.tval() != ItemKindType::WHISTLE) {
         return false;
     }
 
@@ -228,13 +201,13 @@ static bool activate_whistle(CreatureEntity &user, ae_type *ae_ptr)
         teleport_monster_to(user, pet_indice, user.y, user.x, 100, TELEPORT_PASSIVE);
     }
 
-    ae_ptr->o_ptr->timeout = 100 + randint1(100);
+    ae_ptr->item->timeout = 100 + randint1(100);
     return true;
 }
 
 static bool scouter_probing(CreatureEntity &user, ae_type *ae_ptr)
 {
-    if (ae_ptr->o_ptr->bi_key.tval() != ItemKindType::HELM || ae_ptr->o_ptr->bi_key.sval() != SV_SCOUTER) {
+    if (ae_ptr->item->bi_key.tval() != ItemKindType::HELM || ae_ptr->item->bi_key.sval() != SV_SCOUTER) {
         return false;
     }
 
@@ -244,7 +217,7 @@ static bool scouter_probing(CreatureEntity &user, ae_type *ae_ptr)
 
 static bool activate_firethrowing(CreatureEntity &creature, ae_type *ae_ptr)
 {
-    if (ae_ptr->o_ptr->bi_key.tval() != ItemKindType::BOW || ae_ptr->o_ptr->bi_key.sval() != SV_FLAMETHROWER) {
+    if (ae_ptr->item->bi_key.tval() != ItemKindType::BOW || ae_ptr->item->bi_key.sval() != SV_FLAMETHROWER) {
         return false;
     }
 
@@ -260,7 +233,7 @@ static bool activate_firethrowing(CreatureEntity &creature, ae_type *ae_ptr)
 
 static bool activate_rosmarinus(CreatureEntity &creature, ae_type *ae_ptr)
 {
-    if (ae_ptr->o_ptr->bi_key.tval() != ItemKindType::BOW || ae_ptr->o_ptr->bi_key.sval() != SV_ROSMARINUS) {
+    if (ae_ptr->item->bi_key.tval() != ItemKindType::BOW || ae_ptr->item->bi_key.sval() != SV_ROSMARINUS) {
         return false;
     }
 
@@ -275,7 +248,7 @@ static bool activate_rosmarinus(CreatureEntity &creature, ae_type *ae_ptr)
 
 static bool activate_stungun(CreatureEntity &creature, ae_type *ae_ptr)
 {
-    if (ae_ptr->o_ptr->bi_key.tval() != ItemKindType::JUNK || ae_ptr->o_ptr->bi_key.sval() != SV_STUNGUN) {
+    if (ae_ptr->item->bi_key.tval() != ItemKindType::JUNK || ae_ptr->item->bi_key.sval() != SV_STUNGUN) {
         return false;
     }
 
@@ -293,7 +266,7 @@ static bool activate_stungun(CreatureEntity &creature, ae_type *ae_ptr)
 
 static bool activate_raygun(CreatureEntity &creature, ae_type *ae_ptr)
 {
-    if (ae_ptr->o_ptr->bi_key.tval() != ItemKindType::BOW || ae_ptr->o_ptr->bi_key.sval() != SV_RAYGUN) {
+    if (ae_ptr->item->bi_key.tval() != ItemKindType::BOW || ae_ptr->item->bi_key.sval() != SV_RAYGUN) {
         return false;
     }
 
@@ -320,16 +293,16 @@ void exe_activate(CreatureEntity &creature, INVENTORY_IDX i_idx)
         return;
     }
 
-    ae_type tmp_ae;
-    ae_type *ae_ptr = initialize_ae_type(creature, &tmp_ae, i_idx);
+    ae_type ae(creature, i_idx);
+    auto *ae_ptr = &ae;
 
-    if (ae_ptr->o_ptr->ego_idx == EgoType::SHATTERED || ae_ptr->o_ptr->ego_idx == EgoType::BLASTED) {
+    if (ae_ptr->item->ego_idx == EgoType::SHATTERED || ae_ptr->item->ego_idx == EgoType::BLASTED) {
         msg_print(_("このアイテムはもう壊れていて始動できない。", "That broken object can't be activated."));
         return;
     }
 
     PlayerEnergy(creature).set_player_turn_energy(100);
-    decide_activation_level(ae_ptr);
+    ae_ptr->decide_activation_level();
     decide_chance_fail(creature, ae_ptr);
     if (cmd_limit_time_walk(creature)) {
         return;
@@ -342,8 +315,8 @@ void exe_activate(CreatureEntity &creature, INVENTORY_IDX i_idx)
 
     msg_print(_("始動させた...", "You activate it..."));
     sound(SoundKind::ZAP);
-    if (ae_ptr->o_ptr->has_activation()) {
-        (void)activate_artifact(creature, ae_ptr->o_ptr);
+    if (ae_ptr->item->has_activation()) {
+        (void)activate_artifact(creature, ae_ptr->item.get());
         static constexpr auto flags = {
             SubWindowRedrawingFlag::INVENTORY,
             SubWindowRedrawingFlag::EQUIPMENT,
@@ -356,7 +329,7 @@ void exe_activate(CreatureEntity &creature, INVENTORY_IDX i_idx)
         activated = true;
     } else if (scouter_probing(creature, ae_ptr)) {
         activated = true;
-    } else if (exe_monster_capture(creature, *ae_ptr->o_ptr)) {
+    } else if (exe_monster_capture(creature, *ae_ptr->item)) {
         activated = true;
     } else if (activate_firethrowing(creature, ae_ptr)) {
         activated = true;
@@ -374,8 +347,8 @@ void exe_activate(CreatureEntity &creature, INVENTORY_IDX i_idx)
     }
 
     if (randint1(100) <= ae_ptr->broken) {
-        std::string o_name = describe_flavor(creature, *ae_ptr->o_ptr, OD_OMIT_PREFIX);
+        std::string o_name = describe_flavor(creature, *ae_ptr->item, OD_OMIT_PREFIX);
         msg_format(_("%sは壊れた！", "%s is destroyed!"), o_name.data());
-        curse_weapon_object(creature, true, ae_ptr->o_ptr);
+        curse_weapon_object(creature, true, ae_ptr->item.get());
     }
 }
