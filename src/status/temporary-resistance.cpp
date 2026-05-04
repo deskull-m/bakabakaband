@@ -3,6 +3,8 @@
 #include "core/disturbance.h"
 #include "core/stuff-handler.h"
 #include "game-option/disturbance-options.h"
+#include "main/sound-definitions-table.h"
+#include "main/sound-of-music.h"
 #include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
@@ -35,6 +37,7 @@ bool set_tim_levitation(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_LEVITATION)) {
             msg_print(_("もう宙に浮かべなくなった。", "You stop flying."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
@@ -77,6 +80,7 @@ bool set_ultimate_res(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
             msg_print(_("あらゆることに対する耐性が薄れた気がする。", "You feel less resistant"));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
@@ -121,6 +125,7 @@ bool set_tim_res_nether(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     else {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_RES_NETHER)) {
             msg_print(_("地獄の力に対する耐性が薄れた気がする。", "You feel less nether-resistant"));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
@@ -162,6 +167,7 @@ bool set_tim_res_lite(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_RES_LITE)) {
             msg_print(_("閃光の力に対する耐性が薄れた気がする。", "You feel less lite-resistant"));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
@@ -203,6 +209,7 @@ bool set_tim_res_dark(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_RES_DARK)) {
             msg_print(_("暗黒の力に対する耐性が薄れた気がする。", "You feel less dark-resistant"));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
@@ -243,6 +250,7 @@ bool set_tim_res_fear(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_RES_FEAR)) {
             msg_print(_("恐怖の力に対する耐性が薄れた気がする。", "You feel less fear-resistant"));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
@@ -281,6 +289,7 @@ bool set_tim_res_time(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_RES_TIME)) {
             msg_print(_("時間逆転の力に対する耐性が薄れた気がする。", "You feel less time-resistant"));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
@@ -321,6 +330,7 @@ bool set_tim_imm_dark(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_IMM_DARK)) {
             msg_print(_("暗黒の力に対する完全な耐性を喪った気がする。", "You feel lose dark-immunity"));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }

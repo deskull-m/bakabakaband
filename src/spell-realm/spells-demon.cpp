@@ -3,6 +3,8 @@
 #include "core/disturbance.h"
 #include "core/stuff-handler.h"
 #include "game-option/disturbance-options.h"
+#include "main/sound-definitions-table.h"
+#include "main/sound-of-music.h"
 #include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
@@ -35,6 +37,7 @@ bool set_tim_sh_fire(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_FIRE)) {
             msg_print(_("炎のオーラが消えた。", "The fiery aura disappeared."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }

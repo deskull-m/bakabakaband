@@ -38,6 +38,7 @@ const std::map<SoundKind, std::string> sound_names = {
     { SoundKind::BUY, "buy" },
     { SoundKind::SELL, "sell" },
     { SoundKind::WARN, "warn" },
+    { SoundKind::BUFF_EXPIRE, "buff_expire" },
     { SoundKind::ROCKET, "rocket" },
     { SoundKind::N_KILL, "n_kill" },
     { SoundKind::U_KILL, "u_kill" },
