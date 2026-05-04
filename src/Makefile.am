@@ -709,7 +709,6 @@ hengband_SOURCES = \
 	inventory/inventory-object.cpp inventory/inventory-object.h \
 	inventory/inventory-slot-types.h \
 	inventory/inventory-util.cpp inventory/inventory-util.h \
-	inventory/item-getter.cpp inventory/item-getter.h \
 	inventory/item-selection-util.cpp inventory/item-selection-util.h \
 	inventory/pack-overflow.cpp inventory/pack-overflow.h \
 	inventory/player-inventory.cpp inventory/player-inventory.h \

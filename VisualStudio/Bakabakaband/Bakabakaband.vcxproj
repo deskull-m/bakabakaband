@@ -563,7 +563,6 @@
     <ClCompile Include="..\..\src\inventory\item-selection-util.cpp" />
     <ClCompile Include="..\..\src\inventory\inventory-describer.cpp" />
     <ClCompile Include="..\..\src\inventory\inventory-util.cpp" />
-    <ClCompile Include="..\..\src\inventory\item-getter.cpp" />
     <ClCompile Include="..\..\src\io-dump\random-art-info-dumper.cpp" />
     <ClCompile Include="..\..\src\io\command-repeater.cpp" />
     <ClCompile Include="..\..\src\io\cursor.cpp" />
@@ -1467,7 +1466,6 @@
     <ClInclude Include="..\..\src\inventory\item-selection-util.h" />
     <ClInclude Include="..\..\src\inventory\inventory-describer.h" />
     <ClInclude Include="..\..\src\inventory\inventory-util.h" />
-    <ClInclude Include="..\..\src\inventory\item-getter.h" />
     <ClInclude Include="..\..\src\io-dump\random-art-info-dumper.h" />
     <ClInclude Include="..\..\src\io\command-repeater.h" />
     <ClInclude Include="..\..\src\io\cursor.h" />
