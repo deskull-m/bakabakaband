@@ -18,8 +18,8 @@
 
 static void rd_hengband_dungeons()
 {
-    const int dungeons_size = DungeonList::get_instance().size();
     const auto &dungeons = DungeonList::get_instance();
+    const int dungeons_size = dungeons.size();
     auto &records = DungeonRecords::get_instance();
     const int max = rd_byte();
     for (auto i = 0; i < max; i++) {

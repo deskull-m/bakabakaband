@@ -14,22 +14,12 @@ DungeonList &DungeonList::get_instance()
     return instance;
 }
 
-DungeonDefinition &DungeonList::get_dungeon(DungeonId dungeon_id)
-{
-    return *this->dungeons.at(dungeon_id);
-}
-
 const DungeonDefinition &DungeonList::get_dungeon(DungeonId dungeon_id) const
 {
     return *this->dungeons.at(dungeon_id);
 }
 
-std::shared_ptr<DungeonDefinition> DungeonList::get_dungeon_shared(DungeonId dungeon_id)
-{
-    return this->dungeons.at(dungeon_id);
-}
-
-std::shared_ptr<const DungeonDefinition> DungeonList::get_dungeon_shared(DungeonId dungeon_id) const
+const std::shared_ptr<const DungeonDefinition> DungeonList::get_dungeon_shared(DungeonId dungeon_id) const
 {
     return this->dungeons.at(dungeon_id);
 }
