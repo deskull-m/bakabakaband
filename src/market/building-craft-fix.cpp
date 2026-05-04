@@ -85,29 +85,28 @@ static void give_one_ability_of_object(ItemEntity *to_ptr, ItemEntity *from_ptr)
     }
 }
 
-static std::pair<short, ItemEntity *> select_repairing_broken_weapon(CreatureEntity &creature, const int row)
+static std::pair<short, std::shared_ptr<ItemEntity>> select_repairing_broken_weapon(CreatureEntity &creature, const int row)
 {
     prt(_("修復には材料となるもう1つの武器が必要です。", "Hand one material weapon to repair a broken weapon."), row, 2);
     prt(_("材料に使用した武器はなくなります！", "The material weapon will disappear after repairing!!"), row + 1, 2);
     constexpr auto q = _("どの折れた武器を修復しますか？", "Repair which broken weapon? ");
     constexpr auto s = _("修復できる折れた武器がありません。", "You have no broken weapon to repair.");
-    short i_idx;
-    auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_EQUIP), FuncItemTester(&ItemEntity::is_broken_weapon));
-    if (o_ptr == nullptr) {
+    const auto &[item, i_idx] = choose_object(creature, q, s, (USE_INVEN | USE_EQUIP), FuncItemTester(&ItemEntity::is_broken_weapon));
+    if (!item) {
         return { i_idx, nullptr };
     }
 
-    if (!o_ptr->is_ego() && !o_ptr->is_fixed_or_random_artifact()) {
+    if (!item->is_ego() && !item->is_fixed_or_random_artifact()) {
         msg_format(_("それは直してもしょうがないぜ。", "It is worthless to repair."));
-        return { i_idx, o_ptr };
+        return { i_idx, item };
     }
 
-    if (o_ptr->number > 1) {
+    if (item->number > 1) {
         msg_format(_("一度に複数を修復することはできません！", "They are too many to repair at once!"));
-        return { i_idx, o_ptr };
+        return { i_idx, item };
     }
 
-    return { i_idx, o_ptr };
+    return { i_idx, item };
 }
 
 static void display_reparing_weapon(CreatureEntity &creature, const ItemEntity &item, const int row)
@@ -137,28 +136,27 @@ static PRICE repair_broken_weapon_aux(CreatureEntity &creature, PRICE bcost)
 {
     clear_bldg(0, 22);
     auto row = 7;
-    const auto &[i_idx, o_ptr] = select_repairing_broken_weapon(creature, row);
-    if (o_ptr == nullptr) {
+    const auto &[item_idx_broken, item_broken] = select_repairing_broken_weapon(creature, row);
+    if (!item_broken) {
         return 0;
     }
 
-    display_reparing_weapon(creature, *o_ptr, row);
+    display_reparing_weapon(creature, *item_broken, row);
     constexpr auto q = _("材料となる武器は？", "Which weapon for material? ");
     constexpr auto s = _("材料となる武器がありません。", "You have no material for the repair.");
-    short mater;
-    auto *mo_ptr = choose_object(creature, &mater, q, s, (USE_INVEN | USE_EQUIP), FuncItemTester(&ItemEntity::is_orthodox_melee_weapons));
-    if (!mo_ptr) {
+    const auto &[item_material, material_idx] = choose_object(creature, q, s, (USE_INVEN | USE_EQUIP), FuncItemTester(&ItemEntity::is_orthodox_melee_weapons));
+    if (!item_material) {
         return 0;
     }
 
-    if (mater == i_idx) {
+    if (material_idx == item_idx_broken) {
         msg_print(_("クラインの壷じゃない！", "This is not a Klein bottle!"));
         return 0;
     }
 
-    const auto item_name = describe_flavor(creature, *mo_ptr, OD_NAME_ONLY);
+    const auto item_name = describe_flavor(creature, *item_material, OD_NAME_ONLY);
     prt(format(_("材料とする武器： %s", "Material : %s"), item_name.data()), row + 4, 2);
-    const auto cost = bcost + object_value_real(o_ptr) * 2;
+    const auto cost = bcost + object_value_real(item_broken.get()) * 2;
     if (!input_check(format(_("＄%dかかりますがよろしいですか？ ", "Costs %d gold, okay? "), cost))) {
         return 0;
     }
@@ -171,7 +169,7 @@ static PRICE repair_broken_weapon_aux(CreatureEntity &creature, PRICE bcost)
 
     short bi_id;
     const auto &baseitems = BaseitemList::get_instance();
-    if (o_ptr->bi_key.sval() == SV_BROKEN_DAGGER) {
+    if (item_broken->bi_key.sval() == SV_BROKEN_DAGGER) {
         auto n = 1;
         bi_id = 0;
         for (const auto &baseitem : baseitems) {
@@ -194,7 +192,7 @@ static PRICE repair_broken_weapon_aux(CreatureEntity &creature, PRICE bcost)
             }
         }
     } else {
-        auto tval = (one_in_(5) ? mo_ptr->bi_key.tval() : ItemKindType::SWORD);
+        auto tval = (one_in_(5) ? item_material->bi_key.tval() : ItemKindType::SWORD);
         while (true) {
             bi_id = baseitems.lookup_baseitem_id({ tval });
             const auto &baseitem = baseitems.get_baseitem(bi_id);
@@ -221,28 +219,28 @@ static PRICE repair_broken_weapon_aux(CreatureEntity &creature, PRICE bcost)
         }
     }
 
-    const auto &baseitem_o = o_ptr->get_baseitem();
-    const auto &baseitem_mo = mo_ptr->get_baseitem();
-    auto dd_bonus = o_ptr->damage_dice.num - baseitem_o.damage_dice.num;
-    auto ds_bonus = o_ptr->damage_dice.sides - baseitem_o.damage_dice.sides;
-    dd_bonus += mo_ptr->damage_dice.num - baseitem_mo.damage_dice.num;
-    ds_bonus += mo_ptr->damage_dice.sides - baseitem_mo.damage_dice.sides;
+    const auto &baseitem_o = item_broken->get_baseitem();
+    const auto &baseitem_mo = item_material->get_baseitem();
+    auto dd_bonus = item_broken->damage_dice.num - baseitem_o.damage_dice.num;
+    auto ds_bonus = item_broken->damage_dice.sides - baseitem_o.damage_dice.sides;
+    dd_bonus += item_material->damage_dice.num - baseitem_mo.damage_dice.num;
+    ds_bonus += item_material->damage_dice.sides - baseitem_mo.damage_dice.sides;
 
     const auto &baseitem = baseitems.get_baseitem(bi_id);
-    o_ptr->bi_id = bi_id;
-    o_ptr->weight = baseitem.weight;
-    o_ptr->bi_key = baseitem.bi_key;
-    o_ptr->damage_dice = baseitem.damage_dice;
-    o_ptr->art_flags.set(baseitem.flags);
+    item_broken->bi_id = bi_id;
+    item_broken->weight = baseitem.weight;
+    item_broken->bi_key = baseitem.bi_key;
+    item_broken->damage_dice = baseitem.damage_dice;
+    item_broken->art_flags.set(baseitem.flags);
     if (baseitem.pval) {
-        o_ptr->pval = std::max(o_ptr->pval, randnum1<short>(baseitem.pval));
+        item_broken->pval = std::max(item_broken->pval, randnum1<short>(baseitem.pval));
     }
 
     if (baseitem.flags.has(TR_ACTIVATE)) {
-        o_ptr->activation_id = baseitem.act_idx;
+        item_broken->activation_id = baseitem.act_idx;
     }
 
-    auto &dice = o_ptr->damage_dice;
+    auto &dice = item_broken->damage_dice;
     if (dd_bonus > 0) {
         dice.num++;
         for (int i = 1; i < dd_bonus; i++) {
@@ -262,42 +260,42 @@ static PRICE repair_broken_weapon_aux(CreatureEntity &creature, PRICE bcost)
     }
 
     if (baseitem.flags.has(TR_BLOWS)) {
-        auto bmax = std::min<short>(3, std::max<short>(1, 40 / o_ptr->damage_dice.maxroll()));
-        o_ptr->pval = std::min<short>(o_ptr->pval, bmax);
+        auto bmax = std::min<short>(3, std::max<short>(1, 40 / item_broken->damage_dice.maxroll()));
+        item_broken->pval = std::min<short>(item_broken->pval, bmax);
     }
 
-    give_one_ability_of_object(o_ptr, mo_ptr);
-    o_ptr->to_d += std::max(0, (mo_ptr->to_d / 3));
-    o_ptr->to_h += std::max<short>(0, (mo_ptr->to_h / 3));
-    o_ptr->to_a += std::max<short>(0, (mo_ptr->to_a));
+    give_one_ability_of_object(item_broken.get(), item_material.get());
+    item_broken->to_d += std::max(0, (item_material->to_d / 3));
+    item_broken->to_h += std::max<short>(0, (item_material->to_h / 3));
+    item_broken->to_a += std::max<short>(0, (item_material->to_a));
 
-    const auto is_narsil = o_ptr->is_specific_artifact(FixedArtifactId::NARSIL);
-    if (is_narsil || (o_ptr->is_random_artifact() && one_in_(1)) || (o_ptr->is_ego() && one_in_(7))) {
-        if (o_ptr->is_ego()) {
-            o_ptr->art_flags.set(TR_IGNORE_FIRE);
-            o_ptr->art_flags.set(TR_IGNORE_ACID);
+    const auto is_narsil = item_broken->is_specific_artifact(FixedArtifactId::NARSIL);
+    if (is_narsil || (item_broken->is_random_artifact() && one_in_(1)) || (item_broken->is_ego() && one_in_(7))) {
+        if (item_broken->is_ego()) {
+            item_broken->art_flags.set(TR_IGNORE_FIRE);
+            item_broken->art_flags.set(TR_IGNORE_ACID);
         }
 
-        give_one_ability_of_object(o_ptr, mo_ptr);
-        if (!o_ptr->has_activation()) {
-            one_activation(o_ptr);
+        give_one_ability_of_object(item_broken.get(), item_material.get());
+        if (!item_broken->has_activation()) {
+            one_activation(item_broken.get());
         }
 
         if (is_narsil) {
-            one_high_resistance(o_ptr);
-            one_ability(o_ptr);
+            one_high_resistance(item_broken.get());
+            one_ability(item_broken.get());
         }
 
         msg_print(_("これはかなりの業物だったようだ。", "This blade seems to be exceptional."));
     }
 
-    display_repair_success_message(creature, *o_ptr, cost);
-    o_ptr->ident &= ~(IDENT_BROKEN);
-    o_ptr->discount = 99;
+    display_repair_success_message(creature, *item_broken, cost);
+    item_broken->ident &= ~(IDENT_BROKEN);
+    item_broken->discount = 99;
 
     calc_android_exp(creature);
-    inven_item_increase(creature, mater, -1);
-    inven_item_optimize(creature, mater);
+    inven_item_increase(creature, material_idx, -1);
+    inven_item_optimize(creature, material_idx);
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(creature);

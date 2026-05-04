@@ -120,18 +120,16 @@ static void set_smith_redrawing_flags()
  */
 static void drain_essence(CreatureEntity &creature)
 {
-    auto q = _("どのアイテムから抽出しますか？", "Extract from which item? ");
-    auto s = _("抽出できるアイテムがありません。", "You have nothing you can extract from.");
-
-    short i_idx;
+    constexpr auto q = _("どのアイテムから抽出しますか？", "Extract from which item? ");
+    constexpr auto s = _("抽出できるアイテムがありません。", "You have nothing you can extract from.");
     constexpr auto options = USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    auto o_ptr = choose_object(creature, &i_idx, q, s, options, FuncItemTester(&ItemEntity::is_weapon_armour_ammo));
-    if (!o_ptr) {
+    const auto &[item, i_idx] = choose_object(creature, q, s, options, FuncItemTester(&ItemEntity::is_weapon_armour_ammo));
+    if (!item) {
         return;
     }
 
-    if (o_ptr->is_known() && !o_ptr->is_nameless()) {
-        const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    if (item->is_known() && !item->is_nameless()) {
+        const auto item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
         if (!input_check(format(_("本当に%sから抽出してよろしいですか？", "Really extract from %s? "), item_name.data()))) {
             return;
         }
@@ -139,7 +137,7 @@ static void drain_essence(CreatureEntity &creature)
 
     PlayerEnergy(creature).set_player_turn_energy(100);
 
-    auto drain_result = Smith(creature).drain_essence(o_ptr);
+    auto drain_result = Smith(creature).drain_essence(item.get());
 
     if (drain_result.empty()) {
         msg_print(_("エッセンスは抽出できませんでした。", "You were not able to extract any essence."));
@@ -442,19 +440,18 @@ static void add_essence(CreatureEntity &creature, SmithCategoryType mode)
 
     constexpr auto q = _("どのアイテムを改良しますか？", "Improve which item? ");
     constexpr auto s = _("改良できるアイテムがありません。", "You have nothing to improve.");
-    short i_idx;
-    auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
-    if (!o_ptr) {
+    const auto &[item, i_idx] = choose_object(creature, q, s, (USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
+    if (!item) {
         return;
     }
 
-    const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
-    const auto use_essence = Smith::get_essence_consumption(effect, o_ptr);
-    if (o_ptr->number > 1) {
-        msg_format(_("%d個あるのでエッセンスは%d必要です。", "For %d items, it will take %d essences."), o_ptr->number, use_essence);
+    const auto item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto use_essence = Smith::get_essence_consumption(effect, item.get());
+    if (item->number > 1) {
+        msg_format(_("%d個あるのでエッセンスは%d必要です。", "For %d items, it will take %d essences."), item->number, use_essence);
     }
 
-    if (smith.get_addable_count(effect, o_ptr) == 0) {
+    if (smith.get_addable_count(effect, item.get()) == 0) {
         msg_print(_("エッセンスが足りない。", "You don't have enough essences."));
         return;
     }
@@ -463,25 +460,25 @@ static void add_essence(CreatureEntity &creature, SmithCategoryType mode)
     const auto attribute_flags = Smith::get_effect_tr_flags(effect);
     auto add_essence_count = 1;
     if (attribute_flags.has_any_of(TR_PVAL_FLAG_MASK)) {
-        if (o_ptr->pval < 0) {
+        if (item->pval < 0) {
             msg_print(_("このアイテムの能力修正を強化することはできない。", "You cannot increase magic number of this item."));
             return;
         } else if (attribute_flags.has(TR_BLOWS)) {
-            if ((o_ptr->pval > 1) && !input_check(_("修正値は1になります。よろしいですか？", "The magic number of this weapon will become 1. Are you sure? "))) {
+            if ((item->pval > 1) && !input_check(_("修正値は1になります。よろしいですか？", "The magic number of this weapon will become 1. Are you sure? "))) {
                 return;
             }
-            o_ptr->pval = 1;
-        } else if (o_ptr->pval == 0) {
-            const auto limit = std::min(5, smith.get_addable_count(effect, o_ptr));
+            item->pval = 1;
+        } else if (item->pval == 0) {
+            const auto limit = std::min(5, smith.get_addable_count(effect, item.get()));
             const auto num_enchants = input_numerics<short>(prompt, 1, limit, 1);
             if (!num_enchants.has_value()) {
                 return;
             }
 
-            o_ptr->pval = *num_enchants;
+            item->pval = *num_enchants;
         }
 
-        add_essence_count = o_ptr->pval;
+        add_essence_count = item->pval;
     } else if (effect == SmithEffectType::SLAY_GLOVE) {
         const auto max_val = creature.level / 7 + 3;
         const auto num_enchants = input_numerics(prompt, 1, max_val, 1);
@@ -494,14 +491,14 @@ static void add_essence(CreatureEntity &creature, SmithCategoryType mode)
 
     msg_format(_("エッセンスを%d個使用します。", "It will take %d essences."), use_essence * add_essence_count);
 
-    if (smith.get_addable_count(effect, o_ptr) < add_essence_count) {
+    if (smith.get_addable_count(effect, item.get()) < add_essence_count) {
         msg_print(_("エッセンスが足りない。", "You don't have enough essences."));
         return;
     }
 
     PlayerEnergy(creature).set_player_turn_energy(100);
 
-    if (!smith.add_essence(effect, o_ptr, add_essence_count)) {
+    if (!smith.add_essence(effect, item.get(), add_essence_count)) {
         msg_print(_("改良に失敗した。", "You failed to enchant."));
         return;
     }
@@ -519,20 +516,19 @@ static void erase_essence(CreatureEntity &creature)
 {
     constexpr auto q = _("どのアイテムのエッセンスを消去しますか？", "Remove from which item? ");
     constexpr auto s = _("エッセンスを付加したアイテムがありません。", "You have nothing with added essence to remove.");
-    short i_idx;
-    auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::is_smith));
-    if (!o_ptr) {
+    const auto &[item, i_idx] = choose_object(creature, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::is_smith));
+    if (!item) {
         return;
     }
 
-    const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     if (!input_check(format(_("よろしいですか？ [%s]", "Are you sure? [%s]"), item_name.data()))) {
         return;
     }
 
     PlayerEnergy(creature).set_player_turn_energy(100);
 
-    Smith(creature).erase_essence(o_ptr);
+    Smith(creature).erase_essence(item.get());
 
     msg_print(_("エッセンスを取り去った。", "You removed all essence you have added."));
     set_smith_redrawing_flags();

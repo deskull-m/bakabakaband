@@ -4,7 +4,10 @@
 #include "system/angband.h"
 #include "system/baseitem/baseitem-allocation.h"
 #include "util/point-2d.h"
+#include <memory>
+#include <string_view>
 #include <tl/optional.hpp>
+#include <utility>
 #include <vector>
 
 class ObjectIndexList;
@@ -26,4 +29,4 @@ short drop_near(CreatureEntity &subject, ItemEntity &drop_item, const Pos2D &pos
 void drop_ammo_near(CreatureEntity &creature, ItemEntity &drop_item, const Pos2D &pos, int destruction_chance);
 void floor_item_charges(const FloorType &floor, INVENTORY_IDX i_idx);
 void floor_item_describe(CreatureEntity &creature, INVENTORY_IDX i_idx);
-ItemEntity *choose_object(CreatureEntity &creature, short *initial_i_idx, concptr q, concptr s, BIT_FLAGS option, const ItemTester &item_tester = AllMatchItemTester());
+std::pair<std::shared_ptr<ItemEntity>, short> choose_object(CreatureEntity &creature, std::string_view q, std::string_view s, BIT_FLAGS option, const ItemTester &item_tester = AllMatchItemTester());

@@ -308,25 +308,24 @@ bool pulish_shield(CreatureEntity &creature)
     constexpr auto q = _("どの盾を磨きますか？", "Polish which shield? ");
     constexpr auto s = _("磨く盾がありません。", "You have no shield to polish.");
     const auto options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    short i_idx;
-    auto *o_ptr = choose_object(creature, &i_idx, q, s, options, TvalItemTester(ItemKindType::SHIELD));
-    if (o_ptr == nullptr) {
+    const auto &[item, i_idx] = choose_object(creature, q, s, options, TvalItemTester(ItemKindType::SHIELD));
+    if (!item) {
         return false;
     }
 
-    const auto item_name = describe_flavor(creature, *o_ptr, OD_OMIT_PREFIX | OD_NAME_ONLY);
-    auto is_pulish_successful = o_ptr->is_valid() && !o_ptr->is_fixed_or_random_artifact() && !o_ptr->is_ego();
-    is_pulish_successful &= !o_ptr->is_cursed();
-    is_pulish_successful &= (o_ptr->bi_key.sval() != SV_MIRROR_SHIELD);
+    const auto item_name = describe_flavor(creature, *item, OD_OMIT_PREFIX | OD_NAME_ONLY);
+    auto is_pulish_successful = item->is_valid() && !item->is_fixed_or_random_artifact() && !item->is_ego();
+    is_pulish_successful &= !item->is_cursed();
+    is_pulish_successful &= (item->bi_key.sval() != SV_MIRROR_SHIELD);
     if (is_pulish_successful) {
 #ifdef JP
         msg_format("%sは輝いた！", item_name.data());
 #else
-        msg_format("%s %s shine%s!", ((i_idx >= 0) ? "Your" : "The"), item_name.data(), ((o_ptr->number > 1) ? "" : "s"));
+        msg_format("%s %s shine%s!", ((i_idx >= 0) ? "Your" : "The"), item_name.data(), ((item->number > 1) ? "" : "s"));
 #endif
-        o_ptr->ego_idx = EgoType::REFLECTION;
-        enchant_equipment(o_ptr, randint0(3) + 4, ENCH_TOAC);
-        o_ptr->discount = 99;
+        item->ego_idx = EgoType::REFLECTION;
+        enchant_equipment(item.get(), randint0(3) + 4, ENCH_TOAC);
+        item->discount = 99;
         chg_virtue(creature, Virtue::ENCHANT, 2);
         return true;
     }

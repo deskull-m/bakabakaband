@@ -30,27 +30,26 @@ bool alchemy(CreatureEntity &creature)
 
     constexpr auto q = _("どのアイテムを金に変えますか？", "Turn which item to gold? ");
     constexpr auto s = _("金に変えられる物がありません。", "You have nothing to turn to gold.");
-    short i_idx;
-    auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_FLOOR));
-    if (o_ptr == nullptr) {
+    const auto &[item, i_idx] = choose_object(creature, q, s, (USE_INVEN | USE_FLOOR));
+    if (!item) {
         return false;
     }
 
     auto amt = 1;
-    if (o_ptr->number > 1) {
-        amt = input_quantity(o_ptr->number);
+    if (item->number > 1) {
+        amt = input_quantity(item->number);
         if (amt <= 0) {
             return false;
         }
     }
 
-    const auto old_number = o_ptr->number;
-    o_ptr->number = amt;
-    const auto item_name = describe_flavor(creature, *o_ptr, 0);
-    o_ptr->number = old_number;
+    const auto old_number = item->number;
+    item->number = amt;
+    const auto item_name = describe_flavor(creature, *item, 0);
+    item->number = old_number;
 
     if (!force) {
-        if (confirm_destroy || (o_ptr->calc_price() > 0)) {
+        if (confirm_destroy || (item->calc_price() > 0)) {
             const auto out_val = format(_("本当に%sを金に変えますか？", "Really turn %s to gold? "), item_name.data());
             if (!input_check(out_val)) {
                 return false;
@@ -58,12 +57,12 @@ bool alchemy(CreatureEntity &creature)
         }
     }
 
-    if (!can_player_destroy_object(o_ptr)) {
+    if (!can_player_destroy_object(item.get())) {
         msg_format(_("%sを金に変えることに失敗した。", "You fail to turn %s to gold!"), item_name.data());
         return false;
     }
 
-    auto price = object_value_real(o_ptr);
+    auto price = object_value_real(item.get());
     if (price <= 0) {
         msg_format(_("%sをニセの金に変えた。", "You turn %s to fool's gold."), item_name.data());
         vary_item(creature, i_idx, -amt);

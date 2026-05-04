@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string>
 #include <string_view>
 
@@ -18,13 +19,13 @@ enum class AutopickSearchResult {
 
 class AutopickSearch {
 public:
-    AutopickSearch(ItemEntity *item_ptr, std::string_view search_str)
-        : item_ptr(item_ptr)
+    AutopickSearch(std::shared_ptr<ItemEntity> item, std::string_view search_str)
+        : item(item)
         , search_str(search_str)
     {
     }
 
-    ItemEntity *item_ptr;
+    std::shared_ptr<ItemEntity> item;
     std::string search_str;
     AutopickSearchResult result = AutopickSearchResult::CANCEL;
 };

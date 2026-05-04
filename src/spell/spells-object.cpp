@@ -481,30 +481,29 @@ bool enchant_spell(CreatureEntity &creature, HIT_PROB num_hit, int num_dam, ARMO
 
     constexpr auto q = _("どのアイテムを強化しますか? ", "Enchant which item? ");
     constexpr auto s = _("強化できるアイテムがない。", "You have nothing to enchant.");
-    short i_idx;
     const auto options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    auto *o_ptr = choose_object(creature, &i_idx, q, s, options, item_tester);
-    if (o_ptr == nullptr) {
+    const auto &[item, i_idx] = choose_object(creature, q, s, options, item_tester);
+    if (!item) {
         return false;
     }
 
-    const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
 #ifdef JP
     msg_format("%s は明るく輝いた！", item_name.data());
 #else
-    msg_format("%s %s glow%s brightly!", ((i_idx >= 0) ? "Your" : "The"), item_name.data(), ((o_ptr->number > 1) ? "" : "s"));
+    msg_format("%s %s glow%s brightly!", ((i_idx >= 0) ? "Your" : "The"), item_name.data(), ((item->number > 1) ? "" : "s"));
 #endif
 
     auto is_enchant_successful = false;
-    if (enchant_equipment(o_ptr, num_hit, ENCH_TOHIT)) {
+    if (enchant_equipment(item.get(), num_hit, ENCH_TOHIT)) {
         is_enchant_successful = true;
     }
 
-    if (enchant_equipment(o_ptr, num_dam, ENCH_TODAM)) {
+    if (enchant_equipment(item.get(), num_dam, ENCH_TODAM)) {
         is_enchant_successful = true;
     }
 
-    if (enchant_equipment(o_ptr, num_ac, ENCH_TOAC)) {
+    if (enchant_equipment(item.get(), num_ac, ENCH_TOAC)) {
         is_enchant_successful = true;
     }
 
@@ -534,18 +533,17 @@ void brand_weapon(CreatureEntity &creature, int brand_type)
 
     constexpr auto q = _("どの武器を強化しますか? ", "Enchant which weapon? ");
     constexpr auto s = _("強化できる武器がない。", "You have nothing to enchant.");
-    short i_idx;
     const auto options = USE_EQUIP | IGNORE_BOTHHAND_SLOT;
-    auto *o_ptr = choose_object(creature, &i_idx, q, s, options, FuncItemTester(&ItemEntity::allow_enchant_melee_weapon));
-    if (o_ptr == nullptr) {
+    const auto &[item, i_idx] = choose_object(creature, q, s, options, FuncItemTester(&ItemEntity::allow_enchant_melee_weapon));
+    if (!item) {
         return;
     }
 
-    const auto &bi_key = o_ptr->bi_key;
+    const auto &bi_key = item->bi_key;
     auto special_weapon = bi_key == BaseitemKey(ItemKindType::SWORD, SV_POISON_NEEDLE);
     special_weapon |= bi_key == BaseitemKey(ItemKindType::POLEARM, SV_DEATH_SCYTHE);
     special_weapon |= bi_key == BaseitemKey(ItemKindType::SWORD, SV_DIAMOND_EDGE);
-    const auto is_normal_item = o_ptr->is_valid() && !o_ptr->is_fixed_or_random_artifact() && !o_ptr->is_ego() && !o_ptr->is_cursed() && !special_weapon;
+    const auto is_normal_item = item->is_valid() && !item->is_fixed_or_random_artifact() && !item->is_ego() && !item->is_cursed() && !special_weapon;
     if (!is_normal_item) {
         if (flush_failure) {
             flush();
@@ -557,98 +555,98 @@ void brand_weapon(CreatureEntity &creature, int brand_type)
         return;
     }
 
-    const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     concptr act = nullptr;
     switch (brand_type) {
     case 17:
-        if (o_ptr->bi_key.tval() == ItemKindType::SWORD) {
+        if (item->bi_key.tval() == ItemKindType::SWORD) {
             act = _("は鋭さを増した！", "becomes very sharp!");
-            o_ptr->ego_idx = EgoType::SHARPNESS;
-            o_ptr->pval = (PARAMETER_VALUE)m_bonus(5, creature.get_floor()->dun_level) + 1;
-            if ((o_ptr->bi_key.sval() == SV_HAYABUSA) && (o_ptr->pval > 2)) {
-                o_ptr->pval = 2;
+            item->ego_idx = EgoType::SHARPNESS;
+            item->pval = (PARAMETER_VALUE)m_bonus(5, creature.get_floor()->dun_level) + 1;
+            if ((item->bi_key.sval() == SV_HAYABUSA) && (item->pval > 2)) {
+                item->pval = 2;
             }
         } else {
             act = _("は破壊力を増した！", "seems very powerful.");
-            o_ptr->ego_idx = EgoType::EARTHQUAKES;
-            o_ptr->pval = (PARAMETER_VALUE)m_bonus(3, creature.get_floor()->dun_level);
+            item->ego_idx = EgoType::EARTHQUAKES;
+            item->pval = (PARAMETER_VALUE)m_bonus(3, creature.get_floor()->dun_level);
         }
 
         break;
     case 16:
         act = _("は人間の血を求めている！", "seems to be looking for humans!");
-        o_ptr->ego_idx = EgoType::KILL_HUMAN;
+        item->ego_idx = EgoType::KILL_HUMAN;
         break;
     case 15:
         act = _("は電撃に覆われた！", "covered with lightning!");
-        o_ptr->ego_idx = EgoType::BRAND_ELEC;
+        item->ego_idx = EgoType::BRAND_ELEC;
         break;
     case 14:
         act = _("は酸に覆われた！", "coated with acid!");
-        o_ptr->ego_idx = EgoType::BRAND_ACID;
+        item->ego_idx = EgoType::BRAND_ACID;
         break;
     case 13:
         act = _("は邪悪なる怪物を求めている！", "seems to be looking for evil monsters!");
-        o_ptr->ego_idx = EgoType::KILL_EVIL;
+        item->ego_idx = EgoType::KILL_EVIL;
         break;
     case 12:
         act = _("は異世界の住人の肉体を求めている！", "seems to be looking for demons!");
-        o_ptr->ego_idx = EgoType::KILL_DEMON;
+        item->ego_idx = EgoType::KILL_DEMON;
         break;
     case 11:
         act = _("は屍を求めている！", "seems to be looking for undead!");
-        o_ptr->ego_idx = EgoType::KILL_UNDEAD;
+        item->ego_idx = EgoType::KILL_UNDEAD;
         break;
     case 10:
         act = _("は動物の血を求めている！", "seems to be looking for animals!");
-        o_ptr->ego_idx = EgoType::KILL_ANIMAL;
+        item->ego_idx = EgoType::KILL_ANIMAL;
         break;
     case 9:
         act = _("はドラゴンの血を求めている！", "seems to be looking for dragons!");
-        o_ptr->ego_idx = EgoType::KILL_DRAGON;
+        item->ego_idx = EgoType::KILL_DRAGON;
         break;
     case 8:
         act = _("はトロルの血を求めている！", "seems to be looking for troll!s");
-        o_ptr->ego_idx = EgoType::KILL_TROLL;
+        item->ego_idx = EgoType::KILL_TROLL;
         break;
     case 7:
         act = _("はオークの血を求めている！", "seems to be looking for orcs!");
-        o_ptr->ego_idx = EgoType::KILL_ORC;
+        item->ego_idx = EgoType::KILL_ORC;
         break;
     case 6:
         act = _("は巨人の血を求めている！", "seems to be looking for giants!");
-        o_ptr->ego_idx = EgoType::KILL_GIANT;
+        item->ego_idx = EgoType::KILL_GIANT;
         break;
     case 5:
         act = _("は非常に不安定になったようだ。", "seems very unstable now.");
-        o_ptr->ego_idx = EgoType::TRUMP;
-        o_ptr->pval = randnum1<short>(2);
+        item->ego_idx = EgoType::TRUMP;
+        item->pval = randnum1<short>(2);
         break;
     case 4:
         act = _("は血を求めている！", "thirsts for blood!");
-        o_ptr->ego_idx = EgoType::VAMPIRIC;
+        item->ego_idx = EgoType::VAMPIRIC;
         break;
     case 3:
         act = _("は毒に覆われた。", "is coated with poison.");
-        o_ptr->ego_idx = EgoType::BRAND_POIS;
+        item->ego_idx = EgoType::BRAND_POIS;
         break;
     case 2:
         act = _("は純ログルスに飲み込まれた。", "is engulfed in raw Logrus!");
-        o_ptr->ego_idx = EgoType::CHAOTIC;
+        item->ego_idx = EgoType::CHAOTIC;
         break;
     case 1:
         act = _("は炎のシールドに覆われた！", "is covered in a fiery shield!");
-        o_ptr->ego_idx = EgoType::BRAND_FIRE;
+        item->ego_idx = EgoType::BRAND_FIRE;
         break;
     default:
         act = _("は深く冷たいブルーに輝いた！", "glows deep, icy blue!");
-        o_ptr->ego_idx = EgoType::BRAND_COLD;
+        item->ego_idx = EgoType::BRAND_COLD;
         break;
     }
 
     msg_format(_("あなたの%s%s", "Your %s %s"), item_name.data(), act);
-    enchant_equipment(o_ptr, randint0(3) + 4, ENCH_TOHIT | ENCH_TODAM);
-    o_ptr->discount = 99;
+    enchant_equipment(item.get(), randint0(3) + 4, ENCH_TOHIT | ENCH_TODAM);
+    item->discount = 99;
     chg_virtue(creature, Virtue::ENCHANT, 2);
     calc_android_exp(creature);
 }

@@ -148,8 +148,8 @@ static void py_pickup_multiple_items(CreatureEntity &creature, bool pickup)
     for (auto pick_count = 0; pick_count < count_of_pickable_items; ++pick_count) {
         constexpr auto q = _("どれを拾いますか？", "Get which item? ");
         constexpr auto s = _("もうザックには床にあるどのアイテムも入らない。", "You no longer have any room for the objects on the floor.");
-        short i_idx;
-        if (!choose_object(creature, &i_idx, q, s, (USE_FLOOR), tester)) {
+        const auto &[item, i_idx] = choose_object(creature, q, s, USE_FLOOR, tester);
+        if (!item) {
             break;
         }
         process_player_pickup_item(creature, -i_idx);

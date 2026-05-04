@@ -431,8 +431,9 @@ ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, in
     }
     case EC_SEARCH_STR: {
         tb->dirty_flags |= DIRTY_SCREEN;
-        const auto as_result = get_string_for_search(creature, { tb->search_o_ptr, tb->search_str });
-        tb->search_o_ptr = as_result.item_ptr;
+        AutopickSearch as(tb->search_item, tb->search_str);
+        const auto as_result = get_string_for_search(creature, as);
+        tb->search_item = as_result.item;
         tb->search_str = as_result.search_str;
         if (as_result.result == AutopickSearchResult::CANCEL) {
             break;
@@ -443,8 +444,8 @@ ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, in
         break;
     }
     case EC_SEARCH_FORW:
-        if (tb->search_o_ptr) {
-            search_for_object(creature, tb, tb->search_o_ptr, true);
+        if (tb->search_item) {
+            search_for_object(creature, tb, tb->search_item.get(), true);
             break;
         }
 
@@ -457,8 +458,8 @@ ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, in
         break;
 
     case EC_SEARCH_BACK: {
-        if (tb->search_o_ptr) {
-            search_for_object(creature, tb, tb->search_o_ptr, false);
+        if (tb->search_item) {
+            search_for_object(creature, tb, tb->search_item.get(), false);
             break;
         }
 
@@ -472,7 +473,7 @@ ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, in
     }
     case EC_SEARCH_OBJ: {
         tb->dirty_flags |= DIRTY_SCREEN;
-        AutopickSearch as(tb->search_o_ptr, tb->search_str);
+        AutopickSearch as(tb->search_item, tb->search_str);
         if (!get_object_for_search(creature, as)) {
             break;
         }
@@ -482,7 +483,7 @@ ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, in
         break;
     }
     case EC_SEARCH_DESTROYED: {
-        AutopickSearch as(tb->search_o_ptr, tb->search_str);
+        AutopickSearch as(tb->search_item, tb->search_str);
         if (!get_destroyed_object_for_search(creature, as)) {
             tb->dirty_flags |= DIRTY_NO_SEARCH;
             break;

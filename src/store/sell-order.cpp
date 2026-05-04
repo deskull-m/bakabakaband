@@ -85,31 +85,30 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
         break;
     }
 
-    short i_idx;
     const auto options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    auto *o_ptr = choose_object(creature, &i_idx, q, s_none, options, FuncItemTester([](CreatureEntity *c, const ItemEntity *o, StoreSaleType st) { return store_will_buy(*c, o, st); }, creature, store_num));
-    if (o_ptr == nullptr) {
+    const auto &[item, i_idx] = choose_object(creature, q, s_none, options, FuncItemTester([](CreatureEntity *c, const ItemEntity *o, StoreSaleType st) { return store_will_buy(*c, o, st); }, creature, store_num));
+    if (!item) {
         return;
     }
 
-    if ((i_idx >= INVEN_MAIN_HAND) && o_ptr->is_cursed()) {
+    if ((i_idx >= INVEN_MAIN_HAND) && item->is_cursed()) {
         msg_print(_("ふーむ、どうやらそれは呪われているようだね。", "Hmmm, it seems to be cursed."));
         return;
     }
 
     auto amt = 1;
-    if (o_ptr->number > 1) {
-        amt = input_quantity(o_ptr->number);
+    if (item->number > 1) {
+        amt = input_quantity(item->number);
         if (amt <= 0) {
             return;
         }
     }
 
-    auto selling_item = o_ptr->clone();
+    auto selling_item = item->clone();
     selling_item.number = amt;
 
-    if (o_ptr->is_wand_rod()) {
-        selling_item.pval = o_ptr->pval * amt / o_ptr->number;
+    if (item->is_wand_rod()) {
+        selling_item.pval = item->pval * amt / item->number;
     }
 
     if ((store_num != StoreSaleType::HOME) && (store_num != StoreSaleType::MUSEUM)) {
@@ -139,7 +138,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
                 chg_virtue(creature, Virtue::JUSTICE, -1);
             }
 
-            const auto tval = o_ptr->bi_key.tval();
+            const auto tval = item->bi_key.tval();
             if ((tval == ItemKindType::BOTTLE) && (store_num != StoreSaleType::HOME)) {
                 chg_virtue(creature, Virtue::NATURE, 1);
             }
@@ -148,13 +147,13 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
             store_prt_gold(creature.au);
             const auto dummy = selling_item.calc_price() * selling_item.number;
 
-            identify_item(creature, o_ptr);
-            auto sold_item = o_ptr->clone();
+            identify_item(creature, item.get());
+            auto sold_item = item->clone();
             sold_item.number = amt;
             sold_item.ident |= IDENT_STORE;
 
-            if (o_ptr->is_wand_rod()) {
-                sold_item.pval = o_ptr->pval * amt / o_ptr->number;
+            if (item->is_wand_rod()) {
+                sold_item.pval = item->pval * amt / item->number;
             }
 
             const auto value = sold_item.calc_price() * sold_item.number;
@@ -171,11 +170,11 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
                 purchase_analyze(creature, price, value, dummy);
             }
 
-            distribute_charges(o_ptr, &sold_item, amt);
+            distribute_charges(item.get(), &sold_item, amt);
             sold_item.timeout = 0;
             inven_item_increase(creature, i_idx, -amt);
             inven_item_describe(creature, i_idx);
-            if (o_ptr->number > 0) {
+            if (item->number > 0) {
                 autopick_alter_item(creature, i_idx, false);
             }
 
@@ -202,7 +201,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
         identify_item(creature, &selling_item);
         selling_item.ident |= IDENT_FULL_KNOWN;
 
-        distribute_charges(o_ptr, &selling_item, amt);
+        distribute_charges(item.get(), &selling_item, amt);
         msg_format(_("%sを置いた。(%c)", "You drop %s (%c)."), museum_item_name.data(), index_to_label(i_idx));
         placed = true;
 
@@ -214,7 +213,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
             display_store_inventory(creature, store_num);
         }
     } else {
-        distribute_charges(o_ptr, &selling_item, amt);
+        distribute_charges(item.get(), &selling_item, amt);
         const auto item_name = describe_flavor(creature, selling_item, 0);
         msg_format(_("%sを置いた。(%c)", "You drop %s (%c)."), item_name.data(), index_to_label(i_idx));
         placed = true;
