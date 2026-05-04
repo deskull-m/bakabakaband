@@ -32,15 +32,15 @@ void do_cmd_fire(CreatureEntity &creature, SPELL_IDX snipe_type)
     }
 
     creature.is_fired = false;
-    auto *item_ptr = creature.inventory[INVEN_BOW].get();
-    const auto tval = item_ptr->bi_key.tval();
+    auto *bow_ptr = creature.inventory[INVEN_BOW].get();
+    const auto tval = bow_ptr->bi_key.tval();
     if (tval == ItemKindType::NONE) {
         msg_print(_("射撃用の武器を持っていない。", "You have nothing to fire with."));
         flush();
         return;
     }
 
-    const auto sval = item_ptr->bi_key.sval();
+    const auto sval = bow_ptr->bi_key.sval();
     if (sval == SV_CRIMSON) {
         msg_print(_("この武器は発動して使うもののようだ。", "It's already activated."));
         flush();
@@ -63,7 +63,7 @@ void do_cmd_fire(CreatureEntity &creature, SPELL_IDX snipe_type)
         return;
     }
 
-    exe_fire(creature, i_idx, item_ptr, snipe_type);
+    exe_fire(creature, i_idx, bow_ptr, snipe_type);
     if (!creature.is_fired || !CreatureClass(creature).equals(PlayerClassType::SNIPER)) {
         return;
     }
