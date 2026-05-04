@@ -40,14 +40,14 @@
  */
 static void autopick_delayed_alter_aux(CreatureEntity &creature, INVENTORY_IDX i_idx)
 {
-    const auto *o_ptr = ref_item(creature, i_idx);
-    if (!o_ptr->is_valid() || o_ptr->marked.has_not(OmType::AUTODESTROY)) {
+    const auto &item = ref_item(creature, i_idx);
+    if (!item->is_valid() || item->marked.has_not(OmType::AUTODESTROY)) {
         return;
     }
 
-    const auto item_name = describe_flavor(creature, *o_ptr, 0);
+    const auto item_name = describe_flavor(creature, *item, 0);
     if (i_idx >= 0) {
-        inven_item_increase(creature, i_idx, -(o_ptr->number));
+        inven_item_increase(creature, i_idx, -(item->number));
         inven_item_optimize(creature, i_idx);
     } else {
         delete_object_idx(creature, 0 - i_idx);
@@ -87,12 +87,11 @@ void autopick_delayed_alter(CreatureEntity &creature)
  */
 void autopick_alter_item(CreatureEntity &creature, INVENTORY_IDX i_idx, bool destroy)
 {
-    ItemEntity *o_ptr;
-    o_ptr = ref_item(creature, i_idx);
-    int idx = find_autopick_list(creature, o_ptr);
-    auto_inscribe_item(o_ptr, idx);
+    auto item = ref_item(creature, i_idx);
+    int idx = find_autopick_list(creature, item.get());
+    auto_inscribe_item(item.get(), idx);
     if (destroy && i_idx <= INVEN_PACK) {
-        auto_destroy_item(creature, o_ptr, idx);
+        auto_destroy_item(creature, item.get(), idx);
     }
 }
 
