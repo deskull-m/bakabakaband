@@ -315,7 +315,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
         return;
     }
 
-    if (creature.has_warning_flag() && (!process_warning(creature, pos.x, pos.y))) {
+    if (creature.has_warning_flag() && (!process_warning(creature, pos))) {
         energy.set_player_turn_energy(25);
         return;
     }
