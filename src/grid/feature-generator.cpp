@@ -34,7 +34,7 @@ void gen_caverns_and_lakes(CreatureEntity &creature, const DungeonDefinition &du
 {
     const auto &floor = *creature.get_floor();
     constexpr auto chance_destroyed = 18;
-    if ((floor.dun_level > 30) && one_in_(chance_destroyed * 2) && small_levels && dungeon.flags.has(DungeonFeatureType::DESTROY)) {
+    if ((floor.dun_level > 30) && one_in_(chance_destroyed * 2) && allow_smallest_floor && dungeon.flags.has(DungeonFeatureType::DESTROY)) {
         dd_ptr->destroyed = true;
         build_lake(creature, one_in_(2) ? LAKE_T_CAVE : LAKE_T_EARTH_VAULT);
     }

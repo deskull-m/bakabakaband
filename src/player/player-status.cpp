@@ -3009,10 +3009,10 @@ uint32_t calc_score(CreatureEntity &creature)
     if (ironman_shops) {
         mult += 50;
     }
-    if (ironman_small_levels) {
+    if (ironman_smallest_floor) {
         mult += 10;
     }
-    if (ironman_empty_levels) {
+    if (ironman_force_arena_floor) {
         mult += 20;
     }
     if (!powerup_home) {

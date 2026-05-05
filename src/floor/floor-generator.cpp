@@ -345,7 +345,7 @@ static tl::optional<std::string> level_gen(CreatureEntity &creature, tl::optiona
     if (dungeon.flags.has(DungeonFeatureType::ALWAY_MAX_SIZE)) {
         level_height = MAX_HGT / SCREEN_HGT;
         level_width = MAX_WID / SCREEN_WID;
-    } else if (always_small_levels || ironman_small_levels || (small_levels && one_in_(chance_small_floor)) || dungeon.flags.has(DungeonFeatureType::SMALLEST)) {
+    } else if (always_small_floor || ironman_smallest_floor || (allow_smallest_floor && one_in_(chance_small_floor)) || dungeon.flags.has(DungeonFeatureType::SMALLEST)) {
         level_height = MIN_HGT_MULTIPLE;
         level_width = MIN_WID_MULTIPLE;
     } else if (dungeon.flags.has(DungeonFeatureType::BEGINNER)) {

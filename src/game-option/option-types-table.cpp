@@ -190,12 +190,12 @@ const std::vector<GameOption> option_info = validate_option_info({
 
     { &expand_list, true, GameOptionType::EXPAND_LIST, "expand_list", _("「一覧」コマンドを拡張する", "Expand the power of the list commands"), GameOptionPage::GAMEPLAY },
 
-    { &small_levels, true, GameOptionType::SMALL_LEVELS, "small_levels", _("非常に小さいフロアの生成を可能にする", "Allow unusually small dungeon levels"), GameOptionPage::GAMEPLAY },
+    { &allow_smallest_floor, true, GameOptionType::ALLOW_SMALLEST_FLOOR, "allow_smallest_floor", _("非常に小さいフロアの生成を可能にする", "Allow unusually small dungeon levels"), GameOptionPage::GAMEPLAY },
 
-    { &always_small_levels, false, GameOptionType::ALWAYS_SMALL_LEVELS, "always_small_levels",
+    { &always_small_floor, false, GameOptionType::ALWAYS_SMALL_FLOOR, "always_small_floor",
         _("常に非常に小さいフロアを生成する", "Always create unusually small dungeon levels"), GameOptionPage::GAMEPLAY },
 
-    { &empty_levels, true, GameOptionType::EMPTY_LEVELS, "empty_levels", _("空っぽの「アリーナ」レベルの生成を可能にする", "Allow empty 'arena' levels"), GameOptionPage::GAMEPLAY },
+    { &allow_arena_floor, true, GameOptionType::ALLOW_ARENA_FLOOR, "allow_arena_floor", _("空っぽの「アリーナ」レベルの生成を可能にする", "Allow empty 'arena' levels"), GameOptionPage::GAMEPLAY },
 
     { &bound_walls_perm, true, GameOptionType::BOUND_WALLS_PERM, "bound_walls_perm", _("ダンジョンの外壁を永久岩にする", "Boundary walls become 'permanent wall'"), GameOptionPage::GAMEPLAY },
 
@@ -266,12 +266,12 @@ const std::vector<GameOption> option_info = validate_option_info({
 
     { &ironman_shops, false, GameOptionType::IRONMAN_SHOPS, "ironman_shops", _("(鉄人用)店を使用しない(*)", "Stores are permanently closed (*)"), GameOptionPage::BIRTH },
 
-    { &ironman_small_levels, false, GameOptionType::IRONMAN_SMALL_LEVELS, "ironman_small_levels",
+    { &ironman_smallest_floor, false, GameOptionType::IRONMAN_SMALLEST_FLOOR, "ironman_smallest_floor",
         _("(鉄人用)常に非常に小さいフロアを生成(*)", "Always create unusually small dungeon levels (*)"), GameOptionPage::BIRTH },
 
     { &ironman_downward, false, GameOptionType::IRONMAN_DOWNWARD, "ironman_downward", _("(鉄人用)帰還と上り階段なし(*)", "Disable recall and use of up stairs (*)"), GameOptionPage::BIRTH },
 
-    { &ironman_empty_levels, false, GameOptionType::IRONMAN_EMPTY_LEVELS, "ironman_empty_levels",
+    { &ironman_force_arena_floor, false, GameOptionType::IRONMAN_FORCE_ARENA_FLOOR, "ironman_force_arena_floor",
         _("(鉄人用)常に空っぽのアリーナレベルを生成(*)", "Always create empty 'arena' levels (*)"), GameOptionPage::BIRTH },
 
     { &ironman_rooms, false, GameOptionType::IRONMAN_ROOMS, "ironman_rooms", _("(鉄人用)常に普通でない部屋を生成する(*)", "Always generate very unusual rooms (*)"), GameOptionPage::BIRTH },
