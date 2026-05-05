@@ -130,15 +130,13 @@ bool generate_rooms(CreatureEntity &creature, DungeonData *dd_ptr)
         dun_rooms *= randint1(4);
     }
 
-    room_info_type *room_info_ptr = room_info_normal;
-
-    for (auto r : ROOM_TYPE_LIST) {
+    for (const auto &[r, room_info] : room_info_normal) {
         if (dungeon.room_rate.count(r)) {
             prob_list[r] = dungeon.room_rate.at(r);
-        } else if (floor_ptr->dun_level < room_info_ptr[enum2i(r)].min_level) {
+        } else if (floor_ptr->dun_level < room_info.min_level) {
             prob_list[r] = 0;
         } else {
-            prob_list[r] = room_info_ptr[enum2i(r)].prob[level_index];
+            prob_list[r] = room_info.prob[level_index];
         }
     }
 
@@ -236,8 +234,7 @@ bool generate_rooms(CreatureEntity &creature, DungeonData *dd_ptr)
     bool remain;
     while (true) {
         remain = false;
-        for (auto i = 0; i < ROOM_TYPE_MAX; i++) {
-            auto room_type = room_build_order[i];
+        for (const auto room_type : room_build_order) {
             if (!room_num[room_type]) {
                 continue;
             }
