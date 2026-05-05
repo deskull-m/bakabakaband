@@ -43,7 +43,7 @@ ObjectReadEntity::ObjectReadEntity(CreatureEntity &creature, INVENTORY_IDX i_idx
  */
 void ObjectReadEntity::execute(bool known)
 {
-    auto *o_ptr = ref_item(this->creature, this->i_idx);
+    auto item = ref_item(this->creature, this->i_idx);
     PlayerEnergy(this->creature).set_player_turn_energy(100);
     if (!this->can_read()) {
         return;
@@ -58,7 +58,7 @@ void ObjectReadEntity::execute(bool known)
         (void)SpellHex(this->creature).stop_all_spells();
     }
 
-    auto executor = ReadExecutorFactory::create(this->creature, o_ptr, known);
+    auto executor = ReadExecutorFactory::create(this->creature, item.get(), known);
     auto used_up = executor->read();
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     using Srf = StatusRecalculatingFlag;
@@ -68,9 +68,9 @@ void ObjectReadEntity::execute(bool known)
     }
 
     rfu.reset_flags(flags_srf);
-    this->change_virtue_as_read(*o_ptr);
-    o_ptr->mark_as_tried();
-    this->gain_exp_from_item_use(o_ptr, executor->is_identified());
+    this->change_virtue_as_read(*item);
+    item->mark_as_tried();
+    this->gain_exp_from_item_use(item.get(), executor->is_identified());
     static constexpr auto flags_swrf = {
         SubWindowRedrawingFlag::INVENTORY,
         SubWindowRedrawingFlag::EQUIPMENT,

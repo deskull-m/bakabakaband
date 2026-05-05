@@ -46,8 +46,8 @@ void ObjectUseEntity::execute()
 {
     auto &creature = *this->creature_ptr;
     auto use_charge = true;
-    auto *o_ptr = ref_item(creature, this->i_idx);
-    if ((this->i_idx < 0) && (o_ptr->number > 1)) {
+    auto item = ref_item(creature, this->i_idx);
+    if ((this->i_idx < 0) && (item->number > 1)) {
         msg_print(_("まずは杖を拾わなければ。", "You must first pick up the staffs."));
         return;
     }
@@ -57,7 +57,7 @@ void ObjectUseEntity::execute()
         return;
     }
 
-    auto item_level = o_ptr->get_baseitem_level();
+    auto item_level = item->get_baseitem_level();
     if (item_level > 50) {
         item_level = 50 + (item_level - 50) / 2;
     }
@@ -82,13 +82,13 @@ void ObjectUseEntity::execute()
         return;
     }
 
-    if (o_ptr->pval <= 0) {
+    if (item->pval <= 0) {
         if (flush_failure) {
             flush();
         }
 
         msg_print(_("この杖にはもう魔力が残っていない。", "The staff has no charges left."));
-        o_ptr->ident |= IDENT_EMPTY;
+        item->ident |= IDENT_EMPTY;
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         static constexpr auto flags = {
             StatusRecalculatingFlag::COMBINATION,
@@ -100,8 +100,8 @@ void ObjectUseEntity::execute()
     }
 
     sound(SoundKind::ZAP);
-    auto ident = staff_effect(creature, *o_ptr->bi_key.sval(), &use_charge, false, false, o_ptr->is_aware());
-    if (!(o_ptr->is_aware())) {
+    auto ident = staff_effect(creature, *item->bi_key.sval(), &use_charge, false, false, item->is_aware());
+    if (!(item->is_aware())) {
         chg_virtue(creature, Virtue::PATIENCE, -1);
         chg_virtue(creature, Virtue::CHANCE, 1);
         chg_virtue(creature, Virtue::KNOWLEDGE, -1);
@@ -115,9 +115,9 @@ void ObjectUseEntity::execute()
     }
 
     rfu.reset_flags(flags_srf);
-    o_ptr->mark_as_tried();
-    if (ident && !o_ptr->is_aware()) {
-        object_aware(creature, *o_ptr);
+    item->mark_as_tried();
+    if (ident && !item->is_aware()) {
+        object_aware(creature, *item);
         gain_exp(creature, (item_level + (creature.level >> 1)) / creature.level);
     }
 
@@ -134,12 +134,12 @@ void ObjectUseEntity::execute()
         return;
     }
 
-    o_ptr->pval--;
-    if ((this->i_idx >= 0) && (o_ptr->number > 1)) {
-        auto used_item = o_ptr->clone();
+    item->pval--;
+    if ((this->i_idx >= 0) && (item->number > 1)) {
+        auto used_item = item->clone();
         used_item.number = 1;
-        o_ptr->pval++;
-        o_ptr->number--;
+        item->pval++;
+        item->number--;
         this->i_idx = store_item_to_inventory(creature, &used_item);
         msg_print(_("杖をまとめなおした。", "You unstack your staff."));
     }
