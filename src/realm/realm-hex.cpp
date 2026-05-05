@@ -127,7 +127,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         if (cast) {
             constexpr auto q = _("どれを呪いますか？", "Which weapon do you curse?");
             constexpr auto s = _("武器を装備していない。", "You're not wielding a weapon.");
-            const auto &[item, i_idx] = choose_object(creature, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_melee_weapon));
+            const auto &[item, i_idx] = choose_item(creature, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_melee_weapon));
             if (!item) {
                 return "";
             }
@@ -384,7 +384,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         if (cast) {
             constexpr auto q = _("どれを呪いますか？", "Which piece of armour do you curse?");
             constexpr auto s = _("防具を装備していない。", "You're not wearing any armor.");
-            auto [item, i_idx] = choose_object(creature, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_protector));
+            auto [item, i_idx] = choose_item(creature, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_protector));
             if (!item) {
                 return "";
             }
@@ -572,7 +572,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         if (cast) {
             constexpr auto q = _("どの装備品から吸収しますか？", "Which cursed equipment do you drain mana from?");
             constexpr auto s = _("呪われたアイテムを装備していない。", "You have no cursed equipment.");
-            const auto &[item, i_idx] = choose_object(creature, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_cursed));
+            const auto &[item, i_idx] = choose_item(creature, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_cursed));
             if (!item) {
                 return "";
             }

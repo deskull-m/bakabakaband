@@ -31,7 +31,7 @@ bool enchant_item(CreatureEntity &creature, PRICE cost, HIT_PROB to_hit, int to_
 
     constexpr auto q = _("どのアイテムを改良しますか？", "Improve which item? ");
     constexpr auto s = _("改良できるものがありません。", "You have nothing to improve.");
-    const auto &[item, i_idx] = choose_object(creature, q, s, (USE_INVEN | USE_EQUIP | IGNORE_BOTHHAND_SLOT), item_tester);
+    const auto &[item, i_idx] = choose_item(creature, q, s, (USE_INVEN | USE_EQUIP | IGNORE_BOTHHAND_SLOT), item_tester);
     if (!item) {
         return false;
     }

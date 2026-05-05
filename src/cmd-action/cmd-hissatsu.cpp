@@ -385,7 +385,7 @@ void do_cmd_gain_hissatsu(CreatureEntity &creature)
     constexpr auto q = _("どの書から学びますか? ", "Study which book? ");
     constexpr auto s = _("読める書がない。", "You have no books that you can read.");
     constexpr auto options = USE_INVEN | USE_FLOOR;
-    const auto &[item, i_idx] = choose_object(creature, q, s, options, TvalItemTester(ItemKindType::HISSATSU_BOOK));
+    const auto &[item, i_idx] = choose_item(creature, q, s, options, TvalItemTester(ItemKindType::HISSATSU_BOOK));
     if (!item) {
         return;
     }

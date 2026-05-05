@@ -30,7 +30,7 @@ bool alchemy(CreatureEntity &creature)
 
     constexpr auto q = _("どのアイテムを金に変えますか？", "Turn which item to gold? ");
     constexpr auto s = _("金に変えられる物がありません。", "You have nothing to turn to gold.");
-    const auto &[item, i_idx] = choose_object(creature, q, s, (USE_INVEN | USE_FLOOR));
+    const auto &[item, i_idx] = choose_item(creature, q, s, (USE_INVEN | USE_FLOOR));
     if (!item) {
         return false;
     }

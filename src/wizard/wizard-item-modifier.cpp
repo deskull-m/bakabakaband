@@ -246,7 +246,7 @@ void wiz_modify_item_activation(CreatureEntity &creature)
 {
     constexpr auto q = _("どのアイテムの発動を変更しますか？ ", "Which item? ");
     constexpr auto s = _("発動を変更するアイテムがない。", "Nothing to do with.");
-    const auto &[item, i_idx] = choose_object(creature, q, s, USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT);
+    const auto &[item, i_idx] = choose_item(creature, q, s, USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT);
     if (!item) {
         return;
     }
@@ -734,7 +734,7 @@ void wiz_modify_item(CreatureEntity &creature)
 {
     constexpr auto q = "Play with which object? ";
     constexpr auto s = "You have nothing to play with.";
-    const auto &[item, i_idx] = choose_object(creature, q, s, USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT);
+    const auto &[item, i_idx] = choose_item(creature, q, s, USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT);
     if (!item) {
         return;
     }

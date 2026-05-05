@@ -22,7 +22,7 @@ bool rustproof(CreatureEntity &creature)
     constexpr auto q = _("どの防具に錆止めをしますか？", "Rustproof which piece of armour? ");
     constexpr auto s = _("錆止めできるものがありません。", "You have nothing to rustproof.");
     const auto options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    const auto &[item, i_idx] = choose_object(creature, q, s, options, FuncItemTester(&ItemEntity::is_protector));
+    const auto &[item, i_idx] = choose_item(creature, q, s, options, FuncItemTester(&ItemEntity::is_protector));
     if (!item) {
         return false;
     }

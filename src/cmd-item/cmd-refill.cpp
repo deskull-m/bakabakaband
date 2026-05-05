@@ -28,7 +28,7 @@ static void do_cmd_refill_lamp(CreatureEntity &creature)
 {
     constexpr auto q = _("どの油つぼから注ぎますか? ", "Refill with which flask? ");
     constexpr auto s = _("油つぼがない。", "You have no flasks of oil.");
-    const auto &[item, i_idx] = choose_object(creature, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::can_refill_lantern));
+    const auto &[item, i_idx] = choose_item(creature, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::can_refill_lantern));
     if (!item) {
         return;
     }
@@ -63,7 +63,7 @@ static void do_cmd_refill_torch(CreatureEntity &creature)
 {
     constexpr auto q = _("どの松明で明かりを強めますか? ", "Refuel with which torch? ");
     constexpr auto s = _("他に松明がない。", "You have no extra torches.");
-    const auto &[item, i_idx] = choose_object(creature, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::can_refill_torch));
+    const auto &[item, i_idx] = choose_item(creature, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::can_refill_torch));
     if (!item) {
         return;
     }
