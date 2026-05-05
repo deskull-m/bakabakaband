@@ -142,7 +142,7 @@ void do_cmd_wield(CreatureEntity &creature)
         return;
     }
 
-    auto slot = wield_slot(creature, o_ptr);
+    auto slot = wield_slot(creature, *o_ptr);
 
     // 肛門破壊チェック
     if (slot == INVEN_ASSHOLE && creature.get_mutations().has(PlayerMutationType::DESTROYED_ASSHOLE)) {
