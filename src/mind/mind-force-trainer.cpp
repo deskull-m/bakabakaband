@@ -8,6 +8,8 @@
 #include "floor/geometry.h"
 #include "game-option/disturbance-options.h"
 #include "grid/grid.h"
+#include "main/sound-definitions-table.h"
+#include "main/sound-of-music.h"
 #include "mind/mind-magic-resistance.h"
 #include "mind/mind-numbers.h"
 #include "monster-floor/monster-summon.h"
@@ -124,6 +126,7 @@ void set_lightspeed(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED)) {
             msg_print(_("動きの素早さがなくなったようだ。", "You feel yourself slow down."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }

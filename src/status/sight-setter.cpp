@@ -2,6 +2,8 @@
 #include "core/disturbance.h"
 #include "core/stuff-handler.h"
 #include "game-option/disturbance-options.h"
+#include "main/sound-definitions-table.h"
+#include "main/sound-of-music.h"
 #include "realm/realm-song-numbers.h"
 #include "spell-realm/spells-song.h"
 #include "system/creature-entity.h"
@@ -57,6 +59,7 @@ bool set_tim_esp(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_ESP) && !music_singing(creature, MUSIC_MIND)) {
             msg_print(_("意識は元に戻った。", "Your consciousness contracts again."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
@@ -93,6 +96,7 @@ bool set_tim_invis(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_INVIS)) {
             msg_print(_("目の敏感さがなくなったようだ。", "Your eyes feel less sensitive."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
@@ -129,6 +133,7 @@ bool set_tim_infra(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_INFRA)) {
             msg_print(_("目の輝きがなくなった。", "Your eyes stop tingling."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }

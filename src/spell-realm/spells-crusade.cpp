@@ -11,6 +11,8 @@
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
 #include "game-option/disturbance-options.h"
+#include "main/sound-definitions-table.h"
+#include "main/sound-of-music.h"
 #include "player-info/race-info.h"
 #include "spell-kind/spells-detection.h"
 #include "spell-kind/spells-floor.h"
@@ -55,6 +57,7 @@ bool set_tim_sh_holy(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_HOLY)) {
             msg_print(_("聖なるオーラが消えた。", "The holy aura disappeared."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
@@ -106,6 +109,7 @@ bool set_tim_eyeeye(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_EYEEYE)) {
             msg_print(_("懲罰を執行することができなくなった。", "You lost your aura of retribution."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }

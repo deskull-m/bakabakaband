@@ -3,6 +3,8 @@
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
 #include "hpmp/hp-mp-processor.h"
+#include "main/sound-definitions-table.h"
+#include "main/sound-of-music.h"
 #include "player-info/class-info.h"
 #include "player/attack-defense-types.h"
 #include "player/player-status.h"
@@ -107,6 +109,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         if (stop) {
             if (!creature.get_timed_effect(CreatureTimedEffect::BLESSED)) {
                 msg_print(_("高潔な気分が消え失せた。", "The prayer has expired."));
+                sound(SoundKind::BUFF_EXPIRE);
             }
         }
 
@@ -249,6 +252,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         if (stop) {
             if (!creature.get_timed_effect(CreatureTimedEffect::HERO)) {
                 msg_print(_("ヒーローの気分が消え失せた。", "The heroism wears off."));
+                sound(SoundKind::BUFF_EXPIRE);
                 RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::HP);
             }
         }
@@ -384,6 +388,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         if (stop) {
             if (!creature.get_timed_effect(CreatureTimedEffect::TIM_STEALTH)) {
                 msg_print(_("姿がはっきりと見えるようになった。", "You are no longer hidden."));
+                sound(SoundKind::BUFF_EXPIRE);
             }
         }
 
@@ -510,24 +515,42 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (stop) {
+            auto sound_played = false;
             if (!creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ACID)) {
                 msg_print(_("酸への耐性が薄れた気がする。", "You feel less resistant to acid."));
+                sound(SoundKind::BUFF_EXPIRE);
+                sound_played = true;
             }
 
             if (!creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ELEC)) {
                 msg_print(_("電撃への耐性が薄れた気がする。", "You feel less resistant to elec."));
+                if (!sound_played) {
+                    sound(SoundKind::BUFF_EXPIRE);
+                    sound_played = true;
+                }
             }
 
             if (!creature.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE)) {
                 msg_print(_("火への耐性が薄れた気がする。", "You feel less resistant to fire."));
+                if (!sound_played) {
+                    sound(SoundKind::BUFF_EXPIRE);
+                    sound_played = true;
+                }
             }
 
             if (!creature.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD)) {
                 msg_print(_("冷気への耐性が薄れた気がする。", "You feel less resistant to cold."));
+                if (!sound_played) {
+                    sound(SoundKind::BUFF_EXPIRE);
+                    sound_played = true;
+                }
             }
 
             if (!creature.get_timed_effect(CreatureTimedEffect::OPPOSE_POIS)) {
                 msg_print(_("毒への耐性が薄れた気がする。", "You feel less resistant to pois."));
+                if (!sound_played) {
+                    sound(SoundKind::BUFF_EXPIRE);
+                }
             }
         }
 
@@ -547,6 +570,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         if (stop) {
             if (!creature.is_fast()) {
                 msg_print(_("動きの素早さがなくなったようだ。", "You feel yourself slow down."));
+                sound(SoundKind::BUFF_EXPIRE);
             }
         }
 
@@ -741,13 +765,19 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (stop) {
+            auto sound_played = false;
             if (!creature.get_timed_effect(CreatureTimedEffect::HERO)) {
                 msg_print(_("ヒーローの気分が消え失せた。", "The heroism wears off."));
+                sound(SoundKind::BUFF_EXPIRE);
+                sound_played = true;
                 RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::HP);
             }
 
             if (!creature.is_fast()) {
                 msg_print(_("動きの素早さがなくなったようだ。", "You feel yourself slow down."));
+                if (!sound_played) {
+                    sound(SoundKind::BUFF_EXPIRE);
+                }
             }
         }
 
@@ -846,6 +876,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         if (stop) {
             if (!creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY)) {
                 msg_print(_("無敵ではなくなった。", "The invulnerability wears off."));
+                sound(SoundKind::BUFF_EXPIRE);
                 auto &rfu = RedrawingFlagsUpdater::get_instance();
                 rfu.set_flag(MainWindowRedrawingFlag::MAP);
                 rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
