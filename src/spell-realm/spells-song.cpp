@@ -4,6 +4,8 @@
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
 #include "game-option/disturbance-options.h"
+#include "main/sound-definitions-table.h"
+#include "main/sound-of-music.h"
 #include "player-base/player-class.h"
 #include "player-info/bard-data-type.h"
 #include "player/attack-defense-types.h"
@@ -110,6 +112,7 @@ bool set_tim_stealth(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_STEALTH) && !music_singing(creature, MUSIC_STEALTH)) {
             msg_print(_("足音が大きくなった。", "You no longer walk silently."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }

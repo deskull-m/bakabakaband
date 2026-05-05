@@ -6,6 +6,8 @@
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
 #include "game-option/disturbance-options.h"
+#include "main/sound-definitions-table.h"
+#include "main/sound-of-music.h"
 #include "realm/realm-song-numbers.h"
 #include "spell-realm/spells-song.h"
 #include "system/creature-entity.h"
@@ -58,6 +60,7 @@ void BodyImprovement::set_protection(short v, bool is_decrease)
     } else {
         if (is_protected) {
             msg_print(_("邪悪なる存在から守られている感じがなくなった。", "You no longer feel safe from evil."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
@@ -116,6 +119,7 @@ bool set_invuln(CreatureEntity &creature, short v, bool do_dec)
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY) && !music_singing(creature, MUSIC_INVULN)) {
             msg_print(_("無敵ではなくなった。", "The invulnerability wears off."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
             rfu.set_flag(MainWindowRedrawingFlag::MAP);
             rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
@@ -168,6 +172,7 @@ bool set_tim_regen(CreatureEntity &creature, short v, bool do_dec)
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_REGEN)) {
             msg_print(_("素早く回復する感じがなくなった。", "You feel you are no longer regenerating quickly."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
@@ -216,6 +221,7 @@ bool set_tim_reflect(CreatureEntity &creature, short v, bool do_dec)
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_REFLECT)) {
             msg_print(_("体の表面が滑かでなくなった。", "Your body is no longer smooth."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
@@ -264,6 +270,7 @@ bool set_pass_wall(CreatureEntity &creature, short v, bool do_dec)
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_PASS_WALL)) {
             msg_print(_("体が物質化した。", "You are no longer ethereal."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
@@ -312,6 +319,7 @@ bool set_tim_emission(CreatureEntity &creature, short v, bool do_dec)
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_EMISSION)) {
             msg_print(_("体の光が消え去った。", "Your body stopped emitting light."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
@@ -360,6 +368,7 @@ bool set_tim_exorcism(CreatureEntity &creature, short v, bool do_dec)
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM)) {
             msg_print(_("浄化の力を失った。", "You are no longer exorcist."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }

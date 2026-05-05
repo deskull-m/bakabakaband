@@ -40,6 +40,7 @@ enum class SoundKind {
     BUY,
     SELL,
     WARN,
+    BUFF_EXPIRE,
     ROCKET, /*!< (unused) Somebody's shooting rockets */
     N_KILL, /*!< The player kills a non-living/undead monster */
     U_KILL, /*!< (unused) The player kills a unique*/

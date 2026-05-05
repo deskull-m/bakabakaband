@@ -3,6 +3,8 @@
 #include "core/disturbance.h"
 #include "core/stuff-handler.h"
 #include "game-option/disturbance-options.h"
+#include "main/sound-definitions-table.h"
+#include "main/sound-of-music.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
 #include "player-info/race-info.h"
@@ -42,6 +44,7 @@ bool set_oppose_acid(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ACID) && !music_singing(creature, MUSIC_RESIST) &&
             !CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU)) {
             msg_print(_("酸への耐性が薄れた気がする。", "You feel less resistant to acid."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
@@ -89,6 +92,7 @@ bool set_oppose_elec(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ELEC) && !music_singing(creature, MUSIC_RESIST) &&
             !CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU)) {
             msg_print(_("電撃への耐性が薄れた気がする。", "You feel less resistant to electricity."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
@@ -138,6 +142,7 @@ bool set_oppose_fire(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE) && !music_singing(creature, MUSIC_RESIST) &&
             !CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU)) {
             msg_print(_("火への耐性が薄れた気がする。", "You feel less resistant to fire."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
@@ -184,6 +189,7 @@ bool set_oppose_cold(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD) && !music_singing(creature, MUSIC_RESIST) &&
             !CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU)) {
             msg_print(_("冷気への耐性が薄れた気がする。", "You feel less resistant to cold."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
@@ -234,6 +240,7 @@ bool set_oppose_pois(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_POIS) && !music_singing(creature, MUSIC_RESIST) &&
             !pc.samurai_stance_is(SamuraiStanceType::MUSOU)) {
             msg_print(_("毒への耐性が薄れた気がする。", "You feel less resistant to poison."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
