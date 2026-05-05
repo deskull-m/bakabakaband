@@ -10,7 +10,7 @@ const std::unordered_map<std::string_view, DungeonFeatureType> dungeon_flags = {
     { "MAZE", DungeonFeatureType::MAZE },
     { "SMALLEST", DungeonFeatureType::SMALLEST },
     { "BEGINNER", DungeonFeatureType::BEGINNER },
-    { "BIG", DungeonFeatureType::BIG },
+    { "LARGEST", DungeonFeatureType::LARGEST },
     { "NO_DOORS", DungeonFeatureType::NO_DOORS },
     { "WATER_RIVER", DungeonFeatureType::WATER_RIVER },
     { "LAVA_RIVER", DungeonFeatureType::LAVA_RIVER },

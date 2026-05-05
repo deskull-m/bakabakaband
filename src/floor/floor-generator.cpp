@@ -355,7 +355,7 @@ static tl::optional<std::string> level_gen(CreatureEntity &creature, tl::optiona
         if (one_in_(HUGE_DUNGEON_RATE)) {
             level_height = randint1(MAX_HGT / SCREEN_HGT);
             level_width = randint1(MAX_WID / SCREEN_WID);
-        } else if (one_in_(LARGE_DUNGEON_RATE) || dungeon.flags.has(DungeonFeatureType::BIG)) {
+        } else if (one_in_(LARGE_DUNGEON_RATE) || dungeon.flags.has(DungeonFeatureType::LARGEST)) {
             level_height = randint1(MAX_HGT / SCREEN_HGT / 2);
             level_width = randint1(MAX_WID / SCREEN_WID / 2);
         } else {
