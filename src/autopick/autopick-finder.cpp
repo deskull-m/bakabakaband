@@ -56,13 +56,13 @@ bool get_object_for_search(CreatureEntity &creature, AutopickSearch &as)
 {
     constexpr auto q = _("どのアイテムを検索しますか? ", "Enter which item? ");
     constexpr auto s = _("アイテムを持っていない。", "You have nothing to enter.");
-    auto *o_ptr = choose_object(creature, nullptr, q, s, USE_INVEN | USE_FLOOR | USE_EQUIP);
-    if (!o_ptr) {
+    const auto &[item, _] = choose_object(creature, q, s, USE_INVEN | USE_FLOOR | USE_EQUIP);
+    if (!item) {
         return false;
     }
 
-    as.item_ptr = o_ptr;
-    const auto item_name = describe_flavor(creature, *as.item_ptr, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL));
+    as.item = item;
+    const auto item_name = describe_flavor(creature, *as.item, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL));
     as.search_str = format("<%s>", item_name.data());
     return true;
 }
@@ -76,8 +76,8 @@ bool get_destroyed_object_for_search(CreatureEntity &creature, AutopickSearch &a
         return false;
     }
 
-    as.item_ptr = &autopick_last_destroyed_object;
-    const auto item_name = describe_flavor(creature, *as.item_ptr, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL));
+    as.item = std::shared_ptr<ItemEntity>(&autopick_last_destroyed_object, [](ItemEntity *) {});
+    const auto item_name = describe_flavor(creature, *as.item, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL));
     as.search_str = format("<%s>", item_name.data());
     return true;
 }
@@ -95,7 +95,7 @@ AutopickSearch get_string_for_search(CreatureEntity &creature, const AutopickSea
     std::string buf = as.search_str;
     constexpr auto max_search_length = 80;
     uint8_t color = TERM_YELLOW;
-    if (as.item_ptr != nullptr) {
+    if (as.item != nullptr) {
         color = TERM_L_GREEN;
     }
 
@@ -142,12 +142,12 @@ AutopickSearch get_string_for_search(CreatureEntity &creature, const AutopickSea
         case '\r':
         case KTRL('s'): {
             as.result = back ? AutopickSearchResult::BACK : AutopickSearchResult::FORWARD;
-            if (as.item_ptr != nullptr) {
+            if (as.item != nullptr) {
                 return as;
             }
 
             as.search_str = buf;
-            as.item_ptr = nullptr;
+            as.item = nullptr;
             return as;
         }
         case KTRL('i'):
@@ -193,7 +193,7 @@ AutopickSearch get_string_for_search(CreatureEntity &creature, const AutopickSea
             const auto c = static_cast<char>(skey);
             if (color != TERM_WHITE) {
                 if (color == TERM_L_GREEN) {
-                    as.item_ptr = nullptr;
+                    as.item = nullptr;
                     as.search_str = "";
                 }
 
@@ -226,11 +226,11 @@ AutopickSearch get_string_for_search(CreatureEntity &creature, const AutopickSea
         }
         }
 
-        if (as.item_ptr == nullptr || color == TERM_L_GREEN) {
+        if (!as.item || color == TERM_L_GREEN) {
             continue;
         }
 
-        as.item_ptr = nullptr;
+        as.item = nullptr;
         as.search_str = "";
         pos = 0;
         buf = "";

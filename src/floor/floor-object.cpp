@@ -561,27 +561,19 @@ void floor_item_describe(CreatureEntity &creature, INVENTORY_IDX i_idx)
  * @brief Choose an item and get auto-picker entry from it.
  * @todo initial_i_idx をポインタではなく値に変え、戻り値をstd::pairに変える
  */
-ItemEntity *choose_object(CreatureEntity &creature, short *initial_i_idx, concptr q, concptr s, BIT_FLAGS option, const ItemTester &item_tester)
+std::pair<std::shared_ptr<ItemEntity>, short> choose_object(CreatureEntity &creature, std::string_view q, std::string_view s, BIT_FLAGS option, const ItemTester &item_tester)
 {
-    if (initial_i_idx) {
-        *initial_i_idx = INVEN_NONE;
-    }
-
     const auto enable_repeat = util::make_finalizer([&] { creature.get_floor()->prevent_repeat_floor_item_idx = false; });
 
     FixItemTesterSetter setter(item_tester);
     const auto i_idx = get_item_floor(creature, q, s, option, item_tester);
     if (!i_idx) {
-        return nullptr;
-    }
-
-    if (initial_i_idx) {
-        *initial_i_idx = *i_idx;
+        return { nullptr, INVEN_NONE };
     }
 
     if (*i_idx == INVEN_FORCE) {
-        return nullptr;
+        return { nullptr, INVEN_FORCE };
     }
 
-    return ref_item(creature, *i_idx).get(); //!< @todo ダングリングポインタになる可能性があるので戻り値自体をstd::shared_ptr<ItemEntity>にする.
+    return { ref_item(creature, *i_idx), *i_idx };
 }

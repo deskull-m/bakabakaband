@@ -245,13 +245,12 @@ bool cast_summon_greater_demon(CreatureEntity &creature)
 {
     constexpr auto q = _("どの死体を捧げますか? ", "Sacrifice which corpse? ");
     constexpr auto s = _("捧げられる死体を持っていない。", "You have nothing to sacrifice.");
-    short i_idx;
-    const auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::is_offerable));
-    if (!o_ptr) {
+    const auto &[item, i_idx] = choose_object(creature, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::is_offerable));
+    if (!item) {
         return false;
     }
 
-    const auto summon_lev = creature.level * 2 / 3 + o_ptr->get_monrace().level;
+    const auto summon_lev = creature.level * 2 / 3 + item->get_monrace().level;
     if (summon_specific(creature, creature.y, creature.x, summon_lev, SUMMON_HI_DEMON, (PM_ALLOW_GROUP | PM_FORCE_PET))) {
         msg_print(_("硫黄の悪臭が充満した。", "The area fills with a stench of sulphur and brimstone."));
         msg_print(_("「ご用でございますか、ご主人様」", "'What is thy bidding... Master?'"));

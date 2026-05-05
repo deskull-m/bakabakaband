@@ -56,14 +56,13 @@ void do_cmd_fire(CreatureEntity &creature, SPELL_IDX snipe_type)
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
     constexpr auto q = _("どれを撃ちますか? ", "Fire which item? ");
     constexpr auto s = _("発射されるアイテムがありません。", "You have nothing to fire.");
-    short i_idx;
-    const auto *ammo_ptr = choose_object(creature, &i_idx, q, s, USE_INVEN | USE_FLOOR, TvalItemTester(creature.tval_ammo));
-    if (!ammo_ptr) {
+    const auto &[item, i_idx] = choose_object(creature, q, s, USE_INVEN | USE_FLOOR, TvalItemTester(creature.tval_ammo));
+    if (!item) {
         flush();
         return;
     }
 
-    exe_fire(creature, i_idx, bow_ptr, snipe_type);
+    exe_fire(creature, i_idx, item.get(), snipe_type);
     if (!creature.is_fired || !CreatureClass(creature).equals(PlayerClassType::SNIPER)) {
         return;
     }

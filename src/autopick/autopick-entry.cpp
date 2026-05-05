@@ -738,11 +738,11 @@ bool entry_from_choosed_object(CreatureEntity &creature, autopick_type *entry)
 {
     constexpr auto q = _("どのアイテムを登録しますか? ", "Enter which item? ");
     constexpr auto s = _("アイテムを持っていない。", "You have nothing to enter.");
-    auto *o_ptr = choose_object(creature, nullptr, q, s, USE_INVEN | USE_FLOOR | USE_EQUIP);
-    if (!o_ptr) {
+    const auto &[item, _] = choose_object(creature, q, s, USE_INVEN | USE_FLOOR | USE_EQUIP);
+    if (!item) {
         return false;
     }
 
-    autopick_entry_from_object(creature, entry, o_ptr);
+    autopick_entry_from_object(creature, entry, item.get());
     return true;
 }

@@ -385,13 +385,12 @@ void do_cmd_gain_hissatsu(CreatureEntity &creature)
     constexpr auto q = _("どの書から学びますか? ", "Study which book? ");
     constexpr auto s = _("読める書がない。", "You have no books that you can read.");
     constexpr auto options = USE_INVEN | USE_FLOOR;
-    short i_idx;
-    const auto *o_ptr = choose_object(creature, &i_idx, q, s, options, TvalItemTester(ItemKindType::HISSATSU_BOOK));
-    if (o_ptr == nullptr) {
+    const auto &[item, i_idx] = choose_object(creature, q, s, options, TvalItemTester(ItemKindType::HISSATSU_BOOK));
+    if (!item) {
         return;
     }
 
-    const auto sval = o_ptr->bi_key.sval().value();
+    const auto sval = *item->bi_key.sval();
     auto gain = false;
     auto realm_status = PlayerSpellStatus(creature).realm1();
     for (auto i = sval * 8; i < sval * 8 + 8; i++) {

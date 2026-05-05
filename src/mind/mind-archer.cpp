@@ -140,9 +140,8 @@ bool create_ammo(CreatureEntity &creature)
     case AMMO_ARROW: {
         constexpr auto q = _("どのアイテムから作りますか？ ", "Convert which item? ");
         constexpr auto s = _("材料を持っていない。", "You have no item to convert.");
-        short i_idx;
-        auto *q_ptr = choose_object(creature, &i_idx, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::is_convertible));
-        if (!q_ptr) {
+        const auto &[item, i_idx] = choose_object(creature, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::is_convertible));
+        if (!item) {
             return false;
         }
         ItemEntity ammo({ ItemKindType::ARROW, m_bonus(1, creature.level) + 1 });
@@ -164,9 +163,8 @@ bool create_ammo(CreatureEntity &creature)
     case AMMO_BOLT: {
         constexpr auto q = _("どのアイテムから作りますか？ ", "Convert which item? ");
         constexpr auto s = _("材料を持っていない。", "You have no item to convert.");
-        short i_idx;
-        auto *q_ptr = choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::is_convertible));
-        if (!q_ptr) {
+        const auto &[item, i_idx] = choose_object(creature, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::is_convertible));
+        if (!item) {
             return false;
         }
 

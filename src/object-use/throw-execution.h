@@ -8,6 +8,7 @@
 #include "system/angband.h"
 #include "system/system-variables.h"
 #include "util/flag-group.h"
+#include <memory>
 #include <string>
 
 class Grid;
@@ -65,7 +66,7 @@ private:
     int tdam{};
     int tdis{};
     int cur_dis{};
-    ItemEntity *o_ptr{};
+    std::shared_ptr<ItemEntity> item = nullptr;
     bool hit_wall = false;
     bool return_when_thrown = false;
     std::string o_name{};

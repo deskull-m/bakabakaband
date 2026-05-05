@@ -27,23 +27,21 @@ bool bless_weapon(CreatureEntity &creature)
 {
     constexpr auto q = _("どのアイテムを祝福しますか？", "Bless which weapon? ");
     constexpr auto s = _("祝福できる武器がありません。", "You have no weapon to bless.");
-
-    short i_idx;
     constexpr BIT_FLAGS options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    auto *o_ptr = choose_object(creature, &i_idx, q, s, options, FuncItemTester(&ItemEntity::is_weapon));
-    if (!o_ptr) {
+    const auto &[item, i_idx] = choose_object(creature, q, s, options, FuncItemTester(&ItemEntity::is_weapon));
+    if (!item) {
         return false;
     }
 
-    const auto item_name = describe_flavor(creature, *o_ptr, OD_OMIT_PREFIX | OD_NAME_ONLY);
-    const auto item_flags = o_ptr->get_flags();
+    const auto item_name = describe_flavor(creature, *item, OD_OMIT_PREFIX | OD_NAME_ONLY);
+    const auto item_flags = item->get_flags();
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (o_ptr->is_cursed()) {
-        auto can_disturb_blessing = o_ptr->curse_flags.has(CurseTraitType::HEAVY_CURSE) && (randint1(100) < 33);
+    if (item->is_cursed()) {
+        auto can_disturb_blessing = item->curse_flags.has(CurseTraitType::HEAVY_CURSE) && (randint1(100) < 33);
         can_disturb_blessing |= item_flags.has(TR_ADD_L_CURSE);
         can_disturb_blessing |= item_flags.has(TR_ADD_H_CURSE);
-        can_disturb_blessing |= o_ptr->curse_flags.has(CurseTraitType::PERSISTENT_CURSE);
-        can_disturb_blessing |= o_ptr->curse_flags.has(CurseTraitType::PERMA_CURSE);
+        can_disturb_blessing |= item->curse_flags.has(CurseTraitType::PERSISTENT_CURSE);
+        can_disturb_blessing |= item->curse_flags.has(CurseTraitType::PERMA_CURSE);
         if (can_disturb_blessing) {
 #ifdef JP
             msg_format("%sを覆う黒いオーラは祝福を跳ね返した！", item_name.data());
@@ -59,9 +57,9 @@ bool bless_weapon(CreatureEntity &creature)
 #else
         msg_format("A malignant aura leaves %s %s.", ((i_idx >= 0) ? "your" : "the"), item_name.data());
 #endif
-        o_ptr->curse_flags.clear();
-        set_bits(o_ptr->ident, IDENT_SENSE);
-        o_ptr->feeling = FEEL_NONE;
+        item->curse_flags.clear();
+        set_bits(item->ident, IDENT_SENSE);
+        item->feeling = FEEL_NONE;
         rfu.set_flag(StatusRecalculatingFlag::BONUS);
         static constexpr auto flags = {
             SubWindowRedrawingFlag::EQUIPMENT,
@@ -83,51 +81,51 @@ bool bless_weapon(CreatureEntity &creature)
 #ifdef JP
         msg_format("%s は既に祝福されている。", item_name.data());
 #else
-        msg_format("%s %s %s blessed already.", ((i_idx >= 0) ? "Your" : "The"), item_name.data(), ((o_ptr->number > 1) ? "were" : "was"));
+        msg_format("%s %s %s blessed already.", ((i_idx >= 0) ? "Your" : "The"), item_name.data(), ((item->number > 1) ? "were" : "was"));
 #endif
         return true;
     }
 
-    if (!(o_ptr->is_fixed_or_random_artifact() || o_ptr->is_ego()) || one_in_(3)) {
+    if (!(item->is_fixed_or_random_artifact() || item->is_ego()) || one_in_(3)) {
 #ifdef JP
         msg_format("%sは輝いた！", item_name.data());
 #else
-        msg_format("%s %s shine%s!", ((i_idx >= 0) ? "Your" : "The"), item_name.data(), ((o_ptr->number > 1) ? "" : "s"));
+        msg_format("%s %s shine%s!", ((i_idx >= 0) ? "Your" : "The"), item_name.data(), ((item->number > 1) ? "" : "s"));
 #endif
-        o_ptr->art_flags.set(TR_BLESSED);
-        o_ptr->discount = 99;
+        item->art_flags.set(TR_BLESSED);
+        item->discount = 99;
     } else {
         bool dis_happened = false;
         msg_print(_("その武器は祝福を嫌っている！", "The weapon resists your blessing!"));
 
         /* Disenchant tohit */
-        if (o_ptr->to_h > 0) {
-            o_ptr->to_h--;
+        if (item->to_h > 0) {
+            item->to_h--;
             dis_happened = true;
         }
 
-        if ((o_ptr->to_h > 5) && evaluate_percent(33)) {
-            o_ptr->to_h--;
+        if ((item->to_h > 5) && evaluate_percent(33)) {
+            item->to_h--;
         }
 
         /* Disenchant todam */
-        if (o_ptr->to_d > 0) {
-            o_ptr->to_d--;
+        if (item->to_d > 0) {
+            item->to_d--;
             dis_happened = true;
         }
 
-        if ((o_ptr->to_d > 5) && evaluate_percent(33)) {
-            o_ptr->to_d--;
+        if ((item->to_d > 5) && evaluate_percent(33)) {
+            item->to_d--;
         }
 
         /* Disenchant toac */
-        if (o_ptr->to_a > 0) {
-            o_ptr->to_a--;
+        if (item->to_a > 0) {
+            item->to_a--;
             dis_happened = true;
         }
 
-        if ((o_ptr->to_a > 5) && evaluate_percent(33)) {
-            o_ptr->to_a--;
+        if ((item->to_a > 5) && evaluate_percent(33)) {
+            item->to_a--;
         }
 
         if (dis_happened) {
@@ -136,7 +134,7 @@ bool bless_weapon(CreatureEntity &creature)
 #ifdef JP
             msg_format("%s は劣化した！", item_name.data());
 #else
-            msg_format("%s %s %s disenchanted!", ((i_idx >= 0) ? "Your" : "The"), item_name.data(), ((o_ptr->number > 1) ? "were" : "was"));
+            msg_format("%s %s %s disenchanted!", ((i_idx >= 0) ? "Your" : "The"), item_name.data(), ((item->number > 1) ? "were" : "was"));
 #endif
         }
     }

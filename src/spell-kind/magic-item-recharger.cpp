@@ -51,36 +51,34 @@ bool recharge(CreatureEntity &creature, int power)
 {
     constexpr auto q = _("どのアイテムに魔力を充填しますか? ", "Recharge which item? ");
     constexpr auto s = _("魔力を充填すべきアイテムがない。", "You have nothing to recharge.");
-
-    short i_idx;
-    auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::can_recharge));
-    if (o_ptr == nullptr) {
+    const auto &[item, i_idx] = choose_object(creature, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::can_recharge));
+    if (!item) {
         return false;
     }
 
-    const auto item_level = o_ptr->get_baseitem_level();
+    const auto item_level = item->get_baseitem_level();
 
     TIME_EFFECT recharge_amount;
     int recharge_strength;
     auto is_recharge_successful = true;
-    const auto tval = o_ptr->bi_key.tval();
+    const auto tval = item->bi_key.tval();
     if (tval == ItemKindType::ROD) {
         recharge_strength = ((power > item_level / 2) ? (power - item_level / 2) : 0) / 5;
         if (one_in_(recharge_strength)) {
             is_recharge_successful = false;
         } else {
             recharge_amount = (power * Dice::roll(3, 2));
-            if (o_ptr->timeout > recharge_amount) {
-                o_ptr->timeout -= recharge_amount;
+            if (item->timeout > recharge_amount) {
+                item->timeout -= recharge_amount;
             } else {
-                o_ptr->timeout = 0;
+                item->timeout = 0;
             }
         }
     } else {
-        if ((tval == ItemKindType::WAND) && (o_ptr->number > 1)) {
-            recharge_strength = (100 + power - item_level - (8 * o_ptr->pval / o_ptr->number)) / 15;
+        if ((tval == ItemKindType::WAND) && (item->number > 1)) {
+            recharge_strength = (100 + power - item_level - (8 * item->pval / item->number)) / 15;
         } else {
-            recharge_strength = (100 + power - item_level - (8 * o_ptr->pval)) / 15;
+            recharge_strength = (100 + power - item_level - (8 * item->pval)) / 15;
         }
 
         if (recharge_strength < 0) {
@@ -90,9 +88,9 @@ bool recharge(CreatureEntity &creature, int power)
         if (one_in_(recharge_strength)) {
             is_recharge_successful = false;
         } else {
-            recharge_amount = randnum1<short>(1 + o_ptr->get_baseitem_pval() / 2);
-            if ((tval == ItemKindType::WAND) && (o_ptr->number > 1)) {
-                recharge_amount += (randint1(recharge_amount * (o_ptr->number - 1))) / 2;
+            recharge_amount = randnum1<short>(1 + item->get_baseitem_pval() / 2);
+            if ((tval == ItemKindType::WAND) && (item->number > 1)) {
+                recharge_amount += (randint1(recharge_amount * (item->number - 1))) / 2;
                 if (recharge_amount < 1) {
                     recharge_amount = 1;
                 }
@@ -101,16 +99,16 @@ bool recharge(CreatureEntity &creature, int power)
                 }
             }
 
-            if ((tval == ItemKindType::STAFF) && (o_ptr->number > 1)) {
-                recharge_amount /= (TIME_EFFECT)o_ptr->number;
+            if ((tval == ItemKindType::STAFF) && (item->number > 1)) {
+                recharge_amount /= (TIME_EFFECT)item->number;
                 if (recharge_amount < 1) {
                     recharge_amount = 1;
                 }
             }
 
-            o_ptr->pval += recharge_amount;
-            o_ptr->ident &= ~(IDENT_KNOWN);
-            o_ptr->ident &= ~(IDENT_EMPTY);
+            item->pval += recharge_amount;
+            item->ident &= ~(IDENT_KNOWN);
+            item->ident &= ~(IDENT_EMPTY);
         }
     }
 
@@ -118,18 +116,18 @@ bool recharge(CreatureEntity &creature, int power)
         return update_player();
     }
 
-    if (o_ptr->is_fixed_artifact()) {
-        const auto item_name = describe_flavor(creature, *o_ptr, OD_NAME_ONLY);
+    if (item->is_fixed_artifact()) {
+        const auto item_name = describe_flavor(creature, *item, OD_NAME_ONLY);
         msg_format(_("魔力が逆流した！%sは完全に魔力を失った。", "The recharging backfires - %s is completely drained!"), item_name.data());
-        if ((tval == ItemKindType::ROD) && (o_ptr->timeout < 10000)) {
-            o_ptr->timeout = (o_ptr->timeout + 100) * 2;
-        } else if (o_ptr->is_wand_staff()) {
-            o_ptr->pval = 0;
+        if ((tval == ItemKindType::ROD) && (item->timeout < 10000)) {
+            item->timeout = (item->timeout + 100) * 2;
+        } else if (item->is_wand_staff()) {
+            item->pval = 0;
         }
         return update_player();
     }
 
-    const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     auto fail_type = 1;
     if (CreatureClass(creature).is_wizard()) {
         /* 10% chance to blow up one rod, otherwise draining. */
@@ -186,34 +184,34 @@ bool recharge(CreatureEntity &creature, int power)
         if (tval == ItemKindType::ROD) {
             msg_print(_("魔力が逆噴射して、ロッドからさらに魔力を吸い取ってしまった！", "The recharge backfires, draining the rod further!"));
 
-            if (o_ptr->timeout < 10000) {
-                o_ptr->timeout = (o_ptr->timeout + 100) * 2;
+            if (item->timeout < 10000) {
+                item->timeout = (item->timeout + 100) * 2;
             }
         } else if (tval == ItemKindType::WAND) {
             msg_format(_("%sは破損を免れたが、魔力が全て失われた。", "You save your %s from destruction, but all charges are lost."), item_name.data());
-            o_ptr->pval = 0;
+            item->pval = 0;
         }
 
         break;
     case 2:
-        if (o_ptr->number > 1) {
+        if (item->number > 1) {
             msg_format(_("乱暴な魔法のために%sが一本壊れた！", "Wild magic consumes one of your %s!"), item_name.data());
         } else {
             msg_format(_("乱暴な魔法のために%sが壊れた！", "Wild magic consumes your %s!"), item_name.data());
         }
 
         if (tval == ItemKindType::ROD) {
-            o_ptr->timeout = (o_ptr->number - 1) * o_ptr->get_baseitem_pval();
+            item->timeout = (item->number - 1) * item->get_baseitem_pval();
         }
 
         if (tval == ItemKindType::WAND) {
-            o_ptr->pval = 0;
+            item->pval = 0;
         }
 
         vary_item(creature, i_idx, -1);
         break;
     case 3:
-        if (o_ptr->number > 1) {
+        if (item->number > 1) {
             msg_format(_("乱暴な魔法のために%sが全て壊れた！", "Wild magic consumes all your %s!"), item_name.data());
         } else {
             msg_format(_("乱暴な魔法のために%sが壊れた！", "Wild magic consumes your %s!"), item_name.data());
