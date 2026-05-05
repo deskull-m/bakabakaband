@@ -4,7 +4,6 @@
 #include "game-option/cheat-types.h"
 #include "room/door-definition.h"
 #include "room/room-info-table.h"
-#include "room/room-types.h"
 #include "room/rooms-city.h"
 #include "room/rooms-fractal.h"
 #include "room/rooms-nest.h"
