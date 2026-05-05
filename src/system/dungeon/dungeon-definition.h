@@ -20,7 +20,7 @@
 #include "monster-race/race-special-flags.h"
 #include "monster-race/race-visual-flags.h"
 #include "monster-race/race-wilderness-flags.h"
-#include "room/room-types.h"
+#include "room/room-info-table.h"
 #include "room/vault-builder.h"
 #include "system/angband.h"
 #include "util/dice.h"
