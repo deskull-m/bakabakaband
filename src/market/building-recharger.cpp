@@ -33,9 +33,8 @@ void building_recharge(CreatureEntity &creature)
     prt(_("  再充填の費用はアイテムの種類によります。", "  The prices of recharge depend on the type."), 6, 0);
     constexpr auto q = _("どのアイテムに魔力を充填しますか? ", "Recharge which item? ");
     constexpr auto s = _("魔力を充填すべきアイテムがない。", "You have nothing to recharge.");
-    short i_idx;
-    auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::can_recharge));
-    if (o_ptr == nullptr) {
+    const auto &[item, i_idx] = choose_item(creature, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::can_recharge));
+    if (!item) {
         return;
     }
 
@@ -43,13 +42,13 @@ void building_recharge(CreatureEntity &creature)
      * We don't want to give the creature free info about
      * the level of the item or the number of charges.
      */
-    if (!o_ptr->is_known()) {
+    if (!item->is_known()) {
         msg_format(_("充填する前に鑑定されている必要があります！", "The item must be identified first!"));
         msg_erase();
         if ((creature.au >= 50) && input_check(_("＄50で鑑定しますか？ ", "Identify for 50 gold? "))) {
             creature.au -= 50;
-            identify_item(creature, o_ptr);
-            const auto item_name = describe_flavor(creature, *o_ptr, 0);
+            identify_item(creature, item.get());
+            const auto item_name = describe_flavor(creature, *item, 0);
             msg_format(_("%s です。", "You have: %s."), item_name.data());
             autopick_alter_item(creature, i_idx, false);
             building_prt_gold(creature.au);
@@ -58,15 +57,15 @@ void building_recharge(CreatureEntity &creature)
         return;
     }
 
-    const auto item_level = o_ptr->get_baseitem_level();
-    const auto tval = o_ptr->bi_key.tval();
-    const auto base_pval = o_ptr->get_baseitem_pval();
-    const auto base_cost = o_ptr->get_baseitem_cost();
+    const auto item_level = item->get_baseitem_level();
+    const auto tval = item->bi_key.tval();
+    const auto base_pval = item->get_baseitem_pval();
+    const auto base_cost = item->get_baseitem_cost();
     int price;
     switch (tval) {
     case ItemKindType::ROD:
-        if (o_ptr->timeout > 0) {
-            price = (item_level * 50 * o_ptr->timeout) / base_pval;
+        if (item->timeout > 0) {
+            price = (item_level * 50 * item->timeout) / base_pval;
             break;
         }
 
@@ -74,7 +73,7 @@ void building_recharge(CreatureEntity &creature)
         msg_format(_("それは再充填する必要はありません。", "That doesn't need to be recharged."));
         return;
     case ItemKindType::STAFF:
-        price = (base_cost / 10) * o_ptr->number;
+        price = (base_cost / 10) * item->number;
         price = std::max(10, price);
         break;
     default:
@@ -83,16 +82,16 @@ void building_recharge(CreatureEntity &creature)
         break;
     }
 
-    if ((tval == ItemKindType::WAND) && (o_ptr->pval / o_ptr->number >= base_pval)) {
-        if (o_ptr->number > 1) {
+    if ((tval == ItemKindType::WAND) && (item->pval / item->number >= base_pval)) {
+        if (item->number > 1) {
             msg_print(_("この魔法棒はもう充分に充填されています。", "These wands are already fully charged."));
         } else {
             msg_print(_("この魔法棒はもう充分に充填されています。", "This wand is already fully charged."));
         }
 
         return;
-    } else if ((tval == ItemKindType::STAFF) && o_ptr->pval >= base_pval) {
-        if (o_ptr->number > 1) {
+    } else if ((tval == ItemKindType::STAFF) && item->pval >= base_pval) {
+        if (item->number > 1) {
             msg_print(_("この杖はもう充分に充填されています。", "These staffs are already fully charged."));
         } else {
             msg_print(_("この杖はもう充分に充填されています。", "This staff is already fully charged."));
@@ -102,7 +101,7 @@ void building_recharge(CreatureEntity &creature)
     }
 
     if (creature.au < price) {
-        const auto item_name = describe_flavor(creature, *o_ptr, OD_NAME_ONLY);
+        const auto item_name = describe_flavor(creature, *item, OD_NAME_ONLY);
 #ifdef JP
         msg_format("%sを再充填するには＄%d 必要です！", item_name.data(), price);
 #else
@@ -115,20 +114,20 @@ void building_recharge(CreatureEntity &creature)
 #ifdef JP
         if (input_check(format("そのロッドを＄%d で再充填しますか？", price)))
 #else
-        if (input_check(format("Recharge the %s for %d gold? ", ((o_ptr->number > 1) ? "rods" : "rod"), price)))
+        if (input_check(format("Recharge the %s for %d gold? ", ((item->number > 1) ? "rods" : "rod"), price)))
 #endif
 
         {
-            o_ptr->timeout = 0;
+            item->timeout = 0;
         } else {
             return;
         }
     } else {
         int max_charges;
         if (tval == ItemKindType::STAFF) {
-            max_charges = base_pval - o_ptr->pval;
+            max_charges = base_pval - item->pval;
         } else {
-            max_charges = o_ptr->number * base_pval - o_ptr->pval;
+            max_charges = item->number * base_pval - item->pval;
         }
 
         const auto mes = _("一回分＄%d で何回分充填しますか？", "Add how many charges for %d gold apiece? ");
@@ -138,15 +137,15 @@ void building_recharge(CreatureEntity &creature)
         }
 
         price *= charges;
-        o_ptr->pval += static_cast<short>(charges);
-        o_ptr->ident &= ~(IDENT_EMPTY);
+        item->pval += static_cast<short>(charges);
+        item->ident &= ~(IDENT_EMPTY);
     }
 
-    const auto item_name = describe_flavor(creature, *o_ptr, 0);
+    const auto item_name = describe_flavor(creature, *item, 0);
 #ifdef JP
     msg_format("%sを＄%d で再充填しました。", item_name.data(), price);
 #else
-    msg_format("%s^ %s recharged for %d gold.", item_name.data(), ((o_ptr->number > 1) ? "were" : "was"), price);
+    msg_format("%s^ %s recharged for %d gold.", item_name.data(), ((item->number > 1) ? "were" : "was"), price);
 #endif
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags = {

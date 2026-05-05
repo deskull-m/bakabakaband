@@ -302,8 +302,8 @@ void do_cmd_zap_rod(CreatureEntity &creature)
 
     constexpr auto q = _("どのロッドを振りますか? ", "Zap which rod? ");
     constexpr auto s = _("使えるロッドがない。", "You have no rod to zap.");
-    short i_idx;
-    if (!choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_FLOOR), TvalItemTester(ItemKindType::ROD))) {
+    const auto &[item, i_idx] = choose_item(creature, q, s, (USE_INVEN | USE_FLOOR), TvalItemTester(ItemKindType::ROD));
+    if (!item) {
         return;
     }
 

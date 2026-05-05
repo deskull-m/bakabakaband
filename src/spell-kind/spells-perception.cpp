@@ -128,14 +128,13 @@ bool ident_spell(CreatureEntity &creature, bool only_equip)
     }
 
     constexpr auto s = _("鑑定するべきアイテムがない。", "You have nothing to identify.");
-    short i_idx;
-    auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
-    if (!o_ptr) {
+    const auto &[item, i_idx] = choose_item(creature, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
+    if (!item) {
         return false;
     }
 
-    auto old_known = identify_item(creature, o_ptr);
-    const auto item_name = describe_flavor(creature, *o_ptr, 0);
+    auto old_known = identify_item(creature, item.get());
+    const auto item_name = describe_flavor(creature, *item, 0);
     if (i_idx >= INVEN_MAIN_HAND) {
         msg_format(_("%s^: %s(%c)。", "%s^: %s (%c)."), describe_use(creature, i_idx), item_name.data(), index_to_label(i_idx));
     } else if (i_idx >= 0) {
@@ -175,16 +174,15 @@ bool identify_fully(CreatureEntity &creature, bool only_equip)
     }
 
     constexpr auto s = _("*鑑定*するべきアイテムがない。", "You have nothing to *identify*.");
-    short i_idx;
-    auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
-    if (o_ptr == nullptr) {
+    const auto &[item, i_idx] = choose_item(creature, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
+    if (!item) {
         return false;
     }
 
-    auto old_known = identify_item(creature, o_ptr);
-    o_ptr->ident |= (IDENT_FULL_KNOWN);
+    auto old_known = identify_item(creature, item.get());
+    item->ident |= (IDENT_FULL_KNOWN);
     window_stuff(creature);
-    const auto item_name = describe_flavor(creature, *o_ptr, 0);
+    const auto item_name = describe_flavor(creature, *item, 0);
     if (i_idx >= INVEN_MAIN_HAND) {
         msg_format(_("%s^: %s(%c)。", "%s^: %s (%c)."), describe_use(creature, i_idx), item_name.data(), index_to_label(i_idx));
     } else if (i_idx >= 0) {
@@ -193,7 +191,7 @@ bool identify_fully(CreatureEntity &creature, bool only_equip)
         msg_format(_("床上: %s。", "On the ground: %s."), item_name.data());
     }
 
-    (void)screen_object(creature, *o_ptr, 0L);
+    (void)screen_object(creature, *item, 0L);
     autopick_alter_item(creature, i_idx, (bool)(destroy_identify && !old_known));
     return true;
 }

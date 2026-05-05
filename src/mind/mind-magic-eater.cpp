@@ -23,36 +23,35 @@ bool import_magic_device(CreatureEntity &creature)
 {
     constexpr auto q = _("どのアイテムの魔力を取り込みますか? ", "Gain power of which item? ");
     constexpr auto s = _("魔力を取り込めるアイテムがない。", "There's nothing with power to absorb.");
-    short i_idx;
-    auto *o_ptr = choose_object(creature, &i_idx, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::can_recharge));
-    if (o_ptr == nullptr) {
+    const auto &[item, i_idx] = choose_item(creature, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::can_recharge));
+    if (!item) {
         return false;
     }
 
-    const auto bi_key = o_ptr->bi_key;
+    const auto bi_key = item->bi_key;
     if (bi_key == BaseitemKey(ItemKindType::STAFF, SV_STAFF_NOTHING)) {
         msg_print(_("この杖には発動の為の能力は何も備わっていないようだ。", "This staff doesn't have any magical ability."));
         return false;
     }
 
-    if (!o_ptr->is_known()) {
+    if (!item->is_known()) {
         msg_print(_("鑑定されていないと取り込めない。", "You need to identify before absorbing."));
         return false;
     }
 
-    if (o_ptr->timeout) {
+    if (item->timeout) {
         msg_print(_("充填中のアイテムは取り込めない。", "This item is still charging."));
         return false;
     }
 
     auto magic_eater_data = CreatureClass(creature).get_specific_data<MagicEaterDataList>();
     const auto tval = bi_key.tval();
-    auto &target_item = magic_eater_data->get_item_group(tval)[bi_key.sval().value()];
-    auto pval = o_ptr->pval;
+    auto &target_item = magic_eater_data->get_item_group(tval)[*bi_key.sval()];
+    auto pval = item->pval;
     if (tval == ItemKindType::ROD) {
-        target_item.count = std::min<byte>(target_item.count + o_ptr->number, 99);
+        target_item.count = std::min<byte>(target_item.count + item->number, 99);
     } else {
-        for (auto num = o_ptr->number; num > 0; num--) {
+        for (auto num = item->number; num > 0; num--) {
             int gain_num = pval;
             if (tval == ItemKindType::WAND) {
                 gain_num = (pval + num - 1) / num;
@@ -73,7 +72,7 @@ bool import_magic_device(CreatureEntity &creature)
         }
     }
 
-    const auto item_name = describe_flavor(creature, *o_ptr, 0);
+    const auto item_name = describe_flavor(creature, *item, 0);
     msg_format(_("%sの魔力を取り込んだ。", "You absorb magic of %s."), item_name.data());
 
     vary_item(creature, i_idx, -999);

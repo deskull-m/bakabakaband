@@ -246,9 +246,8 @@ void wiz_modify_item_activation(CreatureEntity &creature)
 {
     constexpr auto q = _("どのアイテムの発動を変更しますか？ ", "Which item? ");
     constexpr auto s = _("発動を変更するアイテムがない。", "Nothing to do with.");
-    short i_idx;
-    auto *o_ptr = choose_object(creature, &i_idx, q, s, USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT);
-    if (!o_ptr) {
+    const auto &[item, i_idx] = choose_item(creature, q, s, USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT);
+    if (!item) {
         return;
     }
 
@@ -260,8 +259,8 @@ void wiz_modify_item_activation(CreatureEntity &creature)
     }
 
     auto act_idx = *act_id;
-    o_ptr->art_flags.set(TR_ACTIVATE);
-    o_ptr->activation_id = act_idx;
+    item->art_flags.set(TR_ACTIVATE);
+    item->activation_id = act_idx;
 }
 
 /*!
@@ -735,15 +734,14 @@ void wiz_modify_item(CreatureEntity &creature)
 {
     constexpr auto q = "Play with which object? ";
     constexpr auto s = "You have nothing to play with.";
-    short i_idx;
-    auto *o_ptr = choose_object(creature, &i_idx, q, s, USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT);
-    if (!o_ptr) {
+    const auto &[item, i_idx] = choose_item(creature, q, s, USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT);
+    if (!item) {
         return;
     }
 
     screen_save();
 
-    auto modified_item = o_ptr->clone();
+    auto modified_item = item->clone();
     auto changed = false;
     constexpr auto prompt = "[a]ccept [s]tatistics [r]eroll [t]weak [q]uantity? ";
     while (true) {
@@ -780,7 +778,7 @@ void wiz_modify_item(CreatureEntity &creature)
     if (changed) {
         msg_print("Changes accepted.");
 
-        *o_ptr = std::move(modified_item);
+        *item = std::move(modified_item);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         static constexpr auto flags_srf = {
             StatusRecalculatingFlag::BONUS,
@@ -862,7 +860,7 @@ static std::vector<FixedArtifactId> find_wishing_fixed_artifact(CreatureEntity &
  */
 static int is_slot_able_to_be_ego(CreatureEntity &creature, ItemEntity *o_ptr)
 {
-    int slot = wield_slot(creature, o_ptr);
+    const auto slot = wield_slot(creature, *o_ptr);
     if (slot > -1) {
         return slot;
     }
@@ -1181,11 +1179,11 @@ WishResultType do_cmd_wishing(CreatureEntity &creature, int prob, bool allow_art
             res = WishResultType::NORMAL;
         }
 
-        if (blessed && wield_slot(creature, &item) != -1) {
+        if (blessed && wield_slot(creature, item) != -1) {
             item.art_flags.set(TR_BLESSED);
         }
 
-        if (fixed && wield_slot(creature, &item) != -1) {
+        if (fixed && wield_slot(creature, item) != -1) {
             item.art_flags.set(TR_IGNORE_ACID);
             item.art_flags.set(TR_IGNORE_FIRE);
         }

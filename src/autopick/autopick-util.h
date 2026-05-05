@@ -62,7 +62,7 @@ struct text_body_type {
     int my = 0;
     byte mark = 0;
 
-    ItemEntity *search_o_ptr = nullptr;
+    std::shared_ptr<ItemEntity> search_item = nullptr;
     std::string search_str = "";
     std::string last_destroyed = "";
 

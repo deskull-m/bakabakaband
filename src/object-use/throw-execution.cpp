@@ -81,18 +81,17 @@ ObjectThrowEntity::ObjectThrowEntity(CreatureEntity &creature, ItemEntity *q_ptr
 
 bool ObjectThrowEntity::check_can_throw()
 {
-    auto &creature = *this->creature_ptr;
     if (!this->check_what_throw()) {
         return false;
     }
 
-    if (this->o_ptr->is_cursed() && (this->i_idx >= INVEN_MAIN_HAND)) {
+    if (this->item->is_cursed() && (this->i_idx >= INVEN_MAIN_HAND)) {
         msg_print(_("ふーむ、どうやら呪われているようだ。", "Hmmm, it seems to be cursed."));
         return false;
     }
 
-    const auto is_spike = this->o_ptr->bi_key.tval() == ItemKindType::SPIKE;
-    if (creature.get_floor()->inside_arena && !this->boomerang && !is_spike) {
+    const auto is_spike = this->item->bi_key.tval() == ItemKindType::SPIKE;
+    if (this->creature_ptr->get_floor()->inside_arena && !this->boomerang && !is_spike) {
         msg_print(_("アリーナではアイテムを使えない！", "You're in the arena now. This is hand-to-hand!"));
         msg_erase();
         return false;
@@ -104,10 +103,10 @@ bool ObjectThrowEntity::check_can_throw()
 void ObjectThrowEntity::calc_throw_range()
 {
     auto &creature = *this->creature_ptr;
-    *this->q_ptr = this->o_ptr->clone();
+    *this->q_ptr = this->item->clone();
     this->obj_flags = this->q_ptr->get_flags();
     torch_flags(this->q_ptr, this->obj_flags);
-    distribute_charges(this->o_ptr, this->q_ptr, 1);
+    distribute_charges(this->item.get(), this->q_ptr, 1);
     this->q_ptr->number = 1;
     this->o_name = describe_flavor(creature, *this->q_ptr, OD_OMIT_PREFIX);
     if (creature.has_mighty_throw()) {
@@ -306,9 +305,9 @@ void ObjectThrowEntity::process_boomerang_back()
             return;
         }
 
-        this->o_ptr = creature.inventory[this->i_idx].get();
-        *this->o_ptr = this->q_ptr->clone();
-        creature.equip_cnt++;
+        this->item = creature.inventory[this->i_idx];
+        *this->item = this->q_ptr->clone();
+        this->creature_ptr->equip_cnt++;
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         static constexpr auto flags = {
             StatusRecalculatingFlag::BONUS,
@@ -348,10 +347,9 @@ bool ObjectThrowEntity::has_hit_monster() const
 
 bool ObjectThrowEntity::check_what_throw()
 {
-    auto &creature = *this->creature_ptr;
     if (this->shuriken >= 0) {
         this->i_idx = this->shuriken;
-        this->o_ptr = creature.inventory[this->i_idx].get();
+        this->item = this->creature_ptr->inventory[this->i_idx];
         return true;
     }
 
@@ -361,8 +359,8 @@ bool ObjectThrowEntity::check_what_throw()
 
     constexpr auto q = _("どのアイテムを投げますか? ", "Throw which item? ");
     constexpr auto s = _("投げるアイテムがない。", "You have nothing to throw.");
-    this->o_ptr = choose_object(creature, &this->i_idx, q, s, USE_INVEN | USE_FLOOR | USE_EQUIP);
-    if (!this->o_ptr) {
+    std::tie(this->item, this->i_idx) = choose_item(*this->creature_ptr, q, s, USE_INVEN | USE_FLOOR | USE_EQUIP);
+    if (!this->item) {
         flush();
         return false;
     }
@@ -372,13 +370,11 @@ bool ObjectThrowEntity::check_what_throw()
 
 bool ObjectThrowEntity::check_throw_boomerang()
 {
-    auto &creature = *this->creature_ptr;
-    if (has_melee_weapon(creature, INVEN_MAIN_HAND) && has_melee_weapon(creature, INVEN_SUB_HAND)) {
-        concptr q, s;
-        q = _("どの武器を投げますか? ", "Throw which item? ");
-        s = _("投げる武器がない。", "You have nothing to throw.");
-        this->o_ptr = choose_object(creature, &this->i_idx, q, s, USE_EQUIP, FuncItemTester(&ItemEntity::is_throwable));
-        if (!this->o_ptr) {
+    if (has_melee_weapon(*this->creature_ptr, INVEN_MAIN_HAND) && has_melee_weapon(*this->creature_ptr, INVEN_SUB_HAND)) {
+        constexpr auto q = _("どの武器を投げますか? ", "Throw which item? ");
+        constexpr auto s = _("投げる武器がない。", "You have nothing to throw.");
+        std::tie(this->item, this->i_idx) = choose_item(*this->creature_ptr, q, s, USE_EQUIP, FuncItemTester(&ItemEntity::is_throwable));
+        if (!this->item) {
             flush();
             return false;
         }
@@ -386,14 +382,14 @@ bool ObjectThrowEntity::check_throw_boomerang()
         return true;
     }
 
-    if (has_melee_weapon(creature, INVEN_SUB_HAND)) {
+    if (has_melee_weapon(*this->creature_ptr, INVEN_SUB_HAND)) {
         this->i_idx = INVEN_SUB_HAND;
-        this->o_ptr = creature.inventory[this->i_idx].get();
+        this->item = this->creature_ptr->inventory[this->i_idx];
         return true;
     }
 
     this->i_idx = INVEN_MAIN_HAND;
-    this->o_ptr = creature.inventory[this->i_idx].get();
+    this->item = this->creature_ptr->inventory[this->i_idx];
     return true;
 }
 
@@ -465,7 +461,7 @@ void ObjectThrowEntity::attack_racial_power()
     auto fear = false;
     AttributeFlags attribute_flags{};
     attribute_flags.set(AttributeType::PLAYER_SHOOT);
-    if (is_active_torch(this->o_ptr)) {
+    if (is_active_torch(this->item.get())) {
         attribute_flags.set(AttributeType::FIRE);
     }
 
@@ -516,7 +512,7 @@ void ObjectThrowEntity::calc_racial_power_damage()
         return;
     }
 
-    const auto damage_dice = is_active_torch(this->o_ptr) ? Dice(1, 6) : this->q_ptr->damage_dice;
+    const auto damage_dice = is_active_torch(this->item.get()) ? Dice(1, 6) : this->q_ptr->damage_dice;
     this->tdam = damage_dice.roll();
     this->tdam = calc_attack_damage_with_slay(creature, this->q_ptr, this->tdam, *this->hit_monster->m_ptr, HISSATSU_NONE, true);
     this->tdam = critical_shot(creature, this->q_ptr->weight, this->q_ptr->to_h, 0, this->tdam);

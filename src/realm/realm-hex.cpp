@@ -127,36 +127,35 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         if (cast) {
             constexpr auto q = _("どれを呪いますか？", "Which weapon do you curse?");
             constexpr auto s = _("武器を装備していない。", "You're not wielding a weapon.");
-            short i_idx;
-            auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_melee_weapon));
-            if (o_ptr == nullptr) {
+            const auto &[item, i_idx] = choose_item(creature, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_melee_weapon));
+            if (!item) {
                 return "";
             }
 
-            const auto item_name = describe_flavor(creature, *o_ptr, OD_NAME_ONLY);
+            const auto item_name = describe_flavor(creature, *item, OD_NAME_ONLY);
             if (!input_check(format(_("本当に %s を呪いますか？", "Do you curse %s, really?"), item_name.data()))) {
                 return "";
             }
 
-            if (!one_in_(3) && (o_ptr->is_fixed_or_random_artifact() || o_ptr->get_flags().has(TR_BLESSED))) {
+            if (!one_in_(3) && (item->is_fixed_or_random_artifact() || item->get_flags().has(TR_BLESSED))) {
                 msg_format(_("%s は呪いを跳ね返した。", "%s resists the effect."), item_name.data());
                 if (one_in_(3)) {
-                    if (o_ptr->to_d > 0) {
-                        o_ptr->to_d -= randint1(3) % 2;
-                        if (o_ptr->to_d < 0) {
-                            o_ptr->to_d = 0;
+                    if (item->to_d > 0) {
+                        item->to_d -= randint1(3) % 2;
+                        if (item->to_d < 0) {
+                            item->to_d = 0;
                         }
                     }
-                    if (o_ptr->to_h > 0) {
-                        o_ptr->to_h -= randint1(3) % 2;
-                        if (o_ptr->to_h < 0) {
-                            o_ptr->to_h = 0;
+                    if (item->to_h > 0) {
+                        item->to_h -= randint1(3) % 2;
+                        if (item->to_h < 0) {
+                            item->to_h = 0;
                         }
                     }
-                    if (o_ptr->to_a > 0) {
-                        o_ptr->to_a -= randint1(3) % 2;
-                        if (o_ptr->to_a < 0) {
-                            o_ptr->to_a = 0;
+                    if (item->to_a > 0) {
+                        item->to_a -= randint1(3) % 2;
+                        if (item->to_a < 0) {
+                            item->to_a = 0;
                         }
                     }
                     msg_format(_("%s は劣化してしまった。", "Your %s was disenchanted!"), item_name.data());
@@ -164,28 +163,28 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
             } else {
                 int curse_rank = 0;
                 msg_format(_("恐怖の暗黒オーラがあなたの%sを包み込んだ！", "A terrible black aura blasts your %s!"), item_name.data());
-                o_ptr->curse_flags.set(CurseTraitType::CURSED);
+                item->curse_flags.set(CurseTraitType::CURSED);
 
-                if (o_ptr->is_fixed_or_random_artifact() || o_ptr->is_ego()) {
+                if (item->is_fixed_or_random_artifact() || item->is_ego()) {
 
                     if (one_in_(3)) {
-                        o_ptr->curse_flags.set(CurseTraitType::HEAVY_CURSE);
+                        item->curse_flags.set(CurseTraitType::HEAVY_CURSE);
                     }
                     if (one_in_(666)) {
-                        o_ptr->curse_flags.set(CurseTraitType::TY_CURSE);
+                        item->curse_flags.set(CurseTraitType::TY_CURSE);
                         if (one_in_(666)) {
-                            o_ptr->curse_flags.set(CurseTraitType::PERMA_CURSE);
+                            item->curse_flags.set(CurseTraitType::PERMA_CURSE);
                         }
 
-                        o_ptr->art_flags.set(TR_AGGRAVATE);
-                        o_ptr->art_flags.set(TR_VORPAL);
-                        o_ptr->art_flags.set(TR_VAMPIRIC);
+                        item->art_flags.set(TR_AGGRAVATE);
+                        item->art_flags.set(TR_VORPAL);
+                        item->art_flags.set(TR_VAMPIRIC);
                         msg_print(_("血だ！血だ！血だ！", "Blood, Blood, Blood!"));
                         curse_rank = 2;
                     }
                 }
 
-                o_ptr->curse_flags.set(get_curse(curse_rank, o_ptr));
+                item->curse_flags.set(get_curse(curse_rank, item.get()));
             }
 
             RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
@@ -385,37 +384,36 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         if (cast) {
             constexpr auto q = _("どれを呪いますか？", "Which piece of armour do you curse?");
             constexpr auto s = _("防具を装備していない。", "You're not wearing any armor.");
-            short i_idx;
-            auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_protector));
-            if (!o_ptr) {
+            auto [item, i_idx] = choose_item(creature, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_protector));
+            if (!item) {
                 return "";
             }
 
-            o_ptr = creature.inventory[i_idx].get();
-            const auto item_name = describe_flavor(creature, *o_ptr, OD_NAME_ONLY);
+            item = creature.inventory[i_idx];
+            const auto item_name = describe_flavor(creature, *item, OD_NAME_ONLY);
             if (!input_check(format(_("本当に %s を呪いますか？", "Do you curse %s, really?"), item_name.data()))) {
                 return "";
             }
 
-            if (!one_in_(3) && (o_ptr->is_fixed_or_random_artifact() || o_ptr->get_flags().has(TR_BLESSED))) {
+            if (!one_in_(3) && (item->is_fixed_or_random_artifact() || item->get_flags().has(TR_BLESSED))) {
                 msg_format(_("%s は呪いを跳ね返した。", "%s resists the effect."), item_name.data());
                 if (one_in_(3)) {
-                    if (o_ptr->to_d > 0) {
-                        o_ptr->to_d -= randint1(3) % 2;
-                        if (o_ptr->to_d < 0) {
-                            o_ptr->to_d = 0;
+                    if (item->to_d > 0) {
+                        item->to_d -= randint1(3) % 2;
+                        if (item->to_d < 0) {
+                            item->to_d = 0;
                         }
                     }
-                    if (o_ptr->to_h > 0) {
-                        o_ptr->to_h -= randint1(3) % 2;
-                        if (o_ptr->to_h < 0) {
-                            o_ptr->to_h = 0;
+                    if (item->to_h > 0) {
+                        item->to_h -= randint1(3) % 2;
+                        if (item->to_h < 0) {
+                            item->to_h = 0;
                         }
                     }
-                    if (o_ptr->to_a > 0) {
-                        o_ptr->to_a -= randint1(3) % 2;
-                        if (o_ptr->to_a < 0) {
-                            o_ptr->to_a = 0;
+                    if (item->to_a > 0) {
+                        item->to_a -= randint1(3) % 2;
+                        if (item->to_a < 0) {
+                            item->to_a = 0;
                         }
                     }
                     msg_format(_("%s は劣化してしまった。", "Your %s was disenchanted!"), item_name.data());
@@ -423,29 +421,29 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
             } else {
                 int curse_rank = 0;
                 msg_format(_("恐怖の暗黒オーラがあなたの%sを包み込んだ！", "A terrible black aura blasts your %s!"), item_name.data());
-                o_ptr->curse_flags.set(CurseTraitType::CURSED);
+                item->curse_flags.set(CurseTraitType::CURSED);
 
-                if (o_ptr->is_fixed_or_random_artifact() || o_ptr->is_ego()) {
+                if (item->is_fixed_or_random_artifact() || item->is_ego()) {
 
                     if (one_in_(3)) {
-                        o_ptr->curse_flags.set(CurseTraitType::HEAVY_CURSE);
+                        item->curse_flags.set(CurseTraitType::HEAVY_CURSE);
                     }
                     if (one_in_(666)) {
-                        o_ptr->curse_flags.set(CurseTraitType::TY_CURSE);
+                        item->curse_flags.set(CurseTraitType::TY_CURSE);
                         if (one_in_(666)) {
-                            o_ptr->curse_flags.set(CurseTraitType::PERMA_CURSE);
+                            item->curse_flags.set(CurseTraitType::PERMA_CURSE);
                         }
 
-                        o_ptr->art_flags.set(TR_AGGRAVATE);
-                        o_ptr->art_flags.set(TR_RES_POIS);
-                        o_ptr->art_flags.set(TR_RES_DARK);
-                        o_ptr->art_flags.set(TR_RES_NETHER);
+                        item->art_flags.set(TR_AGGRAVATE);
+                        item->art_flags.set(TR_RES_POIS);
+                        item->art_flags.set(TR_RES_DARK);
+                        item->art_flags.set(TR_RES_NETHER);
                         msg_print(_("血だ！血だ！血だ！", "Blood, Blood, Blood!"));
                         curse_rank = 2;
                     }
                 }
 
-                o_ptr->curse_flags.set(get_curse(curse_rank, o_ptr));
+                item->curse_flags.set(get_curse(curse_rank, item.get()));
             }
 
             RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
@@ -574,30 +572,29 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         if (cast) {
             constexpr auto q = _("どの装備品から吸収しますか？", "Which cursed equipment do you drain mana from?");
             constexpr auto s = _("呪われたアイテムを装備していない。", "You have no cursed equipment.");
-            short i_idx;
-            auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_cursed));
-            if (!o_ptr) {
+            const auto &[item, i_idx] = choose_item(creature, q, s, (USE_EQUIP), FuncItemTester(&ItemEntity::is_cursed));
+            if (!item) {
                 return "";
             }
 
             creature.csp += (creature.level / 5) + randint1(creature.level / 5);
-            if (o_ptr->get_flags().has(TR_TY_CURSE) || o_ptr->curse_flags.has(CurseTraitType::TY_CURSE)) {
+            if (item->get_flags().has(TR_TY_CURSE) || item->curse_flags.has(CurseTraitType::TY_CURSE)) {
                 creature.csp += randint1(5);
             }
             if (creature.csp > creature.msp) {
                 creature.csp = creature.msp;
             }
 
-            if (o_ptr->curse_flags.has(CurseTraitType::PERMA_CURSE)) {
+            if (item->curse_flags.has(CurseTraitType::PERMA_CURSE)) {
                 /* Nothing */
-            } else if (o_ptr->curse_flags.has(CurseTraitType::HEAVY_CURSE)) {
+            } else if (item->curse_flags.has(CurseTraitType::HEAVY_CURSE)) {
                 if (one_in_(7)) {
                     msg_print(_("呪いを全て吸い取った。", "A heavy curse vanished."));
-                    o_ptr->curse_flags.clear();
+                    item->curse_flags.clear();
                 }
-            } else if (o_ptr->curse_flags.has(CurseTraitType::CURSED) && one_in_(3)) {
+            } else if (item->curse_flags.has(CurseTraitType::CURSED) && one_in_(3)) {
                 msg_print(_("呪いを全て吸い取った。", "A curse vanished."));
-                o_ptr->curse_flags.clear();
+                item->curse_flags.clear();
             }
 
             should_continue = false;

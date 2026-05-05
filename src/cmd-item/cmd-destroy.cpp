@@ -41,7 +41,7 @@
 #include <tuple>
 
 /// 破壊するアイテムの選択結果: アイテム、インベントリもしくは床上アイテムのインデックス、個数
-using SelectionResult = std::tuple<ItemEntity *, short, int>;
+using SelectionResult = std::tuple<std::shared_ptr<ItemEntity>, short, int>;
 
 static bool check_destory_item(CreatureEntity &creature, const ItemEntity &destroying_item, short i_idx)
 {
@@ -82,28 +82,27 @@ static bool check_destory_item(CreatureEntity &creature, const ItemEntity &destr
 
 static tl::optional<SelectionResult> select_destroying_item(CreatureEntity &creature, bool force_destroy)
 {
-    short i_idx;
     constexpr auto q = _("どのアイテムを壊しますか? ", "Destroy which item? ");
     constexpr auto s = _("壊せるアイテムを持っていない。", "You have nothing to destroy.");
-    auto *o_ptr = choose_object(creature, &i_idx, q, s, USE_INVEN | USE_FLOOR);
-    if (o_ptr == nullptr) {
+    const auto &[item, i_idx] = choose_item(creature, q, s, USE_INVEN | USE_FLOOR);
+    if (!item) {
         return tl::nullopt;
     }
 
-    if (!force_destroy && !check_destory_item(creature, *o_ptr, i_idx)) {
+    if (!force_destroy && !check_destory_item(creature, *item, i_idx)) {
         return tl::nullopt;
     }
 
-    if (o_ptr->number <= 1) {
-        return tl::make_optional<SelectionResult>(o_ptr, i_idx, 1);
+    if (item->number <= 1) {
+        return tl::make_optional<SelectionResult>(item, i_idx, 1);
     }
 
-    const auto amt = input_quantity(o_ptr->number);
+    const auto amt = input_quantity(item->number);
     if (amt <= 0) {
         return tl::nullopt;
     }
 
-    return tl::make_optional<SelectionResult>(o_ptr, i_idx, amt);
+    return tl::make_optional<SelectionResult>(item, i_idx, amt);
 }
 
 /*!
@@ -220,15 +219,15 @@ void do_cmd_destroy(CreatureEntity &creature)
         return;
     }
 
-    const auto &[o_ptr, i_idx, amt] = *selection_result;
+    const auto &[item, i_idx, amt] = *selection_result;
     PlayerEnergy energy(creature);
     energy.set_player_turn_energy(100);
-    if (!can_player_destroy_object(o_ptr)) {
+    if (!can_player_destroy_object(item.get())) {
         energy.reset_player_turn();
-        const auto item_name = describe_flavor(creature, *o_ptr, 0);
+        const auto item_name = describe_flavor(creature, *item, 0);
         msg_format(_("%sは破壊不可能だ。", "You cannot destroy %s."), item_name.data());
         return;
     }
 
-    exe_destroy_item(creature, *o_ptr, i_idx, amt);
+    exe_destroy_item(creature, *item, i_idx, amt);
 }

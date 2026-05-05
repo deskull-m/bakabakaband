@@ -299,7 +299,7 @@ static void list_weapon(CreatureEntity &creature, const ItemEntity &item, TERM_L
  */
 PRICE compare_weapons(CreatureEntity &creature, PRICE bcost)
 {
-    ItemEntity *o_ptr[2]{};
+    std::shared_ptr<ItemEntity> items[2]{};
     TERM_LEN row = 2;
     TERM_LEN wid = 38, mgn = 2;
     auto &world = AngbandWorld::get_instance();
@@ -310,16 +310,16 @@ PRICE compare_weapons(CreatureEntity &creature, PRICE bcost)
 
     screen_save();
     clear_bldg(0, 22);
-    auto *i_ptr = creature.inventory[INVEN_MAIN_HAND].get();
-    auto orig_weapon = i_ptr->clone();
+    auto &item_main_hand = creature.inventory[INVEN_MAIN_HAND];
+    auto orig_weapon = item_main_hand->clone();
 
     constexpr auto first_q = _("第一の武器は？", "What is your first weapon? ");
     constexpr auto first_s = _("比べるものがありません。", "You have nothing to compare.");
 
     short i_idx_first;
     constexpr auto options = USE_EQUIP | USE_INVEN | IGNORE_BOTHHAND_SLOT;
-    o_ptr[0] = choose_object(creature, &i_idx_first, first_q, first_s, options, FuncItemTester(&ItemEntity::is_orthodox_melee_weapons));
-    if (!o_ptr[0]) {
+    std::tie(items[0], i_idx_first) = choose_item(creature, first_q, first_s, options, FuncItemTester(&ItemEntity::is_orthodox_melee_weapons));
+    if (!items[0]) {
         screen_load();
         return 0;
     }
@@ -332,16 +332,16 @@ PRICE compare_weapons(CreatureEntity &creature, PRICE bcost)
         world.character_xtra = true;
         for (int i = 0; i < n; i++) {
             int col = (wid * i + mgn);
-            if (o_ptr[i] != i_ptr) {
-                *i_ptr = o_ptr[i]->clone();
+            if (items[i] != item_main_hand) {
+                *item_main_hand = items[i]->clone();
             }
 
             rfu.set_flag(StatusRecalculatingFlag::BONUS);
             handle_stuff(creature);
 
-            list_weapon(creature, *o_ptr[i], row, col);
-            compare_weapon_aux(creature, o_ptr[i], col, row + 8);
-            *i_ptr = orig_weapon.clone();
+            list_weapon(creature, *items[i], row, col);
+            compare_weapon_aux(creature, items[i].get(), col, row + 8);
+            *item_main_hand = orig_weapon.clone();
         }
 
         rfu.set_flag(StatusRecalculatingFlag::BONUS);
@@ -372,19 +372,18 @@ PRICE compare_weapons(CreatureEntity &creature, PRICE bcost)
 
         constexpr auto q = _("第二の武器は？", "What is your second weapon? ");
         constexpr auto s = _("比べるものがありません。", "You have nothing to compare.");
-        short i_idx_second;
-        auto *i2_ptr = choose_object(creature, &i_idx_second, q, s, (USE_EQUIP | USE_INVEN | IGNORE_BOTHHAND_SLOT), FuncItemTester(&ItemEntity::is_orthodox_melee_weapons));
-        if (!i2_ptr) {
+        const auto &[item_second, i_idx_second] = choose_item(creature, q, s, (USE_EQUIP | USE_INVEN | IGNORE_BOTHHAND_SLOT), FuncItemTester(&ItemEntity::is_orthodox_melee_weapons));
+        if (!item_second) {
             continue;
         }
 
-        if (i2_ptr == o_ptr[0] || (n == 2 && i2_ptr == o_ptr[1])) {
+        if (item_second == items[0] || (n == 2 && item_second == items[1])) {
             msg_print(_("表示中の武器は選べません！", "Select a different weapon than those displayed."));
             msg_erase();
             continue;
         }
 
-        o_ptr[1] = i2_ptr;
+        items[1] = item_second;
         total += cost;
         cost = bcost / 2;
         n = 2;

@@ -88,12 +88,12 @@ char index_to_label(int i)
 /*!
  * @brief オブジェクトの該当装備部位IDを返す /
  * Determine which equipment slot (if any) an item likes
- * @param o_ptr 名称を取得する元のオブジェクト構造体参照ポインタ
+ * @param item 名称を取得する元のオブジェクト構造体への参照
  * @return 対応する装備部位ID
  */
-short wield_slot(CreatureEntity &creature, const ItemEntity *o_ptr)
+short wield_slot(CreatureEntity &creature, const ItemEntity &item)
 {
-    switch (o_ptr->bi_key.tval()) {
+    switch (item.bi_key.tval()) {
     case ItemKindType::DIGGING:
     case ItemKindType::HAFTED:
     case ItemKindType::POLEARM:
