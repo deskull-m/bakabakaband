@@ -549,28 +549,28 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
         (void)spell_hex.stop_all_spells();
     }
 
-    auto *o_ptr = ref_item(creature, i_idx);
+    auto item = ref_item(creature, i_idx);
 
     sound(SoundKind::EAT);
 
     PlayerEnergy(creature).set_player_turn_energy(100);
-    const auto level = o_ptr->get_baseitem_level();
+    const auto level = item->get_baseitem_level();
 
     /* 基本食い物でないものを喰う判定 */
     bool ate = false;
 
-    ate = exe_eat_soul(creature, o_ptr);
+    ate = exe_eat_soul(creature, item.get());
 
     if (!ate) {
-        ate = exe_eat_corpse_type_object(creature, o_ptr);
+        ate = exe_eat_corpse_type_object(creature, item.get());
     }
 
     if (!ate) {
-        ate = exe_eat_junk_type_object(creature, o_ptr);
+        ate = exe_eat_junk_type_object(creature, item.get());
     }
 
     /* Identity not known yet */
-    const auto &bi_key = o_ptr->bi_key;
+    const auto &bi_key = item->bi_key;
     const auto ident = exe_eat_food_type_object(creature, bi_key);
 
     /*
@@ -588,7 +588,7 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
     }
 
     rfu.reset_flags(flags_srf);
-    if (!(o_ptr->is_aware())) {
+    if (!(item->is_aware())) {
         chg_virtue(creature, Virtue::KNOWLEDGE, -1);
         chg_virtue(creature, Virtue::PATIENCE, -1);
         chg_virtue(creature, Virtue::CHANCE, 1);
@@ -597,12 +597,12 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
     /* We have tried it */
     const auto tval = bi_key.tval();
     if (tval == ItemKindType::FOOD) {
-        o_ptr->mark_as_tried();
+        item->mark_as_tried();
     }
 
     /* The creature is now aware of the object */
-    if (ident && !o_ptr->is_aware()) {
-        object_aware(creature, *o_ptr);
+    if (ident && !item->is_aware()) {
+        object_aware(creature, *item);
         gain_exp(creature, (level + (creature.level >> 1)) / creature.level);
     }
 
@@ -614,7 +614,7 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
     rfu.set_flags(flags_swrf);
 
     /* Undeads drain recharge of magic device */
-    if (exe_eat_charge_of_magic_device(creature, o_ptr, i_idx)) {
+    if (exe_eat_charge_of_magic_device(creature, item.get(), i_idx)) {
         rfu.set_flags(flags_srf);
         return;
     }
@@ -623,8 +623,8 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
 
     /* Balrogs change humanoid corpses to energy */
     if (food_type == PlayerRaceFoodType::CORPSE) {
-        if (o_ptr->is_corpse() && o_ptr->get_monrace().is_human()) {
-            const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+        if (item->is_corpse() && item->get_monrace().is_human()) {
+            const auto item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
             msg_format(_("%sは燃え上り灰になった。精力を吸収した気がする。", "%s^ is burnt to ashes.  You absorb its vitality!"), item_name.data());
             (void)set_food(creature, PY_FOOD_MAX - 1);
 
@@ -637,11 +637,11 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
     if (CreatureRace(&creature).equals(PlayerRaceType::SKELETON)) {
         const auto sval = bi_key.sval();
         if ((sval != SV_FOOD_WAYBREAD) && (sval >= SV_FOOD_BISCUIT)) {
-            ItemEntity item(bi_key);
+            ItemEntity item_skeleton(bi_key);
             msg_print(_("食べ物がアゴを素通りして落ちた！", "The food falls through your jaws!"));
 
             /* Drop the object from heaven */
-            (void)drop_near(creature, item, creature.get_position());
+            (void)drop_near(creature, item_skeleton, creature.get_position());
             ate = true;
         } else {
             msg_print(_("食べ物がアゴを素通りして落ち、消えた！", "The food falls through your jaws and vanishes!"));
@@ -649,7 +649,7 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
         }
     } else if (food_type == PlayerRaceFoodType::BLOOD) {
         /* Vampires are filled only by bloods, so reduced nutritional benefit */
-        (void)set_food(creature, creature.food + (o_ptr->pval / 10));
+        (void)set_food(creature, creature.food + (item->pval / 10));
         msg_print(_("あなたのような者にとって食糧など僅かな栄養にしかならない。", "Mere victuals hold scant sustenance for a being such as yourself."));
 
         if (creature.food < PY_FOOD_ALERT) {
@@ -660,11 +660,11 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
 
     } else if (food_type == PlayerRaceFoodType::WATER) {
         msg_print(_("動物の食物はあなたにとってほとんど栄養にならない。", "The food of animals is poor sustenance for you."));
-        set_food(creature, creature.food + ((o_ptr->pval) / 20));
+        set_food(creature, creature.food + ((item->pval) / 20));
         ate = true;
     } else if (food_type != PlayerRaceFoodType::RATION) {
         msg_print(_("生者の食物はあなたにとってほとんど栄養にならない。", "The food of mortals is poor sustenance for you."));
-        set_food(creature, creature.food + ((o_ptr->pval) / 20));
+        set_food(creature, creature.food + ((item->pval) / 20));
         ate = true;
     } else {
         if (bi_key == BaseitemKey(ItemKindType::FOOD, SV_FOOD_WAYBREAD)) {
@@ -673,7 +673,7 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
             ate = true;
         } else if (bi_key.tval() == ItemKindType::FOOD) {
             /* Food can feed the creature */
-            (void)set_food(creature, creature.food + o_ptr->pval);
+            (void)set_food(creature, creature.food + item->pval);
             ate = true;
         }
     }
@@ -686,11 +686,11 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
     creature.plus_incident_tree("EAT", 1);
 
     // 死体を食べた場合は詳細情報を記録
-    if (o_ptr->bi_key.tval() == ItemKindType::MONSTER_REMAINS && o_ptr->bi_key.sval() == SV_CORPSE) {
+    if (item->bi_key.tval() == ItemKindType::MONSTER_REMAINS && item->bi_key.sval() == SV_CORPSE) {
         auto incident_key = format("EAT/CORPSE/%d/%d/%d",
-            static_cast<int>(o_ptr->bi_key.tval()),
-            o_ptr->bi_key.sval().value_or(0),
-            o_ptr->pval);
+            static_cast<int>(item->bi_key.tval()),
+            item->bi_key.sval().value_or(0),
+            item->pval);
         creature.plus_incident_tree(incident_key, 1);
     }
 

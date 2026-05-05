@@ -583,5 +583,5 @@ ItemEntity *choose_object(CreatureEntity &creature, short *initial_i_idx, concpt
         return nullptr;
     }
 
-    return ref_item(creature, *i_idx);
+    return ref_item(creature, *i_idx).get(); //!< @todo ダングリングポインタになる可能性があるので戻り値自体をstd::shared_ptr<ItemEntity>にする.
 }
