@@ -37,8 +37,8 @@ enum class GameOptionType : int {
     DISTURB_TRAP_DETECT = 27,
     LAST_WORDS = 28,
     OVER_EXERT = 29,
-    SMALL_LEVELS = 30, /*!< 上流 #5360 で ALLOW_SMALLEST_FLOOR に改名予定 */
-    EMPTY_LEVELS = 31, /*!< 上流 #5360 で ALLOW_ARENA_FLOOR に改名予定 */
+    ALLOW_SMALLEST_FLOOR = 30, /*!< 上流 #5360 で ALLOW_SMALLEST_FLOOR に改名予定 */
+    ALLOW_ARENA_FLOOR = 31, /*!< 上流 #5360 で ALLOW_ARENA_FLOOR に改名予定 */
 
     // 32
     VIEW_UNSAFE_WALLS = 33,
@@ -76,7 +76,7 @@ enum class GameOptionType : int {
     SHOW_ITEM_GRAPH = 64,
     BOUND_WALLS_PERM = 65,
     MONSTER_TOMBSTONES = 66, /*!< bakabakaband 独自: モンスターが死ぬ度に墓石を立てる(ジョーク) */
-    ALWAYS_SMALL_LEVELS = 67, /*!< 上流 #5360 で ALWAYS_SMALL_FLOOR に改名予定 */
+    ALWAYS_SMALL_FLOOR = 67, /*!< 上流 #5360 で ALWAYS_SMALL_FLOOR に改名予定 */
     // 68
     TARGET_PET = 69,
     AUTO_MORE = 70,
@@ -142,12 +142,12 @@ enum class GameOptionType : int {
     VANILLA_TOWN = 192,
     LITE_TOWN = 193,
     IRONMAN_SHOPS = 194,
-    IRONMAN_SMALL_LEVELS = 195, /*!< 上流 #5360 で IRONMAN_SMALLEST_FLOOR に改名予定 */
+    IRONMAN_SMALLEST_FLOOR = 195, /*!< 上流 #5360 で IRONMAN_SMALLEST_FLOOR に改名予定 */
     IRONMAN_DOWNWARD = 196,
     // 197
     PLAIN_PICKUP = 198,
     // 199
-    IRONMAN_EMPTY_LEVELS = 200, /*!< 上流 #5360 で IRONMAN_FORCE_ARENA_FLOOR に改名予定 */
+    IRONMAN_FORCE_ARENA_FLOOR = 200, /*!< 上流 #5360 で IRONMAN_FORCE_ARENA_FLOOR に改名予定 */
     // 201
     // 202
     ALLOW_DEBUG_OPTS = 203,

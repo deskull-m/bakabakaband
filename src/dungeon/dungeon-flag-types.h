@@ -5,7 +5,7 @@ enum class DungeonFeatureType {
     MAZE,
     SMALLEST,
     BEGINNER,
-    BIG,
+    LARGEST,
     NO_DOORS,
     WATER_RIVER,
     LAVA_RIVER,
