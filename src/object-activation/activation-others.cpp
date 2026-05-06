@@ -104,9 +104,9 @@ bool activate_scare(CreatureEntity &creature)
     return true;
 }
 
-bool activate_aggravation(CreatureEntity &creature, ItemEntity *o_ptr, std::string_view name)
+bool activate_aggravation(CreatureEntity &creature, const ItemEntity &item, std::string_view name)
 {
-    if (o_ptr->is_specific_artifact(FixedArtifactId::HYOUSIGI)) {
+    if (item.is_specific_artifact(FixedArtifactId::HYOUSIGI)) {
         msg_print(_("拍子木を打った。", "You beat your wooden clappers."));
     } else {
         msg_format(_("%sは不快な物音を立てた。", "The %s sounds an unpleasant noise."), name.data());
@@ -396,17 +396,17 @@ bool activate_recall(CreatureEntity &creature)
     return recall_player(creature, randint0(21) + 15);
 }
 
-bool activate_tree_creation(CreatureEntity &creature, ItemEntity *o_ptr, std::string_view name)
+bool activate_tree_creation(CreatureEntity &creature, const ItemEntity &item, std::string_view name)
 {
-    const auto randart_name = o_ptr->is_random_artifact() ? o_ptr->randart_name->data() : "";
+    const auto randart_name = item.is_random_artifact() ? item.randart_name->data() : "";
     msg_format(_("%s%sから明るい緑の光があふれ出た...", "The %s%s wells with clear light..."), name.data(), randart_name);
     return tree_creation(creature, creature.y, creature.x);
 }
 
-bool activate_animate_dead(CreatureEntity &creature, ItemEntity *o_ptr)
+bool activate_animate_dead(CreatureEntity &creature, const ItemEntity &item)
 {
     msg_print(_("黄金色の光が溢れ出た...", "It emitted a golden light..."));
-    if (o_ptr->is_specific_artifact(FixedArtifactId::EXCALIBORG)) {
+    if (item.is_specific_artifact(FixedArtifactId::EXCALIBORG)) {
         msg_print(_("ぴぴるぴるぴるぴぴるぴ～♪", "Pipiru piru piru pipiru pii"));
     }
 

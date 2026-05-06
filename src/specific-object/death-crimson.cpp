@@ -51,9 +51,9 @@ static bool fire_crimson(CreatureEntity &creature)
     return true;
 }
 
-bool activate_crimson(CreatureEntity &creature, ItemEntity *o_ptr)
+bool activate_crimson(CreatureEntity &creature, ItemEntity &item)
 {
-    if (!o_ptr->is_specific_artifact(FixedArtifactId::CRIMSON)) {
+    if (!item.is_specific_artifact(FixedArtifactId::CRIMSON)) {
         return false;
     }
 
