@@ -21,7 +21,7 @@ extern const concptr ident_info[];
 extern std::array<term_type *, 8> angband_terms;
 #define term_screen (angband_terms[0])
 
-extern std::array<DisplaySymbol, 256> misc_to_display_symbol;
+extern std::array<DisplaySymbol, 256> ds_bolt;
 extern TERM_COLOR tval_to_attr[128];
 extern const char angband_term_name[8][16];
 extern byte angband_color_table[256][4];

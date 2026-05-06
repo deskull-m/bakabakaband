@@ -355,11 +355,10 @@ std::array<term_type *, 8> angband_terms;
  */
 static const concptr color_char = "dwsorgbuDWvyRGBU";
 
-/*
- * Specify attr/char pairs for visual special effects
- * Be sure to use "index & 0x7F" to avoid illegal access
+/*!
+ * @brief ボルト射出の軌跡を表す色付きシンボルテーブル
  */
-std::array<DisplaySymbol, 256> misc_to_display_symbol{};
+std::array<DisplaySymbol, 256> ds_bolt{};
 
 /*
  * Specify attr/char pairs for inventory items (by tval)
@@ -570,7 +569,7 @@ const DisplaySymbol &bolt_pict(const Pos2D &pos_src, const Pos2D &pos_dst, Attri
     }
 
     const auto k = spell_color(typ);
-    return misc_to_display_symbol[base + k];
+    return ds_bolt[base + k];
 }
 
 /*!
