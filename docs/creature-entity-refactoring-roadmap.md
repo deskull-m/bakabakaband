@@ -74,7 +74,13 @@ ESP 系 BIT_FLAGS 等）が残存している。モンスターでも将来運�
 
 - ✅ モンスター生成時に `prace` / `pclass` / `realm1` / `realm2` /
   `element_realm` を NONE に明示初期化（`init_monster_profile()`）
-- 🚧 残り: `ppersonality` / `psex` 用の NONE 値追加、virtual アクセサ整備
+- ✅ `ppersonality` の NONE 値 (`PERSONALITY_NONE`) を `init_monster_profile()`
+  で初期化
+- ✅ `player_sex` enum に `SEX_NONE = 4` を追加 (sex_info に「未設定」エントリ
+  も追加)。`init_monster_profile()` で `psex = SEX_NONE` に初期化し、
+  `get_sex_info()` は範囲外の値を SEX_NONE にフォールバック
+- ✅ virtual アクセサ `get_psex()` / `get_ppersonality()` を `CreatureEntity`
+  に追加 (将来モンスター固有のオーバーライド余地を確保)
 
 ---
 

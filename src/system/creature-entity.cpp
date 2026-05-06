@@ -173,7 +173,9 @@ const player_sex_type &CreatureEntity::get_sex_info() const
 {
     // モンスターの psex は one_monster_placer で kind_flags MALE/FEMALE
     // から計算済み。プレイヤーは birth で選択済み。両者ともそのまま参照する。
-    return sex_info[this->psex];
+    // SEX_NONE は生成途中等の中間値として末尾エントリ ("未設定") を返す。
+    const auto psex_safe = (this->psex < MAX_SEXES) ? this->psex : SEX_NONE;
+    return sex_info[psex_safe];
 }
 
 const player_personality *CreatureEntity::get_personality_info() const
@@ -1136,9 +1138,12 @@ void CreatureEntity::init_monster_profile()
     // モンスターに対して意味をなさないため、明示的に無効値に初期化する。
     // 将来モンスターにも種族・職業・魔法領域を持たせて運用する際は、
     // 対応する MonsterProfile 側の設定値からここに反映させる。
+    // psex は one_monster_placer で kind_flags MALE/FEMALE から再設定されるが、
+    // ここで SEX_NONE に明示初期化することで生成途中の中間状態を区別可能にする。
     this->prace = PlayerRaceType::NONE;
     this->pclass = PlayerClassType::NONE;
     this->ppersonality = PERSONALITY_NONE;
+    this->psex = SEX_NONE;
     this->realm1 = RealmType::NONE;
     this->realm2 = RealmType::NONE;
     this->element_realm = ElementRealmType::NONE;
