@@ -129,52 +129,51 @@ static bool check_activation_conditions(CreatureEntity &creature, ae_type *ae_pt
 
 /*!
  * @brief アイテムの発動効果を処理する。
- * @param creature クリーチャーへの参照
- * @param o_ptr 対象のオブジェクト構造体ポインタ
- * @return 発動実行の是非を返す。
+ * @param creature プレイヤーへの参照ポインタ
+ * @param item 対象アイテムへの参照
  */
-static bool activate_artifact(CreatureEntity &creature, ItemEntity *o_ptr)
+static void activate_artifact(CreatureEntity &creature, std::shared_ptr<ItemEntity> &item)
 {
-    const auto it_activation = o_ptr->find_activation_info();
+    const auto it_activation = item->find_activation_info();
     if (it_activation == activation_info.end()) {
         msg_print("Activation information is not found.");
-        return false;
+        return;
     }
 
-    const auto item_name = describe_flavor(creature, *o_ptr, OD_NAME_ONLY | OD_OMIT_PREFIX | OD_BASE_NAME);
-    const auto &[has_activated, item] = switch_activation(creature, *o_ptr, it_activation->index, item_name);
+    const auto item_name = describe_flavor(creature, *item, OD_NAME_ONLY | OD_OMIT_PREFIX | OD_BASE_NAME);
+    const auto &[has_activated, item_activated] = switch_activation(creature, *item, it_activation->index, item_name);
     if (!has_activated) {
-        return false;
+        return;
     }
 
-    if (item) {
-        o_ptr = item.get();
+    if (item_activated) {
+        item = item_activated;
     }
 
     if (it_activation->constant) {
-        o_ptr->timeout = static_cast<short>(*it_activation->constant);
+        item->timeout = static_cast<short>(*it_activation->constant);
         if (it_activation->dice > 0) {
-            o_ptr->timeout += static_cast<short>(randint1(it_activation->dice));
+            item->timeout += static_cast<short>(randint1(it_activation->dice));
         }
 
-        return true;
+        return;
     }
 
     switch (it_activation->index) {
     case RandomArtActType::BR_FIRE:
-        o_ptr->timeout = o_ptr->bi_key == BaseitemKey(ItemKindType::RING, SV_RING_FLAMES) ? 200 : 250;
-        return true;
+        item->timeout = item->bi_key == BaseitemKey(ItemKindType::RING, SV_RING_FLAMES) ? 200 : 250;
+        return;
     case RandomArtActType::BR_COLD:
-        o_ptr->timeout = o_ptr->bi_key == BaseitemKey(ItemKindType::RING, SV_RING_ICE) ? 200 : 250;
-        return true;
+        item->timeout = item->bi_key == BaseitemKey(ItemKindType::RING, SV_RING_ICE) ? 200 : 250;
+        return;
     case RandomArtActType::TERROR:
-        o_ptr->timeout = 3 * (creature.level + 10);
-        return true;
+        item->timeout = 3 * (creature.level + 10);
+        return;
     case RandomArtActType::MURAMASA:
-        return true;
+        return;
     default:
         msg_format("Special timeout is not implemented: %d.", enum2i(it_activation->index));
-        return false;
+        return;
     }
 }
 
@@ -320,8 +319,8 @@ void exe_activate(CreatureEntity &creature, INVENTORY_IDX i_idx)
 
     msg_print(_("始動させた...", "You activate it..."));
     sound(SoundKind::ZAP);
-    if (ae_ptr->item->has_activation()) {
-        (void)activate_artifact(creature, ae_ptr->item.get());
+    if (ae.item->has_activation()) {
+        activate_artifact(creature, ae.item);
         static constexpr auto flags = {
             SubWindowRedrawingFlag::INVENTORY,
             SubWindowRedrawingFlag::EQUIPMENT,
