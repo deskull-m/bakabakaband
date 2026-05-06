@@ -95,7 +95,7 @@ AutopickSearch get_string_for_search(CreatureEntity &creature, const AutopickSea
     std::string buf = as.search_str;
     constexpr auto max_search_length = 80;
     uint8_t color = TERM_YELLOW;
-    if (as.item != nullptr) {
+    if (as.item) {
         color = TERM_L_GREEN;
     }
 
@@ -142,12 +142,11 @@ AutopickSearch get_string_for_search(CreatureEntity &creature, const AutopickSea
         case '\r':
         case KTRL('s'): {
             as.result = back ? AutopickSearchResult::BACK : AutopickSearchResult::FORWARD;
-            if (as.item != nullptr) {
+            if (as.item) {
                 return as;
             }
 
             as.search_str = buf;
-            as.item = nullptr;
             return as;
         }
         case KTRL('i'):
@@ -193,7 +192,7 @@ AutopickSearch get_string_for_search(CreatureEntity &creature, const AutopickSea
             const auto c = static_cast<char>(skey);
             if (color != TERM_WHITE) {
                 if (color == TERM_L_GREEN) {
-                    as.item = nullptr;
+                    as.item.reset();
                     as.search_str = "";
                 }
 
@@ -230,7 +229,7 @@ AutopickSearch get_string_for_search(CreatureEntity &creature, const AutopickSea
             continue;
         }
 
-        as.item = nullptr;
+        as.item.reset();
         as.search_str = "";
         pos = 0;
         buf = "";
