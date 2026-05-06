@@ -348,6 +348,13 @@ static tl::optional<std::string> level_gen(CreatureEntity &creature, tl::optiona
     } else if (always_small_floor || ironman_smallest_floor || (allow_smallest_floor && one_in_(chance_small_floor)) || dungeon.flags.has(DungeonFeatureType::SMALLEST)) {
         level_height = MIN_HGT_MULTIPLE;
         level_width = MIN_WID_MULTIPLE;
+        // 鉄人「常に最小フロア」+ 鉄人「常に普通でない部屋」+ NO_VAULT 無し の組み合わせで
+        // 1x1 ブロックに VAULT を生成しようとして無限ループに陥るのを回避するため、
+        // VAULT が出現可能なら最低 2x1 ブロックを保証する (上流 hengband#5369 相当)。
+        if (ironman_smallest_floor && ironman_rooms && dungeon.flags.has_not(DungeonFeatureType::NO_VAULT)) {
+            level_height = MIN_HGT_MULTIPLE * 2;
+            level_width = MIN_WID_MULTIPLE;
+        }
     } else if (dungeon.flags.has(DungeonFeatureType::BEGINNER)) {
         level_height = MIN_HGT_MULTIPLE * 2;
         level_width = MIN_WID_MULTIPLE * 2;
