@@ -364,6 +364,28 @@ public:
      */
     const player_sex_type &get_sex_info() const;
 
+    /*!
+     * @brief 性別 enum を取得する
+     * @return psex (player_sex)
+     * @details モンスターは生成途中で SEX_NONE → kind_flags MALE/FEMALE から
+     * 確定値に置換される。プレイヤーは birth で確定済み。
+     */
+    virtual player_sex get_psex() const
+    {
+        return this->psex;
+    }
+
+    /*!
+     * @brief 性格 enum を取得する
+     * @return ppersonality (player_personality_type)
+     * @details モンスターは init_monster_profile() で PERSONALITY_NONE に
+     * 初期化されており、種族側に性格設定が無い限り NONE のまま。
+     */
+    virtual player_personality_type get_ppersonality() const
+    {
+        return this->ppersonality;
+    }
+
     bool has_living_flag(bool is_appearance = false) const;
     bool has_demon_flag(bool is_appearance = false) const;
     bool has_undead_flag(bool is_appearance = false) const;
