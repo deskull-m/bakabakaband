@@ -45,21 +45,21 @@ bool enchant_item(CreatureEntity &creature, PRICE cost, HIT_PROB to_hit, int to_
 
     bool okay = false;
     for (int i = 0; i < to_hit; i++) {
-        if ((item->to_h < maxenchant) && enchant_equipment(item.get(), 1, (ENCH_TOHIT | ENCH_FORCE))) {
+        if ((item->to_h < maxenchant) && enchant_equipment(*item, 1, (ENCH_TOHIT | ENCH_FORCE))) {
             okay = true;
             break;
         }
     }
 
     for (int i = 0; i < to_dam; i++) {
-        if ((item->to_d < maxenchant) && enchant_equipment(item.get(), 1, (ENCH_TODAM | ENCH_FORCE))) {
+        if ((item->to_d < maxenchant) && enchant_equipment(*item, 1, (ENCH_TODAM | ENCH_FORCE))) {
             okay = true;
             break;
         }
     }
 
     for (int i = 0; i < to_ac; i++) {
-        if ((item->to_a < maxenchant) && enchant_equipment(item.get(), 1, (ENCH_TOAC | ENCH_FORCE))) {
+        if ((item->to_a < maxenchant) && enchant_equipment(*item, 1, (ENCH_TOAC | ENCH_FORCE))) {
             okay = true;
             break;
         }

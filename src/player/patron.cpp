@@ -372,7 +372,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
             }
 
             const auto item_name = describe_flavor(creature, *creature.inventory[slot], OD_NAME_ONLY);
-            (void)curse_weapon_object(creature, false, creature.inventory[slot].get());
+            (void)curse_weapon_object(creature, false, *creature.inventory[slot]);
             reward = format(_("%sが破壊された。", "destroying %s"), item_name.data());
             break;
         }
@@ -415,7 +415,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
                     }
 
                     const auto item_name = describe_flavor(creature, *creature.inventory[slot], OD_NAME_ONLY);
-                    (void)curse_weapon_object(creature, false, creature.inventory[slot].get());
+                    (void)curse_weapon_object(creature, false, *creature.inventory[slot]);
                     reward = format(_("%sが破壊された。", "destroying %s"), item_name.data());
                 } else {
                     if (!creature.inventory[INVEN_BODY]->is_valid()) {
@@ -459,7 +459,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
                 }
 
                 if (slot) {
-                    (void)curse_weapon_object(creature, false, creature.inventory[slot].get());
+                    (void)curse_weapon_object(creature, false, *creature.inventory[slot]);
                 }
             }
 

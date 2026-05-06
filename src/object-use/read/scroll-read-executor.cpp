@@ -95,7 +95,7 @@ bool ScrollReadExecutor::read()
             k = INVEN_SUB_HAND;
         }
 
-        if (k && curse_weapon_object(this->creature, false, this->creature.inventory[k].get())) {
+        if (k && curse_weapon_object(this->creature, false, *this->creature.inventory[k])) {
             this->ident = true;
         }
 

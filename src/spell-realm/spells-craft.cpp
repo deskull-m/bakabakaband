@@ -324,7 +324,7 @@ bool pulish_shield(CreatureEntity &creature)
         msg_format("%s %s shine%s!", ((i_idx >= 0) ? "Your" : "The"), item_name.data(), ((item->number > 1) ? "" : "s"));
 #endif
         item->ego_idx = EgoType::REFLECTION;
-        enchant_equipment(item.get(), randint0(3) + 4, ENCH_TOAC);
+        enchant_equipment(*item, randint0(3) + 4, ENCH_TOAC);
         item->discount = 99;
         chg_virtue(creature, Virtue::ENCHANT, 2);
         return true;
