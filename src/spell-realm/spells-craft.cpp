@@ -123,31 +123,31 @@ bool set_ele_immune(CreatureEntity &creature, uint32_t immune_type, TIME_EFFECT 
 
     if ((creature.has_special_defense(DEFENSE_ACID)) && (immune_type != DEFENSE_ACID)) {
         creature.special_defense &= ~(DEFENSE_ACID);
-        msg_print(_("酸の攻撃で傷つけられるようになった。。", "You are no longer immune to acid."));
+        msg_print(_("酸の攻撃で傷つけられるようになった。", "You are no longer immune to acid."));
         sound(SoundKind::BUFF_EXPIRE);
     }
 
     if ((creature.has_special_defense(DEFENSE_ELEC)) && (immune_type != DEFENSE_ELEC)) {
         creature.special_defense &= ~(DEFENSE_ELEC);
-        msg_print(_("電撃の攻撃で傷つけられるようになった。。", "You are no longer immune to electricity."));
+        msg_print(_("電撃の攻撃で傷つけられるようになった。", "You are no longer immune to electricity."));
         sound(SoundKind::BUFF_EXPIRE);
     }
 
     if ((creature.has_special_defense(DEFENSE_FIRE)) && (immune_type != DEFENSE_FIRE)) {
         creature.special_defense &= ~(DEFENSE_FIRE);
-        msg_print(_("火炎の攻撃で傷つけられるようになった。。", "You are no longer immune to fire."));
+        msg_print(_("火炎の攻撃で傷つけられるようになった。", "You are no longer immune to fire."));
         sound(SoundKind::BUFF_EXPIRE);
     }
 
     if ((creature.has_special_defense(DEFENSE_COLD)) && (immune_type != DEFENSE_COLD)) {
         creature.special_defense &= ~(DEFENSE_COLD);
-        msg_print(_("冷気の攻撃で傷つけられるようになった。。", "You are no longer immune to cold."));
+        msg_print(_("冷気の攻撃で傷つけられるようになった。", "You are no longer immune to cold."));
         sound(SoundKind::BUFF_EXPIRE);
     }
 
     if ((creature.has_special_defense(DEFENSE_POIS)) && (immune_type != DEFENSE_POIS)) {
         creature.special_defense &= ~(DEFENSE_POIS);
-        msg_print(_("毒の攻撃で傷つけられるようになった。。", "You are no longer immune to poison."));
+        msg_print(_("毒の攻撃で傷つけられるようになった。", "You are no longer immune to poison."));
         sound(SoundKind::BUFF_EXPIRE);
     }
 
