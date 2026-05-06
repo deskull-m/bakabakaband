@@ -588,7 +588,7 @@ tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32
     floor.allianceID = dungeon.alliance_idx;
 
     constexpr auto chance_empty_floor = 24;
-    if (ironman_empty_levels || (dungeon.flags.has(DungeonFeatureType::ARENA) && (empty_levels && one_in_(chance_empty_floor)))) {
+    if (ironman_force_arena_floor || (dungeon.flags.has(DungeonFeatureType::ARENA) && (allow_arena_floor && one_in_(chance_empty_floor)))) {
         dd.empty_level = true;
         msg_print_wizard(creature, CHEAT_DUNGEON, _("アリーナレベルを生成。", "Arena level."));
     }
