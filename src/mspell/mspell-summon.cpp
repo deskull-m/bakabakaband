@@ -1153,9 +1153,9 @@ MonsterSpellResult spell_RF6_S_UNIQUE(CreatureEntity &creature, POSITION y, POSI
     }
 
     summon_type non_unique_type = SUMMON_HI_UNDEAD;
-    if ((monster.get_monster_profile().sub_align & (SUB_ALIGN_GOOD | SUB_ALIGN_EVIL)) == (SUB_ALIGN_GOOD | SUB_ALIGN_EVIL)) {
+    if ((monster.get_sub_align() & (SUB_ALIGN_GOOD | SUB_ALIGN_EVIL)) == (SUB_ALIGN_GOOD | SUB_ALIGN_EVIL)) {
         non_unique_type = SUMMON_NONE;
-    } else if (monster.get_monster_profile().sub_align & SUB_ALIGN_GOOD) {
+    } else if (monster.get_sub_align() & SUB_ALIGN_GOOD) {
         non_unique_type = SUMMON_ANGEL;
     }
 

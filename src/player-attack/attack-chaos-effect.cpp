@@ -255,7 +255,7 @@ static void attack_golden_hammer(CreatureEntity &creature, player_attack_type *p
 {
     auto &floor = *creature.get_floor();
     auto &monster = floor.get_monster(pa_ptr->m_idx);
-    if (monster.get_monster_profile().hold_o_idx_list.empty()) {
+    if (monster.get_held_objects().empty()) {
         return;
     }
 

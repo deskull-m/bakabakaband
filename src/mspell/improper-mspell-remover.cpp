@@ -45,7 +45,7 @@ void remove_bad_spells(MONSTER_IDX m_idx, CreatureEntity &creature, EnumClassFla
             monster.get_monster_profile().smart.clear();
         }
 
-        msr_ptr->smart_flags = monster.get_monster_profile().smart;
+        msr_ptr->smart_flags = monster.get_smart_flags();
     }
 
     add_cheat_remove_flags(creature, msr_ptr);

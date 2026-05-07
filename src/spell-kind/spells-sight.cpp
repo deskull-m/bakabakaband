@@ -389,11 +389,11 @@ std::string probed_monster_info(CreatureEntity &creature, CreatureEntity &target
         align = _("邪悪", "evil");
     } else if (monrace.kind_flags.has(MonsterKindType::GOOD)) {
         align = _("善良", "good");
-    } else if ((target.get_monster_profile().sub_align & (SUB_ALIGN_EVIL | SUB_ALIGN_GOOD)) == (SUB_ALIGN_EVIL | SUB_ALIGN_GOOD)) {
+    } else if ((target.get_sub_align() & (SUB_ALIGN_EVIL | SUB_ALIGN_GOOD)) == (SUB_ALIGN_EVIL | SUB_ALIGN_GOOD)) {
         align = _("中立(善悪)", "neutral(good&evil)");
-    } else if (target.get_monster_profile().sub_align & SUB_ALIGN_EVIL) {
+    } else if (target.get_sub_align() & SUB_ALIGN_EVIL) {
         align = _("中立(邪悪)", "neutral(evil)");
-    } else if (target.get_monster_profile().sub_align & SUB_ALIGN_GOOD) {
+    } else if (target.get_sub_align() & SUB_ALIGN_GOOD) {
         align = _("中立(善良)", "neutral(good)");
     } else {
         align = _("中立", "neutral");
