@@ -159,19 +159,11 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
         picked.held_m_idx = 0;
         delete_object_idx(creature, this_o_idx);
 
-        // [フェーズ B-1] 装備可能なアイテムは空きスロットがあれば自動装備
-        // (1 個のみ; スタックは pack に格納)
-        const auto eq_slot = wield_slot(monster, picked);
-        const bool can_auto_equip = (eq_slot >= INVEN_MAIN_HAND) && (eq_slot < INVEN_TOTAL) && !monster.inventory[eq_slot]->is_valid() && (picked.number == 1);
-        if (can_auto_equip) {
-            *monster.inventory[eq_slot] = picked;
-            monster.equip_cnt++;
-            if (player_can_see_bold(creature, ny, nx)) {
-                const auto eq_name = describe_flavor(creature, *monster.inventory[eq_slot], 0);
-                msg_format(_("%s^は%sを装備した。", "%s^ wields %s."), m_name.data(), eq_name.data());
-            }
-        } else {
-            (void)monster.store_item(picked);
+        // [フェーズ B-1 / C-2] 装備可能なら自動装備、不可ならパック
+        const auto acquired_slot = monster.acquire_item(picked);
+        if ((acquired_slot >= INVEN_MAIN_HAND) && (acquired_slot < INVEN_TOTAL) && player_can_see_bold(creature, ny, nx)) {
+            const auto eq_name = describe_flavor(creature, *monster.inventory[acquired_slot], 0);
+            msg_format(_("%s^は%sを装備した。", "%s^ wields %s."), m_name.data(), eq_name.data());
         }
 
         RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::FOUND_ITEMS);
