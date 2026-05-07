@@ -960,11 +960,16 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
             /* Memorize monster */
             fire_item.held_m_idx = m_idx;
 
+            // [フェーズ A-3] inventory[] にも並走で格納する。レガシー hold_o_idx_list と
+            // 並列に保持され、A-4 で参照側を inventory[] に切替後にレガシーを削除する。
+            auto inventory_clone = fire_item.clone();
+
             *floor.o_list[item_idx] = std::move(fire_item);
 
             /* Carry object */
             auto &monster = floor.get_monster(m_idx);
             monster.get_monster_profile().hold_o_idx_list.add(floor, item_idx);
+            (void)store_item_to_inventory(monster, &inventory_clone);
         } else if (floor.has_terrain_characteristics(pos_impact, TerrainCharacteristics::PROJECTION)) {
             /* Drop (or break) near that location */
             drop_ammo_near(creature, fire_item, pos_impact, j);
