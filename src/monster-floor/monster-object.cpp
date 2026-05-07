@@ -149,17 +149,13 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
             msg_format(_("%s^が%sを拾った。", "%s^ picks up %s."), m_name.data(), o_name.data());
         }
 
-        excise_object_idx(*creature.get_floor(), this_o_idx);
-        // 意図としては OmType::TOUCHED を維持しつつ OmType::FOUND を消す事と思われるが一応元のロジックを維持しておく
-        o_ptr->marked &= { OmType::TOUCHED };
-        o_ptr->iy = o_ptr->ix = 0;
-        o_ptr->held_m_idx = m_idx;
-        monster.get_monster_profile().hold_o_idx_list.add(*creature.get_floor(), this_o_idx);
-
-        // [フェーズ A-1] inventory[] にも並走で格納する。レガシー hold_o_idx_list と
-        // 並列に保持され、A-2 以降で参照側を inventory[] に切替後にレガシーを削除する。
-        // store_item_to_inventory はクローンを内部で作成するため元 ItemEntity は不変。
+        // [フェーズ A-4b] inventory[] に格納し、floor.o_list 側のエントリは
+        // delete_object_idx で破棄する (旧 hold_o_idx_list / held_m_idx 経路は廃止)
         auto inventory_clone = o_ptr->clone();
+        inventory_clone.marked.clear().set(OmType::TOUCHED);
+        inventory_clone.iy = inventory_clone.ix = 0;
+        inventory_clone.held_m_idx = 0;
+        delete_object_idx(creature, this_o_idx);
         (void)store_item_to_inventory(monster, &inventory_clone);
 
         RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::FOUND_ITEMS);
@@ -221,9 +217,8 @@ void update_object_by_monster_movement(CreatureEntity &creature, turn_flags *tur
  * @param creature クリーチャーへの参照
  * @param target ドロップ元クリーチャー (モンスター)
  * @details
- * フェーズ A-2: inventory[] からドロップに切替。
- * レガシー hold_o_idx_list 経路は floor.o_list 上のホールドアイテム
- * (A-1 で並走書き込みされた重複データ) を削除するクリーンアップ目的でのみ走らせる。
+ * フェーズ A-2 で inventory[] からのドロップに切替済み。
+ * フェーズ A-4b でレガシー hold_o_idx_list 経路を完全削除。
  */
 void monster_drop_carried_objects(CreatureEntity &creature, CreatureEntity &target)
 {
@@ -231,7 +226,6 @@ void monster_drop_carried_objects(CreatureEntity &creature, CreatureEntity &targ
         return;
     }
 
-    // [フェーズ A-2] inventory[] からドロップ
     for (size_t i = 0; i < target.inventory.size(); i++) {
         auto &item = *target.inventory[i];
         if (!item.is_valid()) {
@@ -244,16 +238,4 @@ void monster_drop_carried_objects(CreatureEntity &creature, CreatureEntity &targ
     }
     target.inven_cnt = 0;
     target.equip_cnt = 0;
-
-    // レガシー hold_o_idx_list 経路: A-1 でモンスター pickup が両方に書き込んでいるため
-    // floor.o_list 上に「held_m_idx = m_idx」状態の重複エントリが残存している。
-    // 上記 inventory[] 経路でドロップ済みのため、floor.o_list 側は drop_near せず
-    // delete_object_idx で参照解除する (旧 pre-A-1 monster で inventory[] が
-    // 空の場合は、その分だけアイテムが失われるが許容)。
-    auto &profile = target.get_monster_profile();
-    for (auto it = profile.hold_o_idx_list.begin(); it != profile.hold_o_idx_list.end();) {
-        const auto this_o_idx = *it++;
-        delete_object_idx(creature, this_o_idx);
-    }
-    profile.hold_o_idx_list.clear();
 }

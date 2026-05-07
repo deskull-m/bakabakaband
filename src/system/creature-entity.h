@@ -879,19 +879,6 @@ public:
     }
 
     /*!
-     * @brief このクリーチャーが保持しているアイテムリストを取得する
-     * @return 保持アイテム ObjectIndexList。プレイヤー側は空リストを返す
-     */
-    virtual const ObjectIndexList &get_held_objects() const
-    {
-        if (this->has_monster_profile()) {
-            return this->get_monster_profile().hold_o_idx_list;
-        }
-        static const ObjectIndexList empty{};
-        return empty;
-    }
-
-    /*!
      * @brief 指定インデックスの呪文熟練度を取得する
      * @param spell_idx 呪文インデックス (0..63)
      * @return SUB_EXP 値。プレイヤーは spell_exp[spell_idx]、モンスターは default 実装で

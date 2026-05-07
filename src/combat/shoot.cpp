@@ -942,34 +942,18 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
         const Pos2D pos_impact(y, x);
         if (stick_to) {
             const auto m_idx = floor.get_grid(pos_impact).m_idx;
-            const auto item_idx = floor.pop_empty_index_item();
-            if (item_idx == 0) {
-                msg_format(_("%sはどこかへ行った。", "The %s went somewhere."), item_name.data());
-                if (fire_item.is_fixed_artifact()) {
-                    ArtifactList::get_instance().get_artifact(j_ptr->fa_id).is_generated = false;
-                }
-                return;
-            }
 
             /* Forget mark */
             fire_item.marked.reset(OmType::TOUCHED);
 
             /* Forget location */
             fire_item.iy = fire_item.ix = 0;
+            fire_item.held_m_idx = 0;
 
-            /* Memorize monster */
-            fire_item.held_m_idx = m_idx;
-
-            // [フェーズ A-3] inventory[] にも並走で格納する。レガシー hold_o_idx_list と
-            // 並列に保持され、A-4 で参照側を inventory[] に切替後にレガシーを削除する。
-            auto inventory_clone = fire_item.clone();
-
-            *floor.o_list[item_idx] = std::move(fire_item);
-
-            /* Carry object */
+            // [フェーズ A-4b] 矢が刺さったモンスターは inventory[] 経由で保持する
+            // (旧: floor.o_list 上に held_m_idx を立てて hold_o_idx_list に登録)
             auto &monster = floor.get_monster(m_idx);
-            monster.get_monster_profile().hold_o_idx_list.add(floor, item_idx);
-            (void)store_item_to_inventory(monster, &inventory_clone);
+            (void)store_item_to_inventory(monster, &fire_item);
         } else if (floor.has_terrain_characteristics(pos_impact, TerrainCharacteristics::PROJECTION)) {
             /* Drop (or break) near that location */
             drop_ammo_near(creature, fire_item, pos_impact, j);

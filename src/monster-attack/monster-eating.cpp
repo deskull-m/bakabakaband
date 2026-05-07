@@ -99,31 +99,22 @@ bool check_eat_item(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 
 /*!
  * @brief プレイヤーが持っているアイテムをモンスターに移す
- * @param creature クリーチャーへの参照
- * @monap_ptr モンスターからモンスターへの直接攻撃構造体への参照ポインタ
+ * @param monap_ptr モンスターからモンスターへの直接攻撃構造体への参照ポインタ
+ * @details [フェーズ A-4b] inventory[] のみに格納する。floor.o_list 経由は廃止。
  */
-static void move_item_to_monster(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr, const OBJECT_IDX o_idx)
+static void move_item_to_monster(MonsterAttackPlayer *monap_ptr)
 {
-    if (o_idx == 0) {
-        return;
-    }
-
-    auto &item = *creature.get_floor()->o_list[o_idx];
-    item = monap_ptr->o_ptr->clone();
-    item.number = 1;
+    auto stolen = monap_ptr->o_ptr->clone();
+    stolen.number = 1;
     if (monap_ptr->o_ptr->is_wand_rod()) {
-        item.pval = monap_ptr->o_ptr->pval / monap_ptr->o_ptr->number;
-        monap_ptr->o_ptr->pval -= item.pval;
+        stolen.pval = monap_ptr->o_ptr->pval / monap_ptr->o_ptr->number;
+        monap_ptr->o_ptr->pval -= stolen.pval;
     }
 
-    item.marked.clear().set(OmType::TOUCHED);
-    item.held_m_idx = monap_ptr->m_idx;
-    monap_ptr->m_ptr->get_monster_profile().hold_o_idx_list.add(*creature.get_floor(), o_idx);
-
-    // [フェーズ A-3] inventory[] にも並走で格納する。レガシー hold_o_idx_list と
-    // 並列に保持され、A-4 で参照側を inventory[] に切替後にレガシーを削除する。
-    auto inventory_clone = item.clone();
-    (void)store_item_to_inventory(*monap_ptr->m_ptr, &inventory_clone);
+    stolen.marked.clear().set(OmType::TOUCHED);
+    stolen.held_m_idx = 0;
+    stolen.iy = stolen.ix = 0;
+    (void)store_item_to_inventory(*monap_ptr->m_ptr, &stolen);
 }
 
 /*!
@@ -152,8 +143,7 @@ void process_eat_item(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
         msg_format("%sour %s (%c) was stolen!", ((monap_ptr->o_ptr->number > 1) ? "One of y" : "Y"), item_name.data(), index_to_label(i_idx));
 #endif
         chg_virtue(creature, Virtue::SACRIFICE, 1);
-        const auto item_idx = creature.get_floor()->pop_empty_index_item();
-        move_item_to_monster(creature, monap_ptr, item_idx);
+        move_item_to_monster(monap_ptr);
         inven_item_increase(creature, i_idx, -1);
         inven_item_optimize(creature, i_idx);
         monap_ptr->obvious = true;

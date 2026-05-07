@@ -164,6 +164,14 @@ errr rd_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
 
         auto &item = *floor.o_list[item_idx];
         item_loader->rd_item(&item);
+        // [フェーズ A-4b] held_m_idx 付きアイテムは旧 hold_o_idx_list 経路の遺物。
+        // フェーズ A-4b 以降はモンスター所持アイテムは monster.inventory[] に
+        // 一本化されているため、ここで読み込まれた floor.o_list 上の重複は
+        // wipe して破棄する (pre-A-1 の本物に対応する場合は失われるが許容)
+        if (item.held_m_idx != 0) {
+            item.wipe();
+            continue;
+        }
         auto &list = get_o_idx_list_contains(floor, item_idx);
         list.add(floor, item_idx, item.stack_idx);
     }
