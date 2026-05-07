@@ -368,6 +368,68 @@ static void do_name_pet(CreatureEntity &creature)
 }
 
 /*!
+ * @brief ペット操作コマンド (give/take/view) で対象とするペットを選択する
+ * @param creature プレイヤー
+ * @return 選択されたペットの m_idx、選択不可・キャンセルなら 0
+ * @details
+ *  - 視認可能なペットを列挙
+ *  - 0 体: 0 を返す (呼び側でメッセージ表示)
+ *  - 1 体: そのまま返す
+ *  - 複数: メニュー表示し letter (a-z) で選択。ESC でキャンセル (0 を返す)
+ *  - 騎乗中なら riding pet が候補リスト先頭に来る (default)
+ */
+static MONSTER_IDX select_target_pet(CreatureEntity &creature)
+{
+    auto &floor = *creature.get_floor();
+    std::vector<MONSTER_IDX> pet_indices;
+    if (creature.riding != 0) {
+        pet_indices.push_back(creature.riding);
+    }
+    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+        if (i == creature.riding) {
+            continue;
+        }
+        const auto &mon = floor.get_monster(i);
+        if (!mon.is_valid() || !mon.is_pet() || !mon.is_visible_on_map()) {
+            continue;
+        }
+        pet_indices.push_back(i);
+    }
+    if (pet_indices.empty()) {
+        msg_print(_("近くに視認可能なペットがいない。", "No visible pet nearby."));
+        return 0;
+    }
+    if (pet_indices.size() == 1) {
+        return pet_indices[0];
+    }
+
+    // 複数ペット: 選択メニュー
+    screen_save();
+    prt(_("対象ペットを選択:", "Select target pet:"), 0, 0);
+    int line = 1;
+    for (size_t i = 0; i < pet_indices.size() && i < 26; i++) {
+        const auto &mon = floor.get_monster(pet_indices[i]);
+        const auto name = monster_desc(creature, mon, MD_INDEF_VISIBLE);
+        const char letter = static_cast<char>('a' + i);
+        const char *prefix = (mon.is_riding()) ? _("(騎乗) ", "(riding) ") : "";
+        prt(format("%c) %s%s", letter, prefix, name.data()), line++, 2);
+    }
+    prt(format(_("a-%c を選択 (ESC でキャンセル):", "Choose a-%c (ESC to cancel):"),
+            static_cast<char>('a' + pet_indices.size() - 1)),
+        line + 1, 0);
+    const auto ch = inkey();
+    screen_load();
+    if (ch == ESCAPE) {
+        return 0;
+    }
+    const int sel = ch - 'a';
+    if (sel < 0 || static_cast<size_t>(sel) >= pet_indices.size()) {
+        return 0;
+    }
+    return pet_indices[sel];
+}
+
+/*!
  * @brief ペットに関するコマンドリストのメインルーチン /
  * Issue a pet command
  */
@@ -831,27 +893,11 @@ void do_cmd_pet(CreatureEntity &creature)
 
     case PET_GIVE_ITEM: {
         // [フェーズ C-3 拡張] プレイヤーから対象ペットへアイテムを 1 個渡す
-        auto &floor = *creature.get_floor();
-        MONSTER_IDX target_idx = creature.riding;
+        const auto target_idx = select_target_pet(creature);
         if (target_idx == 0) {
-            int best_dist = INT_MAX;
-            const auto p_pos = creature.get_position();
-            for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-                const auto &mon = floor.get_monster(i);
-                if (!mon.is_valid() || !mon.is_pet() || !mon.is_visible_on_map()) {
-                    continue;
-                }
-                const auto dist = Grid::calc_distance(p_pos, mon.get_position());
-                if (dist < best_dist) {
-                    best_dist = dist;
-                    target_idx = i;
-                }
-            }
-        }
-        if (target_idx == 0) {
-            msg_print(_("近くに視認可能なペットがいない。", "No visible pet nearby."));
             break;
         }
+        auto &floor = *creature.get_floor();
         auto &target_pet = floor.get_monster(target_idx);
         constexpr auto q = _("どのアイテムを渡しますか? ", "Give which item? ");
         constexpr auto s = _("渡せるアイテムがない。", "You have nothing to give.");
@@ -877,27 +923,11 @@ void do_cmd_pet(CreatureEntity &creature)
 
     case PET_TAKE_ITEM: {
         // [フェーズ C-3 拡張] 対象ペットの所持品から 1 個受け取る (装備/パック両対応)
-        auto &floor = *creature.get_floor();
-        MONSTER_IDX target_idx = creature.riding;
+        const auto target_idx = select_target_pet(creature);
         if (target_idx == 0) {
-            int best_dist = INT_MAX;
-            const auto p_pos = creature.get_position();
-            for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-                const auto &mon = floor.get_monster(i);
-                if (!mon.is_valid() || !mon.is_pet() || !mon.is_visible_on_map()) {
-                    continue;
-                }
-                const auto dist = Grid::calc_distance(p_pos, mon.get_position());
-                if (dist < best_dist) {
-                    best_dist = dist;
-                    target_idx = i;
-                }
-            }
-        }
-        if (target_idx == 0) {
-            msg_print(_("近くに視認可能なペットがいない。", "No visible pet nearby."));
             break;
         }
+        auto &floor = *creature.get_floor();
         auto &target_pet = floor.get_monster(target_idx);
 
         // 装備スロット → パックスロットの順に番号付きで表示
@@ -967,28 +997,12 @@ void do_cmd_pet(CreatureEntity &creature)
     }
 
     case PET_VIEW_INVENTORY: {
-        // [フェーズ C-3] 騎乗中のペット、なければ最寄りの可視ペットの所持品を表示
-        const auto &floor = *creature.get_floor();
-        MONSTER_IDX target_idx = creature.riding;
+        // [フェーズ C-3] 視認可能なペットを選択して所持品を表示
+        const auto target_idx = select_target_pet(creature);
         if (target_idx == 0) {
-            int best_dist = INT_MAX;
-            const auto p_pos = creature.get_position();
-            for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-                const auto &mon = floor.get_monster(i);
-                if (!mon.is_valid() || !mon.is_pet() || !mon.is_visible_on_map()) {
-                    continue;
-                }
-                const auto dist = Grid::calc_distance(p_pos, mon.get_position());
-                if (dist < best_dist) {
-                    best_dist = dist;
-                    target_idx = i;
-                }
-            }
-        }
-        if (target_idx == 0) {
-            msg_print(_("近くに視認可能なペットがいない。", "No visible pet nearby."));
             break;
         }
+        const auto &floor = *creature.get_floor();
         auto &target_pet = floor.get_monster(target_idx);
         const auto pet_name = monster_desc(creature, target_pet, MD_INDEF_VISIBLE);
         screen_save();
