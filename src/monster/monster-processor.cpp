@@ -66,9 +66,11 @@
 #include "player/special-defense-types.h"
 #include "spell-kind/spells-teleport.h"
 #include "spell-realm/spells-hex.h"
+#include "spell/spells-util.h"
 #include "spell/summon-types.h"
 #include "sv-definition/sv-junk-types.h"
 #include "sv-definition/sv-potion-types.h"
+#include "sv-definition/sv-scroll-types.h"
 #include "system/angband-system.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-key.h"
@@ -325,6 +327,68 @@ static bool monster_quaff_potion(CreatureEntity &creature, CreatureEntity &monst
 }
 
 /*!
+ * @brief モンスターが巻物を読んで状況に応じた効果を得る (フェーズ C-1 拡張)
+ * @param creature 視点クリーチャー (メッセージ表示用)
+ * @param monster 巻物を読むモンスター
+ * @param m_idx モンスターの floor インデックス
+ * @return 読んだら true
+ * @details
+ * 状況判定:
+ *  - HP 25%未満 で SCROLL_TELEPORT/PHASE_DOOR で離脱
+ *  - HP 25%未満 で SCROLL_HOLY_PRAYER (即時 HP 回復用) — 未対応 (player only)
+ */
+static bool monster_read_scroll(CreatureEntity &creature, CreatureEntity &monster, MONSTER_IDX m_idx)
+{
+    const bool low_hp_severe = monster.hp < monster.maxhp / 4;
+    if (!low_hp_severe) {
+        return false;
+    }
+
+    INVENTORY_IDX scroll_slot = -1;
+    int teleport_dist = 0;
+    for (size_t i = 0; i < monster.inventory.size(); i++) {
+        const auto &item = *monster.inventory[i];
+        if (!item.is_valid() || item.bi_key.tval() != ItemKindType::SCROLL) {
+            continue;
+        }
+        const auto sval = item.bi_key.sval().value_or(0);
+        if (sval == SV_SCROLL_TELEPORT) {
+            scroll_slot = static_cast<INVENTORY_IDX>(i);
+            teleport_dist = 200;
+            break;
+        }
+        if (sval == SV_SCROLL_PHASE_DOOR) {
+            scroll_slot = static_cast<INVENTORY_IDX>(i);
+            teleport_dist = 10;
+            // PHASE_DOOR は予備候補として保持し、TELEPORT が見つかればそちら優先
+        }
+    }
+    if (scroll_slot < 0) {
+        return false;
+    }
+
+    auto &scroll = *monster.inventory[scroll_slot];
+    const auto scroll_name = describe_flavor(creature, scroll, OD_OMIT_PREFIX);
+    const auto m_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
+    if (is_seen(creature, monster)) {
+        msg_format(_("%s^は%sを読んだ。", "%s^ reads %s."), m_name.data(), scroll_name.data());
+    }
+
+    teleport_away(creature, m_idx, teleport_dist, TELEPORT_SPONTANEOUS);
+
+    // 巻物を 1 個消費
+    if (scroll.number > 1) {
+        scroll.number--;
+    } else {
+        scroll.wipe();
+        if (monster.inven_cnt > 0) {
+            monster.inven_cnt--;
+        }
+    }
+    return true;
+}
+
+/*!
  * @brief モンスター単体の1ターン行動処理メインルーチン /
  * Process a monster
  * @param creature クリーチャーへの参照
@@ -446,6 +510,12 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
     if (monster_quaff_potion(creature, monster)) {
         // ポーション使用でターンを消費。次のターン処理は通常通り続行する
         // (move energy は別途 turn 管理で扱う)
+    }
+
+    // [フェーズ C-1 拡張] 巻物使用 (テレポートで離脱)
+    if (monster_read_scroll(creature, monster, m_idx)) {
+        // テレポートが成功すると monster はもう近くにいない可能性があるが、
+        // 後続のチェックは monster へのポインタ経由なので継続可能
     }
 
     if (process_stalking(creature, m_idx)) {
