@@ -51,7 +51,7 @@ bool rodeo(CreatureEntity &creature)
     if (rlev > 60) {
         rlev = 60 + (rlev - 60) / 2;
     }
-    if ((randint1(creature.skill_exp[PlayerSkillKindType::RIDING] / 120 + creature.level * 2 / 3) > rlev) && one_in_(2) &&
+    if ((randint1(creature.get_skill_exp(PlayerSkillKindType::RIDING) / 120 + creature.level * 2 / 3) > rlev) && one_in_(2) &&
         !creature.get_floor()->inside_arena && !AngbandSystem::get_instance().is_phase_out() && monrace.misc_flags.has_not(MonsterMiscType::GUARDIAN) && monrace.misc_flags.has_not(MonsterMiscType::QUESTOR) &&
         (rlev < creature.level * 3 / 2 + randint0(creature.level / 5))) {
         msg_format(_("%sを手なずけた。", "You tame %s."), m_name.data());

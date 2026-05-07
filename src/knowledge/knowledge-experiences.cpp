@@ -45,7 +45,7 @@ void do_cmd_knowledge_weapon_exp(CreatureEntity &creature)
                     continue;
                 }
 
-                SUB_EXP weapon_exp = creature.weapon_exp[tval][num];
+                SUB_EXP weapon_exp = creature.get_weapon_exp(tval, num);
                 SUB_EXP weapon_max = creature.weapon_exp_max[tval][num];
                 fprintf(fff, "%-25s ", baseitem.stripped_name().data());
                 if (show_actual_value) {
@@ -94,7 +94,7 @@ void do_cmd_knowledge_spell_exp(CreatureEntity &creature)
             if (spell.slevel >= 99) {
                 continue;
             }
-            SUB_EXP spell_exp = creature.spell_exp[i];
+            SUB_EXP spell_exp = creature.get_spell_exp(i);
             auto skill_rank = PlayerSkill::spell_skill_rank(spell_exp);
             const auto &spell_name = pr.realm1().get_spell_name(i);
             fprintf(fff, "%-25s ", spell_name.data());
@@ -131,7 +131,7 @@ void do_cmd_knowledge_spell_exp(CreatureEntity &creature)
                 continue;
             }
 
-            SUB_EXP spell_exp = creature.spell_exp[i + 32];
+            SUB_EXP spell_exp = creature.get_spell_exp(i + 32);
             auto skill_rank = PlayerSkill::spell_skill_rank(spell_exp);
             const auto spell_name = pr.realm2().get_spell_name(i);
             fprintf(fff, "%-25s ", spell_name.data());
@@ -169,7 +169,7 @@ void do_cmd_knowledge_skill_exp(CreatureEntity &creature)
     }
 
     for (auto i : PLAYER_SKILL_KIND_TYPE_RANGE) {
-        SUB_EXP skill_exp = creature.skill_exp[i];
+        SUB_EXP skill_exp = creature.get_skill_exp(i);
         SUB_EXP skill_max = class_skills_info[enum2i(creature.pclass)].s_max[i];
         fprintf(fff, "%-20s ", PlayerSkill::skill_name(i));
         if (show_actual_value) {

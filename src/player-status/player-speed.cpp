@@ -283,7 +283,7 @@ int16_t PlayerSpeed::riding_bonus()
     }
 
     if (monster.speed > STANDARD_SPEED) {
-        const auto skill_exp = this->creature.skill_exp[PlayerSkillKindType::RIDING];
+        const auto skill_exp = this->creature.get_skill_exp(PlayerSkillKindType::RIDING);
         bonus = (int16_t)((speed - STANDARD_SPEED) * (skill_exp * 3 + this->creature.level * 160L - 10000L) / (22000L));
         if (bonus < 0) {
             bonus = 0;
@@ -292,7 +292,7 @@ int16_t PlayerSpeed::riding_bonus()
         bonus = speed - 110;
     }
 
-    bonus += (this->creature.skill_exp[PlayerSkillKindType::RIDING] + this->creature.level * 160L) / 3200;
+    bonus += (this->creature.get_skill_exp(PlayerSkillKindType::RIDING) + this->creature.level * 160L) / 3200;
     if (monster.is_accelerated()) {
         bonus += 10;
     }
