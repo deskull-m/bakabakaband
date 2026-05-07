@@ -20,6 +20,8 @@
 #include "effect/attribute-types.h"
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
+#include "flavor/flavor-describer.h"
+#include "flavor/object-flavor-types.h"
 #include "floor/floor-object.h"
 #include "floor/geometry.h"
 #include "game-option/birth-options.h"
@@ -66,8 +68,10 @@
 #include "spell-realm/spells-hex.h"
 #include "spell/summon-types.h"
 #include "sv-definition/sv-junk-types.h"
+#include "sv-definition/sv-potion-types.h"
 #include "system/angband-system.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/baseitem/baseitem-key.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -106,6 +110,87 @@ bool process_stalking(CreatureEntity &creature, MONSTER_IDX m_idx);
 
 constexpr auto STALKER_CHANCE_DENOMINATOR = 32; //!< モンスターが背後に忍び寄る確率分母
 constexpr auto STALKER_DISTANCE_THRESHOLD = 20; //!< モンスターが背後に忍び寄る距離の閾値
+
+/*!
+ * @brief モンスターが回復ポーションを飲んで HP を回復する (フェーズ C-1)
+ * @param creature 視点クリーチャー (主にメッセージ表示用)
+ * @param monster ポーションを飲むモンスター
+ * @return 飲んだら true
+ * @details inventory[] にある SV_POTION_CURE_LIGHT/SERIOUS/CRITICAL/HEALING/STAR_HEALING
+ *          のいずれかを 1 個消費し、対応する HP を回復する。
+ *          HP が maxhp の 50% 未満で発動。プレイヤーから視認できる場合はメッセージ表示。
+ *          quaff/zap effect path 全体のリファクタは大規模なため、本関数は monster.hp の
+ *          直接加算で簡易実装する。状態異常の解除等は対応せず純粋な HP 回復のみ。
+ */
+static bool monster_quaff_healing_potion(CreatureEntity &creature, CreatureEntity &monster)
+{
+    if (monster.hp >= monster.maxhp / 2) {
+        return false;
+    }
+
+    INVENTORY_IDX potion_slot = -1;
+    int heal_amount = 0;
+    for (size_t i = 0; i < monster.inventory.size(); i++) {
+        const auto &item = *monster.inventory[i];
+        if (!item.is_valid()) {
+            continue;
+        }
+        if (item.bi_key.tval() != ItemKindType::POTION) {
+            continue;
+        }
+        const auto sval = item.bi_key.sval().value_or(0);
+        switch (sval) {
+        case SV_POTION_CURE_LIGHT:
+            heal_amount = Dice::roll(2, 8);
+            potion_slot = static_cast<INVENTORY_IDX>(i);
+            break;
+        case SV_POTION_CURE_SERIOUS:
+            heal_amount = Dice::roll(4, 8);
+            potion_slot = static_cast<INVENTORY_IDX>(i);
+            break;
+        case SV_POTION_CURE_CRITICAL:
+            heal_amount = Dice::roll(6, 8);
+            potion_slot = static_cast<INVENTORY_IDX>(i);
+            break;
+        case SV_POTION_HEALING:
+            heal_amount = 300;
+            potion_slot = static_cast<INVENTORY_IDX>(i);
+            break;
+        case SV_POTION_STAR_HEALING:
+            heal_amount = 1200;
+            potion_slot = static_cast<INVENTORY_IDX>(i);
+            break;
+        default:
+            continue;
+        }
+        if (potion_slot >= 0) {
+            break;
+        }
+    }
+    if (potion_slot < 0) {
+        return false;
+    }
+
+    auto &potion = *monster.inventory[potion_slot];
+    const auto potion_name = describe_flavor(creature, potion, OD_OMIT_PREFIX);
+    const auto m_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
+    if (is_seen(creature, monster)) {
+        msg_format(_("%s^は%sを飲んだ。", "%s^ quaffs %s."), m_name.data(), potion_name.data());
+    }
+
+    monster.hp = std::min<int>(monster.maxhp, monster.hp + heal_amount);
+
+    // ポーションを 1 個消費
+    if (potion.number > 1) {
+        potion.number--;
+    } else {
+        potion.wipe();
+        if (monster.inven_cnt > 0) {
+            monster.inven_cnt--;
+        }
+    }
+    return true;
+}
 
 /*!
  * @brief モンスター単体の1ターン行動処理メインルーチン /
@@ -223,6 +308,12 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
 
     if (monster.is_stunned() && one_in_(2)) {
         return;
+    }
+
+    // [フェーズ C-1] 回復ポーション自己使用 (HP < 50%)
+    if (monster_quaff_healing_potion(creature, monster)) {
+        // ポーション使用でターンを消費。次のターン処理は通常通り続行する
+        // (move energy は別途 turn 管理で扱う)
     }
 
     if (process_stalking(creature, m_idx)) {
