@@ -37,7 +37,10 @@ static void compact_monsters_aux(CreatureEntity &creature, MONSTER_IDX i1, MONST
     auto &grid = floor.grid_array[y][x];
     grid.m_idx = i2;
 
-    for (const auto this_o_idx : monster.get_held_objects()) {
+    // [フェーズ A-4] inventory[] 経路に統合済み。floor.o_list 上の held_m_idx は
+    // 旧 hold_o_idx_list 経路 (A-1〜A-3 並走) のレガシーデータで、本来空のはず。
+    // 互換性のため renumber は維持。
+    for (const auto this_o_idx : monster.get_monster_profile().hold_o_idx_list) {
         ItemEntity *o_ptr;
         o_ptr = floor.o_list[this_o_idx].get();
         o_ptr->held_m_idx = i2;
