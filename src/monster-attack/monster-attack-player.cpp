@@ -168,26 +168,39 @@ bool MonsterAttackPlayer::process_monster_blows()
 
         // フレーバーの打撃は必中扱い。それ以外は通常の命中判定を行う。
         this->ac = static_cast<ARMOUR_CLASS>(creature.get_ac());
+
+        // [フェーズ B-2 二刀流対応] HIT/PUNCH/SLASH/STING の物理打撃で、
+        // MAIN/SUB の双方が有効な武器なら blow index で交互に使用、
+        // 片方のみなら一貫してそちらを使用、武器なしなら slot < 0
+        this->weapon_slot_for_blow = -1;
+        switch (this->method) {
+        case RaceBlowMethodType::HIT:
+        case RaceBlowMethodType::PUNCH:
+        case RaceBlowMethodType::SLASH:
+        case RaceBlowMethodType::STING: {
+            const bool main_valid = this->m_ptr->inventory[INVEN_MAIN_HAND]->is_valid() && this->m_ptr->inventory[INVEN_MAIN_HAND]->is_melee_weapon();
+            const bool sub_valid = this->m_ptr->inventory[INVEN_SUB_HAND]->is_valid() && this->m_ptr->inventory[INVEN_SUB_HAND]->is_melee_weapon();
+            if (main_valid && sub_valid) {
+                this->weapon_slot_for_blow = (ap_cnt % 2 == 0) ? INVEN_MAIN_HAND : INVEN_SUB_HAND;
+            } else if (main_valid) {
+                this->weapon_slot_for_blow = INVEN_MAIN_HAND;
+            } else if (sub_valid) {
+                this->weapon_slot_for_blow = INVEN_SUB_HAND;
+            }
+            break;
+        }
+        default:
+            break;
+        }
+
         bool hit;
         if (this->effect == RaceBlowEffectType::FLAVOR) {
             hit = true;
         } else {
             int power = mbe_info[enum2i(this->effect)].power;
-            // [フェーズ B-2c] 武器による命中ボーナス (B-2b の damage 加算と同じく
-            // HIT/PUNCH/SLASH/STING の打撃でのみ MAIN_HAND の to_h を加算)
-            switch (this->method) {
-            case RaceBlowMethodType::HIT:
-            case RaceBlowMethodType::PUNCH:
-            case RaceBlowMethodType::SLASH:
-            case RaceBlowMethodType::STING: {
-                const auto &weapon = *this->m_ptr->inventory[INVEN_MAIN_HAND];
-                if (weapon.is_valid()) {
-                    power += weapon.to_h;
-                }
-                break;
-            }
-            default:
-                break;
+            // [フェーズ B-2c / 二刀流対応] 武器による命中ボーナス
+            if (this->weapon_slot_for_blow >= 0) {
+                power += this->m_ptr->inventory[this->weapon_slot_for_blow]->to_h;
             }
             hit = check_hit_from_monster_to_player(creature, power, this->rlev, this->m_ptr->get_remaining_stun());
         }
@@ -280,24 +293,12 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
         this->damage = 0;
     }
 
-    // [フェーズ B-2b] 装備武器によるダメージボーナス
-    // 武器を持って振るう種別の打撃 (HIT/PUNCH/SLASH/STING) のみ、
-    // INVEN_MAIN_HAND の武器ダメージ (dice + to_d) を加算する
-    if (!this->explode) {
-        switch (this->method) {
-        case RaceBlowMethodType::HIT:
-        case RaceBlowMethodType::PUNCH:
-        case RaceBlowMethodType::SLASH:
-        case RaceBlowMethodType::STING: {
-            const auto &weapon = *this->m_ptr->inventory[INVEN_MAIN_HAND];
-            if (weapon.is_valid()) {
-                this->damage += weapon.damage_dice.roll() + weapon.to_d;
-            }
-            break;
-        }
-        default:
-            break;
-        }
+    // [フェーズ B-2b / 二刀流対応] 装備武器によるダメージボーナス
+    // weapon_slot_for_blow は process_monster_blows() で設定され、
+    // 物理打撃 (HIT/PUNCH/SLASH/STING) かつ武器装備時のみ有効
+    if (!this->explode && this->weapon_slot_for_blow >= 0) {
+        const auto &weapon = *this->m_ptr->inventory[this->weapon_slot_for_blow];
+        this->damage += weapon.damage_dice.roll() + weapon.to_d;
     }
 
     switch_monster_blow_to_player(creature, this);

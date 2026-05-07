@@ -36,6 +36,7 @@ public:
     ARMOUR_CLASS ac = 0;
     bool alive = true;
     bool fear = false;
+    short weapon_slot_for_blow = -1; //!< [フェーズ B-2 二刀流] 当該打撃で使用する武器スロット (-1 = 武器なし)
 
     void make_attack_normal();
 
