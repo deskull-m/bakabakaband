@@ -349,6 +349,6 @@ void exe_activate(CreatureEntity &creature, INVENTORY_IDX i_idx)
     if (randint1(100) <= ae_ptr->broken) {
         std::string o_name = describe_flavor(creature, *ae_ptr->item, OD_OMIT_PREFIX);
         msg_format(_("%sは壊れた！", "%s is destroyed!"), o_name.data());
-        curse_weapon_object(creature, true, ae_ptr->item.get());
+        curse_weapon_object(creature, true, *ae_ptr->item);
     }
 }
