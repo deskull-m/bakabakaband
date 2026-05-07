@@ -353,8 +353,12 @@ bool switch_activation(CreatureEntity &creature, ItemEntity **o_ptr_ptr, const R
     case RandomArtActType::DETECT_TREASURE:
         return activate_detect_treasure(creature);
     case RandomArtActType::CAST_OFF:
-        (void)cosmic_cast_off(creature, o_ptr_ptr);
-        return true;
+        if (const auto item_casted = cosmic_cast_off(creature, **o_ptr_ptr); item_casted) {
+            *o_ptr_ptr = item_casted.get();
+            return true;
+        }
+
+        return false;
     case RandomArtActType::FALLING_STAR:
         return activate_toragoroshi(creature);
     case RandomArtActType::GRAND_CROSS:

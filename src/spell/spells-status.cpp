@@ -607,38 +607,33 @@ bool fishing(CreatureEntity &creature)
 /*!
  * @brief 装備を脱ぎ捨てて小宇宙を燃やす
  * @param creature クリーチャーへの参照
- * @param o_ptr_ptr 脱ぐ装備品への参照ポインタのポインタ
- * @return 脱いだらTRUE、脱がなかったらFALSE
- * @details
- * 脱いで落とした装備にtimeoutを設定するために装備品のアドレスを返す。
+ * @param item_casting 脱ぐ装備品への参照
+ * @return 脱いだら脱いだ後のアイテムへの shared_ptr、脱がなかったら nullptr
+ * @details 脱いで落とした装備に timeout を設定するために装備品のアドレスを返す。
  */
-bool cosmic_cast_off(CreatureEntity &creature, ItemEntity **o_ptr_ptr)
+std::shared_ptr<ItemEntity> cosmic_cast_off(CreatureEntity &creature, const ItemEntity &item_casting)
 {
     if (!creature.is_player()) {
-        return false;
+        return nullptr;
     }
-
-    auto *o_ptr = *o_ptr_ptr;
 
     /* Cast off activated item */
     INVENTORY_IDX slot;
     for (slot = INVEN_MAIN_HAND; slot <= INVEN_FEET; slot++) {
-        if (o_ptr == creature.inventory[slot].get()) {
+        if (&item_casting == creature.inventory[slot].get()) {
             break;
         }
     }
 
     if (slot > INVEN_FEET) {
-        return false;
+        return nullptr;
     }
 
-    auto item = o_ptr->clone();
-    inven_item_increase(creature, slot, (0 - o_ptr->number));
+    auto item = item_casting.clone();
+    inven_item_increase(creature, slot, -item.number);
     inven_item_optimize(creature, slot);
 
     const auto old_o_idx = drop_near(creature, item, creature.get_position());
-    *o_ptr_ptr = creature.get_floor()->o_list[old_o_idx].get();
-
     const auto item_name = describe_flavor(creature, item, OD_NAME_ONLY);
     msg_format(_("%sを脱ぎ捨てた。", "You cast off %s."), item_name.data());
     sound(SoundKind::TAKE_OFF);
@@ -660,7 +655,7 @@ bool cosmic_cast_off(CreatureEntity &creature, ItemEntity **o_ptr_ptr)
         msg_print(_("気が爆発寸前になった。", "Your force absorbs the explosion."));
     }
 
-    return true;
+    return old_o_idx > 0 ? creature.get_floor()->o_list[old_o_idx] : nullptr;
 }
 
 /*!
