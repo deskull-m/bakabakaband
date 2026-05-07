@@ -19,6 +19,7 @@ enum pet_command {
     PET_RIDING = 14, /*!< ペットに関するコマンド: ペットに乗る */
     PET_NAME = 15, /*!< ペットに関するコマンド: ペットに名前をつける */
     PET_TWO_HANDS = 16, /*!< ペットに関するコマンド: 騎乗中に両手で武器を使うかどうか */
+    PET_VIEW_INVENTORY = 17, /*!< ペットに関するコマンド: ペットの所持品を確認 (フェーズ C-3) */
 };
 
 enum pet_follow_distance {

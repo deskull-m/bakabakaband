@@ -6,6 +6,7 @@
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
 #include "effect/spells-effect-util.h"
+#include "flavor/flavor-describer.h"
 #include "floor/geometry.h"
 #include "floor/pattern-walk.h"
 #include "game-option/input-options.h"
@@ -29,6 +30,7 @@
 #include "monster/monster-status.h"
 #include "monster/smart-learn-types.h"
 #include "object-hook/hook-weapon.h"
+#include "object/object-info.h"
 #include "pet/pet-util.h"
 #include "player-base/player-class.h"
 #include "player-info/class-info.h"
@@ -525,6 +527,10 @@ void do_cmd_pet(CreatureEntity &creature)
         }
     }
 
+    // [フェーズ C-3] ペット所持品確認コマンド
+    power_desc[num] = _("ペットの所持品を確認", "view pet's inventory");
+    powers[num++] = PET_VIEW_INVENTORY;
+
     auto code_repeat = repeat_pull();
     if (!code_repeat || (code_repeat < 0) || (code_repeat >= num)) {
         flag = false;
@@ -811,6 +817,61 @@ void do_cmd_pet(CreatureEntity &creature)
 
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
         handle_stuff(creature);
+        break;
+    }
+
+    case PET_VIEW_INVENTORY: {
+        // [フェーズ C-3] 騎乗中のペット、なければ最寄りの可視ペットの所持品を表示
+        const auto &floor = *creature.get_floor();
+        MONSTER_IDX target_idx = creature.riding;
+        if (target_idx == 0) {
+            int best_dist = INT_MAX;
+            const auto p_pos = creature.get_position();
+            for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+                const auto &mon = floor.get_monster(i);
+                if (!mon.is_valid() || !mon.is_pet() || !mon.is_visible_on_map()) {
+                    continue;
+                }
+                const auto dist = Grid::calc_distance(p_pos, mon.get_position());
+                if (dist < best_dist) {
+                    best_dist = dist;
+                    target_idx = i;
+                }
+            }
+        }
+        if (target_idx == 0) {
+            msg_print(_("近くに視認可能なペットがいない。", "No visible pet nearby."));
+            break;
+        }
+        auto &target_pet = floor.get_monster(target_idx);
+        const auto pet_name = monster_desc(creature, target_pet, MD_INDEF_VISIBLE);
+        screen_save();
+        prt(format(_("%s の所持品:", "%s's inventory:"), pet_name.data()), 0, 0);
+        int line = 1;
+        // 装備スロット
+        for (size_t i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
+            const auto &item = *target_pet.inventory[i];
+            if (!item.is_valid()) {
+                continue;
+            }
+            const auto name = describe_flavor(creature, item, 0);
+            prt(format(_("[装備] %s", "[Equipped] %s"), name.data()), line++, 2);
+        }
+        // パックスロット
+        for (size_t i = 0; i < INVEN_PACK; i++) {
+            const auto &item = *target_pet.inventory[i];
+            if (!item.is_valid()) {
+                continue;
+            }
+            const auto name = describe_flavor(creature, item, 0);
+            prt(format(_("[%c] %s", "[%c] %s"), index_to_label(static_cast<INVENTORY_IDX>(i)), name.data()), line++, 2);
+        }
+        if (line == 1) {
+            prt(_("(何も持っていない)", "(nothing)"), 1, 2);
+        }
+        prt(_("何かキーを押してください。", "Press any key to continue."), line + 1, 0);
+        (void)inkey();
+        screen_load();
         break;
     }
     }
