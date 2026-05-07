@@ -65,6 +65,7 @@
 #include "player/player-status-flags.h"
 #include "player/special-defense-types.h"
 #include "spell-kind/spells-teleport.h"
+#include "spell-kind/spells-world.h"
 #include "spell-realm/spells-hex.h"
 #include "spell/spells-util.h"
 #include "spell/summon-types.h"
@@ -347,22 +348,37 @@ static bool monster_read_scroll(CreatureEntity &creature, CreatureEntity &monste
     }
 
     INVENTORY_IDX scroll_slot = -1;
+    int priority = -1; // 小=優先
     int teleport_dist = 0;
+    bool use_level = false;
+    auto select_if = [&](INVENTORY_IDX slot, int p, int dist, bool level) {
+        if (priority < 0 || p < priority) {
+            scroll_slot = slot;
+            priority = p;
+            teleport_dist = dist;
+            use_level = level;
+        }
+    };
     for (size_t i = 0; i < monster.inventory.size(); i++) {
         const auto &item = *monster.inventory[i];
         if (!item.is_valid() || item.bi_key.tval() != ItemKindType::SCROLL) {
             continue;
         }
         const auto sval = item.bi_key.sval().value_or(0);
-        if (sval == SV_SCROLL_TELEPORT) {
-            scroll_slot = static_cast<INVENTORY_IDX>(i);
-            teleport_dist = 200;
+        const auto idx = static_cast<INVENTORY_IDX>(i);
+        switch (sval) {
+        case SV_SCROLL_TELEPORT_LEVEL:
+            // フロア間脱出 (最優先)
+            select_if(idx, 0, 0, true);
             break;
-        }
-        if (sval == SV_SCROLL_PHASE_DOOR) {
-            scroll_slot = static_cast<INVENTORY_IDX>(i);
-            teleport_dist = 10;
-            // PHASE_DOOR は予備候補として保持し、TELEPORT が見つかればそちら優先
+        case SV_SCROLL_TELEPORT:
+            select_if(idx, 1, 200, false);
+            break;
+        case SV_SCROLL_PHASE_DOOR:
+            select_if(idx, 2, 10, false);
+            break;
+        default:
+            break;
         }
     }
     if (scroll_slot < 0) {
@@ -376,7 +392,11 @@ static bool monster_read_scroll(CreatureEntity &creature, CreatureEntity &monste
         msg_format(_("%s^は%sを読んだ。", "%s^ reads %s."), m_name.data(), scroll_name.data());
     }
 
-    teleport_away(creature, m_idx, teleport_dist, TELEPORT_SPONTANEOUS);
+    if (use_level) {
+        teleport_level(creature, m_idx);
+    } else {
+        teleport_away(creature, m_idx, teleport_dist, TELEPORT_SPONTANEOUS);
+    }
 
     // 巻物を 1 個消費
     if (scroll.number > 1) {
@@ -462,6 +482,12 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
             case SV_WAND_DRAGON_BREATH:
                 if (can_target_player) {
                     select_if(idx, 10);
+                }
+                break;
+            // [防衛用 wand] プレイヤーをテレポートで離す (HP 危機時)
+            case SV_WAND_TELEPORT_AWAY:
+                if (can_target_player && low_hp_mid) {
+                    select_if(idx, 3);
                 }
                 break;
             default:
@@ -594,6 +620,9 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
             break;
         case SV_WAND_DRAGON_BREATH:
             fire_ball_at_player(AttributeType::FIRE, 120, 3);
+            break;
+        case SV_WAND_TELEPORT_AWAY:
+            fire_bolt_at_player(AttributeType::AWAY_ALL, 100);
             break;
         }
         device.pval--;
