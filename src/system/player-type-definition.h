@@ -16,6 +16,11 @@ public:
     void on_death(std::string_view cause) override;
     bool calc_damage_reduction(int &damage, int damage_type) override;
 
+    bool should_skip_natural_regen() const override;
+    int get_base_natural_regen_amount() const override;
+    int apply_state_regen_modifier(int amount) const override;
+    int apply_creature_specific_regen_modifier(int amount) const override;
+
     void wipe() override;
 
     /*!

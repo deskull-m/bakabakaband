@@ -320,6 +320,42 @@ Phase 2 で主要な `is_xxx()` 系は仮想化済みだが、以下はまだ自
 
 ---
 
+## 提案 8: HP/MP 自然回復計算の virtual hook 化 ✅ 完了
+
+### 背景
+
+`compute_regen_amount(CreatureEntity &)` 内に `if (creature.is_player())`
+分岐が 4 箇所あり、満腹度・スタンス・呪い・ミュータント体質のプレイヤー
+固有処理が直書きされていた。モンスター回復計算 `regenerate_monsters()`
+からも同関数が呼ばれており、is_player() ガードで適切にスキップされていたが、
+将来モンスターに同等の概念を持たせる際の拡張点が定義されていなかった。
+
+### 作業内容
+
+`CreatureEntity` に 4 つの virtual hook を追加:
+
+| 仮想関数 | 役割 | デフォルト | PlayerType override |
+|---|---|---|---|
+| `should_skip_natural_regen()` | 完全停止判定 | false | KOUKIJIN 構え or HAYAGAKE 行動なら true |
+| `get_base_natural_regen_amount()` | ベース量取得 | `PY_REGEN_NORMAL` | 満腹度に応じて NORMAL/WEAK/FAINT/0 |
+| `apply_state_regen_modifier(int)` | 構え・呪い補正 | identity | 僧/侍構え `/2`、SLOW_REGEN 呪い `/5` |
+| `apply_creature_specific_regen_modifier(int)` | 最終固有補正 | identity | `mutant_regenerate_mod` 適用 |
+
+### 効果
+
+- `compute_regen_amount()` から `is_player()` 分岐 4 箇所を排除
+- プレイヤー固有処理が `PlayerType` 内に集約され、モンスターの hook 上書きで
+  個体差・種族別回復補正を導入できる下地が整備
+- 関数本体はベース量算出 → 状態補正 → 行動/地形補正 → 最終補正の流れが
+  読み取りやすくなる
+
+### 計算結果の同等性
+
+各 virtual のデフォルト・override 順序は元の is_player ガード順を保持しているため、
+プレイヤー・モンスターの数値結果は完全一致 (回帰なし)。
+
+---
+
 ## 提案 7: モンスター可視判定 (`ml`) の virtual アクセサ化 ✅ 完了
 
 ### 背景

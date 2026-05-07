@@ -501,6 +501,45 @@ public:
      */
     virtual void set_timed_effect(CreatureTimedEffect effect, short value);
 
+    /*!
+     * @brief 自然回復をスキップすべき状態か（侍 KOUKIJIN 構え・早駆け中等）を判定
+     * @return スキップすべきなら true。デフォルトは false（モンスターは常に回復対象）
+     * @details PlayerType でオーバーライドし、KOUKIJIN 構え・HAYAGAKE 行動を判定する
+     */
+    virtual bool should_skip_natural_regen() const
+    {
+        return false;
+    }
+
+    /*!
+     * @brief 自然回復ベース量を取得（満腹度等の影響を反映）
+     * @return ベース回復量。デフォルトは PY_REGEN_NORMAL
+     * @details PlayerType でオーバーライドし、PY_FOOD_WEAK / FAINT / STARVE による減衰を適用する
+     */
+    virtual int get_base_natural_regen_amount() const;
+
+    /*!
+     * @brief 構え・呪いによる回復量補正を適用
+     * @param amount 補正前の回復量
+     * @return 補正後の回復量。デフォルトは引数をそのまま返す
+     * @details PlayerType でオーバーライドし、僧/侍構え・SLOW_REGEN 呪いによる減衰を適用する
+     */
+    virtual int apply_state_regen_modifier(int amount) const
+    {
+        return amount;
+    }
+
+    /*!
+     * @brief クリーチャー固有要因による最終回復量補正を適用
+     * @param amount 補正前の回復量
+     * @return 補正後の回復量。デフォルトは引数をそのまま返す
+     * @details PlayerType でオーバーライドし、ミュータント体質 (mutant_regenerate_mod) による補正を適用する
+     */
+    virtual int apply_creature_specific_regen_modifier(int amount) const
+    {
+        return amount;
+    }
+
     short get_remaining_sleep() const
     {
         return this->get_timed_effect(CreatureTimedEffect::SLEEP_OR_PARALYSIS);
