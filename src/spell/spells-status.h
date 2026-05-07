@@ -2,6 +2,7 @@
 
 #include "spell/spells-util.h"
 #include "system/angband.h"
+#include <memory>
 
 class Direction;
 class ItemEntity;
@@ -30,6 +31,6 @@ bool restore_mana(CreatureEntity &creature, bool magic_eater);
 bool restore_all_status(CreatureEntity &creature);
 
 bool fishing(CreatureEntity &creature);
-bool cosmic_cast_off(CreatureEntity &creature, ItemEntity **o_ptr_ptr);
+std::shared_ptr<ItemEntity> cosmic_cast_off(CreatureEntity &creature, const ItemEntity &item);
 void apply_nexus(const CreatureEntity &attacker, CreatureEntity &creature);
 void status_shuffle(CreatureEntity &creature);
