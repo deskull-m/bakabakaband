@@ -149,14 +149,14 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
             msg_format(_("%s^が%sを拾った。", "%s^ picks up %s."), m_name.data(), o_name.data());
         }
 
-        // [フェーズ A-4b] inventory[] に格納し、floor.o_list 側のエントリは
+        // [フェーズ A-5] inventory[] に格納し、floor.o_list 側のエントリは
         // delete_object_idx で破棄する (旧 hold_o_idx_list / held_m_idx 経路は廃止)
-        auto inventory_clone = o_ptr->clone();
-        inventory_clone.marked.clear().set(OmType::TOUCHED);
-        inventory_clone.iy = inventory_clone.ix = 0;
-        inventory_clone.held_m_idx = 0;
+        auto picked = o_ptr->clone();
+        picked.marked.clear().set(OmType::TOUCHED);
+        picked.iy = picked.ix = 0;
+        picked.held_m_idx = 0;
         delete_object_idx(creature, this_o_idx);
-        (void)store_item_to_inventory(monster, &inventory_clone);
+        (void)monster.store_item(picked);
 
         RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::FOUND_ITEMS);
         return;
@@ -214,28 +214,17 @@ void update_object_by_monster_movement(CreatureEntity &creature, turn_flags *tur
 
 /*!
  * @brief モンスターが盗みや拾いで確保していたアイテムを全てドロップさせる / Drop all items carried by a monster
- * @param creature クリーチャーへの参照
+ * @param creature クリーチャーへの参照 (フロア・UI 文脈)
  * @param target ドロップ元クリーチャー (モンスター)
  * @details
- * フェーズ A-2 で inventory[] からのドロップに切替済み。
- * フェーズ A-4b でレガシー hold_o_idx_list 経路を完全削除。
+ * フェーズ A-2 で inventory[] からのドロップに切替済み、フェーズ A-4b で
+ * レガシー hold_o_idx_list 経路を完全削除。フェーズ A-5 で
+ * `target.drop_all_inventory(creature)` に集約。
  */
 void monster_drop_carried_objects(CreatureEntity &creature, CreatureEntity &target)
 {
     if (!target.has_monster_profile()) {
         return;
     }
-
-    for (size_t i = 0; i < target.inventory.size(); i++) {
-        auto &item = *target.inventory[i];
-        if (!item.is_valid()) {
-            continue;
-        }
-        auto drop_item = item.clone();
-        drop_item.held_m_idx = 0;
-        (void)drop_near(creature, drop_item, target.get_position());
-        item.wipe();
-    }
-    target.inven_cnt = 0;
-    target.equip_cnt = 0;
+    target.drop_all_inventory(creature);
 }

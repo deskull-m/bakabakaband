@@ -114,7 +114,7 @@ static void move_item_to_monster(MonsterAttackPlayer *monap_ptr)
     stolen.marked.clear().set(OmType::TOUCHED);
     stolen.held_m_idx = 0;
     stolen.iy = stolen.ix = 0;
-    (void)store_item_to_inventory(*monap_ptr->m_ptr, &stolen);
+    (void)monap_ptr->m_ptr->store_item(stolen);
 }
 
 /*!

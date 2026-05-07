@@ -950,10 +950,10 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
             fire_item.iy = fire_item.ix = 0;
             fire_item.held_m_idx = 0;
 
-            // [フェーズ A-4b] 矢が刺さったモンスターは inventory[] 経由で保持する
+            // [フェーズ A-5] 矢が刺さったモンスターは inventory[] 経由で保持する
             // (旧: floor.o_list 上に held_m_idx を立てて hold_o_idx_list に登録)
             auto &monster = floor.get_monster(m_idx);
-            (void)store_item_to_inventory(monster, &fire_item);
+            (void)monster.store_item(fire_item);
         } else if (floor.has_terrain_characteristics(pos_impact, TerrainCharacteristics::PROJECTION)) {
             /* Drop (or break) near that location */
             drop_ammo_near(creature, fire_item, pos_impact, j);
