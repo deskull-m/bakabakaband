@@ -343,20 +343,24 @@ static bool monster_quaff_potion(CreatureEntity &creature, CreatureEntity &monst
 static bool monster_read_scroll(CreatureEntity &creature, CreatureEntity &monster, MONSTER_IDX m_idx)
 {
     const bool low_hp_severe = monster.hp < monster.maxhp / 4;
-    if (!low_hp_severe) {
-        return false;
-    }
+    const bool fighting_context = monster.is_hostile() && monster.is_visible_on_map();
 
+    enum class ScrollAction { TELEPORT,
+        TELEPORT_LEVEL,
+        PHASE_DOOR,
+        SUMMON };
     INVENTORY_IDX scroll_slot = -1;
     int priority = -1; // 小=優先
     int teleport_dist = 0;
-    bool use_level = false;
-    auto select_if = [&](INVENTORY_IDX slot, int p, int dist, bool level) {
+    ScrollAction action = ScrollAction::TELEPORT;
+    summon_type summon_kind = SUMMON_NONE;
+    auto select_if = [&](INVENTORY_IDX slot, int p, ScrollAction act, int dist = 0, summon_type st = SUMMON_NONE) {
         if (priority < 0 || p < priority) {
             scroll_slot = slot;
             priority = p;
+            action = act;
             teleport_dist = dist;
-            use_level = level;
+            summon_kind = st;
         }
     };
     for (size_t i = 0; i < monster.inventory.size(); i++) {
@@ -367,15 +371,37 @@ static bool monster_read_scroll(CreatureEntity &creature, CreatureEntity &monste
         const auto sval = item.bi_key.sval().value_or(0);
         const auto idx = static_cast<INVENTORY_IDX>(i);
         switch (sval) {
+        // 脱出系 (HP 危機時のみ)
         case SV_SCROLL_TELEPORT_LEVEL:
-            // フロア間脱出 (最優先)
-            select_if(idx, 0, 0, true);
+            if (low_hp_severe) {
+                select_if(idx, 0, ScrollAction::TELEPORT_LEVEL);
+            }
             break;
         case SV_SCROLL_TELEPORT:
-            select_if(idx, 1, 200, false);
+            if (low_hp_severe) {
+                select_if(idx, 1, ScrollAction::TELEPORT, 200);
+            }
             break;
         case SV_SCROLL_PHASE_DOOR:
-            select_if(idx, 2, 10, false);
+            if (low_hp_severe) {
+                select_if(idx, 2, ScrollAction::PHASE_DOOR, 10);
+            }
+            break;
+        // 召喚系 (戦闘中なら使用)
+        case SV_SCROLL_SUMMON_MONSTER:
+            if (fighting_context) {
+                select_if(idx, 8, ScrollAction::SUMMON, 0, SUMMON_NONE);
+            }
+            break;
+        case SV_SCROLL_SUMMON_UNDEAD:
+            if (fighting_context) {
+                select_if(idx, 8, ScrollAction::SUMMON, 0, SUMMON_UNDEAD);
+            }
+            break;
+        case SV_SCROLL_SUMMON_KIN:
+            if (fighting_context) {
+                select_if(idx, 7, ScrollAction::SUMMON, 0, SUMMON_KIN);
+            }
             break;
         default:
             break;
@@ -392,10 +418,20 @@ static bool monster_read_scroll(CreatureEntity &creature, CreatureEntity &monste
         msg_format(_("%s^は%sを読んだ。", "%s^ reads %s."), m_name.data(), scroll_name.data());
     }
 
-    if (use_level) {
+    switch (action) {
+    case ScrollAction::TELEPORT_LEVEL:
         teleport_level(creature, m_idx);
-    } else {
+        break;
+    case ScrollAction::TELEPORT:
+    case ScrollAction::PHASE_DOOR:
         teleport_away(creature, m_idx, teleport_dist, TELEPORT_SPONTANEOUS);
+        break;
+    case ScrollAction::SUMMON:
+        // モンスター位置から自身のレベル相当で召喚 (3 体まで試行)
+        for (int n = 0; n < 3; n++) {
+            (void)summon_specific(creature, monster.y, monster.x, monster.get_monrace().level, summon_kind, PM_NONE, m_idx);
+        }
+        break;
     }
 
     // 巻物を 1 個消費
@@ -488,6 +524,12 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
             case SV_WAND_TELEPORT_AWAY:
                 if (can_target_player && low_hp_mid) {
                     select_if(idx, 3);
+                }
+                break;
+            // [自己分裂 wand] 自分の分身を作成 (戦闘中、ニッチだが強力)
+            case SV_WAND_CLONE_MONSTER:
+                if (fighting_context) {
+                    select_if(idx, 9);
                 }
                 break;
             default:
@@ -623,6 +665,10 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
             break;
         case SV_WAND_TELEPORT_AWAY:
             fire_bolt_at_player(AttributeType::AWAY_ALL, 100);
+            break;
+        case SV_WAND_CLONE_MONSTER:
+            // モンスター自身の分身を生成 (PM_NO_PET で勝手に味方にならないよう)
+            (void)multiply_monster(creature, m_idx, monster.r_idx, true, PM_NO_PET);
             break;
         }
         device.pval--;
