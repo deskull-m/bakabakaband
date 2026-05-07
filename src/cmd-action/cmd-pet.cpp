@@ -876,7 +876,7 @@ void do_cmd_pet(CreatureEntity &creature)
     }
 
     case PET_TAKE_ITEM: {
-        // [フェーズ C-3 拡張] 対象ペットの所持品から 1 個受け取る
+        // [フェーズ C-3 拡張] 対象ペットの所持品から 1 個受け取る (装備/パック両対応)
         auto &floor = *creature.get_floor();
         MONSTER_IDX target_idx = creature.riding;
         if (target_idx == 0) {
@@ -899,29 +899,69 @@ void do_cmd_pet(CreatureEntity &creature)
             break;
         }
         auto &target_pet = floor.get_monster(target_idx);
-        // 簡易選択: パックスロットで最初に見つかった有効アイテム (装備品は受取り不可)
-        INVENTORY_IDX src_slot = -1;
-        for (INVENTORY_IDX i = 0; i < INVEN_PACK; i++) {
-            if (target_pet.inventory[i]->is_valid()) {
-                src_slot = i;
-                break;
+
+        // 装備スロット → パックスロットの順に番号付きで表示
+        std::vector<INVENTORY_IDX> selectable_slots;
+        screen_save();
+        const auto pet_name = monster_desc(creature, target_pet, MD_INDEF_VISIBLE);
+        prt(format(_("%s から受け取るアイテム:", "Take which item from %s?"), pet_name.data()), 0, 0);
+        int line = 1;
+        for (INVENTORY_IDX i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
+            if (!target_pet.inventory[i]->is_valid()) {
+                continue;
             }
+            const auto name = describe_flavor(creature, *target_pet.inventory[i], 0);
+            const char letter = static_cast<char>('a' + selectable_slots.size());
+            selectable_slots.push_back(i);
+            prt(format(_("%c) [装備] %s", "%c) [Equipped] %s"), letter, name.data()), line++, 2);
         }
-        if (src_slot < 0) {
-            msg_print(_("ペットは渡せるアイテムを持っていない。", "The pet has nothing to give."));
+        for (INVENTORY_IDX i = 0; i < INVEN_PACK; i++) {
+            if (!target_pet.inventory[i]->is_valid()) {
+                continue;
+            }
+            const auto name = describe_flavor(creature, *target_pet.inventory[i], 0);
+            const char letter = static_cast<char>('a' + selectable_slots.size());
+            selectable_slots.push_back(i);
+            prt(format(_("%c) %s", "%c) %s"), letter, name.data()), line++, 2);
+        }
+        if (selectable_slots.empty()) {
+            prt(_("(何も持っていない)", "(nothing)"), 1, 2);
+            prt(_("何かキーを押してください。", "Press any key to continue."), line + 1, 0);
+            (void)inkey();
+            screen_load();
             break;
         }
-        auto &item_in_pack = *target_pet.inventory[src_slot];
-        auto received = item_in_pack.clone();
+        prt(format(_("a-%c を選択 (ESC でキャンセル):", "Choose a-%c (ESC to cancel):"),
+                static_cast<char>('a' + selectable_slots.size() - 1)),
+            line + 1, 0);
+        const auto ch = inkey();
+        screen_load();
+        if (ch == ESCAPE) {
+            break;
+        }
+        const int sel = ch - 'a';
+        if (sel < 0 || static_cast<size_t>(sel) >= selectable_slots.size()) {
+            break;
+        }
+        const auto src_slot = selectable_slots[sel];
+        const bool was_equipped = (src_slot >= INVEN_MAIN_HAND);
+
+        auto &item_in_slot = *target_pet.inventory[src_slot];
+        auto received = item_in_slot.clone();
         received.held_m_idx = 0;
         received.iy = received.ix = 0;
-        const auto pet_name = monster_desc(creature, target_pet, MD_INDEF_VISIBLE);
         const auto item_name = describe_flavor(creature, received, OD_OMIT_PREFIX);
         msg_format(_("%sから%sを受け取った。", "You receive %s from %s."), pet_name.data(), item_name.data());
         store_item_to_inventory(creature, &received);
-        item_in_pack.wipe();
-        if (target_pet.inven_cnt > 0) {
-            target_pet.inven_cnt--;
+        item_in_slot.wipe();
+        if (was_equipped) {
+            if (target_pet.equip_cnt > 0) {
+                target_pet.equip_cnt--;
+            }
+        } else {
+            if (target_pet.inven_cnt > 0) {
+                target_pet.inven_cnt--;
+            }
         }
         break;
     }
