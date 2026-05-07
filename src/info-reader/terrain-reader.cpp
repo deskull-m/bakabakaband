@@ -78,6 +78,7 @@ static errr set_terrain_symbol(const nlohmann::json &symbol_obj, TerrainType &te
     const bool lit = lit_obj.get<bool>();
     if (lit) {
         terrain.reset_lighting(false);
+        return PARSE_ERROR_NONE;
     }
 
     for (int j = F_LIT_NS_BEGIN; j < F_LIT_MAX; j++) {
