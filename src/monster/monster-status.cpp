@@ -170,7 +170,7 @@ static void process_monsters_timed_effect_aux(CreatureEntity &creature, MONSTER_
         }
 
         /* Notice the "waking up" */
-        if (monster.get_monster_profile().ml) {
+        if (monster.is_visible_on_map()) {
             const auto m_name = monster_desc(creature, monster, 0);
             msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
         }
@@ -310,19 +310,19 @@ void dispel_monster_status(CreatureEntity &creature, MONSTER_IDX m_idx)
     const auto &monster = floor.get_monster(m_idx);
     const auto m_name = monster_desc(creature, monster, 0);
     if (set_monster_invulner(floor, m_idx, 0, true)) {
-        if (monster.get_monster_profile().ml) {
+        if (monster.is_visible_on_map()) {
             msg_format(_("%sはもう無敵ではない。", "%s^ is no longer invulnerable."), m_name.data());
         }
     }
 
     if (set_monster_fast(floor, m_idx, 0)) {
-        if (monster.get_monster_profile().ml) {
+        if (monster.is_visible_on_map()) {
             msg_format(_("%sはもう加速されていない。", "%s^ is no longer fast."), m_name.data());
         }
     }
 
     if (set_monster_slow(floor, m_idx, 0)) {
-        if (monster.get_monster_profile().ml) {
+        if (monster.is_visible_on_map()) {
             msg_format(_("%sはもう減速されていない。", "%s^ is no longer slow."), m_name.data());
         }
     }
@@ -421,7 +421,7 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
     }
 
     monster.exp = 0;
-    if (monster.is_pet() || monster.get_monster_profile().ml) {
+    if (monster.is_pet() || monster.is_visible_on_map()) {
         const auto is_hallucinated = creature.is_hallucinated();
         if (!ignore_unview || player_can_see_bold(creature, monster.y, monster.x)) {
             if (is_hallucinated) {

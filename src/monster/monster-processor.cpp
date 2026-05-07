@@ -300,7 +300,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
         return;
     }
 
-    if (monster.get_monster_profile().ml) {
+    if (monster.is_visible_on_map()) {
         chg_virtue(creature, Virtue::COMPASSION, -1);
     }
 }
@@ -435,7 +435,7 @@ bool awake_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
     }
 
     (void)set_monster_csleep(*creature.get_floor(), m_idx, 0);
-    if (monster.get_monster_profile().ml) {
+    if (monster.is_visible_on_map()) {
         const auto m_name = monster_desc(creature, monster, 0);
         msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
     }
@@ -555,7 +555,7 @@ void process_special(CreatureEntity &creature, MONSTER_IDX m_idx)
 
     for (int k = 0; k < A_MAX; k++) {
         if (auto summoned_m_idx = summon_specific(creature, monster.y, monster.x, rlev, SUMMON_MOLD, (PM_ALLOW_GROUP | p_mode), m_idx)) {
-            if (creature.get_floor()->get_monster(*summoned_m_idx).get_monster_profile().ml) {
+            if (creature.get_floor()->get_monster(*summoned_m_idx).is_visible_on_map()) {
                 count++;
             }
         }
@@ -605,10 +605,10 @@ bool decide_monster_multiplication(CreatureEntity &creature, MONSTER_IDX m_idx, 
     constexpr auto chance_reproduction = 8;
     if ((k < 4) && (!k || !randint0(k * chance_reproduction))) {
         if (auto multiplied_m_idx = multiply_monster(creature, m_idx, monrace.idx, false, (monster.is_pet() ? PM_FORCE_PET : 0))) {
-            if (creature.get_floor()->get_monster(*multiplied_m_idx).get_monster_profile().ml && is_original_ap_and_seen(creature, monster)) {
+            if (creature.get_floor()->get_monster(*multiplied_m_idx).is_visible_on_map() && is_original_ap_and_seen(creature, monster)) {
                 monrace.r_misc_flags.set(MonsterMiscType::MULTIPLY);
             }
-            if (floor.get_monster(*multiplied_m_idx).get_monster_profile().ml && is_original_ap_and_seen(creature, monster)) {
+            if (floor.get_monster(*multiplied_m_idx).is_visible_on_map() && is_original_ap_and_seen(creature, monster)) {
                 monrace.r_misc_flags.set(MonsterMiscType::MULTIPLY);
             }
             return true;
@@ -726,7 +726,7 @@ bool process_monster_spawn_monster(CreatureEntity &creature, MONSTER_IDX m_idx, 
         if (randint1(deno) <= num) {
             if (multiply_monster(creature, m_idx, idx, false, (m_ptr->is_pet() ? PM_FORCE_PET : 0))) {
                 auto &monster = creature.get_floor()->get_monster(m_idx);
-                if (monster.get_monster_profile().ml && is_original_ap_and_seen(creature, *m_ptr)) {
+                if (monster.is_visible_on_map() && is_original_ap_and_seen(creature, *m_ptr)) {
                     r_ptr->misc_flags.set(MonsterMiscType::MULTIPLY);
                 }
                 return true;
@@ -949,7 +949,7 @@ void sweep_monster_process(CreatureEntity &creature)
                 pow *= 3;
             }
             if (r_ptr.level < randint0(pow)) {
-                if (monster.get_monster_profile().ml) {
+                if (monster.is_visible_on_map()) {
                     msg_format(_("%sは%sに絡めとられて動けなかった！", "%s wes entangled in the %s and could not move!"), m_name.data(), f_ptr.name.data());
                 }
                 if (r_ptr.kind_flags.has(MonsterKindType::HENTAI)) {

@@ -503,11 +503,11 @@ static void decide_sight_invisible_monster(CreatureEntity &creature, um_type *um
 static void update_invisible_monster(CreatureEntity &creature, um_type *um_ptr, MONSTER_IDX m_idx)
 {
     auto &monster = *um_ptr->m_ptr;
-    if (monster.get_monster_profile().ml) {
+    if (monster.is_visible_on_map()) {
         return;
     }
 
-    monster.get_monster_profile().ml = true;
+    monster.set_visible_on_map(true);
     lite_spot(creature, um_ptr->get_position());
 
     HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
@@ -544,11 +544,11 @@ static void update_invisible_monster(CreatureEntity &creature, um_type *um_ptr, 
 
 static void update_visible_monster(CreatureEntity &creature, um_type *um_ptr, MONSTER_IDX m_idx)
 {
-    if (!um_ptr->m_ptr->get_monster_profile().ml) {
+    if (!um_ptr->m_ptr->is_visible_on_map()) {
         return;
     }
 
-    um_ptr->m_ptr->get_monster_profile().ml = false;
+    um_ptr->m_ptr->set_visible_on_map(false);
     lite_spot(creature, um_ptr->get_position());
 
     HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);

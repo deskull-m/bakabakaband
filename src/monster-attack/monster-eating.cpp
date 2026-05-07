@@ -295,7 +295,7 @@ void process_drain_life(MonsterAttackPlayer *monap_ptr, const bool resist_drain)
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 
-    if (monap_ptr->m_ptr->get_monster_profile().ml && did_heal) {
+    if (monap_ptr->m_ptr->is_visible_on_map() && did_heal) {
         msg_format(_("%sは体力を回復したようだ。", "%s^ appears healthier."), monap_ptr->m_name);
     }
 }

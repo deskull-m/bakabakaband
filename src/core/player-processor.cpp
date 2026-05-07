@@ -348,7 +348,7 @@ void process_player(CreatureEntity &creature)
                 const auto &monrace = monster.get_appearance_monrace();
 
                 // モンスターのシンボル/カラーの更新
-                if (monster.get_monster_profile().ml && monrace.visual_flags.has_any_of({ MonsterVisualType::MULTI_COLOR, MonsterVisualType::SHAPECHANGER })) {
+                if (monster.is_visible_on_map() && monrace.visual_flags.has_any_of({ MonsterVisualType::MULTI_COLOR, MonsterVisualType::SHAPECHANGER })) {
                     lite_spot(creature, monster.get_position());
                 }
 
@@ -369,7 +369,7 @@ void process_player(CreatureEntity &creature)
                         monster.get_monster_profile().mflag2.reset(MonsterConstantFlagType::SHOW);
                     } else {
                         monster.get_monster_profile().mflag2.reset(MonsterConstantFlagType::MARK);
-                        monster.get_monster_profile().ml = false;
+                        monster.set_visible_on_map(false);
                         update_monster(creature, m_idx, false);
                         HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
                         if (monster.is_riding()) {

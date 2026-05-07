@@ -143,7 +143,7 @@ bool vanish_dungeon(CreatureEntity &creature)
         const auto &monster = floor.get_monster(grid.m_idx);
         if (grid.has_monster() && monster.is_asleep()) {
             (void)set_monster_csleep(floor, grid.m_idx, 0);
-            if (monster.get_monster_profile().ml) {
+            if (monster.is_visible_on_map()) {
                 const auto m_name = monster_desc(creature, monster, 0);
                 msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
             }

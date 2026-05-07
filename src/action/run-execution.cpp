@@ -213,7 +213,7 @@ static bool run_test(CreatureEntity &creature)
         const auto &grid = floor.get_grid(pos);
         if (grid.has_monster()) {
             const auto &monster = floor.get_monster(grid.m_idx);
-            if (monster.get_monster_profile().ml) {
+            if (monster.is_visible_on_map()) {
                 return true;
             }
         }

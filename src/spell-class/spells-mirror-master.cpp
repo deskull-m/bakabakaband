@@ -294,7 +294,7 @@ void SpellsMirrorMaster::project_seeker_ray(int target_x, int target_y, int dam)
             }
             const auto &grid = floor.grid_array[project_m_y][project_m_x];
             const auto &monster = floor.get_monster(grid.m_idx);
-            if (project_m_n == 1 && grid.has_monster() && monster.get_monster_profile().ml) {
+            if (project_m_n == 1 && grid.has_monster() && monster.is_visible_on_map()) {
                 if (!this->creature_ptr->is_hallucinated()) {
                     tracker.set_trackee(monster.ap_r_idx);
                 }
@@ -394,7 +394,7 @@ static bool activate_super_ray_effect(CreatureEntity &creature, int y, int x, in
     const auto &floor = *creature.get_floor();
     const auto &grid = floor.grid_array[project_m_y][project_m_x];
     const auto &monster = floor.get_monster(grid.m_idx);
-    if (project_m_n == 1 && grid.has_monster() && monster.get_monster_profile().ml) {
+    if (project_m_n == 1 && grid.has_monster() && monster.is_visible_on_map()) {
         if (!creature.is_hallucinated()) {
             LoreTracker::get_instance().set_trackee(monster.ap_r_idx);
         }

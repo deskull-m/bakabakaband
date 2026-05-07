@@ -743,7 +743,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
                 auto &monrace = monster.get_monrace();
 
                 /* Check the visibility */
-                auto visible = monster.get_monster_profile().ml;
+                auto visible = monster.is_visible_on_map();
 
                 /* Note the collision */
                 hit_body = true;
@@ -766,7 +766,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
                 }
 
                 /* Did we hit it (penalize range) */
-                if (test_hit_fire(creature, chance - cur_dis, monster, monster.get_monster_profile().ml, item_name.data())) {
+                if (test_hit_fire(creature, chance - cur_dis, monster, monster.is_visible_on_map(), item_name.data())) {
                     bool fear = false;
                     auto tdam = tdam_base; //!< @note 実際に与えるダメージ
                     auto base_dam = tdam; //!< @note 補正前の与えるダメージ(無傷、全ての耐性など)
@@ -787,7 +787,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
 
                         msg_format(_("%sが%sに命中した。", "The %s hits %s."), item_name.data(), m_name.data());
 
-                        if (monster.get_monster_profile().ml) {
+                        if (monster.is_visible_on_map()) {
                             if (!creature.is_hallucinated()) {
                                 tracker.set_trackee(monster.ap_r_idx);
                             }
@@ -875,7 +875,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
                             anger_monster(creature, monster);
                         }
 
-                        if (fear && monster.get_monster_profile().ml) {
+                        if (fear && monster.is_visible_on_map()) {
                             sound(SoundKind::FLEE);
                             msg_format(_("%s^は恐怖して逃げ出した！", "%s^ flees in terror!"), m_name.data());
                         }

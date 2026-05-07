@@ -462,7 +462,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     // 所持金を初期化（能力値に基づいて計算）
     get_money_for_creature(*m_ptr);
 
-    m_ptr->get_monster_profile().ml = false;
+    m_ptr->set_visible_on_map(false);
     if (any_bits(mode, PM_FORCE_PET)) {
         set_pet(player, *m_ptr);
     } else {

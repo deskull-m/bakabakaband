@@ -222,7 +222,7 @@ static void print_pet_list_oneline(CreatureEntity &creature, const CreatureEntit
     const auto &monrace = monster.get_appearance_monrace();
     const auto name = monster_desc(creature, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE | MD_NO_OWNER);
     const auto &[bar_color, bar_len] = monster.get_hp_bar_data();
-    const auto is_visible = monster.get_monster_profile().ml && !creature.is_hallucinated();
+    const auto is_visible = monster.is_visible_on_map() && !creature.is_hallucinated();
 
     term_erase(0, y);
     if (is_visible) {
@@ -535,7 +535,7 @@ static bool is_seeing_monster_on(const FloorType &floor, const Grid &grid)
     }
 
     const auto &monster = floor.get_monster(grid.m_idx);
-    return monster.is_valid() && monster.get_monster_profile().ml;
+    return monster.is_valid() && monster.is_visible_on_map();
 }
 
 /*!

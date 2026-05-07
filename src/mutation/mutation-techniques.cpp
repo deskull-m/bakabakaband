@@ -45,7 +45,7 @@ bool eat_rock(CreatureEntity &creature)
     } else if (grid.has_monster()) {
         const auto &monster = creature.get_floor()->get_monster(grid.m_idx);
         msg_print(_("何かが邪魔しています！", "There's something in the way!"));
-        if (!monster.get_monster_profile().ml || !monster.is_pet()) {
+        if (!monster.is_visible_on_map() || !monster.is_pet()) {
             do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
         }
     } else if (terrain.flags.has(TerrainCharacteristics::TREE)) {

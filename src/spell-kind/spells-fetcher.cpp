@@ -156,7 +156,7 @@ bool fetch_monster(CreatureEntity &creature)
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
     }
 
-    if (monster.get_monster_profile().ml) {
+    if (monster.is_visible_on_map()) {
         if (!creature.is_hallucinated()) {
             LoreTracker::get_instance().set_trackee(monster.ap_r_idx);
         }

@@ -336,7 +336,7 @@ static void drop_items_golds(CreatureEntity &creature, MonsterDeath *md_ptr, int
     }
 
     floor.object_level = floor.base_level;
-    auto visible = md_ptr->m_ptr->get_monster_profile().ml && !creature.is_hallucinated();
+    auto visible = md_ptr->m_ptr->is_visible_on_map() && !creature.is_hallucinated();
     visible |= (md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE));
     if (visible && (dump_item || dump_gold)) {
         md_ptr->m_ptr->make_lore_treasure(dump_item, dump_gold);
