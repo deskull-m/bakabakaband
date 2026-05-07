@@ -70,7 +70,9 @@
 #include "spell/summon-types.h"
 #include "sv-definition/sv-junk-types.h"
 #include "sv-definition/sv-potion-types.h"
+#include "sv-definition/sv-rod-types.h"
 #include "sv-definition/sv-scroll-types.h"
+#include "sv-definition/sv-wand-types.h"
 #include "system/angband-system.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-key.h"
@@ -389,6 +391,150 @@ static bool monster_read_scroll(CreatureEntity &creature, CreatureEntity &monste
 }
 
 /*!
+ * @brief モンスターが杖/ロッドを起動して状況に応じた効果を得る (フェーズ C-1 拡張)
+ * @param creature 視点クリーチャー
+ * @param monster 起動するモンスター
+ * @return 起動したら true
+ * @details
+ *  対応 wand (sval / 発動条件 / 効果):
+ *   - HEAL_MONSTER : HP < 50% / HP+(20) クランプ
+ *   - HASTE_MONSTER: 戦闘&未加速 / ACCELERATION 加算
+ *  対応 rod:
+ *   - HEALING : HP < 50% / HP+500
+ *   - SPEED   : 戦闘&未加速 / ACCELERATION 加算
+ *   - CURING  : 状態異常時 / FEAR/CONFUSION/STUN/POISON リセット
+ *  消費:
+ *   - 杖: pval-- (charges 1 消費)
+ *   - ロッド: timeout += base_pval (再充填時間設定)
+ */
+static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &monster)
+{
+    const bool low_hp_mid = monster.hp < monster.maxhp / 2;
+    const bool not_fast = monster.get_timed_effect(CreatureTimedEffect::ACCELERATION) == 0;
+    const bool fighting_context = monster.is_hostile() && monster.is_visible_on_map();
+    const bool has_status = monster.is_fearful() || monster.is_confused() || monster.is_stunned() || monster.get_timed_effect(CreatureTimedEffect::POISON) > 0;
+
+    INVENTORY_IDX device_slot = -1;
+    int priority = -1;
+    auto select_if = [&](INVENTORY_IDX slot, int p) {
+        if (priority < 0 || p < priority) {
+            device_slot = slot;
+            priority = p;
+        }
+    };
+    for (size_t i = 0; i < monster.inventory.size(); i++) {
+        const auto &item = *monster.inventory[i];
+        if (!item.is_valid()) {
+            continue;
+        }
+        const auto idx = static_cast<INVENTORY_IDX>(i);
+        const auto sval = item.bi_key.sval().value_or(0);
+        if (item.bi_key.tval() == ItemKindType::WAND) {
+            // 杖: pval > 0 で残充填あり
+            if (item.pval <= 0) {
+                continue;
+            }
+            switch (sval) {
+            case SV_WAND_HEAL_MONSTER:
+                if (low_hp_mid) {
+                    select_if(idx, 1);
+                }
+                break;
+            case SV_WAND_HASTE_MONSTER:
+                if (fighting_context && not_fast) {
+                    select_if(idx, 5);
+                }
+                break;
+            default:
+                break;
+            }
+        } else if (item.bi_key.tval() == ItemKindType::ROD) {
+            // ロッド: timeout が base_pval * (number-1) 以下で 1 個以上使用可能
+            const auto base_pval = item.get_baseitem_pval();
+            if (item.number == 1 && item.timeout > 0) {
+                continue;
+            }
+            if (item.number > 1 && item.timeout > base_pval * (item.number - 1)) {
+                continue;
+            }
+            switch (sval) {
+            case SV_ROD_HEALING:
+                if (low_hp_mid) {
+                    select_if(idx, 0);
+                }
+                break;
+            case SV_ROD_SPEED:
+                if (fighting_context && not_fast) {
+                    select_if(idx, 4);
+                }
+                break;
+            case SV_ROD_CURING:
+                if (has_status) {
+                    select_if(idx, 6);
+                }
+                break;
+            default:
+                break;
+            }
+        }
+    }
+    if (device_slot < 0) {
+        return false;
+    }
+
+    auto &device = *monster.inventory[device_slot];
+    const auto sval = device.bi_key.sval().value_or(0);
+    const auto device_name = describe_flavor(creature, device, OD_OMIT_PREFIX);
+    const auto m_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
+    const bool is_wand = device.bi_key.tval() == ItemKindType::WAND;
+    if (is_seen(creature, monster)) {
+        if (is_wand) {
+            msg_format(_("%s^は%sを振った。", "%s^ aims %s."), m_name.data(), device_name.data());
+        } else {
+            msg_format(_("%s^は%sを振った。", "%s^ zaps %s."), m_name.data(), device_name.data());
+        }
+    }
+
+    auto heal = [&](int amount) {
+        monster.hp = std::min<int>(monster.maxhp, monster.hp + amount);
+    };
+    auto add_timed = [&](CreatureTimedEffect effect, int duration) {
+        const auto current = monster.get_timed_effect(effect);
+        monster.set_timed_effect(effect, static_cast<short>(std::min<int>(MAX_SHORT, current + duration)));
+    };
+
+    if (is_wand) {
+        switch (sval) {
+        case SV_WAND_HEAL_MONSTER:
+            heal(20);
+            break;
+        case SV_WAND_HASTE_MONSTER:
+            add_timed(CreatureTimedEffect::ACCELERATION, 100 + randint1(100));
+            break;
+        }
+        device.pval--;
+    } else {
+        // ロッド
+        switch (sval) {
+        case SV_ROD_HEALING:
+            heal(500);
+            break;
+        case SV_ROD_SPEED:
+            add_timed(CreatureTimedEffect::ACCELERATION, 15 + randint1(25));
+            break;
+        case SV_ROD_CURING:
+            monster.set_timed_effect(CreatureTimedEffect::FEAR, 0);
+            monster.set_timed_effect(CreatureTimedEffect::CONFUSION, 0);
+            monster.set_timed_effect(CreatureTimedEffect::STUN, 0);
+            monster.set_timed_effect(CreatureTimedEffect::POISON, 0);
+            break;
+        }
+        device.timeout += device.get_baseitem_pval();
+    }
+    return true;
+}
+
+/*!
  * @brief モンスター単体の1ターン行動処理メインルーチン /
  * Process a monster
  * @param creature クリーチャーへの参照
@@ -516,6 +662,11 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
     if (monster_read_scroll(creature, monster, m_idx)) {
         // テレポートが成功すると monster はもう近くにいない可能性があるが、
         // 後続のチェックは monster へのポインタ経由なので継続可能
+    }
+
+    // [フェーズ C-1 拡張] 杖/ロッド使用 (HEAL_MONSTER/HASTE_MONSTER/HEALING/SPEED/CURING)
+    if (monster_use_wand_or_rod(creature, monster)) {
+        // 同上、ターン消費とは別に副次行動として処理
     }
 
     if (process_stalking(creature, m_idx)) {
