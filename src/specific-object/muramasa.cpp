@@ -19,6 +19,10 @@ bool activate_muramasa(CreatureEntity &creature, ItemEntity *o_ptr)
 
     msg_print(_("村正が震えた．．．", "The Muramasa pulsates..."));
     do_inc_stat(creature, A_STR);
+    if (one_in_(2)) {
+        msg_print(_("村正は壊れた！", "The Muramasa is destroyed!"));
+        curse_weapon_object(creature, true, *o_ptr);
+    }
 
     return true;
 }
