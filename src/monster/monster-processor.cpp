@@ -64,6 +64,7 @@
 #include "player/player-skill.h"
 #include "player/player-status-flags.h"
 #include "player/special-defense-types.h"
+#include "spell-kind/spells-floor.h"
 #include "spell-kind/spells-teleport.h"
 #include "spell-kind/spells-world.h"
 #include "spell-realm/spells-hex.h"
@@ -377,19 +378,22 @@ static bool monster_read_scroll(CreatureEntity &creature, CreatureEntity &monste
     enum class ScrollAction { TELEPORT,
         TELEPORT_LEVEL,
         PHASE_DOOR,
-        SUMMON };
+        SUMMON,
+        DESTRUCTION };
     INVENTORY_IDX scroll_slot = -1;
     int priority = -1; // 小=優先
     int teleport_dist = 0;
     ScrollAction action = ScrollAction::TELEPORT;
     summon_type summon_kind = SUMMON_NONE;
-    auto select_if = [&](INVENTORY_IDX slot, int p, ScrollAction act, int dist = 0, summon_type st = SUMMON_NONE) {
+    int destruction_radius = 0;
+    auto select_if = [&](INVENTORY_IDX slot, int p, ScrollAction act, int dist = 0, summon_type st = SUMMON_NONE, int radius = 0) {
         if (priority < 0 || p < priority) {
             scroll_slot = slot;
             priority = p;
             action = act;
             teleport_dist = dist;
             summon_kind = st;
+            destruction_radius = radius;
         }
     };
     for (size_t i = 0; i < monster.inventory.size(); i++) {
@@ -432,6 +436,12 @@ static bool monster_read_scroll(CreatureEntity &creature, CreatureEntity &monste
                 select_if(idx, 7, ScrollAction::SUMMON, 0, SUMMON_KIN);
             }
             break;
+        // 破壊系 (HP 危機 + 戦闘中で発動、自身の周囲を破壊して脱出)
+        case SV_SCROLL_STAR_DESTRUCTION:
+            if (low_hp_severe && fighting_context) {
+                select_if(idx, 4, ScrollAction::DESTRUCTION, 0, SUMMON_NONE, 24);
+            }
+            break;
         default:
             break;
         }
@@ -460,6 +470,11 @@ static bool monster_read_scroll(CreatureEntity &creature, CreatureEntity &monste
         for (int n = 0; n < 3; n++) {
             (void)summon_specific(creature, monster.y, monster.x, monster.get_monrace().level, summon_kind, PM_NONE, m_idx);
         }
+        break;
+    case ScrollAction::DESTRUCTION:
+        // 周囲一帯を破壊 (壁・モンスター・アイテム消滅)
+        // 自分自身も巻き込まれるため、HP 危機時の最終手段として使用
+        (void)destroy_area(creature, monster.y, monster.x, destruction_radius, false);
         break;
     }
 
