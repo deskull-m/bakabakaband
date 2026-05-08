@@ -732,14 +732,24 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
             fire_ball_at_player(AttributeType::COLD, 48, 2);
             break;
         case SV_WAND_DRAGON_FIRE:
-            fire_ball_at_player(AttributeType::FIRE, 100, 3);
+            fire_ball_at_player(AttributeType::FIRE, 200, 3);
             break;
         case SV_WAND_DRAGON_COLD:
-            fire_ball_at_player(AttributeType::COLD, 80, 3);
+            fire_ball_at_player(AttributeType::COLD, 180, 3);
             break;
-        case SV_WAND_DRAGON_BREATH:
-            fire_ball_at_player(AttributeType::FIRE, 120, 3);
+        case SV_WAND_DRAGON_BREATH: {
+            // 5 属性からランダム選択 (player 版 cmd-zapwand.cpp と整合)
+            constexpr std::array<std::pair<int, AttributeType>, 5> candidates = { {
+                { 240, AttributeType::ACID },
+                { 210, AttributeType::ELEC },
+                { 240, AttributeType::FIRE },
+                { 210, AttributeType::COLD },
+                { 180, AttributeType::POIS },
+            } };
+            const auto [dam, type] = rand_choice(candidates);
+            fire_ball_at_player(type, dam, 3);
             break;
+        }
         case SV_WAND_TELEPORT_AWAY:
             fire_bolt_at_player(AttributeType::AWAY_ALL, 100);
             break;
