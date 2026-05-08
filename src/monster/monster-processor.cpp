@@ -117,6 +117,35 @@ constexpr auto STALKER_CHANCE_DENOMINATOR = 32; //!< モンスターが背後に
 constexpr auto STALKER_DISTANCE_THRESHOLD = 20; //!< モンスターが背後に忍び寄る距離の閾値
 
 /*!
+ * @brief モンスター AI が「戦闘中」と見做せる状況かを判定 (フェーズ C-1 拡張)
+ * @param creature 視点クリーチャー (プレイヤー)
+ * @param monster 判定対象モンスター
+ * @return 敵対モンスターはプレイヤー視認時、ペットは hostile monster 視認時に true
+ * @details モンスターのバフ系/攻撃系アイテム使用判定で共有される判定。
+ *          ペットでも hostile monster が近くにいれば fighting_context = true として
+ *          バフ・攻撃用アイテムを発動できるようにする。
+ */
+static bool ai_is_in_fighting_context(const CreatureEntity &creature, const CreatureEntity &monster)
+{
+    if (!monster.is_visible_on_map()) {
+        return false;
+    }
+    if (monster.is_hostile()) {
+        return true;
+    }
+    if (monster.is_pet()) {
+        const auto &floor = *creature.get_floor();
+        for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+            const auto &target_mon = floor.get_monster(i);
+            if (target_mon.is_valid() && target_mon.is_hostile() && target_mon.is_visible_on_map()) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+/*!
  * @brief モンスターがポーションを飲んで状況に応じた効果を得る (フェーズ C-1 拡張)
  * @param creature 視点クリーチャー (メッセージ表示用)
  * @param monster ポーションを飲むモンスター
@@ -145,7 +174,7 @@ static bool monster_quaff_potion(CreatureEntity &creature, CreatureEntity &monst
     const bool not_fast = monster.get_timed_effect(CreatureTimedEffect::ACCELERATION) == 0;
     const bool not_resistant = monster.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE) == 0 && monster.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD) == 0;
     const bool not_buffed = monster.get_timed_effect(CreatureTimedEffect::HERO) == 0 && monster.get_timed_effect(CreatureTimedEffect::BERSERK) == 0;
-    const bool fighting_context = monster.is_hostile() && monster.is_visible_on_map();
+    const bool fighting_context = ai_is_in_fighting_context(creature, monster);
 
     INVENTORY_IDX potion_slot = -1;
     int priority = -1; // 0=最優先 ... 大=後回し
@@ -467,9 +496,42 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
 {
     const bool low_hp_mid = monster.hp < monster.maxhp / 2;
     const bool not_fast = monster.get_timed_effect(CreatureTimedEffect::ACCELERATION) == 0;
-    const bool fighting_context = monster.is_hostile() && monster.is_visible_on_map();
     const bool has_status = monster.is_fearful() || monster.is_confused() || monster.is_stunned() || monster.get_timed_effect(CreatureTimedEffect::POISON) > 0;
-    const bool can_target_player = fighting_context && projectable(*creature.get_floor(), monster.get_position(), creature.get_position());
+
+    // [ペット AI 拡張] モンスターの場合: target = プレイヤー
+    //                  ペットの場合: target = 最寄りの hostile monster (projectable)
+    auto &floor = *creature.get_floor();
+    POSITION attack_target_y = creature.y;
+    POSITION attack_target_x = creature.x;
+    bool can_attack_target = false;
+    bool fighting_context = false;
+    fighting_context = ai_is_in_fighting_context(creature, monster);
+    if (monster.is_pet()) {
+        // ペットは hostile monster を直射目標として選定
+        int best_dist = INT_MAX;
+        const auto m_pos = monster.get_position();
+        for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+            const auto &target_mon = floor.get_monster(i);
+            if (!target_mon.is_valid() || !target_mon.is_hostile() || !target_mon.is_visible_on_map()) {
+                continue;
+            }
+            const auto t_pos = target_mon.get_position();
+            if (!projectable(floor, m_pos, t_pos)) {
+                continue;
+            }
+            const auto dist = Grid::calc_distance(m_pos, t_pos);
+            if (dist < best_dist) {
+                best_dist = dist;
+                attack_target_y = t_pos.y;
+                attack_target_x = t_pos.x;
+                can_attack_target = true;
+            }
+        }
+    } else {
+        can_attack_target = fighting_context && projectable(floor, monster.get_position(), creature.get_position());
+    }
+    // 旧来名 can_target_player を残してコード互換性を保つ (実際には pet の場合 hostile monster)
+    const bool can_target_player = can_attack_target;
 
     INVENTORY_IDX device_slot = -1;
     int priority = -1;
@@ -604,9 +666,9 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
         monster.set_timed_effect(effect, static_cast<short>(std::min<int>(MAX_SHORT, current + duration)));
     };
 
-    // 攻撃系の標的座標 (プレイヤー)
-    const auto target_y = creature.y;
-    const auto target_x = creature.x;
+    // 攻撃系の標的座標 (敵対モンスターはプレイヤー、ペットは hostile monster)
+    const auto target_y = attack_target_y;
+    const auto target_x = attack_target_x;
     constexpr BIT_FLAGS flg_bolt = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
     constexpr BIT_FLAGS flg_ball = PROJECT_STOP | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM;
     auto fire_bolt_at_player = [&](AttributeType typ, int dam) {

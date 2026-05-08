@@ -111,12 +111,32 @@ priority 10 (wand) / 11 (rod), 発動条件は `can_target_player`
 
 ## ペット運用との関係
 
-- ペットも上記 AI で動作する
-- ただし `is_hostile() = false` のため `fighting_context = false`
-- → ペットは攻撃 wand/rod / 召喚巻物 / WAND_CLONE_MONSTER は使わない
-- → ペットが使う: 自己回復系ポーション/ロッド、TELEPORT 系巻物、CURING 系
-- 拡張余地: ペットの場合に `fighting_context` を「最寄りの hostile monster がいて
-  projectable」と再定義すれば、攻撃 wand を hostile monster へ向けて使うようになる
+`fighting_context` の判定は `ai_is_in_fighting_context()` ヘルパに集約され、
+以下の 2 つの状況で true を返す:
+
+- 敵対モンスター: 視認可能 (`is_visible_on_map()`) かつ `is_hostile()`
+- ペット: 視認可能で、視認可能な hostile monster が同フロアに存在
+
+これにより、ペットも以下が発動するようになっている:
+
+- ポーション: SPEED, HEROISM, BERSERK, RESISTANCE 等の戦闘バフ
+- 杖/ロッド: HEAL_MONSTER, HASTE_MONSTER, CLONE_MONSTER (自身分裂で増援)
+- 攻撃 wand/rod: 最寄りの hostile monster (projectable) を標的として発射
+
+ただし以下は `monster_read_scroll` 内の独自 `fighting_context` (hostile only) で
+ガードされており、ペットは使わない:
+
+- SCROLL_SUMMON_MONSTER / UNDEAD / KIN (敵を増やす行動)
+
+`monster_use_wand_or_rod` 内で攻撃 wand の標的決定は:
+
+- 敵対モンスター: target = プレイヤー位置
+- ペット: target = `is_pet() && best_dist` で選定された最寄り hostile monster の位置
+
+ペットの WAND_CLONE_MONSTER は分身が `multiply_monster(..., PM_NO_PET)` で
+生成されるため、ペット自身が分裂したものは敵性ではないが pet flag は
+継承されない (NO_PET 強制) 仕様。これは「ペットが一時的に増援を呼ぶ」
+意図に合っている (バランス上 ペットが無限増殖しないように)。
 
 ## メッセージ
 
