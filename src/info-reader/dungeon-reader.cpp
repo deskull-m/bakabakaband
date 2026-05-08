@@ -476,3 +476,36 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
 
     return PARSE_ERROR_UNDEFINED_DIRECTIVE;
 }
+
+/*!
+ * @brief ダンジョン情報(JSON Object)のパース関数 (フェーズ A-2 Dungeon JSON 化)
+ * @param dungeon_data JSON ダンジョンエントリ
+ * @param head ヘッダ構造体
+ * @return エラーコード
+ * @details
+ * 各 JSON エントリは `{ "id": N, "lines": [".txt 形式の行", ...] }` 構造で、
+ * `lines[]` の各文字列を既存の token-based parse_dungeons_info() に流して
+ * パースする。本関数は upstream PR #5353 の JSON 化に対応するための
+ * bakabakaband 固有の最小実装で、内部的には .txt 互換の token 形式を維持する。
+ */
+errr parse_dungeons_info_json(nlohmann::json &dungeon_data, angband_header *head)
+{
+    if (!dungeon_data.contains("lines") || !dungeon_data["lines"].is_array()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    for (const auto &line : dungeon_data["lines"]) {
+        if (!line.is_string()) {
+            continue;
+        }
+        const auto buf = line.get<std::string>();
+        if (buf.empty()) {
+            continue;
+        }
+        const auto err = parse_dungeons_info(buf, head);
+        if (err != PARSE_ERROR_NONE) {
+            return err;
+        }
+    }
+    return PARSE_ERROR_NONE;
+}
