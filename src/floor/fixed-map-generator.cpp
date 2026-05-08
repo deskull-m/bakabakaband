@@ -291,7 +291,7 @@ static int parse_qtw_Q(qtwg_type *qtwg_ptr, char **zz)
     }
 #endif
 
-    int num = tokenize(qtwg_ptr->buf + _(2, 3), 33, zz, 0);
+    int num = tokenize(qtwg_ptr->buf + _(2, 3), 33, zz);
     if (num < 3) {
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
     }
@@ -336,7 +336,7 @@ static bool parse_qtw_P(CreatureEntity &creature, qtwg_type *qtwg_ptr, char **zz
         return true;
     }
 
-    if (tokenize(qtwg_ptr->buf + 2, 2, zz, 0) != 2) {
+    if (tokenize(qtwg_ptr->buf + 2, 2, zz) != 2) {
         return true;
     }
 

@@ -48,7 +48,7 @@ static void add_history_from_pref_line(std::string_view t)
 static bool interpret_r_token(char *buf)
 {
     char *zz[16];
-    if (tokenize(buf + 2, 3, zz, TOKENIZE_CHECKQUOTE) != 3) {
+    if (tokenize(buf + 2, 3, zz) != 3) {
         return false;
     }
 
@@ -81,7 +81,7 @@ static bool interpret_r_token(char *buf)
 static bool interpret_k_token(char *buf)
 {
     char *zz[16];
-    if (tokenize(buf + 2, 3, zz, TOKENIZE_CHECKQUOTE) != 3) {
+    if (tokenize(buf + 2, 3, zz) != 3) {
         return false;
     }
 
@@ -177,7 +177,7 @@ static void decide_feature_type(int i, int num, char **zz)
 static bool interpret_f_token(char *buf)
 {
     char *zz[16];
-    int num = tokenize(buf + 2, F_LIT_MAX * 2 + 1, zz, TOKENIZE_CHECKQUOTE);
+    int num = tokenize(buf + 2, F_LIT_MAX * 2 + 1, zz);
 
     if ((num != 3) && (num != 4) && (num != F_LIT_MAX * 2 + 1)) {
         return false;
@@ -204,7 +204,7 @@ static bool interpret_f_token(char *buf)
 static bool interpret_s_token(char *buf)
 {
     char *zz[16];
-    if (tokenize(buf + 2, 3, zz, TOKENIZE_CHECKQUOTE) != 3) {
+    if (tokenize(buf + 2, 3, zz) != 3) {
         return false;
     }
 
@@ -223,7 +223,7 @@ static bool interpret_s_token(char *buf)
 static bool interpret_u_token(char *buf)
 {
     char *zz[16];
-    if (tokenize(buf + 2, 3, zz, TOKENIZE_CHECKQUOTE) != 3) {
+    if (tokenize(buf + 2, 3, zz) != 3) {
         return false;
     }
 
@@ -253,7 +253,7 @@ static bool interpret_u_token(char *buf)
 static bool interpret_e_token(char *buf)
 {
     char *zz[16];
-    if (tokenize(buf + 2, 2, zz, TOKENIZE_CHECKQUOTE) != 2) {
+    if (tokenize(buf + 2, 2, zz) != 2) {
         return false;
     }
 
@@ -285,7 +285,7 @@ static int interpret_p_token(char *buf)
 static bool interpret_c_token(char *buf)
 {
     char *zz[16];
-    if (tokenize(buf + 2, 2, zz, TOKENIZE_CHECKQUOTE) != 2) {
+    if (tokenize(buf + 2, 2, zz) != 2) {
         return false;
     }
 
@@ -313,7 +313,7 @@ static bool interpret_c_token(char *buf)
 static bool interpret_v_token(char *buf)
 {
     char *zz[16];
-    if (tokenize(buf + 2, 5, zz, TOKENIZE_CHECKQUOTE) != 5) {
+    if (tokenize(buf + 2, 5, zz) != 5) {
         return false;
     }
 
@@ -480,7 +480,7 @@ static bool interpret_macro_keycodes(int tok, char **zz)
 static bool interpret_t_token(char *buf)
 {
     char *zz[16];
-    int tok = tokenize(buf + 2, 2 + MAX_MACRO_MOD, zz, 0);
+    int tok = tokenize(buf + 2, 2 + MAX_MACRO_MOD, zz);
     if (tok >= 4) {
         return decide_template_modifier(tok, zz);
     }
