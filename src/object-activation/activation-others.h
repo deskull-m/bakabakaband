@@ -4,11 +4,12 @@
 
 class CreatureEntity;
 class ItemEntity;
+class PlayerType;
 bool activate_sunlight(CreatureEntity &creature);
 bool activate_confusion(CreatureEntity &creature);
 bool activate_banish_evil(CreatureEntity &creature);
 bool activate_scare(CreatureEntity &creature);
-bool activate_aggravation(CreatureEntity &creature, ItemEntity *o_ptr, std::string_view name);
+bool activate_aggravation(CreatureEntity &creature, const ItemEntity &item, std::string_view name);
 bool activate_stone_mud(CreatureEntity &creature);
 bool activate_judgement(CreatureEntity &creature, std::string_view name);
 bool activate_telekinesis(CreatureEntity &creature, std::string_view name);
@@ -40,8 +41,8 @@ bool activate_protection_rune(CreatureEntity &creature);
 bool activate_protection_elbereth(CreatureEntity &creature);
 bool activate_light(CreatureEntity &creature, std::string_view name);
 bool activate_recall(CreatureEntity &creature);
-bool activate_tree_creation(CreatureEntity &creature, ItemEntity *o_ptr, std::string_view name);
-bool activate_animate_dead(CreatureEntity &creature, ItemEntity *o_ptr);
+bool activate_tree_creation(CreatureEntity &creature, const ItemEntity &item, std::string_view name);
+bool activate_animate_dead(CreatureEntity &creature, const ItemEntity &item);
 bool activate_detect_treasure(CreatureEntity &creature);
 bool activate_create_ammo(CreatureEntity &creature);
 bool activate_dispel_magic(CreatureEntity &creature);

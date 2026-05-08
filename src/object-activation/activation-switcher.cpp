@@ -124,15 +124,15 @@ bool switch_activation(CreatureEntity &creature, ItemEntity **o_ptr_ptr, const R
     case RandomArtActType::BLADETURNER:
         return activate_bladeturner(creature);
     case RandomArtActType::BR_FIRE:
-        return activate_breath_fire(creature, o_ptr);
+        return activate_breath_fire(creature, *o_ptr);
     case RandomArtActType::BR_COLD:
-        return activate_breath_cold(creature, o_ptr);
+        return activate_breath_cold(creature, *o_ptr);
     case RandomArtActType::BR_DRAGON:
-        return activate_dragon_breath(creature, o_ptr);
+        return activate_dragon_breath(creature, *o_ptr);
     case RandomArtActType::TREE_CREATION:
-        return activate_tree_creation(creature, o_ptr, name);
+        return activate_tree_creation(creature, *o_ptr, name);
     case RandomArtActType::ANIM_DEAD:
-        return activate_animate_dead(creature, o_ptr);
+        return activate_animate_dead(creature, *o_ptr);
     case RandomArtActType::CONFUSE:
         return activate_confusion(creature);
     case RandomArtActType::SLEEP:
@@ -152,7 +152,7 @@ bool switch_activation(CreatureEntity &creature, ItemEntity **o_ptr_ptr, const R
     case RandomArtActType::SCARE_AREA:
         return activate_scare(creature);
     case RandomArtActType::AGGRAVATE:
-        return activate_aggravation(creature, o_ptr, name);
+        return activate_aggravation(creature, *o_ptr, name);
     case RandomArtActType::CHARM_ANIMAL:
         return activate_charm_animal(creature);
     case RandomArtActType::CHARM_UNDEAD:
@@ -376,11 +376,11 @@ bool switch_activation(CreatureEntity &creature, ItemEntity **o_ptr_ptr, const R
         mitokohmon(creature);
         return true;
     case RandomArtActType::MURAMASA:
-        return activate_muramasa(creature, o_ptr);
+        return activate_muramasa(creature, *o_ptr);
     case RandomArtActType::BLOODY_MOON:
-        return activate_bloody_moon(creature, o_ptr);
+        return activate_bloody_moon(creature, *o_ptr);
     case RandomArtActType::CRIMSON:
-        return activate_crimson(creature, o_ptr);
+        return activate_crimson(creature, *o_ptr);
     case RandomArtActType::HERO_BLESS:
         (void)set_hero(creature, randint1(25) + 25, false);
         (void)set_blessed(creature, randint1(25) + 25, true);
