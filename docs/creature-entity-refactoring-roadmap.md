@@ -476,14 +476,160 @@ parent_m_idx / smart / hold_o_idx_list) はそれぞれ十数件以上の
 
 ---
 
+## 提案 11: モンスターアイテム所持の inventory[] 統一 ✅ 完了 (フェーズ A)
+
+### 背景
+
+bakabakaband ではプレイヤーとモンスター双方が `CreatureEntity` インスタンスとして
+`inventory[INVEN_TOTAL]` を持つ統一的なデータ構造を整備していたが、モンスターの
+アイテム所持は引き続きレガシーの `MonsterProfile::hold_o_idx_list` (floor.o_list
+上に held_m_idx を立てて表現する index リスト) で管理されていた。これにより:
+
+- プレイヤーとモンスターでアイテム所持の経路が二重化
+- floor.o_list 上に「held_m_idx 付きアイテム」が orphan として残存しやすい
+- monster.inventory[] フィールドは存在するも実際には使われていない
+
+### 作業内容 (5 サブフェーズ)
+
+- **A-1**: monster pickup を inventory[] 並走書込み (5710abdd8)
+- **A-2**: monster drop を inventory[] 経路へ切替 (ee2012106)
+- **A-3**: shoot/eating の取得経路を inventory[] 並走 (8358fc90f)
+- **A-4a**: hold_o_idx_list の参照経路を inventory[] へ移行 (dbce1c971)
+  - polymorph / attack-chaos-effect / target-describer / monster-compaction
+- **A-4b**: hold_o_idx_list / held_m_idx 経路完全廃止 + save/load マイグレーション (004d3fac2)
+  - `MonsterProfile::hold_o_idx_list` field 削除
+  - `CreatureEntity::get_held_objects()` virtual 削除
+  - load 時に held_m_idx 付き orphan アイテムを wipe で破棄
+- **A-5**: store_item / drop_all_inventory を `CreatureEntity` メンバに整備 (3d8579323)
+
+### 効果
+
+- モンスター所持アイテムは `CreatureEntity::inventory[INVEN_TOTAL]` に一本化
+- floor.o_list 上の orphan が完全消滅
+- フェーズ B/C で「装備」「アイテム使用」を構築する基盤が整備
+- save format は backward compat (held_m_idx flag は load 時 wipe で吸収)
+
+---
+
+## 提案 12: モンスター装備の有効化 ✅ 完了 (フェーズ B)
+
+### 背景
+
+提案 11 でモンスターも inventory[] を実際に使うようになったが、装備スロット
+(INVEN_MAIN_HAND..INVEN_TOTAL) は単なる格納場所でしかなく、装備品の効果が
+モンスターのステータスに反映されていなかった。
+
+### 作業内容
+
+- **B-1**: pickup 時の自動装備 (4031a2962)
+  - `wield_slot()` で空きスロット判定 → `acquire_item()` で直接装着
+- **B-2**: AC / 耐性の装備反映 (f0535d0aa)
+  - `get_ac()`: モンスター時 inventory 走査で `item.ac + item.to_a` 加算
+  - `has_resist_X()` 等 30 virtual: `::has_resist_X(*this)` を OR して
+    装備品 + ULTIMATE_RESISTANCE 等を反映
+- **B-2b**: 近接攻撃のダメージボーナス (7a9cda1ec)
+  - HIT/PUNCH/SLASH/STING 打撃で `weapon.damage_dice.roll() + weapon.to_d` 加算
+- **B-2c**: 近接攻撃の命中ボーナス (11058a278)
+  - `to_h` を `check_hit_from_monster_to_player` の power に加算
+- **B-4**: look 表示で装備品/パック品を区別 (145f1fb56)
+  - 「装備している」vs「持っている」分離表示
+- **二刀流対応** (57339aa0c)
+  - MAIN/SUB 両方に melee weapon があれば blow index 偶奇で交互使用
+
+### B-3 (装備フラグキャッシュ) は DEFERRED
+
+- on-the-fly O(14) iter / call で性能十分
+- 実 profiling で hot spot 判明したら再検討
+
+### 効果
+
+- 装備武器を持つ TAKE_ITEM 行動モンスターは 命中 + ダメージ + AC + 耐性 すべて強化
+- ペットに与えた装備が発動して戦闘力 UP
+- 「two-handed orc with flaming sword and shield」のような構成が機能する
+
+---
+
+## 提案 13: モンスター AI のアイテム能動使用 ✅ 完了 (フェーズ C)
+
+### 背景
+
+提案 12 でモンスター装備は機能するようになったが、消耗品 (ポーション/巻物/杖/ロッド)
+は inventory[] にあるだけで使われない状態だった。プレイヤーと同等のアイテム
+活用 AI を実装することで、戦術的なモンスター戦闘を実現する。
+
+### 作業内容
+
+- **C-1**: モンスター/ペットの自己使用 AI (`monster-processor.cpp`)
+  - 回復系ポーション 5 種 (080d4dbf3)
+  - 拡張: バフ/解毒/恐怖解除/加速/耐性/無敵 全 12 ポーション (21e3215fd)
+  - 巻物 PHASE_DOOR/TELEPORT (dbcabb762) → TELEPORT_LEVEL 追加 (fa873535f)
+  - 巻物 SUMMON_MONSTER/UNDEAD/KIN 追加 (49a7fa33b)
+  - 杖 HEAL_MONSTER/HASTE_MONSTER + ロッド HEALING/SPEED/CURING (92032a3f5)
+  - 攻撃用 wand/rod 17 種 (e9cebf58a) — MAGIC_MISSILE/各種 BOLT/BALL/HYPODYNAMIA/DRAGON_*
+  - WAND_TELEPORT_AWAY (防衛離脱) (fa873535f)
+  - WAND_CLONE_MONSTER (自身分裂) (49a7fa33b)
+- **C-2**: 永続的な窃取 + 自動装備 (98976a44b)
+  - 窃取後 `acquire_item()` 経由で装備可能なら即装備
+- **C-3**: ペット装備指定 UI (`cmd-pet.cpp`)
+  - 所持品確認コマンド (0f8589d4b)
+  - give/take プレイヤー↔ペット 転送 (a6fbfeae4)
+  - take は装備/パック両方から letter 選択 (6487e97de)
+  - 複数ペット選択メニュー (6951daaf1)
+
+### AI 状態判定の優先度設計
+
+1. HP < 25%: 大回復系 + INVULNERABILITY + TELEPORT_LEVEL
+2. HP < 50%: 中回復系 + WAND_TELEPORT_AWAY (防衛距離取り)
+3. 重毒/恐怖: 解毒/Boldness
+4. 戦闘中 + 未バフ: HEROISM/BERSERK
+5. 戦闘中 + 未加速: SPEED
+6. 戦闘中 + 耐性なし: RESISTANCE
+7. 戦闘中 + 直射可能: 攻撃 wand/rod
+8. 戦闘中: 召喚巻物 + WAND_CLONE_MONSTER
+
+各ポーション/巻物/杖/ロッドに priority (0=最優先) を割り当て、最も状況に
+適合した 1 個を毎ターン消費する。
+
+### 効果
+
+- TAKE_ITEM モンスターは戦闘中の生存性・脅威度が大幅に増加
+- ペットも同じ AI で自己保護＋援護 (give した回復系を使う)
+- 既存スペル AI (`mspell-attack`) と並列に動く副次行動として実装
+
+### 残存検討対象 (今後の拡張余地)
+
+- ペット AI で攻撃 wand/rod を hostile monster に向けて発動
+  (現状 `is_hostile()` ガードのため敵対モンスターのみ攻撃 wand 使用)
+- 戦略的脱出 (SCROLL_DESTRUCTION/GENOCIDE)
+- POTION_NEO_TSUYOSHI 等の特殊効果対応
+- 装備耐久 (`apply_artifact` に近い仕組みでモンスター装備も損耗)
+
+---
+
 ## 推奨実施順序
+
+### 完了済み (大規模フェーズ)
+
+- ✅ **提案 7-10**: virtual アクセサ整備 (ml/回復計算/MonsterProfile/配列)
+- ✅ **提案 11**: モンスター inventory[] 統一 (フェーズ A、5 サブフェーズ)
+- ✅ **提案 12**: モンスター装備有効化 (フェーズ B、AC/耐性/攻撃/二刀流)
+- ✅ **提案 13**: モンスター AI アイテム使用 (フェーズ C、ポーション/巻物/杖/ロッド + UI)
+
+### 既存提案の残作業 (中規模)
 
 1. **提案 1** - プレイヤー専用フィールドのクリーチャー共通化（初期値・アクセサ整備）
 2. **提案 2** - プレイヤー専用 virtual メソッドの共通化（提案 1 と並行可）
 3. **提案 5** - TimedEffects 二重管理解消
 4. **提案 4** - 残存状態チェック関数の仮想化
-5. **提案 3** - `PlayerType::get_instance()` 削減
+5. **提案 3** - `PlayerType::get_instance()` 削減 ✅ 完了
 6. **提案 6** - フィールド命名統一（最後）
+
+### 提案 13 の延長検討対象
+
+- ペット AI で攻撃 wand/rod を hostile monster に向けて発動
+- 戦略的脱出 (SCROLL_DESTRUCTION/GENOCIDE)
+- 装備耐久・損耗
+- B-3: 装備フラグキャッシュ (性能必要時)
 
 各提案は独立した PR として進めること。
 
