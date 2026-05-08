@@ -2,6 +2,7 @@
 
 class CreatureEntity;
 class ItemEntity;
-bool activate_dragon_breath(CreatureEntity &creature, ItemEntity *o_ptr);
-bool activate_breath_fire(CreatureEntity &creature, ItemEntity *o_ptr);
-bool activate_breath_cold(CreatureEntity &creature, ItemEntity *o_ptr);
+class PlayerType;
+bool activate_dragon_breath(CreatureEntity &creature, const ItemEntity &item);
+bool activate_breath_fire(CreatureEntity &creature, const ItemEntity &item);
+bool activate_breath_cold(CreatureEntity &creature, const ItemEntity &item);

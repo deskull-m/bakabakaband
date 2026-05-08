@@ -58,41 +58,41 @@ constexpr auto BLOODY_MOON_PVAL_FLAG_CANDIDATES = {
 /*!
  * @brief 固定アーティファクト『ブラッディムーン』の特性を変更する。
  * @details スレイ2d2種、及びone_resistance()による耐性1d2種、pval2種を得る。
- * @param o_ptr 対象のオブジェクト構造体 (ブラッディムーン)のポインタ
+ * @param item 対象のオブジェクト構造体 (ブラッディムーン)の参照
  */
-void get_bloody_moon_flags(ItemEntity *o_ptr)
+void get_bloody_moon_flags(ItemEntity &item)
 {
-    o_ptr->art_flags = ArtifactList::get_instance().get_artifact(FixedArtifactId::BLOOD).flags;
+    item.art_flags = ArtifactList::get_instance().get_artifact(FixedArtifactId::BLOOD).flags;
 
     for (int i = 0, count = Dice::roll(2, 2); i < count; i++) {
         const auto flag = rand_choice(BLOODY_MOON_SLAYING_FLAG_CANDIDATES);
-        o_ptr->art_flags.set(flag);
+        item.art_flags.set(flag);
     }
 
     for (int i = 0, count = randint1(2); i < count; i++) {
-        one_resistance(o_ptr);
+        one_resistance(&item);
     }
 
     for (int i = 0; i < 2; i++) {
         const auto flag = rand_choice(BLOODY_MOON_PVAL_FLAG_CANDIDATES);
-        o_ptr->art_flags.set(flag);
+        item.art_flags.set(flag);
     }
 }
 
 /*!
  * @brief Let's dance a RONDO!!
- * @param creature クリーチャーへの参照
- * @param o_ptr ブラッディ・ムーンへの参照ポインタ
+ * @param creature プレイヤーへの参照ポインタ
+ * @param item ブラッディ・ムーンへの参照
  * @return オブジェクト情報に異常がない限りTRUE
  */
-bool activate_bloody_moon(CreatureEntity &creature, ItemEntity *o_ptr)
+bool activate_bloody_moon(CreatureEntity &creature, ItemEntity &item)
 {
-    if (!o_ptr->is_specific_artifact(FixedArtifactId::BLOOD)) {
+    if (!item.is_specific_artifact(FixedArtifactId::BLOOD)) {
         return false;
     }
 
     msg_print(_("鎌が明るく輝いた...", "Your scythe glows brightly!"));
-    get_bloody_moon_flags(o_ptr);
+    get_bloody_moon_flags(item);
     if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
         calc_android_exp(creature);
     }
