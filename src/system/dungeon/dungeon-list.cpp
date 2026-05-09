@@ -36,5 +36,6 @@ void DungeonList::retouch()
 {
     for (auto &[_, dungeon] : this->dungeons) {
         dungeon->set_guardian_flag();
+        dungeon->set_no_vault_flag_if_smallest();
     }
 }

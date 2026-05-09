@@ -165,6 +165,7 @@ public:
 
     //!< @details ここから下は、地形など全ての定義ファイルを読み込んだ後に呼び出される初期化処理.
     void set_guardian_flag();
+    void set_no_vault_flag_if_smallest();
 
 private:
     Pos2D pos = { 0, 0 };
