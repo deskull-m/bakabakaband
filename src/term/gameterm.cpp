@@ -412,7 +412,7 @@ static TERM_COLOR mh_attr(int max)
 static TERM_COLOR spell_color(AttributeType type)
 {
     /* Check if A.B.'s new graphics should be used (rr9) */
-    if (streq(ANGBAND_GRAF, "new") || streq(ANGBAND_GRAF, "ne2")) {
+    if ((ANGBAND_GRAF == "new") || (ANGBAND_GRAF == "ne2")) {
         /* Analyze */
         switch (type) {
         case AttributeType::PSY_SPEAR:

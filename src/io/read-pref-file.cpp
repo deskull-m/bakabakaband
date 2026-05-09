@@ -24,6 +24,7 @@
 #include "world/world.h"
 #include <algorithm>
 #include <filesystem>
+#include <fmt/format.h>
 #include <string>
 
 //!< @todo コールバック関数に変更するので、いずれ消す.
@@ -269,6 +270,8 @@ void close_auto_dump(FILE **fpp, std::string_view mark)
 
 /*!
  * @brief 全ユーザプロファイルをロードする / Load some "user pref files"
+ *
+ * "{}.prf"をfmt::format() 第1引数へ変数として入れると実行時エラーを吐く場合があるので、リテラルで渡す.
  * @paaram creature クリーチャーへの参照
  * @note
  * Modified by Arcum Dagsson to support
@@ -276,20 +279,18 @@ void close_auto_dump(FILE **fpp, std::string_view mark)
  */
 void load_all_pref_files(CreatureEntity &creature)
 {
-
     process_pref_file(creature, "user.prf");
-    process_pref_file(creature, format("user-%s.prf", ANGBAND_SYS));
-    constexpr auto fmt = "%s.prf";
-    process_pref_file(creature, format(fmt, creature.get_race_info()->title.data()));
-    process_pref_file(creature, format(fmt, (*creature.get_class_info()).title.data()));
-    process_pref_file(creature, format(fmt, creature.base_name.data()));
+    process_pref_file(creature, fmt::format("user-{}.prf", ANGBAND_SYS));
+    process_pref_file(creature, fmt::format("{}.prf", creature.get_race_info()->title));
+    process_pref_file(creature, fmt::format("{}.prf", (*creature.get_class_info()).title));
+    process_pref_file(creature, fmt::format("{}.prf", creature.base_name));
     PlayerRealm pr(creature);
     if (pr.realm1().is_available()) {
-        process_pref_file(creature, format(fmt, pr.realm1().get_name().data()));
+        process_pref_file(creature, fmt::format("{}.prf", pr.realm1().get_name()));
     }
 
     if (pr.realm2().is_available()) {
-        process_pref_file(creature, format(fmt, pr.realm2().get_name().data()));
+        process_pref_file(creature, fmt::format("{}.prf", pr.realm2().get_name()));
     }
 
     autopick_load_pref(creature, false);

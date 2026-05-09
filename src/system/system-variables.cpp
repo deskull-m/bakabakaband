@@ -5,6 +5,7 @@
  */
 
 #include "system/system-variables.h"
+#include "locale/language-switcher.h"
 
 /*!
  * @todo どこからも呼ばれていない。main関数辺りに移設するか、そもそもコメントでいいと思われる
@@ -21,7 +22,7 @@ const concptr copyright[5] =
 };
 */
 
-concptr ANGBAND_SYS = "xxx";
-concptr ANGBAND_KEYBOARD = _("JAPAN", "0");
-concptr ANGBAND_GRAF = "ascii";
+std::string_view ANGBAND_SYS = "xxx";
+std::string_view ANGBAND_KEYBOARD = _("JAPAN", "0");
+std::string_view ANGBAND_GRAF = "ascii";
 init_flags_type init_flags; //!< @todo このグローバル変数何とかしたい

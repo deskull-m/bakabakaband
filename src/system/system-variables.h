@@ -1,6 +1,6 @@
 #pragma once
 
-#include "system/angband.h"
+#include <string_view>
 
 constexpr auto MAX_UNIQUE_NUM = 1;
 constexpr auto MAX_NAZGUL_NUM = 5;
@@ -26,6 +26,6 @@ enum init_flags_type {
 };
 
 extern init_flags_type init_flags;
-extern concptr ANGBAND_SYS;
-extern concptr ANGBAND_KEYBOARD;
-extern concptr ANGBAND_GRAF;
+extern std::string_view ANGBAND_SYS;
+extern std::string_view ANGBAND_KEYBOARD;
+extern std::string_view ANGBAND_GRAF;
