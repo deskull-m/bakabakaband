@@ -21,8 +21,7 @@ extern const concptr ident_info[];
 extern std::array<term_type *, 8> angband_terms;
 #define term_screen (angband_terms[0])
 
-extern TERM_COLOR misc_to_attr[256];
-extern char misc_to_char[256];
+extern std::array<DisplaySymbol, 256> ds_bolt;
 extern TERM_COLOR tval_to_attr[128];
 extern const char angband_term_name[8][16];
 extern byte angband_color_table[256][4];
@@ -34,4 +33,4 @@ extern TERM_COLOR color_char_to_attr(char c);
 extern const std::unordered_map<std::string_view, TERM_COLOR> color_list;
 
 class DisplaySymbol;
-DisplaySymbol bolt_pict(const Pos2D &pos_src, const Pos2D &pos_dst, AttributeType typ);
+const DisplaySymbol &bolt_pict(const Pos2D &pos_src, const Pos2D &pos_dst, AttributeType typ);

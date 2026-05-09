@@ -314,7 +314,7 @@ void print_rel(CreatureEntity &creature, const DisplaySymbol &symbol, const Pos2
 
 void print_bolt_pict(CreatureEntity &creature, const Pos2D &pos_src, const Pos2D &pos_dst, AttributeType typ)
 {
-    const auto symbol = bolt_pict(pos_src, pos_dst, typ);
+    const auto &symbol = bolt_pict(pos_src, pos_dst, typ);
     print_rel(creature, symbol, pos_dst);
 }
 

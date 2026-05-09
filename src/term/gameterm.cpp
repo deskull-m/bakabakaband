@@ -355,12 +355,10 @@ std::array<term_type *, 8> angband_terms;
  */
 static const concptr color_char = "dwsorgbuDWvyRGBU";
 
-/*
- * Specify attr/char pairs for visual special effects
- * Be sure to use "index & 0x7F" to avoid illegal access
+/*!
+ * @brief ボルト射出の軌跡を表す色付きシンボルテーブル
  */
-TERM_COLOR misc_to_attr[256];
-char misc_to_char[256];
+std::array<DisplaySymbol, 256> ds_bolt{};
 
 /*
  * Specify attr/char pairs for inventory items (by tval)
@@ -553,7 +551,7 @@ static TERM_COLOR spell_color(AttributeType type)
  * @param typ 魔法の効果属性
  * @return 方向キャラID
  */
-DisplaySymbol bolt_pict(const Pos2D &pos_src, const Pos2D &pos_dst, AttributeType typ)
+const DisplaySymbol &bolt_pict(const Pos2D &pos_src, const Pos2D &pos_dst, AttributeType typ)
 {
     int base;
     if (pos_dst == pos_src) {
@@ -571,9 +569,7 @@ DisplaySymbol bolt_pict(const Pos2D &pos_src, const Pos2D &pos_dst, AttributeTyp
     }
 
     const auto k = spell_color(typ);
-    const auto a = misc_to_attr[base + k];
-    const auto c = misc_to_char[base + k];
-    return { a, c };
+    return ds_bolt[base + k];
 }
 
 /*!
