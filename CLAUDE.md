@@ -250,6 +250,60 @@ Phase 1-8 完了後の継続提案（プレイヤー専用フィールドのク�
 
 ---
 
+## bakabakaband 独自仕様 (CreatureEntity 統合派生)
+
+### モンスター能力値補正 (`stat_modifiers`)
+
+`MonraceDefinition` に `std::array<tl::optional<int>, A_MAX> stat_modifiers` を持ち、
+JSON `lib/edit/MonraceDefinitions.jsonc` で個別モンスターの 6 能力値補正値を指定できる。
+
+```jsonc
+"stat_modifiers": { "STR": -3, "INT": -5, "WIS": -2, "DEX": -4, "CON": -1, "CHR": -2 }
+```
+
+各値は表示単位 (1 = +1.0 = 内部 10 単位)、`-40〜+40` の範囲。値が指定されない能力値は
+`get_stats()` のロール結果をそのまま使う。指定されている能力値は `place_monster_one()`
+内で chameleon 判定後の `new_monrace.stat_modifiers` を加算し、`stat_max/stat_cur/stat_use`
+を更新（`stat_max_max` 必要に応じて拡張）、最終的に `[30, 400]` にクランプする。
+
+街の `WILD_TOWN` フラグ付き `t` 系人間モンスター 44 体には負の補正値が一括付与済み
+(`fewer monsters... but tougher` ではなく flavor 重視のバランス)。
+
+### UNIQUE モンスターの個体名
+
+UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.name.string()` で
+種族名を個体名フィールドに自動セット。これにより:
+
+- `CreatureEntity::name` が ペットのニックネームと UNIQUE の個体名の双方で同形管理
+- `creature.is_named()` が UNIQUE でも true を返す (floor-leaver の保存判定で活用)
+- `monster_desc()` は UNIQUE 表示が「X「X」」とならないよう、`monster.name == monrace.name`
+  なら "called" 表記を抑止
+
+### HP/MP 自然回復計算の統一
+
+`compute_regen_amount(CreatureEntity &)` (`src/hpmp/hp-mp-regenerator.cpp`) が
+プレイヤー基準の自然回復係数を算出する共通ヘルパ:
+
+- `PY_REGEN_NORMAL` を起点に、満腹度・スタンス・呪い・ミュータント体質などは
+  `is_player()` ガードで適用
+- 再生種族フラグ・毒・切り傷・行動・地形衛生はプレイヤー/モンスター共通
+
+`process_player_hp_mp` (10 ターン毎) と `regenerate_monsters` (100 ターン毎、内部で 10
+スケールアップ) の両方で同じ計算式を使用。さらに `c` ステータス画面 (`display_player`)
+の `ENTRY_HP_REGEN`/`ENTRY_MP_REGEN` 表示もモンスター inspect 時に同じ式で表示される。
+
+### `psex` の SEX_NONE
+
+`player_sex::SEX_NONE = 4` (MAX_SEXES = 5) が追加され、`init_monster_profile()` で
+モンスター生成途中の中間値として `psex = SEX_NONE` に明示初期化される。
+`one_monster_placer` が `kind_flags` の MALE/FEMALE から確定値を上書きする。
+`get_sex_info()` は範囲外の値を SEX_NONE にフォールバック。
+
+`get_psex()` / `get_ppersonality()` は `CreatureEntity` の virtual アクセサ
+(将来モンスター固有のオーバーライド余地)。
+
+---
+
 ## 開発フロー
 
 ### PR の粒度
@@ -463,6 +517,19 @@ bakabakaband 側と上流側でよくある構造的差異を以下のルール�
 | `creature.effects()->stun().reset()` の値クリア | `creature.set_timed_effect(CreatureTimedEffect::STUN, 0)` |
 | `creature.effects()->cut().is_cut()` / `effects()->poison().is_poisoned()` | `creature.is_cut()` / `creature.is_poisoned()` (Phase 2 系の virtual) |
 | `PlayerType::get_timed_effect()` / `set_timed_effect()` のオーバーライド | bakabakaband 側では基底クラスに分岐ロジック統一済みのため不要 (PlayerType オーバーライドは廃止) |
+| `DungeonFeatureType::BIG` | `DungeonFeatureType::LARGEST` (上流 PR #5360 で改名済) |
+| `small_levels` / `empty_levels` / `always_small_levels` / `ironman_small_levels` / `ironman_empty_levels` | `allow_smallest_floor` / `allow_arena_floor` / `always_small_floor` / `ironman_smallest_floor` / `ironman_force_arena_floor` (上流 PR #5360 91177e87f) |
+| `GameOption` の旧 `(set, bits)` 引数 | `GameOption` の `GameOptionType::XXX` 列挙 (上流 PR #5363/#5364 で導入。bakabakaband 独自 `MONSTER_TOMBSTONES` (66) / `IRONMAN_ALLIANCE_HOSTILITY` (211) 追加済) |
+| `misc_to_attr[256]` / `misc_to_char[256]` 個別配列 | `misc_to_display_symbol[256]` (DisplaySymbol) → 後に `ds_bolt[256]` に改名 (上流 PR #5352) |
+| `ItemEntity *ref_item(...)` | `std::shared_ptr<ItemEntity> ref_item(...)` (上流 PR #5339) |
+| `ItemEntity *choose_object(...)` | `std::pair<std::shared_ptr<ItemEntity>, short> choose_item(...)` (上流 PR #5339; 関数名も改名) |
+| `wield_slot(creature, ItemEntity *)` | `wield_slot(creature, const ItemEntity &)` (上流 PR #5339) |
+| `ae_type::o_ptr` (ItemEntity *) | `ae_type::item` (`std::shared_ptr<ItemEntity>`) + コンストラクタ + `decide_activation_level()` メソッド (上流 PR #5339) |
+| `cosmic_cast_off(creature, ItemEntity **)` | `cosmic_cast_off(creature, const ItemEntity &)` 戻り値 `std::shared_ptr<ItemEntity>` (上流 PR #5342) |
+| `curse_weapon_object(creature, bool, ItemEntity *)` / `enchant_equipment(ItemEntity *, ...)` | 引数を `ItemEntity &` 参照に変更 (上流 PR #5342) |
+| `switch_activation(..., ItemEntity **, ...)` 戻り値 `bool` | `switch_activation(..., const ItemEntity &, ...)` 戻り値 `std::pair<bool, std::shared_ptr<ItemEntity>>` (上流 PR #5342) |
+| `activate_artifact(creature, ItemEntity *)` 戻り値あり | `activate_artifact(creature, std::shared_ptr<ItemEntity> &)` 戻り値廃止 (上流 PR #5342) |
+| `concptr ANGBAND_SYS/KEYBOARD/GRAF` | `std::string_view ANGBAND_SYS/KEYBOARD/GRAF` (上流 PR #5354) |
 
 **GCC 固有の注意**:
 上流は MSVC 前提のことが多く、`<cstdint>` 等のインクルード漏れがあれば追加する。
