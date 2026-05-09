@@ -208,10 +208,10 @@ static bool interpret_s_token(char *buf)
         return false;
     }
 
-    const auto j = std::stoi(zz[0], nullptr, 0);
-    const auto n1 = static_cast<uint8_t>(std::stoi(zz[1], nullptr, 0));
-    const auto n2 = static_cast<char>(std::stoi(zz[2], nullptr, 0));
-    misc_to_display_symbol[j] = DisplaySymbol(n1, n2);
+    const auto num = std::stoi(zz[0], nullptr, 0);
+    const auto color = static_cast<uint8_t>(std::stoi(zz[1], nullptr, 0));
+    const auto character = static_cast<char>(std::stoi(zz[2], nullptr, 0));
+    ds_bolt[num] = DisplaySymbol(color, character);
     return true;
 }
 
