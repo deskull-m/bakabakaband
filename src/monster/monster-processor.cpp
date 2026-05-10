@@ -381,7 +381,7 @@ bool vanish_summoned_children(CreatureEntity &creature, MONSTER_IDX m_idx, bool 
     }
 
     // parent_m_idxが自分自身を指している場合は召喚主は消滅している
-    if (monster.get_monster_profile().parent_m_idx != m_idx && floor.get_monster(monster.get_monster_profile().parent_m_idx).is_valid()) {
+    if (monster.get_parent_m_idx() != m_idx && floor.get_monster(monster.get_parent_m_idx()).is_valid()) {
         return false;
     }
 

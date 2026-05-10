@@ -634,9 +634,9 @@ bool CreatureEntity::is_hostile_to_melee(const CreatureEntity &other) const
         }
     }
 
-    if (this->get_monster_profile().alliance_idx != other.get_monster_profile().alliance_idx) {
+    if (this->get_alliance_idx() != other.get_alliance_idx()) {
         return true;
-    } else if (this->is_hostile_align(other.get_monster_profile().sub_align)) {
+    } else if (this->is_hostile_align(other.get_sub_align())) {
         if (this->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON) || other.get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON)) {
             return true;
         }
@@ -650,7 +650,7 @@ bool CreatureEntity::is_hostile_align(byte other_sub_align) const
     if (!this->has_monster_profile()) {
         return false;
     }
-    return CreatureEntity::check_sub_alignments(this->get_monster_profile().sub_align, other_sub_align);
+    return CreatureEntity::check_sub_alignments(this->get_sub_align(), other_sub_align);
 }
 
 bool CreatureEntity::is_mimicry() const
@@ -683,9 +683,9 @@ void CreatureEntity::set_hostile()
 
     this->get_monster_profile().mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
 
-    if (this->get_monster_profile().alliance_idx != AllianceType::NONE) {
+    if (this->get_alliance_idx() != AllianceType::NONE) {
         for (auto &monster : this->get_floor()->m_list) {
-            if (monster.get_monster_profile().alliance_idx == this->get_monster_profile().alliance_idx) {
+            if (monster.get_alliance_idx() == this->get_alliance_idx()) {
                 monster.get_monster_profile().mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
             }
         }
@@ -940,8 +940,8 @@ std::string CreatureEntity::build_looking_description(bool needs_attitude) const
     const std::string clone(this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::CLONED) ? ", clone" : "");
     const auto &apparent_monrace = this->get_appearance_monrace();
 
-    const bool show_alliance = this->has_monster_profile() && !this->is_pet() && this->get_monster_profile().alliance_idx != AllianceType::NONE;
-    const std::string alliance_part = show_alliance ? format("(%s)", alliance_list.at(this->get_monster_profile().alliance_idx)->name.data()) : "";
+    const bool show_alliance = this->has_monster_profile() && !this->is_pet() && this->get_alliance_idx() != AllianceType::NONE;
+    const std::string alliance_part = show_alliance ? format("(%s)", alliance_list.at(this->get_alliance_idx())->name.data()) : "";
 
     if ((apparent_monrace.r_tkills > 0) && (!this->has_monster_profile() || this->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::KAGE))) {
         constexpr auto fmt = _("レベル%d, %s%s%s%s", "Level %d, %s%s%s%s");

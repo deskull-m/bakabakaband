@@ -254,7 +254,7 @@ static void describe_monster_person(GridExamination *ge_ptr)
 
 static short describe_monster_item(CreatureEntity &creature, GridExamination *ge_ptr)
 {
-    for (const auto this_o_idx : ge_ptr->m_ptr->get_monster_profile().hold_o_idx_list) {
+    for (const auto this_o_idx : ge_ptr->m_ptr->get_held_objects()) {
         const auto &item = *creature.get_floor()->o_list[this_o_idx];
         const auto item_name = describe_flavor(creature, item, 0);
 #ifdef JP

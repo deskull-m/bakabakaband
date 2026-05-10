@@ -320,6 +320,51 @@ Phase 2 で主要な `is_xxx()` 系は仮想化済みだが、以下はまだ自
 
 ---
 
+## 提案 9: MonsterProfile フィールド virtual アクセサ化 ✅ 一部完了
+
+### 背景
+
+`MonsterProfile` の主要フィールド (alliance_idx / sub_align /
+parent_m_idx / smart / hold_o_idx_list) はそれぞれ十数件以上の
+直アクセスを持ち、プレイヤー側 (MonsterProfile を持たない) から
+呼ぶと tl::optional dereference でクラッシュする問題を抱えていた。
+提案 7 (ml) と同様の方針で virtual アクセサに集約する。
+
+### 作業内容
+
+`CreatureEntity` に 5 つの virtual アクセサを追加 (read-only):
+
+| 仮想関数 | 役割 | プレイヤー側デフォルト |
+|---|---|---|
+| `get_alliance_idx()` | アライアンス所属 | `AllianceType::NONE` |
+| `get_sub_align()` | サブアライメント | `SUB_ALIGN_NEUTRAL` |
+| `get_parent_m_idx()` | 召喚親モンスター | `0` |
+| `get_smart_flags()` | smart_learn フラグ群 (const ref) | 空フラグ集合 |
+| `get_held_objects()` | 保持アイテム ObjectIndexList (const ref) | 空リスト |
+
+### 移行結果
+
+- 読取り 54 箇所を新 virtual 経由に置換
+- 書込み・破壊的メソッド呼出 (set/reset/clear/add/pop_front 等) 58 箇所は
+  従来通り `monster.get_monster_profile().X` 形式で残置
+  (将来 setter virtual を整備する余地)
+
+### 効果
+
+- プレイヤー側で誤って呼んだ際の null dereference リスクを排除
+- `if (creature.has_monster_profile())` ガード忘れによるバグを防止
+- 提案 7 と同パターンで一貫性のある拡張
+
+### 残作業
+
+- mflag (227 箇所) の virtual 化は粒度を細かく (is_chameleon / is_kage 等
+  個別 virtual) して別バッチで進めると衝突を抑えられる
+- 書込み側 setter virtual の整備は call site が多様な mutation
+  (set/reset/clear/pop/push) を行うため、virtual 経由で全て表現すると
+  抽象コストが大きい。優先度低として保留
+
+---
+
 ## 提案 8: HP/MP 自然回復計算の virtual hook 化 ✅ 完了
 
 ### 背景

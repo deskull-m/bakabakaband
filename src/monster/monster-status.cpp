@@ -378,7 +378,7 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
 
     const auto old_hp = monster.hp;
     const auto old_maxhp = monster.max_maxhp;
-    const auto old_sub_align = monster.get_monster_profile().sub_align;
+    const auto old_sub_align = monster.get_sub_align();
 
     /* Hack -- Reduce the racial counter of previous monster */
     monster.get_real_monrace().decrement_current_numbers();

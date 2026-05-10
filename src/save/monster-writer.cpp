@@ -22,7 +22,7 @@ void MonsterWriter::write_to_savedata() const
     const auto flags = this->write_monster_flags();
 
     wr_s16b(enum2i(this->monster.r_idx));
-    wr_s32b(enum2i(this->monster.get_monster_profile().alliance_idx));
+    wr_s32b(enum2i(this->monster.get_alliance_idx()));
 
     wr_byte((byte)this->monster.y);
     wr_byte((byte)this->monster.x);
@@ -36,7 +36,7 @@ void MonsterWriter::write_to_savedata() const
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::SUB_ALIGN)) {
-        wr_byte(this->monster.get_monster_profile().sub_align);
+        wr_byte(this->monster.get_sub_align());
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::SLEEP)) {
@@ -56,7 +56,7 @@ uint32_t MonsterWriter::write_monster_flags() const
         set_bits(flags, SaveDataMonsterFlagType::AP_R_IDX);
     }
 
-    if (this->monster.get_monster_profile().sub_align) {
+    if (this->monster.get_sub_align()) {
         set_bits(flags, SaveDataMonsterFlagType::SUB_ALIGN);
     }
 
@@ -96,7 +96,7 @@ uint32_t MonsterWriter::write_monster_flags() const
         set_bits(flags, SaveDataMonsterFlagType::INVULNER);
     }
 
-    if (this->monster.get_monster_profile().smart.any()) {
+    if (this->monster.get_smart_flags().any()) {
         set_bits(flags, SaveDataMonsterFlagType::SMART);
     }
 
@@ -194,7 +194,7 @@ void MonsterWriter::write_monster_info(uint32_t flags) const
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::SMART)) {
-        wr_FlagGroup(this->monster.get_monster_profile().smart, wr_byte);
+        wr_FlagGroup(this->monster.get_smart_flags(), wr_byte);
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::EXP)) {
@@ -210,7 +210,7 @@ void MonsterWriter::write_monster_info(uint32_t flags) const
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::PARENT)) {
-        wr_s16b(this->monster.get_monster_profile().parent_m_idx);
+        wr_s16b(this->monster.get_parent_m_idx());
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::GOLD)) {

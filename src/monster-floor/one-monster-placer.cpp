@@ -380,7 +380,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     }
 
     if (m_ptr->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON) && is_summoned && new_monrace.kind_flags.has_none_of(alignment_mask)) {
-        m_ptr->get_monster_profile().sub_align = summoner.get_monster_profile().sub_align;
+        m_ptr->get_monster_profile().sub_align = summoner.get_sub_align();
     } else if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::CHAMELEON) && new_monrace.kind_flags.has(MonsterKindType::UNIQUE) && !is_summoned) {
         m_ptr->get_monster_profile().sub_align = SUB_ALIGN_NEUTRAL;
     } else {
@@ -471,8 +471,8 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         should_be_friendly |= any_bits(mode, PM_FORCE_FRIENDLY);
         auto force_hostile = monster_has_hostile_to_player(player, 0, -1, new_monrace);
         force_hostile |= floor.inside_arena;
-        if (m_ptr->get_monster_profile().alliance_idx != AllianceType::NONE) {
-            should_be_friendly |= alliance_list.at(m_ptr->get_monster_profile().alliance_idx)->isFriendly(player);
+        if (m_ptr->get_alliance_idx() != AllianceType::NONE) {
+            should_be_friendly |= alliance_list.at(m_ptr->get_alliance_idx())->isFriendly(player);
         }
         if (should_be_friendly && !force_hostile) {
             m_ptr->set_friendly();
