@@ -190,6 +190,8 @@ static void display_usage(const char *program)
     puts("  -mx11    To use X11");
     puts("  --       Sub options");
     puts("  -- -d    Set display name");
+    puts("  -- -fb   Use bitmap fonts");
+    puts("  -- -ft   Use TrueType fonts");
     puts("  -- -o    Request old 8x8 tile graphics");
     puts("  -- -a    Request Adam Bolt 16x16 tile graphics");
     puts("  -- -b    Request Bigtile graphics mode");
