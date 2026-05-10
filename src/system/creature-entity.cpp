@@ -534,6 +534,8 @@ short CreatureEntity::get_timed_effect(CreatureTimedEffect effect) const
             return eff.cut().current();
         case CreatureTimedEffect::POISON:
             return eff.poison().current();
+        case CreatureTimedEffect::PROTECTION:
+            return eff.protection().current();
         default:
             break;
         }
@@ -577,6 +579,9 @@ void CreatureEntity::set_timed_effect(CreatureTimedEffect effect, short value)
             return;
         case CreatureTimedEffect::POISON:
             eff.poison().set(value);
+            return;
+        case CreatureTimedEffect::PROTECTION:
+            eff.protection().set(value);
             return;
         default:
             break;
