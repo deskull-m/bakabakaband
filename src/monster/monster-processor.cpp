@@ -1621,9 +1621,8 @@ void sweep_monster_process(CreatureEntity &creature)
         monster.energy_need += ENERGY_NEED();
         auto m_name = monster_desc(creature, monster, 0);
 
-        if (monster.get_monster_profile().death_count > 0) {
-            monster.get_monster_profile().death_count--;
-            if (monster.get_monster_profile().death_count == 0) {
+        if (monster.get_death_count() > 0) {
+            if (monster.decrement_death_count() == 0) {
                 bool fear;
                 monster.max_maxhp = monster.maxhp = monster.hp = -1;
                 MonsterDamageProcessor mdp(creature, m_idx, 0, &fear, AttributeType::ATTACK);

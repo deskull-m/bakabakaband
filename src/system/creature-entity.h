@@ -993,6 +993,90 @@ public:
     }
 
     /*!
+     * @brief 変身先モンスター種族 ID を取得する (提案 19)
+     */
+    virtual MonraceId get_transform_r_idx() const
+    {
+        return this->has_monster_profile() ? this->get_monster_profile().transform_r_idx : MonraceId::PLAYER;
+    }
+
+    /*!
+     * @brief 変身先モンスター種族 ID を設定する (提案 19)
+     */
+    virtual void set_transform_r_idx(MonraceId r_idx)
+    {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().transform_r_idx = r_idx;
+        }
+    }
+
+    /*!
+     * @brief 変身する HP 閾値 (最大 HP の %) を取得する (提案 19)
+     */
+    virtual PERCENTAGE get_transform_hp_threshold() const
+    {
+        return this->has_monster_profile() ? this->get_monster_profile().transform_hp_threshold : 0;
+    }
+
+    /*!
+     * @brief 変身する HP 閾値を設定する (提案 19)
+     */
+    virtual void set_transform_hp_threshold(PERCENTAGE threshold)
+    {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().transform_hp_threshold = threshold;
+        }
+    }
+
+    /*!
+     * @brief 変身済みかどうか (提案 19)
+     */
+    virtual bool has_transformed() const
+    {
+        return this->has_monster_profile() && this->get_monster_profile().has_transformed;
+    }
+
+    /*!
+     * @brief 変身済みフラグを設定する (提案 19)
+     */
+    virtual void set_has_transformed(bool transformed)
+    {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().has_transformed = transformed;
+        }
+    }
+
+    /*!
+     * @brief 自壊までの残りターン数を取得する (提案 19)
+     */
+    virtual int get_death_count() const
+    {
+        return this->has_monster_profile() ? this->get_monster_profile().death_count : 0;
+    }
+
+    /*!
+     * @brief 自壊までの残りターン数を設定する (提案 19)
+     */
+    virtual void set_death_count(int count)
+    {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().death_count = count;
+        }
+    }
+
+    /*!
+     * @brief 自壊までの残りターン数を 1 減らす (提案 19)
+     * @return 減算後の値
+     */
+    virtual int decrement_death_count()
+    {
+        if (this->has_monster_profile()) {
+            return --this->get_monster_profile().death_count;
+        }
+        return 0;
+    }
+
+    /*!
      * @brief MonsterConstantFlagType (mflag2) のチェック共通ヘルパ
      * @details 提案 15: mflag2.has(...) パターンを virtual で集約
      */
