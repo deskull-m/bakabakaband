@@ -381,19 +381,17 @@ static void do_name_pet(CreatureEntity &creature)
 static MONSTER_IDX select_target_pet(CreatureEntity &creature)
 {
     auto &floor = *creature.get_floor();
+    // [提案 14] AI ターゲット選定共通化: 騎乗ペットを先頭、続いて他の可視ペット
     std::vector<MONSTER_IDX> pet_indices;
     if (creature.riding != 0) {
         pet_indices.push_back(creature.riding);
     }
-    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-        if (i == creature.riding) {
-            continue;
+    const auto riding_idx = creature.riding;
+    for (auto idx : creature.collect_creatures(
+             [](const CreatureEntity &c) { return c.is_pet() && c.is_visible_on_map(); })) {
+        if (idx != riding_idx) {
+            pet_indices.push_back(idx);
         }
-        const auto &mon = floor.get_monster(i);
-        if (!mon.is_valid() || !mon.is_pet() || !mon.is_visible_on_map()) {
-            continue;
-        }
-        pet_indices.push_back(i);
     }
     if (pet_indices.empty()) {
         msg_print(_("近くに視認可能なペットがいない。", "No visible pet nearby."));

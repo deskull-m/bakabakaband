@@ -3,6 +3,7 @@
 #include "floor/floor-object.h"
 #include "floor/geometry.h"
 #include "game-option/birth-options.h"
+#include "grid/grid.h"
 #include "hpmp/hp-mp-regenerator.h"
 #include "inventory/inventory-object.h"
 #include "inventory/inventory-slot-types.h"
@@ -39,6 +40,7 @@
 #include "system/monrace/monrace-list.h"
 #include "system/monster-profile.h"
 #include "system/redrawing-flags-updater.h"
+#include "target/projection-path-calculator.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
 #include "term/z-rand.h"
@@ -961,6 +963,56 @@ void CreatureEntity::initialize_equivalent_player_classes()
         this->pclass_ref = nullptr;
         this->pclass = PlayerClassType::WARRIOR;
     }
+}
+
+// [提案 14] AI ターゲット選定の共通化実装
+MONSTER_IDX CreatureEntity::find_nearest_creature(const CreaturePredicate &predicate, bool require_projectable) const
+{
+    const auto &floor = *this->get_floor();
+    const auto self_pos = this->get_position();
+    MONSTER_IDX best_idx = 0;
+    int best_dist = INT_MAX;
+    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+        const auto &candidate = floor.get_monster(i);
+        if (!candidate.is_valid() || !predicate(candidate)) {
+            continue;
+        }
+        const auto c_pos = candidate.get_position();
+        if (require_projectable && !projectable(floor, self_pos, c_pos)) {
+            continue;
+        }
+        const auto dist = Grid::calc_distance(self_pos, c_pos);
+        if (dist < best_dist) {
+            best_dist = dist;
+            best_idx = i;
+        }
+    }
+    return best_idx;
+}
+
+bool CreatureEntity::has_visible_creature(const CreaturePredicate &predicate) const
+{
+    const auto &floor = *this->get_floor();
+    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+        const auto &candidate = floor.get_monster(i);
+        if (candidate.is_valid() && predicate(candidate)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+std::vector<MONSTER_IDX> CreatureEntity::collect_creatures(const CreaturePredicate &predicate) const
+{
+    const auto &floor = *this->get_floor();
+    std::vector<MONSTER_IDX> result;
+    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+        const auto &candidate = floor.get_monster(i);
+        if (candidate.is_valid() && predicate(candidate)) {
+            result.push_back(i);
+        }
+    }
+    return result;
 }
 
 int CreatureEntity::get_ac() const
