@@ -881,7 +881,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
     mark_monsters_present(creature);
 
     turn_flags_ptr->aware = process_stealth(creature, m_idx);
-    if (monrace.behavior_flags.has(MonsterBehaviorType::FRIENDLY_STANDBY) && monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::FRIENDLY)) {
+    if (monrace.behavior_flags.has(MonsterBehaviorType::FRIENDLY_STANDBY) && monster.is_friendly()) {
         return;
     }
 
@@ -1087,7 +1087,7 @@ bool vanish_summoned_children(CreatureEntity &creature, MONSTER_IDX m_idx, bool 
     }
 
     const auto m_name = monster_desc(creature, monster, 0);
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::QUYLTHLUG_BORN)) {
+    if (monster.is_quylthlug_born()) {
         if (see_m) {
             msg_format(_("%sは崩壊して朽ち果てた。", "%s^ crumbles into dust."), m_name.data());
         }
@@ -1095,7 +1095,7 @@ bool vanish_summoned_children(CreatureEntity &creature, MONSTER_IDX m_idx, bool 
         if (see_m) {
             msg_format(_("%sは主を失い消え去った。", "%s^ disappears without a master."), m_name.data());
         }
-    } else if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::PET)) {
+    } else if (monster.is_pet()) {
         if (see_m) {
             msg_format(_("%sは消え去った。", "%s^ disappears."), m_name.data());
         }
@@ -1232,7 +1232,7 @@ void process_special(CreatureEntity &creature, MONSTER_IDX m_idx)
     can_do_special &= randint1(100) <= monrace.freq_spell;
 
     // 違法改造モンスターの自滅処理
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED) && one_in_(50)) {
+    if (monster.is_illegal_modified() && one_in_(50)) {
         const auto m_name = monster_desc(creature, monster, 0);
         const auto pos = monster.get_position();
         msg_format(_("%sが突然機能停止し、爆発した！", "%s suddenly malfunctions and explodes!"), m_name.data());
@@ -1501,9 +1501,7 @@ bool process_monster_fear(CreatureEntity &creature, turn_flags *turn_flags_ptr, 
     const auto m_name = monster_desc(creature, *m_ptr, 0);
     const auto &monrace = m_ptr->get_monrace();
 
-    if (monrace.resistance_flags.has_not(MonsterResistanceType::NO_DEFECATE) &&
-        m_ptr->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::DEFECATED) &&
-        m_ptr->is_fearful() && one_in_(20)) {
+    if (monrace.resistance_flags.has_not(MonsterResistanceType::NO_DEFECATE) && !m_ptr->is_defecated() && m_ptr->is_fearful() && one_in_(20)) {
         msg_format(_("%s^は恐怖のあまり脱糞した！", "%s^ was defecated because of fear!"), m_name.data());
         ItemEntity item;
         item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
@@ -1511,9 +1509,7 @@ bool process_monster_fear(CreatureEntity &creature, turn_flags *turn_flags_ptr, 
         m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::DEFECATED);
     }
 
-    if (monrace.resistance_flags.has_not(MonsterResistanceType::NO_VOMIT) &&
-        m_ptr->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::VOMITED) &&
-        m_ptr->is_fearful() && one_in_(20)) {
+    if (monrace.resistance_flags.has_not(MonsterResistanceType::NO_VOMIT) && !m_ptr->is_vomited() && m_ptr->is_fearful() && one_in_(20)) {
         msg_format(_("%s^は恐怖のあまり嘔吐した！", "%s^ vomited in fear!"), m_name.data());
         ItemEntity item;
         item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_VOMITTING }));

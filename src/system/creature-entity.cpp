@@ -163,7 +163,7 @@ MonraceDefinition &CreatureEntity::get_appearance_monrace() const
 
 MonraceId CreatureEntity::get_real_monrace_id() const
 {
-    if (!this->has_monster_profile() || this->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON)) {
+    if (!this->is_chameleon()) {
         return this->r_idx;
     }
 
@@ -230,7 +230,7 @@ bool CreatureEntity::is_male() const
 bool CreatureEntity::is_female() const
 {
     const auto has_female_psex = (this->psex == SEX_FEMALE) || (this->psex == SEX_BISEXUAL);
-    return has_female_psex || (this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::WAIFUIZED));
+    return has_female_psex || this->is_waifuized();
 }
 
 std::pair<TERM_COLOR, int> CreatureEntity::get_hp_bar_data() const
@@ -677,7 +677,7 @@ bool CreatureEntity::is_hostile_to_melee(const CreatureEntity &other) const
     if (this->get_alliance_idx() != other.get_alliance_idx()) {
         return true;
     } else if (this->is_hostile_align(other.get_sub_align())) {
-        if (this->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON) || other.get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON)) {
+        if (!this->is_chameleon() || !other.is_chameleon()) {
             return true;
         }
     }
@@ -1017,7 +1017,7 @@ std::vector<MONSTER_IDX> CreatureEntity::collect_creatures(const CreaturePredica
 
 int CreatureEntity::get_ac() const
 {
-    if (this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::NAKED)) {
+    if (this->is_naked()) {
         return 0;
     }
 
@@ -1049,7 +1049,7 @@ std::string CreatureEntity::build_looking_description(bool needs_attitude) const
     const bool show_alliance = this->has_monster_profile() && !this->is_pet() && this->get_alliance_idx() != AllianceType::NONE;
     const std::string alliance_part = show_alliance ? format("(%s)", alliance_list.at(this->get_alliance_idx())->name.data()) : "";
 
-    if ((apparent_monrace.r_tkills > 0) && (!this->has_monster_profile() || this->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::KAGE))) {
+    if ((apparent_monrace.r_tkills > 0) && !this->is_kage()) {
         constexpr auto fmt = _("レベル%d, %s%s%s%s", "Level %d, %s%s%s%s");
         return format(fmt, apparent_monrace.level, description.data(), attitude.data(), clone.data(), alliance_part.data());
     }
@@ -1175,7 +1175,7 @@ byte CreatureEntity::get_temporary_speed() const
     }
 
     if (this->has_monster_profile()) {
-        if (this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FAT)) {
+        if (this->is_fat()) {
             current_speed -= 5;
         }
 

@@ -308,7 +308,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     const auto is_summoned = summoner_m_idx.has_value();
     const CreatureEntity &summoner = floor.m_list[summoner_m_idx.value_or(0)];
 
-    auto same_appearance_as_parent = m_ptr->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON);
+    auto same_appearance_as_parent = !m_ptr->is_chameleon();
     same_appearance_as_parent &= any_bits(mode, PM_MULTIPLY);
     same_appearance_as_parent &= is_summoned && !summoner.is_original_ap();
 
@@ -329,14 +329,11 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && one_in_(100)) {
         m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::HUGE);
-    } else if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
-               m_ptr->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::HUGE) && one_in_(15)) {
+    } else if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && !m_ptr->is_huge() && one_in_(15)) {
         m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::LARGE);
     }
 
-    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
-        m_ptr->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::LARGE) &&
-        m_ptr->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::HUGE) && one_in_(18)) {
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && !m_ptr->is_large() && !m_ptr->is_huge() && one_in_(18)) {
         m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::SMALL);
     }
 
@@ -344,8 +341,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         monrace.kind_flags.has_not(MonsterKindType::NONLIVING) && one_in_(20)) {
         m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::FAT);
     } else if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
-               monrace.kind_flags.has_not(MonsterKindType::NONLIVING) &&
-               m_ptr->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::FAT) && one_in_(25)) {
+               monrace.kind_flags.has_not(MonsterKindType::NONLIVING) && !m_ptr->is_fat() && one_in_(25)) {
         m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::GAUNT);
     }
 
@@ -379,7 +375,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::LIGHTWEIGHT);
     }
 
-    if (m_ptr->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON) && is_summoned && new_monrace.kind_flags.has_none_of(alignment_mask)) {
+    if (!m_ptr->is_chameleon() && is_summoned && new_monrace.kind_flags.has_none_of(alignment_mask)) {
         m_ptr->get_monster_profile().sub_align = summoner.get_sub_align();
     } else if (m_ptr->is_chameleon() && new_monrace.kind_flags.has(MonsterKindType::UNIQUE) && !is_summoned) {
         m_ptr->get_monster_profile().sub_align = SUB_ALIGN_NEUTRAL;
@@ -491,36 +487,36 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         m_ptr->max_maxhp = new_monrace.hit_dice.roll();
     }
 
-    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::HUGE)) {
+    if (m_ptr->is_huge()) {
         m_ptr->max_maxhp *= (randint1(8) + 15) / 8;
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
-    } else if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::LARGE)) {
+    } else if (m_ptr->is_large()) {
         m_ptr->max_maxhp *= (randint1(5) + 10) / 8;
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
     }
-    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::SMALL)) {
+    if (m_ptr->is_small()) {
         m_ptr->max_maxhp *= (randint1(2) + 4) / 8;
         m_ptr->max_maxhp = std::max(1, m_ptr->max_maxhp);
     }
-    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::FAT)) {
+    if (m_ptr->is_fat()) {
         m_ptr->max_maxhp *= (randint1(3) + 8) / 8;
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
     }
-    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::GAUNT)) {
+    if (m_ptr->is_gaunt()) {
         m_ptr->max_maxhp *= (randint1(3) + 4) / 8;
         m_ptr->max_maxhp = std::max(1, m_ptr->max_maxhp);
     }
-    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::ZOMBIFIED)) {
+    if (m_ptr->is_zombified()) {
         m_ptr->max_maxhp *= (randint1(3) + 5) / 8;
         m_ptr->max_maxhp = std::max(1, m_ptr->max_maxhp);
         // ゾンビ化したモンスターにUNDEADフラグを付与
         m_ptr->get_monrace().kind_flags.set(MonsterKindType::UNDEAD);
     }
-    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
+    if (m_ptr->is_illegal_modified()) {
         m_ptr->max_maxhp *= (randint1(3) + 10) / 8; // 1.5倍～1.75倍のHPボーナス
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
     }
-    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::LIGHTWEIGHT)) {
+    if (m_ptr->is_lightweight()) {
         m_ptr->max_maxhp *= (randint1(2) + 5) / 8; // 0.625倍～0.75倍のHP減少
         m_ptr->max_maxhp = std::max(1, m_ptr->max_maxhp);
     }
@@ -556,23 +552,23 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     // Initialize AC from monster race
     m_ptr->ac = new_monrace.ac;
-    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
+    if (m_ptr->is_illegal_modified()) {
         m_ptr->ac += randint1(10) + 5; // +6～+15のACボーナス
     }
 
-    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::HUGE)) {
+    if (m_ptr->is_huge()) {
         m_ptr->speed -= randint1(2) + 2;
     }
-    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::GAUNT)) {
+    if (m_ptr->is_gaunt()) {
         m_ptr->speed -= randint1(3);
     }
-    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::SMALL)) {
+    if (m_ptr->is_small()) {
         m_ptr->speed += randint1(2) + 1;
     }
-    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
+    if (m_ptr->is_illegal_modified()) {
         m_ptr->speed += randint1(5) + 3; // +3～+7の加速ボーナス
     }
-    if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::LIGHTWEIGHT)) {
+    if (m_ptr->is_lightweight()) {
         m_ptr->speed += randint1(3) + 2; // +2～+4の加速ボーナス
     }
 

@@ -60,7 +60,7 @@ bool genocide_aux(CreatureEntity &creature, MONSTER_IDX m_idx, int power, bool p
         resist = true;
     } else if (player_cast && (monrace.level > randint0(power))) {
         resist = true;
-    } else if (player_cast && monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::NOGENO)) {
+    } else if (player_cast && monster.is_nogeno()) {
         resist = true;
     } else {
         if (record_named_pet && monster.is_named_pet()) {

@@ -961,6 +961,108 @@ public:
         return this->has_constant_flag(MonsterConstantFlagType::NOPET);
     }
 
+    /*! @brief 巨大サイズ (HUGE) 個体修飾子 */
+    virtual bool is_huge() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::HUGE);
+    }
+
+    /*! @brief 大型サイズ (LARGE) 個体修飾子 */
+    virtual bool is_large() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::LARGE);
+    }
+
+    /*! @brief 小型サイズ (SMALL) 個体修飾子 */
+    virtual bool is_small() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::SMALL);
+    }
+
+    /*! @brief 太め (FAT) 個体修飾子 */
+    virtual bool is_fat() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::FAT);
+    }
+
+    /*! @brief 痩せ (GAUNT) 個体修飾子 */
+    virtual bool is_gaunt() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::GAUNT);
+    }
+
+    /*! @brief 軽量 (LIGHTWEIGHT) 個体修飾子 */
+    virtual bool is_lightweight() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::LIGHTWEIGHT);
+    }
+
+    /*! @brief 全裸 (NAKED) 個体修飾子 */
+    virtual bool is_naked() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::NAKED);
+    }
+
+    /*! @brief ゾンビ化 (ZOMBIFIED) 個体修飾子 */
+    virtual bool is_zombified() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::ZOMBIFIED);
+    }
+
+    /*! @brief 不正改造個体 (ILLEGAL_MODIFIED) */
+    virtual bool is_illegal_modified() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::ILLEGAL_MODIFIED);
+    }
+
+    /*! @brief サンタ化 (SANTA) 個体 */
+    virtual bool is_santa() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::SANTA);
+    }
+
+    /*! @brief 怒り (ANGER) 状態 */
+    virtual bool is_angered() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::ANGER);
+    }
+
+    /*! @brief 嫁化 (WAIFUIZED) 個体 */
+    virtual bool is_waifuized() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::WAIFUIZED);
+    }
+
+    /*! @brief クイルスラグ産まれ (QUYLTHLUG_BORN) */
+    virtual bool is_quylthlug_born() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::QUYLTHLUG_BORN);
+    }
+
+    /*! @brief 排泄済み (DEFECATED) */
+    virtual bool is_defecated() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::DEFECATED);
+    }
+
+    /*! @brief 嘔吐済み (VOMITED) */
+    virtual bool is_vomited() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::VOMITED);
+    }
+
+    /*! @brief 流路追跡を行わない (NOFLOW) */
+    virtual bool has_noflow() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::NOFLOW);
+    }
+
+    /*! @brief 抹殺対象外 (NOGENO) */
+    virtual bool is_nogeno() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::NOGENO);
+    }
+
     /*!
      * @brief プレイヤーに対する学習フラグ（smart_learn）を取得する
      * @return 学習フラグ群。プレイヤー側は空のフラグ集合を返す
