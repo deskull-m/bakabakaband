@@ -22,6 +22,7 @@ enum class CreatureTimedEffect {
     HALLUCINATION, /*!< 幻覚 / Hallucination */
     CUT, /*!< 切り傷 / Cut */
     POISON, /*!< 毒 / Poison */
+    PROTECTION, /*!< 対邪悪結界 / Protection from Evil */
 
     // --- プレイヤー専用：戦闘バフ系 ---
     HERO, /*!< 士気高揚 / Heroism */

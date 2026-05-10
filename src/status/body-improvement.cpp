@@ -27,7 +27,7 @@ bool BodyImprovement::has_effect() const
 
 void BodyImprovement::mod_protection(short v, bool is_decrease)
 {
-    this->set_protection(this->creature_ptr->effects()->protection().current() + v, is_decrease);
+    this->set_protection(this->creature_ptr->get_timed_effect(CreatureTimedEffect::PROTECTION) + v, is_decrease);
 }
 
 /*!
