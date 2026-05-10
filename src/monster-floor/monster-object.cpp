@@ -10,6 +10,7 @@
 #include "floor/floor-object.h"
 #include "floor/geometry.h"
 #include "inventory/inventory-object.h"
+#include "inventory/inventory-slot-types.h"
 #include "monster-race/race-flags-resistance.h"
 #include "monster-race/race-resistance-mask.h"
 #include "monster/monster-describer.h"
@@ -18,6 +19,7 @@
 #include "monster/monster-processor-util.h"
 #include "monster/smart-learn-types.h"
 #include "object-enchant/tr-types.h"
+#include "object/object-info.h"
 #include "object/object-mark-types.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
@@ -156,7 +158,21 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
         picked.iy = picked.ix = 0;
         picked.held_m_idx = 0;
         delete_object_idx(creature, this_o_idx);
-        (void)monster.store_item(picked);
+
+        // [フェーズ B-1] 装備可能なアイテムは空きスロットがあれば自動装備
+        // (1 個のみ; スタックは pack に格納)
+        const auto eq_slot = wield_slot(monster, picked);
+        const bool can_auto_equip = (eq_slot >= INVEN_MAIN_HAND) && (eq_slot < INVEN_TOTAL) && !monster.inventory[eq_slot]->is_valid() && (picked.number == 1);
+        if (can_auto_equip) {
+            *monster.inventory[eq_slot] = picked;
+            monster.equip_cnt++;
+            if (player_can_see_bold(creature, ny, nx)) {
+                const auto eq_name = describe_flavor(creature, *monster.inventory[eq_slot], 0);
+                msg_format(_("%s^は%sを装備した。", "%s^ wields %s."), m_name.data(), eq_name.data());
+            }
+        } else {
+            (void)monster.store_item(picked);
+        }
 
         RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::FOUND_ITEMS);
         return;

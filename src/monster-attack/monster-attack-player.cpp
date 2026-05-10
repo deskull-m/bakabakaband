@@ -264,6 +264,26 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
         this->damage = 0;
     }
 
+    // [フェーズ B-2b] 装備武器によるダメージボーナス
+    // 武器を持って振るう種別の打撃 (HIT/PUNCH/SLASH/STING) のみ、
+    // INVEN_MAIN_HAND の武器ダメージ (dice + to_d) を加算する
+    if (!this->explode) {
+        switch (this->method) {
+        case RaceBlowMethodType::HIT:
+        case RaceBlowMethodType::PUNCH:
+        case RaceBlowMethodType::SLASH:
+        case RaceBlowMethodType::STING: {
+            const auto &weapon = *this->m_ptr->inventory[INVEN_MAIN_HAND];
+            if (weapon.is_valid()) {
+                this->damage += weapon.damage_dice.roll() + weapon.to_d;
+            }
+            break;
+        }
+        default:
+            break;
+        }
+    }
+
     switch_monster_blow_to_player(creature, this);
     this->select_cut_stun();
     this->calc_player_cut();
