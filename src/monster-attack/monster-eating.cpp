@@ -114,7 +114,8 @@ static void move_item_to_monster(MonsterAttackPlayer *monap_ptr)
     stolen.marked.clear().set(OmType::TOUCHED);
     stolen.held_m_idx = 0;
     stolen.iy = stolen.ix = 0;
-    (void)monap_ptr->m_ptr->store_item(stolen);
+    // [フェーズ C-2] 装備可能なら盗賊が即座に装備、不可ならパックへ
+    (void)monap_ptr->m_ptr->acquire_item(stolen);
 }
 
 /*!
