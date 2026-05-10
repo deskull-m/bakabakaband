@@ -9,6 +9,7 @@
 #include "flavor/flavor-describer.h"
 #include "floor/floor-object.h"
 #include "floor/geometry.h"
+#include "inventory/inventory-object.h"
 #include "monster-race/race-flags-resistance.h"
 #include "monster-race/race-resistance-mask.h"
 #include "monster/monster-describer.h"
@@ -148,12 +149,15 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
             msg_format(_("%s^が%sを拾った。", "%s^ picks up %s."), m_name.data(), o_name.data());
         }
 
-        excise_object_idx(*creature.get_floor(), this_o_idx);
-        // 意図としては OmType::TOUCHED を維持しつつ OmType::FOUND を消す事と思われるが一応元のロジックを維持しておく
-        o_ptr->marked &= { OmType::TOUCHED };
-        o_ptr->iy = o_ptr->ix = 0;
-        o_ptr->held_m_idx = m_idx;
-        monster.get_monster_profile().hold_o_idx_list.add(*creature.get_floor(), this_o_idx);
+        // [フェーズ A-5] inventory[] に格納し、floor.o_list 側のエントリは
+        // delete_object_idx で破棄する (旧 hold_o_idx_list / held_m_idx 経路は廃止)
+        auto picked = o_ptr->clone();
+        picked.marked.clear().set(OmType::TOUCHED);
+        picked.iy = picked.ix = 0;
+        picked.held_m_idx = 0;
+        delete_object_idx(creature, this_o_idx);
+        (void)monster.store_item(picked);
+
         RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::FOUND_ITEMS);
         return;
     }
@@ -210,23 +214,17 @@ void update_object_by_monster_movement(CreatureEntity &creature, turn_flags *tur
 
 /*!
  * @brief モンスターが盗みや拾いで確保していたアイテムを全てドロップさせる / Drop all items carried by a monster
- * @param creature クリーチャーへの参照
- * @param m_ptr モンスター参照ポインタ
+ * @param creature クリーチャーへの参照 (フロア・UI 文脈)
+ * @param target ドロップ元クリーチャー (モンスター)
+ * @details
+ * フェーズ A-2 で inventory[] からのドロップに切替済み、フェーズ A-4b で
+ * レガシー hold_o_idx_list 経路を完全削除。フェーズ A-5 で
+ * `target.drop_all_inventory(creature)` に集約。
  */
 void monster_drop_carried_objects(CreatureEntity &creature, CreatureEntity &target)
 {
     if (!target.has_monster_profile()) {
         return;
     }
-
-    auto &profile = target.get_monster_profile();
-    for (auto it = profile.hold_o_idx_list.begin(); it != profile.hold_o_idx_list.end();) {
-        const auto this_o_idx = *it++;
-        auto drop_item = creature.get_floor()->o_list[this_o_idx]->clone();
-        drop_item.held_m_idx = 0;
-        delete_object_idx(creature, this_o_idx);
-        (void)drop_near(creature, drop_item, target.get_position());
-    }
-
-    profile.hold_o_idx_list.clear();
+    target.drop_all_inventory(creature);
 }

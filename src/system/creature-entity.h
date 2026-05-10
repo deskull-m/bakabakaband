@@ -827,6 +827,26 @@ public:
     }
 
     /*!
+     * @brief このクリーチャーの所持品にアイテムを格納する
+     * @param item 格納するアイテム (内部でクローンされる)
+     * @return 格納されたインベントリスロットID、失敗時 -1
+     * @details inventory[INVEN_PACK] の空きスロットに対しスタック吸収または新規格納を行う。
+     *          プレイヤー・モンスター共通 API として利用する。
+     *          実装は free function `store_item_to_inventory()` (inventory/inventory-object.cpp)
+     *          に委譲する。
+     */
+    int16_t store_item(const ItemEntity &item);
+
+    /*!
+     * @brief このクリーチャーの所持品全てを近隣にドロップする
+     * @param dropper ドロップ処理の主体 (フロア・UI 文脈の参照クリーチャー)
+     * @details inventory[INVEN_TOTAL] を走査し各有効アイテムを drop_near() でドロップ。
+     *          drop 後 inventory[] を wipe し inven_cnt / equip_cnt を 0 にリセット。
+     *          モンスター死亡時のアイテムドロップに使用される。
+     */
+    void drop_all_inventory(CreatureEntity &dropper);
+
+    /*!
      * @brief クリーチャーのマップ上視認状態を設定する
      * @param value 視認状態
      * @details モンスターのみ意味を持つ。プレイヤーには無効。
@@ -875,19 +895,6 @@ public:
             return this->get_monster_profile().smart;
         }
         static const EnumClassFlagGroup<MonsterSmartLearnType> empty{};
-        return empty;
-    }
-
-    /*!
-     * @brief このクリーチャーが保持しているアイテムリストを取得する
-     * @return 保持アイテム ObjectIndexList。プレイヤー側は空リストを返す
-     */
-    virtual const ObjectIndexList &get_held_objects() const
-    {
-        if (this->has_monster_profile()) {
-            return this->get_monster_profile().hold_o_idx_list;
-        }
-        static const ObjectIndexList empty{};
         return empty;
     }
 

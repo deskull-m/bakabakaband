@@ -37,11 +37,9 @@ static void compact_monsters_aux(CreatureEntity &creature, MONSTER_IDX i1, MONST
     auto &grid = floor.grid_array[y][x];
     grid.m_idx = i2;
 
-    for (const auto this_o_idx : monster.get_held_objects()) {
-        ItemEntity *o_ptr;
-        o_ptr = floor.o_list[this_o_idx].get();
-        o_ptr->held_m_idx = i2;
-    }
+    // [フェーズ A-4b] 所持アイテムは inventory[] (CreatureEntity 共通) に統合済み。
+    // monster は floor.m_list[i1→i2] の代入時に inventory[] を含めて移動するため、
+    // floor.o_list 経由の held_m_idx 更新は不要
 
     const auto target_m_idx = Target::get_last_target().get_m_idx();
     if (target_m_idx == i1) {

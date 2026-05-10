@@ -318,20 +318,17 @@ void delete_items(CreatureEntity &creature, ObjectIndexList &o_idx_list)
 }
 
 /*!
- * @brief 指定したOBJECT_IDXを含むリスト(モンスター所持リスト or 床上スタックリスト)への参照を得る
- * @param floo_ptr 現在フロアへの参照ポインタ
- * @param o_idx 参照を得るリストに含まれるOBJECT_IDX
- * @return o_idxを含む ObjectIndexList への参照
+ * @brief 指定した OBJECT_IDX を含む床上スタックリストへの参照を得る
+ * @param floor 現在フロアへの参照
+ * @param o_idx 参照を得るリストに含まれる OBJECT_IDX
+ * @return o_idx を含む ObjectIndexList への参照
+ * @details [フェーズ A-4b] モンスター所持アイテムは monster.inventory[] に
+ * 一本化したため、本関数は床上スタック (Grid::o_idx_list) のみを返す。
  */
 ObjectIndexList &get_o_idx_list_contains(FloorType &floor, OBJECT_IDX o_idx)
 {
     auto *o_ptr = floor.o_list[o_idx].get();
-
-    if (o_ptr->is_held_by_monster()) {
-        return floor.get_monster(o_ptr->held_m_idx).get_monster_profile().hold_o_idx_list;
-    } else {
-        return floor.grid_array[o_ptr->iy][o_ptr->ix].o_idx_list;
-    }
+    return floor.grid_array[o_ptr->iy][o_ptr->ix].o_idx_list;
 }
 
 /*!

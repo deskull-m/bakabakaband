@@ -126,7 +126,6 @@ static MonraceDefinition &set_pet_params(CreatureEntity &creature, const int cur
     monster.set_floor(creature.get_floor());
     monster.set_visible_on_map(true);
     monster.set_timed_effect(CreatureTimedEffect::SLEEP_OR_PARALYSIS, 0);
-    monster.get_monster_profile().hold_o_idx_list.clear();
     monster.reset_target();
     auto &r_ref = monster.get_real_monrace();
     if (!ironman_nightmare) {

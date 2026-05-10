@@ -3,7 +3,6 @@
 #include "alliance/alliance.h"
 #include "monster/monster-flag-types.h"
 #include "monster/smart-learn-types.h"
-#include "object/object-index-list.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "util/flag-group.h"
 #include <vector>
@@ -28,7 +27,6 @@ struct MonsterProfile {
     EnumClassFlagGroup<MonsterTemporaryFlagType> mflag{}; /*!< モンスター個体に与えられた特殊フラグ1 (セーブ不要) / Extra monster flags */
     EnumClassFlagGroup<MonsterConstantFlagType> mflag2{}; /*!< モンスター個体に与えられた特殊フラグ2 (セーブ必要) / Extra monster flags */
     bool ml{}; /*!< モンスターがプレイヤーにとって視認できるか(処理のためのテンポラリ変数) Monster is "visible" */
-    ObjectIndexList hold_o_idx_list{}; /*!< モンスターが所持しているアイテムのリスト / Object list being held (if any) */
     EnumClassFlagGroup<MonsterSmartLearnType> smart{}; /*!< モンスターのプレイヤーに対する学習状態 / Field for "smart_learn" */
     MONSTER_IDX parent_m_idx{}; /*!< 召喚主のモンスターID */
     MonraceId transform_r_idx{}; /*!< 変身先モンスター種族ID */

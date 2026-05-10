@@ -96,7 +96,14 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
         return false;
     }
 
-    bool preserve_hold_objects = !back_m.get_held_objects().empty();
+    // [フェーズ A-4] 所持アイテムは inventory[] (CreatureEntity 共通) で判定する
+    bool preserve_hold_objects = false;
+    for (const auto &item : back_m.inventory) {
+        if (item->is_valid()) {
+            preserve_hold_objects = true;
+            break;
+        }
+    }
 
     BIT_FLAGS mode = 0L;
     if (monster.is_friendly()) {
@@ -109,7 +116,6 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
         mode |= PM_NO_PET;
     }
 
-    monster.get_monster_profile().hold_o_idx_list.clear();
     delete_monster_idx(creature, grid.m_idx);
     bool polymorphed = false;
     auto m_idx = place_specific_monster(creature, y, x, new_r_idx, mode);
@@ -117,25 +123,23 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
         auto &monster_polymorphed = floor.get_monster(*m_idx);
         monster_polymorphed.name = back_m.name;
         monster_polymorphed.get_monster_profile().parent_m_idx = back_m.get_parent_m_idx();
-        monster_polymorphed.get_monster_profile().hold_o_idx_list = back_m.get_held_objects();
+        // 所持アイテムは inventory[] を引き継ぐ
+        if (preserve_hold_objects) {
+            for (size_t i = 0; i < back_m.inventory.size(); i++) {
+                if (back_m.inventory[i]->is_valid()) {
+                    *monster_polymorphed.inventory[i] = back_m.inventory[i]->clone();
+                }
+            }
+            monster_polymorphed.inven_cnt = back_m.inven_cnt;
+            monster_polymorphed.equip_cnt = back_m.equip_cnt;
+        }
         polymorphed = true;
     } else {
         m_idx = place_specific_monster(creature, y, x, old_r_idx, (mode | PM_NO_KAGE | PM_IGNORE_TERRAIN));
         if (m_idx) {
-            floor.m_list[*m_idx] = back_m;
+            floor.m_list[*m_idx] = back_m; // inventory[] を含めて丸ごと復元
             floor.reset_mproc();
-        } else {
-            preserve_hold_objects = false;
         }
-    }
-
-    if (preserve_hold_objects) {
-        for (const auto this_o_idx : back_m.get_held_objects()) {
-            auto *o_ptr = floor.o_list[this_o_idx].get();
-            o_ptr->held_m_idx = *m_idx;
-        }
-    } else {
-        delete_items(creature, back_m.get_monster_profile().hold_o_idx_list);
     }
 
     if (targeted) {

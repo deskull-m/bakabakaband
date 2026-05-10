@@ -1,8 +1,10 @@
 #include "system/creature-entity.h"
 #include "core/speed-table.h"
+#include "floor/floor-object.h"
 #include "floor/geometry.h"
 #include "game-option/birth-options.h"
 #include "hpmp/hp-mp-regenerator.h"
+#include "inventory/inventory-object.h"
 #include "inventory/inventory-slot-types.h"
 #include "market/arena-entry.h"
 #include "mind/mind-elementalist.h"
@@ -594,6 +596,28 @@ void CreatureEntity::set_timed_effect(CreatureTimedEffect effect, short value)
 int CreatureEntity::get_base_natural_regen_amount() const
 {
     return PY_REGEN_NORMAL;
+}
+
+int16_t CreatureEntity::store_item(const ItemEntity &item)
+{
+    auto clone = item.clone();
+    return store_item_to_inventory(*this, &clone);
+}
+
+void CreatureEntity::drop_all_inventory(CreatureEntity &dropper)
+{
+    for (size_t i = 0; i < this->inventory.size(); i++) {
+        auto &held = *this->inventory[i];
+        if (!held.is_valid()) {
+            continue;
+        }
+        auto drop_item = held.clone();
+        drop_item.held_m_idx = 0;
+        (void)drop_near(dropper, drop_item, this->get_position());
+        held.wipe();
+    }
+    this->inven_cnt = 0;
+    this->equip_cnt = 0;
 }
 
 void CreatureEntity::make_lore_treasure(int num_item, int num_gold) const
