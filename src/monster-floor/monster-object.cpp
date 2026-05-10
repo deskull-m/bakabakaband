@@ -219,7 +219,11 @@ void update_object_by_monster_movement(CreatureEntity &creature, turn_flags *tur
 /*!
  * @brief モンスターが盗みや拾いで確保していたアイテムを全てドロップさせる / Drop all items carried by a monster
  * @param creature クリーチャーへの参照
- * @param m_ptr モンスター参照ポインタ
+ * @param target ドロップ元クリーチャー (モンスター)
+ * @details
+ * フェーズ A-2: inventory[] からドロップに切替。
+ * レガシー hold_o_idx_list 経路は floor.o_list 上のホールドアイテム
+ * (A-1 で並走書き込みされた重複データ) を削除するクリーンアップ目的でのみ走らせる。
  */
 void monster_drop_carried_objects(CreatureEntity &creature, CreatureEntity &target)
 {
@@ -227,14 +231,29 @@ void monster_drop_carried_objects(CreatureEntity &creature, CreatureEntity &targ
         return;
     }
 
+    // [フェーズ A-2] inventory[] からドロップ
+    for (size_t i = 0; i < target.inventory.size(); i++) {
+        auto &item = *target.inventory[i];
+        if (!item.is_valid()) {
+            continue;
+        }
+        auto drop_item = item.clone();
+        drop_item.held_m_idx = 0;
+        (void)drop_near(creature, drop_item, target.get_position());
+        item.wipe();
+    }
+    target.inven_cnt = 0;
+    target.equip_cnt = 0;
+
+    // レガシー hold_o_idx_list 経路: A-1 でモンスター pickup が両方に書き込んでいるため
+    // floor.o_list 上に「held_m_idx = m_idx」状態の重複エントリが残存している。
+    // 上記 inventory[] 経路でドロップ済みのため、floor.o_list 側は drop_near せず
+    // delete_object_idx で参照解除する (旧 pre-A-1 monster で inventory[] が
+    // 空の場合は、その分だけアイテムが失われるが許容)。
     auto &profile = target.get_monster_profile();
     for (auto it = profile.hold_o_idx_list.begin(); it != profile.hold_o_idx_list.end();) {
         const auto this_o_idx = *it++;
-        auto drop_item = creature.get_floor()->o_list[this_o_idx]->clone();
-        drop_item.held_m_idx = 0;
         delete_object_idx(creature, this_o_idx);
-        (void)drop_near(creature, drop_item, target.get_position());
     }
-
     profile.hold_o_idx_list.clear();
 }
