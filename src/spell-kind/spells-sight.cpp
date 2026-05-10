@@ -57,18 +57,18 @@ bool project_all_los(CreatureEntity &creature, AttributeType typ, int dam)
             continue;
         }
 
-        monster.get_monster_profile().mflag.set(MonsterTemporaryFlagType::LOS);
+        monster.set_temporary_flag(MonsterTemporaryFlagType::LOS);
     }
 
     BIT_FLAGS flg = PROJECT_JUMP | PROJECT_KILL | PROJECT_HIDE;
     auto obvious = false;
     for (short i = 1; i < floor.m_max; i++) {
         auto &monster = floor.get_monster(i);
-        if (monster.get_monster_profile().mflag.has_not(MonsterTemporaryFlagType::LOS)) {
+        if (!monster.has_temporary_flag(MonsterTemporaryFlagType::LOS)) {
             continue;
         }
 
-        monster.get_monster_profile().mflag.reset(MonsterTemporaryFlagType::LOS);
+        monster.reset_temporary_flag(MonsterTemporaryFlagType::LOS);
         const auto m_pos = monster.get_position();
         if (project(creature, 0, 0, m_pos.y, m_pos.x, dam, typ, flg).notice) {
             obvious = true;

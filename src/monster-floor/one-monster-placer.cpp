@@ -583,7 +583,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     }
 
     if (!ironman_nightmare) {
-        m_ptr->get_monster_profile().mflag.set(MonsterTemporaryFlagType::PREVENT_MAGIC);
+        m_ptr->set_temporary_flag(MonsterTemporaryFlagType::PREVENT_MAGIC);
     }
 
     auto is_awake_lightning_monster = new_monrace.brightness_flags.has_any_of(self_ld_mask);

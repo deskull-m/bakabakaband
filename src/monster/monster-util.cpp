@@ -732,7 +732,7 @@ void mark_monsters_present(CreatureEntity &creature)
         if (!monster.is_valid()) {
             continue;
         }
-        monster.get_monster_profile().mflag.set(MonsterTemporaryFlagType::PRESENT_AT_TURN_START);
+        monster.set_temporary_flag(MonsterTemporaryFlagType::PRESENT_AT_TURN_START);
     }
 }
 

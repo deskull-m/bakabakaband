@@ -992,6 +992,70 @@ public:
         return this->has_monster_profile() && this->get_monster_profile().mflag2.has(flag);
     }
 
+    /*!
+     * @brief MonsterTemporaryFlagType (mflag) のチェック共通ヘルパ (提案 16)
+     */
+    bool has_temporary_flag(MonsterTemporaryFlagType flag) const
+    {
+        return this->has_monster_profile() && this->get_monster_profile().mflag.has(flag);
+    }
+
+    /*!
+     * @brief MonsterTemporaryFlagType を立てる (提案 16)
+     */
+    virtual void set_temporary_flag(MonsterTemporaryFlagType flag)
+    {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().mflag.set(flag);
+        }
+    }
+
+    /*!
+     * @brief MonsterTemporaryFlagType をクリアする (提案 16)
+     */
+    virtual void reset_temporary_flag(MonsterTemporaryFlagType flag)
+    {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().mflag.reset(flag);
+        }
+    }
+
+    /*! @brief プレイヤーの視界内 (VIEW) にいるか (提案 16) */
+    virtual bool is_in_view() const
+    {
+        return this->has_temporary_flag(MonsterTemporaryFlagType::VIEW);
+    }
+
+    /*! @brief project_all_los の対象 (LOS) としてマークされているか */
+    virtual bool is_marked_for_los() const
+    {
+        return this->has_temporary_flag(MonsterTemporaryFlagType::LOS);
+    }
+
+    /*! @brief ESP で感知されているか */
+    virtual bool is_sensed_by_esp() const
+    {
+        return this->has_temporary_flag(MonsterTemporaryFlagType::ESP);
+    }
+
+    /*! @brief ターン開始時にフロアにいたか (PRESENT_AT_TURN_START) */
+    virtual bool was_present_at_turn_start() const
+    {
+        return this->has_temporary_flag(MonsterTemporaryFlagType::PRESENT_AT_TURN_START);
+    }
+
+    /*! @brief 反魔法状態 (PREVENT_MAGIC) か */
+    virtual bool has_prevent_magic() const
+    {
+        return this->has_temporary_flag(MonsterTemporaryFlagType::PREVENT_MAGIC);
+    }
+
+    /*! @brief 正気喪失効果 (SANITY_BLAST) を持つか */
+    virtual bool has_sanity_blast() const
+    {
+        return this->has_temporary_flag(MonsterTemporaryFlagType::SANITY_BLAST);
+    }
+
     /*! @brief 影 (KAGE) かどうか */
     virtual bool is_kage() const
     {

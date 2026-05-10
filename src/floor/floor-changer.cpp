@@ -129,7 +129,7 @@ static MonraceDefinition &set_pet_params(CreatureEntity &creature, const int cur
     monster.reset_target();
     auto &r_ref = monster.get_real_monrace();
     if (!ironman_nightmare) {
-        monster.get_monster_profile().mflag.set(MonsterTemporaryFlagType::PREVENT_MAGIC);
+        monster.set_temporary_flag(MonsterTemporaryFlagType::PREVENT_MAGIC);
     }
 
     return r_ref;
