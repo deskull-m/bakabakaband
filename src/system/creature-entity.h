@@ -838,6 +838,17 @@ public:
     int16_t store_item(const ItemEntity &item);
 
     /*!
+     * @brief 装備可能なら装備スロットへ、不可ならパックへアイテムを格納する
+     * @param item 格納するアイテム (内部でクローンされる)
+     * @return 格納されたインベントリスロットID、失敗時 -1
+     * @details `wield_slot()` で得られた装備スロットが空かつアイテムが単体 (number==1) の
+     *          場合は装備スロットへ直接装着し equip_cnt をインクリメント。
+     *          そうでない場合は store_item() でパックに格納。
+     *          モンスター pickup・窃取等で「拾う or 奪う」と「装備する」を一括で行うため。
+     */
+    int16_t acquire_item(const ItemEntity &item);
+
+    /*!
      * @brief このクリーチャーの所持品全てを近隣にドロップする
      * @param dropper ドロップ処理の主体 (フロア・UI 文脈の参照クリーチャー)
      * @details inventory[INVEN_TOTAL] を走査し各有効アイテムを drop_near() でドロップ。

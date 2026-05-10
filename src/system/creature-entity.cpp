@@ -18,6 +18,7 @@
 #include "monster/monster-pain-describer.h"
 #include "monster/monster-timed-effects.h"
 #include "monster/monster-util.h"
+#include "object/object-info.h"
 #include "player-ability/player-ability-types.h"
 #include "player-info/bard-data-type.h"
 #include "player-info/class-info.h"
@@ -602,6 +603,19 @@ int16_t CreatureEntity::store_item(const ItemEntity &item)
 {
     auto clone = item.clone();
     return store_item_to_inventory(*this, &clone);
+}
+
+int16_t CreatureEntity::acquire_item(const ItemEntity &item)
+{
+    // [フェーズ C-2] 装備可能なアイテムは空きスロットがあれば自動装備
+    const auto eq_slot = wield_slot(*this, item);
+    const bool can_auto_equip = (eq_slot >= INVEN_MAIN_HAND) && (eq_slot < INVEN_TOTAL) && !this->inventory[eq_slot]->is_valid() && (item.number == 1);
+    if (can_auto_equip) {
+        *this->inventory[eq_slot] = item.clone();
+        this->equip_cnt++;
+        return eq_slot;
+    }
+    return this->store_item(item);
 }
 
 void CreatureEntity::drop_all_inventory(CreatureEntity &dropper)

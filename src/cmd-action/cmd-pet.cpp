@@ -6,6 +6,9 @@
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
 #include "effect/spells-effect-util.h"
+#include "flavor/flavor-describer.h"
+#include "flavor/object-flavor-types.h"
+#include "floor/floor-object.h"
 #include "floor/geometry.h"
 #include "floor/pattern-walk.h"
 #include "game-option/input-options.h"
@@ -13,6 +16,7 @@
 #include "game-option/play-record-options.h"
 #include "game-option/text-display-options.h"
 #include "grid/grid.h"
+#include "inventory/inventory-object.h"
 #include "inventory/inventory-slot-types.h"
 #include "io/command-repeater.h"
 #include "io/cursor.h"
@@ -29,6 +33,9 @@
 #include "monster/monster-status.h"
 #include "monster/smart-learn-types.h"
 #include "object-hook/hook-weapon.h"
+#include "object/item-tester-hooker.h"
+#include "object/item-use-flags.h"
+#include "object/object-info.h"
 #include "pet/pet-util.h"
 #include "player-base/player-class.h"
 #include "player-info/class-info.h"
@@ -525,6 +532,14 @@ void do_cmd_pet(CreatureEntity &creature)
         }
     }
 
+    // [フェーズ C-3] ペット所持品確認コマンド
+    power_desc[num] = _("ペットの所持品を確認", "view pet's inventory");
+    powers[num++] = PET_VIEW_INVENTORY;
+    power_desc[num] = _("ペットにアイテムを渡す", "give item to pet");
+    powers[num++] = PET_GIVE_ITEM;
+    power_desc[num] = _("ペットからアイテムを受け取る", "take item from pet");
+    powers[num++] = PET_TAKE_ITEM;
+
     auto code_repeat = repeat_pull();
     if (!code_repeat || (code_repeat < 0) || (code_repeat >= num)) {
         flag = false;
@@ -811,6 +826,158 @@ void do_cmd_pet(CreatureEntity &creature)
 
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
         handle_stuff(creature);
+        break;
+    }
+
+    case PET_GIVE_ITEM: {
+        // [フェーズ C-3 拡張] プレイヤーから対象ペットへアイテムを 1 個渡す
+        auto &floor = *creature.get_floor();
+        MONSTER_IDX target_idx = creature.riding;
+        if (target_idx == 0) {
+            int best_dist = INT_MAX;
+            const auto p_pos = creature.get_position();
+            for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+                const auto &mon = floor.get_monster(i);
+                if (!mon.is_valid() || !mon.is_pet() || !mon.is_visible_on_map()) {
+                    continue;
+                }
+                const auto dist = Grid::calc_distance(p_pos, mon.get_position());
+                if (dist < best_dist) {
+                    best_dist = dist;
+                    target_idx = i;
+                }
+            }
+        }
+        if (target_idx == 0) {
+            msg_print(_("近くに視認可能なペットがいない。", "No visible pet nearby."));
+            break;
+        }
+        auto &pet_monster = floor.get_monster(target_idx);
+        constexpr auto q = _("どのアイテムを渡しますか? ", "Give which item? ");
+        constexpr auto s = _("渡せるアイテムがない。", "You have nothing to give.");
+        const auto &[item, i_idx] = choose_item(creature, q, s, (USE_INVEN), AllMatchItemTester());
+        if (!item) {
+            break;
+        }
+        auto given = item->clone();
+        given.number = 1;
+        given.held_m_idx = 0;
+        given.iy = given.ix = 0;
+        const auto pet_name = monster_desc(creature, pet_monster, MD_INDEF_VISIBLE);
+        const auto item_name = describe_flavor(creature, given, OD_OMIT_PREFIX);
+        if (pet_monster.acquire_item(given) >= 0) {
+            msg_format(_("%sに%sを渡した。", "You give %s to %s."), pet_name.data(), item_name.data());
+            inven_item_increase(creature, i_idx, -1);
+            inven_item_optimize(creature, i_idx);
+        } else {
+            msg_print(_("ペットがアイテムを受け取れない。", "The pet cannot receive the item."));
+        }
+        break;
+    }
+
+    case PET_TAKE_ITEM: {
+        // [フェーズ C-3 拡張] 対象ペットの所持品から 1 個受け取る
+        auto &floor = *creature.get_floor();
+        MONSTER_IDX target_idx = creature.riding;
+        if (target_idx == 0) {
+            int best_dist = INT_MAX;
+            const auto p_pos = creature.get_position();
+            for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+                const auto &mon = floor.get_monster(i);
+                if (!mon.is_valid() || !mon.is_pet() || !mon.is_visible_on_map()) {
+                    continue;
+                }
+                const auto dist = Grid::calc_distance(p_pos, mon.get_position());
+                if (dist < best_dist) {
+                    best_dist = dist;
+                    target_idx = i;
+                }
+            }
+        }
+        if (target_idx == 0) {
+            msg_print(_("近くに視認可能なペットがいない。", "No visible pet nearby."));
+            break;
+        }
+        auto &pet_monster = floor.get_monster(target_idx);
+        // 簡易選択: パックスロットで最初に見つかった有効アイテム (装備品は受取り不可)
+        INVENTORY_IDX src_slot = -1;
+        for (INVENTORY_IDX i = 0; i < INVEN_PACK; i++) {
+            if (pet_monster.inventory[i]->is_valid()) {
+                src_slot = i;
+                break;
+            }
+        }
+        if (src_slot < 0) {
+            msg_print(_("ペットは渡せるアイテムを持っていない。", "The pet has nothing to give."));
+            break;
+        }
+        auto &item_in_pack = *pet_monster.inventory[src_slot];
+        auto received = item_in_pack.clone();
+        received.held_m_idx = 0;
+        received.iy = received.ix = 0;
+        const auto pet_name = monster_desc(creature, pet_monster, MD_INDEF_VISIBLE);
+        const auto item_name = describe_flavor(creature, received, OD_OMIT_PREFIX);
+        msg_format(_("%sから%sを受け取った。", "You receive %s from %s."), pet_name.data(), item_name.data());
+        store_item_to_inventory(creature, &received);
+        item_in_pack.wipe();
+        if (pet_monster.inven_cnt > 0) {
+            pet_monster.inven_cnt--;
+        }
+        break;
+    }
+
+    case PET_VIEW_INVENTORY: {
+        // [フェーズ C-3] 騎乗中のペット、なければ最寄りの可視ペットの所持品を表示
+        const auto &floor = *creature.get_floor();
+        MONSTER_IDX target_idx = creature.riding;
+        if (target_idx == 0) {
+            int best_dist = INT_MAX;
+            const auto p_pos = creature.get_position();
+            for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+                const auto &mon = floor.get_monster(i);
+                if (!mon.is_valid() || !mon.is_pet() || !mon.is_visible_on_map()) {
+                    continue;
+                }
+                const auto dist = Grid::calc_distance(p_pos, mon.get_position());
+                if (dist < best_dist) {
+                    best_dist = dist;
+                    target_idx = i;
+                }
+            }
+        }
+        if (target_idx == 0) {
+            msg_print(_("近くに視認可能なペットがいない。", "No visible pet nearby."));
+            break;
+        }
+        auto &pet_monster = floor.get_monster(target_idx);
+        const auto pet_name = monster_desc(creature, pet_monster, MD_INDEF_VISIBLE);
+        screen_save();
+        prt(format(_("%s の所持品:", "%s's inventory:"), pet_name.data()), 0, 0);
+        int line = 1;
+        // 装備スロット
+        for (size_t i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
+            const auto &item = *pet_monster.inventory[i];
+            if (!item.is_valid()) {
+                continue;
+            }
+            const auto name = describe_flavor(creature, item, 0);
+            prt(format(_("[装備] %s", "[Equipped] %s"), name.data()), line++, 2);
+        }
+        // パックスロット
+        for (size_t i = 0; i < INVEN_PACK; i++) {
+            const auto &item = *pet_monster.inventory[i];
+            if (!item.is_valid()) {
+                continue;
+            }
+            const auto name = describe_flavor(creature, item, 0);
+            prt(format(_("[%c] %s", "[%c] %s"), index_to_label(static_cast<INVENTORY_IDX>(i)), name.data()), line++, 2);
+        }
+        if (line == 1) {
+            prt(_("(何も持っていない)", "(nothing)"), 1, 2);
+        }
+        prt(_("何かキーを押してください。", "Press any key to continue."), line + 1, 0);
+        (void)inkey();
+        screen_load();
         break;
     }
     }
