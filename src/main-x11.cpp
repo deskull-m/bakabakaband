@@ -2422,34 +2422,29 @@ term_data_init(term_data *td, int i)
     }
 
     if (!font) {
+#ifdef USE_XFT
+        const auto font_main = use_xft_runtime ? DEFAULT_X11_FONT_TRUETYPE : DEFAULT_X11_FONT_BMP;
+        const auto font_sub = use_xft_runtime ? DEFAULT_X11_FONT_TRUETYPE_SUB : DEFAULT_X11_FONT_BMP_SUB;
+#else
+        const auto font_main = DEFAULT_X11_FONT_BMP;
+        const auto font_sub = DEFAULT_X11_FONT_BMP_SUB;
+#endif
         switch (i) {
-        case 0: {
-            font = DEFAULT_X11_FONT_0;
-        } break;
-        case 1: {
-            font = DEFAULT_X11_FONT_1;
-        } break;
-        case 2: {
-            font = DEFAULT_X11_FONT_2;
-        } break;
-        case 3: {
-            font = DEFAULT_X11_FONT_3;
-        } break;
-        case 4: {
-            font = DEFAULT_X11_FONT_4;
-        } break;
-        case 5: {
-            font = DEFAULT_X11_FONT_5;
-        } break;
-        case 6: {
-            font = DEFAULT_X11_FONT_6;
-        } break;
-        case 7: {
-            font = DEFAULT_X11_FONT_7;
-        } break;
-        default: {
-            font = DEFAULT_X11_FONT;
-        }
+        case 0:
+            font = font_main;
+            break;
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+            font = font_sub;
+            break;
+        default:
+            font = font_main;
+            break;
         }
     }
 
