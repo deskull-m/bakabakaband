@@ -92,7 +92,7 @@ static void take_item_from_home(CreatureEntity &creature, ItemEntity &item_home,
     const auto amt = item_inventory.number;
     distribute_charges(&item_home, &item_inventory, amt);
 
-    const auto item_new = store_item_to_inventory(creature, &item_inventory);
+    const auto item_new = creature.store_item(item_inventory);
     const auto item_name = describe_flavor(creature, *creature.inventory[item_new], 0);
     handle_stuff(creature);
     msg_format(_("%s(%c)を取った。", "You have %s (%c)."), item_name.data(), index_to_label(item_new));
@@ -187,7 +187,7 @@ void store_purchase(CreatureEntity &creature, StoreSaleType store_num)
      */
     reduce_charges(&item, item_store.number - amt);
     item.number = amt;
-    if (!check_store_item_to_inventory(creature, &item)) {
+    if (!check_creature.store_item(item)) {
         msg_print(_("そんなにアイテムを持てない。", "You cannot carry that many different items."));
         return;
     }
@@ -218,7 +218,7 @@ void store_purchase(CreatureEntity &creature, StoreSaleType store_num)
         return;
     }
 
-    if (!check_store_item_to_inventory(creature, &item)) {
+    if (!check_creature.store_item(item)) {
         msg_print(_("ザックにそのアイテムを入れる隙間がない。", "You cannot carry that many items."));
         return;
     }
@@ -284,7 +284,7 @@ void store_purchase(CreatureEntity &creature, StoreSaleType store_num)
     const auto idx = find_autopick_list(creature, &item);
     auto_inscribe_item(&item, idx);
 
-    item_new = store_item_to_inventory(creature, &item);
+    item_new = creature.store_item(item);
     handle_stuff(creature);
 
     const auto got_item_name = describe_flavor(creature, *creature.inventory[item_new], 0);

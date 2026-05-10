@@ -140,7 +140,7 @@ void ObjectUseEntity::execute()
         used_item.number = 1;
         item->pval++;
         item->number--;
-        this->i_idx = store_item_to_inventory(creature, &used_item);
+        this->i_idx = creature.store_item(used_item);
         msg_print(_("杖をまとめなおした。", "You unstack your staff."));
     }
 

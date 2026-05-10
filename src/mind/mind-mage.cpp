@@ -71,7 +71,7 @@ bool eat_magic(CreatureEntity &creature, int power)
                     eat_item.number = 1;
                     item->pval++;
                     item->number--;
-                    i_idx = store_item_to_inventory(creature, &eat_item);
+                    i_idx = creature.store_item(eat_item);
 
                     msg_print(_("杖をまとめなおした。", "You unstack your staff."));
                 }

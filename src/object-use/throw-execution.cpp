@@ -300,7 +300,7 @@ void ObjectThrowEntity::process_boomerang_back()
     auto &creature = *this->creature_ptr;
     if (this->come_back) {
         if ((this->i_idx != INVEN_MAIN_HAND) && (this->i_idx != INVEN_SUB_HAND)) {
-            store_item_to_inventory(creature, this->q_ptr);
+            creature.store_item(*this->q_ptr);
             this->do_drop = false;
             return;
         }

@@ -24,7 +24,6 @@
 #include "io/input-key-requester.h"
 #include "io/write-diary.h"
 #include "main/sound-of-music.h"
-#include "monster-floor/monster-object.h"
 #include "monster-floor/monster-remover.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
@@ -821,7 +820,7 @@ void do_cmd_pet(CreatureEntity &creature)
             for (pet_ctr = creature.get_floor()->m_max - 1; pet_ctr >= 1; pet_ctr--) {
                 auto &monster = creature.get_floor()->get_monster(static_cast<MONSTER_IDX>(pet_ctr));
                 if (monster.is_pet()) {
-                    monster_drop_carried_objects(creature, monster);
+                    monster.drop_all_inventory(creature);
                 }
             }
         } else {
@@ -980,7 +979,7 @@ void do_cmd_pet(CreatureEntity &creature)
         received.iy = received.ix = 0;
         const auto item_name = describe_flavor(creature, received, OD_OMIT_PREFIX);
         msg_format(_("%sから%sを受け取った。", "You receive %s from %s."), pet_name.data(), item_name.data());
-        store_item_to_inventory(creature, &received);
+        creature.store_item(received);
         item_in_slot.wipe();
         if (was_equipped) {
             if (target_pet.equip_cnt > 0) {

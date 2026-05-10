@@ -126,7 +126,7 @@ bool create_ammo(CreatureEntity &creature)
         item.mark_as_known();
         ItemMagicApplier(creature, &item, creature.level, AM_NO_FIXED_ART).execute();
         item.discount = 99;
-        int16_t slot = store_item_to_inventory(creature, &item);
+        int16_t slot = creature.store_item(item);
         const auto item_name = describe_flavor(creature, item, 0);
         msg_print(_(format("%sを作った。", item_name.data()), "You make some ammo."));
         if (slot >= 0) {
@@ -153,7 +153,7 @@ bool create_ammo(CreatureEntity &creature)
         const auto item_name = describe_flavor(creature, ammo, 0);
         msg_print(_(format("%sを作った。", item_name.data()), "You make some ammo."));
         vary_item(creature, i_idx, -1);
-        int16_t slot = store_item_to_inventory(creature, &ammo);
+        int16_t slot = creature.store_item(ammo);
         if (slot >= 0) {
             autopick_alter_item(creature, slot, false);
         }
@@ -177,7 +177,7 @@ bool create_ammo(CreatureEntity &creature)
         const auto item_name = describe_flavor(creature, ammo, 0);
         msg_print(_(format("%sを作った。", item_name.data()), "You make some ammo."));
         vary_item(creature, i_idx, -1);
-        int16_t slot = store_item_to_inventory(creature, &ammo);
+        int16_t slot = creature.store_item(ammo);
         if (slot >= 0) {
             autopick_alter_item(creature, slot, false);
         }
