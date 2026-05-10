@@ -37,7 +37,7 @@ static void compact_monsters_aux(CreatureEntity &creature, MONSTER_IDX i1, MONST
     auto &grid = floor.grid_array[y][x];
     grid.m_idx = i2;
 
-    for (const auto this_o_idx : monster.get_monster_profile().hold_o_idx_list) {
+    for (const auto this_o_idx : monster.get_held_objects()) {
         ItemEntity *o_ptr;
         o_ptr = floor.o_list[this_o_idx].get();
         o_ptr->held_m_idx = i2;
@@ -67,7 +67,7 @@ static void compact_monsters_aux(CreatureEntity &creature, MONSTER_IDX i1, MONST
         for (int i = 1; i < floor.m_max; i++) {
             CreatureEntity *m2_ptr = &floor.get_monster(static_cast<MONSTER_IDX>(i));
 
-            if (m2_ptr->get_monster_profile().parent_m_idx == i1) {
+            if (m2_ptr->get_parent_m_idx() == i1) {
                 m2_ptr->get_monster_profile().parent_m_idx = i2;
             }
         }

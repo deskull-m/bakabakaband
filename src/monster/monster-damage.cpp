@@ -599,7 +599,7 @@ bool MonsterDamageProcessor::check_and_process_hp_transform()
     // 変身前の情報を保存
     const auto old_hp = monster.hp;
     const auto old_maxhp = monster.max_maxhp;
-    const auto old_sub_align = monster.get_monster_profile().sub_align;
+    const auto old_sub_align = monster.get_sub_align();
     const auto old_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
 
     // 種族カウンターの更新

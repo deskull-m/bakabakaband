@@ -96,7 +96,7 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
         return false;
     }
 
-    bool preserve_hold_objects = !back_m.get_monster_profile().hold_o_idx_list.empty();
+    bool preserve_hold_objects = !back_m.get_held_objects().empty();
 
     BIT_FLAGS mode = 0L;
     if (monster.is_friendly()) {
@@ -116,8 +116,8 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
     if (m_idx) {
         auto &monster_polymorphed = floor.get_monster(*m_idx);
         monster_polymorphed.name = back_m.name;
-        monster_polymorphed.get_monster_profile().parent_m_idx = back_m.get_monster_profile().parent_m_idx;
-        monster_polymorphed.get_monster_profile().hold_o_idx_list = back_m.get_monster_profile().hold_o_idx_list;
+        monster_polymorphed.get_monster_profile().parent_m_idx = back_m.get_parent_m_idx();
+        monster_polymorphed.get_monster_profile().hold_o_idx_list = back_m.get_held_objects();
         polymorphed = true;
     } else {
         m_idx = place_specific_monster(creature, y, x, old_r_idx, (mode | PM_NO_KAGE | PM_IGNORE_TERRAIN));
@@ -130,7 +130,7 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
     }
 
     if (preserve_hold_objects) {
-        for (const auto this_o_idx : back_m.get_monster_profile().hold_o_idx_list) {
+        for (const auto this_o_idx : back_m.get_held_objects()) {
             auto *o_ptr = floor.o_list[this_o_idx].get();
             o_ptr->held_m_idx = *m_idx;
         }

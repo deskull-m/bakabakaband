@@ -78,7 +78,7 @@ void delete_monster_idx(CreatureEntity &creature, short m_idx)
     // 召喚されたモンスター自身のm_idxを指すようにする
     for (MONSTER_IDX child_m_idx = 1; child_m_idx < floor.m_max; child_m_idx++) {
         auto &child_monster = floor.get_monster(child_m_idx);
-        if (child_monster.is_valid() && child_monster.get_monster_profile().parent_m_idx == m_idx) {
+        if (child_monster.is_valid() && child_monster.get_parent_m_idx() == m_idx) {
             child_monster.get_monster_profile().parent_m_idx = child_m_idx;
         }
     }

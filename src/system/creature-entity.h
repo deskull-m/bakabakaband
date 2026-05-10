@@ -839,6 +839,59 @@ public:
     }
 
     /*!
+     * @brief クリーチャーが所属するアライアンスを取得する
+     * @return アライアンス種別。デフォルトは AllianceType::NONE（無所属）
+     */
+    virtual AllianceType get_alliance_idx() const
+    {
+        return this->has_monster_profile() ? this->get_monster_profile().alliance_idx : AllianceType::NONE;
+    }
+
+    /*!
+     * @brief クリーチャーのサブアライメント（中立モンスターが召喚主の影響で一時的に持つ陣営）を取得する
+     * @return サブアライメントフラグ。デフォルトは SUB_ALIGN_NEUTRAL
+     */
+    virtual BIT_FLAGS8 get_sub_align() const
+    {
+        return this->has_monster_profile() ? this->get_monster_profile().sub_align : static_cast<BIT_FLAGS8>(SUB_ALIGN_NEUTRAL);
+    }
+
+    /*!
+     * @brief このクリーチャーを召喚した親モンスターのインデックスを取得する
+     * @return 親モンスター m_idx。召喚されていない（または不明）なら 0
+     */
+    virtual MONSTER_IDX get_parent_m_idx() const
+    {
+        return this->has_monster_profile() ? this->get_monster_profile().parent_m_idx : 0;
+    }
+
+    /*!
+     * @brief プレイヤーに対する学習フラグ（smart_learn）を取得する
+     * @return 学習フラグ群。プレイヤー側は空のフラグ集合を返す
+     */
+    virtual const EnumClassFlagGroup<MonsterSmartLearnType> &get_smart_flags() const
+    {
+        if (this->has_monster_profile()) {
+            return this->get_monster_profile().smart;
+        }
+        static const EnumClassFlagGroup<MonsterSmartLearnType> empty{};
+        return empty;
+    }
+
+    /*!
+     * @brief このクリーチャーが保持しているアイテムリストを取得する
+     * @return 保持アイテム ObjectIndexList。プレイヤー側は空リストを返す
+     */
+    virtual const ObjectIndexList &get_held_objects() const
+    {
+        if (this->has_monster_profile()) {
+            return this->get_monster_profile().hold_o_idx_list;
+        }
+        static const ObjectIndexList empty{};
+        return empty;
+    }
+
+    /*!
      * @brief クリーチャーがフレンドリー状態かどうかを判定
      * @return フレンドリーならtrue、デフォルトはfalse（プレイヤーはフレンドリー判定対象外）
      */
