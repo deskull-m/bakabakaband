@@ -106,17 +106,17 @@ void wr_player(CreatureEntity &creature)
     wr_s16b(creature.level);
 
     for (int i = 0; i < 64; i++) {
-        wr_s16b(creature.spell_exp[i]);
+        wr_s16b(creature.get_spell_exp(i));
     }
 
     for (auto tval : TV_WEAPON_RANGE) {
         for (int j = 0; j < 64; j++) {
-            wr_s16b(creature.weapon_exp[tval][j]);
+            wr_s16b(creature.get_weapon_exp(tval, j));
         }
     }
 
     for (auto i : PLAYER_SKILL_KIND_TYPE_RANGE) {
-        wr_s16b(creature.skill_exp[i]);
+        wr_s16b(creature.get_skill_exp(i));
     }
     for (auto i = 0U; i < MAX_SKILLS - PLAYER_SKILL_KIND_TYPE_RANGE.size(); ++i) {
         // resreved skills

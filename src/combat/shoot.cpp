@@ -1125,9 +1125,9 @@ int calc_crit_ratio_shot(CreatureEntity &creature, int plus_ammo, int plus_bow)
     const auto tval = j_ptr->bi_key.tval();
     const auto sval = *j_ptr->bi_key.sval();
     if (creature.tval_ammo == ItemKindType::BOLT) {
-        i = (creature.get_skill_to_hit_bow() + (creature.weapon_exp[tval][sval] / 400 + i) * BTH_PLUS_ADJ);
+        i = (creature.get_skill_to_hit_bow() + (creature.get_weapon_exp(tval, sval) / 400 + i) * BTH_PLUS_ADJ);
     } else {
-        i = (creature.get_skill_to_hit_bow() + ((creature.weapon_exp[tval][sval] - (PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER) / 2)) / 200 + i) * BTH_PLUS_ADJ);
+        i = (creature.get_skill_to_hit_bow() + ((creature.get_weapon_exp(tval, sval) - (PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER) / 2)) / 200 + i) * BTH_PLUS_ADJ);
     }
 
     CreatureClass pc(creature);

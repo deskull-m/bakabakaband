@@ -59,7 +59,7 @@ static bool calc_fall_off_possibility(CreatureEntity &creature, const int dam, c
         return true;
     }
 
-    auto cur = creature.skill_exp[PlayerSkillKindType::RIDING];
+    auto cur = creature.get_skill_exp(PlayerSkillKindType::RIDING);
 
     int fall_off_level = monrace.level;
     if (creature.riding_ryoute) {

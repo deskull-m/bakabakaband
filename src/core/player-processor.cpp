@@ -192,7 +192,7 @@ void process_player(CreatureEntity &creature)
 
         if (monster.is_stunned()) {
             if (set_monster_stunned(*creature.get_floor(), creature.riding,
-                    (randint0(monrace.level) < creature.skill_exp[PlayerSkillKindType::RIDING]) ? 0 : (monster.get_remaining_stun() - 1))) {
+                    (randint0(monrace.level) < creature.get_skill_exp(PlayerSkillKindType::RIDING)) ? 0 : (monster.get_remaining_stun() - 1))) {
                 const auto m_name = monster_desc(creature, monster, 0);
                 msg_format(_("%s^を朦朧状態から立ち直らせた。", "%s^ is no longer stunned."), m_name.data());
             }
@@ -200,7 +200,7 @@ void process_player(CreatureEntity &creature)
 
         if (monster.is_confused()) {
             if (set_monster_confused(*creature.get_floor(), creature.riding,
-                    (randint0(monrace.level) < creature.skill_exp[PlayerSkillKindType::RIDING]) ? 0 : (monster.get_remaining_confusion() - 1))) {
+                    (randint0(monrace.level) < creature.get_skill_exp(PlayerSkillKindType::RIDING)) ? 0 : (monster.get_remaining_confusion() - 1))) {
                 const auto m_name = monster_desc(creature, monster, 0);
                 msg_format(_("%s^を混乱状態から立ち直らせた。", "%s^ is no longer confused."), m_name.data());
             }
@@ -208,7 +208,7 @@ void process_player(CreatureEntity &creature)
 
         if (monster.is_fearful()) {
             if (set_monster_monfear(*creature.get_floor(), creature.riding,
-                    (randint0(monrace.level) < creature.skill_exp[PlayerSkillKindType::RIDING]) ? 0 : (monster.get_remaining_fear() - 1))) {
+                    (randint0(monrace.level) < creature.get_skill_exp(PlayerSkillKindType::RIDING)) ? 0 : (monster.get_remaining_fear() - 1))) {
                 const auto m_name = monster_desc(creature, monster, 0);
                 msg_format(_("%s^を恐怖から立ち直らせた。", "%s^ is no longer fearful."), m_name.data());
             }

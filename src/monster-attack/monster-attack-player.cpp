@@ -481,7 +481,7 @@ void MonsterAttackPlayer::gain_armor_exp()
         return;
     }
 
-    auto cur = creature.skill_exp[PlayerSkillKindType::SHIELD];
+    auto cur = creature.get_skill_exp(PlayerSkillKindType::SHIELD);
     auto max = class_skills_info[enum2i(creature.pclass)].s_max[PlayerSkillKindType::SHIELD];
     if (cur >= max) {
         return;
