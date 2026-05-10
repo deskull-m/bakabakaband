@@ -39,8 +39,8 @@ bool TargetSorter::compare_importance(const FloorType &floor, const Pos2D &pos_a
         return false;
     }
 
-    const auto can_see_grid1 = grid1.has_monster() && monster_a.get_monster_profile().ml;
-    const auto can_see_grid2 = grid2.has_monster() && monster_b.get_monster_profile().ml;
+    const auto can_see_grid1 = grid1.has_monster() && monster_a.is_visible_on_map();
+    const auto can_see_grid2 = grid2.has_monster() && monster_b.is_visible_on_map();
     if (can_see_grid1 && !can_see_grid2) {
         return true;
     }

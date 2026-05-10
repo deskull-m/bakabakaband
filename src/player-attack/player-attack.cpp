@@ -612,7 +612,7 @@ void massacre(CreatureEntity &creature)
         const auto pos = creature.get_neighbor(d);
         const auto &grid = floor.get_grid(pos);
         const auto &monster = floor.get_monster(grid.m_idx);
-        if (grid.has_monster() && (monster.get_monster_profile().ml || floor.has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION))) {
+        if (grid.has_monster() && (monster.is_visible_on_map() || floor.has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION))) {
             do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
         }
     }

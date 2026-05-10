@@ -450,7 +450,7 @@ bool probing(CreatureEntity &creature)
         if (!floor.has_los_at({ monster.y, monster.x })) {
             continue;
         }
-        if (!monster.get_monster_profile().ml) {
+        if (!monster.is_visible_on_map()) {
             continue;
         }
 

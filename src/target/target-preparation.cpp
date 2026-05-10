@@ -42,7 +42,7 @@ bool target_able(CreatureEntity &creature, MONSTER_IDX m_idx)
         return false;
     }
 
-    if (!monster.get_monster_profile().ml) {
+    if (!monster.is_visible_on_map()) {
         return false;
     }
 
@@ -79,7 +79,7 @@ static bool target_set_accept(CreatureEntity &creature, const Pos2D &pos)
     const auto &grid = floor.get_grid(pos);
     if (grid.has_monster()) {
         auto &monster = floor.get_monster(grid.m_idx);
-        if (monster.get_monster_profile().ml) {
+        if (monster.is_visible_on_map()) {
             return true;
         }
     }
@@ -179,7 +179,7 @@ void target_sensing_monsters_prepare(CreatureEntity &creature, std::vector<MONST
 
     for (MONSTER_IDX i = 1; i < creature.get_floor()->m_max; i++) {
         const auto &monster = creature.get_floor()->m_list[i];
-        if (!monster.is_valid() || !monster.get_monster_profile().ml || monster.is_pet()) {
+        if (!monster.is_valid() || !monster.is_visible_on_map() || monster.is_pet()) {
             continue;
         }
 

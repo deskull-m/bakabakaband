@@ -449,7 +449,7 @@ void ObjectThrowEntity::attack_racial_power()
     }
 
     auto &monster = *this->hit_monster->m_ptr;
-    if (!test_hit_fire(creature, this->chance - this->cur_dis, monster, monster.get_monster_profile().ml, this->o_name)) {
+    if (!test_hit_fire(creature, this->chance - this->cur_dis, monster, monster.is_visible_on_map(), this->o_name)) {
         return;
     }
 
@@ -478,7 +478,7 @@ void ObjectThrowEntity::attack_racial_power()
         anger_monster(creature, monster);
     }
 
-    if (fear && monster.get_monster_profile().ml) {
+    if (fear && monster.is_visible_on_map()) {
         sound(SoundKind::FLEE);
         msg_format(_("%s^は恐怖して逃げ出した！", "%s^ flees in terror!"), this->hit_monster->m_name.data());
     }
@@ -491,7 +491,7 @@ void ObjectThrowEntity::display_attack_racial_power()
         return;
     }
 
-    if (!this->hit_monster->m_ptr->get_monster_profile().ml) {
+    if (!this->hit_monster->m_ptr->is_visible_on_map()) {
         msg_format(_("%sが敵を捕捉した。", "The %s finds a mark."), this->o_name.data());
         return;
     }

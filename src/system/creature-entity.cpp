@@ -954,7 +954,7 @@ std::string CreatureEntity::build_damage_description() const
 
     const auto is_living = this->has_living_flag(true);
     const auto damage_ratio = this->maxhp > 0 ? 100L * this->hp / this->maxhp : 0;
-    if (!this->get_monster_profile().ml) {
+    if (!this->is_visible_on_map()) {
         return _("損傷具合不明", "damage unknown");
     }
 
@@ -1044,7 +1044,7 @@ tl::optional<std::string> CreatureEntity::get_pain_message(std::string_view mons
     }
 
     auto &monrace = this->get_monrace();
-    return MonsterPainDescriber(monrace.idx, monrace.symbol_definition.character, monster_name).describe(this->hp, damage, this->get_monster_profile().ml);
+    return MonsterPainDescriber(monrace.idx, monrace.symbol_definition.character, monster_name).describe(this->hp, damage, this->is_visible_on_map());
 }
 
 byte CreatureEntity::get_temporary_speed() const

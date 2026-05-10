@@ -262,7 +262,7 @@ static bool check_thrown_mspell(CreatureEntity &creature, msa_type *msa_ptr)
 
 static void check_mspell_imitation(CreatureEntity &creature, msa_type *msa_ptr)
 {
-    const auto seen = (!creature.is_blind() && msa_ptr->m_ptr->get_monster_profile().ml);
+    const auto seen = (!creature.is_blind() && msa_ptr->m_ptr->is_visible_on_map());
     const auto can_imitate = creature.get_floor()->has_los_at({ msa_ptr->m_ptr->y, msa_ptr->m_ptr->x });
     CreatureClass pc(creature);
     if (!seen || !can_imitate || (AngbandWorld::get_instance().timewalk_m_idx != 0) || !pc.equals(PlayerClassType::IMITATOR)) {

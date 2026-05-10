@@ -91,7 +91,7 @@ static std::string get_monster_personal_pronoun(const int kind, const BIT_FLAGS 
 
 static tl::optional<std::string> decide_monster_personal_pronoun(const CreatureEntity &monster, const BIT_FLAGS mode)
 {
-    const auto seen = any_bits(mode, MD_ASSUME_VISIBLE) || (none_bits(mode, MD_ASSUME_HIDDEN) && monster.get_monster_profile().ml);
+    const auto seen = any_bits(mode, MD_ASSUME_VISIBLE) || (none_bits(mode, MD_ASSUME_HIDDEN) && monster.is_visible_on_map());
     const auto pron = (seen && any_bits(mode, MD_PRON_VISIBLE)) || (!seen && any_bits(mode, MD_PRON_HIDDEN));
     if (seen && !pron) {
         return tl::nullopt;

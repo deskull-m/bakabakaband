@@ -172,7 +172,7 @@ MonsterSpellResult spell_RF5_DRAIN_MANA(CreatureEntity &creature, POSITION y, PO
 MonsterSpellResult spell_RF5_MIND_BLAST(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     const auto &monster = creature.get_floor()->get_monster(m_idx);
-    bool seen = (!creature.is_blind() && monster.get_monster_profile().ml);
+    bool seen = (!creature.is_blind() && monster.is_visible_on_map());
     const auto m_name = monster_name(creature, m_idx);
     const auto t_name = monster_name(creature, t_idx);
 
@@ -210,7 +210,7 @@ MonsterSpellResult spell_RF5_MIND_BLAST(CreatureEntity &creature, POSITION y, PO
 MonsterSpellResult spell_RF5_BRAIN_SMASH(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     const auto &monster = creature.get_floor()->get_monster(m_idx);
-    bool seen = (!creature.is_blind() && monster.get_monster_profile().ml);
+    bool seen = (!creature.is_blind() && monster.is_visible_on_map());
     const auto m_name = monster_name(creature, m_idx);
     const auto t_name = monster_name(creature, t_idx);
 
@@ -585,7 +585,7 @@ MonsterSpellResult spell_RF6_HEAL(CreatureEntity &creature, MONSTER_IDX m_idx, M
     auto &monster = floor.get_monster(m_idx);
     DEPTH rlev = monster_level_idx(floor, m_idx);
     const auto is_blind = creature.is_blind();
-    const auto seen = (!is_blind && monster.get_monster_profile().ml);
+    const auto seen = (!is_blind && monster.is_visible_on_map());
     const auto m_poss = monster_desc(creature, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
 
     msg.to_player_true = _("%s^が何かをつぶやいた。", "%s^ mumbles.");
@@ -643,14 +643,14 @@ MonsterSpellResult spell_RF6_HEAL(CreatureEntity &creature, MONSTER_IDX m_idx, M
 MonsterSpellResult spell_RF6_INVULNER(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     const auto &monster = creature.get_floor()->get_monster(m_idx);
-    bool seen = (!creature.is_blind() && monster.get_monster_profile().ml);
+    bool seen = (!creature.is_blind() && monster.is_visible_on_map());
     mspell_cast_msg msg(_("%s^が何かを力強くつぶやいた。", "%s^ mumbles powerfully."),
         _("%s^が何かを力強くつぶやいた。", "%s^ mumbles powerfully."), _("%sは無傷の球の呪文を唱えた。", "%s^ casts a Globe of Invulnerability."),
         _("%sは無傷の球の呪文を唱えた。", "%s^ casts a Globe of Invulnerability."));
 
     monspell_message_base(creature, m_idx, t_idx, msg, !seen, target_type);
 
-    if (monster.get_monster_profile().ml) {
+    if (monster.is_visible_on_map()) {
         MonraceId r_idx = monster.r_idx;
         const auto m_name = monster_desc(creature, monster, MD_NONE);
         switch (r_idx) {

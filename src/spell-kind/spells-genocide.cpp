@@ -81,7 +81,7 @@ bool genocide_aux(CreatureEntity &creature, MONSTER_IDX m_idx, int power, bool p
 
         if (monster.is_asleep()) {
             (void)set_monster_csleep(*creature.get_floor(), m_idx, 0);
-            if (monster.get_monster_profile().ml) {
+            if (monster.is_visible_on_map()) {
                 msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
             }
         }

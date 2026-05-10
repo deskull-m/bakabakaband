@@ -91,7 +91,7 @@ bool set_monster_csleep(FloorType &floor, MONSTER_IDX m_idx, int v)
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (monster.get_monster_profile().ml) {
+    if (monster.is_visible_on_map()) {
         HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
         if (monster.is_riding()) {
             rfu.set_flag(MainWindowRedrawingFlag::UHEALTH);
@@ -274,7 +274,7 @@ bool set_monster_monfear(FloorType &floor, MONSTER_IDX m_idx, int v)
         return false;
     }
 
-    if (monster.get_monster_profile().ml) {
+    if (monster.is_visible_on_map()) {
         HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
         if (monster.is_riding()) {
             RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
@@ -318,7 +318,7 @@ bool set_monster_invulner(FloorType &floor, MONSTER_IDX m_idx, int v, bool energ
         return false;
     }
 
-    if (monster.get_monster_profile().ml) {
+    if (monster.is_visible_on_map()) {
         HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
         if (monster.is_riding()) {
             RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);

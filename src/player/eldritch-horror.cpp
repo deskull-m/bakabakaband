@@ -80,7 +80,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
             return;
         }
 
-        if (!monster.get_monster_profile().ml) {
+        if (!monster.is_visible_on_map()) {
             return;
         }
 
