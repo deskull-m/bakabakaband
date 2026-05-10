@@ -64,8 +64,8 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
     monster.target.y = any_bits(flags, SaveDataMonsterFlagType::TARGET_Y) ? rd_s16b() : 0;
     monster.target.x = any_bits(flags, SaveDataMonsterFlagType::TARGET_X) ? rd_s16b() : 0;
     monster.set_timed_effect(CreatureTimedEffect::INVULNERABILITY, any_bits(flags, SaveDataMonsterFlagType::INVULNER) ? rd_byte() : 0);
-    monster.get_monster_profile().mflag.clear();
-    monster.get_monster_profile().mflag2.clear();
+    monster.clear_temporary_flags();
+    monster.clear_constant_flags();
     if (any_bits(flags, SaveDataMonsterFlagType::SMART)) {
         if (loading_savefile_version_is_older_than(2)) {
             auto tmp32u = rd_u32b();
@@ -74,9 +74,9 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
             // 3.0.0Alpha10以前のSM_CLONED(ビット位置22)、SM_PET(23)、SM_FRIEDLY(28)をMFLAG2に移行する
             // ビット位置の定義はなくなるので、ビット位置の値をハードコードする。
             std::bitset<32> rd_bits(tmp32u);
-            monster.get_monster_profile().mflag2[MonsterConstantFlagType::CLONED] = rd_bits[22];
-            monster.get_monster_profile().mflag2[MonsterConstantFlagType::PET] = rd_bits[23];
-            monster.get_monster_profile().mflag2[MonsterConstantFlagType::FRIENDLY] = rd_bits[28];
+            monster.assign_constant_flag(MonsterConstantFlagType::CLONED, rd_bits[22]);
+            monster.assign_constant_flag(MonsterConstantFlagType::PET, rd_bits[23]);
+            monster.assign_constant_flag(MonsterConstantFlagType::FRIENDLY, rd_bits[28]);
             monster.get_monster_profile().smart.reset(i2enum<MonsterSmartLearnType>(22)).reset(i2enum<MonsterSmartLearnType>(23)).reset(i2enum<MonsterSmartLearnType>(28));
         } else {
             rd_FlagGroup(monster.get_monster_profile().smart, rd_byte);

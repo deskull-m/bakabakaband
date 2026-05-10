@@ -1126,6 +1126,64 @@ public:
     }
 
     /*!
+     * @brief MonsterConstantFlagType を真偽値で設定する (提案 20)
+     * @details savefile 復元等で `mflag2[flag] = bool` 風の代入を行う
+     *          パターン用。true なら set、false なら reset。
+     */
+    virtual void assign_constant_flag(MonsterConstantFlagType flag, bool value)
+    {
+        if (!this->has_monster_profile()) {
+            return;
+        }
+        if (value) {
+            this->get_monster_profile().mflag2.set(flag);
+        } else {
+            this->get_monster_profile().mflag2.reset(flag);
+        }
+    }
+
+    /*!
+     * @brief MonsterConstantFlagType (mflag2) をすべてクリアする (提案 20)
+     */
+    virtual void clear_constant_flags()
+    {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().mflag2.clear();
+        }
+    }
+
+    /*!
+     * @brief mflag2 全体を読み取る (提案 20)
+     * @details モンスターボール捕獲・解放等で mflag2 ビット集合を
+     *          まるごとコピーする用途。プレイヤーは空集合を返す。
+     */
+    virtual const EnumClassFlagGroup<MonsterConstantFlagType> &get_all_constant_flags() const
+    {
+        static const EnumClassFlagGroup<MonsterConstantFlagType> empty{};
+        return this->has_monster_profile() ? this->get_monster_profile().mflag2 : empty;
+    }
+
+    /*!
+     * @brief mflag2 全体を上書きする (提案 20)
+     */
+    virtual void set_all_constant_flags(const EnumClassFlagGroup<MonsterConstantFlagType> &flags)
+    {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().mflag2 = flags;
+        }
+    }
+
+    /*!
+     * @brief MonsterTemporaryFlagType (mflag) をすべてクリアする (提案 20)
+     */
+    virtual void clear_temporary_flags()
+    {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().mflag.clear();
+        }
+    }
+
+    /*!
      * @brief MonsterTemporaryFlagType (mflag) のチェック共通ヘルパ (提案 16)
      */
     bool has_temporary_flag(MonsterTemporaryFlagType flag) const

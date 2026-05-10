@@ -445,7 +445,7 @@ static void effect_monster_captured(CreatureEntity &creature, EffectMonster *em_
     cap_mon_ptr->current_hp = static_cast<short>(em_ptr->m_ptr->hp);
     cap_mon_ptr->max_hp = static_cast<short>(em_ptr->m_ptr->max_maxhp);
     cap_mon_ptr->name = em_ptr->m_ptr->name;
-    cap_mon_ptr->mflag2 = em_ptr->m_ptr->get_monster_profile().mflag2;
+    cap_mon_ptr->mflag2 = em_ptr->m_ptr->get_all_constant_flags();
     if (em_ptr->m_ptr->is_riding() && process_fall_off_horse(creature, -1, false)) {
         msg_print(_("地面に落とされた。", format("You have fallen from %s.", em_ptr->m_name)));
     }

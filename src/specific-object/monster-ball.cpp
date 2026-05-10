@@ -117,7 +117,7 @@ static bool release_monster(CreatureEntity &creature, ItemEntity &item, const Di
     if (item.captured_monster_current_hp > 0) {
         monster.hp = item.captured_monster_current_hp;
     }
-    monster.get_monster_profile().mflag2 = item.captured_monster_mflag2;
+    monster.set_all_constant_flags(item.captured_monster_mflag2);
 
     monster.maxhp = monster.max_maxhp;
     restore_monster_nickname(monster, item);
