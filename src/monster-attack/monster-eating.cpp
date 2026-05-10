@@ -119,6 +119,11 @@ static void move_item_to_monster(CreatureEntity &creature, MonsterAttackPlayer *
     item.marked.clear().set(OmType::TOUCHED);
     item.held_m_idx = monap_ptr->m_idx;
     monap_ptr->m_ptr->get_monster_profile().hold_o_idx_list.add(*creature.get_floor(), o_idx);
+
+    // [フェーズ A-3] inventory[] にも並走で格納する。レガシー hold_o_idx_list と
+    // 並列に保持され、A-4 で参照側を inventory[] に切替後にレガシーを削除する。
+    auto inventory_clone = item.clone();
+    (void)store_item_to_inventory(*monap_ptr->m_ptr, &inventory_clone);
 }
 
 /*!

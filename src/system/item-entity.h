@@ -85,7 +85,10 @@ public:
 
     TrFlags art_flags{}; /*!< Extra Flags for ego and artifacts */
     EnumClassFlagGroup<CurseTraitType> curse_flags{}; /*!< Flags for curse */
-    MONSTER_IDX held_m_idx{}; /*!< アイテムを所持しているモンスターID (いないなら 0) / Monster holding us (if any) */
+    MONSTER_IDX held_m_idx{}; /*!< [非推奨/移行中] アイテムを所持しているモンスターID (いないなら 0) / Monster holding us (if any).
+                                    * フェーズ A-1〜A-3 でモンスター所持は inventory[] (CreatureEntity::inventory) に統合済み。
+                                    * 本フィールドは旧 hold_o_idx_list 経路 (floor.o_list 上に held_m_idx を立てて保持を表現)
+                                    * の併走用一時データであり、フェーズ A-4 で hold_o_idx_list と共に削除予定。 */
     RandomArtifactBias artifact_bias{}; /*!< ランダムアーティファクト生成時のバイアスID */
 
     void wipe();
