@@ -172,7 +172,23 @@ bool MonsterAttackPlayer::process_monster_blows()
         if (this->effect == RaceBlowEffectType::FLAVOR) {
             hit = true;
         } else {
-            const int power = mbe_info[enum2i(this->effect)].power;
+            int power = mbe_info[enum2i(this->effect)].power;
+            // [フェーズ B-2c] 武器による命中ボーナス (B-2b の damage 加算と同じく
+            // HIT/PUNCH/SLASH/STING の打撃でのみ MAIN_HAND の to_h を加算)
+            switch (this->method) {
+            case RaceBlowMethodType::HIT:
+            case RaceBlowMethodType::PUNCH:
+            case RaceBlowMethodType::SLASH:
+            case RaceBlowMethodType::STING: {
+                const auto &weapon = *this->m_ptr->inventory[INVEN_MAIN_HAND];
+                if (weapon.is_valid()) {
+                    power += weapon.to_h;
+                }
+                break;
+            }
+            default:
+                break;
+            }
             hit = check_hit_from_monster_to_player(creature, power, this->rlev, this->m_ptr->get_remaining_stun());
         }
 
