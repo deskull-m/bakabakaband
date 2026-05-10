@@ -72,7 +72,8 @@ void delete_monster_idx(CreatureEntity &creature, short m_idx)
     }
 
     floor.get_grid(m_pos).m_idx = 0;
-    delete_items(creature, monster.get_monster_profile().hold_o_idx_list);
+    // [フェーズ A-4b] inventory[] はモンスターと共に廃棄される (floor.o_list への
+    // 残置参照はないため明示的な delete_items は不要)
 
     // 召喚元のモンスターが消滅した時は、召喚されたモンスターのparent_m_idxが
     // 召喚されたモンスター自身のm_idxを指すようにする

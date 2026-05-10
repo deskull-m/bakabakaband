@@ -116,7 +116,6 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
         mode |= PM_NO_PET;
     }
 
-    monster.get_monster_profile().hold_o_idx_list.clear();
     delete_monster_idx(creature, grid.m_idx);
     bool polymorphed = false;
     auto m_idx = place_specific_monster(creature, y, x, new_r_idx, mode);
