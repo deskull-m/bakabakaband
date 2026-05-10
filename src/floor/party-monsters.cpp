@@ -19,7 +19,7 @@ const CreatureEntity &PartyMonsters::operator[](int i) const
 void PartyMonsters::invalidate_all()
 {
     for (auto &monster : monsters_) {
-        monster.r_idx = MonraceList::empty_id();
+        monster.set_r_idx(MonraceList::empty_id());
     }
 }
 

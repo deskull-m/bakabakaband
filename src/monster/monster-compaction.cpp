@@ -54,7 +54,7 @@ static void compact_monsters_aux(CreatureEntity &creature, MONSTER_IDX i1, MONST
     }
 
     if (monster.is_riding()) { // creature.riding == i1 のままの方がいい？
-        creature.riding = i2;
+        creature.set_riding(i2);
     }
 
     if (HealthBarTracker::get_instance().is_tracking(i1)) {
