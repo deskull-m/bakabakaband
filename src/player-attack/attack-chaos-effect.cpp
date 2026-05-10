@@ -255,17 +255,30 @@ static void attack_golden_hammer(CreatureEntity &creature, player_attack_type *p
 {
     auto &floor = *creature.get_floor();
     auto &monster = floor.get_monster(pa_ptr->m_idx);
-    if (monster.get_held_objects().empty()) {
+
+    // [フェーズ A-4] inventory[] のパックスロットから先頭の有効アイテムを 1 個盗む
+    INVENTORY_IDX src_slot = -1;
+    for (INVENTORY_IDX i = 0; i < INVEN_PACK; i++) {
+        if (monster.inventory[i]->is_valid()) {
+            src_slot = i;
+            break;
+        }
+    }
+    if (src_slot < 0) {
         return;
     }
 
-    auto &item = *floor.o_list[monster.get_monster_profile().hold_o_idx_list.front()];
-    const auto item_name = describe_flavor(creature, item, OD_NAME_ONLY);
-    item.held_m_idx = 0;
-    item.marked.clear().set(OmType::TOUCHED);
-    monster.get_monster_profile().hold_o_idx_list.pop_front();
+    auto &item_in_pack = *monster.inventory[src_slot];
+    auto stolen = item_in_pack.clone();
+    const auto item_name = describe_flavor(creature, stolen, OD_NAME_ONLY);
+    stolen.held_m_idx = 0;
+    stolen.marked.clear().set(OmType::TOUCHED);
+    item_in_pack.wipe();
+    if (monster.inven_cnt > 0) {
+        monster.inven_cnt--;
+    }
     msg_format(_("%sを奪った。", "You snatched %s."), item_name.data());
-    store_item_to_inventory(creature, &item);
+    store_item_to_inventory(creature, &stolen);
 }
 
 /*!
