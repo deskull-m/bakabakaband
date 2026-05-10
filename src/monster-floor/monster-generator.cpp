@@ -142,7 +142,7 @@ tl::optional<MONSTER_IDX> multiply_monster(CreatureEntity &creature, MONSTER_IDX
     }
 
     if (clone || monster.is_cloned()) {
-        floor.get_monster(*multiplied_m_idx).get_monster_profile().mflag2.set({ MonsterConstantFlagType::CLONED, MonsterConstantFlagType::NOPET });
+        floor.get_monster(*multiplied_m_idx).set_constant_flags({ MonsterConstantFlagType::CLONED, MonsterConstantFlagType::NOPET });
     }
 
     return multiplied_m_idx;

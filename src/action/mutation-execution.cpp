@@ -285,7 +285,7 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
 
         msg_print(_("祈りは効果がなかった！", "Your invocation is ineffectual!"));
         if (one_in_(13)) {
-            monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::NOGENO);
+            monster.set_constant_flag(MonsterConstantFlagType::NOGENO);
         }
 
         return true;

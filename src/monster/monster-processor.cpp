@@ -982,7 +982,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
      *  Try to flow by smell.
      */
     if (creature.no_flowed && count > 2 && monster.get_target_position().y) {
-        monster.get_monster_profile().mflag2.reset(MonsterConstantFlagType::NOFLOW);
+        monster.reset_constant_flag(MonsterConstantFlagType::NOFLOW);
     }
 
     if (!turn_flags_ptr->do_turn && !turn_flags_ptr->do_move && !monster.is_fearful() && !turn_flags_ptr->is_riding_mon && turn_flags_ptr->aware) {
@@ -1506,7 +1506,7 @@ bool process_monster_fear(CreatureEntity &creature, turn_flags *turn_flags_ptr, 
         ItemEntity item;
         item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
         (void)drop_near(creature, item, m_ptr->get_position());
-        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::DEFECATED);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::DEFECATED);
     }
 
     if (monrace.resistance_flags.has_not(MonsterResistanceType::NO_VOMIT) && !m_ptr->is_vomited() && m_ptr->is_fearful() && one_in_(20)) {
@@ -1514,7 +1514,7 @@ bool process_monster_fear(CreatureEntity &creature, turn_flags *turn_flags_ptr, 
         ItemEntity item;
         item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_VOMITTING }));
         (void)drop_near(creature, item, m_ptr->get_position());
-        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::VOMITED);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::VOMITED);
     }
 
     const auto &monster = creature.get_floor()->get_monster(m_idx);
@@ -1679,7 +1679,7 @@ void sweep_monster_process(CreatureEntity &creature)
         process_monster(creature, m_idx);
         monster.reset_target();
         if (creature.no_flowed && one_in_(3)) {
-            monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::NOFLOW);
+            monster.set_constant_flag(MonsterConstantFlagType::NOFLOW);
         }
 
         if (!creature.playing || creature.is_dead() || creature.leaving) {
@@ -1699,7 +1699,7 @@ bool decide_process_continue(CreatureEntity &creature, CreatureEntity &monster)
     const auto &monrace = monster.get_monrace();
 
     if (!creature.no_flowed) {
-        monster.get_monster_profile().mflag2.reset(MonsterConstantFlagType::NOFLOW);
+        monster.reset_constant_flag(MonsterConstantFlagType::NOFLOW);
     }
 
     const auto cdis = Grid::calc_distance(creature.get_position(), monster.get_position());

@@ -33,7 +33,7 @@
 void set_pet(CreatureEntity &creature, CreatureEntity &target)
 {
     QuestCompletionChecker(creature, target).complete();
-    target.get_monster_profile().mflag2.set(MonsterConstantFlagType::PET);
+    target.set_constant_flag(MonsterConstantFlagType::PET);
     target.set_alliance_idx(AllianceType::NONE);
     if (target.get_monrace().kind_flags.has_none_of(alignment_mask)) {
         target.set_sub_align(SUB_ALIGN_NEUTRAL);

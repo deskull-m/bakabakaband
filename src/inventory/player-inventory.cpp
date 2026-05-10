@@ -116,7 +116,7 @@ static void py_pickup_single_item(CreatureEntity &creature, short i_idx, bool pi
         return;
     }
 
-    if (!check_creature.store_item(item)) {
+    if (!creature.can_store_item(item)) {
         msg_print(_("ザックには{}を入れる隙間がない。", "You have no room for {}."), item_name);
         return;
     }
@@ -307,7 +307,7 @@ void carry(CreatureEntity &creature, bool pickup)
             continue;
         }
 
-        if (!check_creature.store_item(item)) {
+        if (!creature.can_store_item(item)) {
             msg_format(_("ザックには%sを入れる隙間がない。", "You have no room for %s."), item_name.data());
             continue;
         }

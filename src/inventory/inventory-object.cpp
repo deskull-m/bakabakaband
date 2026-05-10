@@ -348,14 +348,14 @@ bool check_get_item(ItemEntity *o_ptr)
  * @param o_ptr 拾いたいオブジェクトの構造体参照ポインタ
  * @return 溢れずに済むならTRUEを返す
  */
-bool check_store_item_to_inventory(CreatureEntity &creature, const ItemEntity *o_ptr)
+bool check_store_item_to_inventory(const CreatureEntity &creature, const ItemEntity *o_ptr)
 {
     if (creature.inven_cnt < INVEN_PACK) {
         return true;
     }
 
     for (int j = 0; j < INVEN_PACK; j++) {
-        auto *j_ptr = creature.inventory[j].get();
+        const auto *j_ptr = creature.inventory[j].get();
         if (!j_ptr->is_valid()) {
             continue;
         }
