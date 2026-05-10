@@ -9,6 +9,7 @@
 #include "game-option/input-options.h"
 #include "grid/grid.h"
 #include "info-reader/fixed-map-parser.h"
+#include "inventory/inventory-slot-types.h"
 #include "io/cursor.h"
 #include "io/input-key-acceptor.h"
 #include "monster/monster-describer.h"
@@ -40,6 +41,7 @@
 #include "window/display-sub-windows.h"
 #include "world/world.h"
 #include <fmt/format.h>
+#include <optional>
 #include <vector>
 #ifdef JP
 #else
@@ -254,13 +256,17 @@ static void describe_monster_person(GridExamination *ge_ptr)
 
 static short describe_monster_item(CreatureEntity &creature, GridExamination *ge_ptr)
 {
-    // [フェーズ A-4] inventory[] のパックスロットを順に表示
-    for (size_t i = 0; i < ge_ptr->m_ptr->inventory.size(); i++) {
-        const auto &item = *ge_ptr->m_ptr->inventory[i];
-        if (!item.is_valid()) {
-            continue;
-        }
+    // [フェーズ B-4] 装備スロット → パックスロットの順で表示し、
+    // 装備品は「装備している」、パックは「持っている」と区別する
+    auto show_one = [&](const ItemEntity &item, bool is_equipped, bool is_first) -> std::optional<short> {
         const auto item_name = describe_flavor(creature, item, 0);
+        if (is_equipped) {
+            ge_ptr->s2 = is_first ? _("を", "wielding ") : _("をまた", "also wielding ");
+            ge_ptr->s3 = _("装備している", "");
+        } else {
+            ge_ptr->s2 = is_first ? _("を", "carrying ") : _("をまた", "also carrying ");
+            ge_ptr->s3 = _("持っている", "");
+        }
 #ifdef JP
         const auto out_val = format("%s%s%s%s[%s]", ge_ptr->s1, item_name.data(), ge_ptr->s2, ge_ptr->s3, ge_ptr->info);
 #else
@@ -272,12 +278,34 @@ static short describe_monster_item(CreatureEntity &creature, GridExamination *ge
         if ((ge_ptr->query != '\r') && (ge_ptr->query != '\n') && (ge_ptr->query != ' ') && (ge_ptr->query != 'x')) {
             return ge_ptr->query;
         }
-
         if ((ge_ptr->query == ' ') && !(ge_ptr->mode & TARGET_LOOK)) {
             return ge_ptr->query;
         }
+        return std::nullopt;
+    };
 
-        ge_ptr->s2 = _("をまた", "also carrying ");
+    bool is_first = true;
+    // 装備スロット (INVEN_MAIN_HAND..INVEN_TOTAL)
+    for (size_t i = INVEN_MAIN_HAND; i < INVEN_TOTAL && i < ge_ptr->m_ptr->inventory.size(); i++) {
+        const auto &item = *ge_ptr->m_ptr->inventory[i];
+        if (!item.is_valid()) {
+            continue;
+        }
+        if (auto early = show_one(item, true, is_first); early) {
+            return *early;
+        }
+        is_first = false;
+    }
+    // パックスロット (0..INVEN_PACK)
+    for (size_t i = 0; i < INVEN_PACK && i < ge_ptr->m_ptr->inventory.size(); i++) {
+        const auto &item = *ge_ptr->m_ptr->inventory[i];
+        if (!item.is_valid()) {
+            continue;
+        }
+        if (auto early = show_one(item, false, is_first); early) {
+            return *early;
+        }
+        is_first = false;
     }
 
     return CONTINUOUS_DESCRIPTION;
