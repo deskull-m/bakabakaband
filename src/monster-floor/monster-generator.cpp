@@ -132,7 +132,7 @@ tl::optional<MONSTER_IDX> multiply_monster(CreatureEntity &creature, MONSTER_IDX
         return tl::nullopt;
     }
 
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::NOPET)) {
+    if (monster.is_nopet()) {
         mode |= PM_NO_PET;
     }
 
@@ -141,7 +141,7 @@ tl::optional<MONSTER_IDX> multiply_monster(CreatureEntity &creature, MONSTER_IDX
         return tl::nullopt;
     }
 
-    if (clone || monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CLONED)) {
+    if (clone || monster.is_cloned()) {
         floor.get_monster(*multiplied_m_idx).get_monster_profile().mflag2.set({ MonsterConstantFlagType::CLONED, MonsterConstantFlagType::NOPET });
     }
 
@@ -380,7 +380,7 @@ bool alloc_horde(CreatureEntity &creature, POSITION y, POSITION x, summon_specif
         return true;
     }
 
-    const auto &monrace = monentity.get_monster_profile().mflag2.has(MonsterConstantFlagType::CHAMELEON) ? monentity.get_monrace() : MonraceList::get_instance().get_monrace(*monrace_id);
+    const auto &monrace = monentity.is_chameleon() ? monentity.get_monrace() : MonraceList::get_instance().get_monrace(*monrace_id);
     msg_format(_("モンスターの大群(%c)", "Monster horde (%c)."), monrace.symbol_definition.character);
     return true;
 }

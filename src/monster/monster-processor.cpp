@@ -829,7 +829,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
     turn_flags_ptr->see_m = is_seen(creature, monster);
 
     decide_drop_from_monster(creature, m_idx, turn_flags_ptr->is_riding_mon);
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CHAMELEON) && one_in_(13) && !monster.is_asleep()) {
+    if (monster.is_chameleon() && one_in_(13) && !monster.is_asleep()) {
         const auto &floor = *creature.get_floor();
         const auto old_m_name = monster_desc(creature, monster, 0);
         const auto &monrace = monster.get_monrace();
@@ -954,7 +954,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
     process_speak(creature, m_idx, oy, ox, turn_flags_ptr->aware);
 
     // 狂乱状態のモンスターは魔法を使わず、プレイヤーに隣接していれば攻撃のみを行う
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::FRENZY)) {
+    if (monster.is_frenzied()) {
         const auto dy = std::abs(monster.y - creature.y);
         const auto dx = std::abs(monster.x - creature.x);
         if (dy <= 1 && dx <= 1 && turn_flags_ptr->aware) {
@@ -1453,7 +1453,7 @@ bool cast_spell(CreatureEntity &creature, MONSTER_IDX m_idx, bool aware)
     const auto &monrace = monster_from.get_monrace();
 
     // 狂乱状態のモンスターは魔法を使わない
-    if (monster_from.get_monster_profile().mflag2.has(MonsterConstantFlagType::FRENZY)) {
+    if (monster_from.is_frenzied()) {
         return false;
     }
 

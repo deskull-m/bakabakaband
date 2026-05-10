@@ -363,7 +363,7 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
     }
 
     monster.exp += new_exp;
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
+    if (monster.is_chameleon()) {
         return;
     }
 

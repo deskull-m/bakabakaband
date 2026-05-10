@@ -416,7 +416,7 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
 
     write_pet_death(creature, &md);
     on_dead_explosion(creature, &md);
-    if (md.m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
+    if (md.m_ptr->is_chameleon()) {
         md.m_ptr->reset_chameleon_polymorph();
         md.r_ptr = &md.m_ptr->get_monrace();
     }

@@ -138,7 +138,7 @@ void wiz_summon_specific_monster_common(CreatureEntity &creature, MonraceId monr
         return;
     }
 
-    if (monster->get_monster_profile().mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
+    if (monster->is_chameleon()) {
         wiz_select_chameleon_polymorph(*monster);
     }
 

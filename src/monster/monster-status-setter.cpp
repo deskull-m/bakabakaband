@@ -250,7 +250,7 @@ bool set_monster_monfear(FloorType &floor, MONSTER_IDX m_idx, int v)
     bool notice = false;
 
     // 狂乱状態のモンスターは恐怖しない
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::FRENZY) && v > 0) {
+    if (monster.is_frenzied() && v > 0) {
         return false;
     }
 

@@ -103,7 +103,7 @@ static void attack_stun(CreatureEntity &creature, player_attack_type *pa_ptr, bo
 static void attack_scare(CreatureEntity &creature, player_attack_type *pa_ptr, bool can_resist = true)
 {
     auto &monrace = *pa_ptr->r_ptr;
-    if (monrace.resistance_flags.has(MonsterResistanceType::NO_FEAR) || pa_ptr->m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::FRENZY)) {
+    if (monrace.resistance_flags.has(MonsterResistanceType::NO_FEAR) || pa_ptr->m_ptr->is_frenzied()) {
         if (is_original_ap_and_seen(creature, *pa_ptr->m_ptr)) {
             monrace.resistance_flags.set(MonsterResistanceType::NO_FEAR);
         }

@@ -82,8 +82,8 @@ static bool is_high_rate(CreatureEntity &creature, MONSTER_IDX m_idx1, MONSTER_I
     }
 
     /* Shadowers first (あやしい影) */
-    if (monster1.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE) != monster2.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE)) {
-        return monster1.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE);
+    if (monster1.is_kage() != monster2.is_kage()) {
+        return monster1.is_kage();
     }
 
     /* Unknown monsters first */
@@ -139,7 +139,7 @@ static bool scene_monster(CreatureEntity &creature, scene_type *value)
 {
     const auto &monster = creature.get_floor()->get_monster(scene_target_monster.m_idx);
 
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE)) {
+    if (monster.is_kage()) {
         value->type = TERM_XTRA_MUSIC_BASIC;
         value->val = MUSIC_BASIC_SHADOWER;
         return true;
