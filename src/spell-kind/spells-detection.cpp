@@ -336,24 +336,20 @@ bool detect_monsters_normal(CreatureEntity &creature, POSITION range)
     }
 
     bool flag = false;
-    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+    // [提案 14b] AI ターゲット選定共通化を活用
+    const auto p_pos = creature.get_position();
+    const auto sees_invis = creature.can_see_invisible();
+    const auto matched = creature.collect_creatures([&](const CreatureEntity &mon) {
+        if (Grid::calc_distance(p_pos, mon.get_position()) > range) {
+            return false;
+        }
+        return mon.get_monrace().misc_flags.has_not(MonsterMiscType::INVISIBLE) || sees_invis;
+    });
+    for (auto i : matched) {
         auto &monster = floor.m_list[i];
-        const auto &monrace = monster.get_monrace();
-        if (!monster.is_valid()) {
-            continue;
-        }
-
-        POSITION y = monster.y;
-        POSITION x = monster.x;
-        if (Grid::calc_distance(creature.get_position(), { y, x }) > range) {
-            continue;
-        }
-
-        if (monrace.misc_flags.has_not(MonsterMiscType::INVISIBLE) || creature.can_see_invisible()) {
-            monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(creature, i, false);
-            flag = true;
-        }
+        monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
+        update_monster(creature, i, false);
+        flag = true;
     }
 
     if (music_singing(creature, MUSIC_DETECT) && get_singing_count(creature) > 3) {
@@ -382,30 +378,22 @@ bool detect_monsters_invis(CreatureEntity &creature, POSITION range)
     const auto &tracker = LoreTracker::get_instance();
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     auto flag = false;
-    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+    // [提案 14b]
+    const auto p_pos = creature.get_position();
+    const auto matched = creature.collect_creatures([&](const CreatureEntity &mon) {
+        if (Grid::calc_distance(p_pos, mon.get_position()) > range) {
+            return false;
+        }
+        return mon.get_monrace().misc_flags.has(MonsterMiscType::INVISIBLE);
+    });
+    for (auto i : matched) {
         auto &monster = floor.m_list[i];
-        const auto &monrace = monster.get_monrace();
-
-        if (!monster.is_valid()) {
-            continue;
+        if (tracker.is_tracking(monster.r_idx)) {
+            rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
         }
-
-        POSITION y = monster.y;
-        POSITION x = monster.x;
-
-        if (Grid::calc_distance(creature.get_position(), { y, x }) > range) {
-            continue;
-        }
-
-        if (monrace.misc_flags.has(MonsterMiscType::INVISIBLE)) {
-            if (tracker.is_tracking(monster.r_idx)) {
-                rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
-            }
-
-            monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(creature, i, false);
-            flag = true;
-        }
+        monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
+        update_monster(creature, i, false);
+        flag = true;
     }
 
     if (music_singing(creature, MUSIC_DETECT) && get_singing_count(creature) > 3) {
@@ -434,32 +422,26 @@ bool detect_monsters_evil(CreatureEntity &creature, POSITION range)
     const auto &tracker = LoreTracker::get_instance();
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     auto flag = false;
-    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+    // [提案 14b]
+    const auto p_pos = creature.get_position();
+    const auto matched = creature.collect_creatures([&](const CreatureEntity &mon) {
+        if (Grid::calc_distance(p_pos, mon.get_position()) > range) {
+            return false;
+        }
+        return mon.get_monrace().kind_flags.has(MonsterKindType::EVIL);
+    });
+    for (auto i : matched) {
         auto &monster = floor.m_list[i];
         auto &monrace = monster.get_monrace();
-        if (!monster.is_valid()) {
-            continue;
-        }
-
-        POSITION y = monster.y;
-        POSITION x = monster.x;
-
-        if (Grid::calc_distance(creature.get_position(), { y, x }) > range) {
-            continue;
-        }
-
-        if (monrace.kind_flags.has(MonsterKindType::EVIL)) {
-            if (monster.is_original_ap()) {
-                monrace.r_kind_flags.set(MonsterKindType::EVIL);
-                if (tracker.is_tracking(monster.r_idx)) {
-                    rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
-                }
+        if (monster.is_original_ap()) {
+            monrace.r_kind_flags.set(MonsterKindType::EVIL);
+            if (tracker.is_tracking(monster.r_idx)) {
+                rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
             }
-
-            monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(creature, i, false);
-            flag = true;
         }
+        monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
+        update_monster(creature, i, false);
+        flag = true;
     }
 
     if (flag) {
@@ -485,27 +467,22 @@ bool detect_monsters_nonliving(CreatureEntity &creature, POSITION range)
     const auto &tracker = LoreTracker::get_instance();
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     auto flag = false;
-    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+    // [提案 14b]
+    const auto p_pos = creature.get_position();
+    const auto matched = creature.collect_creatures([&](const CreatureEntity &mon) {
+        if (Grid::calc_distance(p_pos, mon.get_position()) > range) {
+            return false;
+        }
+        return !mon.has_living_flag();
+    });
+    for (auto i : matched) {
         auto &monster = floor.m_list[i];
-        if (!monster.is_valid()) {
-            continue;
+        if (tracker.is_tracking(monster.r_idx)) {
+            rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
         }
-
-        POSITION y = monster.y;
-        POSITION x = monster.x;
-        if (Grid::calc_distance(creature.get_position(), { y, x }) > range) {
-            continue;
-        }
-
-        if (!monster.has_living_flag()) {
-            if (tracker.is_tracking(monster.r_idx)) {
-                rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
-            }
-
-            monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(creature, i, false);
-            flag = true;
-        }
+        monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
+        update_monster(creature, i, false);
+        flag = true;
     }
 
     if (flag) {
@@ -531,29 +508,22 @@ bool detect_monsters_mind(CreatureEntity &creature, POSITION range)
     const auto &tracker = LoreTracker::get_instance();
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     auto flag = false;
-    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+    // [提案 14b]
+    const auto p_pos = creature.get_position();
+    const auto matched = creature.collect_creatures([&](const CreatureEntity &mon) {
+        if (Grid::calc_distance(p_pos, mon.get_position()) > range) {
+            return false;
+        }
+        return mon.get_monrace().misc_flags.has_not(MonsterMiscType::EMPTY_MIND);
+    });
+    for (auto i : matched) {
         auto &monster = floor.m_list[i];
-        const auto &monrace = monster.get_monrace();
-        if (!monster.is_valid()) {
-            continue;
+        if (tracker.is_tracking(monster.r_idx)) {
+            rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
         }
-
-        POSITION y = monster.y;
-        POSITION x = monster.x;
-
-        if (Grid::calc_distance(creature.get_position(), { y, x }) > range) {
-            continue;
-        }
-
-        if (monrace.misc_flags.has_not(MonsterMiscType::EMPTY_MIND)) {
-            if (tracker.is_tracking(monster.r_idx)) {
-                rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
-            }
-
-            monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(creature, i, false);
-            flag = true;
-        }
+        monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
+        update_monster(creature, i, false);
+        flag = true;
     }
 
     if (flag) {
@@ -580,29 +550,22 @@ bool detect_monsters_string(CreatureEntity &creature, POSITION range, concptr Ma
     const auto &tracker = LoreTracker::get_instance();
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     auto flag = false;
-    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+    // [提案 14b]
+    const auto p_pos = creature.get_position();
+    const auto matched = creature.collect_creatures([&](const CreatureEntity &mon) {
+        if (Grid::calc_distance(p_pos, mon.get_position()) > range) {
+            return false;
+        }
+        return angband_strchr(Match, mon.get_monrace().symbol_definition.character) != nullptr;
+    });
+    for (auto i : matched) {
         auto &monster = floor.m_list[i];
-        const auto &monrace = monster.get_monrace();
-        if (!monster.is_valid()) {
-            continue;
+        if (tracker.is_tracking(monster.r_idx)) {
+            rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
         }
-
-        POSITION y = monster.y;
-        POSITION x = monster.x;
-
-        if (Grid::calc_distance(creature.get_position(), { y, x }) > range) {
-            continue;
-        }
-
-        if (angband_strchr(Match, monrace.symbol_definition.character)) {
-            if (tracker.is_tracking(monster.r_idx)) {
-                rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
-            }
-
-            monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(creature, i, false);
-            flag = true;
-        }
+        monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
+        update_monster(creature, i, false);
+        flag = true;
     }
 
     if (music_singing(creature, MUSIC_DETECT) && get_singing_count(creature) > 3) {

@@ -104,25 +104,26 @@ void compact_monsters(CreatureEntity &creature, int size)
 
     /* Compact at least 'size' objects */
     auto &floor = *creature.get_floor();
+    const auto p_pos = creature.get_position();
     for (int num = 0, cnt = 1; num < size; cnt++) {
         int cur_lev = 5 * cnt;
         int cur_dis = 5 * (20 - cnt);
-        for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+        // [提案 14b]
+        const auto candidates = creature.collect_creatures([&](const CreatureEntity &mon) {
+            if (mon.get_monrace().level > cur_lev) {
+                return false;
+            }
+            if (mon.is_riding()) {
+                return false;
+            }
+            if ((cur_dis > 0) && (Grid::calc_distance(p_pos, mon.get_position()) < cur_dis)) {
+                return false;
+            }
+            return true;
+        });
+        for (auto i : candidates) {
             const auto &monster = floor.get_monster(i);
             const auto &monrace = monster.get_monrace();
-            if (!monster.is_valid()) {
-                continue;
-            }
-            if (monrace.level > cur_lev) {
-                continue;
-            }
-            if (monster.is_riding()) {
-                continue;
-            }
-            if ((cur_dis > 0) && (Grid::calc_distance(creature.get_position(), monster.get_position()) < cur_dis)) {
-                continue;
-            }
-
             int chance = 90;
             if (monrace.misc_flags.has(MonsterMiscType::QUESTOR) && (cnt < 1000)) {
                 chance = 100;
