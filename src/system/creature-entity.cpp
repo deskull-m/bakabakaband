@@ -2,6 +2,7 @@
 #include "core/speed-table.h"
 #include "floor/geometry.h"
 #include "game-option/birth-options.h"
+#include "hpmp/hp-mp-regenerator.h"
 #include "inventory/inventory-slot-types.h"
 #include "market/arena-entry.h"
 #include "mind/mind-elementalist.h"
@@ -588,6 +589,11 @@ void CreatureEntity::set_timed_effect(CreatureTimedEffect effect, short value)
         }
     }
     this->timed_effects_map[effect] = value;
+}
+
+int CreatureEntity::get_base_natural_regen_amount() const
+{
+    return PY_REGEN_NORMAL;
 }
 
 void CreatureEntity::make_lore_treasure(int num_item, int num_gold) const

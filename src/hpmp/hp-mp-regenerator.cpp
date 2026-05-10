@@ -17,6 +17,7 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
+#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "tracking/health-bar-tracker.h"
@@ -28,38 +29,21 @@ int wild_regen = 20;
  * @brief 共通の自然回復量を算出する。プレイヤー基準の計算に揃え、モンスターでも同形で
  *        評価できる係数 (regen_amount) を返す。
  *
- * - PY_REGEN_NORMAL を起点に、満腹度・スタンス・呪い・ミュータント体質などの
- *   プレイヤー固有要因は is_player() ガードで適用する。
- * - 再生種族フラグ (regen)・毒・切り傷・行動 (search/rest)・地形衛生は
- *   モンスターでも同等のロジックで適用される。
+ * - 構え・行動による完全停止判定は should_skip_natural_regen() (virtual)
+ * - ベース回復量は get_base_natural_regen_amount() (virtual)。プレイヤーは満腹度に応じた値を返す
+ * - 構え・呪いによる減衰は apply_state_regen_modifier() (virtual)
+ * - ミュータント体質等のクリーチャー固有要因は apply_creature_specific_regen_modifier() (virtual)
+ * - 毒・切り傷・再生種族フラグ・行動 (search/rest)・地形衛生はプレイヤー・モンスター共通で適用
  * - regenhp() / regenmana() / 表示用 calculate_*_regen_rate() で同じ値を使うことで
  *   プレイヤー・モンスター・c画面表示を一貫させる。
  */
 int compute_regen_amount(CreatureEntity &creature)
 {
-    if (creature.is_player()) {
-        CreatureClass pc(creature);
-        if (pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
-            return 0;
-        }
-        if (creature.action == ACTION_HAYAGAKE) {
-            return 0;
-        }
+    if (creature.should_skip_natural_regen()) {
+        return 0;
     }
 
-    int regen_amount = PY_REGEN_NORMAL;
-
-    if (creature.is_player()) {
-        if (creature.food < PY_FOOD_WEAK) {
-            if (creature.food < PY_FOOD_STARVE) {
-                regen_amount = 0;
-            } else if (creature.food < PY_FOOD_FAINT) {
-                regen_amount = PY_REGEN_FAINT;
-            } else {
-                regen_amount = PY_REGEN_WEAK;
-            }
-        }
-    }
+    int regen_amount = creature.get_base_natural_regen_amount();
 
     if (creature.is_poisoned() || creature.is_cut()) {
         regen_amount = 0;
@@ -69,15 +53,7 @@ int compute_regen_amount(CreatureEntity &creature)
         regen_amount = regen_amount * 2;
     }
 
-    if (creature.is_player()) {
-        CreatureClass pc(creature);
-        if (!pc.monk_stance_is(MonkStanceType::NONE) || !pc.samurai_stance_is(SamuraiStanceType::NONE)) {
-            regen_amount /= 2;
-        }
-        if (creature.get_cursed_flags().has(CurseTraitType::SLOW_REGEN)) {
-            regen_amount /= 5;
-        }
-    }
+    regen_amount = creature.apply_state_regen_modifier(regen_amount);
 
     if ((creature.action == ACTION_SEARCH) || (creature.action == ACTION_REST)) {
         regen_amount = regen_amount * 2;
@@ -93,11 +69,47 @@ int compute_regen_amount(CreatureEntity &creature)
         }
     }
 
-    if (creature.is_player()) {
-        regen_amount = (regen_amount * creature.mutant_regenerate_mod) / 100;
-    }
+    return creature.apply_creature_specific_regen_modifier(regen_amount);
+}
 
-    return regen_amount;
+bool PlayerType::should_skip_natural_regen() const
+{
+    CreatureClass pc(const_cast<PlayerType &>(*this));
+    if (pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
+        return true;
+    }
+    return this->action == ACTION_HAYAGAKE;
+}
+
+int PlayerType::get_base_natural_regen_amount() const
+{
+    if (this->food >= PY_FOOD_WEAK) {
+        return PY_REGEN_NORMAL;
+    }
+    if (this->food < PY_FOOD_STARVE) {
+        return 0;
+    }
+    if (this->food < PY_FOOD_FAINT) {
+        return PY_REGEN_FAINT;
+    }
+    return PY_REGEN_WEAK;
+}
+
+int PlayerType::apply_state_regen_modifier(int amount) const
+{
+    CreatureClass pc(const_cast<PlayerType &>(*this));
+    if (!pc.monk_stance_is(MonkStanceType::NONE) || !pc.samurai_stance_is(SamuraiStanceType::NONE)) {
+        amount /= 2;
+    }
+    if (this->get_cursed_flags().has(CurseTraitType::SLOW_REGEN)) {
+        amount /= 5;
+    }
+    return amount;
+}
+
+int PlayerType::apply_creature_specific_regen_modifier(int amount) const
+{
+    return (amount * this->mutant_regenerate_mod) / 100;
 }
 
 /*!
