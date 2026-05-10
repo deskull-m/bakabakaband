@@ -180,7 +180,7 @@ static ProcessResult exe_affect_monster_by_effect(CreatureEntity &creature, Effe
  */
 static void effect_damage_killed_pet(CreatureEntity &creature, EffectMonster *em_ptr)
 {
-    bool sad = em_ptr->m_ptr->is_pet() && !(em_ptr->m_ptr->get_monster_profile().ml);
+    bool sad = em_ptr->m_ptr->is_pet() && !(em_ptr->m_ptr->is_visible_on_map());
     if (em_ptr->known && !em_ptr->note.empty()) {
         angband_strcpy(em_ptr->m_name, monster_desc(creature, *em_ptr->m_ptr, MD_TRUE_NAME), sizeof(em_ptr->m_name));
         if (em_ptr->see_s_msg) {

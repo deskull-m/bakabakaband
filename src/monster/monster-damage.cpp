@@ -236,7 +236,7 @@ void MonsterDamageProcessor::increase_kill_numbers()
     }
 
     const auto is_hallucinated = creature.is_hallucinated();
-    if (((monster.get_monster_profile().ml == 0) || is_hallucinated) && monrace.kind_flags.has_not(MonsterKindType::UNIQUE)) {
+    if ((!monster.is_visible_on_map() || is_hallucinated) && monrace.kind_flags.has_not(MonsterKindType::UNIQUE)) {
         return;
     }
 
@@ -343,7 +343,7 @@ void MonsterDamageProcessor::show_kill_message(std::string_view note, std::strin
         return;
     }
 
-    if (!monster.get_monster_profile().ml) {
+    if (!monster.is_visible_on_map()) {
         auto mes = this->creature.is_echizen() ? _("せっかくだから%sを殺した。", "Because it's time, you have killed %s.")
                                                : _("%sを殺した。", "You have killed %s.");
         msg_format(mes, m_name.data());
@@ -535,7 +535,7 @@ void MonsterDamageProcessor::process_masochist_reaction()
             auto heal_amount = randint1(this->dam / 4 + 1);
             monster.hp = std::min(monster.hp + heal_amount, monster.maxhp);
 
-            if (monster.get_monster_profile().ml) {
+            if (monster.is_visible_on_map()) {
                 msg_format(_("%s^は苦痛に悦んでいる！", "%s^ seems to enjoy the pain!"), monster.get_monrace().name.data());
             }
         }
@@ -563,7 +563,7 @@ void MonsterDamageProcessor::process_sadist_reaction()
         // 一時的な加速効果付与（興奮状態）
         (void)set_monster_fast(*creature.get_floor(), this->m_idx, monster.get_remaining_acceleration() + 100);
 
-        if (monster.get_monster_profile().ml) {
+        if (monster.is_visible_on_map()) {
             msg_format(_("%s^は他者の苦痛に興奮している！", "%s^ gets excited by others' pain!"), monster.get_monrace().name.data());
         }
     }
@@ -633,7 +633,7 @@ bool MonsterDamageProcessor::check_and_process_hp_transform()
     monster.get_monster_profile().sub_align = old_sub_align;
 
     // メッセージ表示
-    if (monster.get_monster_profile().ml) {
+    if (monster.is_visible_on_map()) {
         const auto new_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
         msg_format(_("％sは％sに変身した！", "％s^ transforms into ％s!"),
             old_name.data(), new_name.data());

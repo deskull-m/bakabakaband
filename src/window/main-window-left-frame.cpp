@@ -405,7 +405,7 @@ void print_health(CreatureEntity &creature, bool riding)
 
     const auto &monster = creature.get_floor()->get_monster(monster_idx.value());
 
-    if ((!monster.get_monster_profile().ml) || (creature.is_hallucinated()) || monster.is_dead()) {
+    if ((!monster.is_visible_on_map()) || (creature.is_hallucinated()) || monster.is_dead()) {
         term_putstr(col, row, max_width, TERM_WHITE, "[----------]");
         return;
     }

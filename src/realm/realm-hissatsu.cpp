@@ -425,7 +425,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
                 const auto pos_ddd = pos + d.vec();
                 const auto &grid = floor.get_grid(pos_ddd);
                 const auto &monster = floor.get_monster(grid.m_idx);
-                if (!grid.has_monster() || (!monster.get_monster_profile().ml && !floor.has_terrain_characteristics(pos_ddd, TerrainCharacteristics::PROJECTION))) {
+                if (!grid.has_monster() || (!monster.is_visible_on_map() && !floor.has_terrain_characteristics(pos_ddd, TerrainCharacteristics::PROJECTION))) {
                     continue;
                 }
 

@@ -320,6 +320,38 @@ Phase 2 で主要な `is_xxx()` 系は仮想化済みだが、以下はまだ自
 
 ---
 
+## 提案 7: モンスター可視判定 (`ml`) の virtual アクセサ化 ✅ 完了
+
+### 背景
+
+`MonsterProfile::ml` (bool) はプレイヤーから見えるかを保持する一時変数で、
+全コードベース 119 箇所で `monster.get_monster_profile().ml` の形で
+直接アクセスされていた。MonsterProfile を持たないクリーチャー
+(=プレイヤー) でアクセスすると `tl::optional` の dereference でクラッシュ
+するため、慣用句的に呼び側で `has_monster_profile()` ガードや
+`ternary` で `false` フォールバックを書く必要があった。
+
+### 作業内容
+
+- `CreatureEntity` に virtual `is_visible_on_map()` を追加
+  (デフォルト実装: `monster_profile ? ml : false`)
+- 同 virtual `set_visible_on_map(bool)` を追加
+  (デフォルト実装: monster_profile があれば書込み、なければ no-op)
+- 既存呼び側を sed 一括移行: 読取り 113 箇所、書込み 6 箇所、
+  43 ファイルに渡って `is_visible_on_map()` / `set_visible_on_map(...)`
+  形式へ置換
+- `is_seen()` (geometry.cpp) と `is_original_ap_and_seen()`
+  (monster-info.cpp) の `has_monster_profile()` ガードは
+  virtual 内部で吸収されるようになったため削除
+
+### 効果
+
+- 119 箇所の直接アクセスを virtual 経由に集約
+- ガード忘れ・null dereference リスクの恒久的排除
+- 将来モンスターに「視認状態」概念を追加するときの拡張ポイント確保
+
+---
+
 ## 推奨実施順序
 
 1. **提案 1** - プレイヤー専用フィールドのクリーチャー共通化（初期値・アクセサ整備）

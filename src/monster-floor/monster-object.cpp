@@ -134,7 +134,7 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
     if (is_unpickable_object) {
         if (turn_flags_ptr->do_take && monrace.behavior_flags.has(MonsterBehaviorType::STUPID)) {
             turn_flags_ptr->did_take_item = true;
-            if (monster.get_monster_profile().ml && player_can_see_bold(creature, ny, nx)) {
+            if (monster.is_visible_on_map() && player_can_see_bold(creature, ny, nx)) {
                 msg_format(_("%s^は%sを拾おうとしたが、だめだった。", "%s^ tries to pick up %s, but fails."), m_name.data(), o_name.data());
             }
         }

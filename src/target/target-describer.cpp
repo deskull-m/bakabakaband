@@ -286,7 +286,7 @@ static bool within_char_util(const short input)
 
 static short describe_grid(CreatureEntity &creature, GridExamination *ge_ptr)
 {
-    if (!ge_ptr->g_ptr->has_monster() || !creature.get_floor()->get_monster(ge_ptr->g_ptr->m_idx).get_monster_profile().ml) {
+    if (!ge_ptr->g_ptr->has_monster() || !creature.get_floor()->get_monster(ge_ptr->g_ptr->m_idx).is_visible_on_map()) {
         return CONTINUOUS_DESCRIPTION;
     }
 

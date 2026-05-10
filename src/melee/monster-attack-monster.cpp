@@ -95,7 +95,7 @@ static void aura_fire_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
         msg_format(_("%s^は突然熱くなった！", "%s^ is suddenly very hot!"), mam_ptr->m_name);
     }
 
-    if (mam_ptr->m_ptr->get_monster_profile().ml && is_original_ap_and_seen(creature, *mam_ptr->t_ptr)) {
+    if (mam_ptr->m_ptr->is_visible_on_map() && is_original_ap_and_seen(creature, *mam_ptr->t_ptr)) {
         monrace_target.aura_flags.set(MonsterAuraType::FIRE);
     }
 
@@ -122,7 +122,7 @@ static void aura_cold_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
         msg_format(_("%s^は突然寒くなった！", "%s^ is suddenly very cold!"), mam_ptr->m_name);
     }
 
-    if (monster.get_monster_profile().ml && is_original_ap_and_seen(creature, *mam_ptr->t_ptr)) {
+    if (monster.is_visible_on_map() && is_original_ap_and_seen(creature, *mam_ptr->t_ptr)) {
         monrace_target.aura_flags.set(MonsterAuraType::COLD);
     }
 
@@ -149,7 +149,7 @@ static void aura_elec_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
         msg_format(_("%s^は電撃を食らった！", "%s^ gets zapped!"), mam_ptr->m_name);
     }
 
-    if (monster.get_monster_profile().ml && is_original_ap_and_seen(creature, *mam_ptr->t_ptr)) {
+    if (monster.is_visible_on_map() && is_original_ap_and_seen(creature, *mam_ptr->t_ptr)) {
         monrace_target.aura_flags.set(MonsterAuraType::ELEC);
     }
 
@@ -178,7 +178,7 @@ static bool check_same_monster(CreatureEntity &creature, mam_type *mam_ptr)
 
 static void redraw_health_bar(mam_type *mam_ptr)
 {
-    if (!mam_ptr->t_ptr->get_monster_profile().ml) {
+    if (!mam_ptr->t_ptr->is_visible_on_map()) {
         return;
     }
 

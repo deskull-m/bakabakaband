@@ -776,6 +776,30 @@ public:
     }
 
     /*!
+     * @brief クリーチャーがマップ上で視認可能（プレイヤーから見える）かどうかを判定
+     * @return 視認可能ならtrue
+     * @details モンスターは MonsterProfile::ml の値、プレイヤーや MonsterProfile を
+     *          持たないクリーチャーは false（プレイヤー自身を「視認対象」として
+     *          扱わないことで既存の `is_seen()` 等の意味論を維持）
+     */
+    virtual bool is_visible_on_map() const
+    {
+        return this->has_monster_profile() && this->get_monster_profile().ml;
+    }
+
+    /*!
+     * @brief クリーチャーのマップ上視認状態を設定する
+     * @param value 視認状態
+     * @details モンスターのみ意味を持つ。プレイヤーには無効。
+     */
+    virtual void set_visible_on_map(bool value)
+    {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().ml = value;
+        }
+    }
+
+    /*!
      * @brief クリーチャーがフレンドリー状態かどうかを判定
      * @return フレンドリーならtrue、デフォルトはfalse（プレイヤーはフレンドリー判定対象外）
      */

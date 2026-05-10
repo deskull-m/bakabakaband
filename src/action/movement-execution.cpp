@@ -149,20 +149,20 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
     std::string m_name;
     bool can_move = true;
     bool do_past = false;
-    if (grid.has_monster() && (monster.get_monster_profile().ml || p_can_enter || p_can_kill_walls)) {
+    if (grid.has_monster() && (monster.is_visible_on_map() || p_can_enter || p_can_kill_walls)) {
         const auto &monrace = monster.get_monrace();
         const auto effects = creature.effects();
         const auto is_stunned = effects->stun().is_stunned();
         auto can_cast = !effects->confusion().is_confused();
         const auto is_hallucinated = effects->hallucination().is_hallucinated();
         can_cast &= !is_hallucinated;
-        can_cast &= monster.get_monster_profile().ml;
+        can_cast &= monster.is_visible_on_map();
         can_cast &= !is_stunned;
         can_cast &= creature.get_mutations().has_not(PlayerMutationType::BERS_RAGE) || !creature.is_shero();
         if (!monster.is_hostile() && can_cast && pattern_seq(creature, pos) && (p_can_enter || p_can_kill_walls)) {
             (void)set_monster_csleep(*creature.get_floor(), grid.m_idx, 0);
             m_name = monster_desc(creature, monster, 0);
-            if (monster.get_monster_profile().ml) {
+            if (monster.is_visible_on_map()) {
                 if (!is_hallucinated) {
                     LoreTracker::get_instance().set_trackee(monster.ap_r_idx);
                 }
