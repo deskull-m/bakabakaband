@@ -122,7 +122,7 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
     if (m_idx) {
         auto &monster_polymorphed = floor.get_monster(*m_idx);
         monster_polymorphed.name = back_m.name;
-        monster_polymorphed.get_monster_profile().parent_m_idx = back_m.get_parent_m_idx();
+        monster_polymorphed.set_parent_m_idx(back_m.get_parent_m_idx());
         // 所持アイテムは inventory[] を引き継ぐ
         if (preserve_hold_objects) {
             for (size_t i = 0; i < back_m.inventory.size(); i++) {

@@ -42,7 +42,7 @@ void remove_bad_spells(MONSTER_IDX m_idx, CreatureEntity &creature, EnumClassFla
     if (smart_learn) {
         /* 時々学習情報を忘れる */
         if (one_in_(100)) {
-            monster.get_monster_profile().smart.clear();
+            monster.clear_smart_flags();
         }
 
         msr_ptr->smart_flags = monster.get_smart_flags();

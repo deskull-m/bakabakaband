@@ -66,7 +66,7 @@ static void compact_monsters_aux(CreatureEntity &creature, MONSTER_IDX i1, MONST
             CreatureEntity *m2_ptr = &floor.get_monster(static_cast<MONSTER_IDX>(i));
 
             if (m2_ptr->get_parent_m_idx() == i1) {
-                m2_ptr->get_monster_profile().parent_m_idx = i2;
+                m2_ptr->set_parent_m_idx(i2);
             }
         }
     }
