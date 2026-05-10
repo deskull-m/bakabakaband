@@ -852,7 +852,7 @@ void do_cmd_pet(CreatureEntity &creature)
             msg_print(_("近くに視認可能なペットがいない。", "No visible pet nearby."));
             break;
         }
-        auto &target_pet = floor.get_monster(target_idx);
+        auto &pet_monster = floor.get_monster(target_idx);
         constexpr auto q = _("どのアイテムを渡しますか? ", "Give which item? ");
         constexpr auto s = _("渡せるアイテムがない。", "You have nothing to give.");
         const auto &[item, i_idx] = choose_item(creature, q, s, (USE_INVEN), AllMatchItemTester());
@@ -863,9 +863,9 @@ void do_cmd_pet(CreatureEntity &creature)
         given.number = 1;
         given.held_m_idx = 0;
         given.iy = given.ix = 0;
-        const auto pet_name = monster_desc(creature, target_pet, MD_INDEF_VISIBLE);
+        const auto pet_name = monster_desc(creature, pet_monster, MD_INDEF_VISIBLE);
         const auto item_name = describe_flavor(creature, given, OD_OMIT_PREFIX);
-        if (target_pet.acquire_item(given) >= 0) {
+        if (pet_monster.acquire_item(given) >= 0) {
             msg_format(_("%sに%sを渡した。", "You give %s to %s."), pet_name.data(), item_name.data());
             inven_item_increase(creature, i_idx, -1);
             inven_item_optimize(creature, i_idx);
@@ -898,11 +898,11 @@ void do_cmd_pet(CreatureEntity &creature)
             msg_print(_("近くに視認可能なペットがいない。", "No visible pet nearby."));
             break;
         }
-        auto &target_pet = floor.get_monster(target_idx);
+        auto &pet_monster = floor.get_monster(target_idx);
         // 簡易選択: パックスロットで最初に見つかった有効アイテム (装備品は受取り不可)
         INVENTORY_IDX src_slot = -1;
         for (INVENTORY_IDX i = 0; i < INVEN_PACK; i++) {
-            if (target_pet.inventory[i]->is_valid()) {
+            if (pet_monster.inventory[i]->is_valid()) {
                 src_slot = i;
                 break;
             }
@@ -911,17 +911,17 @@ void do_cmd_pet(CreatureEntity &creature)
             msg_print(_("ペットは渡せるアイテムを持っていない。", "The pet has nothing to give."));
             break;
         }
-        auto &item_in_pack = *target_pet.inventory[src_slot];
+        auto &item_in_pack = *pet_monster.inventory[src_slot];
         auto received = item_in_pack.clone();
         received.held_m_idx = 0;
         received.iy = received.ix = 0;
-        const auto pet_name = monster_desc(creature, target_pet, MD_INDEF_VISIBLE);
+        const auto pet_name = monster_desc(creature, pet_monster, MD_INDEF_VISIBLE);
         const auto item_name = describe_flavor(creature, received, OD_OMIT_PREFIX);
         msg_format(_("%sから%sを受け取った。", "You receive %s from %s."), pet_name.data(), item_name.data());
         store_item_to_inventory(creature, &received);
         item_in_pack.wipe();
-        if (target_pet.inven_cnt > 0) {
-            target_pet.inven_cnt--;
+        if (pet_monster.inven_cnt > 0) {
+            pet_monster.inven_cnt--;
         }
         break;
     }
@@ -949,14 +949,14 @@ void do_cmd_pet(CreatureEntity &creature)
             msg_print(_("近くに視認可能なペットがいない。", "No visible pet nearby."));
             break;
         }
-        auto &target_pet = floor.get_monster(target_idx);
-        const auto pet_name = monster_desc(creature, target_pet, MD_INDEF_VISIBLE);
+        auto &pet_monster = floor.get_monster(target_idx);
+        const auto pet_name = monster_desc(creature, pet_monster, MD_INDEF_VISIBLE);
         screen_save();
         prt(format(_("%s の所持品:", "%s's inventory:"), pet_name.data()), 0, 0);
         int line = 1;
         // 装備スロット
         for (size_t i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-            const auto &item = *target_pet.inventory[i];
+            const auto &item = *pet_monster.inventory[i];
             if (!item.is_valid()) {
                 continue;
             }
@@ -965,7 +965,7 @@ void do_cmd_pet(CreatureEntity &creature)
         }
         // パックスロット
         for (size_t i = 0; i < INVEN_PACK; i++) {
-            const auto &item = *target_pet.inventory[i];
+            const auto &item = *pet_monster.inventory[i];
             if (!item.is_valid()) {
                 continue;
             }
