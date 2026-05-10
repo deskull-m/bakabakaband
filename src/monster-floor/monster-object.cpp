@@ -9,6 +9,7 @@
 #include "flavor/flavor-describer.h"
 #include "floor/floor-object.h"
 #include "floor/geometry.h"
+#include "inventory/inventory-object.h"
 #include "monster-race/race-flags-resistance.h"
 #include "monster-race/race-resistance-mask.h"
 #include "monster/monster-describer.h"
@@ -154,6 +155,13 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
         o_ptr->iy = o_ptr->ix = 0;
         o_ptr->held_m_idx = m_idx;
         monster.get_monster_profile().hold_o_idx_list.add(*creature.get_floor(), this_o_idx);
+
+        // [フェーズ A-1] inventory[] にも並走で格納する。レガシー hold_o_idx_list と
+        // 並列に保持され、A-2 以降で参照側を inventory[] に切替後にレガシーを削除する。
+        // store_item_to_inventory はクローンを内部で作成するため元 ItemEntity は不変。
+        auto inventory_clone = o_ptr->clone();
+        (void)store_item_to_inventory(monster, &inventory_clone);
+
         RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::FOUND_ITEMS);
         return;
     }
