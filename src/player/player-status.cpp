@@ -1639,13 +1639,13 @@ static ARMOUR_CLASS calc_base_ac(CreatureEntity &creature)
     const auto o_ptr_mh = creature.inventory[INVEN_MAIN_HAND].get();
     const auto o_ptr_sh = creature.inventory[INVEN_SUB_HAND].get();
     if (o_ptr_mh->is_protector() || o_ptr_sh->is_protector()) {
-        ac += creature.skill_exp[PlayerSkillKindType::SHIELD] * (1 + creature.level / 22) / 2000;
+        ac += creature.get_skill_exp(PlayerSkillKindType::SHIELD) * (1 + creature.level / 22) / 2000;
     }
 
     // 装甲技能による防御力ボーナス（鎧装備時）
     const auto o_ptr_body = creature.inventory[INVEN_BODY].get();
     if (o_ptr_body->is_valid() && (o_ptr_body->bi_key.tval() == ItemKindType::HARD_ARMOR)) {
-        ac += creature.skill_exp[PlayerSkillKindType::ARMOR] * (1 + creature.level / 25) / 2500;
+        ac += creature.get_skill_exp(PlayerSkillKindType::ARMOR) * (1 + creature.level / 25) / 2500;
     }
 
     // 回避技能による防御力ボーナス（軽装備時）
@@ -1658,7 +1658,7 @@ static ARMOUR_CLASS calc_base_ac(CreatureEntity &creature)
 
     // 装備重量が軽い（300ポンド以下）時に回避技能ボーナス
     if (equipment_weight <= 300) {
-        auto evasion_bonus = creature.skill_exp[PlayerSkillKindType::EVASION] * (1 + creature.level / 20) / 3000;
+        auto evasion_bonus = creature.get_skill_exp(PlayerSkillKindType::EVASION) * (1 + creature.level / 20) / 3000;
         // 装備がより軽いほどボーナスが大きくなる（最大で2倍）
         auto weight_ratio = (300 - equipment_weight) / 300.0;
         evasion_bonus = static_cast<int>(evasion_bonus * (1.0 + weight_ratio));
@@ -1868,7 +1868,7 @@ int16_t calc_double_weapon_penalty(CreatureEntity &creature, INVENTORY_IDX slot)
     if (has_melee_weapon(creature, INVEN_MAIN_HAND) && has_melee_weapon(creature, INVEN_SUB_HAND)) {
         const auto flags = creature.inventory[INVEN_SUB_HAND]->get_flags();
 
-        penalty = ((100 - creature.skill_exp[PlayerSkillKindType::TWO_WEAPON] / 160) - (130 - creature.inventory[slot]->weight) / 8);
+        penalty = ((100 - creature.get_skill_exp(PlayerSkillKindType::TWO_WEAPON) / 160) - (130 - creature.inventory[slot]->weight) / 8);
         if (set_quick_and_tiny(creature) || set_icing_and_twinkle(creature) || set_anubis_and_chariot(creature)) {
             penalty = penalty / 2 - 5;
         }
@@ -1932,7 +1932,7 @@ static int16_t calc_riding_bow_penalty(CreatureEntity &creature)
             penalty = 5;
         }
     } else {
-        penalty = floor.get_monster(creature.riding).get_monrace().level - creature.skill_exp[PlayerSkillKindType::RIDING] / 80;
+        penalty = floor.get_monster(creature.riding).get_monrace().level - creature.get_skill_exp(PlayerSkillKindType::RIDING) / 80;
         penalty += 30;
         if (penalty < 30) {
             penalty = 30;
@@ -2243,7 +2243,7 @@ static short calc_to_hit(CreatureEntity &creature, INVENTORY_IDX slot, bool is_r
             }
             [[fallthrough]];
         case MELEE_TYPE_BAREHAND_TWO:
-            hit += (creature.skill_exp[PlayerSkillKindType::MARTIAL_ARTS] - PlayerSkill::weapon_exp_at(PlayerSkillRank::BEGINNER)) / 200;
+            hit += (creature.get_skill_exp(PlayerSkillKindType::MARTIAL_ARTS) - PlayerSkill::weapon_exp_at(PlayerSkillRank::BEGINNER)) / 200;
             break;
 
         default:
@@ -2265,7 +2265,7 @@ static short calc_to_hit(CreatureEntity &creature, INVENTORY_IDX slot, bool is_r
         /* Traind bonuses */
         const auto tval = o_ptr->bi_key.tval();
         const auto sval = *o_ptr->bi_key.sval();
-        hit += (creature.weapon_exp[tval][sval] - PlayerSkill::weapon_exp_at(PlayerSkillRank::BEGINNER)) / 200;
+        hit += (creature.get_weapon_exp(tval, sval) - PlayerSkill::weapon_exp_at(PlayerSkillRank::BEGINNER)) / 200;
 
         /* Weight penalty */
         if (calc_weapon_weight_limit(creature) < o_ptr->weight / 10) {
@@ -2291,7 +2291,7 @@ static short calc_to_hit(CreatureEntity &creature, INVENTORY_IDX slot, bool is_r
                 if (CreatureClass(creature).is_tamer()) {
                     penalty = 5;
                 } else {
-                    penalty = creature.get_floor()->get_monster(creature.riding).get_monrace().level - creature.skill_exp[PlayerSkillKindType::RIDING] / 80;
+                    penalty = creature.get_floor()->get_monster(creature.riding).get_monrace().level - creature.get_skill_exp(PlayerSkillKindType::RIDING) / 80;
                     penalty += 30;
                     if (penalty < 30) {
                         penalty = 30;

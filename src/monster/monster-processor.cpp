@@ -475,7 +475,7 @@ void process_angar(CreatureEntity &creature, MONSTER_IDX m_idx, bool see_m)
 
     /* When riding a hostile alignment pet */
     if (monster.is_riding()) {
-        if (abs(creature.alignment / 10) < randint0(creature.skill_exp[PlayerSkillKindType::RIDING])) {
+        if (abs(creature.alignment / 10) < randint0(creature.get_skill_exp(PlayerSkillKindType::RIDING))) {
             return;
         }
 

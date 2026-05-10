@@ -361,7 +361,7 @@ void wiz_change_status(CreatureEntity &creature)
     for (auto j : PLAYER_SKILL_KIND_TYPE_RANGE) {
         creature.skill_exp[j] = *proficiency;
         auto short_pclass = enum2i(creature.pclass);
-        if (creature.skill_exp[j] > class_skills_info[short_pclass].s_max[j]) {
+        if (creature.get_skill_exp(j) > class_skills_info[short_pclass].s_max[j]) {
             creature.skill_exp[j] = class_skills_info[short_pclass].s_max[j];
         }
     }

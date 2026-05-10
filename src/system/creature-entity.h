@@ -892,6 +892,40 @@ public:
     }
 
     /*!
+     * @brief 指定インデックスの呪文熟練度を取得する
+     * @param spell_idx 呪文インデックス (0..63)
+     * @return SUB_EXP 値。プレイヤーは spell_exp[spell_idx]、モンスターは default 実装で
+     *         同フィールドを参照 (現状は意味を持たないが将来モンスター呪文熟練を導入する余地)
+     */
+    virtual SUB_EXP get_spell_exp(int spell_idx) const
+    {
+        return this->spell_exp[spell_idx];
+    }
+
+    /*!
+     * @brief 指定スキル種別のスキル熟練度を取得する
+     * @param skill スキル種別
+     * @return SUB_EXP 値。プレイヤーは skill_exp に存在すれば返し、無ければ 0。
+     */
+    virtual SUB_EXP get_skill_exp(PlayerSkillKindType skill) const
+    {
+        const auto it = this->skill_exp.find(skill);
+        return (it != this->skill_exp.end()) ? it->second : 0;
+    }
+
+    /*!
+     * @brief 指定武器種別・サブ種別の武器熟練度を取得する
+     * @param tval ItemKindType
+     * @param sval サブ種別 (0..63)
+     * @return SUB_EXP 値。プレイヤーは weapon_exp[tval][sval]、なければ 0
+     */
+    virtual SUB_EXP get_weapon_exp(ItemKindType tval, int sval) const
+    {
+        const auto it = this->weapon_exp.find(tval);
+        return (it != this->weapon_exp.end()) ? it->second[sval] : 0;
+    }
+
+    /*!
      * @brief クリーチャーがフレンドリー状態かどうかを判定
      * @return フレンドリーならtrue、デフォルトはfalse（プレイヤーはフレンドリー判定対象外）
      */

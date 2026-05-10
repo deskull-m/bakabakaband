@@ -129,7 +129,7 @@ PERCENTAGE spell_chance(CreatureEntity &creature, SPELL_IDX spell_id, RealmType 
     chance -= 3 * (adj_mag_stat[creature.stat_index[mp_ptr->spell_stat]] - 1);
     if (creature.riding) {
         const auto &riding_monrace = creature.get_floor()->get_monster(creature.riding).get_monrace();
-        chance += (std::max(riding_monrace.level - creature.skill_exp[PlayerSkillKindType::RIDING] / 100 - 10, 0));
+        chance += (std::max(riding_monrace.level - creature.get_skill_exp(PlayerSkillKindType::RIDING) / 100 - 10, 0));
     }
 
     MANA_POINT need_mana = mod_need_mana(creature, spell.smana, spell_id, use_realm);

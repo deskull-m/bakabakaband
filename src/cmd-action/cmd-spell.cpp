@@ -822,7 +822,7 @@ void do_cmd_study(CreatureEntity &creature)
 
     if (realm_status.is_learned(spell % 32)) {
         auto max_exp = PlayerSkill::spell_exp_at((spell < 32) ? PlayerSkillRank::MASTER : PlayerSkillRank::EXPERT);
-        const auto old_exp = creature.spell_exp[spell];
+        const auto old_exp = creature.get_spell_exp(spell);
         const auto &realm = increment ? pr.realm2() : pr.realm1();
         const auto &spell_name = realm.get_spell_name(spell % 32);
 

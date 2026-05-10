@@ -320,6 +320,49 @@ Phase 2 で主要な `is_xxx()` 系は仮想化済みだが、以下はまだ自
 
 ---
 
+## 提案 10: 配列フィールド virtual インデックスアクセサ ✅ 一部完了
+
+### 背景
+
+`spell_exp[64]` (固定配列) / `weapon_exp` / `weapon_exp_max` /
+`skill_exp` (`std::map`) はプレイヤーの熟練度システム用フィールドだが
+`CreatureEntity` 直下に存在するため、モンスターからもアクセス可能な
+構造になっている。直アクセスのみで virtual がなく、将来モンスターに
+熟練度概念を導入する際の拡張点が無かった。
+
+### 作業内容
+
+`CreatureEntity` に 3 つの read-only virtual インデックサを追加:
+
+| 仮想関数 | 役割 | デフォルト動作 |
+|---|---|---|
+| `get_spell_exp(int idx)` | 呪文熟練度 | `spell_exp[idx]` を返す |
+| `get_skill_exp(PlayerSkillKindType)` | スキル熟練度 | map に存在すれば値、無ければ 0 |
+| `get_weapon_exp(ItemKindType, int sval)` | 武器熟練度 | map に存在すれば値、無ければ 0 |
+
+### 移行結果
+
+- 読取り 31 箇所 (spell_exp 4, skill_exp 22, weapon_exp 5) を新 virtual 経由に置換
+- 書込み・参照取得 (`auto &exp = ...`)・複合代入 16 箇所は従来通り
+  直接配列アクセス形式で残置 (mutation/reference 取得には virtual が
+  対応できないため)
+
+### 効果
+
+- 読取りパスがプレイヤー・モンスター共通の API を通る
+- 将来モンスターに `get_X_exp()` を override させて種族別/個体別の
+  熟練度ロジックを導入可能
+
+### 残作業
+
+- 書込み setter virtual 整備は呼び出しパターン (集計加算/上限クランプ/
+  `auto &` 経由 in-place 変更) が多様で抽象コストが大きく、優先度低
+  として保留
+- 配列全体走査 (`for (auto &exp : creature.weapon_exp[tval])`) は
+  span 経由の virtual 化も検討余地あり
+
+---
+
 ## 提案 9: MonsterProfile フィールド virtual アクセサ化 ✅ 一部完了
 
 ### 背景
