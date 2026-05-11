@@ -126,8 +126,8 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
         monrace_questor.misc_flags.set(MonsterMiscType::QUESTOR);
     }
 
-    if (creature.get_max_plv() < creature.level) {
-        creature.set_max_plv(creature.level);
+    if (creature.get_max_plv() < creature.get_level()) {
+        creature.set_max_plv(creature.get_level());
     }
 
     auto &dungeon_record = DungeonRecords::get_instance().get_record(floor.dungeon_id);

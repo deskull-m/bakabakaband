@@ -207,7 +207,7 @@ ProcessResult effect_monster_engetsu(CreatureEntity &creature, EffectMonster *em
             if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
                 em_ptr->do_stun = 0;
             } else {
-                em_ptr->do_stun = Dice::roll((creature.level / 10) + 3, (em_ptr->dam)) + 1;
+                em_ptr->do_stun = Dice::roll((creature.get_level() / 10) + 3, (em_ptr->dam)) + 1;
                 done = true;
             }
             break;

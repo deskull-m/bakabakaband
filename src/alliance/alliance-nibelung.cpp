@@ -110,7 +110,7 @@ int AllianceNibelung::calcImpressionPoint(const CreatureEntity &creature) const
     }
 
     // レベルボーナス
-    point += creature.level / 3;
+    point += creature.get_level() / 3;
 
     // ニーベルング族のメンバーを殺害した場合の減点
     const auto &monrace_list = MonraceList::get_instance();
@@ -210,7 +210,7 @@ void AllianceNibelung::panishment([[maybe_unused]] CreatureEntity &creature)
 
     // 強力な地属性攻撃
     project(&creature, 0, 8, creature.y, creature.x,
-        creature.level * 4, AttributeType::SHARDS,
+        creature.get_level() * 4, AttributeType::SHARDS,
         PROJECT_KILL | PROJECT_ITEM | PROJECT_GRID);
 
     // 大量のドワーフ軍団召喚

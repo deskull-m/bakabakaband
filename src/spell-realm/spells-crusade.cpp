@@ -134,13 +134,13 @@ bool set_tim_eyeeye(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 void check_emission(CreatureEntity &creature)
 {
     if (creature.get_timed_effect(CreatureTimedEffect::TIM_EMISSION) > 0) {
-        if (creature.level > 29) {
+        if (creature.get_level() > 29) {
             map_area(creature, creature.cur_lite);
         }
-        if (creature.level > 24) {
+        if (creature.get_level() > 24) {
             detect_traps(creature, creature.cur_lite, true);
         }
-        if (creature.level > 19) {
+        if (creature.get_level() > 19) {
             detect_monsters_evil(creature, creature.cur_lite);
         }
     }
@@ -149,7 +149,7 @@ void check_emission(CreatureEntity &creature)
 void check_demigod(CreatureEntity &creature)
 {
     if (creature.get_mimic_form() == MimicKindType::DEMIGOD) {
-        const Dice dice(1, creature.level * 4);
+        const Dice dice(1, creature.get_level() * 4);
 
         dispel_evil(creature, dice.roll());
     }
@@ -158,7 +158,7 @@ void check_demigod(CreatureEntity &creature)
 bool has_slay_demon_from_exorcism(const CreatureEntity &creature)
 {
     if (creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM) > 0) {
-        if (creature.level < THRESHOLD_KILL_FROM_EXORCISM) {
+        if (creature.get_level() < THRESHOLD_KILL_FROM_EXORCISM) {
             return true;
         }
     }
@@ -168,7 +168,7 @@ bool has_slay_demon_from_exorcism(const CreatureEntity &creature)
 bool has_kill_demon_from_exorcism(const CreatureEntity &creature)
 {
     if (creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM) > 0) {
-        if (creature.level >= THRESHOLD_KILL_FROM_EXORCISM) {
+        if (creature.get_level() >= THRESHOLD_KILL_FROM_EXORCISM) {
             return true;
         }
     }
@@ -178,7 +178,7 @@ bool has_kill_demon_from_exorcism(const CreatureEntity &creature)
 bool has_slay_undead_from_exorcism(const CreatureEntity &creature)
 {
     if (creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM) > 0) {
-        if (creature.level < THRESHOLD_KILL_FROM_EXORCISM) {
+        if (creature.get_level() < THRESHOLD_KILL_FROM_EXORCISM) {
             return true;
         }
     }
@@ -188,7 +188,7 @@ bool has_slay_undead_from_exorcism(const CreatureEntity &creature)
 bool has_kill_undead_from_exorcism(const CreatureEntity &creature)
 {
     if (creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM) > 0) {
-        if (creature.level >= THRESHOLD_KILL_FROM_EXORCISM) {
+        if (creature.get_level() >= THRESHOLD_KILL_FROM_EXORCISM) {
             return true;
         }
     }

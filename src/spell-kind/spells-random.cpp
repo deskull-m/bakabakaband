@@ -80,7 +80,7 @@ void call_chaos(CreatureEntity &creature)
     if (line_chaos) {
         fire_beam(creature, chaos_type, dir, 250);
     } else {
-        fire_ball(creature, chaos_type, dir, 250, 3 + (creature.level / 35));
+        fire_ball(creature, chaos_type, dir, 250, 3 + (creature.get_level() / 35));
     }
 }
 
@@ -364,7 +364,7 @@ void wild_magic(CreatureEntity &creature, int spell)
  */
 void cast_wonder(CreatureEntity &creature, const Direction &dir)
 {
-    PLAYER_LEVEL plev = creature.level;
+    PLAYER_LEVEL plev = creature.get_level();
     int die = randint1(100) + plev / 5;
     int vir = virtue_number(creature, Virtue::CHANCE);
     if (vir) {

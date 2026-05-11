@@ -138,7 +138,7 @@ void effect_player_arrow(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         return;
     }
 
-    if (creature.is_tough() && one_in_(100 / (2 + creature.level))) {
+    if (creature.is_tough() && one_in_(100 / (2 + creature.get_level()))) {
         msg_print(_("灘神影流、弾丸すべり！", "Bullet slipping of Nada-Shinkage-Arts!"));
         return;
     }

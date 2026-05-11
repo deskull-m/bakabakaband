@@ -266,8 +266,8 @@ static tl::optional<BaseitemKey> select_magic_eater(CreatureEntity &creature, bo
                 chance = level * 4 / 5 + 20;
                 chance -= 3 * (adj_mag_stat[creature.get_stat_index(mp_ptr->spell_stat)] - 1);
                 level /= 2;
-                if (creature.level > level) {
-                    chance -= 3 * (creature.level - level);
+                if (creature.get_level() > level) {
+                    chance -= 3 * (creature.get_level() - level);
                 }
                 chance = mod_spell_chance_1(creature, chance);
                 chance = std::max<int>(chance, adj_mag_fail[creature.get_stat_index(mp_ptr->spell_stat)]);
@@ -507,8 +507,8 @@ bool do_cmd_magic_eater(CreatureEntity &creature, bool only_browse, bool powerfu
     auto chance = level * 4 / 5 + 20;
     chance -= 3 * (adj_mag_stat[creature.get_stat_index(mp_ptr->spell_stat)] - 1);
     level /= 2;
-    if (creature.level > level) {
-        chance -= 3 * (creature.level - level);
+    if (creature.get_level() > level) {
+        chance -= 3 * (creature.get_level() - level);
     }
     chance = mod_spell_chance_1(creature, chance);
     chance = std::max<int>(chance, adj_mag_fail[creature.get_stat_index(mp_ptr->spell_stat)]);

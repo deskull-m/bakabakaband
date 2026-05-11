@@ -118,7 +118,7 @@ void process_player_hp_mp(CreatureEntity &creature)
     int upkeep_factor = 0;
     int regen_amount = 0; // compute_regen_amount() で後段に確定
     if (terrain.flags.has(TerrainCharacteristics::RUNE_HEALING)) {
-        hp_player(creature, 2 + creature.level / 6);
+        hp_player(creature, 2 + creature.get_level() / 6);
     }
 
     if (creature.is_poisoned() && !creature.is_invulnerable()) {
@@ -222,7 +222,7 @@ void process_player_hp_mp(CreatureEntity &creature)
     if (can_drown && !creature.has_levitation() && !creature.has_can_swim() && !creature.has_resist_water()) {
         if (calc_inventory_weight(creature) > calc_weight_limit(creature)) {
             msg_print(_("溺れている！", "You are drowning!"));
-            take_hit(creature, DAMAGE_NOESCAPE, randint1(creature.level), _("溺れ", "drowning"));
+            take_hit(creature, DAMAGE_NOESCAPE, randint1(creature.get_level()), _("溺れ", "drowning"));
             cave_no_regen = true;
             sound(SoundKind::TERRAIN_DAMAGE);
         }
@@ -232,9 +232,9 @@ void process_player_hp_mp(CreatureEntity &creature)
         int damage;
         msg_print(_("棘に体が突き刺さっている！", "Your body is stuck in a thorn!"));
         if (calc_inventory_weight(creature) > calc_weight_limit(creature)) {
-            damage = randint1(creature.level);
+            damage = randint1(creature.get_level());
         } else {
-            damage = (randint1(creature.level) + 1) / 2;
+            damage = (randint1(creature.get_level()) + 1) / 2;
         }
         cave_no_regen = true;
         take_hit(creature, DAMAGE_NOESCAPE, damage, _("突起物", "Protrusions"));
@@ -260,7 +260,7 @@ void process_player_hp_mp(CreatureEntity &creature)
 
     if (get_player_flags(creature, TR_SELF_FIRE) && !creature.has_immune_fire()) {
         int damage;
-        damage = creature.level;
+        damage = creature.get_level();
         if (race.tr_flags().has(TR_VUL_FIRE)) {
             damage += damage / 3;
         }
@@ -278,7 +278,7 @@ void process_player_hp_mp(CreatureEntity &creature)
 
     if (get_player_flags(creature, TR_SELF_ELEC) && !creature.has_immune_elec()) {
         int damage;
-        damage = creature.level;
+        damage = creature.get_level();
         if (race.tr_flags().has(TR_VUL_ELEC)) {
             damage += damage / 3;
         }
@@ -296,7 +296,7 @@ void process_player_hp_mp(CreatureEntity &creature)
 
     if (get_player_flags(creature, TR_SELF_COLD) && !creature.has_immune_cold()) {
         int damage;
-        damage = creature.level;
+        damage = creature.get_level();
         if (race.tr_flags().has(TR_VUL_COLD)) {
             damage += damage / 3;
         }
@@ -378,7 +378,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         auto should_damage = !creature.is_invulnerable();
         should_damage &= creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM) == 0;
         should_damage &= creature.get_timed_effect(CreatureTimedEffect::TIM_PASS_WALL) == 0;
-        should_damage &= (creature.hp > (creature.level / 5)) || !creature.has_pass_wall();
+        should_damage &= (creature.hp > (creature.get_level() / 5)) || !creature.has_pass_wall();
         if (should_damage) {
             concptr dam_desc;
             cave_no_regen = true;
@@ -391,7 +391,7 @@ void process_player_hp_mp(CreatureEntity &creature)
                 dam_desc = _("硬い岩", "solid rock");
             }
 
-            take_hit(creature, DAMAGE_NOESCAPE, 1 + (creature.level / 5), dam_desc);
+            take_hit(creature, DAMAGE_NOESCAPE, 1 + (creature.get_level() / 5), dam_desc);
         }
     }
 

@@ -208,7 +208,7 @@ void complete_quest(CreatureEntity &creature, QuestId quest_id)
         break;
     }
 
-    record_quest_final_status(&quest, creature.level, QuestStatusType::COMPLETED);
+    record_quest_final_status(&quest, creature.get_level(), QuestStatusType::COMPLETED);
     if (quest.flags & QUEST_FLAG_SILENT) {
         return;
     }
@@ -295,13 +295,13 @@ void leave_quest_check(CreatureEntity &creature)
         return;
     }
 
-    record_quest_final_status(&quest, creature.level, QuestStatusType::FAILED);
+    record_quest_final_status(&quest, creature.get_level(), QuestStatusType::FAILED);
 
     /* Additional settings */
     switch (quest.type) {
     case QuestKindType::TOWER:
         quests.get_quest(QuestId::TOWER1).status = QuestStatusType::FAILED;
-        quests.get_quest(QuestId::TOWER1).complev = creature.level;
+        quests.get_quest(QuestId::TOWER1).complev = creature.get_level();
         break;
     case QuestKindType::FIND_ARTIFACT:
         quest.get_reward().gen_flags.reset(ItemGenerationTraitType::QUESTITEM);
@@ -346,7 +346,7 @@ void leave_tower_check(CreatureEntity &creature)
         return;
     }
     tower1.status = QuestStatusType::FAILED;
-    tower1.complev = creature.level;
+    tower1.complev = creature.get_level();
     auto &world = AngbandWorld::get_instance();
     world.play_time.update();
     tower1.comptime = world.play_time.elapsed_sec();

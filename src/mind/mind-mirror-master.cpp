@@ -240,11 +240,11 @@ bool binding_field(CreatureEntity &creature, int dam)
 bool confusing_light(CreatureEntity &creature)
 {
     msg_print(_("辺りを睨んだ...", "You glare at nearby monsters..."));
-    slow_monsters(creature, creature.level);
-    stun_monsters(creature, creature.level * 4);
-    confuse_monsters(creature, creature.level * 4);
-    turn_monsters(creature, creature.level * 4);
-    stasis_monsters(creature, creature.level * 4);
+    slow_monsters(creature, creature.get_level());
+    stun_monsters(creature, creature.get_level() * 4);
+    confuse_monsters(creature, creature.get_level() * 4);
+    turn_monsters(creature, creature.get_level() * 4);
+    stasis_monsters(creature, creature.get_level() * 4);
     return true;
 }
 
@@ -361,7 +361,7 @@ static int number_of_mirrors(const FloorType &floor)
  */
 bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
 {
-    PLAYER_LEVEL plev = creature.level;
+    PLAYER_LEVEL plev = creature.get_level();
     int tmp;
     TIME_EFFECT t;
     const auto &grid = creature.get_floor()->grid_array[creature.y][creature.x];

@@ -181,10 +181,10 @@ Alliance::Alliance(AllianceType id, std::string tag, std::string name, int64_t b
  */
 int Alliance::calcPlayerPower(const CreatureEntity &creature, const int bias, const int min_level)
 {
-    if (min_level > creature.level) {
+    if (min_level > creature.get_level()) {
         return 0;
     }
-    return (2000 + 10 * (creature.level - min_level + 1) * (creature.level - min_level + 1)) * bias / 100;
+    return (2000 + 10 * (creature.get_level() - min_level + 1) * (creature.get_level() - min_level + 1)) * bias / 100;
 }
 
 /*!

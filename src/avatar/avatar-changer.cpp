@@ -74,7 +74,7 @@ void AvatarChanger::change_virtue_non_beginner()
         chg_virtue(this->creature, Virtue::VALOUR, 1);
     }
 
-    if (monrace.level >= 2 * (this->creature.level + 1)) {
+    if (monrace.level >= 2 * (this->creature.get_level() + 1)) {
         chg_virtue(this->creature, Virtue::VALOUR, 2);
     }
 }

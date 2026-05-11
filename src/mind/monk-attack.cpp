@@ -76,7 +76,7 @@ static int calc_max_blow_selection_times(CreatureEntity &creature)
 {
     CreatureClass pc(creature);
     if (pc.monk_stance_is(MonkStanceType::BYAKKO)) {
-        return creature.level < 3 ? 1 : creature.level / 3;
+        return creature.get_level() < 3 ? 1 : creature.get_level() / 3;
     }
 
     if (pc.monk_stance_is(MonkStanceType::SUZAKU)) {
@@ -87,7 +87,7 @@ static int calc_max_blow_selection_times(CreatureEntity &creature)
         return 1;
     }
 
-    return creature.level < 7 ? 1 : creature.level / 7;
+    return creature.get_level() < 7 ? 1 : creature.get_level() / 7;
 }
 
 /*!
@@ -109,7 +109,7 @@ static int select_blow(CreatureEntity &creature, player_attack_type *pa_ptr, int
             } else {
                 min_level = pa_ptr->ma_ptr->min_level;
             }
-        } while ((min_level > creature.level) || (randint1(creature.level) < pa_ptr->ma_ptr->chance));
+        } while ((min_level > creature.get_level()) || (randint1(creature.get_level()) < pa_ptr->ma_ptr->chance));
 
         const auto effects = creature.effects();
         const auto is_stunned = effects->stun().is_stunned();
@@ -209,7 +209,7 @@ static void process_attack_vital_spot(CreatureEntity &creature, player_attack_ty
 
     if ((special_effect == MA_SLOW) && ((pa_ptr->attack_damage + creature.get_to_d(pa_ptr->hand)) < pa_ptr->m_ptr->hp)) {
         const auto is_unique = monrace.kind_flags.has_not(MonsterKindType::UNIQUE);
-        if (is_unique && (randint1(creature.level) > monrace.level) && (pa_ptr->m_ptr->speed > STANDARD_SPEED - 50)) {
+        if (is_unique && (randint1(creature.get_level()) > monrace.level) && (pa_ptr->m_ptr->speed > STANDARD_SPEED - 50)) {
             msg_format(_("%s^は足をひきずり始めた。", "You've hobbled %s."), pa_ptr->m_name);
             pa_ptr->m_ptr->speed -= 10;
         }
@@ -228,7 +228,7 @@ static void print_stun_effect(CreatureEntity &creature, player_attack_type *pa_p
 {
     const auto &monrace = pa_ptr->m_ptr->get_monrace();
     if (stun_effect && ((pa_ptr->attack_damage + creature.get_to_d(pa_ptr->hand)) < pa_ptr->m_ptr->hp)) {
-        if (creature.level > randint1(monrace.level + resist_stun + 10)) {
+        if (creature.get_level() > randint1(monrace.level + resist_stun + 10)) {
             if (set_monster_stunned(*creature.get_floor(), pa_ptr->g_ptr->m_idx, stun_effect + pa_ptr->m_ptr->get_remaining_stun())) {
                 msg_format(_("%s^はフラフラになった。", "%s^ is stunned."), pa_ptr->m_name);
             } else {
@@ -262,7 +262,7 @@ void process_monk_attack(CreatureEntity &creature, player_attack_type *pa_ptr)
     int stun_effect = 0;
     int special_effect = process_monk_additional_effect(pa_ptr, &stun_effect);
     WEIGHT weight = calc_monk_attack_weight(creature);
-    pa_ptr->attack_damage = critical_norm(creature, creature.level * weight, min_level, pa_ptr->attack_damage, creature.get_to_h(0), HISSATSU_NONE);
+    pa_ptr->attack_damage = critical_norm(creature, creature.get_level() * weight, min_level, pa_ptr->attack_damage, creature.get_to_h(0), HISSATSU_NONE);
     process_attack_vital_spot(creature, pa_ptr, &stun_effect, &resist_stun, special_effect);
     print_stun_effect(creature, pa_ptr, stun_effect, resist_stun);
 }

@@ -425,7 +425,7 @@ bool affect_feature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, P
             msg_print(_("鏡が割れた！", "The mirror was shattered!"));
             sound(SoundKind::GLASS);
             SpellsMirrorMaster(creature).remove_mirror(y, x);
-            project(creature, 0, 2, y, x, creature.level / 2 + 5, AttributeType::SHARDS,
+            project(creature, 0, 2, y, x, creature.get_level() / 2 + 5, AttributeType::SHARDS,
                 (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP | PROJECT_NO_HANGEKI));
         }
 
@@ -443,11 +443,11 @@ bool affect_feature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, P
         break;
     }
     case AttributeType::SOUND: {
-        if (grid.is_mirror() && creature.level < 40) {
+        if (grid.is_mirror() && creature.get_level() < 40) {
             msg_print(_("鏡が割れた！", "The mirror was shattered!"));
             sound(SoundKind::GLASS);
             SpellsMirrorMaster(creature).remove_mirror(y, x);
-            project(creature, 0, 2, y, x, creature.level / 2 + 5, AttributeType::SHARDS,
+            project(creature, 0, 2, y, x, creature.get_level() / 2 + 5, AttributeType::SHARDS,
                 (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP | PROJECT_NO_HANGEKI));
         }
 

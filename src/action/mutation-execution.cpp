@@ -61,7 +61,7 @@
  */
 bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
 {
-    PLAYER_LEVEL lvl = creature.level;
+    PLAYER_LEVEL lvl = creature.get_level();
     auto &floor = *creature.get_floor();
     switch (power) {
     case PlayerMutationType::SPIT_ACID: {
@@ -223,7 +223,7 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
         (void)earthquake(creature, creature.get_position(), 10);
         return true;
     case PlayerMutationType::EAT_MAGIC:
-        return eat_magic(creature, creature.level * 2);
+        return eat_magic(creature, creature.get_level() * 2);
     case PlayerMutationType::WEIGH_MAG:
         report_magics(creature);
         return true;
@@ -270,7 +270,7 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
         can_banish &= monrace.kind_flags.has_not(MonsterKindType::UNIQUE);
         can_banish &= !floor.inside_arena;
         can_banish &= !floor.is_in_quest();
-        can_banish &= (monrace.level < randint1(creature.level + 50));
+        can_banish &= (monrace.level < randint1(creature.get_level() + 50));
         can_banish &= !monster.is_nogeno();
         if (can_banish) {
             if (record_named_pet && monster.is_named_pet()) {

@@ -54,24 +54,24 @@ static int compensate_special_race(CreatureEntity &creature, int stat_num)
     switch (stat_num) {
     case A_STR:
     case A_CON:
-        if (creature.level > 25) {
+        if (creature.get_level() > 25) {
             r_adj++;
         }
-        if (creature.level > 40) {
+        if (creature.get_level() > 40) {
             r_adj++;
         }
-        if (creature.level > 45) {
+        if (creature.get_level() > 45) {
             r_adj++;
         }
         break;
     case A_DEX:
-        if (creature.level > 25) {
+        if (creature.get_level() > 25) {
             r_adj--;
         }
-        if (creature.level > 40) {
+        if (creature.get_level() > 40) {
             r_adj--;
         }
-        if (creature.level > 45) {
+        if (creature.get_level() > 45) {
             r_adj--;
         }
         break;

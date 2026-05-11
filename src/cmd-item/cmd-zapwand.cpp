@@ -54,7 +54,7 @@
 bool wand_effect(CreatureEntity &creature, int sval, const Direction &dir, bool powerful, bool magic)
 {
     bool ident = false;
-    PLAYER_LEVEL lev = powerful ? creature.level * 2 : creature.level;
+    PLAYER_LEVEL lev = powerful ? creature.get_level() * 2 : creature.get_level();
     POSITION rad = powerful ? 3 : 2;
 
     creature.plus_incident_tree("ZAP_WAND", 1);

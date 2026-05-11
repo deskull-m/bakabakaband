@@ -1016,7 +1016,7 @@ bool process_stealth(CreatureEntity &creature, MONSTER_IDX m_idx)
 
     const auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
-    int tmp = creature.level * 6 + (creature.get_skill_stealth() + 10) * 4;
+    int tmp = creature.get_level() * 6 + (creature.get_skill_stealth() + 10) * 4;
     if (creature.monlite) {
         tmp /= 3;
     }
@@ -1025,7 +1025,7 @@ bool process_stealth(CreatureEntity &creature, MONSTER_IDX m_idx)
         tmp /= 2;
     }
 
-    if (monrace.level > (creature.level * creature.level / 20 + 10)) {
+    if (monrace.level > (creature.get_level() * creature.get_level() / 20 + 10)) {
         tmp /= 3;
     }
 
@@ -1646,11 +1646,11 @@ void sweep_monster_process(CreatureEntity &creature)
                     switch (randint1(3)) {
                     case 1:
                         msg_format(_("%s「んほぉ！」", "%s 'Nnhor!'"), m_name.data());
-                        (void)set_monster_stunned(*creature.get_floor(), 0, monster.get_remaining_stun() + 10 + randint0(creature.level) / 5);
+                        (void)set_monster_stunned(*creature.get_floor(), 0, monster.get_remaining_stun() + 10 + randint0(creature.get_level()) / 5);
                         break;
                     case 2:
                         msg_format(_("%s「アへぇ！」", "%s 'Aherr!'"), m_name.data());
-                        (void)set_monster_slow(*creature.get_floor(), 0, monster.get_remaining_deceleration() + 10 + randint0(creature.level) / 5);
+                        (void)set_monster_slow(*creature.get_floor(), 0, monster.get_remaining_deceleration() + 10 + randint0(creature.get_level()) / 5);
                         break;
                     case 3: {
                         bool fear = false;

@@ -51,7 +51,7 @@ void learn_spell(CreatureEntity &creature, MonsterAbilityType monspell)
     }
 
     const auto &monster_power = monster_powers.at(monspell);
-    if (randint1(creature.level + 70) > monster_power.level + 40) {
+    if (randint1(creature.get_level() + 70) > monster_power.level + 40) {
         bluemage_data->learnt_blue_magics.set(monspell);
         msg_format(_("%sを学習した！", "You have learned %s!"), monster_power.name);
         gain_exp(creature, monster_power.level * monster_power.smana);

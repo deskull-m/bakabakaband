@@ -421,7 +421,7 @@ static bool exe_eat_food_type_object(CreatureEntity &creature, const BaseitemKey
         (void)do_inc_stat(creature, randint0(6));
         return true;
     case SV_FOOD_ABESHI:
-        gain_exp(creature, creature.level * 50);
+        gain_exp(creature, creature.get_level() * 50);
         (void)set_hero(creature, randint1(10) + 10, false);
         if (one_in_(300)) {
             (void)do_inc_stat(creature, A_STR);
@@ -434,7 +434,7 @@ static bool exe_eat_food_type_object(CreatureEntity &creature, const BaseitemKey
         }
         return true;
     case SV_FOOD_HIDEBU:
-        gain_exp(creature, creature.level * 100);
+        gain_exp(creature, creature.get_level() * 100);
         (void)set_hero(creature, randint1(25) + 25, false);
         if (one_in_(100)) {
             (void)do_inc_stat(creature, A_STR);
@@ -447,7 +447,7 @@ static bool exe_eat_food_type_object(CreatureEntity &creature, const BaseitemKey
         }
         return true;
     case SV_FOOD_BASILISK_TIME:
-        gain_exp(creature, creature.level * 100);
+        gain_exp(creature, creature.get_level() * 100);
         msg_print("あなたは突如狂ったように踊り始めた！");
         msg_print("「みずのよーうにのようにやさしく！はなのよーうにはげしく！ふーるえ……」");
         (void)BadStatusSetter(creature).mod_stun(25 + randint1(25));
@@ -603,7 +603,7 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
     /* The creature is now aware of the object */
     if (ident && !item->is_aware()) {
         object_aware(creature, *item);
-        gain_exp(creature, (level + (creature.level >> 1)) / creature.level);
+        gain_exp(creature, (level + (creature.get_level() >> 1)) / creature.get_level());
     }
 
     static constexpr auto flags_swrf = {

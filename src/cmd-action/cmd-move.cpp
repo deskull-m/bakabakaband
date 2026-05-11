@@ -290,7 +290,7 @@ void do_cmd_go_down(CreatureEntity &creature)
         }
 
         const auto &dungeon = DungeonList::get_instance().get_dungeon(dungeon_id);
-        if (dungeon.min_plev > creature.level) {
+        if (dungeon.min_plev > creature.get_level()) {
             msg_print(_("あなたは弾き返された。このダンジョンに入るだけの力が備わっていないようだ。", "You are repelled. You lack the strength to enter this dungeon."));
             return;
         }
@@ -407,7 +407,7 @@ void do_cmd_walk(CreatureEntity &creature, bool pickup)
         }
 
         if (creature.action == ACTION_HAYAGAKE) {
-            auto energy_use = (ENERGY)(creature.energy_use * (45 - (creature.level / 2)) / 100);
+            auto energy_use = (ENERGY)(creature.energy_use * (45 - (creature.get_level() / 2)) / 100);
             energy.set_player_turn_energy(energy_use);
         }
 
@@ -419,12 +419,12 @@ void do_cmd_walk(CreatureEntity &creature, bool pickup)
     const auto p_pos = creature.get_position();
     if (is_wild_mode && !floor.has_terrain_characteristics(p_pos, TerrainCharacteristics::TOWN)) {
         const auto wild_level = WildernessGrids::get_instance().get_player_grid().get_level();
-        auto tmp = 120 + creature.level * 10 - wild_level + 5;
+        auto tmp = 120 + creature.get_level() * 10 - wild_level + 5;
         if (tmp < 1) {
             tmp = 1;
         }
 
-        if (((wild_level + 5) > (creature.level / 2)) && randint0(tmp) < (21 - creature.get_skill_stealth())) {
+        if (((wild_level + 5) > (creature.get_level() / 2)) && randint0(tmp) < (21 - creature.get_skill_stealth())) {
             // TODO: 広域マップの領域ごとのアライアンス情報を取得する機能が未実装のため、
             // 今回はデフォルトメッセージを使用。将来的にはアライアンス固有のメッセージを表示予定
             msg_print(_("襲撃だ！", "You are ambushed !"));

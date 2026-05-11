@@ -192,7 +192,7 @@ void switch_class_racial(CreatureEntity &creature, rc_type *rc_ptr)
         rpi.info = format("%s%d", KWD_POWER, rc_ptr->lvl);
         rpi.text = _("1体のモンスターをペットにする。抵抗されると無効。", "Attempts to charm a monster.");
         rpi.min_level = 1;
-        rpi.cost = (creature.level + 3) / 4;
+        rpi.cost = (creature.get_level() + 3) / 4;
         rpi.stat = A_CHR;
         rpi.fail = 10;
         rc_ptr->add_power(rpi, RC_IDX_CLASS_0);
@@ -201,7 +201,7 @@ void switch_class_racial(CreatureEntity &creature, rc_type *rc_ptr)
         rpi.info = format("%s%d", KWD_POWER, rc_ptr->lvl);
         rpi.text = _("周辺のモンスターをペットにする。抵抗されると無効。", "Attempts to charm a monsters in your sight.");
         rpi.min_level = 30;
-        rpi.cost = (creature.level + 20) / 2;
+        rpi.cost = (creature.get_level() + 20) / 2;
         rpi.stat = A_CHR;
         rpi.fail = 10;
         rc_ptr->add_power(rpi, -4);

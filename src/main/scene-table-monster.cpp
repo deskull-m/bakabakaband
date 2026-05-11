@@ -177,7 +177,7 @@ static bool scene_unknown(CreatureEntity &creature, scene_type *value)
 
 static bool scene_high_level(CreatureEntity &creature, scene_type *value)
 {
-    if (scene_target_monster.ap_r_ptr->r_tkills > 0 && (scene_target_monster.ap_r_ptr->level >= creature.level)) {
+    if (scene_target_monster.ap_r_ptr->r_tkills > 0 && (scene_target_monster.ap_r_ptr->level >= creature.get_level())) {
         value->type = TERM_XTRA_MUSIC_BASIC;
         value->val = MUSIC_BASIC_HIGHER_LEVEL_MONSTER;
         return true;

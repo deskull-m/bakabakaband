@@ -83,7 +83,7 @@ bool clear_mind(CreatureEntity &creature)
 
     msg_print(_("少し頭がハッキリした。", "You feel your head clear a little."));
 
-    creature.add_csp((3 + creature.level / 20));
+    creature.add_csp((3 + creature.get_level() / 20));
     if (creature.get_csp() >= creature.get_msp()) {
         creature.set_csp(creature.get_msp());
         creature.csp_frac = 0;
@@ -210,7 +210,7 @@ bool shock_power(CreatureEntity &creature)
     }
 
     auto pos = creature.get_neighbor(dir);
-    PLAYER_LEVEL plev = creature.level;
+    PLAYER_LEVEL plev = creature.get_level();
     const auto dam = Dice::roll(8 + ((plev - 5) / 4) + boost / 12, 8);
     fire_beam(creature, AttributeType::MISSILE, dir, dam);
     auto &floor = *creature.get_floor();
@@ -264,7 +264,7 @@ bool shock_power(CreatureEntity &creature)
  */
 bool cast_force_spell(CreatureEntity &creature, MindForceTrainerType spell)
 {
-    PLAYER_LEVEL plev = creature.level;
+    PLAYER_LEVEL plev = creature.get_level();
     int boost = get_current_ki(creature);
     if (heavy_armor(creature)) {
         boost /= 2;

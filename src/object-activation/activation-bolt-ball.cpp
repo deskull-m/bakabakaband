@@ -316,7 +316,7 @@ bool activate_rocket(CreatureEntity &creature)
     }
 
     msg_print(_("ロケットを発射した！", "You launch a rocket!"));
-    (void)fire_ball(creature, AttributeType::ROCKET, dir, 250 + creature.level * 3, 2);
+    (void)fire_ball(creature, AttributeType::ROCKET, dir, 250 + creature.get_level() * 3, 2);
     return true;
 }
 

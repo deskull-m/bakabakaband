@@ -188,7 +188,7 @@ std::string process_pref_file_expr(CreatureEntity &creature, char **sp, char *fp
     } else if (streq(b + 1, "REALM2")) {
         v = PlayerRealm(creature).realm2().get_name().en_string();
     } else if (streq(b + 1, "LEVEL")) {
-        v = format("%02d", creature.level);
+        v = format("%02d", creature.get_level());
     } else if (streq(b + 1, "AUTOREGISTER")) {
         if (creature.autopick_autoregister) {
             v = "1";

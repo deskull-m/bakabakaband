@@ -55,7 +55,7 @@ TrFlags CreatureClass::tr_flags() const
     }
 
     TrFlags flags;
-    const auto plev = creature.level;
+    const auto plev = creature.get_level();
 
     switch (creature.pclass) {
     case PlayerClassType::WARRIOR: {
@@ -281,7 +281,7 @@ bool CreatureClass::has_stun_immunity() const
     if (!this->creature.is_player()) {
         return false;
     }
-    return this->equals(PlayerClassType::BERSERKER) && (creature.level > 34);
+    return this->equals(PlayerClassType::BERSERKER) && (creature.get_level() > 34);
 }
 
 bool CreatureClass::has_poison_resistance() const
@@ -289,7 +289,7 @@ bool CreatureClass::has_poison_resistance() const
     if (!this->creature.is_player()) {
         return false;
     }
-    return this->equals(PlayerClassType::NINJA) && (creature.level > 44);
+    return this->equals(PlayerClassType::NINJA) && (creature.get_level() > 44);
 }
 
 /*!

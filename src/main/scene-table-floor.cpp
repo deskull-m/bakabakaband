@@ -95,9 +95,9 @@ static bool scene_field(CreatureEntity &creature, scene_type *value)
     if (enable) {
         value->type = TERM_XTRA_MUSIC_BASIC;
 
-        if (creature.level >= 45) {
+        if (creature.get_level() >= 45) {
             value->val = MUSIC_BASIC_FIELD3;
-        } else if (creature.level >= 25) {
+        } else if (creature.get_level() >= 25) {
             value->val = MUSIC_BASIC_FIELD2;
         } else {
             value->val = MUSIC_BASIC_FIELD1;

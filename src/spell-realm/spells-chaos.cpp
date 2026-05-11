@@ -79,7 +79,7 @@ void call_the_void(CreatureEntity &creature)
         return;
     }
 
-    if (destroy_area(creature, creature.y, creature.x, 15 + creature.level + randint0(11), false)) {
+    if (destroy_area(creature, creature.y, creature.x, 15 + creature.get_level() + randint0(11), false)) {
         msg_print(_("ダンジョンが崩壊した...", "The dungeon collapses..."));
     } else {
         msg_print(_("ダンジョンは大きく揺れた。", "The dungeon trembles."));

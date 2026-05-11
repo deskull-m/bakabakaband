@@ -56,7 +56,7 @@ bool teleport_swap(CreatureEntity &creature, const Direction &dir)
         return false;
     }
 
-    if ((grid.is_icky()) || (Grid::calc_distance(pos, creature.get_position()) > creature.level * 3 / 2 + 10)) {
+    if ((grid.is_icky()) || (Grid::calc_distance(pos, creature.get_position()) > creature.get_level() * 3 / 2 + 10)) {
         msg_print(_("失敗した。", "Failed to swap."));
         return false;
     }
@@ -569,7 +569,7 @@ void teleport_away_followable(CreatureEntity &creature, MONSTER_IDX m_idx)
  */
 bool exe_dimension_door(CreatureEntity &creature, const Pos2D &pos)
 {
-    PLAYER_LEVEL plev = creature.level;
+    PLAYER_LEVEL plev = creature.get_level();
 
     creature.set_energy_need(creature.get_energy_need() + static_cast<short>((60 - plev) * ENERGY_NEED() / 100));
     auto is_successful = cave_player_teleportable_bold(creature, pos.y, pos.x, TELEPORT_SPONTANEOUS);

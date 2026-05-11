@@ -97,7 +97,7 @@ bool create_ammo(CreatureEntity &creature)
 
     ammo_creation_type ext = AMMO_NONE;
 
-    if (!select_ammo_creation_type(ext, creature.level)) {
+    if (!select_ammo_creation_type(ext, creature.get_level())) {
         return false;
     }
 
@@ -120,11 +120,11 @@ bool create_ammo(CreatureEntity &creature)
             return true;
         }
 
-        ItemEntity item({ ItemKindType::SHOT, m_bonus(1, creature.level) + 1 });
+        ItemEntity item({ ItemKindType::SHOT, m_bonus(1, creature.get_level()) + 1 });
         item.number = rand_range(15, 30);
         object_aware(creature, item);
         item.mark_as_known();
-        ItemMagicApplier(creature, &item, creature.level, AM_NO_FIXED_ART).execute();
+        ItemMagicApplier(creature, &item, creature.get_level(), AM_NO_FIXED_ART).execute();
         item.discount = 99;
         int16_t slot = creature.store_item(item);
         const auto item_name = describe_flavor(creature, item, 0);
@@ -144,11 +144,11 @@ bool create_ammo(CreatureEntity &creature)
         if (!item) {
             return false;
         }
-        ItemEntity ammo({ ItemKindType::ARROW, m_bonus(1, creature.level) + 1 });
+        ItemEntity ammo({ ItemKindType::ARROW, m_bonus(1, creature.get_level()) + 1 });
         ammo.number = rand_range(5, 10);
         object_aware(creature, ammo);
         ammo.mark_as_known();
-        ItemMagicApplier(creature, &ammo, creature.level, AM_NO_FIXED_ART).execute();
+        ItemMagicApplier(creature, &ammo, creature.get_level(), AM_NO_FIXED_ART).execute();
         ammo.discount = 99;
         const auto item_name = describe_flavor(creature, ammo, 0);
         msg_print(_(format("%sを作った。", item_name.data()), "You make some ammo."));
@@ -168,11 +168,11 @@ bool create_ammo(CreatureEntity &creature)
             return false;
         }
 
-        ItemEntity ammo({ ItemKindType::BOLT, m_bonus(1, creature.level) + 1 });
+        ItemEntity ammo({ ItemKindType::BOLT, m_bonus(1, creature.get_level()) + 1 });
         ammo.number = rand_range(4, 8);
         object_aware(creature, ammo);
         ammo.mark_as_known();
-        ItemMagicApplier(creature, &ammo, creature.level, AM_NO_FIXED_ART).execute();
+        ItemMagicApplier(creature, &ammo, creature.get_level(), AM_NO_FIXED_ART).execute();
         ammo.discount = 99;
         const auto item_name = describe_flavor(creature, ammo, 0);
         msg_print(_(format("%sを作った。", item_name.data()), "You make some ammo."));

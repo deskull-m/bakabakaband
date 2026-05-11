@@ -110,7 +110,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
         case PlayerRaceLifeType::DEMON:
             return;
         case PlayerRaceLifeType::UNDEAD:
-            if (evaluate_percent(25 + creature.level)) {
+            if (evaluate_percent(25 + creature.get_level())) {
                 return;
             }
             break;
@@ -155,12 +155,12 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
         monrace.r_misc_flags.set(MonsterMiscType::ELDRITCH_HORROR);
         switch (CreatureRace(&creature).life()) {
         case PlayerRaceLifeType::DEMON:
-            if (evaluate_percent(20 + creature.level)) {
+            if (evaluate_percent(20 + creature.get_level())) {
                 return;
             }
             break;
         case PlayerRaceLifeType::UNDEAD:
-            if (evaluate_percent(10 + creature.level)) {
+            if (evaluate_percent(10 + creature.get_level())) {
                 return;
             }
             break;

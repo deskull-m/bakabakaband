@@ -75,13 +75,13 @@ static void calc_shot_params(CreatureEntity &creature, ItemEntity *o_ptr, int *s
         return;
     }
 
-    if (creature.level >= 10) {
+    if (creature.get_level() >= 10) {
         (*shots)++;
     }
-    if (creature.level >= 30) {
+    if (creature.get_level() >= 30) {
         (*shots)++;
     }
-    if (creature.level >= 45) {
+    if (creature.get_level() >= 45) {
         (*shots)++;
     }
 }
@@ -97,7 +97,7 @@ static void calc_shot_params(CreatureEntity &creature, ItemEntity *o_ptr, int *s
  */
 static bool calc_weapon_damage_limit(CreatureEntity &creature, int hand, int *damage, int *basedam, ItemEntity *o_ptr)
 {
-    PLAYER_LEVEL level = creature.level;
+    PLAYER_LEVEL level = creature.get_level();
     if (hand > 0) {
         damage[hand] = 0;
         return false;
@@ -116,8 +116,8 @@ static bool calc_weapon_damage_limit(CreatureEntity &creature, int hand, int *da
         *basedam = monk_ave_damage[level][0];
     }
     bool impact = creature.has_impact_flag() != 0;
-    WEIGHT weight = creature.level * calc_monk_attack_weight(creature);
-    int to_h = creature.level * 7 / 10; // 命中計算が煩雑なのでおよその値を使用する
+    WEIGHT weight = creature.get_level() * calc_monk_attack_weight(creature);
+    int to_h = creature.get_level() * 7 / 10; // 命中計算が煩雑なのでおよその値を使用する
 
     *basedam = calc_expect_crit(creature, weight, to_h, *basedam, creature.get_to_h(0), false, impact, 100);
 

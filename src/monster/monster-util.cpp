@@ -196,7 +196,7 @@ static bool do_hook(CreatureEntity &creature, MonraceHook hook, MonraceId monrac
     case MonraceHook::ARENA:
         return monrace.can_entry_arena();
     case MonraceHook::NIGHTMARE:
-        return monrace.is_suitable_for_nightmare(creature.level);
+        return monrace.is_suitable_for_nightmare(creature.get_level());
     case MonraceHook::HUMAN:
         return monrace.is_eatable_human();
     case MonraceHook::GLASS:

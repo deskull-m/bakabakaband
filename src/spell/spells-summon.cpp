@@ -50,7 +50,7 @@
 bool trump_summoning(CreatureEntity &creature, int num, bool pet, POSITION y, POSITION x, DEPTH lev, summon_type type, BIT_FLAGS mode)
 {
     /* Default level */
-    PLAYER_LEVEL plev = creature.level;
+    PLAYER_LEVEL plev = creature.get_level();
     if (!lev) {
         lev = plev * 2 / 3 + randint1(plev / 2);
     }
@@ -94,7 +94,7 @@ bool cast_summon_demon(CreatureEntity &creature, int power)
     } else {
         flg |= PM_NO_PET;
     }
-    if (!(pet && (creature.level < 50))) {
+    if (!(pet && (creature.get_level() < 50))) {
         flg |= PM_ALLOW_GROUP;
     }
 
@@ -115,10 +115,10 @@ bool cast_summon_demon(CreatureEntity &creature, int power)
 bool cast_summon_undead(CreatureEntity &creature, int power)
 {
     bool pet = one_in_(3);
-    summon_type type = (creature.level > 47 ? SUMMON_HI_UNDEAD : SUMMON_UNDEAD);
+    summon_type type = (creature.get_level() > 47 ? SUMMON_HI_UNDEAD : SUMMON_UNDEAD);
 
     BIT_FLAGS mode = 0L;
-    if (!pet || ((creature.level > 24) && one_in_(3))) {
+    if (!pet || ((creature.get_level() > 24) && one_in_(3))) {
         mode |= PM_ALLOW_GROUP;
     }
     if (pet) {
@@ -151,7 +151,7 @@ bool cast_summon_nasty(CreatureEntity &creature, int power)
     summon_type type = SUMMON_NASTY;
 
     BIT_FLAGS mode = 0L;
-    if (!pet || ((creature.level > 24) && one_in_(3))) {
+    if (!pet || ((creature.get_level() > 24) && one_in_(3))) {
         mode |= PM_ALLOW_GROUP;
     }
     if (pet) {
@@ -197,7 +197,7 @@ bool cast_summon_elemental(CreatureEntity &creature, int power)
 {
     bool pet = one_in_(3);
     BIT_FLAGS mode = 0L;
-    if (!(pet && (creature.level < 50))) {
+    if (!(pet && (creature.get_level() < 50))) {
         mode |= PM_ALLOW_GROUP;
     }
     if (pet) {
@@ -250,7 +250,7 @@ bool cast_summon_greater_demon(CreatureEntity &creature)
         return false;
     }
 
-    const auto summon_lev = creature.level * 2 / 3 + item->get_monrace().level;
+    const auto summon_lev = creature.get_level() * 2 / 3 + item->get_monrace().level;
     if (summon_specific(creature, creature.y, creature.x, summon_lev, SUMMON_HI_DEMON, (PM_ALLOW_GROUP | PM_FORCE_PET))) {
         msg_print(_("硫黄の悪臭が充満した。", "The area fills with a stench of sulphur and brimstone."));
         msg_print(_("「ご用でございますか、ご主人様」", "'What is thy bidding... Master?'"));
@@ -396,7 +396,7 @@ int activate_hi_summon(CreatureEntity &creature, POSITION y, POSITION x, bool ca
     }
 
     DEPTH dungeon_level = creature.get_floor()->dun_level;
-    DEPTH summon_lev = (pet ? creature.level * 2 / 3 + randint1(creature.level / 2) : dungeon_level);
+    DEPTH summon_lev = (pet ? creature.get_level() * 2 / 3 + randint1(creature.get_level() / 2) : dungeon_level);
     int count = 0;
     for (int i = 0; i < (randint1(7) + (dungeon_level / 40)); i++) {
         switch (randint1(25) + (dungeon_level / 20)) {
@@ -480,7 +480,7 @@ int activate_hi_summon(CreatureEntity &creature, POSITION y, POSITION x, bool ca
  */
 void cast_invoke_spirits(CreatureEntity &creature, const Direction &dir)
 {
-    PLAYER_LEVEL plev = creature.level;
+    PLAYER_LEVEL plev = creature.get_level();
     int die = randint1(100) + plev / 5;
     int vir = virtue_number(creature, Virtue::CHANCE);
 

@@ -111,7 +111,7 @@ void castle_quest(CreatureEntity &creature)
         (void)inkey();
         prt("", 0, 0);
         msg_erase();
-        record_quest_final_status(&quest, creature.level, QuestStatusType::FAILED);
+        record_quest_final_status(&quest, creature.get_level(), QuestStatusType::FAILED);
     }
 
     if (quest.status == QuestStatusType::FAILED) {

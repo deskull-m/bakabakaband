@@ -12,7 +12,7 @@ bmc_type *initialize_blue_magic_type(
 {
     bmc_ptr->spell = spell;
     bmc_ptr->plev = (*get_pseudo_monstetr_level)(creature);
-    bmc_ptr->summon_lev = creature.level * 2 / 3 + randint1(creature.level / 2);
+    bmc_ptr->summon_lev = creature.get_level() * 2 / 3 + randint1(creature.get_level() / 2);
     bmc_ptr->pet = success; // read-only.
     bmc_ptr->no_trump = false;
     bmc_ptr->p_mode = bmc_ptr->pet ? PM_FORCE_PET : PM_NO_PET;
