@@ -87,8 +87,8 @@ void get_stats(CreatureEntity &creature)
     // プレイヤーは後段の calc_bonuses() で stat_use を再計算するが、
     // モンスターは calc_bonuses() を呼ばないので stat_use がここで確定する。
     for (auto i = 0; i < A_MAX; i++) {
-        creature.set_stat_max_max(i, creature.stat_max[i]);
-        creature.set_stat_use(i, creature.stat_max[i]);
+        creature.set_stat_max_max(i, creature.get_stat_max(i));
+        creature.set_stat_use(i, creature.get_stat_max(i));
     }
 }
 
@@ -103,14 +103,14 @@ void get_money_for_creature(CreatureEntity &creature)
 
     // 能力値に応じて所持金を調整
     for (int i = 0; i < A_MAX; i++) {
-        if (creature.stat_max[i] >= 680) {
+        if (creature.get_stat_max(i) >= 680) {
             gold -= 300;
-        } else if (creature.stat_max[i] >= 380) {
+        } else if (creature.get_stat_max(i) >= 380) {
             gold -= 200;
-        } else if (creature.stat_max[i] > 180) {
+        } else if (creature.get_stat_max(i) > 180) {
             gold -= 150;
         } else {
-            gold -= (creature.stat_max[i] / 10 - 8) * 10;
+            gold -= (creature.get_stat_max(i) / 10 - 8) * 10;
         }
     }
 
@@ -217,10 +217,10 @@ void get_max_stats(CreatureEntity &creature)
         // 新形式: 180 + 60 + dice[i] * 10 = 240 + 10~70 = 250~310 (25.0~31.0)
         short max_max = 180 + 60 + dice[i] * 10;
         creature.set_stat_max_max(i, max_max);
-        if (creature.stat_max[i] > max_max) {
+        if (creature.get_stat_max(i) > max_max) {
             creature.set_stat_max(i, max_max);
         }
-        if (creature.stat_cur[i] > max_max) {
+        if (creature.get_stat_cur(i) > max_max) {
             creature.set_stat_cur(i, max_max);
         }
     }

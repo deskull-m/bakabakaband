@@ -528,7 +528,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
     /* Actually "fire" the object */
     const auto tval = j_ptr->bi_key.tval();
     const auto median_skill_exp = PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER) / 2;
-    const auto bonus = (creature.to_h_b + o_ptr->to_h + j_ptr->to_h);
+    const auto bonus = (creature.get_to_h_b() + o_ptr->to_h + j_ptr->to_h);
     const auto &weapon_exps = creature.weapon_exp[tval];
     constexpr auto bow_magnification = 200;
     constexpr auto xbow_magnification = 400;
@@ -552,7 +552,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
         tmul++;
     }
 
-    tmul = tmul * (100 + (int)(adj_str_td[creature.stat_index[A_STR]]) - 128);
+    tmul = tmul * (100 + (int)(adj_str_td[creature.get_stat_index(A_STR)]) - 128);
 
     /* Boost the damage */
     tdam_base *= tmul;
@@ -1047,7 +1047,7 @@ bool test_hit_fire(CreatureEntity &creature, int chance, CreatureEntity &target,
 int critical_shot(CreatureEntity &creature, WEIGHT weight, int plus_ammo, int plus_bow, int dam)
 {
     const auto &item = *creature.inventory[INVEN_BOW];
-    const auto bonus = creature.to_h_b + plus_ammo;
+    const auto bonus = creature.get_to_h_b() + plus_ammo;
     const auto tval = item.bi_key.tval();
     const auto median_skill_exp = PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER) / 2;
     const auto &weapon_exps = creature.weapon_exp[tval];
@@ -1110,7 +1110,7 @@ int calc_crit_ratio_shot(CreatureEntity &creature, int plus_ammo, int plus_bow)
     auto *j_ptr = creature.inventory[INVEN_BOW].get();
 
     /* Extract "shot" power */
-    auto i = creature.to_h_b + plus_ammo;
+    auto i = creature.get_to_h_b() + plus_ammo;
     const auto tval = j_ptr->bi_key.tval();
     const auto sval = *j_ptr->bi_key.sval();
     if (creature.tval_ammo == ItemKindType::BOLT) {

@@ -1599,6 +1599,96 @@ public:
         this->to_a = value;
     }
 
+    /*! @brief 命中ボーナス to_h[hand] を設定する (提案 31b) */
+    virtual void set_to_h(int hand, int16_t value)
+    {
+        this->to_h[hand] = value;
+    }
+
+    /*! @brief ダメージボーナス to_d[hand] を設定する (提案 31b) */
+    virtual void set_to_d(int hand, int16_t value)
+    {
+        this->to_d[hand] = value;
+    }
+
+    /*! @brief 命中ボーナス (近接利き手分以外) を取得する (提案 31b) */
+    virtual int16_t get_to_h_b() const
+    {
+        return this->to_h_b;
+    }
+
+    /*! @brief 命中ボーナス (その他装備分) を取得する (提案 31b) */
+    virtual int16_t get_to_h_m() const
+    {
+        return this->to_h_m;
+    }
+
+    /*! @brief ダメージボーナス (その他装備分) を取得する (提案 31b) */
+    virtual int16_t get_to_d_m() const
+    {
+        return this->to_d_m;
+    }
+
+    /*! @brief AC ボーナスを取得する (提案 31b) */
+    virtual int16_t get_to_a() const
+    {
+        return this->to_a;
+    }
+
+    /*! @brief 命中ボーナス to_h[hand] を取得する (提案 31b) */
+    virtual int16_t get_to_h(int hand) const
+    {
+        return this->to_h[hand];
+    }
+
+    /*! @brief ダメージボーナス to_d[hand] を取得する (提案 31b) */
+    virtual int16_t get_to_d(int hand) const
+    {
+        return this->to_d[hand];
+    }
+
+    /*! @brief 能力値最大値 stat_max[idx] を取得する (提案 31b) */
+    virtual short get_stat_max(int idx) const
+    {
+        return this->stat_max[idx];
+    }
+
+    /*! @brief 能力値現在値 stat_cur[idx] を取得する (提案 31b) */
+    virtual short get_stat_cur(int idx) const
+    {
+        return this->stat_cur[idx];
+    }
+
+    /*! @brief 能力値最大の最大値 stat_max_max[idx] を取得する (提案 31b) */
+    virtual short get_stat_max_max(int idx) const
+    {
+        return this->stat_max_max[idx];
+    }
+
+    /*! @brief 能力値修正済み値 stat_use[idx] を取得する (提案 31b) */
+    virtual int16_t get_stat_use(int idx) const
+    {
+        return this->stat_use[idx];
+    }
+
+    /*! @brief 能力値最大修正済み値 stat_top[idx] を取得する (提案 31b) */
+    virtual int16_t get_stat_top(int idx) const
+    {
+        return this->stat_top[idx];
+    }
+
+    /*! @brief 能力値修正値 stat_add[idx] を取得する (提案 31b) */
+    virtual int16_t get_stat_add(int idx) const
+    {
+        return this->stat_add[idx];
+    }
+
+    /*! @brief 能力値インデックス stat_index[idx] を取得する (提案 31b) */
+    virtual int16_t get_stat_index(int idx) const
+    {
+        return this->stat_index[idx];
+    }
+
     /*! @brief 能力値最大値 stat_max[idx] を設定する (提案 30) */
     virtual void set_stat_max(int idx, short value)
     {

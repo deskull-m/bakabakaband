@@ -281,8 +281,8 @@ void wiz_create_named_art(CreatureEntity &creature)
 static void wiz_change_status_max(CreatureEntity &creature)
 {
     for (auto i = 0; i < A_MAX; ++i) {
-        creature.set_stat_cur(i, creature.stat_max_max[i]);
-        creature.set_stat_max(i, creature.stat_max_max[i]);
+        creature.set_stat_cur(i, creature.get_stat_max_max(i));
+        creature.set_stat_max(i, creature.get_stat_max_max(i));
     }
 
     for (auto tval : TV_WEAPON_RANGE) {
@@ -333,8 +333,8 @@ void wiz_change_status(CreatureEntity &creature)
     }
 
     for (int i = 0; i < A_MAX; i++) {
-        const auto max_max_ability_score = creature.stat_max_max[i];
-        const auto max_ability_score = creature.stat_max[i];
+        const auto max_max_ability_score = creature.get_stat_max_max(i);
+        const auto max_ability_score = creature.get_stat_max(i);
         const auto new_ability_score = input_numerics(stat_names[i], 3, max_max_ability_score, max_ability_score);
         if (!new_ability_score.has_value()) {
             return;

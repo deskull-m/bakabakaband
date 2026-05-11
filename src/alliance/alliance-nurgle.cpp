@@ -32,13 +32,13 @@ int AllianceNurgle::calcImpressionPoint(const CreatureEntity &creature) const
     impression += Alliance::calcPlayerPower(creature, 10, 25);
 
     // 耐久力を最重視（病気に耐える力）
-    impression += (creature.stat_use[A_CON] - 10) * 6;
+    impression += (creature.get_stat_use(A_CON) - 10) * 6;
 
     // 筋力も評価（腐敗した肉体でも力強く）
-    impression += (creature.stat_use[A_STR] - 10) * 3;
+    impression += (creature.get_stat_use(A_STR) - 10) * 3;
 
     // 魅力は逆に低い方が好まれる（醜さは美徳）
-    impression -= (creature.stat_use[A_CHR] - 10) * 4;
+    impression -= (creature.get_stat_use(A_CHR) - 10) * 4;
 
     // 種族による評価
     switch (creature.prace) {

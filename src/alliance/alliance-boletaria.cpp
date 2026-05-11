@@ -17,7 +17,7 @@ int AllianceBoletaria::calcImpressionPoint(const CreatureEntity &creature) const
     int bias = 10;
     int level = 22;
 
-    int base_stat = (creature.stat_max[A_STR] + creature.stat_max[A_CON]) / 2;
+    int base_stat = (creature.get_stat_max(A_STR) + creature.get_stat_max(A_CON)) / 2;
     int impression = base_stat + bias + creature.level / level;
 
     if (impression < 1) {

@@ -34,7 +34,7 @@
 static int calc_basic_stat(CreatureEntity &creature, int stat_num)
 {
     // 新形式では単純に差分を返す（すでに10倍スケール）
-    int e_adj = (creature.stat_top[stat_num] - creature.stat_max[stat_num]) / 10;
+    int e_adj = (creature.get_stat_top(stat_num) - creature.get_stat_max(stat_num)) / 10;
     return e_adj;
 }
 
@@ -89,7 +89,7 @@ static int compensate_special_race(CreatureEntity &creature, int stat_num)
  */
 static void display_basic_stat_name(CreatureEntity &creature, int stat_num, int row, int stat_col)
 {
-    if (creature.stat_cur[stat_num] < creature.stat_max[stat_num]) {
+    if (creature.get_stat_cur(stat_num) < creature.get_stat_max(stat_num)) {
         c_put_str(TERM_WHITE, stat_names_reduced[stat_num], row + stat_num + 1, stat_col + 1);
     } else {
         c_put_str(TERM_WHITE, stat_names[stat_num], row + stat_num + 1, stat_col + 1);
@@ -115,10 +115,10 @@ static void display_basic_stat_value(CreatureEntity &creature, int stat_num, int
 
     c_put_str(TERM_L_BLUE, format("%3d", (int)e_adj), row + stat_num + 1, stat_col + 22);
 
-    c_put_str(TERM_L_GREEN, cnv_stat(creature.stat_top[stat_num]), row + stat_num + 1, stat_col + 26);
+    c_put_str(TERM_L_GREEN, cnv_stat(creature.get_stat_top(stat_num)), row + stat_num + 1, stat_col + 26);
 
-    if (creature.stat_use[stat_num] < creature.stat_top[stat_num]) {
-        c_put_str(TERM_YELLOW, cnv_stat(creature.stat_use[stat_num]), row + stat_num + 1, stat_col + 33);
+    if (creature.get_stat_use(stat_num) < creature.get_stat_top(stat_num)) {
+        c_put_str(TERM_YELLOW, cnv_stat(creature.get_stat_use(stat_num)), row + stat_num + 1, stat_col + 33);
     }
 }
 
@@ -139,11 +139,11 @@ static void process_stats(CreatureEntity &creature, int row, int stat_col)
         e_adj -= (*creature.get_personality_info()).a_adj[i];
 
         display_basic_stat_name(creature, i, row, stat_col);
-        if (creature.stat_max[i] == creature.stat_max_max[i]) {
+        if (creature.get_stat_max(i) == creature.get_stat_max_max(i)) {
             c_put_str(TERM_WHITE, "!", row + i + 1, _(stat_col + 6, stat_col + 4));
         }
 
-        const auto stat_str = cnv_stat(creature.stat_max[i]);
+        const auto stat_str = cnv_stat(creature.get_stat_max(i));
         c_put_str(TERM_BLUE, stat_str, row + i + 1, stat_col + 13 - stat_str.length());
 
         display_basic_stat_value(creature, i, r_adj, e_adj, row, stat_col);

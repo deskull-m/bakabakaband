@@ -645,9 +645,9 @@ static PERCENTAGE decide_element_chance(CreatureEntity &creature, mind_type spel
 
     chance -= 3 * (creature.level - spell.min_lev);
     chance += creature.to_m_chance;
-    chance -= 3 * (adj_mag_stat[creature.stat_index[A_WIS]] - 1);
+    chance -= 3 * (adj_mag_stat[creature.get_stat_index(A_WIS)] - 1);
 
-    PERCENTAGE minfail = adj_mag_fail[creature.stat_index[A_WIS]];
+    PERCENTAGE minfail = adj_mag_fail[creature.get_stat_index(A_WIS)];
     if (chance < minfail) {
         chance = minfail;
     }

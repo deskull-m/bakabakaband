@@ -44,7 +44,7 @@ bool common_saving_throw_charm(CreatureEntity &creature, int pow, const Creature
         return true;
     }
 
-    pow += (adj_chr_chm[creature.stat_index[A_CHR]] - 1);
+    pow += (adj_chr_chm[creature.get_stat_index(A_CHR)] - 1);
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE) || (monrace.population_flags.has(MonsterPopulationType::NAZGUL))) {
         pow = pow * 2 / 3;
     }
@@ -77,7 +77,7 @@ bool common_saving_throw_control(CreatureEntity &creature, int pow, const Creatu
         return true;
     }
 
-    pow += adj_chr_chm[creature.stat_index[A_CHR]] - 1;
+    pow += adj_chr_chm[creature.get_stat_index(A_CHR)] - 1;
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE) || (monrace.population_flags.has(MonsterPopulationType::NAZGUL))) {
         pow = pow * 2 / 3;
     }

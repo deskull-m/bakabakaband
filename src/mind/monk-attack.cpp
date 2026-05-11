@@ -200,14 +200,14 @@ WEIGHT calc_monk_attack_weight(CreatureEntity &creature)
 static void process_attack_vital_spot(CreatureEntity &creature, player_attack_type *pa_ptr, int *stun_effect, int *resist_stun, const int special_effect)
 {
     const auto &monrace = pa_ptr->m_ptr->get_monrace();
-    if ((special_effect == MA_KNEE) && ((pa_ptr->attack_damage + creature.to_d[pa_ptr->hand]) < pa_ptr->m_ptr->hp)) {
+    if ((special_effect == MA_KNEE) && ((pa_ptr->attack_damage + creature.get_to_d(pa_ptr->hand)) < pa_ptr->m_ptr->hp)) {
         msg_format(_("%s^は苦痛にうめいている！", "%s^ moans in agony!"), pa_ptr->m_name);
         *stun_effect = 7 + randint1(13);
         *resist_stun /= 3;
         return;
     }
 
-    if ((special_effect == MA_SLOW) && ((pa_ptr->attack_damage + creature.to_d[pa_ptr->hand]) < pa_ptr->m_ptr->hp)) {
+    if ((special_effect == MA_SLOW) && ((pa_ptr->attack_damage + creature.get_to_d(pa_ptr->hand)) < pa_ptr->m_ptr->hp)) {
         const auto is_unique = monrace.kind_flags.has_not(MonsterKindType::UNIQUE);
         if (is_unique && (randint1(creature.level) > monrace.level) && (pa_ptr->m_ptr->speed > STANDARD_SPEED - 50)) {
             msg_format(_("%s^は足をひきずり始めた。", "You've hobbled %s."), pa_ptr->m_name);
@@ -227,7 +227,7 @@ static void process_attack_vital_spot(CreatureEntity &creature, player_attack_ty
 static void print_stun_effect(CreatureEntity &creature, player_attack_type *pa_ptr, const int stun_effect, const int resist_stun)
 {
     const auto &monrace = pa_ptr->m_ptr->get_monrace();
-    if (stun_effect && ((pa_ptr->attack_damage + creature.to_d[pa_ptr->hand]) < pa_ptr->m_ptr->hp)) {
+    if (stun_effect && ((pa_ptr->attack_damage + creature.get_to_d(pa_ptr->hand)) < pa_ptr->m_ptr->hp)) {
         if (creature.level > randint1(monrace.level + resist_stun + 10)) {
             if (set_monster_stunned(*creature.get_floor(), pa_ptr->g_ptr->m_idx, stun_effect + pa_ptr->m_ptr->get_remaining_stun())) {
                 msg_format(_("%s^はフラフラになった。", "%s^ is stunned."), pa_ptr->m_name);
@@ -262,7 +262,7 @@ void process_monk_attack(CreatureEntity &creature, player_attack_type *pa_ptr)
     int stun_effect = 0;
     int special_effect = process_monk_additional_effect(pa_ptr, &stun_effect);
     WEIGHT weight = calc_monk_attack_weight(creature);
-    pa_ptr->attack_damage = critical_norm(creature, creature.level * weight, min_level, pa_ptr->attack_damage, creature.to_h[0], HISSATSU_NONE);
+    pa_ptr->attack_damage = critical_norm(creature, creature.level * weight, min_level, pa_ptr->attack_damage, creature.get_to_h(0), HISSATSU_NONE);
     process_attack_vital_spot(creature, pa_ptr, &stun_effect, &resist_stun, special_effect);
     print_stun_effect(creature, pa_ptr, stun_effect, resist_stun);
 }

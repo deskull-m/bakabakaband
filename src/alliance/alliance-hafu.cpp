@@ -23,8 +23,8 @@ int AllianceHafu::calcImpressionPoint(const CreatureEntity &creature) const
     impression += Alliance::calcPlayerPower(creature, 4, 25);
 
     // 魅力と知恵による統治者としての評価
-    impression += (creature.stat_use[A_CHR] - 10) * 3;
-    impression += (creature.stat_use[A_WIS] - 10) * 2;
+    impression += (creature.get_stat_use(A_CHR) - 10) * 3;
+    impression += (creature.get_stat_use(A_WIS) - 10) * 2;
 
     // レベルによる権威の評価
     impression += creature.level * 2;

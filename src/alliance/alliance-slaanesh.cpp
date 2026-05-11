@@ -23,7 +23,7 @@ int AllianceSlaanesh::calcImpressionPoint(const CreatureEntity &creature) const
     impression += Alliance::calcPlayerPower(creature, 2, 30);
 
     // 魅力による追加ボーナス
-    impression += (creature.stat_use[A_CHR] - 10) * 5;
+    impression += (creature.get_stat_use(A_CHR) - 10) * 5;
 
     // 魔法使用による好感度向上（コーンとは逆）
     // if (creature.realm1 != REALM_NONE || creature.realm2 != REALM_NONE) {

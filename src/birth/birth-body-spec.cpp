@@ -59,14 +59,14 @@ void get_money(CreatureEntity &creature)
 
     for (int i = 0; i < A_MAX; i++) {
         // 新形式: 180+50*10=680, 180+20*10=380, 180
-        if (creature.stat_max[i] >= 680) { // 旧18/50 -> 新68.0以上
+        if (creature.get_stat_max(i) >= 680) { // 旧18/50 -> 新68.0以上
             gold -= 300;
-        } else if (creature.stat_max[i] >= 380) { // 旧18/20 -> 新38.0以上
+        } else if (creature.get_stat_max(i) >= 380) { // 旧18/20 -> 新38.0以上
             gold -= 200;
-        } else if (creature.stat_max[i] > 180) { // 旧18超 -> 新18.0超
+        } else if (creature.get_stat_max(i) > 180) { // 旧18超 -> 新18.0超
             gold -= 150;
         } else {
-            gold -= (creature.stat_max[i] / 10 - 8) * 10; // 新形式での計算
+            gold -= (creature.get_stat_max(i) / 10 - 8) * 10; // 新形式での計算
         }
     }
 

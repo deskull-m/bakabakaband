@@ -443,8 +443,8 @@ static void dump_aux_virtues(CreatureEntity &creature, FILE *fff)
     fmt::println(fff, "Limits of maximum stats");
 #endif
     for (auto v_nr = 0; v_nr < A_MAX; v_nr++) {
-        if ((creature.knowledge & KNOW_STAT) || creature.stat_max[v_nr] == creature.stat_max_max[v_nr]) {
-            fmt::println(fff, "{} 18/{}", stat_names[v_nr], creature.stat_max_max[v_nr] - 18);
+        if ((creature.knowledge & KNOW_STAT) || creature.get_stat_max(v_nr) == creature.get_stat_max_max(v_nr)) {
+            fmt::println(fff, "{} 18/{}", stat_names[v_nr], creature.get_stat_max_max(v_nr) - 18);
         } else {
             fmt::println(fff, "{} ???", stat_names[v_nr]);
         }

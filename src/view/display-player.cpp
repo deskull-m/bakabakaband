@@ -199,18 +199,18 @@ static void display_phisique(CreatureEntity &creature)
 static void display_player_stats(CreatureEntity &creature)
 {
     for (int i = 0; i < A_MAX; i++) {
-        if (creature.stat_cur[i] < creature.stat_max[i]) {
+        if (creature.get_stat_cur(i) < creature.get_stat_max(i)) {
             put_str(stat_names_reduced[i], 3 + i, 53);
-            int value = creature.stat_use[i];
+            int value = creature.get_stat_use(i);
             c_put_str(TERM_YELLOW, cnv_stat(value), 3 + i, 60);
-            value = creature.stat_top[i];
+            value = creature.get_stat_top(i);
             c_put_str(TERM_L_GREEN, cnv_stat(value), 3 + i, 67);
         } else {
             put_str(stat_names[i], 3 + i, 53);
-            c_put_str(TERM_L_GREEN, cnv_stat(creature.stat_use[i]), 3 + i, 60);
+            c_put_str(TERM_L_GREEN, cnv_stat(creature.get_stat_use(i)), 3 + i, 60);
         }
 
-        if (creature.stat_max[i] == creature.stat_max_max[i]) {
+        if (creature.get_stat_max(i) == creature.get_stat_max_max(i)) {
             c_put_str(TERM_WHITE, "!", 3 + i, _(58, 58 - 2));
         }
     }

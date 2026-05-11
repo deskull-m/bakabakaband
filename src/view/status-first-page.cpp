@@ -119,7 +119,7 @@ static bool calc_weapon_damage_limit(CreatureEntity &creature, int hand, int *da
     WEIGHT weight = creature.level * calc_monk_attack_weight(creature);
     int to_h = creature.level * 7 / 10; // 命中計算が煩雑なのでおよその値を使用する
 
-    *basedam = calc_expect_crit(creature, weight, to_h, *basedam, creature.to_h[0], false, impact, 100);
+    *basedam = calc_expect_crit(creature, weight, to_h, *basedam, creature.get_to_h(0), false, impact, 100);
 
     damage[hand] += *basedam;
     if (o_ptr->bi_key == BaseitemKey(ItemKindType::SWORD, SV_POISON_NEEDLE)) {
@@ -261,8 +261,8 @@ static void calc_two_hands(CreatureEntity &creature, int *damage, int *to_h)
         const auto mindice = (o_ptr->damage_dice.num + creature.damage_dice_bonus[i].num);
         const auto maxdice = mindice * (o_ptr->damage_dice.sides + creature.damage_dice_bonus[i].sides);
 
-        basedam = calc_expect_dice(creature, mindice, creature.to_h[i], o_ptr);
-        basedam += calc_expect_dice(creature, maxdice, creature.to_h[i], o_ptr);
+        basedam = calc_expect_dice(creature, mindice, creature.get_to_h(i), o_ptr);
+        basedam += calc_expect_dice(creature, maxdice, creature.get_to_h(i), o_ptr);
         damage[i] += basedam * 50; // x100 for display
 
         if (o_ptr->bi_key == BaseitemKey(ItemKindType::SWORD, SV_POISON_NEEDLE)) {
@@ -344,7 +344,7 @@ static int calculate_mp_regen_rate(CreatureEntity &creature)
  */
 static void display_first_page(CreatureEntity &creature, int xthb, int *damage, int shots, int shot_frac)
 {
-    int xthn = creature.get_skill_to_hit_melee() + (creature.to_h_m * BTH_PLUS_ADJ);
+    int xthn = creature.get_skill_to_hit_melee() + (creature.get_to_h_m() * BTH_PLUS_ADJ);
 
     int muta_att = 0;
     if (creature.get_mutations().has(PlayerMutationType::HORNS)) {
@@ -653,7 +653,7 @@ void display_player_various(CreatureEntity &creature)
 
     ItemEntity *o_ptr;
     o_ptr = creature.inventory[INVEN_BOW].get();
-    int tmp = creature.to_h_b + o_ptr->to_h;
+    int tmp = creature.get_to_h_b() + o_ptr->to_h;
     int xthb = creature.get_skill_to_hit_bow() + (tmp * BTH_PLUS_ADJ);
     int shots = 0;
     int shot_frac = 0;

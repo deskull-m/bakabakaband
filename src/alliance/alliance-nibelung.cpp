@@ -90,10 +90,10 @@ int AllianceNibelung::calcImpressionPoint(const CreatureEntity &creature) const
     }
 
     // ステータスボーナス
-    point += (creature.stat_cur[A_STR] - 10) * 2; // 筋力重視
-    point += (creature.stat_cur[A_CON] - 10) * 2; // 耐久力重視
-    point += (creature.stat_cur[A_DEX] - 10) * 1; // 器用さも評価
-    point -= (creature.stat_cur[A_CHR] - 10) * 1; // 魅力はそれほど重要視しない
+    point += (creature.get_stat_cur(A_STR) - 10) * 2; // 筋力重視
+    point += (creature.get_stat_cur(A_CON) - 10) * 2; // 耐久力重視
+    point += (creature.get_stat_cur(A_DEX) - 10) * 1; // 器用さも評価
+    point -= (creature.get_stat_cur(A_CHR) - 10) * 1; // 魅力はそれほど重要視しない
 
     // 性格ボーナス
     if (creature.ppersonality == PERSONALITY_ORDINARY) {

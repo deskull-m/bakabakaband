@@ -38,7 +38,7 @@ int16_t PlayerBasicStatistics::modification_value()
 int16_t PlayerBasicStatistics::get_value()
 {
     this->set_locals();
-    return this->creature.stat_index[(int)this->ability_type];
+    return this->creature.get_stat_index((int)this->ability_type);
 }
 
 /*!
@@ -101,9 +101,9 @@ void PlayerBasicStatistics::update_value()
 void PlayerBasicStatistics::update_top_status()
 {
     int status = (int)this->ability_type;
-    int top = modify_stat_value(this->creature.stat_max[status], this->creature.stat_add[status]);
+    int top = modify_stat_value(this->creature.get_stat_max(status), this->creature.get_stat_add(status));
 
-    if (this->creature.stat_top[status] != top) {
+    if (this->creature.get_stat_top(status) != top) {
         this->creature.set_stat_top(status, (int16_t)top);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
@@ -133,11 +133,11 @@ int16_t PlayerBasicStatistics::set_exception_use_status(int16_t value)
 void PlayerBasicStatistics::update_use_status()
 {
     int status = (int)this->ability_type;
-    int16_t use = modify_stat_value(this->creature.stat_cur[status], this->creature.stat_add[status]);
+    int16_t use = modify_stat_value(this->creature.get_stat_cur(status), this->creature.get_stat_add(status));
 
     use = this->set_exception_use_status(use);
 
-    if (this->creature.stat_use[status] != use) {
+    if (this->creature.get_stat_use(status) != use) {
         this->creature.set_stat_use(status, (int16_t)use);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
@@ -159,15 +159,15 @@ void PlayerBasicStatistics::update_index_status()
     // 新形式: 30-400 -> 0-37のインデックスに変換
     // 30-180: 0-15 (旧3-18相当)
     // 190-400: 16-37 (旧18/10-18/220相当)
-    if (this->creature.stat_use[status] <= 180) {
-        index = (this->creature.stat_use[status] - 30) / 10;
-    } else if (this->creature.stat_use[status] <= 400) {
-        index = 15 + (this->creature.stat_use[status] - 180) / 10;
+    if (this->creature.get_stat_use(status) <= 180) {
+        index = (this->creature.get_stat_use(status) - 30) / 10;
+    } else if (this->creature.get_stat_use(status) <= 400) {
+        index = 15 + (this->creature.get_stat_use(status) - 180) / 10;
     } else {
         index = 37;
     }
 
-    if (this->creature.stat_index[status] == index) {
+    if (this->creature.get_stat_index(status) == index) {
         return;
     }
 

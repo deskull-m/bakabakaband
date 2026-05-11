@@ -264,7 +264,7 @@ static std::string describe_ammo_detail(CreatureEntity &creature, const ItemEnti
         tmul++;
     }
 
-    tmul = tmul * (100 + static_cast<int>(adj_str_td[creature.stat_index[A_STR]]) - 128);
+    tmul = tmul * (100 + static_cast<int>(adj_str_td[creature.get_stat_index(A_STR)]) - 128);
     avgdam *= tmul;
     avgdam /= (100 * 10);
     avgdam = boost_concentration_damage(creature, avgdam);

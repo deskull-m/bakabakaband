@@ -22,8 +22,8 @@ int AllianceTzeentch::calcImpressionPoint(const CreatureEntity &creature) const
     impression += Alliance::calcPlayerPower(creature, 2, 35);
 
     // 知力と魔法能力による追加評価
-    impression += (creature.stat_use[A_INT] - 10) * 4;
-    impression += (creature.stat_use[A_WIS] - 10) * 2;
+    impression += (creature.get_stat_use(A_INT) - 10) * 4;
+    impression += (creature.get_stat_use(A_WIS) - 10) * 2;
 
     /*
     // 魔法使用による大幅な好感度向上
