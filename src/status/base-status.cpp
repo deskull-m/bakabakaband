@@ -66,9 +66,9 @@ bool inc_stat(CreatureEntity &creature, int stat)
         value += 10;
     }
 
-    creature.stat_cur[stat] = value;
+    creature.set_stat_cur(stat, value);
     if (value > creature.stat_max[stat]) {
-        creature.stat_max[stat] = value;
+        creature.set_stat_max(stat, value);
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
@@ -176,8 +176,8 @@ bool dec_stat(CreatureEntity &creature, int stat, int amount, int permanent)
     }
 
     if (res) {
-        creature.stat_cur[stat] = cur;
-        creature.stat_max[stat] = max;
+        creature.set_stat_cur(stat, cur);
+        creature.set_stat_max(stat, max);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
         rfu.set_flag(StatusRecalculatingFlag::BONUS);
@@ -194,7 +194,7 @@ bool dec_stat(CreatureEntity &creature, int stat, int amount, int permanent)
 bool res_stat(CreatureEntity &creature, int stat)
 {
     if (creature.stat_cur[stat] != creature.stat_max[stat]) {
-        creature.stat_cur[stat] = creature.stat_max[stat];
+        creature.set_stat_cur(stat, creature.stat_max[stat]);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(StatusRecalculatingFlag::BONUS);
         rfu.set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);

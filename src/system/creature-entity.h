@@ -1467,6 +1467,78 @@ public:
         this->csp -= delta;
     }
 
+    /*! @brief 命中ボーナス (近接利き手分以外) を設定する (提案 30) */
+    virtual void set_to_h_b(int16_t value)
+    {
+        this->to_h_b = value;
+    }
+
+    /*! @brief 命中ボーナス (その他装備分) を設定する (提案 30) */
+    virtual void set_to_h_m(int16_t value)
+    {
+        this->to_h_m = value;
+    }
+
+    /*! @brief ダメージボーナス (その他装備分) を設定する (提案 30) */
+    virtual void set_to_d_m(int16_t value)
+    {
+        this->to_d_m = value;
+    }
+
+    /*! @brief AC ボーナスを設定する (提案 30) */
+    virtual void set_to_a(int16_t value)
+    {
+        this->to_a = value;
+    }
+
+    /*! @brief 能力値最大値 stat_max[idx] を設定する (提案 30) */
+    virtual void set_stat_max(int idx, short value)
+    {
+        this->stat_max[idx] = value;
+    }
+
+    /*! @brief 能力値現在値 stat_cur[idx] を設定する (提案 30) */
+    virtual void set_stat_cur(int idx, short value)
+    {
+        this->stat_cur[idx] = value;
+    }
+
+    /*! @brief 能力値現在値 stat_cur[idx] を加算する (提案 30) */
+    virtual void add_stat_cur(int idx, short delta)
+    {
+        this->stat_cur[idx] += delta;
+    }
+
+    /*! @brief 能力値最大の最大値 stat_max_max[idx] を設定する (提案 30) */
+    virtual void set_stat_max_max(int idx, short value)
+    {
+        this->stat_max_max[idx] = value;
+    }
+
+    /*! @brief 能力値修正済み値 stat_use[idx] を設定する (提案 30) */
+    virtual void set_stat_use(int idx, int16_t value)
+    {
+        this->stat_use[idx] = value;
+    }
+
+    /*! @brief 能力値最大修正済み値 stat_top[idx] を設定する (提案 30) */
+    virtual void set_stat_top(int idx, int16_t value)
+    {
+        this->stat_top[idx] = value;
+    }
+
+    /*! @brief 能力値修正値 stat_add[idx] を設定する (提案 30) */
+    virtual void set_stat_add(int idx, int16_t value)
+    {
+        this->stat_add[idx] = value;
+    }
+
+    /*! @brief 能力値インデックス stat_index[idx] を設定する (提案 30) */
+    virtual void set_stat_index(int idx, int16_t value)
+    {
+        this->stat_index[idx] = value;
+    }
+
     /*! @brief 影 (KAGE) かどうか */
     virtual bool is_kage() const
     {

@@ -730,17 +730,17 @@ void status_shuffle(CreatureEntity &creature)
     const auto max2 = creature.stat_max[j];
     const auto cur2 = creature.stat_cur[j];
 
-    creature.stat_max[i] = max2;
-    creature.stat_cur[i] = cur2;
-    creature.stat_max[j] = max1;
-    creature.stat_cur[j] = cur1;
+    creature.set_stat_max(i, max2);
+    creature.set_stat_cur(i, cur2);
+    creature.set_stat_max(j, max1);
+    creature.set_stat_cur(j, cur1);
 
     for (int k = 0; k < A_MAX; k++) {
         if (creature.stat_max[k] > creature.stat_max_max[k]) {
-            creature.stat_max[k] = creature.stat_max_max[k];
+            creature.set_stat_max(k, creature.stat_max_max[k]);
         }
         if (creature.stat_cur[k] > creature.stat_max_max[k]) {
-            creature.stat_cur[k] = creature.stat_max_max[k];
+            creature.set_stat_cur(k, creature.stat_max_max[k]);
         }
     }
 
