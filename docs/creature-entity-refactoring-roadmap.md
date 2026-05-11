@@ -1229,8 +1229,41 @@ migration 対象 (109 ファイル, 約 350 箇所):
 
 ### 残置
 
-- `level` (628 read sites) は分量が多いため別提案 (31b) として残置
-- `stat_*[]` 配列 (200+ read sites) も同様に別提案として残置
+- `level` (628 read sites) は分量が多いため別提案 (31c) として残置
+- `stat_*[]` 配列 (200+ read sites) は提案 31b で対応
+
+---
+
+## 提案 31b: stat_*[] と to_h*/to_d*/to_a の getter virtual 整備と read 移行 ✅ 完了
+
+### 背景
+
+提案 30 で setter virtual を整備した能力値配列 (`stat_*[]`) と
+戦闘ボーナス (`to_h*` / `to_d*` / `to_a`) について、対応する getter
+virtual を追加し、read site を getter 経由に統一する。これにより
+これらフィールド群の private 化 (将来の提案 32) の前提条件が整う。
+
+### 作業内容 (commit `38b69beb5`)
+
+新規 virtual (15 個):
+- stat 系 getter (7 個): `get_stat_max(idx)` / `get_stat_cur(idx)` /
+  `get_stat_max_max(idx)` / `get_stat_use(idx)` / `get_stat_top(idx)` /
+  `get_stat_add(idx)` / `get_stat_index(idx)`
+- 戦闘ボーナス getter (6 個): `get_to_h_b` / `get_to_h_m` /
+  `get_to_d_m` / `get_to_a` / `get_to_h(hand)` / `get_to_d(hand)`
+- 補助 setter (2 個): `set_to_h(hand, val)` / `set_to_d(hand, val)`
+  (sed で誤って `creature.get_to_h(0) = X` に化けた write site を
+  `set_to_h(0, X)` に再修正するため)
+
+migration 対象 (62 ファイル, 約 270 箇所):
+- `stat_*[idx]` read (約 200 箇所): 各種計算・表示・装備処理
+- `to_h_b` / `to_h_m` / `to_d_m` / `to_a` の単純 read (約 25 箇所)
+- `to_h[hand]` / `to_d[hand]` の配列 read (約 80 箇所)
+
+### 残置
+
+- `level` (628 read sites) は分量が突出しているため、別提案 (31c)
+  として残置
 
 ---
 
@@ -1265,6 +1298,7 @@ migration 対象 (109 ファイル, 約 350 箇所):
 - ✅ **提案 29**: `r_idx` / `ap_r_idx` / `riding` を CreatureEntity の private 化 (CreatureEntity 直下フィールドの完全 private 化に成功した最初の例)
 - ✅ **提案 30**: 戦闘ボーナス系 (to_h_b / to_h_m / to_d_m / to_a) と stat 系 (stat_max / stat_cur / stat_max_max / stat_use / stat_top / stat_add / stat_index) の setter virtual 整備、約 55 箇所 migration
 - ✅ **提案 31**: 残り plain field 14 種 (au / csp / food / town_num / age / ht / wt / prestige / max_plv / msp / exp / max_exp / max_max_exp / ambush_flag) の getter virtual 整備と read site 約 350 箇所の migration
+- ✅ **提案 31b**: stat_*[] (7 種) と to_h_b / to_h_m / to_d_m / to_a / to_h[hand] / to_d[hand] の getter virtual 整備と read site 約 270 箇所の migration
 
 ### 既存提案の残作業 (中規模)
 
@@ -1277,11 +1311,12 @@ migration 対象 (109 ファイル, 約 350 箇所):
 
 ### 今後の候補 (追加提案)
 
-- **提案 31b**: `level` (628 read sites) と `stat_*[]` 配列
-  (200+ read sites) / `to_h` / `to_d` / `to_a` の read 側 getter 化
-- **提案 32**: 提案 31 で getter 整備済みのフィールド (au / csp /
-  food / town_num / age / ht / wt / prestige / max_plv / msp /
-  exp / max_exp / max_max_exp / ambush_flag) を CreatureEntity の
+- **提案 31c**: `level` (628 read sites) の read 側 getter 化
+  (`get_level()` 既存)
+- **提案 32**: 提案 31 / 31b で getter 整備済みのフィールド
+  (au / csp / food / town_num / age / ht / wt / prestige / max_plv /
+  msp / exp / max_exp / max_max_exp / ambush_flag / to_h_b / to_h_m /
+  to_d_m / to_a / to_h[] / to_d[] / stat_*[]) を CreatureEntity の
   private 化 (提案 29 と同じパターン)
 - **提案 25b**: 性能影響が出た場合の `get_inven_cnt()` キャッシュ層再導入
   → **検証済 (不要)**: 全 12 call site が低頻度 (savefile load / inventory
