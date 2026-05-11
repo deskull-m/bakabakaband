@@ -1262,8 +1262,45 @@ migration 対象 (62 ファイル, 約 270 箇所):
 
 ### 残置
 
-- `level` (628 read sites) は分量が突出しているため、別提案 (31c)
-  として残置
+- `level` (628 read sites) は提案 31c で対応
+
+---
+
+## 提案 31c: level read site を get_level() 経由に移行 ✅ 完了
+
+### 背景
+
+CreatureEntity::level の read site は 628 箇所と分量が突出しており、
+提案 31 / 31b では別提案として残置していた。本提案で残り全てを
+`get_level()` virtual 経由に統一する。
+
+`get_level()` は既存実装で「`level > 0` ならその値、そうでなければ
+`monrace.level / 2` を返す」セマンティクスを持つため、モンスター
+初期化漏れ等に対する安全な fallback も得られる。
+
+### 作業内容 (commit `1234f65a3`)
+
+migration 対象 (175 ファイル, 約 628 箇所):
+- `(creature|monster|target).level` 直接読取りを `get_level()` に
+  sed で機械的に変換
+
+副次修正:
+- sed が `creature.level--` / `creature.level++` を
+  `creature.get_level()--` / `creature.get_level()++` に化けさせて
+  いた 2 箇所 (player-status.cpp の experience レベルダウン/アップ)
+  を `set_level(get_level() - 1)` / `set_level(get_level() + 1)` に
+  再修正
+
+### 注記
+
+各種別 struct (`monrace.level` / `quest.level` / `baseitem.level` /
+`m_lev.level` 等) は CreatureEntity ではないため migration 対象外。
+
+### 効果
+
+- CreatureEntity の主要フィールド read/write 両側が完全に virtual
+  API 経由に統一された
+- 残るは将来の提案 32 (整備済みフィールドの private 化) のみ
 
 ---
 
@@ -1299,6 +1336,7 @@ migration 対象 (62 ファイル, 約 270 箇所):
 - ✅ **提案 30**: 戦闘ボーナス系 (to_h_b / to_h_m / to_d_m / to_a) と stat 系 (stat_max / stat_cur / stat_max_max / stat_use / stat_top / stat_add / stat_index) の setter virtual 整備、約 55 箇所 migration
 - ✅ **提案 31**: 残り plain field 14 種 (au / csp / food / town_num / age / ht / wt / prestige / max_plv / msp / exp / max_exp / max_max_exp / ambush_flag) の getter virtual 整備と read site 約 350 箇所の migration
 - ✅ **提案 31b**: stat_*[] (7 種) と to_h_b / to_h_m / to_d_m / to_a / to_h[hand] / to_d[hand] の getter virtual 整備と read site 約 270 箇所の migration
+- ✅ **提案 31c**: level read site (628 箇所) を get_level() 経由に統一 (175 ファイル migration)
 
 ### 既存提案の残作業 (中規模)
 
@@ -1311,13 +1349,11 @@ migration 対象 (62 ファイル, 約 270 箇所):
 
 ### 今後の候補 (追加提案)
 
-- **提案 31c**: `level` (628 read sites) の read 側 getter 化
-  (`get_level()` 既存)
-- **提案 32**: 提案 31 / 31b で getter 整備済みのフィールド
-  (au / csp / food / town_num / age / ht / wt / prestige / max_plv /
-  msp / exp / max_exp / max_max_exp / ambush_flag / to_h_b / to_h_m /
-  to_d_m / to_a / to_h[] / to_d[] / stat_*[]) を CreatureEntity の
-  private 化 (提案 29 と同じパターン)
+- **提案 32**: 提案 31 / 31b / 31c で getter 整備済みのフィールド
+  (au / csp / food / town_num / level / age / ht / wt / prestige /
+  max_plv / msp / exp / max_exp / max_max_exp / ambush_flag /
+  to_h_b / to_h_m / to_d_m / to_a / to_h[] / to_d[] / stat_*[]) を
+  CreatureEntity の private 化 (提案 29 と同じパターン)
 - **提案 25b**: 性能影響が出た場合の `get_inven_cnt()` キャッシュ層再導入
   → **検証済 (不要)**: 全 12 call site が低頻度 (savefile load / inventory
   pickup / death message / character dump / 個別 UI コマンド)。最頻箇所
