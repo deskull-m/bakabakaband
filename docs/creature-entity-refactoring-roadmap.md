@@ -976,6 +976,10 @@ load/birth-loader での age/ht/wt/prestige 代入は直接フィールド
 - `get_inven_cnt()` は最大 INVEN_PACK (23) スロットの線形スキャン
 - ホットパスで性能影響を観測した場合、提案 25b (キャッシュ層の再導入)
   を検討する余地あり
+- → 後日 (提案 23 再々実施時) call site 数と頻度を検証した結果、全 12
+  call site が低頻度 (savefile load / inventory pickup / death message /
+  character dump 等)。最頻でも数十回/ターン × 70ns 程度で再導入不要と
+  判定。詳細は本書末尾「今後の候補」節の 25b エントリ参照。
 
 ---
 
@@ -1110,6 +1114,12 @@ CreatureEntity 直下の戦闘ボーナス・経験値系フィールドのう�
   `dis_to_h` / `dis_to_d` 等) と stat 系 (`stat_max[]` /
   `stat_cur[]` 等) の compound assignment 移行
 - **提案 25b**: 性能影響が出た場合の `get_inven_cnt()` キャッシュ層再導入
+  → **検証済 (不要)**: 全 12 call site が低頻度 (savefile load / inventory
+  pickup / death message / character dump / 個別 UI コマンド)。最頻箇所
+  でも `INVEN_PACK = 23` の線形スキャン (~70ns) × 数十回/ターン 程度
+  で、ターン全体の処理量に比べ無視できる。`reorder_pack` /
+  `store_item_to_inventory` / `check_store_item_to_inventory` のいずれも
+  per-turn loop ではない。**現状で再導入の必要なし。**
 
 ### 提案 13 の延長検討対象
 
