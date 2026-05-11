@@ -19,7 +19,6 @@
 #include "target/projection-path-calculator.h"
 #include "target/target-setter.h"
 #include "target/target-types.h"
-#include "timed-effect/timed-effects.h"
 #include "tracking/lore-tracker.h"
 #include "view/display-messages.h"
 

@@ -19,7 +19,6 @@
 #include "system/dungeon/dungeon-record.h"
 #include "system/floor/floor-info.h"
 #include "system/inner-game-data.h"
-#include "timed-effect/timed-effects.h"
 #include "world/world.h"
 #include <variant>
 
@@ -182,24 +181,23 @@ void wr_player(CreatureEntity &creature)
     wr_s16b(0);
     wr_s16b(creature.get_prestige());
 
-    auto effects = creature.effects();
     wr_s16b(0); /* old "rest" */
-    wr_s16b(effects->blindness().current());
-    wr_s16b(effects->paralysis().current());
-    wr_s16b(effects->confusion().current());
+    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::BLINDNESS));
+    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::PARALYSIS));
+    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::CONFUSION));
     wr_s16b(creature.get_food());
     wr_s16b(0); /* old "food_digested" */
     wr_s16b(0); /* old "protection" */
     wr_s16b(creature.energy_need);
     wr_s16b(creature.enchant_energy_need);
-    wr_s16b(effects->acceleration().current());
-    wr_s16b(effects->deceleration().current());
-    wr_s16b(effects->fear().current());
-    wr_s16b(effects->cut().current());
-    wr_s16b(effects->stun().current());
-    wr_s16b(effects->poison().current());
-    wr_s16b(effects->hallucination().current());
-    wr_s16b(effects->protection().current());
+    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::ACCELERATION));
+    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::DECELERATION));
+    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::FEAR));
+    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::CUT));
+    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::STUN));
+    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::POISON));
+    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::HALLUCINATION));
+    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::PROTECTION));
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY));
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE));
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::HERO));

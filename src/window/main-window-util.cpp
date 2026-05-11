@@ -15,7 +15,6 @@
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-map.h"
 #include "view/display-symbol.h"
 #include "world/world.h"

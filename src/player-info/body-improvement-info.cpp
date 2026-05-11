@@ -3,12 +3,10 @@
 #include "player/player-status-flags.h"
 #include "spell-realm/spells-crusade.h"
 #include "system/creature-entity.h"
-#include "timed-effect/timed-effects.h"
 
 /*!< @todo 並び順の都合で連番を付ける。まとめても良いならまとめてしまう予定 */
 void set_body_improvement_info_1(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    const auto effects = creature.effects();
     if (creature.is_blessed()) {
         self_ptr->info_list.emplace_back(_("あなたは高潔さを感じている。", "You feel rightous."));
     }
@@ -21,7 +19,7 @@ void set_body_improvement_info_1(CreatureEntity &creature, self_info_type *self_
         self_ptr->info_list.emplace_back(_("あなたは戦闘狂だ。", "You are in a battle rage."));
     }
 
-    if (effects->protection().is_protected()) {
+    if (creature.is_protected_from_evil()) {
         self_ptr->info_list.emplace_back(_("あなたは邪悪なる存在から守られている。", "You are protected from evil."));
     }
 

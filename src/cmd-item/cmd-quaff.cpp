@@ -20,8 +20,6 @@
 #include "status/action-setter.h"
 #include "status/bad-status-setter.h"
 #include "system/creature-entity.h"
-#include "timed-effect/player-confusion.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "world/world.h"

@@ -33,7 +33,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 #include <algorithm>
 #include <range/v3/view.hpp>

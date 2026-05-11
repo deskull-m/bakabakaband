@@ -45,7 +45,8 @@
 #include "term/z-form.h"
 #include "term/z-rand.h"
 #include "term/z-util.h"
-#include "timed-effect/timed-effects.h"
+#include "timed-effect/player-cut.h"
+#include "timed-effect/player-stun.h"
 #include "tracking/lore-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
@@ -54,8 +55,8 @@
 
 /*!
  * @brief CreatureEntity のデフォルトコンストラクタ
- * @details プレイヤー・モンスター共通で inventory と timed_effects を
- * 初期化する。これによりプレイヤー用経路に流されたモンスターでも
+ * @details プレイヤー・モンスター共通で inventory を初期化する。
+ * これによりプレイヤー用経路に流されたモンスターでも
  * null 参照・out-of-bounds を起こさない。
  * モンスター固有データ (MonsterProfile) は init_monster_profile() を
  * 別途呼び出して設定する。
@@ -64,7 +65,6 @@ CreatureEntity::CreatureEntity()
 {
     this->inventory.resize(INVEN_TOTAL);
     ranges::generate(this->inventory, [] { return std::make_shared<ItemEntity>(); });
-    this->timed_effects = std::make_shared<TimedEffects>();
 }
 
 bool CreatureEntity::try_set_position(const Pos2D &pos)
@@ -80,18 +80,17 @@ bool CreatureEntity::try_set_position(const Pos2D &pos)
 
 bool CreatureEntity::is_fully_healthy() const
 {
-    auto effects = this->effects();
     auto is_healthy = this->hp == this->maxhp;
     is_healthy &= this->csp >= this->msp;
-    is_healthy &= !effects->blindness().is_blind();
-    is_healthy &= !effects->confusion().is_confused();
-    is_healthy &= !effects->poison().is_poisoned();
-    is_healthy &= !effects->fear().is_fearful();
-    is_healthy &= !effects->stun().is_stunned();
-    is_healthy &= !effects->cut().is_cut();
-    is_healthy &= !effects->deceleration().is_slow();
-    is_healthy &= !effects->paralysis().is_paralyzed();
-    is_healthy &= !effects->hallucination().is_hallucinated();
+    is_healthy &= !this->is_blind();
+    is_healthy &= !this->is_confused();
+    is_healthy &= !this->is_poisoned();
+    is_healthy &= !this->is_fearful();
+    is_healthy &= !this->is_stunned();
+    is_healthy &= !this->is_cut();
+    is_healthy &= !this->is_decelerated();
+    is_healthy &= !this->is_paralyzed();
+    is_healthy &= !this->is_hallucinated();
     is_healthy &= !this->get_timed_effect(CreatureTimedEffect::WORD_RECALL);
     is_healthy &= !this->get_timed_effect(CreatureTimedEffect::ALTER_REALITY);
     return is_healthy;
@@ -302,15 +301,6 @@ bool CreatureEntity::is_wielding(FixedArtifactId fa_id) const
 }
 
 /*!
- * @brief 時限効果管理オブジェクトを取得
- * @return 時限効果管理オブジェクトへの共有ポインタ
- */
-std::shared_ptr<TimedEffects> CreatureEntity::effects() const
-{
-    return this->timed_effects;
-}
-
-/*!
  * @brief 現在地の隣 (瞬時値)または現在地を返す
  * @param dir 隣を表す方向番号
  * @details クリーチャーが移動する前後の文脈で使用すると不整合を起こすので注意
@@ -417,13 +407,7 @@ bool CreatureEntity::is_blind() const
 
 bool CreatureEntity::is_hallucinated() const
 {
-    // モンスターは timed_effects オブジェクトを持たないため、
-    // 幻覚状態は常に false として扱う (PlayerType のみが実体を持つ)
-    const auto eff = this->effects();
-    if (!eff) {
-        return false;
-    }
-    return eff->hallucination().is_hallucinated();
+    return this->get_timed_effect(CreatureTimedEffect::HALLUCINATION) > 0;
 }
 
 bool CreatureEntity::is_paralyzed() const
@@ -443,39 +427,39 @@ bool CreatureEntity::is_poisoned() const
 
 bool CreatureEntity::is_protected_from_evil() const
 {
-    return this->effects()->protection().is_protected();
+    return this->get_timed_effect(CreatureTimedEffect::PROTECTION) > 0;
 }
 
 int CreatureEntity::get_stun_magic_chance_penalty() const
 {
-    return this->effects()->stun().get_magic_chance_penalty();
+    return PlayerStun::get_magic_chance_penalty(this->get_timed_effect(CreatureTimedEffect::STUN));
 }
 
 int CreatureEntity::get_stun_item_chance_penalty() const
 {
-    return this->effects()->stun().get_item_chance_penalty();
+    return PlayerStun::get_item_chance_penalty(this->get_timed_effect(CreatureTimedEffect::STUN));
 }
 
 short CreatureEntity::get_stun_damage_penalty() const
 {
-    return this->effects()->stun().get_damage_penalty();
+    return PlayerStun::get_damage_penalty(this->get_timed_effect(CreatureTimedEffect::STUN));
 }
 
 std::pair<TERM_COLOR, std::string> CreatureEntity::get_stun_expr() const
 {
-    const auto [color, text] = this->effects()->stun().get_expr();
+    const auto [color, text] = PlayerStun::get_expr(this->get_timed_effect(CreatureTimedEffect::STUN));
     return { color, std::string(text) };
 }
 
 std::pair<TERM_COLOR, std::string> CreatureEntity::get_cut_expr() const
 {
-    const auto [color, text] = this->effects()->cut().get_expr();
+    const auto [color, text] = PlayerCut::get_expr(this->get_timed_effect(CreatureTimedEffect::CUT));
     return { color, text };
 }
 
 int CreatureEntity::get_cut_damage_per_turn() const
 {
-    return this->effects()->cut().get_damage();
+    return PlayerCut::get_damage(this->get_timed_effect(CreatureTimedEffect::CUT));
 }
 
 bool CreatureEntity::is_blessed() const
@@ -515,86 +499,16 @@ bool CreatureEntity::is_echizen() const
 
 short CreatureEntity::get_timed_effect(CreatureTimedEffect effect) const
 {
-    // 一部の時限効果は高機能な TimedEffects オブジェクト経由で管理する。
-    // 提案 5 の方針に従い、プレイヤー・モンスター共通でこの分岐を採用。
-    if (this->timed_effects) {
-        const auto &eff = *this->timed_effects;
-        switch (effect) {
-        case CreatureTimedEffect::STUN:
-            return eff.stun().current();
-        case CreatureTimedEffect::CONFUSION:
-            return eff.confusion().current();
-        case CreatureTimedEffect::FEAR:
-            return eff.fear().current();
-        case CreatureTimedEffect::ACCELERATION:
-            return eff.acceleration().current();
-        case CreatureTimedEffect::DECELERATION:
-            return eff.deceleration().current();
-        case CreatureTimedEffect::SLEEP_OR_PARALYSIS:
-        case CreatureTimedEffect::PARALYSIS:
-            return eff.paralysis().current();
-        case CreatureTimedEffect::BLINDNESS:
-            return eff.blindness().current();
-        case CreatureTimedEffect::HALLUCINATION:
-            return eff.hallucination().current();
-        case CreatureTimedEffect::CUT:
-            return eff.cut().current();
-        case CreatureTimedEffect::POISON:
-            return eff.poison().current();
-        case CreatureTimedEffect::PROTECTION:
-            return eff.protection().current();
-        default:
-            break;
-        }
-    }
-    const auto it = this->timed_effects_map.find(effect);
+    // 提案 5 (最終): SLEEP_OR_PARALYSIS は PARALYSIS と同一エントリで扱う
+    auto key = (effect == CreatureTimedEffect::SLEEP_OR_PARALYSIS) ? CreatureTimedEffect::PARALYSIS : effect;
+    const auto it = this->timed_effects_map.find(key);
     return (it != this->timed_effects_map.end()) ? it->second : 0;
 }
 
 void CreatureEntity::set_timed_effect(CreatureTimedEffect effect, short value)
 {
-    if (this->timed_effects) {
-        auto &eff = *this->timed_effects;
-        switch (effect) {
-        case CreatureTimedEffect::STUN:
-            eff.stun().set(value);
-            return;
-        case CreatureTimedEffect::CONFUSION:
-            eff.confusion().set(value);
-            return;
-        case CreatureTimedEffect::FEAR:
-            eff.fear().set(value);
-            return;
-        case CreatureTimedEffect::ACCELERATION:
-            eff.acceleration().set(value);
-            return;
-        case CreatureTimedEffect::DECELERATION:
-            eff.deceleration().set(value);
-            return;
-        case CreatureTimedEffect::SLEEP_OR_PARALYSIS:
-        case CreatureTimedEffect::PARALYSIS:
-            eff.paralysis().set(value);
-            return;
-        case CreatureTimedEffect::BLINDNESS:
-            eff.blindness().set(value);
-            return;
-        case CreatureTimedEffect::HALLUCINATION:
-            eff.hallucination().set(value);
-            return;
-        case CreatureTimedEffect::CUT:
-            eff.cut().set(value);
-            return;
-        case CreatureTimedEffect::POISON:
-            eff.poison().set(value);
-            return;
-        case CreatureTimedEffect::PROTECTION:
-            eff.protection().set(value);
-            return;
-        default:
-            break;
-        }
-    }
-    this->timed_effects_map[effect] = value;
+    auto key = (effect == CreatureTimedEffect::SLEEP_OR_PARALYSIS) ? CreatureTimedEffect::PARALYSIS : effect;
+    this->timed_effects_map[key] = value;
 }
 
 int CreatureEntity::get_base_natural_regen_amount() const

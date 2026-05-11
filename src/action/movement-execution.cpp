@@ -40,7 +40,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
-#include "timed-effect/timed-effects.h"
 #include "tracking/lore-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -151,10 +150,9 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
     bool do_past = false;
     if (grid.has_monster() && (monster.is_visible_on_map() || p_can_enter || p_can_kill_walls)) {
         const auto &monrace = monster.get_monrace();
-        const auto effects = creature.effects();
-        const auto is_stunned = effects->stun().is_stunned();
-        auto can_cast = !effects->confusion().is_confused();
-        const auto is_hallucinated = effects->hallucination().is_hallucinated();
+        const auto is_stunned = creature.is_stunned();
+        auto can_cast = !creature.is_confused();
+        const auto is_hallucinated = creature.is_hallucinated();
         can_cast &= !is_hallucinated;
         can_cast &= monster.is_visible_on_map();
         can_cast &= !is_stunned;
@@ -267,10 +265,9 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
                 lite_spot(creature, pos);
             }
         } else {
-            const auto effects = creature.effects();
-            const auto is_confused = effects->confusion().is_confused();
-            const auto is_stunned = effects->stun().is_stunned();
-            const auto is_hallucinated = effects->hallucination().is_hallucinated();
+            const auto is_confused = creature.is_confused();
+            const auto is_stunned = creature.is_stunned();
+            const auto is_hallucinated = creature.is_hallucinated();
             if (boundary_floor(grid, terrain, terrain_mimic)) {
                 msg_print(_("それ以上先には進めない。", "You cannot go any more."));
                 if (!(is_confused || is_stunned || is_hallucinated)) {
@@ -299,10 +296,9 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
     }
 
     if (can_move && !pattern_seq(creature, pos)) {
-        const auto effects = creature.effects();
-        const auto is_confused = effects->confusion().is_confused();
-        const auto is_stunned = effects->stun().is_stunned();
-        const auto is_hallucinated = effects->hallucination().is_hallucinated();
+        const auto is_confused = creature.is_confused();
+        const auto is_stunned = creature.is_stunned();
+        const auto is_hallucinated = creature.is_hallucinated();
         if (!(is_confused || is_stunned || is_hallucinated)) {
             energy.reset_player_turn();
         }

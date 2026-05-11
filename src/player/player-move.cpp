@@ -44,7 +44,6 @@
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "target/target-checker.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
@@ -97,12 +96,11 @@ static void discover_hidden_things(CreatureEntity &creature, const Pos2D &pos)
 void search(CreatureEntity &creature)
 {
     PERCENTAGE chance = creature.get_skill_search();
-    const auto effects = creature.effects();
-    if (effects->blindness().is_blind() || no_lite(creature)) {
+    if (creature.is_blind() || no_lite(creature)) {
         chance = chance / 10;
     }
 
-    if (effects->confusion().is_confused() || effects->hallucination().is_hallucinated()) {
+    if (creature.is_confused() || creature.is_hallucinated()) {
         chance = chance / 10;
     }
 

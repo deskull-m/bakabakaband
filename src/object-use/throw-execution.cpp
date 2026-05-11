@@ -50,7 +50,6 @@
 #include "target/target-checker.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "tracking/lore-tracker.h"
 #include "view/display-messages.h"
 #include "view/object-describer.h"

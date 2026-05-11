@@ -47,7 +47,6 @@
 #include "system/services/baseitem-monrace-service.h"
 #include "system/system-variables.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "world/world-collapsion.h"

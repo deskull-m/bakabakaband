@@ -18,7 +18,6 @@
 #include "system/creature-entity.h"
 #include "system/creature-timed-effect-types.h"
 #include "system/inner-game-data.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 #include "world/world-collapsion.h"
 #include "world/world.h"
@@ -47,8 +46,7 @@ static bool buy_food(CreatureEntity &creature)
  */
 static bool is_healthy_stay(CreatureEntity &creature)
 {
-    const auto effects = creature.effects();
-    if (!effects->poison().is_poisoned() && !effects->cut().is_cut()) {
+    if (!creature.is_poisoned() && !creature.is_cut()) {
         return true;
     }
 

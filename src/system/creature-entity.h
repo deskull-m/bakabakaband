@@ -37,7 +37,6 @@ class Direction;
 class FloorType;
 class ItemEntity;
 class MonraceDefinition;
-class TimedEffects;
 struct player_race_info;
 struct player_personality;
 struct player_class_info;
@@ -2740,12 +2739,6 @@ public:
     // 死亡履歴
     std::vector<DeathRecord> death_history{}; /*!< 死亡履歴リスト */
 
-    /*!<
-     * @brief 時限効果管理オブジェクトを取得
-     * @return 時限効果管理オブジェクトへの共有ポインタ
-     */
-    std::shared_ptr<TimedEffects> effects() const;
-
     /*!
      * @brief ツリー構造インシデント数加算
      * @param incident_id 階層構造のインシデントID（例: "root/attack/critical"）
@@ -2929,10 +2922,8 @@ public:
     std::string base_name{}; /*!< Stripped version of "player_name" */
 
 protected:
-    std::shared_ptr<TimedEffects> timed_effects; /*!< 時限効果管理オブジェクト */
-
     // 時限効果の統一ストレージ（外部からは get/set_timed_effect() 経由でアクセスすること）
-    // プレイヤー・モンスター共通。PlayerType の STUN / CONFUSION 等は TimedEffects オブジェクト経由。
+    // プレイヤー・モンスター共通。提案 5 完了で全効果が map 単一管理。
     std::map<CreatureTimedEffect, TIME_EFFECT> timed_effects_map{};
 
     // 変身形態（外部からは get_mimic_form() / set_mimic_form() 経由でアクセスすること）

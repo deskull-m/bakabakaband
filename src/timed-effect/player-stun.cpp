@@ -129,16 +129,6 @@ int PlayerStun::get_accumulation_rank(int total, int damage)
     return 1;
 }
 
-short PlayerStun::current() const
-{
-    return this->stun;
-}
-
-PlayerStunRank PlayerStun::get_rank() const
-{
-    return this->get_rank(this->stun);
-}
-
 /*!
  * @brief 朦朧ランクに応じて魔法系の失率を上げる.
  * @return 失率
@@ -146,9 +136,9 @@ PlayerStunRank PlayerStun::get_rank() const
  * 昏倒ならばそもそも動けないのでこのメソッドを通らない.
  * しかし今後の拡張を考慮して100%としておく.
  */
-int PlayerStun::get_magic_chance_penalty() const
+int PlayerStun::get_magic_chance_penalty(short value)
 {
-    switch (this->get_rank()) {
+    switch (get_rank(value)) {
     case PlayerStunRank::NONE:
         return 0;
     case PlayerStunRank::SLIGHT:
@@ -173,9 +163,9 @@ int PlayerStun::get_magic_chance_penalty() const
  * 昏倒ならばそもそも動けないのでこのメソッドを通らない.
  * しかし今後の拡張を考慮して100%としておく.
  */
-int PlayerStun::get_item_chance_penalty() const
+int PlayerStun::get_item_chance_penalty(short value)
 {
-    switch (this->get_rank()) {
+    switch (get_rank(value)) {
     case PlayerStunRank::NONE:
     case PlayerStunRank::SLIGHT:
     case PlayerStunRank::NORMAL:
@@ -199,9 +189,9 @@ int PlayerStun::get_item_chance_penalty() const
  * 意識不明瞭ならばそもそも動けないのでこのメソッドを通らない.
  * しかし今後の拡張を考慮して100としておく.
  */
-short PlayerStun::get_damage_penalty() const
+short PlayerStun::get_damage_penalty(short value)
 {
-    switch (this->get_rank()) {
+    switch (get_rank(value)) {
     case PlayerStunRank::NONE:
         return 0;
     case PlayerStunRank::SLIGHT:
@@ -223,23 +213,23 @@ short PlayerStun::get_damage_penalty() const
  * @brief プレイヤーが朦朧しているかを返す
  * @return 朦朧状態ならばtrue、頭がハッキリしているならばfalse
  */
-bool PlayerStun::is_stunned() const
+bool PlayerStun::is_stunned(short value)
 {
-    return this->get_rank() > PlayerStunRank::NONE;
+    return get_rank(value) > PlayerStunRank::NONE;
 }
 
 /*!
  * @brief プレイヤーが朦朧で行動不能かを返す
  * @return 昏倒状態ならばtrue、それ以外ならばfalse
  */
-bool PlayerStun::is_knocked_out() const
+bool PlayerStun::is_knocked_out(short value)
 {
-    return this->get_rank() == PlayerStunRank::KNOCKED;
+    return get_rank(value) == PlayerStunRank::KNOCKED;
 }
 
-std::tuple<term_color_type, std::string_view> PlayerStun::get_expr() const
+std::tuple<term_color_type, std::string_view> PlayerStun::get_expr(short value)
 {
-    switch (this->get_rank()) {
+    switch (get_rank(value)) {
     case PlayerStunRank::NONE: // dummy.
         return std::make_tuple(TERM_WHITE, "            ");
     case PlayerStunRank::SLIGHT:
@@ -255,14 +245,4 @@ std::tuple<term_color_type, std::string_view> PlayerStun::get_expr() const
     default:
         THROW_EXCEPTION(std::logic_error, "Invalid StunRank is specified!");
     }
-}
-
-void PlayerStun::set(short value)
-{
-    this->stun = value;
-}
-
-void PlayerStun::reset()
-{
-    this->set(0);
 }

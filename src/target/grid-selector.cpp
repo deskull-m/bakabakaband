@@ -16,7 +16,6 @@
 #include "target/target-checker.h"
 #include "target/target-sorter.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "util/candidate-selector.h"
 #include "util/finalizer.h"
 #include "util/int-char-converter.h"

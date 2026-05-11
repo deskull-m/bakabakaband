@@ -6,6 +6,7 @@
 #include "system/angband.h"
 #include "system/player-type-definition.h"
 #include "term/gameterm.h"
+#include "term/term-color-types.h"
 #include "term/z-form.h"
 
 #ifdef USE_CAP
