@@ -517,7 +517,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
 
             if (d > 0) {
                 if (d < r) {
-                    creature.exp = creature.max_exp;
+                    creature.set_exp(creature.max_exp);
                 } else {
                     creature.exp += r;
                 }

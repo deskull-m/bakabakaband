@@ -85,7 +85,7 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
         monster.clear_smart_flags();
     }
 
-    monster.exp = any_bits(flags, SaveDataMonsterFlagType::EXP) ? rd_u32b() : 0;
+    monster.set_exp(any_bits(flags, SaveDataMonsterFlagType::EXP) ? rd_u32b() : 0);
     if (any_bits(flags, SaveDataMonsterFlagType::MFLAG2)) {
         if (loading_savefile_version_is_older_than(2)) {
             auto tmp8u = rd_byte();

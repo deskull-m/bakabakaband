@@ -261,12 +261,12 @@ static void curse_drain_exp(CreatureEntity &creature)
 
     creature.exp -= (creature.level + 1) / 2;
     if (creature.exp < 0) {
-        creature.exp = 0;
+        creature.set_exp(0);
     }
 
     creature.max_exp -= (creature.level + 1) / 2;
     if (creature.max_exp < 0) {
-        creature.max_exp = 0;
+        creature.set_max_exp(0);
     }
 
     check_experience(creature);

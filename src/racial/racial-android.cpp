@@ -165,6 +165,7 @@ void calc_android_exp(CreatureEntity &creature)
         }
     }
 
-    creature.exp = creature.max_exp = total_exp;
+    creature.set_max_exp(total_exp);
+    creature.set_exp(total_exp);
     check_experience(creature);
 }
