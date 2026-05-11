@@ -217,7 +217,7 @@ bool SpellHex::process_mana_cost(const bool need_restart)
     s64b_div(&need_mana, &need_mana_frac, 0, 3); /* Divide by 3 */
     need_mana += this->get_casting_num() - 1;
 
-    auto enough_mana = s64b_cmp(this->creature.csp, this->creature.csp_frac, need_mana, need_mana_frac) >= 0;
+    auto enough_mana = s64b_cmp(this->creature.get_csp(), this->creature.csp_frac, need_mana, need_mana_frac) >= 0;
     if (!enough_mana) {
         this->stop_all_spells();
         return false;

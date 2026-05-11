@@ -30,7 +30,7 @@
  */
 static bool buy_food(CreatureEntity &creature)
 {
-    if (creature.food >= PY_FOOD_FULL) {
+    if (creature.get_food() >= PY_FOOD_FULL) {
         msg_print(_("今は満腹だ。", "You are full now."));
         return false;
     }
@@ -117,7 +117,7 @@ static void back_to_health(CreatureEntity &creature)
     (void)bss.set_confusion(0);
     creature.set_timed_effect(CreatureTimedEffect::STUN, 0);
     creature.hp = creature.maxhp;
-    creature.set_csp(creature.msp);
+    creature.set_csp(creature.get_msp());
 }
 
 /*!

@@ -62,7 +62,7 @@ void add_cheat_remove_flags_others(CreatureEntity &creature, msr_type *msr_ptr)
         msr_ptr->smart_flags.set(MonsterSmartLearnType::IMM_FREE);
     }
 
-    if (!creature.msp) {
+    if (!creature.get_msp()) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::IMM_MANA);
     }
 }

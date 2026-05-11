@@ -42,7 +42,7 @@ bool do_cmd_cast_learned(CreatureEntity &creature)
 
     const auto &spell = monster_powers.at(*selected_spell);
     const auto need_mana = mod_need_mana(creature, spell.smana, 0, RealmType::NONE);
-    if (need_mana > creature.csp) {
+    if (need_mana > creature.get_csp()) {
         msg_print(_("ＭＰが足りません。", "You do not have enough mana to use this power."));
         if (!over_exert) {
             return false;
@@ -72,7 +72,7 @@ bool do_cmd_cast_learned(CreatureEntity &creature)
         }
     }
 
-    if (need_mana <= creature.csp) {
+    if (need_mana <= creature.get_csp()) {
         creature.sub_csp(need_mana);
     } else {
         int oops = need_mana;

@@ -213,8 +213,8 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
             msg_print(_("「汝は良く行いたり！続けよ！」", "'Well done, mortal! Lead on!'"));
             if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
                 msg_print(_("しかし何も起こらなかった。", "But, nothing happens."));
-            } else if (creature.exp < PY_MAX_EXP) {
-                int32_t ee = (creature.exp / 2) + 10;
+            } else if (creature.get_exp() < PY_MAX_EXP) {
+                int32_t ee = (creature.get_exp() / 2) + 10;
                 if (ee > 100000L) {
                     ee = 100000L;
                 }
@@ -231,7 +231,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
             if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
                 msg_print(_("しかし何も起こらなかった。", "But, nothing happens."));
             } else {
-                lose_exp(creature, creature.exp / 6);
+                lose_exp(creature, creature.get_exp() / 6);
                 reward = _("経験値を失った。", "losing experience");
             }
 

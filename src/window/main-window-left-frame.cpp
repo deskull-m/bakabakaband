@@ -60,7 +60,7 @@ void print_title(CreatureEntity &creature)
 void print_level(CreatureEntity &creature)
 {
     const auto tmp = format("%5d", creature.level);
-    if (creature.level >= creature.max_plv) {
+    if (creature.level >= creature.get_max_plv()) {
         put_str(_("レベル ", "LEVEL "), ROW_LEVEL, 0);
         c_put_str(TERM_L_GREEN, tmp, ROW_LEVEL, COL_LEVEL + 7);
     } else {
@@ -80,18 +80,18 @@ void print_exp(CreatureEntity &creature)
     if (!creature.is_player()) {
         // モンスターは player_exp 表に該当エントリを持たないため、
         // 現在経験値のみ表示する。
-        out_val = format("%8d", creature.exp);
+        out_val = format("%8d", creature.get_exp());
     } else if ((!exp_need) || pr.equals(PlayerRaceType::ANDROID)) {
-        out_val = format("%8d", creature.exp);
+        out_val = format("%8d", creature.get_exp());
     } else {
         if (creature.level >= PY_MAX_LEVEL) {
             (void)sprintf(out_val.data(), "********");
         } else {
-            out_val = format("%8d", player_exp[creature.level - 1] * creature.expfact / 100 - creature.exp);
+            out_val = format("%8d", player_exp[creature.level - 1] * creature.expfact / 100 - creature.get_exp());
         }
     }
 
-    if (creature.exp >= creature.max_exp) {
+    if (creature.get_exp() >= creature.get_max_exp()) {
         if (pr.equals(PlayerRaceType::ANDROID)) {
             put_str(_("強化 ", "Cst "), ROW_EXP, 0);
         } else {
@@ -160,22 +160,22 @@ void print_sp(CreatureEntity &creature)
     byte color;
 
     put_str(_("MP", "SP"), ROW_CURSP, COL_CURSP);
-    sprintf(tmp, "%4ld", (long int)creature.csp);
-    if (creature.msp <= 0) {
+    sprintf(tmp, "%4ld", (long int)creature.get_csp());
+    if (creature.get_msp() <= 0) {
         color = TERM_SLATE;
-    } else if (creature.csp >= creature.msp) {
+    } else if (creature.get_csp() >= creature.get_msp()) {
         color = TERM_L_GREEN;
-    } else if (creature.csp > (creature.msp * mana_warn) / 10) {
+    } else if (creature.get_csp() > (creature.get_msp() * mana_warn) / 10) {
         color = TERM_YELLOW;
     } else {
         color = TERM_RED;
     }
 
-    c_put_str(color, format("%4d", creature.csp), ROW_CURSP, COL_CURSP + 3);
+    c_put_str(color, format("%4d", creature.get_csp()), ROW_CURSP, COL_CURSP + 3);
     put_str("/", ROW_CURSP, COL_CURSP + 7);
-    sprintf(tmp, "%4ld", (long int)creature.msp);
-    color = (creature.msp <= 0) ? TERM_SLATE : TERM_L_GREEN;
-    c_put_str(color, format("%4d", creature.msp), ROW_CURSP, COL_CURSP + 8);
+    sprintf(tmp, "%4ld", (long int)creature.get_msp());
+    color = (creature.get_msp() <= 0) ? TERM_SLATE : TERM_L_GREEN;
+    c_put_str(color, format("%4d", creature.get_msp()), ROW_CURSP, COL_CURSP + 8);
 }
 
 /*!
@@ -185,7 +185,7 @@ void print_sp(CreatureEntity &creature)
 void print_gold(CreatureEntity &creature)
 {
     put_str(_("＄ ", "AU "), ROW_GOLD, COL_GOLD);
-    c_put_str(TERM_L_GREEN, format("%9d", creature.au), ROW_GOLD, COL_GOLD + 3);
+    c_put_str(TERM_L_GREEN, format("%9d", creature.get_au()), ROW_GOLD, COL_GOLD + 3);
 }
 
 /*!

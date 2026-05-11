@@ -29,8 +29,8 @@ static void exe_ring_of_power(CreatureEntity &creature, const Direction &dir)
         (void)dec_stat(creature, A_DEX, 50, true);
         (void)dec_stat(creature, A_CON, 50, true);
         (void)dec_stat(creature, A_CHR, 50, true);
-        creature.exp -= (creature.exp / 4);
-        creature.max_exp -= (creature.exp / 4);
+        creature.sub_exp((creature.get_exp() / 4));
+        creature.sub_max_exp((creature.get_exp() / 4));
         check_experience(creature);
         break;
     case 3:

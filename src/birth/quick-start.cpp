@@ -74,7 +74,7 @@ bool ask_quick_start(CreatureEntity &creature)
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
     update_creature(creature);
     creature.hp = creature.maxhp;
-    creature.set_csp(creature.msp);
+    creature.set_csp(creature.get_msp());
     process_player_name(creature);
     return true;
 }
@@ -99,11 +99,11 @@ void save_prev_data(CreatureEntity &creature, birther *birther_ptr)
         birther_ptr->realm2 = static_cast<int16_t>(pr.realm2().to_enum());
     }
 
-    birther_ptr->age = creature.age;
-    birther_ptr->ht = creature.ht;
-    birther_ptr->wt = creature.wt;
-    birther_ptr->prestige = creature.prestige;
-    birther_ptr->au = creature.au;
+    birther_ptr->age = creature.get_age();
+    birther_ptr->ht = creature.get_ht();
+    birther_ptr->wt = creature.get_wt();
+    birther_ptr->prestige = creature.get_prestige();
+    birther_ptr->au = creature.get_au();
 
     for (int i = 0; i < A_MAX; i++) {
         birther_ptr->stat_max[i] = creature.stat_max[i];

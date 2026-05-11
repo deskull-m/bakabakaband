@@ -142,43 +142,43 @@ static void display_phisique(CreatureEntity &creature)
     constexpr auto unset_numeric = "----";
 #ifdef JP
     if (is_player) {
-        display_player_one_line(ENTRY_AGE, format("%d才", (int)creature.age), TERM_L_BLUE);
+        display_player_one_line(ENTRY_AGE, format("%d才", (int)creature.get_age()), TERM_L_BLUE);
     } else {
         display_player_one_line(ENTRY_AGE, unset_numeric, TERM_SLATE);
     }
-    if (is_player || creature.ht > 0) {
-        display_player_one_line(ENTRY_HEIGHT, format("%dcm", inch_to_cm(creature.ht)), TERM_L_BLUE);
+    if (is_player || creature.get_ht() > 0) {
+        display_player_one_line(ENTRY_HEIGHT, format("%dcm", inch_to_cm(creature.get_ht())), TERM_L_BLUE);
     } else {
         display_player_one_line(ENTRY_HEIGHT, unset_numeric, TERM_SLATE);
     }
-    if (is_player || creature.wt > 0) {
-        display_player_one_line(ENTRY_WEIGHT, format("%dkg", lb_to_kg(creature.wt)), TERM_L_BLUE);
+    if (is_player || creature.get_wt() > 0) {
+        display_player_one_line(ENTRY_WEIGHT, format("%dkg", lb_to_kg(creature.get_wt())), TERM_L_BLUE);
     } else {
         display_player_one_line(ENTRY_WEIGHT, unset_numeric, TERM_SLATE);
     }
     if (is_player) {
-        display_player_one_line(ENTRY_SOCIAL, format("%d  ", (int)creature.prestige), TERM_L_BLUE);
+        display_player_one_line(ENTRY_SOCIAL, format("%d  ", (int)creature.get_prestige()), TERM_L_BLUE);
     } else {
         display_player_one_line(ENTRY_SOCIAL, unset_numeric, TERM_SLATE);
     }
 #else
     if (is_player) {
-        display_player_one_line(ENTRY_AGE, format("%d", (int)creature.age), TERM_L_BLUE);
+        display_player_one_line(ENTRY_AGE, format("%d", (int)creature.get_age()), TERM_L_BLUE);
     } else {
         display_player_one_line(ENTRY_AGE, unset_numeric, TERM_SLATE);
     }
-    if (is_player || creature.ht > 0) {
-        display_player_one_line(ENTRY_HEIGHT, format("%d", (int)creature.ht), TERM_L_BLUE);
+    if (is_player || creature.get_ht() > 0) {
+        display_player_one_line(ENTRY_HEIGHT, format("%d", (int)creature.get_ht()), TERM_L_BLUE);
     } else {
         display_player_one_line(ENTRY_HEIGHT, unset_numeric, TERM_SLATE);
     }
-    if (is_player || creature.wt > 0) {
-        display_player_one_line(ENTRY_WEIGHT, format("%d", (int)creature.wt), TERM_L_BLUE);
+    if (is_player || creature.get_wt() > 0) {
+        display_player_one_line(ENTRY_WEIGHT, format("%d", (int)creature.get_wt()), TERM_L_BLUE);
     } else {
         display_player_one_line(ENTRY_WEIGHT, unset_numeric, TERM_SLATE);
     }
     if (is_player) {
-        display_player_one_line(ENTRY_SOCIAL, format("%d", (int)creature.prestige), TERM_L_BLUE);
+        display_player_one_line(ENTRY_SOCIAL, format("%d", (int)creature.get_prestige()), TERM_L_BLUE);
     } else {
         display_player_one_line(ENTRY_SOCIAL, unset_numeric, TERM_SLATE);
     }

@@ -511,15 +511,15 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         }
         if (cast || continuation) {
             bool flag = false;
-            int d = (creature.max_exp - creature.exp);
-            int r = (creature.exp / 20);
+            int d = (creature.get_max_exp() - creature.get_exp());
+            int r = (creature.get_exp() / 20);
             int i;
 
             if (d > 0) {
                 if (d < r) {
-                    creature.set_exp(creature.max_exp);
+                    creature.set_exp(creature.get_max_exp());
                 } else {
-                    creature.exp += r;
+                    creature.add_exp(r);
                 }
 
                 /* Check the experience */
@@ -581,8 +581,8 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
             if (item->get_flags().has(TR_TY_CURSE) || item->curse_flags.has(CurseTraitType::TY_CURSE)) {
                 creature.add_csp(randint1(5));
             }
-            if (creature.csp > creature.msp) {
-                creature.set_csp(creature.msp);
+            if (creature.get_csp() > creature.get_msp()) {
+                creature.set_csp(creature.get_msp());
             }
 
             if (item->curse_flags.has(CurseTraitType::PERMA_CURSE)) {

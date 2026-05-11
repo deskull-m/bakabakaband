@@ -155,7 +155,7 @@ void process_player(CreatureEntity &creature)
 
     if (creature.resting < 0) {
         if (creature.resting == COMMAND_ARG_REST_FULL_HEALING) {
-            if ((creature.hp == creature.maxhp) && (creature.csp >= creature.msp)) {
+            if ((creature.hp == creature.maxhp) && (creature.get_csp() >= creature.get_msp())) {
                 set_action(creature, ACTION_NONE);
             }
         } else if (creature.resting == COMMAND_ARG_REST_UNTIL_DONE) {
@@ -234,9 +234,9 @@ void process_player(CreatureEntity &creature)
 
     if (creature.action == ACTION_LEARN) {
         int32_t cost = 0L;
-        uint32_t cost_frac = (creature.msp + 30L) * 256L;
+        uint32_t cost_frac = (creature.get_msp() + 30L) * 256L;
         s64b_lshift(&cost, &cost_frac, 16);
-        if (s64b_cmp(creature.csp, creature.csp_frac, cost, cost_frac) < 0) {
+        if (s64b_cmp(creature.get_csp(), creature.csp_frac, cost, cost_frac) < 0) {
             creature.set_csp(0);
             creature.csp_frac = 0;
             set_action(creature, ACTION_NONE);
@@ -248,7 +248,7 @@ void process_player(CreatureEntity &creature)
     }
 
     if (CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU)) {
-        if (creature.csp < 3) {
+        if (creature.get_csp() < 3) {
             set_action(creature, ACTION_NONE);
         } else {
             creature.sub_csp(2);

@@ -106,7 +106,7 @@ static void compare_weapon_aux(CreatureEntity &creature, ItemEntity *o_ptr, int 
         show_weapon_dmg(r++, col, mindam, maxdam, blow, dmg_bonus, _("切れ味:", "Vorpal:"), TERM_L_RED);
     }
 
-    if (!CreatureClass(creature).equals(PlayerClassType::SAMURAI) && flags.has(TR_FORCE_WEAPON) && (creature.csp > (o_ptr->damage_dice.maxroll() / 5))) {
+    if (!CreatureClass(creature).equals(PlayerClassType::SAMURAI) && flags.has(TR_FORCE_WEAPON) && (creature.get_csp() > (o_ptr->damage_dice.maxroll() / 5))) {
         force = true;
 
         mindam = calc_expect_dice(creature, mindice, 1, 1, force, o_ptr->weight, o_ptr->to_h, creature.to_h[0], dokubari, impact, vorpal_mult, vorpal_div);
@@ -364,7 +364,7 @@ PRICE compare_weapons(CreatureEntity &creature, PRICE bcost)
             break;
         }
 
-        if (total + cost > creature.au) {
+        if (total + cost > creature.get_au()) {
             msg_print(_("お金が足りません！", "You don't have enough money!"));
             msg_erase();
             continue;

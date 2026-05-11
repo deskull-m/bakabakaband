@@ -261,14 +261,14 @@ static void display_player_exp(CreatureEntity &creature)
 {
     CreatureRace pr(&creature);
     int e = pr.equals(PlayerRaceType::ANDROID) ? ENTRY_EXP_ANDR : ENTRY_CUR_EXP;
-    if (creature.exp >= creature.max_exp) {
-        display_player_one_line(e, format("%ld", creature.exp), TERM_L_GREEN);
+    if (creature.get_exp() >= creature.get_max_exp()) {
+        display_player_one_line(e, format("%ld", creature.get_exp()), TERM_L_GREEN);
     } else {
-        display_player_one_line(e, format("%ld", creature.exp), TERM_YELLOW);
+        display_player_one_line(e, format("%ld", creature.get_exp()), TERM_YELLOW);
     }
 
     if (!pr.equals(PlayerRaceType::ANDROID)) {
-        display_player_one_line(ENTRY_MAX_EXP, format("%ld", creature.max_exp), TERM_L_GREEN);
+        display_player_one_line(ENTRY_MAX_EXP, format("%ld", creature.get_max_exp()), TERM_L_GREEN);
     }
 
     e = pr.equals(PlayerRaceType::ANDROID) ? ENTRY_EXP_TO_ADV_ANDR : ENTRY_EXP_TO_ADV;
@@ -312,14 +312,14 @@ static void display_playtime_in_game(CreatureEntity &creature)
 
     // SP は常に表示する。msp <= 0 のクリーチャー（多くのモンスター等）は
     // 生成時に msp/csp とも 0 で初期化済みのため 0/0 と表示する。
-    if (creature.msp <= 0) {
-        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.csp, creature.msp), TERM_SLATE);
-    } else if (creature.csp >= creature.msp) {
-        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.csp, creature.msp), TERM_L_GREEN);
-    } else if (creature.csp > (creature.msp * mana_warn) / 10) {
-        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.csp, creature.msp), TERM_YELLOW);
+    if (creature.get_msp() <= 0) {
+        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.get_csp(), creature.get_msp()), TERM_SLATE);
+    } else if (creature.get_csp() >= creature.get_msp()) {
+        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.get_csp(), creature.get_msp()), TERM_L_GREEN);
+    } else if (creature.get_csp() > (creature.get_msp() * mana_warn) / 10) {
+        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.get_csp(), creature.get_msp()), TERM_YELLOW);
     } else {
-        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.csp, creature.msp), TERM_RED);
+        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.get_csp(), creature.get_msp()), TERM_RED);
     }
 }
 
@@ -350,7 +350,7 @@ void display_player_middle(CreatureEntity &creature)
     int tmp_speed = calc_temporary_speed(creature);
     display_player_speed(creature, attr, base_speed, tmp_speed);
     display_player_exp(creature);
-    display_player_one_line(ENTRY_GOLD, format("%ld", creature.au), TERM_L_GREEN);
+    display_player_one_line(ENTRY_GOLD, format("%ld", creature.get_au()), TERM_L_GREEN);
     display_playtime_in_game(creature);
     display_player_one_line(ENTRY_PLAY_TIME, AngbandWorld::get_instance().format_real_playtime(), TERM_L_GREEN);
 }

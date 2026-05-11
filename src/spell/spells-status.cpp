@@ -211,7 +211,7 @@ bool time_walk(CreatureEntity &creature)
     //	msg_print(_("「『ザ・ワールド』！時は止まった！」", "You yell 'The World! Time has stopped!'"));
     msg_erase();
 
-    creature.energy_need -= 1000 + (100 + creature.csp - 50) * TURNS_PER_TICK / 10;
+    creature.energy_need -= 1000 + (100 + creature.get_csp() - 50) * TURNS_PER_TICK / 10;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MAP);
     rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
@@ -528,11 +528,11 @@ bool restore_mana(CreatureEntity &creature, bool magic_eater)
         return true;
     }
 
-    if (creature.csp >= creature.msp) {
+    if (creature.get_csp() >= creature.get_msp()) {
         return false;
     }
 
-    creature.set_csp(creature.msp);
+    creature.set_csp(creature.get_msp());
     creature.csp_frac = 0;
     msg_print(_("頭がハッキリとした。", "You feel your head clear."));
     rfu.set_flag(MainWindowRedrawingFlag::MP);

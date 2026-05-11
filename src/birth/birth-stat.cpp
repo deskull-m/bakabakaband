@@ -99,7 +99,7 @@ void get_stats(CreatureEntity &creature)
  */
 void get_money_for_creature(CreatureEntity &creature)
 {
-    int gold = (creature.prestige * 6) + randint1(100) + 300;
+    int gold = (creature.get_prestige() * 6) + randint1(100) + 300;
 
     // 能力値に応じて所持金を調整
     for (int i = 0; i < A_MAX; i++) {

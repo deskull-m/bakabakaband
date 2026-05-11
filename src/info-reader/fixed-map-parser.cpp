@@ -198,7 +198,7 @@ static std::string parse_fixed_map_expression(CreatureEntity &creature, char **s
         *tpn = '\0';
         v = tmp_player_name;
     } else if (streq(b + 1, "TOWN")) {
-        v = std::to_string(creature.town_num);
+        v = std::to_string(creature.get_town_num());
     } else if (streq(b + 1, "LEVEL")) {
         v = std::to_string(creature.level);
     } else if (streq(b + 1, "QUEST_NUMBER")) {

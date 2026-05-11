@@ -126,7 +126,7 @@ static void switch_store_stock(CreatureEntity &creature, const int i, const COMM
 {
     if (st_ptr->stock_num == 0) {
         msg_print(_("店主は新たな在庫を取り出した。", "The shopkeeper brings out some new stock."));
-        store_maintenance(creature, creature.town_num, store_num, 10);
+        store_maintenance(creature, creature.get_town_num(), store_num, 10);
 
         store_top = 0;
         display_store_inventory(creature, store_num);
@@ -245,7 +245,7 @@ void store_purchase(CreatureEntity &creature, StoreSaleType store_num)
         return;
     }
 
-    if (creature.au < res.value()) {
+    if (creature.get_au() < res.value()) {
         msg_print(_("お金が足りません。", "You do not have enough gold."));
         return;
     }
@@ -260,7 +260,7 @@ void store_purchase(CreatureEntity &creature, StoreSaleType store_num)
 
     sound(SoundKind::BUY);
     creature.sub_au(res.value());
-    store_prt_gold(creature.au);
+    store_prt_gold(creature.get_au());
     object_aware(creature, item);
     creature.plus_incident_tree("STORE_BUY", 1);
 

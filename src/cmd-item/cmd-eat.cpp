@@ -114,8 +114,8 @@ static bool exe_eat_soul(CreatureEntity &creature, ItemEntity *o_ptr)
     EXP max_exp = monrace.level * monrace.level * 5;
 
     chg_virtue(creature, Virtue::ENLIGHTEN, 1);
-    if (creature.exp < PY_MAX_EXP) {
-        EXP ee = (creature.exp / 2) + 10;
+    if (creature.get_exp() < PY_MAX_EXP) {
+        EXP ee = (creature.get_exp() / 2) + 10;
         ee = std::min(ee, max_exp);
         msg_print(_("更に経験を積んだような気がする。", "You feel more experienced."));
         gain_exp(creature, ee);
@@ -253,7 +253,7 @@ static bool exe_eat_corpse_type_object(CreatureEntity &creature, ItemEntity *o_p
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::DRAIN_MANA)) {
         creature.sub_csp(30);
-        if (creature.csp < 0) {
+        if (creature.get_csp() < 0) {
             creature.set_csp(0);
             creature.csp_frac = 0;
         }
@@ -504,7 +504,7 @@ static bool exe_eat_charge_of_magic_device(CreatureEntity &creature, ItemEntity 
     o_ptr->pval--;
 
     /* Eat a charge */
-    set_food(creature, creature.food + 5000);
+    set_food(creature, creature.get_food() + 5000);
 
     /* XXX Hack -- unstack if necessary */
     if (is_staff && (i_idx >= 0) && (o_ptr->number > 1)) {
@@ -649,10 +649,10 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
         }
     } else if (food_type == PlayerRaceFoodType::BLOOD) {
         /* Vampires are filled only by bloods, so reduced nutritional benefit */
-        (void)set_food(creature, creature.food + (item->pval / 10));
+        (void)set_food(creature, creature.get_food() + (item->pval / 10));
         msg_print(_("あなたのような者にとって食糧など僅かな栄養にしかならない。", "Mere victuals hold scant sustenance for a being such as yourself."));
 
-        if (creature.food < PY_FOOD_ALERT) {
+        if (creature.get_food() < PY_FOOD_ALERT) {
             /* Hungry */
             msg_print(_("あなたの飢えは新鮮な血によってのみ満たされる！", "Your hunger can only be satisfied with fresh blood!"));
         }
@@ -660,20 +660,20 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
 
     } else if (food_type == PlayerRaceFoodType::WATER) {
         msg_print(_("動物の食物はあなたにとってほとんど栄養にならない。", "The food of animals is poor sustenance for you."));
-        set_food(creature, creature.food + ((item->pval) / 20));
+        set_food(creature, creature.get_food() + ((item->pval) / 20));
         ate = true;
     } else if (food_type != PlayerRaceFoodType::RATION) {
         msg_print(_("生者の食物はあなたにとってほとんど栄養にならない。", "The food of mortals is poor sustenance for you."));
-        set_food(creature, creature.food + ((item->pval) / 20));
+        set_food(creature, creature.get_food() + ((item->pval) / 20));
         ate = true;
     } else {
         if (bi_key == BaseitemKey(ItemKindType::FOOD, SV_FOOD_WAYBREAD)) {
             /* Waybread is always fully satisfying. */
-            set_food(creature, std::max<short>(creature.food, PY_FOOD_MAX - 1));
+            set_food(creature, std::max<short>(creature.get_food(), PY_FOOD_MAX - 1));
             ate = true;
         } else if (bi_key.tval() == ItemKindType::FOOD) {
             /* Food can feed the creature */
-            (void)set_food(creature, creature.food + item->pval);
+            (void)set_food(creature, creature.get_food() + item->pval);
             ate = true;
         }
     }

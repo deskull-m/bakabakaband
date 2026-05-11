@@ -79,7 +79,7 @@ static cm_type *initialize_cm_type(CreatureEntity &creature, cm_type *cm_ptr)
     cm_ptr->b = 0;
     cm_ptr->minfail = 0;
     cm_ptr->plev = creature.level;
-    cm_ptr->old_csp = creature.csp;
+    cm_ptr->old_csp = creature.get_csp();
     cm_ptr->on_mirror = false;
     return cm_ptr;
 }
@@ -157,7 +157,7 @@ static bool check_mind_hp_mp_sufficiency(CreatureEntity &creature, cm_type *cm_p
         return true;
     }
 
-    if (cm_ptr->mana_cost <= creature.csp) {
+    if (cm_ptr->mana_cost <= creature.get_csp()) {
         return true;
     }
 
@@ -178,8 +178,8 @@ static void decide_mind_chance(CreatureEntity &creature, cm_type *cm_ptr)
     cm_ptr->chance -= 3 * (cm_ptr->plev - cm_ptr->spell.min_lev);
     cm_ptr->chance += creature.to_m_chance;
     cm_ptr->chance -= 3 * (adj_mag_stat[creature.stat_index[mp_ptr->spell_stat]] - 1);
-    if ((cm_ptr->mana_cost > creature.csp) && (cm_ptr->use_mind != MindKindType::BERSERKER) && (cm_ptr->use_mind != MindKindType::NINJUTSU)) {
-        cm_ptr->chance += 5 * (cm_ptr->mana_cost - creature.csp);
+    if ((cm_ptr->mana_cost > creature.get_csp()) && (cm_ptr->use_mind != MindKindType::BERSERKER) && (cm_ptr->use_mind != MindKindType::NINJUTSU)) {
+        cm_ptr->chance += 5 * (cm_ptr->mana_cost - creature.get_csp());
     }
 
     cm_ptr->minfail = adj_mag_fail[creature.stat_index[mp_ptr->spell_stat]];
@@ -238,7 +238,7 @@ static void check_mind_mindcrafter(CreatureEntity &creature, cm_type *cm_ptr)
     msg_format(_("%sの力が制御できない氾流となって解放された！", "Your mind unleashes its power in an uncontrollable storm!"), cm_ptr->mind_explanation);
     project(creature, PROJECT_WHO_UNCTRL_POWER, 2 + cm_ptr->plev / 10, creature.y, creature.x, cm_ptr->plev * 2, AttributeType::MANA,
         PROJECT_JUMP | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM);
-    creature.set_csp(std::max(0, creature.csp - cm_ptr->plev * std::max(1, cm_ptr->plev / 10)));
+    creature.set_csp(std::max(0, creature.get_csp() - cm_ptr->plev * std::max(1, cm_ptr->plev / 10)));
 }
 
 static void check_mind_mirror_master(CreatureEntity &creature, cm_type *cm_ptr)
@@ -266,7 +266,7 @@ static void check_mind_mirror_master(CreatureEntity &creature, cm_type *cm_ptr)
     msg_format(_("%sの力が制御できない氾流となって解放された！", "Your mind unleashes its power in an uncontrollable storm!"), cm_ptr->mind_explanation);
     project(creature, PROJECT_WHO_UNCTRL_POWER, 2 + cm_ptr->plev / 10, creature.y, creature.x, cm_ptr->plev * 2, AttributeType::MANA,
         PROJECT_JUMP | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM);
-    creature.set_csp(std::max(0, creature.csp - cm_ptr->plev * std::max(1, cm_ptr->plev / 10)));
+    creature.set_csp(std::max(0, creature.get_csp() - cm_ptr->plev * std::max(1, cm_ptr->plev / 10)));
 }
 
 static void check_mind_class(CreatureEntity &creature, cm_type *cm_ptr)
@@ -350,11 +350,11 @@ static bool judge_mind_chance(CreatureEntity &creature, cm_type *cm_ptr)
 static void mind_reflection(CreatureEntity &creature, cm_type *cm_ptr)
 {
     int oops = cm_ptr->mana_cost - cm_ptr->old_csp;
-    if ((creature.csp - cm_ptr->mana_cost) < 0) {
+    if ((creature.get_csp() - cm_ptr->mana_cost) < 0) {
         creature.csp_frac = 0;
     }
 
-    creature.set_csp(std::max(0, creature.csp - cm_ptr->mana_cost));
+    creature.set_csp(std::max(0, creature.get_csp() - cm_ptr->mana_cost));
     msg_print(_(format("%sを集中しすぎて気を失ってしまった！", cm_ptr->mind_explanation), "You faint from the effort!"));
     (void)BadStatusSetter(creature).mod_paralysis(randnum1<short>(5 * oops + 1));
     if (one_in_(2)) {
@@ -380,7 +380,7 @@ static void process_hard_concentration(CreatureEntity &creature, cm_type *cm_ptr
     }
 
     creature.sub_csp(cm_ptr->mana_cost);
-    if (creature.csp < 0) {
+    if (creature.get_csp() < 0) {
         creature.set_csp(0);
     }
 

@@ -144,7 +144,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
             }
 
             creature.add_au(price);
-            store_prt_gold(creature.au);
+            store_prt_gold(creature.get_au());
             const auto dummy = selling_item.calc_price() * selling_item.number;
 
             identify_item(creature, item.get());
@@ -179,7 +179,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
             }
 
             inven_item_optimize(creature, i_idx);
-            auto &store = towns_info[creature.town_num].get_store(store_num);
+            auto &store = towns_info[creature.get_town_num()].get_store(store_num);
             const auto item_pos = store.carry(sold_item);
             if (item_pos) {
                 store_top = (*item_pos / store_bottom) * store_bottom;

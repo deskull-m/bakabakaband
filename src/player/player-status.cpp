@@ -893,15 +893,15 @@ static void update_max_mana(CreatureEntity &creature)
         msp = 0;
     }
 
-    if (creature.msp != msp) {
-        if ((creature.csp >= msp) && !pc.equals(PlayerClassType::SAMURAI)) {
+    if (creature.get_msp() != msp) {
+        if ((creature.get_csp() >= msp) && !pc.equals(PlayerClassType::SAMURAI)) {
             creature.set_csp(msp);
             creature.csp_frac = 0;
         }
 
 #ifdef JP
-        if (creature.level_up_message && (msp > creature.msp)) {
-            msg_format("最大マジック・ポイントが %d 増加した！", (msp - creature.msp));
+        if (creature.level_up_message && (msp > creature.get_msp())) {
+            msg_format("最大マジック・ポイントが %d 増加した！", (msp - creature.get_msp()));
         }
 #endif
         creature.set_msp(msp);
@@ -2773,31 +2773,31 @@ void check_experience(CreatureEntity &creature)
     if (!creature.is_player()) {
         return;
     }
-    if (creature.exp < 0) {
+    if (creature.get_exp() < 0) {
         creature.set_exp(0);
     }
-    if (creature.max_exp < 0) {
+    if (creature.get_max_exp() < 0) {
         creature.set_max_exp(0);
     }
-    if (creature.max_max_exp < 0) {
+    if (creature.get_max_max_exp() < 0) {
         creature.set_max_max_exp(0);
     }
 
-    if (creature.exp > PY_MAX_EXP) {
+    if (creature.get_exp() > PY_MAX_EXP) {
         creature.set_exp(PY_MAX_EXP);
     }
-    if (creature.max_exp > PY_MAX_EXP) {
+    if (creature.get_max_exp() > PY_MAX_EXP) {
         creature.set_max_exp(PY_MAX_EXP);
     }
-    if (creature.max_max_exp > PY_MAX_EXP) {
+    if (creature.get_max_max_exp() > PY_MAX_EXP) {
         creature.set_max_max_exp(PY_MAX_EXP);
     }
 
-    if (creature.exp > creature.max_exp) {
-        creature.set_max_exp(creature.exp);
+    if (creature.get_exp() > creature.get_max_exp()) {
+        creature.set_max_exp(creature.get_exp());
     }
-    if (creature.max_exp > creature.max_max_exp) {
-        creature.set_max_max_exp(creature.max_exp);
+    if (creature.get_max_exp() > creature.get_max_max_exp()) {
+        creature.set_max_max_exp(creature.get_max_exp());
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -2813,7 +2813,7 @@ void check_experience(CreatureEntity &creature)
         StatusRecalculatingFlag::MP,
         StatusRecalculatingFlag::SPELLS,
     };
-    while ((creature.level > 1) && (creature.exp < ((android ? player_exp_a : player_exp)[creature.level - 2] * creature.expfact / 100L))) {
+    while ((creature.level > 1) && (creature.get_exp() < ((android ? player_exp_a : player_exp)[creature.level - 2] * creature.expfact / 100L))) {
         creature.level--;
         rfu.set_flags(flags_srf);
         static constexpr auto flags_mwrf = {
@@ -2828,9 +2828,9 @@ void check_experience(CreatureEntity &creature)
     bool level_reward = false;
     bool level_mutation = false;
     bool level_inc_stat = false;
-    while ((creature.level < PY_MAX_LEVEL) && (creature.exp >= ((android ? player_exp_a : player_exp)[creature.level - 1] * creature.expfact / 100L))) {
+    while ((creature.level < PY_MAX_LEVEL) && (creature.get_exp() >= ((android ? player_exp_a : player_exp)[creature.level - 1] * creature.expfact / 100L))) {
         creature.level++;
-        if (creature.level > creature.max_plv) {
+        if (creature.level > creature.get_max_plv()) {
             creature.set_max_plv(creature.level);
 
             if (CreatureClass(creature).equals(PlayerClassType::CHAOS_WARRIOR) || creature.get_mutations().has(PlayerMutationType::CHAOS_GIFT)) {
@@ -2866,7 +2866,7 @@ void check_experience(CreatureEntity &creature)
 
         creature.level_up_message = false;
         if (level_inc_stat) {
-            if (!(creature.max_plv % 10)) {
+            if (!(creature.get_max_plv() % 10)) {
                 int choice;
                 screen_save();
                 while (true) {
@@ -2899,7 +2899,7 @@ void check_experience(CreatureEntity &creature)
                 }
                 do_inc_stat(creature, choice - 'a');
                 screen_load();
-            } else if (!(creature.max_plv % 2)) {
+            } else if (!(creature.get_max_plv() % 2)) {
                 do_inc_stat(creature, randint0(6));
             }
         }
@@ -3030,7 +3030,7 @@ uint32_t calc_score(CreatureEntity &creature)
     }
 
     const auto max_dungeon_level = DungeonService::find_max_level();
-    uint32_t point_l = (creature.max_max_exp + (100 * max_dungeon_level));
+    uint32_t point_l = (creature.get_max_max_exp() + (100 * max_dungeon_level));
     uint32_t point_h = point_l / 0x10000L;
     point_l = point_l % 0x10000L;
     point_h *= mult;

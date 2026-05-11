@@ -76,13 +76,13 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
     }
 
     // TODO:
-    //   施設の種類により、一時的に現在地 (creature.town_num) を違う値に偽装して処理している。
+    //   施設の種類により、一時的に現在地 (creature.get_town_num()) を違う値に偽装して処理している。
     //   我が家および博物館は全ての町で内容を共有するため、現在地を辺境の地 (1) にしている。
     //   ダンジョン内の店の場合、現在地を NO_TOWN にしている。
     //   inner_town_num は、施設内で C コマンドなどを使ったときにそのままでは現在地の偽装がバレる
     //   ため、それを糊塗するためのグローバル変数。
     //   この辺はリファクタしたい。
-    old_town_num = creature.town_num;
+    old_town_num = creature.get_town_num();
     if ((store_num == StoreSaleType::HOME) || (store_num == StoreSaleType::MUSEUM)) {
         creature.set_town_num(1);
     }
@@ -91,8 +91,8 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
         creature.set_town_num(VALID_TOWNS);
     }
 
-    inner_town_num = creature.town_num;
-    auto &town = towns_info[creature.town_num];
+    inner_town_num = creature.get_town_num();
+    auto &town = towns_info[creature.get_town_num()];
     auto &store = town.get_store(store_num);
     auto &world = AngbandWorld::get_instance();
     if ((store.store_open >= world.game_turn) || ironman_shops) {
@@ -107,7 +107,7 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
     }
 
     if (maintain_num > 0) {
-        store_maintenance(creature, creature.town_num, store_num, maintain_num);
+        store_maintenance(creature, creature.get_town_num(), store_num, maintain_num);
         store.last_visit = world.game_turn;
     }
 
@@ -119,7 +119,7 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
     command_new = 0;
     get_com_no_macros = true;
     cur_store_feat = grid.feat;
-    st_ptr = &towns_info[creature.town_num].get_store(store_num);
+    st_ptr = &towns_info[creature.get_town_num()].get_store(store_num);
     ot_ptr = &owners.at(store_num)[st_ptr->owner];
     store_top = 0;
 

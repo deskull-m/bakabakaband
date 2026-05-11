@@ -259,13 +259,13 @@ static void curse_drain_exp(CreatureEntity &creature)
         return;
     }
 
-    creature.exp -= (creature.level + 1) / 2;
-    if (creature.exp < 0) {
+    creature.sub_exp((creature.level + 1) / 2);
+    if (creature.get_exp() < 0) {
         creature.set_exp(0);
     }
 
-    creature.max_exp -= (creature.level + 1) / 2;
-    if (creature.max_exp < 0) {
+    creature.sub_max_exp((creature.level + 1) / 2);
+    if (creature.get_max_exp() < 0) {
         creature.set_max_exp(0);
     }
 
@@ -433,7 +433,7 @@ static void curse_drain_hp(CreatureEntity &creature)
 
 static void curse_drain_mp(CreatureEntity &creature)
 {
-    if ((creature.get_cursed_flags().has_not(CurseTraitType::DRAIN_MANA)) || (creature.csp == 0) || !one_in_(666)) {
+    if ((creature.get_cursed_flags().has_not(CurseTraitType::DRAIN_MANA)) || (creature.get_csp() == 0) || !one_in_(666)) {
         return;
     }
 
@@ -441,7 +441,7 @@ static void curse_drain_mp(CreatureEntity &creature)
     const auto item_name = describe_flavor(creature, *item_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     msg_format(_("%sはあなたの魔力を吸収した！", "Your %s drains mana from you!"), item_name.data());
     creature.sub_csp(std::min<short>(creature.level, 50));
-    if (creature.csp < 0) {
+    if (creature.get_csp() < 0) {
         creature.set_csp(0);
         creature.csp_frac = 0;
     }

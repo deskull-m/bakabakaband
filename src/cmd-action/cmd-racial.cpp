@@ -447,10 +447,10 @@ static bool racial_power_reduce_mana(CreatureEntity &creature, rc_type *rc_ptr)
 
     int actual_racial_cost = racial_cost / 2 + randint1(racial_cost / 2);
 
-    if (creature.csp >= actual_racial_cost) {
+    if (creature.get_csp() >= actual_racial_cost) {
         creature.sub_csp(actual_racial_cost);
     } else {
-        actual_racial_cost -= creature.csp;
+        actual_racial_cost -= creature.get_csp();
         creature.set_csp(0);
         take_hit(creature, DAMAGE_USELIFE, actual_racial_cost, _("過度の集中", "concentrating too hard"));
     }

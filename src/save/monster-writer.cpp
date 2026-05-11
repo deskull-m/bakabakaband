@@ -100,7 +100,7 @@ uint32_t MonsterWriter::write_monster_flags() const
         set_bits(flags, SaveDataMonsterFlagType::SMART);
     }
 
-    if (this->monster.exp) {
+    if (this->monster.get_exp()) {
         set_bits(flags, SaveDataMonsterFlagType::EXP);
     }
 
@@ -116,11 +116,11 @@ uint32_t MonsterWriter::write_monster_flags() const
         set_bits(flags, SaveDataMonsterFlagType::PARENT);
     }
 
-    if (this->monster.au) {
+    if (this->monster.get_au()) {
         set_bits(flags, SaveDataMonsterFlagType::GOLD);
     }
 
-    if (this->monster.ht || this->monster.wt) {
+    if (this->monster.get_ht() || this->monster.get_wt()) {
         set_bits(flags, SaveDataMonsterFlagType::HEIGHT_WEIGHT);
     }
 
@@ -198,7 +198,7 @@ void MonsterWriter::write_monster_info(uint32_t flags) const
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::EXP)) {
-        wr_u32b(this->monster.exp);
+        wr_u32b(this->monster.get_exp());
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::MFLAG2)) {
@@ -214,12 +214,12 @@ void MonsterWriter::write_monster_info(uint32_t flags) const
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::GOLD)) {
-        wr_s32b(this->monster.au);
+        wr_s32b(this->monster.get_au());
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::HEIGHT_WEIGHT)) {
-        wr_s16b(this->monster.ht);
-        wr_s16b(this->monster.wt);
+        wr_s16b(this->monster.get_ht());
+        wr_s16b(this->monster.get_wt());
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::RACE)) {

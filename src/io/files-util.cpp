@@ -233,9 +233,9 @@ static errr counts_seek(CreatureEntity &creature, int fd, uint32_t where, bool f
     auto short_pclass = enum2i(creature.pclass);
 #ifdef SAVEFILE_USE_UID
     const auto user_id = UnixUserIds::get_instance().get_user_id();
-    const auto header = format("%d.%s.%d%d%d", user_id, savefile_base.string().data(), short_pclass, creature.ppersonality, creature.age);
+    const auto header = format("%d.%s.%d%d%d", user_id, savefile_base.string().data(), short_pclass, creature.ppersonality, creature.get_age());
 #else
-    const auto header = format("%s.%d%d%d", savefile_base.string().data(), short_pclass, creature.ppersonality, creature.age);
+    const auto header = format("%s.%d%d%d", savefile_base.string().data(), short_pclass, creature.ppersonality, creature.get_age());
 #endif
     angband_strcpy(temp1, header, sizeof(temp1));
     for (int i = 0; temp1[i]; i++) {

@@ -176,7 +176,7 @@ void process_monster_attack_time(CreatureEntity &creature)
         }
 
         msg_print(_("人生が逆戻りした気がする。", "You feel like a chunk of the past has been ripped away."));
-        lose_exp(creature, 100 + (creature.exp / 100) * MON_DRAIN_LIFE);
+        lose_exp(creature, 100 + (creature.get_exp() / 100) * MON_DRAIN_LIFE);
         break;
     case 6:
     case 7:

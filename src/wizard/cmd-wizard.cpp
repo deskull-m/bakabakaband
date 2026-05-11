@@ -271,7 +271,7 @@ bool exe_cmd_debug(CreatureEntity &creature, char cmd)
         wiz_lite(creature, CreatureClass(creature).equals(PlayerClassType::NINJA));
         return true;
     case 'x':
-        gain_exp(creature, command_arg ? command_arg : (creature.exp + 1));
+        gain_exp(creature, command_arg ? command_arg : (creature.get_exp() + 1));
         return true;
     case 'X':
         for (INVENTORY_IDX i = INVEN_TOTAL - 1; i >= 0; i--) {

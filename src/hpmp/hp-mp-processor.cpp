@@ -414,7 +414,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         regenmagic(creature, regen_amount);
     }
 
-    if ((creature.csp == 0) && (creature.csp_frac == 0)) {
+    if ((creature.get_csp() == 0) && (creature.csp_frac == 0)) {
         while (upkeep_factor > 100) {
             msg_print(_("こんなに多くのペットを制御できない！", "Too many pets to control at once!"));
             msg_erase();

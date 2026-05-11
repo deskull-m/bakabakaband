@@ -782,8 +782,8 @@ static void display_spell_list(CreatureEntity &creature)
             chance -= 3 * (creature.level - spell.min_lev);
             chance -= 3 * (adj_mag_stat[creature.stat_index[mp_ptr->spell_stat]] - 1);
             if (!use_hp) {
-                if (spell.mana_cost > creature.csp) {
-                    chance += 5 * (spell.mana_cost - creature.csp);
+                if (spell.mana_cost > creature.get_csp()) {
+                    chance += 5 * (spell.mana_cost - creature.get_csp());
                     a = TERM_ORANGE;
                 }
             } else {

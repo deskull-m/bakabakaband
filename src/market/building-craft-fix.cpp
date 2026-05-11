@@ -161,7 +161,7 @@ static PRICE repair_broken_weapon_aux(CreatureEntity &creature, PRICE bcost)
         return 0;
     }
 
-    if (creature.au < cost) {
+    if (creature.get_au() < cost) {
         msg_format(_("%sを修復するだけのゴールドがありません！", "You do not have the gold to repair %s!"), item_name.data());
         msg_erase();
         return 0;

@@ -404,7 +404,7 @@ std::string probed_monster_info(CreatureEntity &creature, CreatureEntity &target
     auto result = format(mes, m_name.data(), align, (int)target.hp, (int)target.maxhp, target.get_ac(), (speed > 0) ? "+" : "", speed);
 
     if (monrace.get_next().is_valid()) {
-        result.append(format("%d/%d ", target.exp, monrace.next_exp));
+        result.append(format("%d/%d ", target.get_exp(), monrace.next_exp));
     } else {
         result.append("xxx ");
     }
