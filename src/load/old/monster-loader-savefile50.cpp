@@ -181,14 +181,10 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
                 item->wipe();
             }
         }
-        monster.set_inven_cnt(0);
-        monster.set_equip_cnt(0);
     } else {
         if (any_bits(flags, SaveDataMonsterFlagType::INVENTORY)) {
             // PlayerTypeと同じ形式で読み込み
             auto item_loader = ItemLoaderFactory::create_loader();
-            monster.set_inven_cnt(0);
-            monster.set_equip_cnt(0);
 
             while (true) {
                 auto n = rd_u16b();
@@ -207,7 +203,6 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
                 item_loader->rd_item(monster.inventory[n].get());
 
                 if (monster.inventory[n]->is_valid()) {
-                    monster.increment_inven_cnt();
                 }
             }
         } else {
@@ -217,8 +212,6 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
                     item->wipe();
                 }
             }
-            monster.set_inven_cnt(0);
-            monster.set_equip_cnt(0);
         }
     }
 }

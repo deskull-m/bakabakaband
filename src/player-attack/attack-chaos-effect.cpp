@@ -274,8 +274,7 @@ static void attack_golden_hammer(CreatureEntity &creature, player_attack_type *p
     stolen.held_m_idx = 0;
     stolen.marked.clear().set(OmType::TOUCHED);
     item_in_pack.wipe();
-    if (monster.inven_cnt > 0) {
-        monster.decrement_inven_cnt();
+    if (monster.get_inven_cnt() > 0) {
     }
     msg_format(_("%sを奪った。", "You snatched %s."), item_name.data());
     creature.store_item(stolen);

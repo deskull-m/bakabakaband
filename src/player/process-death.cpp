@@ -335,7 +335,7 @@ static void home_aware(CreatureEntity &creature)
  */
 static bool show_dead_player_items(CreatureEntity &creature)
 {
-    if (creature.equip_cnt) {
+    if (creature.get_equip_cnt()) {
         term_clear();
         (void)show_equipment(creature, 0, USE_FULL, AllMatchItemTester());
         prt(_("装備していたアイテム: -続く-", "You are using: -more-"), 0, 0);
@@ -344,7 +344,7 @@ static bool show_dead_player_items(CreatureEntity &creature)
         }
     }
 
-    if (creature.inven_cnt) {
+    if (creature.get_inven_cnt()) {
         term_clear();
         (void)show_inventory(creature, 0, USE_FULL, AllMatchItemTester());
         prt(_("持っていたアイテム: -続く-", "You are carrying: -more-"), 0, 0);

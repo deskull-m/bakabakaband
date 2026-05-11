@@ -1286,41 +1286,19 @@ public:
         this->riding = m_idx;
     }
 
-    /*! @brief 所持品数を設定する (提案 24) */
-    virtual void set_inven_cnt(short value)
-    {
-        this->inven_cnt = value;
-    }
+    /*!
+     * @brief パック内の所持品数を inventory[] から計算する (提案 25)
+     * @details inventory[0..INVEN_PACK) の有効アイテム数を返す。
+     *          以前は `inven_cnt` フィールドにキャッシュしていたが、
+     *          inventory[] が単一の真実源となるよう自動計算化。
+     */
+    short get_inven_cnt() const;
 
-    /*! @brief 所持品数を 1 増やす (提案 24) */
-    virtual void increment_inven_cnt()
-    {
-        this->inven_cnt++;
-    }
-
-    /*! @brief 所持品数を 1 減らす (提案 24) */
-    virtual void decrement_inven_cnt()
-    {
-        this->inven_cnt--;
-    }
-
-    /*! @brief 装備品数を設定する (提案 24) */
-    virtual void set_equip_cnt(short value)
-    {
-        this->equip_cnt = value;
-    }
-
-    /*! @brief 装備品数を 1 増やす (提案 24) */
-    virtual void increment_equip_cnt()
-    {
-        this->equip_cnt++;
-    }
-
-    /*! @brief 装備品数を 1 減らす (提案 24) */
-    virtual void decrement_equip_cnt()
-    {
-        this->equip_cnt--;
-    }
+    /*!
+     * @brief 装備品数を inventory[] から計算する (提案 25)
+     * @details inventory[INVEN_MAIN_HAND..INVEN_TOTAL) の有効アイテム数を返す。
+     */
+    short get_equip_cnt() const;
 
     /*! @brief 年齢を設定する (提案 24) */
     virtual void set_age(int16_t value)
@@ -2187,8 +2165,8 @@ public:
 
     // インベントリ関連
     std::vector<std::shared_ptr<ItemEntity>> inventory{}; /*!< 所持品リスト / The creature's inventory */
-    int16_t inven_cnt{}; /*!< 所持品数 / Number of items in inventory */
-    int16_t equip_cnt{}; /*!< 装備品数 / Number of items in equipment */
+    // 所持品数 inven_cnt / 装備品数 equip_cnt は提案 25 で inventory[] から自動計算する
+    // get_inven_cnt() / get_equip_cnt() に置換済み。
 
     // 座標関連
     POSITION oldpy{}; /*!< 前回のY座標 / Previous location (Y) */

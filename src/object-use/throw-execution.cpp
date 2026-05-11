@@ -307,7 +307,6 @@ void ObjectThrowEntity::process_boomerang_back()
 
         this->item = creature.inventory[this->i_idx];
         *this->item = this->q_ptr->clone();
-        this->creature_ptr->equip_cnt++;
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         static constexpr auto flags = {
             StatusRecalculatingFlag::BONUS,
