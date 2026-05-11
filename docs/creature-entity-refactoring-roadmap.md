@@ -1119,6 +1119,46 @@ pointer dereference 経由の r_idx / ap_r_idx / riding 読取りも
 
 ---
 
+## 提案 29: r_idx / ap_r_idx / riding を private 化 ✅ 完了
+
+### 背景
+
+提案 28 / 28b で getter virtual の整備と read site 移行を完了したため、
+CreatureEntity の r_idx / ap_r_idx / riding フィールドを実際に
+private に移動する。これらは CreatureEntity 直下フィールドで
+**完全 private 化に成功した最初の例** となる。
+
+### 作業内容 (commit `e0e84a26a`)
+
+- CreatureEntity::r_idx, ap_r_idx, riding を public から private に変更
+  (該当箇所に `private:` セクションを挿入し、後続フィールドを
+  `public:` に戻す)
+- private 化に伴い破綻した残存直接アクセス約 15 箇所を getter 経由に
+  追加移行:
+  - effect/spells-effect-util / effect-monster-curse
+  - monster-describer / monster-floor/one-monster-placer
+  - player/player-skill (3 箇所)
+  - target/target-sorter / target-preparation
+  - main/scene-table-monster / window/display-sub-windows
+  - action/activation-execution / floor/floor-changer / floor-leaver
+  - mspell/mspell-special
+
+### 注記
+
+`CapturedMonsterType.r_idx` は別 struct のフィールドで CreatureEntity
+ではないため migration 対象外。提案 28b の sed で誤って `cap_mon.r_idx`
+を `cap_mon.get_r_idx()` に変換していた箇所を本提案で revert した。
+
+### 効果
+
+- これらフィールドへのアクセスは `get_r_idx()` / `set_r_idx()` /
+  `polymorph_to()` / `get_riding()` / `set_riding()` /
+  `ride_monster()` の virtual API 経由でのみ可能
+- 同様の手法で他のアクセサ整備済みフィールド (au, csp, inventory,
+  level 等) も今後 private 化できる雛形が確立された
+
+---
+
 ## 推奨実施順序
 
 ### 完了済み (大規模フェーズ)
@@ -1147,6 +1187,7 @@ pointer dereference 経由の r_idx / ap_r_idx / riding 読取りも
 - ✅ **提案 27b**: au (所持金) / csp (現在 MP) に add/sub/divide virtual 整備、110 箇所の compound assignment 移行
 - ✅ **提案 28**: r_idx / ap_r_idx / riding に getter virtual を追加し読取り (約 210 箇所、参照形式) を移行
 - ✅ **提案 28b**: ポインタ経由 (`m_ptr->X`) の同フィールド読取り (約 80 箇所) を getter virtual 経由に移行
+- ✅ **提案 29**: `r_idx` / `ap_r_idx` / `riding` を CreatureEntity の private 化 (CreatureEntity 直下フィールドの完全 private 化に成功した最初の例)
 
 ### 既存提案の残作業 (中規模)
 
@@ -1159,14 +1200,14 @@ pointer dereference 経由の r_idx / ap_r_idx / riding 読取りも
 
 ### 今後の候補 (追加提案)
 
-- **提案 29**: CreatureEntity の更なる private 化 (アクセサ整備済みの
-  `r_idx` / `ap_r_idx` / `riding` を実際に private へ移動)
 - **提案 30**: 残りの戦闘ボーナス系 (`to_h` / `to_d` / `to_a` /
   `dis_to_h` / `dis_to_d` 等) と stat 系 (`stat_max[]` /
   `stat_cur[]` 等) の compound assignment 移行
 - **提案 31**: その他の plain field (`au` / `csp` / `food` / `level`
   / `town_num` / `age` / `ht` / `wt` / `prestige` 等) の read 側
-  アクセサ化と private 化
+  アクセサ化
+- **提案 32**: 提案 31 完了後に同フィールドを実際に private 化
+  (提案 29 と同じパターン)
 - **提案 25b**: 性能影響が出た場合の `get_inven_cnt()` キャッシュ層再導入
   → **検証済 (不要)**
   → **検証済 (不要)**: 全 12 call site が低頻度 (savefile load / inventory
