@@ -223,7 +223,7 @@ CreatureEntity
          transform_* 等。提案 21 で全メンバ private 化済)
 ```
 
-### Phase 9-30: MonsterProfile + CreatureEntity アクセス API の整備 ✅ 完了
+### Phase 9-31: MonsterProfile + CreatureEntity アクセス API の整備 ✅ 完了
 
 提案 9 系列 (read-side virtual)、提案 14-22 系列 (write-side virtual /
 共通走査 API / 一括操作 / class 化)、提案 24-27b 系列 (CreatureEntity
@@ -263,6 +263,11 @@ API 経由に統一された。一部フィールド (r_idx / ap_r_idx / riding)
 - **提案 30**: 戦闘ボーナス (to_h_b / to_h_m / to_d_m / to_a) と
   能力値配列 (stat_max / stat_cur / stat_max_max / stat_use / stat_top /
   stat_add / stat_index) の setter virtual 整備、約 55 箇所 migration
+- **提案 31**: 残り plain field 14 種 (au / csp / food / town_num /
+  age / ht / wt / prestige / max_plv / msp / exp / max_exp /
+  max_max_exp / ambush_flag) の getter virtual 整備と read site 約
+  350 箇所の migration。`level` (628 read sites) と `stat_*[]`
+  (200+ read sites) は分量により別提案 (31b) に残置
 
 今後の残作業としては、現在 `CreatureEntity` 直下に残存するプレイヤー
 固有フィールド群（種族・職業・熟練度・ESP 等）を、モンスターにも
@@ -271,7 +276,7 @@ API 経由に統一された。一部フィールド (r_idx / ap_r_idx / riding)
 方向は取らない。
 
 **残タスク詳細は [`docs/creature-entity-refactoring-roadmap.md`](docs/creature-entity-refactoring-roadmap.md) 参照。**
-Phase 1-30 完了後の継続提案（プレイヤー専用フィールドのクリーチャー
+Phase 1-31 完了後の継続提案（プレイヤー専用フィールドのクリーチャー
 共通化、プレイヤー専用仮想メソッドの共通化、TimedEffects 二重管理
 解消、戦闘ボーナス系の compound assignment 移行、その他フィールドの
 read 側アクセサ化と private 化等）を同書で管理する。
