@@ -730,7 +730,7 @@ void wiz_zap_surrounding_monsters(CreatureEntity &creature)
     const auto targets = creature.collect_creatures([&](const CreatureEntity &mon) {
         return Grid::calc_distance(p_pos, mon.get_position()) <= MAX_PLAYER_SIGHT;
     });
-    const auto riding_idx = creature.riding;
+    const auto riding_idx = creature.get_riding();
     for (auto i : targets) {
         if (i == riding_idx) {
             continue;

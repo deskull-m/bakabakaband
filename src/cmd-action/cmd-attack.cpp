@@ -376,7 +376,7 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
     const auto is_hallucinated = effects->hallucination().is_hallucinated();
     if (monster.is_visible_on_map()) {
         if (!is_hallucinated) {
-            LoreTracker::get_instance().set_trackee(monster.ap_r_idx);
+            LoreTracker::get_instance().set_trackee(monster.get_ap_r_idx());
         }
 
         health_track(creature, grid.m_idx);
@@ -446,7 +446,7 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
         }
     }
 
-    if (creature.riding) {
+    if (creature.get_riding()) {
         PlayerSkill(creature).gain_riding_skill_exp_on_melee_attack(monrace);
     }
 

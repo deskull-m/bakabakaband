@@ -204,7 +204,7 @@ bool dispel_check_monster(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_I
         return true;
     }
 
-    if ((t_idx == creature.riding) && dispel_check(creature, m_idx)) {
+    if ((t_idx == creature.get_riding()) && dispel_check(creature, m_idx)) {
         return true;
     }
 
@@ -349,8 +349,8 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
         return true;
     }
 
-    const auto &m_ref = creature.get_floor()->get_monster(creature.riding);
-    if (creature.riding && (creature.get_floor()->get_monster(creature.riding).speed < 135) && m_ref.is_accelerated()) {
+    const auto &m_ref = creature.get_floor()->get_monster(creature.get_riding());
+    if (creature.get_riding() && (creature.get_floor()->get_monster(creature.get_riding()).speed < 135) && m_ref.is_accelerated()) {
         return true;
     }
 

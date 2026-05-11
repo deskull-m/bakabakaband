@@ -109,7 +109,7 @@ static void decide_summon_kin_caster(
     bool mon_to_mon = target_type == MONSTER_TO_MONSTER;
     bool mon_to_player = target_type == MONSTER_TO_PLAYER;
 
-    if (monster.r_idx == MonraceId::SERPENT || monster.r_idx == MonraceId::ZOMBI_SERPENT) {
+    if (monster.get_r_idx() == MonraceId::SERPENT || monster.get_r_idx() == MonraceId::ZOMBI_SERPENT) {
         mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
             _("%s^がダンジョンの主を召喚した。", "%s^ magically summons guardians of dungeons."),
             _("%s^がダンジョンの主を召喚した。", "%s^ magically summons guardians of dungeons."));
@@ -163,11 +163,11 @@ MonsterSpellResult spell_RF6_S_KIN(CreatureEntity &creature, POSITION y, POSITIO
 
     decide_summon_kin_caster(creature, m_idx, t_idx, target_type, m_name.data(), m_poss.data(), known);
     int count = 0;
-    auto alliance_id = MonraceList::get_instance().get_monrace(monster.r_idx).alliance_idx;
+    auto alliance_id = MonraceList::get_instance().get_monrace(monster.get_r_idx()).alliance_idx;
 
     if (alliance_id == AllianceType::NONE) {
 
-        switch (monster.r_idx) {
+        switch (monster.get_r_idx()) {
         case MonraceId::MENELDOR:
         case MonraceId::GWAIHIR:
         case MonraceId::THORONDOR:

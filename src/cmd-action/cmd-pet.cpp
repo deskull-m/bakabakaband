@@ -88,7 +88,7 @@ void do_cmd_pet_dismiss(CreatureEntity &creature)
         }
     }
 
-    const auto riding_index = creature.riding;
+    const auto riding_index = creature.get_riding();
     std::stable_sort(pet_index.begin(), pet_index.end(),
         [&floor, riding_index](auto x, auto y) { return floor.order_pet_dismission(x, y, riding_index); });
 
@@ -202,7 +202,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
 
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
-    if (creature.riding) {
+    if (creature.get_riding()) {
         /* Skip non-empty grids */
         if (!can_player_ride_pet(creature, grid, false)) {
             msg_print(_("そちらには降りられません。", "You cannot go that direction."));
@@ -280,7 +280,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
         }
 
         creature.ride_monster(grid.m_idx);
-        if (HealthBarTracker::get_instance().is_tracking(creature.riding)) {
+        if (HealthBarTracker::get_instance().is_tracking(creature.get_riding())) {
             health_track(creature, 0);
         }
     }
@@ -382,10 +382,10 @@ static MONSTER_IDX select_target_pet(CreatureEntity &creature)
     auto &floor = *creature.get_floor();
     // [提案 14] AI ターゲット選定共通化: 騎乗ペットを先頭、続いて他の可視ペット
     std::vector<MONSTER_IDX> pet_indices;
-    if (creature.riding != 0) {
-        pet_indices.push_back(creature.riding);
+    if (creature.get_riding() != 0) {
+        pet_indices.push_back(creature.get_riding());
     }
-    const auto riding_idx = creature.riding;
+    const auto riding_idx = creature.get_riding();
     for (auto idx : creature.collect_creatures(
              [](const CreatureEntity &c) { return c.is_pet() && c.is_visible_on_map(); })) {
         if (idx != riding_idx) {
@@ -528,7 +528,7 @@ void do_cmd_pet(CreatureEntity &creature)
     }
     powers[num++] = PET_BALL_SPELL;
 
-    if (creature.riding) {
+    if (creature.get_riding()) {
         power_desc[num] = _("ペットから降りる", "get off a pet");
     } else {
         power_desc[num] = _("ペットに乗る", "ride a pet");
@@ -545,7 +545,7 @@ void do_cmd_pet(CreatureEntity &creature)
     empty_sub &= empty_hands(creature, false) == EMPTY_HAND_MAIN;
     empty_sub &= creature.inventory[INVEN_SUB_HAND]->allow_two_hands_wielding();
 
-    if (creature.riding) {
+    if (creature.get_riding()) {
         if (empty_main || empty_sub) {
             if (creature.pet_extra_flags & PF_TWO_HANDS) {
                 power_desc[num] = _("武器を片手で持つ", "use one hand to control the pet you are riding");

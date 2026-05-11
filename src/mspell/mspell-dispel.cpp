@@ -144,8 +144,8 @@ MonsterSpellResult spell_RF4_DISPEL(MONSTER_IDX m_idx, CreatureEntity &creature,
 
     if (target_type == MONSTER_TO_PLAYER) {
         dispel_player(creature);
-        if (creature.riding) {
-            dispel_monster_status(creature, creature.riding);
+        if (creature.get_riding()) {
+            dispel_monster_status(creature, creature.get_riding());
         }
 
         if (creature.is_echizen()) {

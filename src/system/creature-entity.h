@@ -1248,6 +1248,31 @@ public:
     }
 
     /*!
+     * @brief モンスター実種族 ID を取得する (提案 28)
+     * @details プレイヤーは MonraceId::PLAYER を保持。
+     */
+    virtual MonraceId get_r_idx() const
+    {
+        return this->r_idx;
+    }
+
+    /*!
+     * @brief モンスター外見種族 ID を取得する (提案 28)
+     */
+    virtual MonraceId get_ap_r_idx() const
+    {
+        return this->ap_r_idx;
+    }
+
+    /*!
+     * @brief 騎乗中のモンスター m_idx を取得する (提案 28)
+     */
+    virtual MONSTER_IDX get_riding() const
+    {
+        return this->riding;
+    }
+
+    /*!
      * @brief モンスター実種族 ID を設定する (提案 22)
      * @details ap_r_idx は変更しない。両方更新したい場合は polymorph_to() を使う。
      */

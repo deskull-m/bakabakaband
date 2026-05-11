@@ -113,7 +113,7 @@ void riding_flags(CreatureEntity &creature, TrFlags &flags, TrFlags &negative_fl
     flags.clear();
     negative_flags.clear();
 
-    if (!creature.riding) {
+    if (!creature.get_riding()) {
         return;
     }
 

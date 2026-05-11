@@ -21,7 +21,7 @@ void MonsterWriter::write_to_savedata() const
 {
     const auto flags = this->write_monster_flags();
 
-    wr_s16b(enum2i(this->monster.r_idx));
+    wr_s16b(enum2i(this->monster.get_r_idx()));
     wr_s32b(enum2i(this->monster.get_alliance_idx()));
 
     wr_byte((byte)this->monster.y);
@@ -32,7 +32,7 @@ void MonsterWriter::write_to_savedata() const
     wr_u32b(this->monster.dealt_damage);
 
     if (any_bits(flags, SaveDataMonsterFlagType::AP_R_IDX)) {
-        wr_s16b(enum2i(this->monster.ap_r_idx));
+        wr_s16b(enum2i(this->monster.get_ap_r_idx()));
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::SUB_ALIGN)) {

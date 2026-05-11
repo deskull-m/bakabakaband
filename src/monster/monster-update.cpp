@@ -518,7 +518,7 @@ static void update_invisible_monster(CreatureEntity &creature, um_type *um_ptr, 
     if (!creature.is_hallucinated()) {
         auto &monrace = monster.get_monrace();
         auto &shadower = MonraceList::get_instance().get_monrace(MonraceId::KAGE);
-        if ((monster.ap_r_idx == MonraceId::KAGE) && (shadower.r_sights < MAX_SHORT)) {
+        if ((monster.get_ap_r_idx() == MonraceId::KAGE) && (shadower.r_sights < MAX_SHORT)) {
             shadower.r_sights++;
         } else if (monster.is_original_ap() && (monrace.r_sights < MAX_SHORT)) {
             monrace.r_sights++;

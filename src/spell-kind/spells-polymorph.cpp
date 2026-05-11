@@ -78,7 +78,7 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
     const auto &grid = floor.grid_array[y][x];
     auto &monster = floor.get_monster(grid.m_idx);
     MonraceId new_r_idx;
-    MonraceId old_r_idx = monster.r_idx;
+    MonraceId old_r_idx = monster.get_r_idx();
     const auto target_m_idx = Target::get_last_target().get_m_idx();
     const auto targeted = target_m_idx == grid.m_idx;
     auto health_tracked = HealthBarTracker::get_instance().is_tracking(grid.m_idx);

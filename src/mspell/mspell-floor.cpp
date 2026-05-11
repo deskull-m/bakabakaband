@@ -57,7 +57,7 @@ MonsterSpellResult spell_RF4_SHRIEK(MONSTER_IDX m_idx, CreatureEntity &creature,
 
     const auto &monster = creature.get_floor()->get_monster(m_idx);
     auto result = MonsterSpellResult::make_valid();
-    if (monster.r_idx == MonraceId::LEE_QIEZI) {
+    if (monster.get_r_idx() == MonraceId::LEE_QIEZI) {
         msg_print(_("しかし、その声は誰の心にも響かなかった…。", "However, that voice didn't touch anyone's heart..."));
         return result;
     }

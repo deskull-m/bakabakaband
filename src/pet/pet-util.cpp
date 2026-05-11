@@ -24,7 +24,7 @@ bool can_player_ride_pet(CreatureEntity &creature, const Grid &grid, bool now_ri
 {
     auto &world = AngbandWorld::get_instance();
     const auto old_character_xtra = world.character_xtra;
-    const auto old_riding = creature.riding;
+    const auto old_riding = creature.get_riding();
     const auto old_riding_two_hands = creature.riding_ryoute;
     const auto old_old_riding_two_hands = creature.old_riding_ryoute;
     const auto old_pf_two_hands = any_bits(creature.pet_extra_flags, PF_TWO_HANDS);

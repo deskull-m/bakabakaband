@@ -389,7 +389,7 @@ MonsterAbilityType choose_attack_spell(CreatureEntity &creature, msa_type *msa_p
     }
 
     const auto &monrace_list = MonraceList::get_instance();
-    if (!special.empty() && monrace_list.can_select_separate(monster.r_idx, monster.hp, monster.maxhp)) {
+    if (!special.empty() && monrace_list.can_select_separate(monster.get_r_idx(), monster.hp, monster.maxhp)) {
         return rand_choice(special);
     }
 
@@ -406,7 +406,7 @@ MonsterAbilityType choose_attack_spell(CreatureEntity &creature, msa_type *msa_p
     }
 
     if (!special.empty()) {
-        const auto r_idx = monster.r_idx;
+        const auto r_idx = monster.get_r_idx();
         auto should_select_special = monrace_list.is_unified(r_idx) && evaluate_percent(70);
         should_select_special |= decide_select_special(r_idx);
         if (should_select_special) {

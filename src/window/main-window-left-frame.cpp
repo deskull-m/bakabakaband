@@ -372,8 +372,8 @@ void print_health(CreatureEntity &creature, bool riding)
     int row, col;
 
     if (riding) {
-        if (creature.riding > 0) {
-            monster_idx = creature.riding;
+        if (creature.get_riding() > 0) {
+            monster_idx = creature.get_riding();
         }
         row = ROW_RIDING_INFO;
         col = COL_RIDING_INFO;

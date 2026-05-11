@@ -275,10 +275,10 @@ int16_t PlayerSpeed::mutation_bonus()
  */
 int16_t PlayerSpeed::riding_bonus()
 {
-    const auto &monster = (&this->creature)->get_floor()->get_monster(this->creature.riding);
+    const auto &monster = (&this->creature)->get_floor()->get_monster(this->creature.get_riding());
     int16_t speed = static_cast<int16_t>(monster.speed);
     int16_t bonus = 0;
-    if (!this->creature.riding) {
+    if (!this->creature.get_riding()) {
         return 0;
     }
 
@@ -314,8 +314,8 @@ int16_t PlayerSpeed::inventory_weight_bonus()
 {
     int16_t bonus = 0;
     auto weight = calc_inventory_weight(this->creature);
-    if (this->creature.riding) {
-        const auto &monster = this->creature.get_floor()->get_monster(this->creature.riding);
+    if (this->creature.get_riding()) {
+        const auto &monster = this->creature.get_floor()->get_monster(this->creature.get_riding());
         const auto &monrace = monster.get_monrace();
         auto count = 1500 + monrace.level * 25;
         if (weight > count) {
@@ -372,7 +372,7 @@ BIT_FLAGS PlayerSpeed::equipments_flags(tr_type check_flag)
  */
 int16_t PlayerSpeed::set_exception_bonus(int16_t value)
 {
-    if (!this->creature.riding) {
+    if (!this->creature.get_riding()) {
         return value;
     }
 

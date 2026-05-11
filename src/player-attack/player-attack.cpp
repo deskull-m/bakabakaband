@@ -95,7 +95,7 @@ static void attack_classify(CreatureEntity &creature, player_attack_type *pa_ptr
     case PlayerClassType::MONK:
     case PlayerClassType::FORCETRAINER:
     case PlayerClassType::BERSERKER:
-        if ((empty_hands(creature, true) & EMPTY_HAND_MAIN) && !creature.riding) {
+        if ((empty_hands(creature, true) & EMPTY_HAND_MAIN) && !creature.get_riding()) {
             pa_ptr->monk_attack = true;
         }
         return;

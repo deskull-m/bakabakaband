@@ -128,7 +128,7 @@ static std::string get_describing_monster_name(const CreatureEntity &monster, co
 
     if (one_in_(2)) {
         constexpr auto filename = _("silly_j.txt", "silly.txt");
-        const auto silly_name = get_random_line(filename, enum2i(monster.r_idx));
+        const auto silly_name = get_random_line(filename, enum2i(monster.get_r_idx()));
         if (silly_name) {
             return *silly_name;
         }
@@ -248,7 +248,7 @@ std::string monster_desc(CreatureEntity &subject, const CreatureEntity &monster,
     if (monster.get_parent_m_idx() > 0) {
         const auto &parent_monster = subject.get_floor()->get_monster(monster.get_parent_m_idx());
         // 親ID＝自身のIDでは主を失った状態なのでスキップ
-        if (parent_monster.r_idx != monster.r_idx) {
+        if (parent_monster.r_idx != monster.get_r_idx()) {
             auto parent_name = subject.get_floor()->get_monster(monster.get_parent_m_idx()).get_monrace().name;
             if (monster.is_quylthlug_born()) {
                 ss << parent_name << _("が産んだ", "-born ");

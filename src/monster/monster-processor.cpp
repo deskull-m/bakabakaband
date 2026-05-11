@@ -733,7 +733,7 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
             break;
         case SV_WAND_CLONE_MONSTER:
             // モンスター自身の分身を生成 (PM_NO_PET で勝手に味方にならないよう)
-            (void)multiply_monster(creature, m_idx, monster.r_idx, true, PM_NO_PET);
+            (void)multiply_monster(creature, m_idx, monster.get_r_idx(), true, PM_NO_PET);
             break;
         }
         device.pval--;
@@ -1051,7 +1051,7 @@ void decide_drop_from_monster(CreatureEntity &creature, MONSTER_IDX m_idx, bool 
 #ifdef JP
         msg_print("地面に落とされた。");
 #else
-        const auto m_name = monster_desc(creature, creature.get_floor()->get_monster(creature.riding), 0);
+        const auto m_name = monster_desc(creature, creature.get_floor()->get_monster(creature.get_riding()), 0);
         msg_format("You have fallen from %s.", m_name.data());
 #endif
     }
@@ -1199,7 +1199,7 @@ bool explode_grenade(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
 
     const auto &monster = creature.get_floor()->get_monster(m_idx);
-    if (monster.r_idx != MonraceId::GRENADE) {
+    if (monster.get_r_idx() != MonraceId::GRENADE) {
         return false;
     }
 
@@ -1219,7 +1219,7 @@ void process_special(CreatureEntity &creature, MONSTER_IDX m_idx)
     const auto &monster = creature.get_floor()->get_monster(m_idx);
     auto &monrace = monster.get_monrace();
     auto can_do_special = monrace.ability_flags.has(MonsterAbilityType::SPECIAL);
-    can_do_special &= monster.r_idx == MonraceId::OHMU;
+    can_do_special &= monster.get_r_idx() == MonraceId::OHMU;
     can_do_special &= !creature.get_floor()->inside_arena;
     can_do_special &= !AngbandSystem::get_instance().is_phase_out();
     can_do_special &= monrace.freq_spell != 0;

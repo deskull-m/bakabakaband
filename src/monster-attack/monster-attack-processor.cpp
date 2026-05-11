@@ -57,7 +57,7 @@ void exe_monster_attack_to_player(CreatureEntity &creature, turn_flags *turn_fla
         return;
     }
 
-    if (!creature.riding || one_in_(2)) {
+    if (!creature.get_riding() || one_in_(2)) {
         MonsterAttackPlayer(creature, m_idx).make_attack_normal();
         turn_flags_ptr->do_move = false;
         turn_flags_ptr->do_turn = true;

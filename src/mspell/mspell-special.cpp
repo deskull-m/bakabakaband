@@ -56,7 +56,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(CreatureEntity &creature
 
     const auto &monraces = MonraceList::get_instance();
     const auto &unified_uniques = MonraceList::get_unified_uniques();
-    if (const auto it_unified = unified_uniques.find(monster.r_idx); it_unified != unified_uniques.end()) {
+    if (const auto it_unified = unified_uniques.find(monster.get_r_idx()); it_unified != unified_uniques.end()) {
         const int separates_size = it_unified->second.size();
         const auto separated_hp = (monster.hp + 1) / separates_size;
         const auto separated_maxhp = monster.maxhp / separates_size;
@@ -81,7 +81,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(CreatureEntity &creature
     }
 
     for (const auto &[unified_unique, separates] : unified_uniques) {
-        if (!separates.contains(monster.r_idx)) {
+        if (!separates.contains(monster.get_r_idx())) {
             continue;
         }
 
@@ -99,7 +99,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(CreatureEntity &creature
 
             unified_hp += monster_separate.hp;
             unified_maxhp += monster_separate.maxhp;
-            if (monster_separate.r_idx != monster.r_idx) {
+            if (monster_separate.r_idx != monster.get_r_idx()) {
                 dummy_y = monster_separate.y;
                 dummy_x = monster_separate.x;
             }
@@ -236,9 +236,9 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(CreatureEntity &creature, POSITION
         }
     }
 
-    if (monster_to_player && creature.riding) {
-        const auto &m_ref = floor.get_monster(creature.riding);
-        mon_take_hit_mon(creature, creature.riding, dam, &dead, &fear, m_ref.get_died_message(), m_idx);
+    if (monster_to_player && creature.get_riding()) {
+        const auto &m_ref = floor.get_monster(creature.get_riding());
+        mon_take_hit_mon(creature, creature.get_riding(), dam, &dead, &fear, m_ref.get_died_message(), m_idx);
     }
 
     if (monster_to_monster) {
@@ -264,7 +264,7 @@ MonsterSpellResult spell_RF6_SPECIAL(CreatureEntity &creature, POSITION y, POSIT
     const auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
-    const auto r_idx = monster.r_idx;
+    const auto r_idx = monster.get_r_idx();
     if (MonraceList::get_instance().can_unify_separate(r_idx)) {
         return spell_RF6_SPECIAL_UNIFICATION(creature, m_idx);
     }
