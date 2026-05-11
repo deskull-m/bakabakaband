@@ -407,12 +407,13 @@ static bool monster_read_scroll(CreatureEntity &creature, CreatureEntity &monste
  *   - 杖: pval-- (charges 1 消費)
  *   - ロッド: timeout += base_pval (再充填時間設定)
  */
-static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &monster)
+static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &monster, MONSTER_IDX m_idx)
 {
     const bool low_hp_mid = monster.hp < monster.maxhp / 2;
     const bool not_fast = monster.get_timed_effect(CreatureTimedEffect::ACCELERATION) == 0;
     const bool fighting_context = monster.is_hostile() && monster.is_visible_on_map();
     const bool has_status = monster.is_fearful() || monster.is_confused() || monster.is_stunned() || monster.get_timed_effect(CreatureTimedEffect::POISON) > 0;
+    const bool can_target_player = fighting_context && projectable(*creature.get_floor(), monster.get_position(), creature.get_position());
 
     INVENTORY_IDX device_slot = -1;
     int priority = -1;
@@ -445,6 +446,24 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
                     select_if(idx, 5);
                 }
                 break;
+            // [攻撃用 wand] プレイヤー標的、可視 & 直射可能な敵対モンスターのみ
+            case SV_WAND_MAGIC_MISSILE:
+            case SV_WAND_ACID_BOLT:
+            case SV_WAND_FIRE_BOLT:
+            case SV_WAND_COLD_BOLT:
+            case SV_WAND_HYPODYNAMIA:
+            case SV_WAND_STINKING_CLOUD:
+            case SV_WAND_ACID_BALL:
+            case SV_WAND_ELEC_BALL:
+            case SV_WAND_FIRE_BALL:
+            case SV_WAND_COLD_BALL:
+            case SV_WAND_DRAGON_FIRE:
+            case SV_WAND_DRAGON_COLD:
+            case SV_WAND_DRAGON_BREATH:
+                if (can_target_player) {
+                    select_if(idx, 10);
+                }
+                break;
             default:
                 break;
             }
@@ -471,6 +490,20 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
             case SV_ROD_CURING:
                 if (has_status) {
                     select_if(idx, 6);
+                }
+                break;
+            // [攻撃用 rod] プレイヤー標的、可視 & 直射可能な敵対モンスターのみ
+            case SV_ROD_ACID_BOLT:
+            case SV_ROD_ELEC_BOLT:
+            case SV_ROD_FIRE_BOLT:
+            case SV_ROD_COLD_BOLT:
+            case SV_ROD_HYPODYNAMIA:
+            case SV_ROD_ACID_BALL:
+            case SV_ROD_ELEC_BALL:
+            case SV_ROD_FIRE_BALL:
+            case SV_ROD_COLD_BALL:
+                if (can_target_player) {
+                    select_if(idx, 11);
                 }
                 break;
             default:
@@ -503,6 +536,18 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
         monster.set_timed_effect(effect, static_cast<short>(std::min<int>(MAX_SHORT, current + duration)));
     };
 
+    // 攻撃系の標的座標 (プレイヤー)
+    const auto target_y = creature.y;
+    const auto target_x = creature.x;
+    constexpr BIT_FLAGS flg_bolt = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
+    constexpr BIT_FLAGS flg_ball = PROJECT_STOP | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM;
+    auto fire_bolt_at_player = [&](AttributeType typ, int dam) {
+        project(creature, m_idx, 0, target_y, target_x, dam, typ, flg_bolt);
+    };
+    auto fire_ball_at_player = [&](AttributeType typ, int dam, int rad) {
+        project(creature, m_idx, rad, target_y, target_x, dam, typ, flg_ball);
+    };
+
     if (is_wand) {
         switch (sval) {
         case SV_WAND_HEAL_MONSTER:
@@ -510,6 +555,45 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
             break;
         case SV_WAND_HASTE_MONSTER:
             add_timed(CreatureTimedEffect::ACCELERATION, 100 + randint1(100));
+            break;
+        case SV_WAND_MAGIC_MISSILE:
+            fire_bolt_at_player(AttributeType::MISSILE, Dice::roll(3, 4));
+            break;
+        case SV_WAND_ACID_BOLT:
+            fire_bolt_at_player(AttributeType::ACID, Dice::roll(10, 8));
+            break;
+        case SV_WAND_FIRE_BOLT:
+            fire_bolt_at_player(AttributeType::FIRE, Dice::roll(9, 8));
+            break;
+        case SV_WAND_COLD_BOLT:
+            fire_bolt_at_player(AttributeType::COLD, Dice::roll(6, 8));
+            break;
+        case SV_WAND_HYPODYNAMIA:
+            fire_bolt_at_player(AttributeType::HYPODYNAMIA, 80);
+            break;
+        case SV_WAND_STINKING_CLOUD:
+            fire_ball_at_player(AttributeType::POIS, 12, 2);
+            break;
+        case SV_WAND_ACID_BALL:
+            fire_ball_at_player(AttributeType::ACID, 60, 2);
+            break;
+        case SV_WAND_ELEC_BALL:
+            fire_ball_at_player(AttributeType::ELEC, 32, 2);
+            break;
+        case SV_WAND_FIRE_BALL:
+            fire_ball_at_player(AttributeType::FIRE, 72, 2);
+            break;
+        case SV_WAND_COLD_BALL:
+            fire_ball_at_player(AttributeType::COLD, 48, 2);
+            break;
+        case SV_WAND_DRAGON_FIRE:
+            fire_ball_at_player(AttributeType::FIRE, 100, 3);
+            break;
+        case SV_WAND_DRAGON_COLD:
+            fire_ball_at_player(AttributeType::COLD, 80, 3);
+            break;
+        case SV_WAND_DRAGON_BREATH:
+            fire_ball_at_player(AttributeType::FIRE, 120, 3);
             break;
         }
         device.pval--;
@@ -527,6 +611,33 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
             monster.set_timed_effect(CreatureTimedEffect::CONFUSION, 0);
             monster.set_timed_effect(CreatureTimedEffect::STUN, 0);
             monster.set_timed_effect(CreatureTimedEffect::POISON, 0);
+            break;
+        case SV_ROD_ACID_BOLT:
+            fire_bolt_at_player(AttributeType::ACID, Dice::roll(12, 8));
+            break;
+        case SV_ROD_ELEC_BOLT:
+            fire_bolt_at_player(AttributeType::ELEC, Dice::roll(6, 6));
+            break;
+        case SV_ROD_FIRE_BOLT:
+            fire_bolt_at_player(AttributeType::FIRE, Dice::roll(16, 8));
+            break;
+        case SV_ROD_COLD_BOLT:
+            fire_bolt_at_player(AttributeType::COLD, Dice::roll(10, 8));
+            break;
+        case SV_ROD_HYPODYNAMIA:
+            fire_bolt_at_player(AttributeType::HYPODYNAMIA, 75);
+            break;
+        case SV_ROD_ACID_BALL:
+            fire_ball_at_player(AttributeType::ACID, 60, 2);
+            break;
+        case SV_ROD_ELEC_BALL:
+            fire_ball_at_player(AttributeType::ELEC, 32, 2);
+            break;
+        case SV_ROD_FIRE_BALL:
+            fire_ball_at_player(AttributeType::FIRE, 72, 2);
+            break;
+        case SV_ROD_COLD_BALL:
+            fire_ball_at_player(AttributeType::COLD, 48, 2);
             break;
         }
         device.timeout += device.get_baseitem_pval();
@@ -664,8 +775,8 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
         // 後続のチェックは monster へのポインタ経由なので継続可能
     }
 
-    // [フェーズ C-1 拡張] 杖/ロッド使用 (HEAL_MONSTER/HASTE_MONSTER/HEALING/SPEED/CURING)
-    if (monster_use_wand_or_rod(creature, monster)) {
+    // [フェーズ C-1 拡張] 杖/ロッド使用 (自己回復/自己加速/状態回復/プレイヤー攻撃)
+    if (monster_use_wand_or_rod(creature, monster, m_idx)) {
         // 同上、ターン消費とは別に副次行動として処理
     }
 
