@@ -1286,6 +1286,86 @@ public:
         this->riding = m_idx;
     }
 
+    /*! @brief 所持品数を設定する (提案 24) */
+    virtual void set_inven_cnt(short value)
+    {
+        this->inven_cnt = value;
+    }
+
+    /*! @brief 所持品数を 1 増やす (提案 24) */
+    virtual void increment_inven_cnt()
+    {
+        this->inven_cnt++;
+    }
+
+    /*! @brief 所持品数を 1 減らす (提案 24) */
+    virtual void decrement_inven_cnt()
+    {
+        this->inven_cnt--;
+    }
+
+    /*! @brief 装備品数を設定する (提案 24) */
+    virtual void set_equip_cnt(short value)
+    {
+        this->equip_cnt = value;
+    }
+
+    /*! @brief 装備品数を 1 増やす (提案 24) */
+    virtual void increment_equip_cnt()
+    {
+        this->equip_cnt++;
+    }
+
+    /*! @brief 装備品数を 1 減らす (提案 24) */
+    virtual void decrement_equip_cnt()
+    {
+        this->equip_cnt--;
+    }
+
+    /*! @brief 年齢を設定する (提案 24) */
+    virtual void set_age(int16_t value)
+    {
+        this->age = value;
+    }
+
+    /*! @brief 年齢を加算する (提案 24) */
+    virtual void add_age(int16_t delta)
+    {
+        this->age += delta;
+    }
+
+    /*! @brief 身長を設定する (提案 24) */
+    virtual void set_ht(int16_t value)
+    {
+        this->ht = value;
+    }
+
+    /*! @brief 体重を設定する (提案 24) */
+    virtual void set_wt(int16_t value)
+    {
+        this->wt = value;
+    }
+
+    /*! @brief 名声を設定する (提案 24) */
+    virtual void set_prestige(int16_t value)
+    {
+        this->prestige = value;
+    }
+
+    /*! @brief 名声を加算する (提案 24) */
+    virtual void add_prestige(int16_t delta)
+    {
+        this->prestige += delta;
+    }
+
+    /*! @brief 名声を半減する等の比率変更 (提案 24) */
+    virtual void divide_prestige(int divisor)
+    {
+        if (divisor != 0) {
+            this->prestige /= divisor;
+        }
+    }
+
     /*! @brief 影 (KAGE) かどうか */
     virtual bool is_kage() const
     {

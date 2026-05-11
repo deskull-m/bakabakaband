@@ -214,7 +214,7 @@ void complete_quest(CreatureEntity &creature, QuestId quest_id)
     }
 
     // 威信値アップ
-    creature.prestige += 10 + (quest.level / 2);
+    creature.add_prestige(10 + (quest.level / 2));
 
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_QUEST_CLEAR);
     msg_print(_("クエストを達成した！", "You just completed your quest!"));

@@ -983,11 +983,11 @@ void do_cmd_pet(CreatureEntity &creature)
         item_in_slot.wipe();
         if (was_equipped) {
             if (target_pet.equip_cnt > 0) {
-                target_pet.equip_cnt--;
+                target_pet.decrement_equip_cnt();
             }
         } else {
             if (target_pet.inven_cnt > 0) {
-                target_pet.inven_cnt--;
+                target_pet.decrement_inven_cnt();
             }
         }
         break;

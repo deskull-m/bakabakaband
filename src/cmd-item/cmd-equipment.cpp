@@ -308,7 +308,7 @@ void do_cmd_wield(CreatureEntity &creature)
 
     wield_slot_item = std::move(item);
     wield_slot_item.marked.set(OmType::TOUCHED);
-    creature.equip_cnt++;
+    creature.increment_equip_cnt();
 
 #define STR_WIELD_HAND_RIGHT _("%s(%c)を右手に装備した。", "You are wielding %s (%c) in your right hand.")
 #define STR_WIELD_HAND_LEFT _("%s(%c)を左手に装備した。", "You are wielding %s (%c) in your left hand.")

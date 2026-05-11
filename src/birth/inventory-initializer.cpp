@@ -72,7 +72,7 @@ void wield_all(CreatureEntity &creature)
             floor_item_optimize(creature, 0 - i_idx);
         }
 
-        creature.equip_cnt++;
+        creature.increment_equip_cnt();
     }
 }
 
