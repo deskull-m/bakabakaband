@@ -337,7 +337,7 @@ ProcessResult effect_monster_photo(CreatureEntity &creature, EffectMonster *em_p
         em_ptr->dam = 0;
     }
 
-    em_ptr->photo = enum2i(em_ptr->m_ptr->r_idx);
+    em_ptr->photo = enum2i(em_ptr->m_ptr->get_r_idx());
     return ProcessResult::PROCESS_CONTINUE;
 }
 

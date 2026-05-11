@@ -148,7 +148,7 @@ void QuestCompletionChecker::complete_kill_all()
 
 std::tuple<bool, bool> QuestCompletionChecker::complete_random()
 {
-    if (this->q_ptr->r_idx != this->m_ptr->r_idx) {
+    if (this->q_ptr->r_idx != this->m_ptr->get_r_idx()) {
         return std::make_tuple(false, false);
     }
 

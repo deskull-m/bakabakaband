@@ -1318,7 +1318,7 @@ bool decide_monster_multiplication(CreatureEntity &creature, MONSTER_IDX m_idx, 
 void process_monster_spawn_item(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     CreatureEntity *m_ptr = &creature.get_floor()->get_monster(m_idx);
-    MonraceDefinition &monrace = MonraceList::get_instance().get_monrace(m_ptr->r_idx);
+    MonraceDefinition &monrace = MonraceList::get_instance().get_monrace(m_ptr->get_r_idx());
     for (const auto &spawn_info : monrace.spawn_items) {
         auto num = std::get<0>(spawn_info);
         auto deno = std::get<1>(spawn_info);
@@ -1339,7 +1339,7 @@ void process_monster_spawn_item(CreatureEntity &creature, MONSTER_IDX m_idx)
 void process_monster_spawn_zanki(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     CreatureEntity *m_ptr = &creature.get_floor()->get_monster(m_idx);
-    MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
+    MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->get_r_idx());
     if (r_ptr->level < 30 || !r_ptr->kind_flags.has(MonsterKindType::UNIQUE) || r_ptr->r_misc_flags.has(MonsterMiscType::EMPTY_MIND)) {
         return;
     }
@@ -1352,7 +1352,7 @@ void process_monster_spawn_zanki(CreatureEntity &creature, MONSTER_IDX m_idx)
     ItemEntity item;
     item.generate(684);
     item.number = 1;
-    item.pval = enum2i(m_ptr->ap_r_idx);
+    item.pval = enum2i(m_ptr->get_ap_r_idx());
     (void)drop_near(creature, item, m_ptr->get_position());
 }
 
@@ -1363,7 +1363,7 @@ void process_monster_spawn_zanki(CreatureEntity &creature, MONSTER_IDX m_idx)
 void process_monster_change_feat(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     auto *m_ptr = &creature.get_floor()->get_monster(m_idx);
-    auto *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
+    auto *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->get_r_idx());
     for (const auto &spawn_info : r_ptr->change_feats) {
         auto num = std::get<0>(spawn_info);
         auto deno = std::get<1>(spawn_info);
@@ -1386,7 +1386,7 @@ bool process_monster_spawn_monster(CreatureEntity &creature, MONSTER_IDX m_idx, 
 {
 
     CreatureEntity *m_ptr = &creature.get_floor()->get_monster(m_idx);
-    MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
+    MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->get_r_idx());
     if ((r_ptr->spawn_monsters.size() == 0) || (creature.get_floor()->num_repro >= MAX_REPRODUCTION)) {
         return false;
     }

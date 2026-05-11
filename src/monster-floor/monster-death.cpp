@@ -120,7 +120,7 @@ static void drop_corpse(CreatureEntity &creature, MonsterDeath *md_ptr)
     const auto &floor = *creature.get_floor();
     auto is_drop_corpse = one_in_(md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) ? 1 : 4);
     is_drop_corpse &= md_ptr->r_ptr->drop_flags.has_any_of({ MonsterDropType::DROP_CORPSE, MonsterDropType::DROP_SKELETON, MonsterDropType::DROP_JUNK });
-    is_drop_corpse &= !(floor.inside_arena || AngbandSystem::get_instance().is_phase_out() || md_ptr->cloned || ((md_ptr->m_ptr->r_idx == AngbandWorld::get_instance().today_mon) && md_ptr->m_ptr->is_pet()));
+    is_drop_corpse &= !(floor.inside_arena || AngbandSystem::get_instance().is_phase_out() || md_ptr->cloned || ((md_ptr->m_ptr->get_r_idx() == AngbandWorld::get_instance().today_mon) && md_ptr->m_ptr->is_pet()));
     if (!is_drop_corpse) {
         return;
     }
@@ -144,13 +144,13 @@ static void drop_corpse(CreatureEntity &creature, MonsterDeath *md_ptr)
 
     ItemEntity item({ ItemKindType::MONSTER_REMAINS, (corpse ? SV_CORPSE : SV_SKELETON) });
     ItemMagicApplier(creature, &item, floor.object_level, AM_NO_FIXED_ART).execute();
-    item.pval = enum2i(md_ptr->m_ptr->r_idx);
+    item.pval = enum2i(md_ptr->m_ptr->get_r_idx());
     (void)drop_near(creature, item, md_ptr->get_position());
 
     try {
         if (one_in_(md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) ? 1 : 4)) {
             item.generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::MONSTER_REMAINS, SV_SOUL }));
-            item.pval = enum2i(md_ptr->m_ptr->r_idx);
+            item.pval = enum2i(md_ptr->m_ptr->get_r_idx());
             (void)drop_near(creature, item, md_ptr->get_position());
         }
     } catch (const std::exception &e) {
@@ -162,7 +162,7 @@ static void drop_corpse(CreatureEntity &creature, MonsterDeath *md_ptr)
 
     if (md_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_JUNK)) {
         ItemEntity item_junk({ ItemKindType::MONSTER_REMAINS, SV_JUNK });
-        item_junk.pval = enum2i(md_ptr->m_ptr->r_idx);
+        item_junk.pval = enum2i(md_ptr->m_ptr->get_r_idx());
         (void)drop_near(creature, item_junk, md_ptr->get_position());
     }
 }
@@ -232,7 +232,7 @@ static void drop_artifacts(CreatureEntity &creature, MonsterDeath *md_ptr)
     drop_artifact_from_unique(creature, md_ptr);
     const auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
-    if (md_ptr->r_ptr->misc_flags.has_not(MonsterMiscType::GUARDIAN) || (dungeon.final_guardian != md_ptr->m_ptr->r_idx)) {
+    if (md_ptr->r_ptr->misc_flags.has_not(MonsterMiscType::GUARDIAN) || (dungeon.final_guardian != md_ptr->m_ptr->get_r_idx())) {
         return;
     }
 
@@ -321,7 +321,7 @@ static void drop_items_golds(CreatureEntity &creature, MonsterDeath *md_ptr, int
     const auto &monraces = MonraceList::get_instance();
     for (auto i = 0; i < drop_numbers; i++) {
         if (md_ptr->do_gold && (!md_ptr->do_item || one_in_(2))) {
-            const auto &monrace = monraces.get_monrace(md_ptr->m_ptr->r_idx);
+            const auto &monrace = monraces.get_monrace(md_ptr->m_ptr->get_r_idx());
             const auto bi_key = BaseitemMonraceService::lookup_fixed_gold_drop(monrace.drop_flags);
             auto item = floor.make_gold(bi_key);
             (void)drop_near(creature, item, md_ptr->get_position());
@@ -455,7 +455,7 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
     const auto drop_numbers = decide_drop_numbers(creature, &md, drop_item, floor.inside_arena);
     floor.object_level = (floor.dun_level + md.r_ptr->level) / 2;
     drop_items_golds(creature, &md, drop_numbers);
-    if ((md.r_ptr->misc_flags.has_not(MonsterMiscType::QUESTOR)) || AngbandSystem::get_instance().is_phase_out() || (md.m_ptr->r_idx != MonraceId::MELKO) || md.cloned) {
+    if ((md.r_ptr->misc_flags.has_not(MonsterMiscType::QUESTOR)) || AngbandSystem::get_instance().is_phase_out() || (md.m_ptr->get_r_idx() != MonraceId::MELKO) || md.cloned) {
         return;
     }
 

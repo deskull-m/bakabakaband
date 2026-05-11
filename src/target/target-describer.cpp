@@ -193,7 +193,7 @@ static ProcessResult describe_hallucinated_target(CreatureEntity &creature, Grid
 static bool describe_grid_lore(CreatureEntity &creature, GridExamination *ge_ptr)
 {
     screen_save();
-    screen_roff(creature, ge_ptr->m_ptr->ap_r_idx, MONSTER_LORE_NORMAL);
+    screen_roff(creature, ge_ptr->m_ptr->get_ap_r_idx(), MONSTER_LORE_NORMAL);
     term_addstr(-1, TERM_WHITE, format(_("  [r思 %s%s]", "  [r,%s%s]"), ge_ptr->x_info, ge_ptr->info));
     ge_ptr->query = inkey();
     screen_load();
@@ -323,7 +323,7 @@ static short describe_grid(CreatureEntity &creature, GridExamination *ge_ptr)
     }
 
     ge_ptr->boring = false;
-    LoreTracker::get_instance().set_trackee(ge_ptr->m_ptr->ap_r_idx);
+    LoreTracker::get_instance().set_trackee(ge_ptr->m_ptr->get_ap_r_idx());
     health_track(creature, ge_ptr->g_ptr->m_idx);
     handle_stuff(creature);
     describe_grid_monster(creature, ge_ptr);

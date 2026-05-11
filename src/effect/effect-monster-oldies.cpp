@@ -57,7 +57,7 @@ ProcessResult effect_monster_old_clone(CreatureEntity &creature, EffectMonster *
     }
 
     em_ptr->m_ptr->hp = em_ptr->m_ptr->maxhp;
-    if (multiply_monster(creature, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->r_idx, true, 0L)) {
+    if (multiply_monster(creature, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_r_idx(), true, 0L)) {
         em_ptr->note = _("が分裂した！", " spawns!");
     }
 
@@ -164,7 +164,7 @@ ProcessResult effect_monster_old_heal(CreatureEntity &creature, EffectMonster *e
     }
 
     effect_monster_old_heal_check_player(creature, em_ptr);
-    if (em_ptr->m_ptr->r_idx == MonraceId::LEPER) {
+    if (em_ptr->m_ptr->get_r_idx() == MonraceId::LEPER) {
         em_ptr->heal_leper = true;
         if (em_ptr->is_player()) {
             chg_virtue(creature, Virtue::COMPASSION, 5);
