@@ -220,8 +220,26 @@ CreatureEntity
 │        高機能タイマー。モンスターでは nullptr)
 └── tl::optional<MonsterProfile> monster_profile
         (モンスター固有データ: alliance_idx / mflag / smart /
-         hold_o_idx_list 等)
+         transform_* 等。提案 21 で全メンバ private 化済)
 ```
+
+### Phase 9-22: MonsterProfile アクセス API の整備 ✅ 完了
+
+提案 9 系列 (read-side virtual)、提案 14-22 系列 (write-side virtual /
+共通走査 API / 一括操作 / class 化) により、`MonsterProfile` への
+外部アクセスは全て `CreatureEntity` の virtual API 経由に統一された。
+
+- **提案 14 / 14b**: `find_nearest_creature` / `has_visible_creature` /
+  `collect_creatures` で m_list 走査を集約
+- **提案 15 / 15b / 18 / 20**: `mflag2` の has/set/reset/assign/clear/
+  get_all/set_all を virtual 化
+- **提案 16 / 20**: `mflag` (一時フラグ) を virtual 化
+- **提案 9b / 17 / 19 / 22**: `alliance_idx`/`sub_align`/`parent_m_idx`/
+  `smart`/`inventory`/`transform_*`/`death_count`/`r_idx`/`ap_r_idx`/
+  `riding` の write-side virtual
+- **提案 21**: `MonsterProfile` を class 化、全メンバ private 化、
+  `friend` は `CreatureEntity` / `MonsterLoader50` / `MonsterWriter`
+  の 3 つに限定
 
 今後の残作業としては、現在 `CreatureEntity` 直下に残存するプレイヤー
 固有フィールド群（種族・職業・熟練度・ESP 等）を、モンスターにも
@@ -230,10 +248,11 @@ CreatureEntity
 方向は取らない。
 
 **残タスク詳細は [`docs/creature-entity-refactoring-roadmap.md`](docs/creature-entity-refactoring-roadmap.md) 参照。**
-Phase 1-8 完了後の継続提案（プレイヤー専用フィールドのクリーチャー
+Phase 1-22 完了後の継続提案（プレイヤー専用フィールドのクリーチャー
 共通化、プレイヤー専用仮想メソッドの共通化、TimedEffects 二重管理
-解消等）を同書で管理する。新規の統合作業に着手する際は先に同書を
-参照し、作業完了後は同書と本ファイルの両方に進捗を反映すること。
+解消、CreatureEntity 直下生フィールドのアクセサ整備等）を同書で管理する。
+新規の統合作業に着手する際は先に同書を参照し、作業完了後は同書と
+本ファイルの両方に進捗を反映すること。
 
 **移行しない（モンスター種族定義側に残す）フィールド:**
 
@@ -534,9 +553,22 @@ bakabakaband 側と上流側でよくある構造的差異を以下のルール�
 | `creature.get_monster_profile().alliance_idx` / `.sub_align` / `.parent_m_idx` / `.smart` / `.hold_o_idx_list` 読取り | `creature.get_alliance_idx()` / `get_sub_align()` / `get_parent_m_idx()` / `get_smart_flags()` (read-only) (フェーズ 9) |
 | `creature.spell_exp[idx]` / `creature.skill_exp[key]` / `creature.weapon_exp[tval][sval]` 読取り | `creature.get_spell_exp(idx)` / `get_skill_exp(skill)` / `get_weapon_exp(tval, sval)` (フェーズ 10) |
 | `MonsterProfile::hold_o_idx_list` / `ItemEntity::held_m_idx` 経由のモンスター所持 | `monster.inventory[INVEN_TOTAL]` 直接、`monster.store_item(item)` / `monster.acquire_item(item)` / `monster.drop_all_inventory(dropper)` (フェーズ A 完了で廃止) |
-| `monster_drop_carried_objects(creature, monster)` | 内部実装が `monster.drop_all_inventory(creature)` に集約 (free function は薄いラッパとして残置) |
-| `store_item_to_inventory(creature, item_ptr)` | 既存の free function は維持。OO 形式は `creature.store_item(item)` |
+| `monster_drop_carried_objects(creature, monster)` | `monster.drop_all_inventory(creature)` (提案 17 で free function ラッパ削除) |
+| `store_item_to_inventory(creature, item_ptr)` | `creature.store_item(item)` (提案 17 で OO 形式に統一)。free function は inventory-object.cpp 内部のみ残置 |
+| `check_store_item_to_inventory(creature, item_ptr)` | `creature.can_store_item(item)` (提案 17) |
 | `creature.effects()->protection().current()` | `creature.get_timed_effect(CreatureTimedEffect::PROTECTION)` (PlayerProtection も統一 API 経由) |
+| 個別ターゲット選定の m_list 走査ループ | `creature.find_nearest_creature(predicate, require_projectable)` / `creature.has_visible_creature(predicate)` / `creature.collect_creatures(predicate)` (提案 14 / 14b) |
+| `monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::X)` 読取り | `monster.has_constant_flag(...)` あるいは個別 virtual `is_kage()` / `is_chameleon()` / `is_huge()` / `is_large()` / `is_small()` / `is_fat()` / `is_gaunt()` / `is_lightweight()` / `is_naked()` / `is_zombified()` / `is_illegal_modified()` / `is_santa()` / `is_angered()` / `is_waifuized()` / `is_quylthlug_born()` / `is_defecated()` / `is_vomited()` / `has_noflow()` / `is_nogeno()` 等 (提案 15 / 15b) |
+| `monster.get_monster_profile().mflag2.set(...)` / `.reset(...)` 書込 | `monster.set_constant_flag(flag)` / `monster.reset_constant_flag(flag)` / 初期化リスト版 `set_constant_flags({...})` / `reset_constant_flags({...})` (提案 18) |
+| `monster.get_monster_profile().mflag2 = bits` 一括代入 | `monster.set_all_constant_flags(bits)` / 取得は `get_all_constant_flags()` (提案 20)。savefile 復元での bool 代入は `assign_constant_flag(flag, bool)` |
+| `monster.get_monster_profile().mflag.has(...)` 読取 / `.set(...)` 書込 | `monster.has_temporary_flag(flag)` / `set_temporary_flag(flag)` / `reset_temporary_flag(flag)`、個別 virtual `is_in_view()` / `is_marked_for_los()` / `is_sensed_by_esp()` / `was_present_at_turn_start()` / `has_prevent_magic()` / `has_sanity_blast()` (提案 16) |
+| `monster.get_monster_profile().mflag.clear()` / `mflag2.clear()` 一括クリア | `clear_temporary_flags()` / `clear_constant_flags()` (提案 20) |
+| `monster.get_monster_profile().alliance_idx = X` / `.sub_align = X` / `.parent_m_idx = X` 書込 | `set_alliance_idx(X)` / `set_sub_align(X)` / `add_sub_align(mask)` / `set_parent_m_idx(X)` (提案 9b) |
+| `monster.get_monster_profile().smart.set(...)` / `.clear()` | `monster.add_smart_flag(flag)` / `monster.clear_smart_flags()` (提案 9b) |
+| `monster.get_monster_profile().transform_r_idx = X` / `.transform_hp_threshold = X` / `.has_transformed = X` / `.death_count = X` | `set_transform_r_idx(X)` / `set_transform_hp_threshold(X)` / `set_has_transformed(X)` / `set_death_count(X)`、減算は `decrement_death_count()`、読取は `get_transform_r_idx()` / `get_transform_hp_threshold()` / `has_transformed()` / `get_death_count()` (提案 19) |
+| `monster.r_idx = X` / `monster.ap_r_idx = X` 書込 | `monster.set_r_idx(X)` / `monster.set_ap_r_idx(X)`、両方同期は `monster.polymorph_to(X)` (提案 22) |
+| `creature.riding = X` 書込 (compaction/floor 切替等の付替え) | `creature.set_riding(X)` (提案 22)。通常の騎乗開始/終了は `creature.ride_monster(X)` |
+| `MonsterProfile` 直接アクセス (`get_monster_profile().X`) | **提案 21 でメンバ private 化済み。** CreatureEntity の virtual API 経由でのみアクセス可能。例外は `friend` 宣言された `CreatureEntity` 自身、`MonsterLoader50`、`MonsterWriter` |
 
 **GCC 固有の注意**:
 上流は MSVC 前提のことが多く、`<cstdint>` 等のインクルード漏れがあれば追加する。
