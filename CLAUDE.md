@@ -251,6 +251,9 @@ CreatureEntity
   max_max_exp) の setter virtual
 - **提案 27b**: `au` (所持金) / `csp` (現在 MP) の set/add/sub/divide
   virtual。約 110 箇所の compound assignment (`+=` / `-=`) を OO 化
+- **提案 28 / 28b**: `r_idx` / `ap_r_idx` / `riding` の getter virtual
+  整備と全 read site (約 290 箇所、参照とポインタ経由両方) の getter
+  経由化。フィールド private 化 (将来の提案 29) 前提条件が整備済み
 
 今後の残作業としては、現在 `CreatureEntity` 直下に残存するプレイヤー
 固有フィールド群（種族・職業・熟練度・ESP 等）を、モンスターにも
@@ -578,7 +581,9 @@ bakabakaband 側と上流側でよくある構造的差異を以下のルール�
 | `monster.get_monster_profile().smart.set(...)` / `.clear()` | `monster.add_smart_flag(flag)` / `monster.clear_smart_flags()` (提案 9b) |
 | `monster.get_monster_profile().transform_r_idx = X` / `.transform_hp_threshold = X` / `.has_transformed = X` / `.death_count = X` | `set_transform_r_idx(X)` / `set_transform_hp_threshold(X)` / `set_has_transformed(X)` / `set_death_count(X)`、減算は `decrement_death_count()`、読取は `get_transform_r_idx()` / `get_transform_hp_threshold()` / `has_transformed()` / `get_death_count()` (提案 19) |
 | `monster.r_idx = X` / `monster.ap_r_idx = X` 書込 | `monster.set_r_idx(X)` / `monster.set_ap_r_idx(X)`、両方同期は `monster.polymorph_to(X)` (提案 22) |
+| `monster.r_idx == X` / `monster.ap_r_idx` 読取り (`m_ptr->r_idx` 含む) | `monster.get_r_idx() == X` / `monster.get_ap_r_idx()` / `m_ptr->get_r_idx()` 等の getter 経由 (提案 28 / 28b) |
 | `creature.riding = X` 書込 (compaction/floor 切替等の付替え) | `creature.set_riding(X)` (提案 22)。通常の騎乗開始/終了は `creature.ride_monster(X)` |
+| `creature.riding == 0` / `creature.riding` 読取り (`m_ptr->riding` 含む) | `creature.get_riding() == 0` / `creature.get_riding()` 経由 (提案 28 / 28b) |
 | `MonsterProfile` 直接アクセス (`get_monster_profile().X`) | **提案 21 でメンバ private 化済み。** CreatureEntity の virtual API 経由でのみアクセス可能。例外は `friend` 宣言された `CreatureEntity` 自身、`MonsterLoader50`、`MonsterWriter` |
 | `creature.age = X` / `creature.ht = X` / `creature.wt = X` / `creature.prestige = X` 書込 | `creature.set_age(X)` / `set_ht(X)` / `set_wt(X)` / `set_prestige(X)`、加算は `add_age(d)` / `add_prestige(d)`、`prestige /= N` は `divide_prestige(N)` (提案 24) |
 | `creature.inven_cnt` / `creature.equip_cnt` フィールド | **提案 25 でフィールド廃止。** `creature.get_inven_cnt()` / `creature.get_equip_cnt()` を呼ぶ。インベントリ変更時の cnt 同期は不要 (inventory[] から自動計算) |
