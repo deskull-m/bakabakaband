@@ -504,7 +504,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
             }
 
             hp_player(creature, healing);
-            creature.csp -= healing;
+            creature.sub_csp(healing);
             RedrawingFlagsUpdater::get_instance().set_flags(flags);
         }
     }
@@ -517,7 +517,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
                 healing = wounds;
             }
 
-            creature.csp += healing;
+            creature.add_csp(healing);
             RedrawingFlagsUpdater::get_instance().set_flags(flags);
             take_hit(creature, DAMAGE_LOSELIFE, healing, _("頭に昇った血", "blood rushing to the head"));
         }

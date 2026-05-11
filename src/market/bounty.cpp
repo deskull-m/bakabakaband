@@ -64,7 +64,7 @@ bool exchange_cash(CreatureEntity &creature)
 
         const auto reward_money = 1000000 * item.number;
         msg_format(fmt_reward, reward_money);
-        creature.au += reward_money;
+        creature.add_au(reward_money);
         rfu.set_flag(MainWindowRedrawingFlag::GOLD);
         vary_item(creature, i, -item.number);
     }
@@ -87,7 +87,7 @@ bool exchange_cash(CreatureEntity &creature)
 
         const auto reward_money = 200000 * item.number;
         msg_format(fmt_reward, reward_money);
-        creature.au += reward_money;
+        creature.add_au(reward_money);
         rfu.set_flag(MainWindowRedrawingFlag::GOLD);
         vary_item(creature, i, -item.number);
     }
@@ -110,7 +110,7 @@ bool exchange_cash(CreatureEntity &creature)
 
         const auto reward_money = 100000 * item.number;
         msg_format(fmt_reward, reward_money);
-        creature.au += reward_money;
+        creature.add_au(reward_money);
         rfu.set_flag(MainWindowRedrawingFlag::GOLD);
         vary_item(creature, i, -item.number);
     }
@@ -131,7 +131,7 @@ bool exchange_cash(CreatureEntity &creature)
 
         const auto reward_money = (monrace.level * 50 + 100) * item.number;
         msg_format(fmt_reward, reward_money);
-        creature.au += reward_money;
+        creature.add_au(reward_money);
         rfu.set_flag(MainWindowRedrawingFlag::GOLD);
         vary_item(creature, i, -item.number);
     }
@@ -151,7 +151,7 @@ bool exchange_cash(CreatureEntity &creature)
 
         const auto reward_money = (monrace.level * 30 + 60) * item.number;
         msg_format(fmt_reward, reward_money);
-        creature.au += reward_money;
+        creature.add_au(reward_money);
         rfu.set_flag(MainWindowRedrawingFlag::GOLD);
         vary_item(creature, i, -item.number);
     }

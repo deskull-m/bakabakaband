@@ -51,7 +51,7 @@ void process_eat_gold(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
         gold = creature.au;
     }
 
-    creature.au -= gold;
+    creature.sub_au(gold);
     if (gold <= 0) {
         msg_print(_("しかし何も盗まれなかった。", "Nothing was stolen."));
     } else if (creature.au > 0) {
@@ -304,9 +304,9 @@ void process_drain_mana(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr
     }
 
     monap_ptr->do_cut = 0;
-    creature.csp -= monap_ptr->damage;
+    creature.sub_csp(monap_ptr->damage);
     if (creature.csp < 0) {
-        creature.csp = 0;
+        creature.set_csp(0);
         creature.csp_frac = 0;
     }
 

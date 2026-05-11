@@ -347,9 +347,9 @@ void do_cmd_hissatsu(CreatureEntity &creature)
 
     creature.plus_incident_tree("USE_HISSATSU", 1);
     PlayerEnergy(creature).set_player_turn_energy(100);
-    creature.csp -= spell.smana;
+    creature.sub_csp(spell.smana);
     if (creature.csp < 0) {
-        creature.csp = 0;
+        creature.set_csp(0);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();

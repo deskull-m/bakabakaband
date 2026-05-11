@@ -143,7 +143,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
                 chg_virtue(creature, Virtue::NATURE, 1);
             }
 
-            creature.au += price;
+            creature.add_au(price);
             store_prt_gold(creature.au);
             const auto dummy = selling_item.calc_price() * selling_item.number;
 

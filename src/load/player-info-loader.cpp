@@ -315,7 +315,7 @@ static void rd_hp(CreatureEntity &creature)
 static void rd_mana(CreatureEntity &creature)
 {
     creature.set_msp(rd_s32b());
-    creature.csp = rd_s32b();
+    creature.set_csp(rd_s32b());
     creature.csp_frac = rd_u32b();
 }
 
@@ -444,7 +444,7 @@ static void rd_player_status(CreatureEntity &creature)
 {
     rd_base_status(creature);
     strip_bytes(24);
-    creature.au = rd_s32b();
+    creature.set_au(rd_s32b());
     rd_experience(creature);
     rd_skills(creature);
     set_race(creature);

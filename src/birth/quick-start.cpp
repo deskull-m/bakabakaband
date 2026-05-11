@@ -74,7 +74,7 @@ bool ask_quick_start(CreatureEntity &creature)
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
     update_creature(creature);
     creature.hp = creature.maxhp;
-    creature.csp = creature.msp;
+    creature.set_csp(creature.msp);
     process_player_name(creature);
     return true;
 }
@@ -155,7 +155,7 @@ void load_prev_data(CreatureEntity &creature, bool swap)
     creature.set_ht(previous_char.ht);
     creature.set_wt(previous_char.wt);
     creature.set_prestige(previous_char.prestige);
-    creature.au = previous_char.au;
+    creature.set_au(previous_char.au);
 
     for (int i = 0; i < A_MAX; i++) {
         creature.stat_cur[i] = creature.stat_max[i] = previous_char.stat_max[i];

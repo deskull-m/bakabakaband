@@ -237,7 +237,7 @@ void process_player(CreatureEntity &creature)
         uint32_t cost_frac = (creature.msp + 30L) * 256L;
         s64b_lshift(&cost, &cost_frac, 16);
         if (s64b_cmp(creature.csp, creature.csp_frac, cost, cost_frac) < 0) {
-            creature.csp = 0;
+            creature.set_csp(0);
             creature.csp_frac = 0;
             set_action(creature, ACTION_NONE);
         } else {
@@ -251,7 +251,7 @@ void process_player(CreatureEntity &creature)
         if (creature.csp < 3) {
             set_action(creature, ACTION_NONE);
         } else {
-            creature.csp -= 2;
+            creature.sub_csp(2);
             rfu.set_flag(MainWindowRedrawingFlag::MP);
         }
     }
