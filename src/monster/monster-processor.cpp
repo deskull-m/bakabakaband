@@ -250,11 +250,11 @@ static bool monster_quaff_potion(CreatureEntity &creature, CreatureEntity &monst
     switch (sval) {
     case SV_POTION_CURE_LIGHT:
         heal(Dice::roll(2, 8));
-        monster.set_timed_effect(CreatureTimedEffect::CUT, std::max<int>(0, monster.get_timed_effect(CreatureTimedEffect::CUT) - 10));
+        monster.set_timed_effect(CreatureTimedEffect::CUT, static_cast<short>(std::max<int>(0, monster.get_timed_effect(CreatureTimedEffect::CUT) - 10)));
         break;
     case SV_POTION_CURE_SERIOUS:
         heal(Dice::roll(4, 8));
-        monster.set_timed_effect(CreatureTimedEffect::CUT, std::max<int>(0, monster.get_timed_effect(CreatureTimedEffect::CUT) / 2 - 50));
+        monster.set_timed_effect(CreatureTimedEffect::CUT, static_cast<short>(std::max<int>(0, monster.get_timed_effect(CreatureTimedEffect::CUT) / 2 - 50)));
         break;
     case SV_POTION_CURE_CRITICAL:
         heal(Dice::roll(6, 8));
