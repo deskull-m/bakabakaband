@@ -295,14 +295,14 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         if (!mod.has_value()) {
             continue;
         }
-        auto adjusted = static_cast<int>(m_ptr->stat_max[stat]) + *mod;
+        auto adjusted = static_cast<int>(m_ptr->get_stat_max(stat)) + *mod;
         adjusted = std::clamp(adjusted, static_cast<int>(stat_min), static_cast<int>(stat_max));
-        m_ptr->stat_max[stat] = static_cast<short>(adjusted);
-        m_ptr->stat_cur[stat] = static_cast<short>(adjusted);
-        if (m_ptr->stat_max_max[stat] < m_ptr->stat_max[stat]) {
-            m_ptr->stat_max_max[stat] = m_ptr->stat_max[stat];
+        m_ptr->set_stat_max(stat, static_cast<short>(adjusted));
+        m_ptr->set_stat_cur(stat, static_cast<short>(adjusted));
+        if (m_ptr->get_stat_max_max(stat) < m_ptr->get_stat_max(stat)) {
+            m_ptr->set_stat_max_max(stat, m_ptr->get_stat_max(stat));
         }
-        m_ptr->stat_use[stat] = m_ptr->stat_max[stat];
+        m_ptr->set_stat_use(stat, m_ptr->get_stat_max(stat));
     }
     const auto is_summoned = summoner_m_idx.has_value();
     const CreatureEntity &summoner = floor.m_list[summoner_m_idx.value_or(0)];
@@ -423,7 +423,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     } else {
         m_ptr->name.clear();
     }
-    m_ptr->exp = 0;
+    m_ptr->set_exp(0);
 
     if (is_summoned) {
         m_ptr->set_parent_m_idx(*summoner_m_idx);

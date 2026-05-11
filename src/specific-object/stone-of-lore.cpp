@@ -49,19 +49,19 @@ bool StoneOfLore::perilous_secrets()
 
 void StoneOfLore::consume_mp()
 {
-    if (this->creature_ptr->msp <= 0) {
+    if (this->creature_ptr->get_msp() <= 0) {
         return;
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (this->creature_ptr->csp >= 20) {
-        this->creature_ptr->csp -= 20;
+    if (this->creature_ptr->get_csp() >= 20) {
+        this->creature_ptr->sub_csp(20);
         rfu.set_flag(MainWindowRedrawingFlag::MP);
         return;
     }
 
-    auto oops = 20 - this->creature_ptr->csp;
-    this->creature_ptr->csp = 0;
+    auto oops = 20 - this->creature_ptr->get_csp();
+    this->creature_ptr->set_csp(0);
     this->creature_ptr->csp_frac = 0;
     msg_print(_("石を制御できない！", "You are too weak to control the stone!"));
     BadStatusSetter bss(*this->creature_ptr);

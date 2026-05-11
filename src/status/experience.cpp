@@ -17,7 +17,7 @@ void gain_exp_64(CreatureEntity &creature, int32_t amount, uint32_t amount_frac)
         return;
     }
 
-    s64b_add(&(creature.exp), &(creature.exp_frac), amount, amount_frac);
+    creature.add_exp_with_frac(amount, amount_frac);
 
     if (creature.get_exp() < creature.get_max_exp()) {
         creature.add_max_exp(amount / 5);

@@ -1467,6 +1467,15 @@ public:
         this->csp -= delta;
     }
 
+    /*! @brief 64bit ペア演算で現在 MP を加算する (提案 32b) */
+    virtual void add_csp_with_frac(int delta, uint32_t delta_frac);
+
+    /*! @brief 64bit ペア演算で現在 MP を減算する (提案 32b) */
+    virtual void sub_csp_with_frac(int delta, uint32_t delta_frac);
+
+    /*! @brief 64bit ペア演算で経験値を加算する (提案 32b) */
+    virtual void add_exp_with_frac(EXP delta, uint32_t delta_frac);
+
     /*! @brief 所持金を取得する (提案 31) */
     virtual int get_au() const
     {
@@ -2536,10 +2545,13 @@ private:
 
 public:
     // 基本情報
+    // [提案 32b] private 化済。get_age()/set_age()/add_age() 等経由。
+private:
     int16_t age{}; /*!< 年齢 / Age */
     int16_t ht{}; /*!< 身長 / Height */
     int16_t wt{}; /*!< 体重 / Weight */
 
+public:
     // [提案 32] private 化済。get_prestige() / set_prestige() / add_prestige() / divide_prestige() 経由。
 private:
     int16_t prestige{}; /*!< 名声 / Prestige */
@@ -2548,6 +2560,8 @@ public:
     int32_t death_count{}; /*!< 死亡カウント / Death count */
 
     // ステータス関連
+    // [提案 32b] private 化済。get_stat_*(idx) / set_stat_*(idx, val) / add_stat_cur(idx, delta) 経由。
+private:
     short stat_max[A_MAX]{}; /*!< 現在の最大能力値 / Current "maximal" stat values */
     short stat_max_max[A_MAX]{}; /*!< 最大の最大能力値 / Maximal "maximal" stat values */
     short stat_cur[A_MAX]{}; /*!< 現在の基本能力値 / Current "natural" stat values */
@@ -2556,6 +2570,7 @@ public:
     int16_t stat_add[A_MAX]{}; /* Modifiers to stat values */
     int16_t stat_index[A_MAX]{}; /* Indexes into stat tables */
 
+public:
     // 徳関連
     std::map<Virtue, int16_t> virtues; /*!< 徳の値 / Virtue values */
 
@@ -2565,8 +2580,12 @@ private:
     EXP max_max_exp{}; /*!< 最大の最大経験値 / Max max experience (only to calculate score) */
 
 public:
+    // [提案 32b] private 化済。get_exp()/set_exp()/add_exp()/sub_exp()/get_max_exp()/set_max_exp() 等経由。
+private:
     EXP max_exp{}; /*!< 最大経験値 / Max experience */
     EXP exp{}; /*!< 現在の経験値 / Current experience */
+
+public:
     uint32_t exp_frac{}; /*!< 経験値の小数部 / Current exp frac (times 2^16) */
 
     // 騎乗関連
@@ -2588,8 +2607,12 @@ public:
     POSITION x{}; /*!< 現在のX座標 / Current location (X) */
 
     // MP関連
+    // [提案 32b] private 化済。get_msp()/set_msp()/get_csp()/set_csp()/add_csp()/sub_csp() 等経由。
+private:
     MANA_POINT msp{}; /*!< 最大MP / Max mana pts */
     MANA_POINT csp{}; /*!< 現在MP / Current mana pts */
+
+public:
     uint32_t csp_frac{}; /*!< MP小数部 / Current mana frac (times 2^16) */
 
     // HP関連
@@ -2603,8 +2626,11 @@ public:
     PlayerRaceType prace{}; /*!< 種族 / Race index */
     PlayerClassType pclass{}; /*!< クラス / Class index */
     player_personality_type ppersonality{}; /*!< 性格 / Personality index */
+    // [提案 32b] private 化済。get_town_num() / set_town_num() 経由。
+private:
     int16_t town_num{}; /*!< 現在いる街番号 / Current town number */
 
+public:
     // クラス固有データ / Class-specific data
     ClassSpecificData class_specific_data;
 
@@ -2622,8 +2648,11 @@ public:
     int speed{}; /*!< クリーチャーの速度 / Creature speed */
 
     // レベル関連
+    // [提案 32b] private 化済。get_level() / set_level() 経由。
+private:
     int16_t level{}; /*!< クリーチャーのレベル / Creature level */
 
+public:
     // アライメント関連
     int alignment{}; /*!< 善悪の属性 / Good/evil/neutral */
 
@@ -2632,12 +2661,18 @@ public:
     int16_t running{}; /*!< 現在の走行カウンタ / Current counter for running, if any */
 
     // 所持金関連
+    // [提案 32b] private 化済。get_au() / set_au() / add_au() / sub_au() / divide_au() 経由。
+private:
     PRICE au{}; /*!< 所持金 / Current Gold */
 
+public:
     // AC関連
     ARMOUR_CLASS ac{}; /*!< アーマークラス（プレイヤーは装備無しの基本AC、モンスターは総合AC） / Armor class (base AC for player, total AC for monster) */
+    // [提案 32b] private 化済。get_to_a() / set_to_a() 経由。
+private:
     ARMOUR_CLASS to_a{}; /*!< ACへのボーナス（主にプレイヤー用、装備などによるボーナス） / Bonus to AC (mainly for player, bonus from equipment) */
 
+public:
     // 名前関連
     std::string name{}; /*!< クリーチャーの名前（プレイヤー名またはペット名） / Creature's name (player name or pet nickname) */
 
@@ -2724,15 +2759,12 @@ public:
     ARMOUR_CLASS dis_to_a{}; /*!< 判明している現在の表記上の装備AC修正値 / Known bonus to ac */
     ARMOUR_CLASS dis_ac{}; /*!< 判明している現在の表記上の装備AC基礎値 / Known base ac */
 
-    int16_t to_h[2]{}; /* Bonus to hit (wield) */
-    // [提案 32] to_h_b / to_h_m / to_d_m を private 化済。get_*() / set_*() 経由。
+    // [提案 32b] to_h[] / to_d[] / to_h_b / to_h_m / to_d_m を private 化済。get_to_h(hand) / set_to_h(hand, val) 等経由。
 private:
+    int16_t to_h[2]{}; /* Bonus to hit (wield) */
     int16_t to_h_b{}; /* Bonus to hit (bow) */
     int16_t to_h_m{}; /* Bonus to hit (misc) */
-
-public:
     int16_t to_d[2]{}; /* Bonus to dam (wield) */
-private:
     int16_t to_d_m{}; /* Bonus to dam (misc) */
 
 public:
@@ -2741,8 +2773,11 @@ public:
     int16_t num_blow[2]{}; /* Number of blows */
     int16_t num_fire{}; /* Number of shots */
 
+    // [提案 32b] private 化済。get_food() / set_food() 経由。
+private:
     int16_t food{}; /*!< ゲーム中の滋養度の型定義 / Current nutrition */
 
+public:
     POSITION cur_lite{}; /* Radius of lite (if any) */
     POSITION old_lite{}; /* Radius of lite (if any) */
 
