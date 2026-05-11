@@ -215,7 +215,7 @@ bool set_food(CreatureEntity &creature, TIME_EFFECT v)
         notice = true;
     }
 
-    creature.food = v;
+    creature.set_food(v);
     if (!notice) {
         return false;
     }

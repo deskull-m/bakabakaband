@@ -125,7 +125,7 @@ void rd_experience(CreatureEntity &creature)
     creature.exp = rd_s32b();
     creature.exp_frac = rd_u32b();
 
-    creature.level = rd_s16b();
+    creature.set_level(rd_s16b());
     for (int i = 0; i < 64; i++) {
         creature.spell_exp[i] = rd_s16b();
     }
@@ -269,7 +269,7 @@ static void rd_arena(CreatureEntity &creature)
 {
     set_gambling_monsters();
 
-    creature.town_num = rd_s16b();
+    creature.set_town_num(rd_s16b());
     auto &entries = ArenaEntryList::get_instance();
     entries.load_current_entry(rd_s16b());
     if (loading_savefile_version < 28) {
@@ -330,7 +330,7 @@ static void rd_bad_status(CreatureEntity &creature)
     effects->blindness().set(rd_s16b());
     effects->paralysis().set(rd_s16b());
     effects->confusion().set(rd_s16b());
-    creature.food = rd_s16b();
+    creature.set_food(rd_s16b());
     strip_bytes(4); /* Old "food_digested" / "protection" */
 }
 

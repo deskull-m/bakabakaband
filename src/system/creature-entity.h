@@ -1344,6 +1344,30 @@ public:
         }
     }
 
+    /*! @brief 待ち伏せ状態を設定する (提案 26) */
+    virtual void set_ambush_flag(bool value)
+    {
+        this->ambush_flag = value;
+    }
+
+    /*! @brief 滋養度を設定する (提案 26) */
+    virtual void set_food(int16_t value)
+    {
+        this->food = value;
+    }
+
+    /*! @brief 現在いる街番号を設定する (提案 26) */
+    virtual void set_town_num(int16_t value)
+    {
+        this->town_num = value;
+    }
+
+    /*! @brief レベルを設定する (提案 26) */
+    virtual void set_level(int16_t value)
+    {
+        this->level = value;
+    }
+
     /*! @brief 影 (KAGE) かどうか */
     virtual bool is_kage() const
     {

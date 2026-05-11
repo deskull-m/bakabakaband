@@ -98,7 +98,7 @@ static void kingly(CreatureEntity &creature)
     }
 
     creature.exp = creature.max_exp;
-    creature.level = creature.max_plv;
+    creature.set_level(creature.max_plv);
     creature.au += 10000000L;
     term_clear();
 
