@@ -112,58 +112,114 @@ constexpr auto STALKER_CHANCE_DENOMINATOR = 32; //!< モンスターが背後に
 constexpr auto STALKER_DISTANCE_THRESHOLD = 20; //!< モンスターが背後に忍び寄る距離の閾値
 
 /*!
- * @brief モンスターが回復ポーションを飲んで HP を回復する (フェーズ C-1)
- * @param creature 視点クリーチャー (主にメッセージ表示用)
+ * @brief モンスターがポーションを飲んで状況に応じた効果を得る (フェーズ C-1 拡張)
+ * @param creature 視点クリーチャー (メッセージ表示用)
  * @param monster ポーションを飲むモンスター
  * @return 飲んだら true
- * @details inventory[] にある SV_POTION_CURE_LIGHT/SERIOUS/CRITICAL/HEALING/STAR_HEALING
- *          のいずれかを 1 個消費し、対応する HP を回復する。
- *          HP が maxhp の 50% 未満で発動。プレイヤーから視認できる場合はメッセージ表示。
- *          quaff/zap effect path 全体のリファクタは大規模なため、本関数は monster.hp の
- *          直接加算で簡易実装する。状態異常の解除等は対応せず純粋な HP 回復のみ。
+ * @details
+ * 状況判定の優先度:
+ *  1. HP 25%未満 で Star Healing/Life で大回復
+ *  2. HP 50%未満 で Healing/Cure系 で中回復
+ *  3. HP 25%未満 で Invulnerability で無敵化
+ *  4. 強毒 (POISON > 100) で Cure Poison で解毒
+ *  5. 恐怖時 で Boldness/Heroism/Berserk で恐怖解除 + バフ
+ *  6. 戦闘想定で 加速なし & Speed なら加速
+ *  7. 戦闘想定で 元素耐性なし & Resistance で 5 元素耐性
+ *  8. 戦闘想定で バフなし & Heroism/Berserk でバフ
+ *
+ * quaff/zap effect path 全体のリファクタは大規模なため、各効果は
+ * monster の HP 加算 / set_timed_effect() の直接呼出で簡易実装する。
+ * プレイヤー固有の virtue 変動・gain_exp 等は適用しない。
  */
-static bool monster_quaff_healing_potion(CreatureEntity &creature, CreatureEntity &monster)
+static bool monster_quaff_potion(CreatureEntity &creature, CreatureEntity &monster)
 {
-    if (monster.hp >= monster.maxhp / 2) {
-        return false;
-    }
+    const bool low_hp_severe = monster.hp < monster.maxhp / 4;
+    const bool low_hp_mid = monster.hp < monster.maxhp / 2;
+    const bool poisoned_heavy = monster.get_timed_effect(CreatureTimedEffect::POISON) > 100;
+    const bool fearful = monster.is_fearful();
+    const bool not_fast = monster.get_timed_effect(CreatureTimedEffect::ACCELERATION) == 0;
+    const bool not_resistant = monster.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE) == 0 && monster.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD) == 0;
+    const bool not_buffed = monster.get_timed_effect(CreatureTimedEffect::HERO) == 0 && monster.get_timed_effect(CreatureTimedEffect::BERSERK) == 0;
+    const bool fighting_context = monster.is_hostile() && monster.is_visible_on_map();
 
     INVENTORY_IDX potion_slot = -1;
-    int heal_amount = 0;
+    int priority = -1; // 0=最優先 ... 大=後回し
+    auto select_if = [&](INVENTORY_IDX slot, int p) {
+        if (priority < 0 || p < priority) {
+            potion_slot = slot;
+            priority = p;
+        }
+    };
     for (size_t i = 0; i < monster.inventory.size(); i++) {
         const auto &item = *monster.inventory[i];
-        if (!item.is_valid()) {
-            continue;
-        }
-        if (item.bi_key.tval() != ItemKindType::POTION) {
+        if (!item.is_valid() || item.bi_key.tval() != ItemKindType::POTION) {
             continue;
         }
         const auto sval = item.bi_key.sval().value_or(0);
+        const auto idx = static_cast<INVENTORY_IDX>(i);
         switch (sval) {
-        case SV_POTION_CURE_LIGHT:
-            heal_amount = Dice::roll(2, 8);
-            potion_slot = static_cast<INVENTORY_IDX>(i);
-            break;
-        case SV_POTION_CURE_SERIOUS:
-            heal_amount = Dice::roll(4, 8);
-            potion_slot = static_cast<INVENTORY_IDX>(i);
-            break;
-        case SV_POTION_CURE_CRITICAL:
-            heal_amount = Dice::roll(6, 8);
-            potion_slot = static_cast<INVENTORY_IDX>(i);
+        case SV_POTION_STAR_HEALING:
+        case SV_POTION_LIFE:
+            if (low_hp_severe) {
+                select_if(idx, 0);
+            }
             break;
         case SV_POTION_HEALING:
-            heal_amount = 300;
-            potion_slot = static_cast<INVENTORY_IDX>(i);
+            if (low_hp_severe) {
+                select_if(idx, 1);
+            }
             break;
-        case SV_POTION_STAR_HEALING:
-            heal_amount = 1200;
-            potion_slot = static_cast<INVENTORY_IDX>(i);
+        case SV_POTION_INVULNERABILITY:
+            if (low_hp_severe) {
+                select_if(idx, 2);
+            }
+            break;
+        case SV_POTION_CURE_CRITICAL:
+            if (low_hp_mid) {
+                select_if(idx, 3);
+            }
+            break;
+        case SV_POTION_CURE_SERIOUS:
+            if (low_hp_mid) {
+                select_if(idx, 4);
+            }
+            break;
+        case SV_POTION_CURE_LIGHT:
+            if (low_hp_mid) {
+                select_if(idx, 5);
+            }
+            break;
+        case SV_POTION_CURE_POISON:
+            if (poisoned_heavy) {
+                select_if(idx, 6);
+            }
+            break;
+        case SV_POTION_BOLDNESS:
+            if (fearful) {
+                select_if(idx, 7);
+            }
+            break;
+        case SV_POTION_BESERK_STRENGTH:
+            if (fearful || (fighting_context && not_buffed)) {
+                select_if(idx, 8);
+            }
+            break;
+        case SV_POTION_HEROISM:
+            if (fearful || (fighting_context && not_buffed)) {
+                select_if(idx, 9);
+            }
+            break;
+        case SV_POTION_SPEED:
+            if (fighting_context && not_fast) {
+                select_if(idx, 10);
+            }
+            break;
+        case SV_POTION_RESISTANCE:
+            if (fighting_context && not_resistant) {
+                select_if(idx, 11);
+            }
             break;
         default:
-            continue;
-        }
-        if (potion_slot >= 0) {
             break;
         }
     }
@@ -172,13 +228,89 @@ static bool monster_quaff_healing_potion(CreatureEntity &creature, CreatureEntit
     }
 
     auto &potion = *monster.inventory[potion_slot];
+    const auto sval = potion.bi_key.sval().value_or(0);
     const auto potion_name = describe_flavor(creature, potion, OD_OMIT_PREFIX);
     const auto m_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
     if (is_seen(creature, monster)) {
         msg_format(_("%s^は%sを飲んだ。", "%s^ quaffs %s."), m_name.data(), potion_name.data());
     }
 
-    monster.hp = std::min<int>(monster.maxhp, monster.hp + heal_amount);
+    auto heal = [&](int amount) {
+        monster.hp = std::min<int>(monster.maxhp, monster.hp + amount);
+    };
+    auto add_timed = [&](CreatureTimedEffect effect, int duration) {
+        const auto current = monster.get_timed_effect(effect);
+        monster.set_timed_effect(effect, static_cast<short>(std::min<int>(MAX_SHORT, current + duration)));
+    };
+
+    switch (sval) {
+    case SV_POTION_CURE_LIGHT:
+        heal(Dice::roll(2, 8));
+        monster.set_timed_effect(CreatureTimedEffect::CUT, std::max<int>(0, monster.get_timed_effect(CreatureTimedEffect::CUT) - 10));
+        break;
+    case SV_POTION_CURE_SERIOUS:
+        heal(Dice::roll(4, 8));
+        monster.set_timed_effect(CreatureTimedEffect::CUT, std::max<int>(0, monster.get_timed_effect(CreatureTimedEffect::CUT) / 2 - 50));
+        break;
+    case SV_POTION_CURE_CRITICAL:
+        heal(Dice::roll(6, 8));
+        monster.set_timed_effect(CreatureTimedEffect::CUT, 0);
+        monster.set_timed_effect(CreatureTimedEffect::STUN, 0);
+        monster.set_timed_effect(CreatureTimedEffect::POISON, 0);
+        break;
+    case SV_POTION_HEALING:
+        heal(300);
+        monster.set_timed_effect(CreatureTimedEffect::CUT, 0);
+        monster.set_timed_effect(CreatureTimedEffect::STUN, 0);
+        monster.set_timed_effect(CreatureTimedEffect::POISON, 0);
+        break;
+    case SV_POTION_STAR_HEALING:
+    case SV_POTION_LIFE:
+        heal(1200);
+        monster.set_timed_effect(CreatureTimedEffect::CUT, 0);
+        monster.set_timed_effect(CreatureTimedEffect::STUN, 0);
+        monster.set_timed_effect(CreatureTimedEffect::POISON, 0);
+        monster.set_timed_effect(CreatureTimedEffect::FEAR, 0);
+        break;
+    case SV_POTION_INVULNERABILITY:
+        add_timed(CreatureTimedEffect::INVULNERABILITY, randint1(8) + 8);
+        break;
+    case SV_POTION_CURE_POISON:
+        monster.set_timed_effect(CreatureTimedEffect::POISON, 0);
+        break;
+    case SV_POTION_BOLDNESS:
+        monster.set_timed_effect(CreatureTimedEffect::FEAR, 0);
+        break;
+    case SV_POTION_HEROISM:
+        monster.set_timed_effect(CreatureTimedEffect::FEAR, 0);
+        add_timed(CreatureTimedEffect::HERO, randint1(25) + 25);
+        heal(10);
+        break;
+    case SV_POTION_BESERK_STRENGTH:
+        monster.set_timed_effect(CreatureTimedEffect::FEAR, 0);
+        monster.set_timed_effect(CreatureTimedEffect::STUN, 0);
+        add_timed(CreatureTimedEffect::BERSERK, randint1(25) + 25);
+        heal(30);
+        break;
+    case SV_POTION_SPEED:
+        if (monster.get_timed_effect(CreatureTimedEffect::ACCELERATION) == 0) {
+            monster.set_timed_effect(CreatureTimedEffect::ACCELERATION, randint1(25) + 15);
+        } else {
+            add_timed(CreatureTimedEffect::ACCELERATION, 5);
+        }
+        break;
+    case SV_POTION_RESISTANCE: {
+        const int dur = randint1(20) + 20;
+        add_timed(CreatureTimedEffect::OPPOSE_ACID, dur);
+        add_timed(CreatureTimedEffect::OPPOSE_ELEC, dur);
+        add_timed(CreatureTimedEffect::OPPOSE_FIRE, dur);
+        add_timed(CreatureTimedEffect::OPPOSE_COLD, dur);
+        add_timed(CreatureTimedEffect::OPPOSE_POIS, dur);
+        break;
+    }
+    default:
+        break;
+    }
 
     // ポーションを 1 個消費
     if (potion.number > 1) {
@@ -310,8 +442,8 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
         return;
     }
 
-    // [フェーズ C-1] 回復ポーション自己使用 (HP < 50%)
-    if (monster_quaff_healing_potion(creature, monster)) {
+    // [フェーズ C-1] ポーション自己使用 (回復/解毒/バフ等)
+    if (monster_quaff_potion(creature, monster)) {
         // ポーション使用でターンを消費。次のターン処理は通常通り続行する
         // (move energy は別途 turn 管理で扱う)
     }
