@@ -135,7 +135,7 @@ static void preserve_pet(CreatureEntity &creature)
     record_pet_diary(creature);
     for (MONSTER_IDX i = creature.get_floor()->m_max - 1; i >= 1; i--) {
         const auto &monster = creature.get_floor()->m_list[i];
-        const auto parent_r_idx = creature.get_floor()->m_list[monster.get_parent_m_idx()].r_idx;
+        const auto parent_r_idx = creature.get_floor()->m_list[monster.get_parent_m_idx()].get_r_idx();
         if (!monster.has_parent() || MonraceList::is_valid(parent_r_idx)) {
             continue;
         }

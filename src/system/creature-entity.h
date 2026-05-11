@@ -2225,9 +2225,13 @@ public:
     }
 
     // モンスター種族ID（プレイヤーの場合は0）
+    // [提案 29] r_idx / ap_r_idx は private 化済。アクセスは get_r_idx() /
+    //          get_ap_r_idx() / set_r_idx() / set_ap_r_idx() / polymorph_to() を介して行う。
+private:
     MonraceId r_idx{}; /*!< モンスターの実種族ID (これが0の時は死亡扱いになる) / Monster race index 0 = dead. */
     MonraceId ap_r_idx{}; /*!< モンスターの外見種族ID（あやしい影、たぬき、ジュラル星人誤認などにより変化する）Monster race appearance index */
 
+public:
     // 与ダメージ蓄積（プレイヤー・モンスター共通）
     int32_t dealt_damage{}; /*!< これまでに蓄積して与えてきたダメージ / Sum of damages dealt by player or to monster */
 
@@ -2284,8 +2288,12 @@ public:
     uint32_t exp_frac{}; /*!< 経験値の小数部 / Current exp frac (times 2^16) */
 
     // 騎乗関連
+    // [提案 29] riding は private 化済。アクセスは get_riding() / set_riding() /
+    //          ride_monster() を介して行う。
+private:
     MONSTER_IDX riding{}; /*!< 騎乗中のモンスターID / Riding on a monster of this index */
 
+public:
     // インベントリ関連
     std::vector<std::shared_ptr<ItemEntity>> inventory{}; /*!< 所持品リスト / The creature's inventory */
     // 所持品数 inven_cnt / 装備品数 equip_cnt は提案 25 で inventory[] から自動計算する

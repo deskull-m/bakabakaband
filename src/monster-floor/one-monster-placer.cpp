@@ -139,7 +139,7 @@ static bool check_quest_placeable(const FloorType &floor, MonraceId r_idx)
     }
     const auto has_quest_monrace = [&](const Pos2D &pos) {
         const auto &grid = floor.get_grid(pos);
-        return grid.has_monster() && (floor.m_list[grid.m_idx].r_idx == quest.r_idx);
+        return grid.has_monster() && (floor.m_list[grid.m_idx].get_r_idx() == quest.r_idx);
     };
     const auto number_mon = ranges::count_if(floor.get_area(), has_quest_monrace);
 

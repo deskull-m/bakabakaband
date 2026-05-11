@@ -93,13 +93,13 @@ static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(CreatureEntity &creature
         auto unified_maxhp = 0;
         for (short k = 1; k < floor.m_max; k++) {
             const auto &monster_separate = floor.get_monster(k);
-            if (!separates.contains(monster_separate.r_idx)) {
+            if (!separates.contains(monster_separate.get_r_idx())) {
                 continue;
             }
 
             unified_hp += monster_separate.hp;
             unified_maxhp += monster_separate.maxhp;
-            if (monster_separate.r_idx != monster.get_r_idx()) {
+            if (monster_separate.get_r_idx() != monster.get_r_idx()) {
                 dummy_y = monster_separate.y;
                 dummy_x = monster_separate.x;
             }
