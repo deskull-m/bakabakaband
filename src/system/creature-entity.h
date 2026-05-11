@@ -2530,13 +2530,21 @@ public:
 
     tl::optional<MonsterProfile> monster_profile{}; /*!< モンスター固有データ (モンスターの場合のみ有効) */
 
+    // [提案 32] private 化済。get_ambush_flag() / set_ambush_flag() 経由。
+private:
     bool ambush_flag{}; /*!< 待ち伏せフラグ / Ambush flag */
 
+public:
     // 基本情報
     int16_t age{}; /*!< 年齢 / Age */
     int16_t ht{}; /*!< 身長 / Height */
     int16_t wt{}; /*!< 体重 / Weight */
+
+    // [提案 32] private 化済。get_prestige() / set_prestige() / add_prestige() / divide_prestige() 経由。
+private:
     int16_t prestige{}; /*!< 名声 / Prestige */
+
+public:
     int32_t death_count{}; /*!< 死亡カウント / Death count */
 
     // ステータス関連
@@ -2552,7 +2560,11 @@ public:
     std::map<Virtue, int16_t> virtues; /*!< 徳の値 / Virtue values */
 
     // 経験値関連
+    // [提案 32] max_max_exp を private 化済。get_max_max_exp() / set_max_max_exp() 経由。
+private:
     EXP max_max_exp{}; /*!< 最大の最大経験値 / Max max experience (only to calculate score) */
+
+public:
     EXP max_exp{}; /*!< 最大経験値 / Max experience */
     EXP exp{}; /*!< 現在の経験値 / Current experience */
     uint32_t exp_frac{}; /*!< 経験値の小数部 / Current exp frac (times 2^16) */
@@ -2713,11 +2725,17 @@ public:
     ARMOUR_CLASS dis_ac{}; /*!< 判明している現在の表記上の装備AC基礎値 / Known base ac */
 
     int16_t to_h[2]{}; /* Bonus to hit (wield) */
+    // [提案 32] to_h_b / to_h_m / to_d_m を private 化済。get_*() / set_*() 経由。
+private:
     int16_t to_h_b{}; /* Bonus to hit (bow) */
     int16_t to_h_m{}; /* Bonus to hit (misc) */
+
+public:
     int16_t to_d[2]{}; /* Bonus to dam (wield) */
+private:
     int16_t to_d_m{}; /* Bonus to dam (misc) */
 
+public:
     int16_t to_m_chance{}; /* Minusses to cast chance */
 
     int16_t num_blow[2]{}; /* Number of blows */
@@ -2750,8 +2768,11 @@ public:
 
     PERCENTAGE mutant_regenerate_mod{};
 
+    // [提案 32] private 化済。get_max_plv() / set_max_plv() 経由。
+private:
     int16_t max_plv{}; /* Max Player Level */
 
+public:
     int16_t learned_spells{};
     int16_t add_spells{};
 
