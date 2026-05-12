@@ -1,0 +1,38 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "description": "ダンジョン定義 (bakabakaband wrapped-line 形式)",
+    "properties": {
+        "version": {
+            "type": "number",
+            "description": "Version 情報 (現在 1)"
+        },
+        "dungeons": {
+            "type": "array",
+            "description": "ダンジョン定義配列",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["id", "lines"],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "ダンジョン ID"
+                    },
+                    "lines": {
+                        "type": "array",
+                        "description": "ダンジョン定義トークン行 (旧 .txt 形式)。各行は <Token>:<args> 形式の文字列。Token 一覧:\n- N:id:name_ja - ダンジョン基本情報\n- E:name_en - 英名\n- T:tag - タグ識別子\n- D:text - 説明文 (日本語)\n- D:$text - 説明文 (英語、$ プレフィックス)\n- P:wild_y:wild_x - 広域マップ位置\n- W:min_dep:max_dep:min_plev:mode:min_alloc:max_alloc:obj_good:obj_great:pit:nest - 生成パラメータ\n- L:floor1:p1:floor2:p2:floor3:p3:tunnel% - 床地形確率\n- A:wall1:p1:wall2:p2:wall3:p3:outer:inner:stream1:stream2 - 壁地形確率\n- F:flag1 | flag2 ... - ダンジョンフラグ (MONSTER_DIV_*/MONSTER_RATE_*/TRAP_RATE_*/ALLIANCE_*/FINAL_GUARDIAN_*/FINAL_OBJECT_* 等)\n- M:flag - モンスター制限フラグ\n- S:spells - モンスター呪文制限\n- K:floor:probability:dice_num:dice_sides:item_id - 特定階層アイテム生成\n- Z:floor:vault_id - 特定階層 vault\n- R:room_type:rate - 部屋生成率\n",
+                        "items": {
+                            "type": "string",
+                            "minLength": 1,
+                            "pattern": "^[A-Z]:"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "required": ["version", "dungeons"]
+}
