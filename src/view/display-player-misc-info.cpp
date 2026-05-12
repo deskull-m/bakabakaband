@@ -55,8 +55,16 @@ void display_player_misc_info(CreatureEntity &creature)
     put_str(_("職業  :", "Class :"), 5, 1);
 
     c_put_str(TERM_L_BLUE, creature.get_sex_info().title, 3, 9);
-    c_put_str(TERM_L_BLUE, (creature.get_mimic_form() != MimicKindType::NONE ? mimic_info.at(creature.get_mimic_form()).title : creature.get_race_info()->title), 4, 9);
-    c_put_str(TERM_L_BLUE, (*creature.get_class_info()).title, 5, 9);
+    if (creature.race != nullptr) {
+        c_put_str(TERM_L_BLUE, (creature.get_mimic_form() != MimicKindType::NONE ? mimic_info.at(creature.get_mimic_form()).title : creature.get_race_info()->title), 4, 9);
+    } else {
+        c_put_str(TERM_SLATE, _("なし", "None"), 4, 9);
+    }
+    if (creature.pclass_ref != nullptr) {
+        c_put_str(TERM_L_BLUE, (*creature.get_class_info()).title, 5, 9);
+    } else {
+        c_put_str(TERM_SLATE, _("なし", "None"), 5, 9);
+    }
 
     put_str(_("レベル:", "Level :"), 6, 1);
     put_str(_("ＨＰ  :", "Hits  :"), 7, 1);
