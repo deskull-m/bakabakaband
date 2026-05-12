@@ -271,7 +271,7 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
         can_banish &= !floor.inside_arena;
         can_banish &= !floor.is_in_quest();
         can_banish &= (monrace.level < randint1(creature.level + 50));
-        can_banish &= monster.get_monster_profile().mflag2.has_not(MonsterConstantFlagType::NOGENO);
+        can_banish &= !monster.is_nogeno();
         if (can_banish) {
             if (record_named_pet && monster.is_named_pet()) {
                 const auto m_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
