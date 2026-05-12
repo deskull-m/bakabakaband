@@ -748,7 +748,7 @@ static void display_spell_list(CreatureEntity &creature)
         put_str(_("名前", "Name"), y, x + 5);
         put_str(_("Lv   MP 失率 効果", "Lv Mana Fail Info"), y, x + 35);
 
-        switch (creature.pclass) {
+        switch (creature.get_pclass()) {
         case PlayerClassType::MINDCRAFTER:
             use_mind = MindKindType::MINDCRAFTER;
             break;

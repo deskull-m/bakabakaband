@@ -81,11 +81,11 @@ static void add_basic_info_to_json(nlohmann::json &j, CreatureEntity &creature)
         j["basic"]["mimic_form"] = localized_to_utf8_safe(mimic_info.at(creature.get_mimic_form()).title);
     }
 
-    if (creature.realm1 != RealmType::NONE) {
-        j["basic"]["realm1"] = localized_to_utf8_safe(PlayerRealm::get_name(creature.realm1));
+    if (creature.get_realm1() != RealmType::NONE) {
+        j["basic"]["realm1"] = localized_to_utf8_safe(PlayerRealm::get_name(creature.get_realm1()));
     }
-    if (creature.realm2 != RealmType::NONE) {
-        j["basic"]["realm2"] = localized_to_utf8_safe(PlayerRealm::get_name(creature.realm2));
+    if (creature.get_realm2() != RealmType::NONE) {
+        j["basic"]["realm2"] = localized_to_utf8_safe(PlayerRealm::get_name(creature.get_realm2()));
     }
 }
 

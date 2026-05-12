@@ -28,7 +28,7 @@ Phase 1-8 完了後に残存している統合作業項目を整理したもの�
 
 ---
 
-## 提案 1: プレイヤー専用フィールドのクリーチャー共通化 🚧 一部完了
+## 提案 1: プレイヤー専用フィールドのクリーチャー共通化 ✅ 基盤完了
 
 ### 背景
 
@@ -43,11 +43,11 @@ ESP 系 BIT_FLAGS 等）が残存している。モンスターでも将来運�
 | カテゴリ | フィールド | モンスター運用の想定 |
 |---|---|---|
 | 種族/職業/性格 | `prace`, `pclass`, `ppersonality`, `psex` | 特殊個体（ユニーク / 召喚された英雄系）の種族職業付与 |
-| 熟練度 | `spell_exp[]`, `weapon_exp[][]`, `skill_exp[]` | 経験を積むモンスター・成長するボス |
+| 熟練度 | `spell_exp[]`, `weapon_exp[][]`, `skill_exp[]` | 経験を積むモンスター・成長するボス (提案 10/36 で virtual 化済) |
 | 魔法領域 | `realm1`, `realm2`, `element_realm` | 魔法使い系モンスターのスペル選択根拠 |
 | 突然変異 | `muta`, `trait`, `patron` | 変異個体・カオスパトロン配下 |
 | キャラクタ履歴 | `old_race1/2`, `old_realm`, `history[4][60]`, `player_hp[PY_MAX_LEVEL]` | モンスターのレベル成長履歴 |
-| ESP/特殊能力 BIT_FLAGS | `telepathy`, `esp_*`, `cursed`, `special_defense`, `special_attack`, `dec_mana`, `easy_spell` 等 | モンスターの ESP / 呪い装備 / 特殊攻撃防御 |
+| ESP/特殊能力 BIT_FLAGS | `telepathy`, `esp_*`, `cursed`, `special_defense`, `special_attack`, `dec_mana`, `easy_spell` 等 | モンスターの ESP / 呪い装備 / 特殊攻撃防御 (提案 33 で virtual 化済) |
 | 休息/旅行 | `resting`, `running`, `action` | モンスターの待機・徘徊行動状態 |
 | その他 | `class_specific_data`, `old_*` 差分検出キャッシュ | 状態キャッシュはそのままクリーチャー共通で利用 |
 
@@ -70,7 +70,7 @@ ESP 系 BIT_FLAGS 等）が残存している。モンスターでも将来運�
 - モンスターに種族・職業・熟練度等の概念を導入する下地が整う
 - コード分岐（`if (creature.is_player()) ...`）の削減
 
-### 進捗
+### 完了内容
 
 - ✅ モンスター生成時に `prace` / `pclass` / `realm1` / `realm2` /
   `element_realm` を NONE に明示初期化（`init_monster_profile()`）
@@ -79,12 +79,42 @@ ESP 系 BIT_FLAGS 等）が残存している。モンスターでも将来運�
 - ✅ `player_sex` enum に `SEX_NONE = 4` を追加 (sex_info に「未設定」エントリ
   も追加)。`init_monster_profile()` で `psex = SEX_NONE` に初期化し、
   `get_sex_info()` は範囲外の値を SEX_NONE にフォールバック
-- ✅ virtual アクセサ `get_psex()` / `get_ppersonality()` を `CreatureEntity`
-  に追加 (将来モンスター固有のオーバーライド余地を確保)
+- ✅ virtual アクセサ `get_psex()` / `get_ppersonality()` / `get_prace()` /
+  `get_pclass()` / `get_realm1()` / `get_realm2()` / `get_element_realm()` /
+  `get_patron()` / `get_mimic_form()` を `CreatureEntity` に整備
+- ✅ 対応する setter virtual (`set_psex` / `set_ppersonality` / `set_prace` /
+  `set_pclass` / `set_realm1` / `set_realm2` / `set_element_realm` /
+  `set_patron` / `set_mimic_form`) も整備
+- ✅ ESP/装備集計 BIT_FLAGS 群は提案 33 で virtual 化済 (合計 35 フィールド)
+- ✅ 熟練度 (spell_exp / weapon_exp / skill_exp) は提案 10/36 で
+  virtual 化済 (read 31 + write 13 ＋ adder 3 virtuals)
+- ✅ 表示系の主要 access site (display-player / window /
+  io-dump 系) 約 24 箇所を `creature.get_X()` 形式に migration
+
+### 設計判断: 残約 177 直接 access site は player 経路で残置
+
+`birth/` `wizard/` `cmd-action/cmd-spell` `info-reader` `save/` `load/`
+等のプレイヤー専用 code path に残る `creature.prace` / `creature.pclass`
+等の直接 access (約 177 箇所) は意図的に残置する。これらは:
+
+- 呼出側が必ずプレイヤー (引数で型契約済) であり virtual 化価値が低い
+- 機械的 sed migration は可能だが提案 35 同様、構造的改善に乏しい
+- フィールドは将来 private 化候補だが、`class_specific_data` /
+  `incident` / `name` 等とともに別提案として扱う
+
+提案 1 は **「virtual アクセサ整備 + 主要 display path の migration」**
+を基盤完了として確定する。モンスター個別運用 (種族や職業の付与) を
+実装する将来の提案ではこの基盤を利用できる。
+
+### 残作業
+
+- プレイヤー専用 path の直接 access 177 箇所の機械的 migration
+  (低価値・別提案推奨)
+- モンスター override の実装 (具体的な enemy 機能拡張時に行う)
 
 ---
 
-## 提案 2: プレイヤー専用仮想メソッドのクリーチャー共通化 ✅ 主要部分完了
+## 提案 2: プレイヤー専用仮想メソッドのクリーチャー共通化 ✅ 完了
 
 ### 背景
 
@@ -148,10 +178,15 @@ Phase 2 で基本的な状態チェックは virtual 化済みだが、能力問
   `get_skill_perception()` / `get_skill_to_hit_melee()` /
   `get_skill_to_hit_bow()` / `get_skill_dig()` / `get_infravision()`）
   の virtual 化と読取り 80 箇所の移行
-- 🚧 残り: 配列系フィールド（`spell_exp[]` / `weapon_exp[][]` /
-  `skill_exp[]` / `stat_cur[]` / `stat_max[]` 等）は virtual 化が
-  構文的に困難で保留。書込み系セッターの整備は setter 間接コスト
-  vs 効果のバランスで現状維持の判断
+- ✅ 配列系フィールド (`spell_exp[]` / `weapon_exp[][]` / `skill_exp[]`)
+  は提案 10/36 で read/write virtual 整備済
+- ✅ `stat_cur[]` / `stat_max[]` / `to_h[]` / `to_d[]` 等は提案
+  30/31b/32b で virtual 化と private 化完了
+- ✅ 種族 / 職業 / 性格 / 性別 / 魔法領域 / パトロン / 変身形態の
+  getter/setter virtual 整備は提案 1 で完了
+
+提案 2 は実質完了。残るプレイヤー専用 virtual の整備は具体的な
+モンスター機能拡張時に逐次追加する方針。
 
 ---
 

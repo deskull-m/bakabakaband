@@ -312,6 +312,15 @@ API 経由に統一された。一部フィールド (r_idx / ap_r_idx / riding)
   三項演算子パターン 24 箇所を意図明示形 (`has_X_spell(realm, idx)`)
   に簡素化。savefile load/save の API も統一。**合計 private 化
   フィールド数: 77 → 83**
+- **提案 1/2**: プレイヤー専用フィールドのモンスター運用化基盤完了。
+  種族 (`prace`) / 職業 (`pclass`) / 魔法領域 (`realm1` / `realm2` /
+  `element_realm`) / パトロン (`patron`) / 変身形態 (`mimic_form`)
+  の get/set virtual を追加。表示系の主要 access site 約 24 箇所を
+  `creature.get_X()` 形式に migration。残約 177 直接 access は player
+  専用 path で型契約済として残置 (機械的 sed の構造的価値が低いため)。
+  モンスター個別運用 (種族や職業の付与) を実装する将来提案でこの
+  基盤を利用可能。提案 2 (能力問合せ系 virtual の共通化) も提案 10/36
+  / 30 / 31b / 32b / 33 等で実質完了。
 
 今後の残作業としては、現在 `CreatureEntity` 直下に残存するプレイヤー
 固有フィールド群（種族・職業・熟練度等）を、モンスターにも

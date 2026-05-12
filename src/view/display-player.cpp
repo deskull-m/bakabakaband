@@ -111,13 +111,13 @@ static void display_player_basic_info(CreatureEntity &creature)
 static void display_magic_realms(CreatureEntity &creature)
 {
     PlayerRealm pr(creature);
-    if (!pr.realm1().is_available() && creature.element_realm == ElementRealmType::NONE) {
+    if (!pr.realm1().is_available() && creature.get_element_realm() == ElementRealmType::NONE) {
         display_player_one_line(ENTRY_REALM, _("なし", "None"), TERM_SLATE);
         return;
     }
 
     if (CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST)) {
-        display_player_one_line(ENTRY_REALM, get_element_title(creature.element_realm), TERM_L_BLUE);
+        display_player_one_line(ENTRY_REALM, get_element_title(creature.get_element_realm()), TERM_L_BLUE);
         return;
     }
 
@@ -350,7 +350,7 @@ tl::optional<int> display_player(CreatureEntity &creature, const int tmp_mode)
     display_player_basic_info(creature);
     display_magic_realms(creature);
     if (CreatureClass(creature).equals(PlayerClassType::CHAOS_WARRIOR) || (creature.get_mutations().has(PlayerMutationType::CHAOS_GIFT))) {
-        display_player_one_line(ENTRY_PATRON, patron_list[creature.patron].name, TERM_L_BLUE);
+        display_player_one_line(ENTRY_PATRON, patron_list[creature.get_patron()].name, TERM_L_BLUE);
     } else {
         display_player_one_line(ENTRY_PATRON, _("なし", "None"), TERM_SLATE);
     }

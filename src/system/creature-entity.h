@@ -387,6 +387,96 @@ public:
         return this->ppersonality;
     }
 
+    /*!
+     * @brief 種族 enum を取得する (提案 1/2)
+     * @details モンスターは init_monster_profile() で PlayerRaceType::NONE に
+     * 初期化されており、種族効果は発動しない (NONE ガード前提)。
+     */
+    virtual PlayerRaceType get_prace() const
+    {
+        return this->prace;
+    }
+
+    /*!
+     * @brief 職業 enum を取得する (提案 1/2)
+     * @details モンスターは init_monster_profile() で PlayerClassType::NONE に
+     * 初期化されており、職業効果は発動しない (NONE ガード前提)。
+     */
+    virtual PlayerClassType get_pclass() const
+    {
+        return this->pclass;
+    }
+
+    /*!
+     * @brief 第 1 魔法領域 enum を取得する (提案 1/2)
+     * @details モンスターは init_monster_profile() で RealmType::NONE に
+     * 初期化されており、魔法領域効果は発動しない (NONE ガード前提)。
+     */
+    virtual RealmType get_realm1() const
+    {
+        return this->realm1;
+    }
+
+    /*!
+     * @brief 第 2 魔法領域 enum を取得する (提案 1/2)
+     */
+    virtual RealmType get_realm2() const
+    {
+        return this->realm2;
+    }
+
+    /*!
+     * @brief 元素使い領域 enum を取得する (提案 1/2)
+     */
+    virtual ElementRealmType get_element_realm() const
+    {
+        return this->element_realm;
+    }
+
+    /*!
+     * @brief カオスパトロン ID を取得する (提案 1/2)
+     * @details プレイヤーのカオス戦士のみ意味を持つ。モンスターは 0。
+     */
+    virtual int16_t get_patron() const
+    {
+        return this->patron;
+    }
+
+    // [提案 1/2] プレイヤー専用フィールド setter virtual 群。
+    // 主に birth / wizard / shape-changer 経路から呼ばれる。
+    virtual void set_psex(player_sex value)
+    {
+        this->psex = value;
+    }
+    virtual void set_ppersonality(player_personality_type value)
+    {
+        this->ppersonality = value;
+    }
+    virtual void set_prace(PlayerRaceType value)
+    {
+        this->prace = value;
+    }
+    virtual void set_pclass(PlayerClassType value)
+    {
+        this->pclass = value;
+    }
+    virtual void set_realm1(RealmType value)
+    {
+        this->realm1 = value;
+    }
+    virtual void set_realm2(RealmType value)
+    {
+        this->realm2 = value;
+    }
+    virtual void set_element_realm(ElementRealmType value)
+    {
+        this->element_realm = value;
+    }
+    virtual void set_patron(int16_t value)
+    {
+        this->patron = value;
+    }
+
     bool has_living_flag(bool is_appearance = false) const;
     bool has_demon_flag(bool is_appearance = false) const;
     bool has_undead_flag(bool is_appearance = false) const;
@@ -2796,7 +2886,7 @@ public:
      * @brief 現在の変身形態を取得する
      * @return 変身形態（NONE なら通常状態）
      */
-    MimicKindType get_mimic_form() const
+    virtual MimicKindType get_mimic_form() const
     {
         return this->mimic_form;
     }
@@ -2805,7 +2895,7 @@ public:
      * @brief 変身形態を設定する
      * @param form 変身形態
      */
-    void set_mimic_form(MimicKindType form)
+    virtual void set_mimic_form(MimicKindType form)
     {
         this->mimic_form = form;
     }
