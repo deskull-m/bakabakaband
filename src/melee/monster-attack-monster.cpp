@@ -362,7 +362,8 @@ bool monst_attack_monst(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX
         creature.get_floor()->monster_noise = true;
     }
 
-    if (creature.is_player() && mam_ptr->m_ptr->is_riding()) {
+    // disturb() はプレイヤー以外で no-op のため、is_player() ガードは不要
+    if (mam_ptr->m_ptr->is_riding()) {
         disturb(creature, true, true);
     }
 
