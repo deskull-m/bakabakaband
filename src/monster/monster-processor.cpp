@@ -65,6 +65,7 @@
 #include "player/player-status-flags.h"
 #include "player/special-defense-types.h"
 #include "spell-kind/spells-teleport.h"
+#include "spell-kind/spells-world.h"
 #include "spell-realm/spells-hex.h"
 #include "spell/spells-util.h"
 #include "spell/summon-types.h"
@@ -342,27 +343,68 @@ static bool monster_quaff_potion(CreatureEntity &creature, CreatureEntity &monst
 static bool monster_read_scroll(CreatureEntity &creature, CreatureEntity &monster, MONSTER_IDX m_idx)
 {
     const bool low_hp_severe = monster.hp < monster.maxhp / 4;
-    if (!low_hp_severe) {
-        return false;
-    }
+    const bool fighting_context = monster.is_hostile() && monster.is_visible_on_map();
 
+    enum class ScrollAction { TELEPORT,
+        TELEPORT_LEVEL,
+        PHASE_DOOR,
+        SUMMON };
     INVENTORY_IDX scroll_slot = -1;
+    int priority = -1; // 小=優先
     int teleport_dist = 0;
+    ScrollAction action = ScrollAction::TELEPORT;
+    summon_type summon_kind = SUMMON_NONE;
+    auto select_if = [&](INVENTORY_IDX slot, int p, ScrollAction act, int dist = 0, summon_type st = SUMMON_NONE) {
+        if (priority < 0 || p < priority) {
+            scroll_slot = slot;
+            priority = p;
+            action = act;
+            teleport_dist = dist;
+            summon_kind = st;
+        }
+    };
     for (size_t i = 0; i < monster.inventory.size(); i++) {
         const auto &item = *monster.inventory[i];
         if (!item.is_valid() || item.bi_key.tval() != ItemKindType::SCROLL) {
             continue;
         }
         const auto sval = item.bi_key.sval().value_or(0);
-        if (sval == SV_SCROLL_TELEPORT) {
-            scroll_slot = static_cast<INVENTORY_IDX>(i);
-            teleport_dist = 200;
+        const auto idx = static_cast<INVENTORY_IDX>(i);
+        switch (sval) {
+        // 脱出系 (HP 危機時のみ)
+        case SV_SCROLL_TELEPORT_LEVEL:
+            if (low_hp_severe) {
+                select_if(idx, 0, ScrollAction::TELEPORT_LEVEL);
+            }
             break;
-        }
-        if (sval == SV_SCROLL_PHASE_DOOR) {
-            scroll_slot = static_cast<INVENTORY_IDX>(i);
-            teleport_dist = 10;
-            // PHASE_DOOR は予備候補として保持し、TELEPORT が見つかればそちら優先
+        case SV_SCROLL_TELEPORT:
+            if (low_hp_severe) {
+                select_if(idx, 1, ScrollAction::TELEPORT, 200);
+            }
+            break;
+        case SV_SCROLL_PHASE_DOOR:
+            if (low_hp_severe) {
+                select_if(idx, 2, ScrollAction::PHASE_DOOR, 10);
+            }
+            break;
+        // 召喚系 (戦闘中なら使用)
+        case SV_SCROLL_SUMMON_MONSTER:
+            if (fighting_context) {
+                select_if(idx, 8, ScrollAction::SUMMON, 0, SUMMON_NONE);
+            }
+            break;
+        case SV_SCROLL_SUMMON_UNDEAD:
+            if (fighting_context) {
+                select_if(idx, 8, ScrollAction::SUMMON, 0, SUMMON_UNDEAD);
+            }
+            break;
+        case SV_SCROLL_SUMMON_KIN:
+            if (fighting_context) {
+                select_if(idx, 7, ScrollAction::SUMMON, 0, SUMMON_KIN);
+            }
+            break;
+        default:
+            break;
         }
     }
     if (scroll_slot < 0) {
@@ -376,7 +418,21 @@ static bool monster_read_scroll(CreatureEntity &creature, CreatureEntity &monste
         msg_format(_("%s^は%sを読んだ。", "%s^ reads %s."), m_name.data(), scroll_name.data());
     }
 
-    teleport_away(creature, m_idx, teleport_dist, TELEPORT_SPONTANEOUS);
+    switch (action) {
+    case ScrollAction::TELEPORT_LEVEL:
+        teleport_level(creature, m_idx);
+        break;
+    case ScrollAction::TELEPORT:
+    case ScrollAction::PHASE_DOOR:
+        teleport_away(creature, m_idx, teleport_dist, TELEPORT_SPONTANEOUS);
+        break;
+    case ScrollAction::SUMMON:
+        // モンスター位置から自身のレベル相当で召喚 (3 体まで試行)
+        for (int n = 0; n < 3; n++) {
+            (void)summon_specific(creature, monster.y, monster.x, monster.get_monrace().level, summon_kind, PM_NONE, m_idx);
+        }
+        break;
+    }
 
     // 巻物を 1 個消費
     if (scroll.number > 1) {
@@ -407,12 +463,13 @@ static bool monster_read_scroll(CreatureEntity &creature, CreatureEntity &monste
  *   - 杖: pval-- (charges 1 消費)
  *   - ロッド: timeout += base_pval (再充填時間設定)
  */
-static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &monster)
+static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &monster, MONSTER_IDX m_idx)
 {
     const bool low_hp_mid = monster.hp < monster.maxhp / 2;
     const bool not_fast = monster.get_timed_effect(CreatureTimedEffect::ACCELERATION) == 0;
     const bool fighting_context = monster.is_hostile() && monster.is_visible_on_map();
     const bool has_status = monster.is_fearful() || monster.is_confused() || monster.is_stunned() || monster.get_timed_effect(CreatureTimedEffect::POISON) > 0;
+    const bool can_target_player = fighting_context && projectable(*creature.get_floor(), monster.get_position(), creature.get_position());
 
     INVENTORY_IDX device_slot = -1;
     int priority = -1;
@@ -445,6 +502,36 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
                     select_if(idx, 5);
                 }
                 break;
+            // [攻撃用 wand] プレイヤー標的、可視 & 直射可能な敵対モンスターのみ
+            case SV_WAND_MAGIC_MISSILE:
+            case SV_WAND_ACID_BOLT:
+            case SV_WAND_FIRE_BOLT:
+            case SV_WAND_COLD_BOLT:
+            case SV_WAND_HYPODYNAMIA:
+            case SV_WAND_STINKING_CLOUD:
+            case SV_WAND_ACID_BALL:
+            case SV_WAND_ELEC_BALL:
+            case SV_WAND_FIRE_BALL:
+            case SV_WAND_COLD_BALL:
+            case SV_WAND_DRAGON_FIRE:
+            case SV_WAND_DRAGON_COLD:
+            case SV_WAND_DRAGON_BREATH:
+                if (can_target_player) {
+                    select_if(idx, 10);
+                }
+                break;
+            // [防衛用 wand] プレイヤーをテレポートで離す (HP 危機時)
+            case SV_WAND_TELEPORT_AWAY:
+                if (can_target_player && low_hp_mid) {
+                    select_if(idx, 3);
+                }
+                break;
+            // [自己分裂 wand] 自分の分身を作成 (戦闘中、ニッチだが強力)
+            case SV_WAND_CLONE_MONSTER:
+                if (fighting_context) {
+                    select_if(idx, 9);
+                }
+                break;
             default:
                 break;
             }
@@ -471,6 +558,20 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
             case SV_ROD_CURING:
                 if (has_status) {
                     select_if(idx, 6);
+                }
+                break;
+            // [攻撃用 rod] プレイヤー標的、可視 & 直射可能な敵対モンスターのみ
+            case SV_ROD_ACID_BOLT:
+            case SV_ROD_ELEC_BOLT:
+            case SV_ROD_FIRE_BOLT:
+            case SV_ROD_COLD_BOLT:
+            case SV_ROD_HYPODYNAMIA:
+            case SV_ROD_ACID_BALL:
+            case SV_ROD_ELEC_BALL:
+            case SV_ROD_FIRE_BALL:
+            case SV_ROD_COLD_BALL:
+                if (can_target_player) {
+                    select_if(idx, 11);
                 }
                 break;
             default:
@@ -503,6 +604,18 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
         monster.set_timed_effect(effect, static_cast<short>(std::min<int>(MAX_SHORT, current + duration)));
     };
 
+    // 攻撃系の標的座標 (プレイヤー)
+    const auto target_y = creature.y;
+    const auto target_x = creature.x;
+    constexpr BIT_FLAGS flg_bolt = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
+    constexpr BIT_FLAGS flg_ball = PROJECT_STOP | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM;
+    auto fire_bolt_at_player = [&](AttributeType typ, int dam) {
+        project(creature, m_idx, 0, target_y, target_x, dam, typ, flg_bolt);
+    };
+    auto fire_ball_at_player = [&](AttributeType typ, int dam, int rad) {
+        project(creature, m_idx, rad, target_y, target_x, dam, typ, flg_ball);
+    };
+
     if (is_wand) {
         switch (sval) {
         case SV_WAND_HEAL_MONSTER:
@@ -510,6 +623,52 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
             break;
         case SV_WAND_HASTE_MONSTER:
             add_timed(CreatureTimedEffect::ACCELERATION, 100 + randint1(100));
+            break;
+        case SV_WAND_MAGIC_MISSILE:
+            fire_bolt_at_player(AttributeType::MISSILE, Dice::roll(3, 4));
+            break;
+        case SV_WAND_ACID_BOLT:
+            fire_bolt_at_player(AttributeType::ACID, Dice::roll(10, 8));
+            break;
+        case SV_WAND_FIRE_BOLT:
+            fire_bolt_at_player(AttributeType::FIRE, Dice::roll(9, 8));
+            break;
+        case SV_WAND_COLD_BOLT:
+            fire_bolt_at_player(AttributeType::COLD, Dice::roll(6, 8));
+            break;
+        case SV_WAND_HYPODYNAMIA:
+            fire_bolt_at_player(AttributeType::HYPODYNAMIA, 80);
+            break;
+        case SV_WAND_STINKING_CLOUD:
+            fire_ball_at_player(AttributeType::POIS, 12, 2);
+            break;
+        case SV_WAND_ACID_BALL:
+            fire_ball_at_player(AttributeType::ACID, 60, 2);
+            break;
+        case SV_WAND_ELEC_BALL:
+            fire_ball_at_player(AttributeType::ELEC, 32, 2);
+            break;
+        case SV_WAND_FIRE_BALL:
+            fire_ball_at_player(AttributeType::FIRE, 72, 2);
+            break;
+        case SV_WAND_COLD_BALL:
+            fire_ball_at_player(AttributeType::COLD, 48, 2);
+            break;
+        case SV_WAND_DRAGON_FIRE:
+            fire_ball_at_player(AttributeType::FIRE, 100, 3);
+            break;
+        case SV_WAND_DRAGON_COLD:
+            fire_ball_at_player(AttributeType::COLD, 80, 3);
+            break;
+        case SV_WAND_DRAGON_BREATH:
+            fire_ball_at_player(AttributeType::FIRE, 120, 3);
+            break;
+        case SV_WAND_TELEPORT_AWAY:
+            fire_bolt_at_player(AttributeType::AWAY_ALL, 100);
+            break;
+        case SV_WAND_CLONE_MONSTER:
+            // モンスター自身の分身を生成 (PM_NO_PET で勝手に味方にならないよう)
+            (void)multiply_monster(creature, m_idx, monster.r_idx, true, PM_NO_PET);
             break;
         }
         device.pval--;
@@ -527,6 +686,33 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
             monster.set_timed_effect(CreatureTimedEffect::CONFUSION, 0);
             monster.set_timed_effect(CreatureTimedEffect::STUN, 0);
             monster.set_timed_effect(CreatureTimedEffect::POISON, 0);
+            break;
+        case SV_ROD_ACID_BOLT:
+            fire_bolt_at_player(AttributeType::ACID, Dice::roll(12, 8));
+            break;
+        case SV_ROD_ELEC_BOLT:
+            fire_bolt_at_player(AttributeType::ELEC, Dice::roll(6, 6));
+            break;
+        case SV_ROD_FIRE_BOLT:
+            fire_bolt_at_player(AttributeType::FIRE, Dice::roll(16, 8));
+            break;
+        case SV_ROD_COLD_BOLT:
+            fire_bolt_at_player(AttributeType::COLD, Dice::roll(10, 8));
+            break;
+        case SV_ROD_HYPODYNAMIA:
+            fire_bolt_at_player(AttributeType::HYPODYNAMIA, 75);
+            break;
+        case SV_ROD_ACID_BALL:
+            fire_ball_at_player(AttributeType::ACID, 60, 2);
+            break;
+        case SV_ROD_ELEC_BALL:
+            fire_ball_at_player(AttributeType::ELEC, 32, 2);
+            break;
+        case SV_ROD_FIRE_BALL:
+            fire_ball_at_player(AttributeType::FIRE, 72, 2);
+            break;
+        case SV_ROD_COLD_BALL:
+            fire_ball_at_player(AttributeType::COLD, 48, 2);
             break;
         }
         device.timeout += device.get_baseitem_pval();
@@ -664,8 +850,8 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
         // 後続のチェックは monster へのポインタ経由なので継続可能
     }
 
-    // [フェーズ C-1 拡張] 杖/ロッド使用 (HEAL_MONSTER/HASTE_MONSTER/HEALING/SPEED/CURING)
-    if (monster_use_wand_or_rod(creature, monster)) {
+    // [フェーズ C-1 拡張] 杖/ロッド使用 (自己回復/自己加速/状態回復/プレイヤー攻撃)
+    if (monster_use_wand_or_rod(creature, monster, m_idx)) {
         // 同上、ターン消費とは別に副次行動として処理
     }
 
