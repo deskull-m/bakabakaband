@@ -109,9 +109,11 @@ static void display_basic_stat_value(CreatureEntity &creature, int stat_num, int
 {
     c_put_str(TERM_L_BLUE, format("%3d", r_adj), row + stat_num + 1, stat_col + 13);
 
-    c_put_str(TERM_L_BLUE, format("%3d", (int)(*creature.get_class_info()).c_adj[stat_num]), row + stat_num + 1, stat_col + 16);
+    const auto class_adj = (creature.pclass_ref != nullptr) ? (int)(*creature.get_class_info()).c_adj[stat_num] : 0;
+    c_put_str(TERM_L_BLUE, format("%3d", class_adj), row + stat_num + 1, stat_col + 16);
 
-    c_put_str(TERM_L_BLUE, format("%3d", (int)(*creature.get_personality_info()).a_adj[stat_num]), row + stat_num + 1, stat_col + 19);
+    const auto personality_adj = (creature.personality != nullptr) ? (int)(*creature.get_personality_info()).a_adj[stat_num] : 0;
+    c_put_str(TERM_L_BLUE, format("%3d", personality_adj), row + stat_num + 1, stat_col + 19);
 
     c_put_str(TERM_L_BLUE, format("%3d", (int)e_adj), row + stat_num + 1, stat_col + 22);
 
@@ -131,12 +133,21 @@ static void display_basic_stat_value(CreatureEntity &creature, int stat_num, int
 static void process_stats(CreatureEntity &creature, int row, int stat_col)
 {
     for (int i = 0; i < A_MAX; i++) {
-        int r_adj = creature.get_mimic_form() != MimicKindType::NONE ? mimic_info.at(creature.get_mimic_form()).r_adj[i] : creature.get_race_info()->r_adj[i];
+        int r_adj = 0;
+        if (creature.get_mimic_form() != MimicKindType::NONE) {
+            r_adj = mimic_info.at(creature.get_mimic_form()).r_adj[i];
+        } else if (creature.race != nullptr) {
+            r_adj = creature.get_race_info()->r_adj[i];
+        }
         int e_adj = calc_basic_stat(creature, i);
         r_adj += compensate_special_race(creature, i);
         e_adj -= r_adj;
-        e_adj -= (*creature.get_class_info()).c_adj[i];
-        e_adj -= (*creature.get_personality_info()).a_adj[i];
+        if (creature.pclass_ref != nullptr) {
+            e_adj -= (*creature.get_class_info()).c_adj[i];
+        }
+        if (creature.personality != nullptr) {
+            e_adj -= (*creature.get_personality_info()).a_adj[i];
+        }
 
         display_basic_stat_name(creature, i, row, stat_col);
         if (creature.stat_max[i] == creature.stat_max_max[i]) {
