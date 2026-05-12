@@ -18,7 +18,7 @@
  * Hack -- We will always extract at least one token
  * </pre>
  */
-int16_t tokenize(char *buf, int16_t num, char **tokens, BIT_FLAGS mode)
+int16_t tokenize(char *buf, int16_t num, char **tokens)
 {
     int16_t i = 0;
     char *s = buf;
@@ -27,21 +27,6 @@ int16_t tokenize(char *buf, int16_t num, char **tokens, BIT_FLAGS mode)
         for (t = s; *t; t++) {
             if ((*t == ':') || (*t == '/')) {
                 break;
-            }
-
-            if ((mode & TOKENIZE_CHECKQUOTE) && (*t == '\'')) {
-                t++;
-                if (*t == '\\') {
-                    t++;
-                }
-                if (!*t) {
-                    break;
-                }
-
-                t++;
-                if (*t != '\'') {
-                    *t = '\'';
-                }
             }
 
             if (*t == '\\') {
