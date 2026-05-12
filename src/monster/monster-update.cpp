@@ -622,13 +622,11 @@ void update_monster(CreatureEntity &creature, MONSTER_IDX m_idx, bool full)
  */
 void update_monsters(CreatureEntity &creature, bool full)
 {
-    const auto &floor = *creature.get_floor();
-    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-        const auto &monster = floor.get_monster(i);
-        if (!monster.is_valid()) {
-            continue;
-        }
-
+    // [提案 14b]
+    const auto targets = creature.collect_creatures([](const CreatureEntity &) {
+        return true;
+    });
+    for (auto i : targets) {
         update_monster(creature, i, full);
     }
 }

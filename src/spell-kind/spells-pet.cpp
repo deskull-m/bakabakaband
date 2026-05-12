@@ -20,30 +20,23 @@
  */
 void discharge_minion(CreatureEntity &creature)
 {
-    bool okay = true;
     const auto &floor = *creature.get_floor();
-    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-        const auto &monster = floor.get_monster(i);
-        if (!monster.is_valid() || !monster.is_pet()) {
-            continue;
-        }
-        if (monster.is_named()) {
-            okay = false;
-        }
-    }
+    // [提案 14b]
+    const bool has_named_pet = creature.has_visible_creature([](const CreatureEntity &mon) {
+        return mon.is_pet() && mon.is_named();
+    });
 
-    if (!okay || creature.riding) {
+    if (has_named_pet || creature.riding) {
         if (!input_check(_("本当に全ペットを爆破しますか？", "You will blast all pets. Are you sure? "))) {
             return;
         }
     }
 
-    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+    const auto pets = creature.collect_creatures([](const CreatureEntity &mon) {
+        return mon.is_pet();
+    });
+    for (auto i : pets) {
         const auto &monster = floor.get_monster(i);
-        if (!monster.is_valid() || !monster.is_pet()) {
-            continue;
-        }
-
         const auto &monrace = monster.get_monrace();
         if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
             const auto m_name = monster_desc(creature, monster, 0x00);

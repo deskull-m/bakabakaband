@@ -725,12 +725,17 @@ void wiz_dump_options()
 void wiz_zap_surrounding_monsters(CreatureEntity &creature)
 {
     const auto &floor = *creature.get_floor();
-    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-        const auto &monster = floor.get_monster(i);
-        if (!monster.is_valid() || (i == creature.riding) || (Grid::calc_distance(creature.get_position(), monster.get_position()) > MAX_PLAYER_SIGHT)) {
+    // [提案 14b]
+    const auto p_pos = creature.get_position();
+    const auto targets = creature.collect_creatures([&](const CreatureEntity &mon) {
+        return Grid::calc_distance(p_pos, mon.get_position()) <= MAX_PLAYER_SIGHT;
+    });
+    const auto riding_idx = creature.riding;
+    for (auto i : targets) {
+        if (i == riding_idx) {
             continue;
         }
-
+        const auto &monster = floor.get_monster(i);
         if (record_named_pet && monster.is_named_pet()) {
             const auto m_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
             exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_WIZ_ZAP, m_name);
@@ -747,12 +752,12 @@ void wiz_zap_surrounding_monsters(CreatureEntity &creature)
 void wiz_zap_floor_monsters(CreatureEntity &creature)
 {
     const auto &floor = *creature.get_floor();
-    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+    // [提案 14b]
+    const auto targets = creature.collect_creatures([](const CreatureEntity &mon) {
+        return !mon.is_riding();
+    });
+    for (auto i : targets) {
         const auto &monster = floor.get_monster(i);
-        if (!monster.is_valid() || monster.is_riding()) {
-            continue;
-        }
-
         if (record_named_pet && monster.is_named_pet()) {
             const auto m_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
             exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_WIZ_ZAP, m_name);
