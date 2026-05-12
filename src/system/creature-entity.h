@@ -20,6 +20,7 @@
 #include "util/flag-group.h"
 #include "util/point-2d.h"
 #include <array>
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
@@ -825,6 +826,31 @@ public:
     {
         return this->has_monster_profile() && this->get_monster_profile().ml;
     }
+
+    // [提案 14] AI ターゲット選定の共通化
+    using CreaturePredicate = std::function<bool(const CreatureEntity &)>;
+
+    /*!
+     * @brief このクリーチャーから見て最寄りで条件を満たすクリーチャーを探す
+     * @param predicate 候補クリーチャーの判定関数
+     * @param require_projectable true なら projectable な相手のみを候補に含める
+     * @return 最寄りクリーチャーの m_idx (0 = 該当なし)
+     */
+    MONSTER_IDX find_nearest_creature(const CreaturePredicate &predicate, bool require_projectable = false) const;
+
+    /*!
+     * @brief このクリーチャーから見て条件を満たすクリーチャーが存在するかチェック
+     * @param predicate 候補クリーチャーの判定関数
+     * @return 1 体でも条件を満たすクリーチャーがあれば true
+     */
+    bool has_visible_creature(const CreaturePredicate &predicate) const;
+
+    /*!
+     * @brief このクリーチャーから見て条件を満たすクリーチャーの m_idx 一覧を返す
+     * @param predicate 候補クリーチャーの判定関数
+     * @return 該当する m_idx のベクタ (空ならなし)
+     */
+    std::vector<MONSTER_IDX> collect_creatures(const CreaturePredicate &predicate) const;
 
     /*!
      * @brief このクリーチャーの所持品にアイテムを格納する

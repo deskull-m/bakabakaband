@@ -128,6 +128,7 @@ constexpr auto STALKER_DISTANCE_THRESHOLD = 20; //!< モンスターが背後に
  */
 static bool ai_is_in_fighting_context(const CreatureEntity &creature, const CreatureEntity &monster)
 {
+    (void)creature;
     if (!monster.is_visible_on_map()) {
         return false;
     }
@@ -135,13 +136,8 @@ static bool ai_is_in_fighting_context(const CreatureEntity &creature, const Crea
         return true;
     }
     if (monster.is_pet()) {
-        const auto &floor = *creature.get_floor();
-        for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-            const auto &target_mon = floor.get_monster(i);
-            if (target_mon.is_valid() && target_mon.is_hostile() && target_mon.is_visible_on_map()) {
-                return true;
-            }
-        }
+        return monster.has_visible_creature(
+            [](const CreatureEntity &c) { return c.is_hostile() && c.is_visible_on_map(); });
     }
     return false;
 }
@@ -515,32 +511,20 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
 
     // [ペット AI 拡張] モンスターの場合: target = プレイヤー
     //                  ペットの場合: target = 最寄りの hostile monster (projectable)
+    // [提案 14] AI ターゲット選定共通化
     auto &floor = *creature.get_floor();
     POSITION attack_target_y = creature.y;
     POSITION attack_target_x = creature.x;
     bool can_attack_target = false;
-    bool fighting_context = false;
-    fighting_context = ai_is_in_fighting_context(creature, monster);
+    const bool fighting_context = ai_is_in_fighting_context(creature, monster);
     if (monster.is_pet()) {
-        // ペットは hostile monster を直射目標として選定
-        int best_dist = INT_MAX;
-        const auto m_pos = monster.get_position();
-        for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-            const auto &target_mon = floor.get_monster(i);
-            if (!target_mon.is_valid() || !target_mon.is_hostile() || !target_mon.is_visible_on_map()) {
-                continue;
-            }
-            const auto t_pos = target_mon.get_position();
-            if (!projectable(floor, m_pos, t_pos)) {
-                continue;
-            }
-            const auto dist = Grid::calc_distance(m_pos, t_pos);
-            if (dist < best_dist) {
-                best_dist = dist;
-                attack_target_y = t_pos.y;
-                attack_target_x = t_pos.x;
-                can_attack_target = true;
-            }
+        const auto target_idx = monster.find_nearest_creature(
+            [](const CreatureEntity &c) { return c.is_hostile() && c.is_visible_on_map(); }, true);
+        if (target_idx > 0) {
+            const auto &target_mon = floor.get_monster(target_idx);
+            attack_target_y = target_mon.y;
+            attack_target_x = target_mon.x;
+            can_attack_target = true;
         }
     } else {
         can_attack_target = fighting_context && projectable(floor, monster.get_position(), creature.get_position());
