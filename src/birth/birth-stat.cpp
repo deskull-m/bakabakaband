@@ -160,11 +160,11 @@ void get_extra(CreatureEntity &creature, bool roll_hitdie)
     auto is_sorcerer = pc.equals(PlayerClassType::SORCERER);
     for (int i = 0; i < 64; i++) {
         if (is_sorcerer) {
-            creature.spell_exp[i] = PlayerSkill::spell_exp_at(PlayerSkillRank::MASTER);
+            creature.set_spell_exp(i, PlayerSkill::spell_exp_at(PlayerSkillRank::MASTER));
         } else if (pc.equals(PlayerClassType::RED_MAGE)) {
-            creature.spell_exp[i] = PlayerSkill::spell_exp_at(PlayerSkillRank::SKILLED);
+            creature.set_spell_exp(i, PlayerSkill::spell_exp_at(PlayerSkillRank::SKILLED));
         } else {
-            creature.spell_exp[i] = PlayerSkill::spell_exp_at(PlayerSkillRank::UNSKILLED);
+            creature.set_spell_exp(i, PlayerSkill::spell_exp_at(PlayerSkillRank::UNSKILLED));
         }
     }
 
@@ -178,7 +178,7 @@ void get_extra(CreatureEntity &creature, bool roll_hitdie)
     }
 
     for (auto i : PLAYER_SKILL_KIND_TYPE_RANGE) {
-        creature.skill_exp[i] = class_skills_info[pclass].s_start[i];
+        creature.set_skill_exp(i, class_skills_info[pclass].s_start[i]);
     }
 
     // 武術スタイルの初期設定

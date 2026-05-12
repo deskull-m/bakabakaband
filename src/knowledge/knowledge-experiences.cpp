@@ -46,7 +46,7 @@ void do_cmd_knowledge_weapon_exp(CreatureEntity &creature)
                 }
 
                 SUB_EXP weapon_exp = creature.get_weapon_exp(tval, num);
-                SUB_EXP weapon_max = creature.weapon_exp_max[tval][num];
+                SUB_EXP weapon_max = creature.get_weapon_exp_max(tval, num);
                 fprintf(fff, "%-25s ", baseitem.stripped_name().data());
                 if (show_actual_value) {
                     fprintf(fff, "%4d/%4d ", weapon_exp, weapon_max);
