@@ -492,7 +492,7 @@ PERCENTAGE calc_gravity_damage_rate(CreatureEntity &creature, rate_calc_type_mod
 {
     (void)mode; // unused
     PERCENTAGE per = 100;
-    if (has_levitation(creature)) {
+    if (creature.has_levitation()) {
         per = (per * 2) / 3;
     }
     return per;
@@ -515,10 +515,10 @@ PERCENTAGE calc_void_damage_rate(CreatureEntity &creature, rate_calc_type_mode m
     PERCENTAGE per = 100;
     if (creature.has_pass_wall()) {
         per = per * 3 / 2;
-    } else if (has_anti_tele(creature) != 0) {
+    } else if (creature.has_anti_tele() != 0) {
         per *= 400;
         per /= randrate(4, 7, mode);
-    } else if (has_levitation(creature) != 0) {
+    } else if (creature.has_levitation() != 0) {
         per = (per * 2) / 3;
     }
     return per;
@@ -535,7 +535,7 @@ PERCENTAGE calc_abyss_damage_rate(CreatureEntity &creature, rate_calc_type_mode 
     if (creature.has_resist_dark() != 0) {
         per *= 400;
         per /= randrate(4, 7, mode);
-    } else if ((has_levitation(creature) == 0) && (has_anti_tele(creature) != 0)) {
+    } else if ((creature.has_levitation() == 0) && (creature.has_anti_tele() != 0)) {
         per = (per * 5) / 4;
     }
     return per;

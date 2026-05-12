@@ -186,12 +186,12 @@ git grep -n "PlayerType::get_instance()" -- 'src/**/*.cpp' | wc -l
 
 ---
 
-## 提案 4: 未統合の状態チェック関数の仮想化 ✅ 主要部分完了
+## 提案 4: 未統合の状態チェック関数の仮想化 ✅ 完了
 
 ### 背景
 
 Phase 2 で主要な `is_xxx()` 系は仮想化済みだが、以下はまだ自由関数
-または `PlayerType` 固有のまま残存している可能性がある。
+または `PlayerType` 固有のまま残存していた。
 
 ### 候補
 
@@ -209,7 +209,7 @@ Phase 2 で主要な `is_xxx()` 系は仮想化済みだが、以下はまだ自
 実装で `MonsterProfile` 経由の参照と `PlayerType` 経由の参照を
 統合する。
 
-### 進捗
+### 完了内容
 
 - ✅ `is_time_limit_esp()` / `is_time_limit_stealth()` は初期から virtual 化済み
 - ✅ 耐性/免疫/弱点系 30 種 (has_resist_fire/cold/elec/acid/pois/conf/
@@ -231,10 +231,34 @@ Phase 2 で主要な `is_xxx()` 系は仮想化済みだが、以下はまだ自
   has_reflect / has_regen_flag に `misc_flags` (REFLECTING /
   REGENERATE) 経路を追加。これでモンスターから耐性・特殊能力の
   問合せを呼ぶと種族フラグ由来の意味ある応答が返る。
-- 🚧 残り: 自由関数本体 (player-status-flags.cpp) の virtual メソッド
-  実装への完全移植。現状は virtual → 自由関数へ委譲する形だが、
-  構造的には重複。`common_cause_flags` など内部ヘルパの整理も
-  必要。工数大で効果は限定的のため優先度低。
+- ✅ 残存していた外部自由関数呼出 13 箇所を virtual API 経由に移行
+  (specific-object/chest, object-use/quaff/quaff-effects,
+   object-use/read/scroll-read-executor,
+   monster-floor/monster-sweep-grid, player/player-status-resist,
+   player/permanent-resistances)
+
+### 設計判断: 自由関数 → virtual への完全本体移植は実施しない
+
+`player-status-flags.cpp` 内の自由関数本体 (約 65 関数) は以下のため
+**現状の delegation pattern を維持**する:
+
+1. **内部相互依存**: `has_resist_fire()` 内で `has_immune_fire()` を
+   呼ぶなど、自由関数が互いを building block として利用している
+2. **`get_player_flags()` 巨大 switch**: tr_type → 自由関数の集中
+   ディスパッチが存在し、自由関数を utility primitive として保持
+   する設計が合理的
+3. **virtual は public API、自由関数は internal helper の役割分担**:
+   外部 (アプリ層) は virtual 経由、内部 (player-status-flags の
+   建築物) は自由関数経由という二層構造が機能的に明瞭
+
+完全本体移植は工数大で構造的価値は限定的であり、提案 4 は
+**「外部 call site の virtual 移行と monster_profile override 整備」
+を完了形** として確定する。
+
+### 残作業
+
+なし。新規 call site では引き続き `creature.has_resist_X()` 形式の
+virtual を使用すること (自由関数は internal helper 扱い)。
 
 ---
 
