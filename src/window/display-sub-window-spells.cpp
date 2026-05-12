@@ -152,11 +152,11 @@ static void display_spell_list(CreatureEntity &creature)
             if (s_ptr->slevel >= 99) {
                 strcpy(name, _("(判読不能)", "(illegible)"));
                 a = TERM_L_DARK;
-            } else if ((j < 1) ? ((creature.spell_forgotten1 & (1UL << i))) : ((creature.spell_forgotten2 & (1UL << (i % 32))))) {
+            } else if (creature.has_forgotten_spell(j, i % 32)) {
                 a = TERM_ORANGE;
-            } else if (!((j < 1) ? (creature.spell_learned1 & (1UL << i)) : (creature.spell_learned2 & (1UL << (i % 32))))) {
+            } else if (!creature.has_learned_spell(j, i % 32)) {
                 a = TERM_RED;
-            } else if (!((j < 1) ? (creature.spell_worked1 & (1UL << i)) : (creature.spell_worked2 & (1UL << (i % 32))))) {
+            } else if (!creature.has_worked_spell(j, i % 32)) {
                 a = TERM_YELLOW;
             }
 

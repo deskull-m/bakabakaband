@@ -306,6 +306,12 @@ API 経由に統一された。一部フィールド (r_idx / ap_r_idx / riding)
   `if (creature.is_player() && ...) disturb(...)` を `disturb` 内部
   ガードに委ねる形に簡素化。さらなる削減は signature 変更
   (`bool foo(PlayerType &)`) が必要で別提案として扱う方針。
+- **提案 41**: 呪文マスク 6 個 (spell_learned1/2 / spell_worked1/2 /
+  spell_forgotten1/2) を private 化。realm_idx (0/1) と spell_id (0..31)
+  ベースの virtual API 12 個を整備し、`is_realm1 ? *_1 : *_2` の
+  三項演算子パターン 24 箇所を意図明示形 (`has_X_spell(realm, idx)`)
+  に簡素化。savefile load/save の API も統一。**合計 private 化
+  フィールド数: 77 → 83**
 
 今後の残作業としては、現在 `CreatureEntity` 直下に残存するプレイヤー
 固有フィールド群（種族・職業・熟練度等）を、モンスターにも

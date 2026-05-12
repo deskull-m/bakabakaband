@@ -190,12 +190,12 @@ static bool wr_savefile_new(CreatureEntity &creature)
         wr_s16b((int16_t)creature.player_hp[i]);
     }
 
-    wr_u32b(creature.spell_learned1);
-    wr_u32b(creature.spell_learned2);
-    wr_u32b(creature.spell_worked1);
-    wr_u32b(creature.spell_worked2);
-    wr_u32b(creature.spell_forgotten1);
-    wr_u32b(creature.spell_forgotten2);
+    wr_u32b(creature.get_spell_learned_flags(0));
+    wr_u32b(creature.get_spell_learned_flags(1));
+    wr_u32b(creature.get_spell_worked_flags(0));
+    wr_u32b(creature.get_spell_worked_flags(1));
+    wr_u32b(creature.get_spell_forgotten_flags(0));
+    wr_u32b(creature.get_spell_forgotten_flags(1));
     wr_s16b(creature.learned_spells);
     wr_s16b(creature.add_spells);
     for (auto i = 0; i < 64; i++) {
