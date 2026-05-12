@@ -701,7 +701,7 @@ tl::expected<Pos2D, parse_error_type> parse_line_wilderness(char *line, int xmin
 #endif
     {
         char *zz[33];
-        const auto num = tokenize(line + 4, 6, zz, 0);
+        const auto num = tokenize(line + 4, 6, zz);
         if (num <= 1) {
             return tl::unexpected(PARSE_ERROR_TOO_FEW_ARGUMENTS);
         }
@@ -755,7 +755,7 @@ tl::expected<Pos2D, parse_error_type> parse_line_wilderness(char *line, int xmin
         }
 
         char *zz[33];
-        if (tokenize(line + 4, 2, zz, 0) != 2) {
+        if (tokenize(line + 4, 2, zz) != 2) {
             return tl::unexpected(PARSE_ERROR_TOO_FEW_ARGUMENTS);
         }
 

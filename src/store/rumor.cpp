@@ -3,6 +3,7 @@
 #include "flavor/object-flavor-types.h"
 #include "io/files-util.h"
 #include "io/tokenizer.h"
+#include "locale/language-switcher.h"
 #include "object-enchant/special-object-flags.h"
 #include "system/angband-exceptions.h"
 #include "system/artifact-type-definition.h"
@@ -56,7 +57,7 @@ tl::optional<std::vector<std::string>> get_rumor_tokens(std::string rumor)
 {
     constexpr auto num_tokens = 3;
     char *tmp_tokens[num_tokens];
-    if (tokenize(rumor.data() + 2, num_tokens, tmp_tokens, TOKENIZE_CHECKQUOTE) != num_tokens) {
+    if (tokenize(rumor.data() + 2, num_tokens, tmp_tokens) != num_tokens) {
         msg_print(_("この情報は間違っている。", "This information is wrong."));
         return tl::nullopt;
     }
