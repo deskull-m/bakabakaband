@@ -530,6 +530,13 @@ bakabakaband 側と上流側でよくある構造的差異を以下のルール�
 | `switch_activation(..., ItemEntity **, ...)` 戻り値 `bool` | `switch_activation(..., const ItemEntity &, ...)` 戻り値 `std::pair<bool, std::shared_ptr<ItemEntity>>` (上流 PR #5342) |
 | `activate_artifact(creature, ItemEntity *)` 戻り値あり | `activate_artifact(creature, std::shared_ptr<ItemEntity> &)` 戻り値廃止 (上流 PR #5342) |
 | `concptr ANGBAND_SYS/KEYBOARD/GRAF` | `std::string_view ANGBAND_SYS/KEYBOARD/GRAF` (上流 PR #5354) |
+| `monster.get_monster_profile().ml` | `monster.is_visible_on_map()` (読取り) / `monster.set_visible_on_map(bool)` (書込み) (フェーズ 7) |
+| `creature.get_monster_profile().alliance_idx` / `.sub_align` / `.parent_m_idx` / `.smart` / `.hold_o_idx_list` 読取り | `creature.get_alliance_idx()` / `get_sub_align()` / `get_parent_m_idx()` / `get_smart_flags()` (read-only) (フェーズ 9) |
+| `creature.spell_exp[idx]` / `creature.skill_exp[key]` / `creature.weapon_exp[tval][sval]` 読取り | `creature.get_spell_exp(idx)` / `get_skill_exp(skill)` / `get_weapon_exp(tval, sval)` (フェーズ 10) |
+| `MonsterProfile::hold_o_idx_list` / `ItemEntity::held_m_idx` 経由のモンスター所持 | `monster.inventory[INVEN_TOTAL]` 直接、`monster.store_item(item)` / `monster.acquire_item(item)` / `monster.drop_all_inventory(dropper)` (フェーズ A 完了で廃止) |
+| `monster_drop_carried_objects(creature, monster)` | 内部実装が `monster.drop_all_inventory(creature)` に集約 (free function は薄いラッパとして残置) |
+| `store_item_to_inventory(creature, item_ptr)` | 既存の free function は維持。OO 形式は `creature.store_item(item)` |
+| `creature.effects()->protection().current()` | `creature.get_timed_effect(CreatureTimedEffect::PROTECTION)` (PlayerProtection も統一 API 経由) |
 
 **GCC 固有の注意**:
 上流は MSVC 前提のことが多く、`<cstdint>` 等のインクルード漏れがあれば追加する。
