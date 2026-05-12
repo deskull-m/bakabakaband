@@ -2,11 +2,11 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
     "additionalProperties": false,
-    "description": "ダンジョン定義 (bakabakaband wrapped-line 形式)",
+    "description": "ダンジョン定義 (bakabakaband 構造化形式 version 2)",
     "properties": {
         "version": {
             "type": "number",
-            "description": "Version 情報 (現在 1)"
+            "description": "Version 情報 (現在 2、version 1 wrapped-line 形式も読み込み互換)"
         },
         "dungeons": {
             "type": "array",
@@ -14,19 +14,206 @@
             "items": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": ["id", "lines"],
+                "required": ["id"],
                 "properties": {
                     "id": {
                         "type": "integer",
                         "minimum": 0,
                         "description": "ダンジョン ID"
                     },
+                    "name": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "ja": { "type": "string" },
+                            "en": { "type": "string" }
+                        }
+                    },
+                    "tag": {
+                        "type": "string",
+                        "description": "タグ識別子 (ANGBAND/MORIA 等)"
+                    },
+                    "description": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "ja": { "type": "string" },
+                            "en": { "type": "string" }
+                        }
+                    },
+                    "position": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": ["y", "x"],
+                        "properties": {
+                            "y": { "type": "integer", "minimum": 0 },
+                            "x": { "type": "integer", "minimum": 0 }
+                        }
+                    },
+                    "generation": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "min_depth": { "type": "integer" },
+                            "max_depth": { "type": "integer" },
+                            "min_player_level": { "type": "integer" },
+                            "flags_mode": { "type": "integer", "minimum": 0, "maximum": 4 },
+                            "min_alloc": { "type": "integer" },
+                            "max_alloc_chance": { "type": "integer" },
+                            "obj_good": { "type": "integer" },
+                            "obj_great": { "type": "integer" },
+                            "pit": { "type": "string", "pattern": "^0x[0-9a-fA-F]+$" },
+                            "nest": { "type": "string", "pattern": "^0x[0-9a-fA-F]+$" }
+                        }
+                    },
+                    "floor": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "tiles": {
+                                "type": "array",
+                                "minItems": 3,
+                                "maxItems": 3,
+                                "items": {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": ["terrain", "rate"],
+                                    "properties": {
+                                        "terrain": { "type": "string" },
+                                        "rate": { "type": "integer", "minimum": 0, "maximum": 100 }
+                                    }
+                                }
+                            },
+                            "tunnel_rate": { "type": "integer", "minimum": 0, "maximum": 100 }
+                        }
+                    },
+                    "wall": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "tiles": {
+                                "type": "array",
+                                "minItems": 3,
+                                "maxItems": 3,
+                                "items": {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": ["terrain", "rate"],
+                                    "properties": {
+                                        "terrain": { "type": "string" },
+                                        "rate": { "type": "integer", "minimum": 0, "maximum": 100 }
+                                    }
+                                }
+                            },
+                            "outer": { "type": "string" },
+                            "inner": { "type": "string" },
+                            "stream1": { "type": "string" },
+                            "stream2": { "type": "string" }
+                        }
+                    },
+                    "flags": {
+                        "type": "array",
+                        "description": "通常のダンジョンフラグ (CAVERN/WATER_RIVER/DESTROY 等)",
+                        "items": { "type": "string" }
+                    },
+                    "monster_rate": {
+                        "type": "integer",
+                        "description": "F:MONSTER_RATE_X 相当 (モンスター生成率%)"
+                    },
+                    "trap_rate": {
+                        "type": "integer",
+                        "description": "F:TRAP_RATE_X 相当"
+                    },
+                    "monster_div": {
+                        "type": "integer",
+                        "description": "F:MONSTER_DIV_X 相当 (制限モンスター比率)"
+                    },
+                    "alliance": {
+                        "type": "string",
+                        "description": "F:ALLIANCE_X 相当 (支配アライアンス名)"
+                    },
+                    "final_guardian": {
+                        "type": "integer",
+                        "description": "F:FINAL_GUARDIAN_X 相当 (最終ガーディアン MonraceId)"
+                    },
+                    "final_object": {
+                        "type": "integer",
+                        "description": "F:FINAL_OBJECT_X 相当 (最終アイテム ID)"
+                    },
+                    "final_artifact": {
+                        "type": "integer",
+                        "description": "F:FINAL_ARTIFACT_X 相当 (最終アーティファクト ID)"
+                    },
+                    "fixed_rooms": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": ["depth", "id", "percentage"],
+                            "properties": {
+                                "depth": { "type": "integer" },
+                                "id": { "type": "integer" },
+                                "percentage": { "type": "integer", "minimum": 0, "maximum": 100 }
+                            }
+                        }
+                    },
+                    "monster_flags": {
+                        "type": "array",
+                        "description": "M: モンスター制限フラグ",
+                        "items": { "type": "string" }
+                    },
+                    "monster_spells": {
+                        "type": "array",
+                        "description": "S: モンスター呪文制限",
+                        "items": { "type": "string" }
+                    },
+                    "specific_items": {
+                        "type": "array",
+                        "description": "K: 特定階層アイテム生成",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": ["floor", "probability", "dice_num", "dice_sides", "item_id"],
+                            "properties": {
+                                "floor": { "type": "integer" },
+                                "probability": { "type": "integer" },
+                                "dice_num": { "type": "integer" },
+                                "dice_sides": { "type": "integer" },
+                                "item_id": { "type": "integer" }
+                            }
+                        }
+                    },
+                    "specific_vaults": {
+                        "type": "array",
+                        "description": "Z: 特定階層 vault",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": ["floor", "vault_id"],
+                            "properties": {
+                                "floor": { "type": "integer" },
+                                "vault_id": { "type": "integer" }
+                            }
+                        }
+                    },
+                    "room_rates": {
+                        "type": "array",
+                        "description": "R: 部屋生成率",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": ["type", "rate"],
+                            "properties": {
+                                "type": { "type": "integer" },
+                                "rate": { "type": "integer" }
+                            }
+                        }
+                    },
                     "lines": {
                         "type": "array",
-                        "description": "ダンジョン定義トークン行 (旧 .txt 形式)。各行は <Token>:<args> 形式の文字列。Token 一覧:\n- N:id:name_ja - ダンジョン基本情報\n- E:name_en - 英名\n- T:tag - タグ識別子\n- D:text - 説明文 (日本語)\n- D:$text - 説明文 (英語、$ プレフィックス)\n- P:wild_y:wild_x - 広域マップ位置\n- W:min_dep:max_dep:min_plev:mode:min_alloc:max_alloc:obj_good:obj_great:pit:nest - 生成パラメータ\n- L:floor1:p1:floor2:p2:floor3:p3:tunnel% - 床地形確率\n- A:wall1:p1:wall2:p2:wall3:p3:outer:inner:stream1:stream2 - 壁地形確率\n- F:flag1 | flag2 ... - ダンジョンフラグ (MONSTER_DIV_*/MONSTER_RATE_*/TRAP_RATE_*/ALLIANCE_*/FINAL_GUARDIAN_*/FINAL_OBJECT_* 等)\n- M:flag - モンスター制限フラグ\n- S:spells - モンスター呪文制限\n- K:floor:probability:dice_num:dice_sides:item_id - 特定階層アイテム生成\n- Z:floor:vault_id - 特定階層 vault\n- R:room_type:rate - 部屋生成率\n",
+                        "description": "[後方互換] version 1 wrapped-line 形式トークン行",
                         "items": {
                             "type": "string",
-                            "minLength": 1,
                             "pattern": "^[A-Z]:"
                         }
                     }
