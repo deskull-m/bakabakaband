@@ -923,6 +923,45 @@ public:
     }
 
     /*!
+     * @brief MonsterConstantFlagType (mflag2) のチェック共通ヘルパ
+     * @details 提案 15: mflag2.has(...) パターンを virtual で集約
+     */
+    bool has_constant_flag(MonsterConstantFlagType flag) const
+    {
+        return this->has_monster_profile() && this->get_monster_profile().mflag2.has(flag);
+    }
+
+    /*! @brief 影 (KAGE) かどうか */
+    virtual bool is_kage() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::KAGE);
+    }
+
+    /*! @brief 狂乱状態 (FRENZY) かどうか */
+    virtual bool is_frenzied() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::FRENZY);
+    }
+
+    /*! @brief カメレオン (CHAMELEON) かどうか */
+    virtual bool is_chameleon() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::CHAMELEON);
+    }
+
+    /*! @brief クローン個体 (CLONED) かどうか */
+    virtual bool is_cloned() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::CLONED);
+    }
+
+    /*! @brief ペット化禁止 (NOPET) かどうか */
+    virtual bool is_nopet() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::NOPET);
+    }
+
+    /*!
      * @brief プレイヤーに対する学習フラグ（smart_learn）を取得する
      * @return 学習フラグ群。プレイヤー側は空のフラグ集合を返す
      */

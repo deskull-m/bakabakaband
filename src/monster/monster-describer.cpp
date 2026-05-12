@@ -166,7 +166,7 @@ static tl::optional<std::string> get_fake_monster_name(const CreatureEntity &cre
         return tl::nullopt;
     }
 
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CHAMELEON) && none_bits(mode, MD_TRUE_NAME)) {
+    if (monster.is_chameleon() && none_bits(mode, MD_TRUE_NAME)) {
         return _(replace_monster_name_undefined(name), format("%s?", name.data()));
     }
 

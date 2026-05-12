@@ -114,7 +114,7 @@ static std::string evaluate_monster_exp(CreatureEntity &creature, const Creature
         return "**";
     }
 
-    if (!monrace.r_tkills || monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE)) {
+    if (!monrace.r_tkills || monster.is_kage()) {
         if (!AngbandWorld::get_instance().wizard) {
             return "??";
         }

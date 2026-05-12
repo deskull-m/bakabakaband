@@ -1043,7 +1043,7 @@ std::string CreatureEntity::build_looking_description(bool needs_attitude) const
 {
     const auto description = this->build_damage_description();
     const auto attitude = needs_attitude ? this->build_attitude_description() : "";
-    const std::string clone(this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::CLONED) ? ", clone" : "");
+    const std::string clone(this->has_monster_profile() && this->is_cloned() ? ", clone" : "");
     const auto &apparent_monrace = this->get_appearance_monrace();
 
     const bool show_alliance = this->has_monster_profile() && !this->is_pet() && this->get_alliance_idx() != AllianceType::NONE;
@@ -1179,7 +1179,7 @@ byte CreatureEntity::get_temporary_speed() const
             current_speed -= 5;
         }
 
-        if (this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FRENZY)) {
+        if (this->is_frenzied()) {
             current_speed += 10;
         }
     }

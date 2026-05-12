@@ -372,7 +372,7 @@ bool deathray_monsters(CreatureEntity &creature)
 std::string probed_monster_info(CreatureEntity &creature, CreatureEntity &target, const MonraceDefinition &monrace)
 {
     if (!target.is_original_ap()) {
-        if (target.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE)) {
+        if (target.is_kage()) {
             target.get_monster_profile().mflag2.reset(MonsterConstantFlagType::KAGE);
         }
 

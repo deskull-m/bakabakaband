@@ -363,7 +363,7 @@ static bool effect_monster_crusade_domination(CreatureEntity &creature, EffectMo
 
     bool failed = em_ptr->r_ptr->misc_flags.has(MonsterMiscType::QUESTOR);
     failed |= em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE);
-    failed |= em_ptr->m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::NOPET);
+    failed |= em_ptr->m_ptr->is_nopet();
     failed |= has_aggravate(creature);
     failed |= has_aggravate_nasty(creature) && em_ptr->r_ptr->kind_flags.has(MonsterKindType::NASTY);
     failed |= (em_ptr->r_ptr->level + 10) > randint1(em_ptr->dam);
@@ -434,7 +434,7 @@ static int calcutate_capturable_hp(CreatureEntity &creature, const CreatureEntit
  */
 static void effect_monster_captured(CreatureEntity &creature, EffectMonster *em_ptr, tl::optional<CapturedMonsterType *> tmp_cap_mon_ptr)
 {
-    if (em_ptr->m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
+    if (em_ptr->m_ptr->is_chameleon()) {
         em_ptr->m_ptr->reset_chameleon_polymorph();
     }
 

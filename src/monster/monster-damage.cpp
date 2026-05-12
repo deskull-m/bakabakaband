@@ -158,7 +158,7 @@ bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, cons
     ac.change_virtue();
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE) && record_destroy_uniq) {
         std::stringstream ss;
-        ss << monrace.name << (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CLONED) ? _("(クローン)", "(Clone)") : "");
+        ss << monrace.name << (monster.is_cloned() ? _("(クローン)", "(Clone)") : "");
         exe_write_diary(*creature.get_floor(), DiaryKind::UNIQUE, 0, ss.str());
     }
 
@@ -188,7 +188,7 @@ void MonsterDamageProcessor::death_special_flag_monster()
         }
     }
 
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
+    if (monster.is_chameleon()) {
         auto &real_monrace = monster.get_real_monrace();
         monrace_id = monster.get_real_monrace_id();
         if (real_monrace.r_sights < MAX_SHORT) {
@@ -196,7 +196,7 @@ void MonsterDamageProcessor::death_special_flag_monster()
         }
     }
 
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CLONED)) {
+    if (monster.is_cloned()) {
         return;
     }
 
@@ -241,7 +241,7 @@ void MonsterDamageProcessor::increase_kill_numbers()
     }
 
     auto &monraces = MonraceList::get_instance();
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE)) {
+    if (monster.is_kage()) {
         auto &shadower = monraces.get_monrace(MonraceId::KAGE);
         shadower.increment_pkills();
         shadower.increment_tkills();
@@ -388,11 +388,11 @@ void MonsterDamageProcessor::show_bounty_message(std::string_view m_name)
     auto &floor = *creature.get_floor();
     auto &monster = floor.get_monster(this->m_idx);
     const auto &monrace = monster.get_real_monrace();
-    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) || monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CLONED) || vanilla_town) {
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) || monster.is_cloned() || vanilla_town) {
         return;
     }
 
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
+    if (monster.is_chameleon()) {
         return;
     }
 
@@ -498,7 +498,7 @@ void MonsterDamageProcessor::add_monster_fear()
 
     const auto &monrace = monster.get_monrace();
     if (monster.is_fearful() || monrace.resistance_flags.has(MonsterResistanceType::NO_FEAR) ||
-        monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::FRENZY)) {
+        monster.is_frenzied()) {
         return;
     }
 

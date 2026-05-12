@@ -86,7 +86,7 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
     if (floor.inside_arena || AngbandSystem::get_instance().is_phase_out()) {
         return false;
     }
-    if (monster.is_riding() || monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE)) {
+    if (monster.is_riding() || monster.is_kage()) {
         return false;
     }
 
@@ -112,7 +112,7 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
     if (monster.is_pet()) {
         mode |= PM_FORCE_PET;
     }
-    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::NOPET)) {
+    if (monster.is_nopet()) {
         mode |= PM_NO_PET;
     }
 

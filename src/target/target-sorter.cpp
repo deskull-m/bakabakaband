@@ -60,11 +60,11 @@ bool TargetSorter::compare_importance(const FloorType &floor, const Pos2D &pos_a
             return false;
         }
 
-        if (monster_a.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE) && monster_b.get_monster_profile().mflag2.has_not(MonsterConstantFlagType::KAGE)) {
+        if (monster_a.is_kage() && monster_b.get_monster_profile().mflag2.has_not(MonsterConstantFlagType::KAGE)) {
             return true;
         }
 
-        if (monster_a.get_monster_profile().mflag2.has_not(MonsterConstantFlagType::KAGE) && monster_b.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE)) {
+        if (monster_a.get_monster_profile().mflag2.has_not(MonsterConstantFlagType::KAGE) && monster_b.is_kage()) {
             return false;
         }
 

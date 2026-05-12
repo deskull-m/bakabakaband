@@ -314,7 +314,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     if (same_appearance_as_parent) {
         m_ptr->ap_r_idx = summoner.ap_r_idx;
-        if (summoner.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE)) {
+        if (summoner.is_kage()) {
             m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::KAGE);
         }
     }
@@ -381,7 +381,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     if (m_ptr->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON) && is_summoned && new_monrace.kind_flags.has_none_of(alignment_mask)) {
         m_ptr->get_monster_profile().sub_align = summoner.get_sub_align();
-    } else if (m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::CHAMELEON) && new_monrace.kind_flags.has(MonsterKindType::UNIQUE) && !is_summoned) {
+    } else if (m_ptr->is_chameleon() && new_monrace.kind_flags.has(MonsterKindType::UNIQUE) && !is_summoned) {
         m_ptr->get_monster_profile().sub_align = SUB_ALIGN_NEUTRAL;
     } else {
         m_ptr->get_monster_profile().sub_align = SUB_ALIGN_NEUTRAL;
