@@ -159,7 +159,7 @@ bool BadStatusSetter::set_confusion(const TIME_EFFECT tmp_v)
     } else {
         if (is_confused) {
             msg_print(_("やっと混乱がおさまった。", "You feel less confused now."));
-            this->creature.special_attack &= ~(ATTACK_SUIKEN);
+            this->creature.remove_special_attack(ATTACK_SUIKEN);
             notice = true;
         }
     }

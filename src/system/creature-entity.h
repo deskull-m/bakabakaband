@@ -2309,6 +2309,268 @@ public:
         return this->xtra_might != 0;
     }
     /*!
+     * @brief 装備由来の祝福武器有無
+     */
+    virtual bool has_bless_blade() const
+    {
+        return this->bless_blade != 0;
+    }
+
+    // [提案 33] BIT_FLAGS フィールドの setter virtual 群。
+    // すべて player-status.cpp の update_creature() から
+    // 装備状態を再計算した結果を書き込むのみ。
+    virtual void set_telepathy(BIT_FLAGS value)
+    {
+        this->telepathy = value;
+    }
+    virtual void set_esp_animal(BIT_FLAGS value)
+    {
+        this->esp_animal = value;
+    }
+    virtual void set_esp_nasty(BIT_FLAGS value)
+    {
+        this->esp_nasty = value;
+    }
+    virtual void set_esp_homo(BIT_FLAGS value)
+    {
+        this->esp_homo = value;
+    }
+    virtual void set_esp_undead(BIT_FLAGS value)
+    {
+        this->esp_undead = value;
+    }
+    virtual void set_esp_demon(BIT_FLAGS value)
+    {
+        this->esp_demon = value;
+    }
+    virtual void set_esp_orc(BIT_FLAGS value)
+    {
+        this->esp_orc = value;
+    }
+    virtual void set_esp_troll(BIT_FLAGS value)
+    {
+        this->esp_troll = value;
+    }
+    virtual void set_esp_giant(BIT_FLAGS value)
+    {
+        this->esp_giant = value;
+    }
+    virtual void set_esp_dragon(BIT_FLAGS value)
+    {
+        this->esp_dragon = value;
+    }
+    virtual void set_esp_human(BIT_FLAGS value)
+    {
+        this->esp_human = value;
+    }
+    virtual void set_esp_evil(BIT_FLAGS value)
+    {
+        this->esp_evil = value;
+    }
+    virtual void set_esp_good(BIT_FLAGS value)
+    {
+        this->esp_good = value;
+    }
+    virtual void set_esp_nonliving(BIT_FLAGS value)
+    {
+        this->esp_nonliving = value;
+    }
+    virtual void set_esp_unique(BIT_FLAGS value)
+    {
+        this->esp_unique = value;
+    }
+
+    virtual void set_can_swim(bool value)
+    {
+        this->can_swim = value;
+    }
+    virtual void set_levitation(BIT_FLAGS value)
+    {
+        this->levitation = value;
+    }
+    virtual void set_free_act(BIT_FLAGS value)
+    {
+        this->free_act = value;
+    }
+    virtual void set_see_inv(BIT_FLAGS value)
+    {
+        this->see_inv = value;
+    }
+    virtual void set_regenerate(BIT_FLAGS value)
+    {
+        this->regenerate = value;
+    }
+    virtual void set_hold_exp(BIT_FLAGS value)
+    {
+        this->hold_exp = value;
+    }
+    virtual void set_slow_digest(BIT_FLAGS value)
+    {
+        this->slow_digest = value;
+    }
+    virtual void set_lite_flags(BIT_FLAGS value)
+    {
+        this->lite = value;
+    }
+    virtual void set_warning_flags(BIT_FLAGS value)
+    {
+        this->warning = value;
+    }
+    virtual void set_impact_flags(BIT_FLAGS value)
+    {
+        this->impact = value;
+    }
+    virtual void set_earthquake_flags(BIT_FLAGS value)
+    {
+        this->earthquake = value;
+    }
+    virtual void set_dec_mana(BIT_FLAGS value)
+    {
+        this->dec_mana = value;
+    }
+    virtual void set_easy_spell(BIT_FLAGS value)
+    {
+        this->easy_spell = value;
+    }
+    virtual void set_hard_spell(BIT_FLAGS value)
+    {
+        this->hard_spell = value;
+    }
+    virtual void set_mighty_throw(BIT_FLAGS value)
+    {
+        this->mighty_throw = value;
+    }
+    virtual void set_see_nocto(BIT_FLAGS value)
+    {
+        this->see_nocto = value;
+    }
+    virtual void set_anti_magic(BIT_FLAGS value)
+    {
+        this->anti_magic = value;
+    }
+    virtual void set_anti_tele(BIT_FLAGS value)
+    {
+        this->anti_tele = value;
+    }
+    virtual void set_bless_blade(BIT_FLAGS value)
+    {
+        this->bless_blade = value;
+    }
+    virtual void set_xtra_might(BIT_FLAGS value)
+    {
+        this->xtra_might = value;
+    }
+
+    // impact / earthquake は装備別ハンドフラグを保持しているため
+    // BIT_FLAGS 値そのものを返す getter を提供 (any_bits 等に渡す用)。
+    virtual BIT_FLAGS get_impact_flags() const
+    {
+        return this->impact;
+    }
+    virtual BIT_FLAGS get_earthquake_flags() const
+    {
+        return this->earthquake;
+    }
+
+    // 旧値スナップショット用 BIT_FLAGS getter (差分検出キャッシュ向け)。
+    virtual BIT_FLAGS get_telepathy_flags() const
+    {
+        return this->telepathy;
+    }
+    virtual BIT_FLAGS get_esp_animal_flags() const
+    {
+        return this->esp_animal;
+    }
+    virtual BIT_FLAGS get_esp_undead_flags() const
+    {
+        return this->esp_undead;
+    }
+    virtual BIT_FLAGS get_esp_demon_flags() const
+    {
+        return this->esp_demon;
+    }
+    virtual BIT_FLAGS get_esp_orc_flags() const
+    {
+        return this->esp_orc;
+    }
+    virtual BIT_FLAGS get_esp_troll_flags() const
+    {
+        return this->esp_troll;
+    }
+    virtual BIT_FLAGS get_esp_giant_flags() const
+    {
+        return this->esp_giant;
+    }
+    virtual BIT_FLAGS get_esp_dragon_flags() const
+    {
+        return this->esp_dragon;
+    }
+    virtual BIT_FLAGS get_esp_human_flags() const
+    {
+        return this->esp_human;
+    }
+    virtual BIT_FLAGS get_esp_evil_flags() const
+    {
+        return this->esp_evil;
+    }
+    virtual BIT_FLAGS get_esp_good_flags() const
+    {
+        return this->esp_good;
+    }
+    virtual BIT_FLAGS get_esp_nonliving_flags() const
+    {
+        return this->esp_nonliving;
+    }
+    virtual BIT_FLAGS get_esp_unique_flags() const
+    {
+        return this->esp_unique;
+    }
+    virtual BIT_FLAGS get_see_inv_flags() const
+    {
+        return this->see_inv;
+    }
+    virtual BIT_FLAGS get_mighty_throw_flags() const
+    {
+        return this->mighty_throw;
+    }
+
+    // 特殊攻撃 / 特殊防御フラグ。compound assignment が複数箇所にあるため
+    // add / remove / set / get の 4 種を提供。has_special_attack(flag) は既存。
+    virtual void set_special_attack_flags(BIT_FLAGS value)
+    {
+        this->special_attack = value;
+    }
+    virtual BIT_FLAGS get_special_attack_flags() const
+    {
+        return this->special_attack;
+    }
+    virtual void add_special_attack(BIT_FLAGS flag)
+    {
+        this->special_attack |= flag;
+    }
+    virtual void remove_special_attack(BIT_FLAGS flag)
+    {
+        this->special_attack &= ~flag;
+    }
+
+    virtual void set_special_defense_flags(BIT_FLAGS value)
+    {
+        this->special_defense = value;
+    }
+    virtual BIT_FLAGS get_special_defense_flags() const
+    {
+        return this->special_defense;
+    }
+    virtual void add_special_defense(BIT_FLAGS flag)
+    {
+        this->special_defense |= flag;
+    }
+    virtual void remove_special_defense(BIT_FLAGS flag)
+    {
+        this->special_defense &= ~flag;
+    }
+
+    /*!
      * @brief 突然変異フラグ集合への参照
      * @details プレイヤーは装備・レベル・クラス起因の変異、モンスターは
      *          将来的に種族由来の変異を返す想定。
@@ -2675,7 +2937,10 @@ public:
     // 名前関連
     std::string name{}; /*!< クリーチャーの名前（プレイヤー名またはペット名） / Creature's name (player name or pet nickname) */
 
-    // テレパシー・感知能力関連 / Telepathy and ESP abilities
+    // [提案 33] テレパシー・感知能力フラグ / Telepathy and ESP abilities
+    // すべて player-status.cpp の update_creature() で装備状態から再計算。
+    // 外部アクセスは has_X() / set_X() / get_X_flags() (旧値スナップショット用) 経由。
+private:
     BIT_FLAGS telepathy{}; /* Telepathy */
     BIT_FLAGS esp_animal{};
     BIT_FLAGS esp_nasty{};
@@ -2692,30 +2957,41 @@ public:
     BIT_FLAGS esp_nonliving{};
     BIT_FLAGS esp_unique{};
 
-    // 地形移動能力 / Terrain movement abilities
+public:
+    // [提案 33] 地形移動能力 / Terrain movement abilities
+private:
     bool can_swim{}; /* No damage in water */
 
-    /* クリーチャーの防御状態の定義 / Bit flags for the "special_defense" variable. -LM- */
+public:
+    // [提案 33] 特殊防御フラグ / Bit flags for the "special_defense" variable. -LM-
+    // has_special_defense(flag) / add_special_defense(flag) 等経由。
+private:
     BIT_FLAGS special_defense{};
 
+public:
     // 装備・能力関連フラグ / Equipment and ability flags
     bool hack_mutation{};
     bool is_fired{};
     bool level_up_message{};
 
+    // [提案 33] 装備由来 BIT_FLAGS 群。
+    // 全て has_X() / set_X() 経由でアクセス。
+    // EnumClassFlagGroup の cursed / cursed_special は public 維持。
+private:
     BIT_FLAGS anti_magic{}; /* Anti-magic */
     BIT_FLAGS anti_tele{}; /* Prevent teleportation */
 
+public:
     EnumClassFlagGroup<CurseTraitType> cursed{}; /* Player is cursed */
     EnumClassFlagGroup<CurseSpecialTraitType> cursed_special{}; /* Player is special type cursed */
 
+private:
     BIT_FLAGS levitation{}; /* No damage falling */
     BIT_FLAGS lite{}; /* Permanent light */
     BIT_FLAGS free_act{}; /* Never paralyzed */
     BIT_FLAGS see_inv{}; /* Can see invisible */
     BIT_FLAGS regenerate{}; /* Regenerate hit pts */
     BIT_FLAGS hold_exp{}; /* Resist exp draining */
-
     BIT_FLAGS slow_digest{}; /* Slower digestion */
     BIT_FLAGS bless_blade{}; //!< 祝福された装備をしている / Blessed by inventory items
     BIT_FLAGS xtra_might{}; /* Extra might bow */
@@ -2727,6 +3003,8 @@ public:
     BIT_FLAGS warning{};
     BIT_FLAGS mighty_throw{};
     BIT_FLAGS see_nocto{}; /* Noctovision */
+
+public:
     bool invoking_midnight_curse{};
 
     // インシデント記録（ツリー構造）
@@ -2774,8 +3052,13 @@ public:
     POSITION cur_lite{}; /* Radius of lite (if any) */
     POSITION old_lite{}; /* Radius of lite (if any) */
 
+    // [提案 33] private 化済。has_special_attack(flag) / add_special_attack(flag)
+    // / remove_special_attack(flag) / set_special_attack_flags(BIT_FLAGS) /
+    // get_special_attack_flags() 経由。
+private:
     BIT_FLAGS special_attack{};
 
+public:
     SUB_EXP spell_exp[64]{}; /* Proficiency of spells */
     std::map<ItemKindType, std::array<SUB_EXP, 64>> weapon_exp{}; /* Proficiency of weapons */
     std::map<ItemKindType, std::array<SUB_EXP, 64>> weapon_exp_max{}; /* Maximum proficiency of weapons */

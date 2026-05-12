@@ -131,23 +131,23 @@ void set_body_improvement_info_3(CreatureEntity &creature, self_info_type *self_
         self_ptr->info_list.emplace_back(_("あなたはテレポートできない。", "You cannot teleport."));
     }
 
-    if (creature.lite) {
+    if (creature.has_lite_flag()) {
         self_ptr->info_list.emplace_back(_("あなたの身体は光っている。", "You are carrying a permanent light."));
     }
 
-    if (creature.warning) {
+    if (creature.has_warning_flag()) {
         self_ptr->info_list.emplace_back(_("あなたは行動の前に危険を察知することができる。", "You will be warned before dangerous actions."));
     }
 
-    if (creature.dec_mana) {
+    if (creature.has_dec_mana()) {
         self_ptr->info_list.emplace_back(_("あなたは少ない消費魔力で魔法を唱えることができる。", "You can cast spells with fewer mana points."));
     }
 
-    if (creature.easy_spell) {
+    if (creature.has_easy_spell()) {
         self_ptr->info_list.emplace_back(_("あなたは低い失敗率で魔法を唱えることができる。", "Your magic fails less often."));
     }
 
-    if (creature.mighty_throw) {
+    if (creature.has_mighty_throw()) {
         self_ptr->info_list.emplace_back(_("あなたは強く物を投げる。", "You can throw objects powerfully."));
     }
 }

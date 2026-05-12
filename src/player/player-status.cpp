@@ -243,67 +243,67 @@ static void update_bonuses(CreatureEntity &creature)
     ItemEntity *o_ptr;
 
     /* Save the old vision stuff */
-    BIT_FLAGS old_telepathy = creature.telepathy;
-    BIT_FLAGS old_esp_animal = creature.esp_animal;
-    BIT_FLAGS old_esp_undead = creature.esp_undead;
-    BIT_FLAGS old_esp_demon = creature.esp_demon;
-    BIT_FLAGS old_esp_orc = creature.esp_orc;
-    BIT_FLAGS old_esp_troll = creature.esp_troll;
-    BIT_FLAGS old_esp_giant = creature.esp_giant;
-    BIT_FLAGS old_esp_dragon = creature.esp_dragon;
-    BIT_FLAGS old_esp_human = creature.esp_human;
-    BIT_FLAGS old_esp_evil = creature.esp_evil;
-    BIT_FLAGS old_esp_good = creature.esp_good;
-    BIT_FLAGS old_esp_nonliving = creature.esp_nonliving;
-    BIT_FLAGS old_esp_unique = creature.esp_unique;
-    BIT_FLAGS old_see_inv = creature.see_inv;
-    BIT_FLAGS old_mighty_throw = creature.mighty_throw;
+    BIT_FLAGS old_telepathy = creature.get_telepathy_flags();
+    BIT_FLAGS old_esp_animal = creature.get_esp_animal_flags();
+    BIT_FLAGS old_esp_undead = creature.get_esp_undead_flags();
+    BIT_FLAGS old_esp_demon = creature.get_esp_demon_flags();
+    BIT_FLAGS old_esp_orc = creature.get_esp_orc_flags();
+    BIT_FLAGS old_esp_troll = creature.get_esp_troll_flags();
+    BIT_FLAGS old_esp_giant = creature.get_esp_giant_flags();
+    BIT_FLAGS old_esp_dragon = creature.get_esp_dragon_flags();
+    BIT_FLAGS old_esp_human = creature.get_esp_human_flags();
+    BIT_FLAGS old_esp_evil = creature.get_esp_evil_flags();
+    BIT_FLAGS old_esp_good = creature.get_esp_good_flags();
+    BIT_FLAGS old_esp_nonliving = creature.get_esp_nonliving_flags();
+    BIT_FLAGS old_esp_unique = creature.get_esp_unique_flags();
+    BIT_FLAGS old_see_inv = creature.get_see_inv_flags();
+    BIT_FLAGS old_mighty_throw = creature.get_mighty_throw_flags();
     int16_t old_speed = static_cast<int16_t>(creature.get_speed());
 
     ARMOUR_CLASS old_dis_ac = creature.dis_ac;
     ARMOUR_CLASS old_dis_to_a = creature.dis_to_a;
 
-    creature.xtra_might = has_xtra_might(creature);
-    creature.esp_evil = has_esp_evil(creature);
-    creature.esp_animal = has_esp_animal(creature);
-    creature.esp_nasty = has_esp_nasty(creature);
-    creature.esp_homo = has_esp_homo(creature);
-    creature.esp_undead = has_esp_undead(creature);
-    creature.esp_demon = has_esp_demon(creature);
-    creature.esp_orc = has_esp_orc(creature);
-    creature.esp_troll = has_esp_troll(creature);
-    creature.esp_giant = has_esp_giant(creature);
-    creature.esp_dragon = has_esp_dragon(creature);
-    creature.esp_human = has_esp_human(creature);
-    creature.esp_good = has_esp_good(creature);
-    creature.esp_nonliving = has_esp_nonliving(creature);
-    creature.esp_unique = has_esp_unique(creature);
-    creature.telepathy = has_esp_telepathy(creature);
-    creature.bless_blade = has_bless_blade(creature);
+    creature.set_xtra_might(has_xtra_might(creature));
+    creature.set_esp_evil(has_esp_evil(creature));
+    creature.set_esp_animal(has_esp_animal(creature));
+    creature.set_esp_nasty(has_esp_nasty(creature));
+    creature.set_esp_homo(has_esp_homo(creature));
+    creature.set_esp_undead(has_esp_undead(creature));
+    creature.set_esp_demon(has_esp_demon(creature));
+    creature.set_esp_orc(has_esp_orc(creature));
+    creature.set_esp_troll(has_esp_troll(creature));
+    creature.set_esp_giant(has_esp_giant(creature));
+    creature.set_esp_dragon(has_esp_dragon(creature));
+    creature.set_esp_human(has_esp_human(creature));
+    creature.set_esp_good(has_esp_good(creature));
+    creature.set_esp_nonliving(has_esp_nonliving(creature));
+    creature.set_esp_unique(has_esp_unique(creature));
+    creature.set_telepathy(has_esp_telepathy(creature));
+    creature.set_bless_blade(has_bless_blade(creature));
     creature.easy_2weapon = creature.has_easy2_weapon();
     creature.down_saving = creature.has_down_saving();
     creature.yoiyami = creature.has_no_ac();
-    creature.mighty_throw = has_mighty_throw(creature);
-    creature.dec_mana = has_dec_mana(creature);
-    creature.see_nocto = has_see_nocto(creature);
-    creature.warning = has_warning(creature);
-    creature.anti_magic = has_anti_magic(creature);
-    creature.anti_tele = has_anti_tele(creature);
-    creature.easy_spell = has_easy_spell(creature);
-    creature.hard_spell = has_hard_spell(creature);
-    creature.hold_exp = has_hold_exp(creature);
-    creature.see_inv = has_see_inv(creature);
-    creature.free_act = has_free_act(creature);
-    creature.levitation = has_levitation(creature);
-    creature.can_swim = has_can_swim(creature);
-    creature.slow_digest = has_slow_digest(creature);
-    creature.regenerate = has_regenerate(creature);
+    creature.set_mighty_throw(has_mighty_throw(creature));
+    creature.set_dec_mana(has_dec_mana(creature));
+    creature.set_see_nocto(has_see_nocto(creature));
+    creature.set_warning_flags(has_warning(creature));
+    creature.set_anti_magic(has_anti_magic(creature));
+    creature.set_anti_tele(has_anti_tele(creature));
+    creature.set_easy_spell(has_easy_spell(creature));
+    creature.set_hard_spell(has_hard_spell(creature));
+    creature.set_hold_exp(has_hold_exp(creature));
+    creature.set_see_inv(has_see_inv(creature));
+    creature.set_free_act(has_free_act(creature));
+    creature.set_levitation(has_levitation(creature));
+    creature.set_can_swim(has_can_swim(creature));
+    creature.set_slow_digest(has_slow_digest(creature));
+    creature.set_regenerate(has_regenerate(creature));
     update_curses(creature);
-    creature.impact = has_impact(creature);
-    creature.earthquake = has_earthquake(creature);
+    creature.set_impact_flags(has_impact(creature));
+    creature.set_earthquake_flags(has_earthquake(creature));
     update_extra_blows(creature);
 
-    creature.lite = has_lite(creature);
+    creature.set_lite_flags(has_lite(creature));
 
     if (!CreatureClass(creature).monk_stance_is(MonkStanceType::NONE)) {
         if (none_bits(empty_hands_status, EMPTY_HAND_MAIN)) {
@@ -359,31 +359,31 @@ static void update_bonuses(CreatureEntity &creature)
     creature.dis_to_a = calc_to_ac(creature, false);
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (old_mighty_throw != creature.mighty_throw) {
+    if (old_mighty_throw != creature.get_mighty_throw_flags()) {
         rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
     }
 
-    if (creature.telepathy != old_telepathy) {
+    if (creature.get_telepathy_flags() != old_telepathy) {
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
     }
 
-    auto is_esp_updated = creature.esp_animal != old_esp_animal;
-    is_esp_updated |= creature.esp_undead != old_esp_undead;
-    is_esp_updated |= creature.esp_demon != old_esp_demon;
-    is_esp_updated |= creature.esp_orc != old_esp_orc;
-    is_esp_updated |= creature.esp_troll != old_esp_troll;
-    is_esp_updated |= creature.esp_giant != old_esp_giant;
-    is_esp_updated |= creature.esp_dragon != old_esp_dragon;
-    is_esp_updated |= creature.esp_human != old_esp_human;
-    is_esp_updated |= creature.esp_evil != old_esp_evil;
-    is_esp_updated |= creature.esp_good != old_esp_good;
-    is_esp_updated |= creature.esp_nonliving != old_esp_nonliving;
-    is_esp_updated |= creature.esp_unique != old_esp_unique;
+    auto is_esp_updated = creature.get_esp_animal_flags() != old_esp_animal;
+    is_esp_updated |= creature.get_esp_undead_flags() != old_esp_undead;
+    is_esp_updated |= creature.get_esp_demon_flags() != old_esp_demon;
+    is_esp_updated |= creature.get_esp_orc_flags() != old_esp_orc;
+    is_esp_updated |= creature.get_esp_troll_flags() != old_esp_troll;
+    is_esp_updated |= creature.get_esp_giant_flags() != old_esp_giant;
+    is_esp_updated |= creature.get_esp_dragon_flags() != old_esp_dragon;
+    is_esp_updated |= creature.get_esp_human_flags() != old_esp_human;
+    is_esp_updated |= creature.get_esp_evil_flags() != old_esp_evil;
+    is_esp_updated |= creature.get_esp_good_flags() != old_esp_good;
+    is_esp_updated |= creature.get_esp_nonliving_flags() != old_esp_nonliving;
+    is_esp_updated |= creature.get_esp_unique_flags() != old_esp_unique;
     if (is_esp_updated) {
         rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
     }
 
-    if (creature.see_inv != old_see_inv) {
+    if (creature.get_see_inv_flags() != old_see_inv) {
         rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
     }
 
@@ -1135,7 +1135,7 @@ static ACTION_SKILL_POWER calc_saving_throw(CreatureEntity &creature)
         pow += 30;
     }
 
-    if (creature.bless_blade) {
+    if (creature.has_bless_blade()) {
         pow += 6 + (creature.get_level() - 1) / 10;
     }
 
@@ -1153,7 +1153,7 @@ static ACTION_SKILL_POWER calc_saving_throw(CreatureEntity &creature)
         pow -= 30;
     }
 
-    if (creature.anti_magic && (pow < (90 + creature.get_level()))) {
+    if (creature.has_anti_magic() && (pow < (90 + creature.get_level()))) {
         pow = 90 + creature.get_level();
     }
 
