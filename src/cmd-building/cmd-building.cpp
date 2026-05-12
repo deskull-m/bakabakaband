@@ -288,7 +288,7 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
         creature.sub_au(building_cost);
         return true;
     case BACT_EVAL_AC:
-        if (eval_ac(creature.dis_ac + creature.dis_to_a)) {
+        if (eval_ac(creature.get_dis_ac() + creature.get_dis_to_a())) {
             creature.sub_au(building_cost);
         }
 

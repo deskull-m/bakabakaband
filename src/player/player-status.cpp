@@ -260,8 +260,8 @@ static void update_bonuses(CreatureEntity &creature)
     BIT_FLAGS old_mighty_throw = creature.get_mighty_throw_flags();
     int16_t old_speed = static_cast<int16_t>(creature.get_speed());
 
-    ARMOUR_CLASS old_dis_ac = creature.dis_ac;
-    ARMOUR_CLASS old_dis_to_a = creature.dis_to_a;
+    ARMOUR_CLASS old_dis_ac = creature.get_dis_ac();
+    ARMOUR_CLASS old_dis_to_a = creature.get_dis_to_a();
 
     creature.set_xtra_might(has_xtra_might(creature));
     creature.set_esp_evil(has_esp_evil(creature));
@@ -341,22 +341,22 @@ static void update_bonuses(CreatureEntity &creature)
     creature.riding_ryoute = is_riding_two_hands(creature);
     creature.set_to_d(0, calc_to_damage(creature, INVEN_MAIN_HAND, true));
     creature.set_to_d(1, calc_to_damage(creature, INVEN_SUB_HAND, true));
-    creature.dis_to_d[0] = calc_to_damage(creature, INVEN_MAIN_HAND, false);
-    creature.dis_to_d[1] = calc_to_damage(creature, INVEN_SUB_HAND, false);
+    creature.set_dis_to_d(0, calc_to_damage(creature, INVEN_MAIN_HAND, false));
+    creature.set_dis_to_d(1, calc_to_damage(creature, INVEN_SUB_HAND, false));
     creature.set_to_h(0, calc_to_hit(creature, INVEN_MAIN_HAND, true));
     creature.set_to_h(1, calc_to_hit(creature, INVEN_SUB_HAND, true));
-    creature.dis_to_h[0] = calc_to_hit(creature, INVEN_MAIN_HAND, false);
-    creature.dis_to_h[1] = calc_to_hit(creature, INVEN_SUB_HAND, false);
+    creature.set_dis_to_h(0, calc_to_hit(creature, INVEN_MAIN_HAND, false));
+    creature.set_dis_to_h(1, calc_to_hit(creature, INVEN_SUB_HAND, false));
     creature.set_to_h_b(calc_to_hit_bow(creature, true));
-    creature.dis_to_h_b = calc_to_hit_bow(creature, false);
+    creature.set_dis_to_h_b(calc_to_hit_bow(creature, false));
     creature.set_to_d_m(calc_to_damage_misc(creature));
     creature.set_to_h_m(calc_to_hit_misc(creature));
     creature.skill_dig = calc_skill_dig(creature);
     creature.to_m_chance = calc_to_magic_chance(creature);
     creature.ac = calc_base_ac(creature);
     creature.set_to_a(calc_to_ac(creature, true));
-    creature.dis_ac = calc_base_ac(creature);
-    creature.dis_to_a = calc_to_ac(creature, false);
+    creature.set_dis_ac(calc_base_ac(creature));
+    creature.set_dis_to_a(calc_to_ac(creature, false));
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (old_mighty_throw != creature.get_mighty_throw_flags()) {
@@ -391,7 +391,7 @@ static void update_bonuses(CreatureEntity &creature)
         rfu.set_flag(MainWindowRedrawingFlag::SPEED);
     }
 
-    if ((creature.dis_ac != old_dis_ac) || (creature.dis_to_a != old_dis_to_a)) {
+    if ((creature.get_dis_ac() != old_dis_ac) || (creature.get_dis_to_a() != old_dis_to_a)) {
         rfu.set_flag(MainWindowRedrawingFlag::AC);
         rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
     }
