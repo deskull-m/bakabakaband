@@ -408,15 +408,15 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
 
     /* Sub-alignment of a monster */
     if (!monster.is_pet() && new_monrace.kind_flags.has_none_of(alignment_mask)) {
-        monster.get_monster_profile().sub_align = old_sub_align;
+        monster.set_sub_align(old_sub_align);
     } else {
-        monster.get_monster_profile().sub_align = SUB_ALIGN_NEUTRAL;
+        monster.set_sub_align(SUB_ALIGN_NEUTRAL);
         if (new_monrace.kind_flags.has(MonsterKindType::EVIL)) {
-            monster.get_monster_profile().sub_align |= SUB_ALIGN_EVIL;
+            monster.add_sub_align(SUB_ALIGN_EVIL);
         }
 
         if (new_monrace.kind_flags.has(MonsterKindType::GOOD)) {
-            monster.get_monster_profile().sub_align |= SUB_ALIGN_GOOD;
+            monster.add_sub_align(SUB_ALIGN_GOOD);
         }
     }
 
@@ -441,7 +441,7 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
         }
 
         /* Now you feel very close to this pet. */
-        monster.get_monster_profile().parent_m_idx = 0;
+        monster.set_parent_m_idx(0);
     }
 
     update_monster(creature, m_idx, false);

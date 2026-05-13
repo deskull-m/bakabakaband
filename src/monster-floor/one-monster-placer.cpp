@@ -262,7 +262,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     // モンスターの能力値をランダムに初期化
     get_stats(*m_ptr);
 
-    m_ptr->get_monster_profile().alliance_idx = monrace.alliance_idx;
+    m_ptr->set_alliance_idx(monrace.alliance_idx);
 
     m_ptr->get_monster_profile().mflag.clear();
     m_ptr->get_monster_profile().mflag2.clear();
@@ -376,16 +376,16 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     }
 
     if (!m_ptr->is_chameleon() && is_summoned && new_monrace.kind_flags.has_none_of(alignment_mask)) {
-        m_ptr->get_monster_profile().sub_align = summoner.get_sub_align();
+        m_ptr->set_sub_align(summoner.get_sub_align());
     } else if (m_ptr->is_chameleon() && new_monrace.kind_flags.has(MonsterKindType::UNIQUE) && !is_summoned) {
-        m_ptr->get_monster_profile().sub_align = SUB_ALIGN_NEUTRAL;
+        m_ptr->set_sub_align(SUB_ALIGN_NEUTRAL);
     } else {
-        m_ptr->get_monster_profile().sub_align = SUB_ALIGN_NEUTRAL;
+        m_ptr->set_sub_align(SUB_ALIGN_NEUTRAL);
         if (new_monrace.kind_flags.has(MonsterKindType::EVIL)) {
-            set_bits(m_ptr->get_monster_profile().sub_align, SUB_ALIGN_EVIL);
+            m_ptr->add_sub_align(SUB_ALIGN_EVIL);
         }
         if (new_monrace.kind_flags.has(MonsterKindType::GOOD)) {
-            set_bits(m_ptr->get_monster_profile().sub_align, SUB_ALIGN_GOOD);
+            m_ptr->add_sub_align(SUB_ALIGN_GOOD);
         }
     }
 
@@ -427,12 +427,12 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     m_ptr->exp = 0;
 
     if (is_summoned) {
-        m_ptr->get_monster_profile().parent_m_idx = *summoner_m_idx;
+        m_ptr->set_parent_m_idx(*summoner_m_idx);
         if (summoner.get_monrace().kind_flags.has(MonsterKindType::QUYLTHLUG)) {
             m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::QUYLTHLUG_BORN);
         }
     } else {
-        m_ptr->get_monster_profile().parent_m_idx = 0;
+        m_ptr->set_parent_m_idx(0);
     }
 
     // 変身情報のコピー

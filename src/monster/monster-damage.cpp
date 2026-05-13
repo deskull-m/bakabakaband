@@ -630,7 +630,7 @@ bool MonsterDamageProcessor::check_and_process_hp_transform()
     monster.get_monster_profile().transform_hp_threshold = new_monrace.transform_hp_threshold;
 
     // アライメントを維持
-    monster.get_monster_profile().sub_align = old_sub_align;
+    monster.set_sub_align(old_sub_align);
 
     // メッセージ表示
     if (monster.is_visible_on_map()) {

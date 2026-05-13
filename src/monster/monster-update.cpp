@@ -647,151 +647,151 @@ void update_smart_learn(CreatureEntity &creature, MONSTER_IDX m_idx, int what)
     switch (what) {
     case DRS_ACID:
         if (creature.has_resist_acid()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_ACID);
+            monster.add_smart_flag(MonsterSmartLearnType::RES_ACID);
         }
 
         if (is_oppose_acid(creature)) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::OPP_ACID);
+            monster.add_smart_flag(MonsterSmartLearnType::OPP_ACID);
         }
 
         if (creature.has_immune_acid()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::IMM_ACID);
+            monster.add_smart_flag(MonsterSmartLearnType::IMM_ACID);
         }
 
         break;
     case DRS_ELEC:
         if (creature.has_resist_elec()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_ELEC);
+            monster.add_smart_flag(MonsterSmartLearnType::RES_ELEC);
         }
 
         if (is_oppose_elec(creature)) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::OPP_ELEC);
+            monster.add_smart_flag(MonsterSmartLearnType::OPP_ELEC);
         }
 
         if (creature.has_immune_elec()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::IMM_ELEC);
+            monster.add_smart_flag(MonsterSmartLearnType::IMM_ELEC);
         }
 
         break;
     case DRS_FIRE:
         if (creature.has_resist_fire()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_FIRE);
+            monster.add_smart_flag(MonsterSmartLearnType::RES_FIRE);
         }
 
         if (is_oppose_fire(creature)) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::OPP_FIRE);
+            monster.add_smart_flag(MonsterSmartLearnType::OPP_FIRE);
         }
 
         if (creature.has_immune_fire()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::IMM_FIRE);
+            monster.add_smart_flag(MonsterSmartLearnType::IMM_FIRE);
         }
 
         break;
     case DRS_COLD:
         if (creature.has_resist_cold()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_COLD);
+            monster.add_smart_flag(MonsterSmartLearnType::RES_COLD);
         }
 
         if (is_oppose_cold(creature)) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::OPP_COLD);
+            monster.add_smart_flag(MonsterSmartLearnType::OPP_COLD);
         }
 
         if (creature.has_immune_cold()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::IMM_COLD);
+            monster.add_smart_flag(MonsterSmartLearnType::IMM_COLD);
         }
 
         break;
     case DRS_POIS:
         if (creature.has_resist_pois()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_POIS);
+            monster.add_smart_flag(MonsterSmartLearnType::RES_POIS);
         }
 
         if (is_oppose_pois(creature)) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::OPP_POIS);
+            monster.add_smart_flag(MonsterSmartLearnType::OPP_POIS);
         }
 
         break;
     case DRS_NETH:
         if (creature.has_resist_neth()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_NETH);
+            monster.add_smart_flag(MonsterSmartLearnType::RES_NETH);
         }
 
         break;
     case DRS_LITE:
         if (creature.has_resist_lite()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_LITE);
+            monster.add_smart_flag(MonsterSmartLearnType::RES_LITE);
         }
 
         break;
     case DRS_DARK:
         if (creature.has_resist_dark() || creature.has_immune_dark()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_DARK);
+            monster.add_smart_flag(MonsterSmartLearnType::RES_DARK);
         }
 
         break;
     case DRS_FEAR:
         if (creature.has_resist_fear()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_FEAR);
+            monster.add_smart_flag(MonsterSmartLearnType::RES_FEAR);
         }
 
         break;
     case DRS_CONF:
         if (creature.has_resist_conf()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_CONF);
+            monster.add_smart_flag(MonsterSmartLearnType::RES_CONF);
         }
 
         break;
     case DRS_CHAOS:
         if (creature.has_resist_chaos()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_CHAOS);
+            monster.add_smart_flag(MonsterSmartLearnType::RES_CHAOS);
         }
 
         break;
     case DRS_DISEN:
         if (creature.has_resist_disen()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_DISEN);
+            monster.add_smart_flag(MonsterSmartLearnType::RES_DISEN);
         }
 
         break;
     case DRS_BLIND:
         if (creature.has_resist_blind()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_BLIND);
+            monster.add_smart_flag(MonsterSmartLearnType::RES_BLIND);
         }
 
         break;
     case DRS_NEXUS:
         if (creature.has_resist_shard()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_NEXUS);
+            monster.add_smart_flag(MonsterSmartLearnType::RES_NEXUS);
         }
 
         break;
     case DRS_SOUND:
         if (creature.has_resist_sound()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_SOUND);
+            monster.add_smart_flag(MonsterSmartLearnType::RES_SOUND);
         }
 
         break;
     case DRS_SHARD:
         if (creature.has_resist_shard()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::RES_SHARD);
+            monster.add_smart_flag(MonsterSmartLearnType::RES_SHARD);
         }
 
         break;
     case DRS_FREE:
         if (creature.has_free_act()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::IMM_FREE);
+            monster.add_smart_flag(MonsterSmartLearnType::IMM_FREE);
         }
 
         break;
     case DRS_MANA:
         if (!creature.msp) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::IMM_MANA);
+            monster.add_smart_flag(MonsterSmartLearnType::IMM_MANA);
         }
 
         break;
     case DRS_REFLECT:
         if (creature.has_reflect()) {
-            monster.get_monster_profile().smart.set(MonsterSmartLearnType::IMM_REFLECT);
+            monster.add_smart_flag(MonsterSmartLearnType::IMM_REFLECT);
         }
 
         break;
