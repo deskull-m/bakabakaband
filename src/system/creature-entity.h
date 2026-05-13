@@ -1092,10 +1092,10 @@ public:
     /*!
      * @brief 変身先モンスター種族 ID を設定する (提案 19)
      */
-    virtual void set_transform_r_idx(MonraceId r_idx)
+    virtual void set_transform_r_idx(MonraceId new_r_idx)
     {
         if (this->has_monster_profile()) {
-            this->get_monster_profile().transform_r_idx = r_idx;
+            this->get_monster_profile().transform_r_idx = new_r_idx;
         }
     }
 
@@ -1146,10 +1146,10 @@ public:
     /*!
      * @brief 自壊までの残りターン数を設定する (提案 19)
      */
-    virtual void set_death_count(int count)
+    virtual void set_death_count(int new_count)
     {
         if (this->has_monster_profile()) {
-            this->get_monster_profile().death_count = count;
+            this->get_monster_profile().death_count = new_count;
         }
     }
 
