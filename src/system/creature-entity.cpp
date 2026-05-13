@@ -3,6 +3,7 @@
 #include "floor/floor-object.h"
 #include "floor/geometry.h"
 #include "game-option/birth-options.h"
+#include "grid/grid.h"
 #include "hpmp/hp-mp-regenerator.h"
 #include "inventory/inventory-object.h"
 #include "inventory/inventory-slot-types.h"
@@ -39,6 +40,7 @@
 #include "system/monrace/monrace-list.h"
 #include "system/monster-profile.h"
 #include "system/redrawing-flags-updater.h"
+#include "target/projection-path-calculator.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
 #include "term/z-rand.h"
@@ -161,7 +163,7 @@ MonraceDefinition &CreatureEntity::get_appearance_monrace() const
 
 MonraceId CreatureEntity::get_real_monrace_id() const
 {
-    if (!this->has_monster_profile() || this->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON)) {
+    if (!this->is_chameleon()) {
         return this->r_idx;
     }
 
@@ -228,7 +230,7 @@ bool CreatureEntity::is_male() const
 bool CreatureEntity::is_female() const
 {
     const auto has_female_psex = (this->psex == SEX_FEMALE) || (this->psex == SEX_BISEXUAL);
-    return has_female_psex || (this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::WAIFUIZED));
+    return has_female_psex || this->is_waifuized();
 }
 
 std::pair<TERM_COLOR, int> CreatureEntity::get_hp_bar_data() const
@@ -675,7 +677,7 @@ bool CreatureEntity::is_hostile_to_melee(const CreatureEntity &other) const
     if (this->get_alliance_idx() != other.get_alliance_idx()) {
         return true;
     } else if (this->is_hostile_align(other.get_sub_align())) {
-        if (this->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON) || other.get_monster_profile().mflag2.has_not(MonsterConstantFlagType::CHAMELEON)) {
+        if (!this->is_chameleon() || !other.is_chameleon()) {
             return true;
         }
     }
@@ -963,9 +965,59 @@ void CreatureEntity::initialize_equivalent_player_classes()
     }
 }
 
+// [提案 14] AI ターゲット選定の共通化実装
+MONSTER_IDX CreatureEntity::find_nearest_creature(const CreaturePredicate &predicate, bool require_projectable) const
+{
+    const auto &floor = *this->get_floor();
+    const auto self_pos = this->get_position();
+    MONSTER_IDX best_idx = 0;
+    int best_dist = INT_MAX;
+    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+        const auto &candidate = floor.get_monster(i);
+        if (!candidate.is_valid() || !predicate(candidate)) {
+            continue;
+        }
+        const auto c_pos = candidate.get_position();
+        if (require_projectable && !projectable(floor, self_pos, c_pos)) {
+            continue;
+        }
+        const auto dist = Grid::calc_distance(self_pos, c_pos);
+        if (dist < best_dist) {
+            best_dist = dist;
+            best_idx = i;
+        }
+    }
+    return best_idx;
+}
+
+bool CreatureEntity::has_visible_creature(const CreaturePredicate &predicate) const
+{
+    const auto &floor = *this->get_floor();
+    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+        const auto &candidate = floor.get_monster(i);
+        if (candidate.is_valid() && predicate(candidate)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+std::vector<MONSTER_IDX> CreatureEntity::collect_creatures(const CreaturePredicate &predicate) const
+{
+    const auto &floor = *this->get_floor();
+    std::vector<MONSTER_IDX> result;
+    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+        const auto &candidate = floor.get_monster(i);
+        if (candidate.is_valid() && predicate(candidate)) {
+            result.push_back(i);
+        }
+    }
+    return result;
+}
+
 int CreatureEntity::get_ac() const
 {
-    if (this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::NAKED)) {
+    if (this->is_naked()) {
         return 0;
     }
 
@@ -991,13 +1043,13 @@ std::string CreatureEntity::build_looking_description(bool needs_attitude) const
 {
     const auto description = this->build_damage_description();
     const auto attitude = needs_attitude ? this->build_attitude_description() : "";
-    const std::string clone(this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::CLONED) ? ", clone" : "");
+    const std::string clone(this->has_monster_profile() && this->is_cloned() ? ", clone" : "");
     const auto &apparent_monrace = this->get_appearance_monrace();
 
     const bool show_alliance = this->has_monster_profile() && !this->is_pet() && this->get_alliance_idx() != AllianceType::NONE;
     const std::string alliance_part = show_alliance ? format("(%s)", alliance_list.at(this->get_alliance_idx())->name.data()) : "";
 
-    if ((apparent_monrace.r_tkills > 0) && (!this->has_monster_profile() || this->get_monster_profile().mflag2.has_not(MonsterConstantFlagType::KAGE))) {
+    if ((apparent_monrace.r_tkills > 0) && !this->is_kage()) {
         constexpr auto fmt = _("レベル%d, %s%s%s%s", "Level %d, %s%s%s%s");
         return format(fmt, apparent_monrace.level, description.data(), attitude.data(), clone.data(), alliance_part.data());
     }
@@ -1123,11 +1175,11 @@ byte CreatureEntity::get_temporary_speed() const
     }
 
     if (this->has_monster_profile()) {
-        if (this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FAT)) {
+        if (this->is_fat()) {
             current_speed -= 5;
         }
 
-        if (this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FRENZY)) {
+        if (this->is_frenzied()) {
             current_speed += 10;
         }
     }

@@ -203,8 +203,8 @@ void target_sensing_monsters_prepare(CreatureEntity &creature, std::vector<MONST
         }
 
         /* Shadowers first (あやしい影) */
-        if (monster1.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE) != monster2.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE)) {
-            return monster1.get_monster_profile().mflag2.has(MonsterConstantFlagType::KAGE);
+        if (monster1.is_kage() != monster2.is_kage()) {
+            return monster1.is_kage();
         }
 
         /* Unknown monsters first */

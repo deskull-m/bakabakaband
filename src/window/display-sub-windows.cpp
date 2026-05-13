@@ -147,7 +147,7 @@ static void print_monster_line(TERM_LEN x, TERM_LEN y, const CreatureEntity &mon
     term_addstr(-1, TERM_WHITE, " ");
     term_add_bigch(monrace.symbol_config);
 
-    if (monrace.r_tkills && monster.get_monster_profile().mflag2.has_not(MonsterConstantFlagType::KAGE)) {
+    if (monrace.r_tkills && !monster.is_kage()) {
         buf = format(" %2d", monrace.level);
     } else {
         buf = "???";

@@ -471,7 +471,7 @@ static void effect_damage_piles_confusion(CreatureEntity &creature, EffectMonste
 static void effect_damage_piles_fear(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->do_fear == 0 || em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_FEAR) ||
-        em_ptr->m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::FRENZY)) {
+        em_ptr->m_ptr->is_frenzied()) {
         return;
     }
 

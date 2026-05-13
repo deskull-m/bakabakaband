@@ -60,7 +60,7 @@ bool genocide_aux(CreatureEntity &creature, MONSTER_IDX m_idx, int power, bool p
         resist = true;
     } else if (player_cast && (monrace.level > randint0(power))) {
         resist = true;
-    } else if (player_cast && monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::NOGENO)) {
+    } else if (player_cast && monster.is_nogeno()) {
         resist = true;
     } else {
         if (record_named_pet && monster.is_named_pet()) {
@@ -177,15 +177,12 @@ bool mass_genocide(CreatureEntity &creature, int power, bool player_cast)
     }
 
     bool result = false;
-    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-        const auto &monster = floor.get_monster(i);
-        if (!monster.is_valid()) {
-            continue;
-        }
-        if (Grid::calc_distance(creature.get_position(), monster.get_position()) > MAX_PLAYER_SIGHT) {
-            continue;
-        }
-
+    // [提案 14b]
+    const auto p_pos = creature.get_position();
+    const auto targets = creature.collect_creatures([&](const CreatureEntity &mon) {
+        return Grid::calc_distance(p_pos, mon.get_position()) <= MAX_PLAYER_SIGHT;
+    });
+    for (auto i : targets) {
         result |= genocide_aux(creature, i, power, player_cast, 3, _("周辺抹殺", "Mass Genocide"));
     }
 
@@ -214,18 +211,15 @@ bool mass_genocide_undead(CreatureEntity &creature, int power, bool player_cast)
     }
 
     bool result = false;
-    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-        const auto &monster = floor.get_monster(i);
-        if (!monster.is_valid()) {
-            continue;
+    // [提案 14b]
+    const auto p_pos = creature.get_position();
+    const auto targets = creature.collect_creatures([&](const CreatureEntity &mon) {
+        if (!mon.has_undead_flag()) {
+            return false;
         }
-        if (!monster.has_undead_flag()) {
-            continue;
-        }
-        if (Grid::calc_distance(creature.get_position(), monster.get_position()) > MAX_PLAYER_SIGHT) {
-            continue;
-        }
-
+        return Grid::calc_distance(p_pos, mon.get_position()) <= MAX_PLAYER_SIGHT;
+    });
+    for (auto i : targets) {
         result |= genocide_aux(creature, i, power, player_cast, 3, _("アンデッド消滅", "Annihilate Undead"));
     }
 

@@ -20,6 +20,7 @@
 #include "util/flag-group.h"
 #include "util/point-2d.h"
 #include <array>
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
@@ -826,6 +827,31 @@ public:
         return this->has_monster_profile() && this->get_monster_profile().ml;
     }
 
+    // [提案 14] AI ターゲット選定の共通化
+    using CreaturePredicate = std::function<bool(const CreatureEntity &)>;
+
+    /*!
+     * @brief このクリーチャーから見て最寄りで条件を満たすクリーチャーを探す
+     * @param predicate 候補クリーチャーの判定関数
+     * @param require_projectable true なら projectable な相手のみを候補に含める
+     * @return 最寄りクリーチャーの m_idx (0 = 該当なし)
+     */
+    MONSTER_IDX find_nearest_creature(const CreaturePredicate &predicate, bool require_projectable = false) const;
+
+    /*!
+     * @brief このクリーチャーから見て条件を満たすクリーチャーが存在するかチェック
+     * @param predicate 候補クリーチャーの判定関数
+     * @return 1 体でも条件を満たすクリーチャーがあれば true
+     */
+    bool has_visible_creature(const CreaturePredicate &predicate) const;
+
+    /*!
+     * @brief このクリーチャーから見て条件を満たすクリーチャーの m_idx 一覧を返す
+     * @param predicate 候補クリーチャーの判定関数
+     * @return 該当する m_idx のベクタ (空ならなし)
+     */
+    std::vector<MONSTER_IDX> collect_creatures(const CreaturePredicate &predicate) const;
+
     /*!
      * @brief このクリーチャーの所持品にアイテムを格納する
      * @param item 格納するアイテム (内部でクローンされる)
@@ -894,6 +920,147 @@ public:
     virtual MONSTER_IDX get_parent_m_idx() const
     {
         return this->has_monster_profile() ? this->get_monster_profile().parent_m_idx : 0;
+    }
+
+    /*!
+     * @brief MonsterConstantFlagType (mflag2) のチェック共通ヘルパ
+     * @details 提案 15: mflag2.has(...) パターンを virtual で集約
+     */
+    bool has_constant_flag(MonsterConstantFlagType flag) const
+    {
+        return this->has_monster_profile() && this->get_monster_profile().mflag2.has(flag);
+    }
+
+    /*! @brief 影 (KAGE) かどうか */
+    virtual bool is_kage() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::KAGE);
+    }
+
+    /*! @brief 狂乱状態 (FRENZY) かどうか */
+    virtual bool is_frenzied() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::FRENZY);
+    }
+
+    /*! @brief カメレオン (CHAMELEON) かどうか */
+    virtual bool is_chameleon() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::CHAMELEON);
+    }
+
+    /*! @brief クローン個体 (CLONED) かどうか */
+    virtual bool is_cloned() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::CLONED);
+    }
+
+    /*! @brief ペット化禁止 (NOPET) かどうか */
+    virtual bool is_nopet() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::NOPET);
+    }
+
+    /*! @brief 巨大サイズ (HUGE) 個体修飾子 */
+    virtual bool is_huge() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::HUGE);
+    }
+
+    /*! @brief 大型サイズ (LARGE) 個体修飾子 */
+    virtual bool is_large() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::LARGE);
+    }
+
+    /*! @brief 小型サイズ (SMALL) 個体修飾子 */
+    virtual bool is_small() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::SMALL);
+    }
+
+    /*! @brief 太め (FAT) 個体修飾子 */
+    virtual bool is_fat() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::FAT);
+    }
+
+    /*! @brief 痩せ (GAUNT) 個体修飾子 */
+    virtual bool is_gaunt() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::GAUNT);
+    }
+
+    /*! @brief 軽量 (LIGHTWEIGHT) 個体修飾子 */
+    virtual bool is_lightweight() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::LIGHTWEIGHT);
+    }
+
+    /*! @brief 全裸 (NAKED) 個体修飾子 */
+    virtual bool is_naked() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::NAKED);
+    }
+
+    /*! @brief ゾンビ化 (ZOMBIFIED) 個体修飾子 */
+    virtual bool is_zombified() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::ZOMBIFIED);
+    }
+
+    /*! @brief 不正改造個体 (ILLEGAL_MODIFIED) */
+    virtual bool is_illegal_modified() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::ILLEGAL_MODIFIED);
+    }
+
+    /*! @brief サンタ化 (SANTA) 個体 */
+    virtual bool is_santa() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::SANTA);
+    }
+
+    /*! @brief 怒り (ANGER) 状態 */
+    virtual bool is_angered() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::ANGER);
+    }
+
+    /*! @brief 嫁化 (WAIFUIZED) 個体 */
+    virtual bool is_waifuized() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::WAIFUIZED);
+    }
+
+    /*! @brief クイルスラグ産まれ (QUYLTHLUG_BORN) */
+    virtual bool is_quylthlug_born() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::QUYLTHLUG_BORN);
+    }
+
+    /*! @brief 排泄済み (DEFECATED) */
+    virtual bool is_defecated() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::DEFECATED);
+    }
+
+    /*! @brief 嘔吐済み (VOMITED) */
+    virtual bool is_vomited() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::VOMITED);
+    }
+
+    /*! @brief 流路追跡を行わない (NOFLOW) */
+    virtual bool has_noflow() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::NOFLOW);
+    }
+
+    /*! @brief 抹殺対象外 (NOGENO) */
+    virtual bool is_nogeno() const
+    {
+        return this->has_constant_flag(MonsterConstantFlagType::NOGENO);
     }
 
     /*!
