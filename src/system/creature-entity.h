@@ -923,6 +923,67 @@ public:
     }
 
     /*!
+     * @brief アライアンス所属を設定する (提案 9b)
+     * @details モンスター以外（プレイヤー）に対する呼出は無視される
+     */
+    virtual void set_alliance_idx(AllianceType alliance)
+    {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().alliance_idx = alliance;
+        }
+    }
+
+    /*!
+     * @brief サブアライメントを設定する (提案 9b)
+     */
+    virtual void set_sub_align(BIT_FLAGS8 sub_align)
+    {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().sub_align = sub_align;
+        }
+    }
+
+    /*!
+     * @brief サブアライメントに特定ビットを追加する (提案 9b)
+     */
+    virtual void add_sub_align(BIT_FLAGS8 mask)
+    {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().sub_align |= mask;
+        }
+    }
+
+    /*!
+     * @brief 親モンスター m_idx を設定する (提案 9b)
+     */
+    virtual void set_parent_m_idx(MONSTER_IDX m_idx)
+    {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().parent_m_idx = m_idx;
+        }
+    }
+
+    /*!
+     * @brief smart_learn フラグに 1 ビット追加する (提案 9b)
+     */
+    virtual void add_smart_flag(MonsterSmartLearnType flag)
+    {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().smart.set(flag);
+        }
+    }
+
+    /*!
+     * @brief smart_learn フラグを全クリアする (提案 9b)
+     */
+    virtual void clear_smart_flags()
+    {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().smart.clear();
+        }
+    }
+
+    /*!
      * @brief MonsterConstantFlagType (mflag2) のチェック共通ヘルパ
      * @details 提案 15: mflag2.has(...) パターンを virtual で集約
      */

@@ -25,9 +25,9 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
 
     if (loading_savefile_version_is_older_than(16)) {
         MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(monster.r_idx);
-        monster.get_monster_profile().alliance_idx = r_ptr->alliance_idx;
+        monster.set_alliance_idx(r_ptr->alliance_idx);
     } else {
-        monster.get_monster_profile().alliance_idx = i2enum<AllianceType>(rd_s32b());
+        monster.set_alliance_idx(i2enum<AllianceType>(rd_s32b()));
     }
 
     monster.y = rd_byte();
@@ -46,7 +46,7 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
     monster.dealt_damage = rd_s32b();
 
     monster.ap_r_idx = any_bits(flags, SaveDataMonsterFlagType::AP_R_IDX) ? i2enum<MonraceId>(rd_s16b()) : monster.r_idx;
-    monster.get_monster_profile().sub_align = any_bits(flags, SaveDataMonsterFlagType::SUB_ALIGN) ? rd_byte() : 0;
+    monster.set_sub_align(any_bits(flags, SaveDataMonsterFlagType::SUB_ALIGN) ? rd_byte() : 0);
     monster.set_timed_effect(CreatureTimedEffect::SLEEP_OR_PARALYSIS, any_bits(flags, SaveDataMonsterFlagType::SLEEP) ? rd_s16b() : 0);
     monster.speed = rd_byte();
     monster.energy_need = rd_s16b();
@@ -82,7 +82,7 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
             rd_FlagGroup(monster.get_monster_profile().smart, rd_byte);
         }
     } else {
-        monster.get_monster_profile().smart.clear();
+        monster.clear_smart_flags();
     }
 
     monster.exp = any_bits(flags, SaveDataMonsterFlagType::EXP) ? rd_u32b() : 0;
@@ -102,7 +102,7 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
         monster.name.clear();
     }
 
-    monster.get_monster_profile().parent_m_idx = any_bits(flags, SaveDataMonsterFlagType::PARENT) ? rd_s16b() : 0;
+    monster.set_parent_m_idx(any_bits(flags, SaveDataMonsterFlagType::PARENT) ? rd_s16b() : 0);
 
     // バージョン40以降: 所持金、身長、体重の読み込み
     if (loading_savefile_version_is_older_than(40)) {
