@@ -1454,7 +1454,7 @@ public:
     virtual void divide_prestige(int divisor)
     {
         if (divisor != 0) {
-            this->prestige /= divisor;
+            this->prestige = static_cast<int16_t>(this->prestige / divisor);
         }
     }
 
