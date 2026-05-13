@@ -478,7 +478,7 @@ bool process_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_p
         const auto p_pos = creature.get_position(); //!< @details 関数が長すぎてプレイヤーの座標が不変であることを保証できない.
         const auto m_pos = monster.get_position();
         const auto is_projectable = projectable(floor, p_pos, m_pos);
-        const auto can_see = disturb_near && monster.get_monster_profile().mflag.has(MonsterTemporaryFlagType::VIEW) && is_projectable;
+        const auto can_see = disturb_near && monster.has_temporary_flag(MonsterTemporaryFlagType::VIEW) && is_projectable;
         const auto is_high_level = disturb_high && (apparent_monrace.r_tkills > 0) && (apparent_monrace.level >= creature.level);
         const auto is_unknown_level = disturb_unknown && (apparent_monrace.r_tkills == 0);
         if (monster.is_visible_on_map() && (disturb_move || can_see || is_high_level || is_unknown_level)) {

@@ -314,7 +314,7 @@ bool make_attack_spell(CreatureEntity &creature, MONSTER_IDX m_idx)
     }
 
     const auto &m_ref = *msa_ptr->m_ptr;
-    auto should_prevent = m_ref.get_monster_profile().mflag.has(MonsterTemporaryFlagType::PREVENT_MAGIC);
+    auto should_prevent = m_ref.has_prevent_magic();
     should_prevent |= !m_ref.is_hostile();
     should_prevent |= (Grid::calc_distance(creature.get_position(), m_ref.get_position()) > AngbandSystem::get_instance().get_max_range()) && !m_ref.get_target_position().y;
     if (should_prevent) {

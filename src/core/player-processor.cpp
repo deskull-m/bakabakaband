@@ -353,12 +353,12 @@ void process_player(CreatureEntity &creature)
                 }
 
                 // 出現して即魔法を使わないようにするフラグを落とす処理
-                if (monster.get_monster_profile().mflag.has(MonsterTemporaryFlagType::PREVENT_MAGIC)) {
-                    monster.get_monster_profile().mflag.reset(MonsterTemporaryFlagType::PREVENT_MAGIC);
+                if (monster.has_temporary_flag(MonsterTemporaryFlagType::PREVENT_MAGIC)) {
+                    monster.reset_temporary_flag(MonsterTemporaryFlagType::PREVENT_MAGIC);
                 }
 
-                if (monster.get_monster_profile().mflag.has(MonsterTemporaryFlagType::SANITY_BLAST)) {
-                    monster.get_monster_profile().mflag.reset(MonsterTemporaryFlagType::SANITY_BLAST);
+                if (monster.has_temporary_flag(MonsterTemporaryFlagType::SANITY_BLAST)) {
+                    monster.reset_temporary_flag(MonsterTemporaryFlagType::SANITY_BLAST);
                     sanity_blast(creature, m_idx);
                 }
 
