@@ -640,24 +640,24 @@ void CreatureEntity::drop_all_inventory(CreatureEntity &dropper)
 
 short CreatureEntity::get_inven_cnt() const
 {
-    short count = 0;
+    short cnt = 0;
     for (auto i = 0; i < INVEN_PACK; i++) {
         if (this->inventory[i] && this->inventory[i]->is_valid()) {
-            count++;
+            cnt++;
         }
     }
-    return count;
+    return cnt;
 }
 
 short CreatureEntity::get_equip_cnt() const
 {
-    short count = 0;
+    short cnt = 0;
     for (auto i = static_cast<int>(INVEN_MAIN_HAND); i < INVEN_TOTAL; i++) {
         if (this->inventory[i] && this->inventory[i]->is_valid()) {
-            count++;
+            cnt++;
         }
     }
-    return count;
+    return cnt;
 }
 
 void CreatureEntity::make_lore_treasure(int num_item, int num_gold) const
