@@ -7,6 +7,9 @@
 #include "util/flag-group.h"
 #include <vector>
 
+class CreatureEntity;
+class MonsterLoader50;
+class MonsterWriter;
 enum class PlayerRaceType;
 enum class PlayerClassType : short;
 
@@ -17,8 +20,17 @@ enum class PlayerClassType : short;
 
 /*!
  * @brief モンスターインスタンス固有データ
+ * @details 提案 21 でメンバを private 化。アクセスは CreatureEntity の
+ *          virtual API (`is_pet()`, `get_alliance_idx()`, `set_constant_flag()`,
+ *          etc.) を介して行うこと。低レベルな bitset I/O が必要な savefile
+ *          loader / writer のみ friend 経由で直接フィールドを操作する。
  */
-struct MonsterProfile {
+class MonsterProfile {
+    friend class CreatureEntity;
+    friend class MonsterLoader50;
+    friend class MonsterWriter;
+
+private:
     BIT_FLAGS8 sub_align{}; /*!< 中立属性のモンスターが召喚主のアライメントに従い一時的に立っている善悪陣営 / Sub-alignment for a neutral monster */
     AllianceType alliance_idx{}; /*!< 現在の所属アライアンス */
     std::vector<PlayerRaceType> equivalent_player_races{}; /*!< モンスターのフラグに基づいて対応するプレイヤー種族IDリスト */
