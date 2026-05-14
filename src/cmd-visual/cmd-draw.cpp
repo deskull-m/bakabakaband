@@ -170,7 +170,7 @@ void do_cmd_player_status(CreatureEntity &creature)
     auto page = 0;
     screen_save();
     constexpr auto player_prompt = _("['c'で名前変更, 'f'でファイルへ書出, 'g'でJSON書出, 'h'でモード変更, ESCで終了]", "['c' to change name, 'f' to file, 'g' to JSON, 'h' to change mode, or ESC]");
-    constexpr auto monster_prompt = _("['f'でファイルへ書出, 'g'でJSON書出, ESCで終了]", "['f' to file, 'g' to JSON, or ESC]");
+    constexpr auto monster_prompt = _("['f'でファイルへ書出, 'g'でJSON書出, 'h'でモード変更, ESCで終了]", "['f' to file, 'g' to JSON, 'h' to change mode, or ESC]");
     const auto prompt = creature.is_player() ? player_prompt : monster_prompt;
     auto &world = AngbandWorld::get_instance();
     while (true) {
@@ -178,7 +178,8 @@ void do_cmd_player_status(CreatureEntity &creature)
 
         world.play_time.update();
         (void)display_player(creature, page);
-        if (page == 5) {
+        // 突然変異ページ (page == 6) はモーダル表示のため、終了後 page 0 へ戻す。
+        if (page == 6) {
             page = 0;
             (void)display_player(creature, page);
         }
