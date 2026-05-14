@@ -187,7 +187,7 @@ void store_purchase(CreatureEntity &creature, StoreSaleType store_num)
      */
     reduce_charges(&item, item_store.number - amt);
     item.number = amt;
-    if (!check_creature.store_item(item)) {
+    if (!creature.can_store_item(item)) {
         msg_print(_("そんなにアイテムを持てない。", "You cannot carry that many different items."));
         return;
     }
@@ -218,7 +218,7 @@ void store_purchase(CreatureEntity &creature, StoreSaleType store_num)
         return;
     }
 
-    if (!check_creature.store_item(item)) {
+    if (!creature.can_store_item(item)) {
         msg_print(_("ザックにそのアイテムを入れる隙間がない。", "You cannot carry that many items."));
         return;
     }

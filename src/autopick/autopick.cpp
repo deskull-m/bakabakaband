@@ -119,7 +119,7 @@ void autopick_pickup_items(CreatureEntity &creature, const Grid &grid)
             continue;
         }
 
-        if (!check_creature.store_item(item)) {
+        if (!creature.can_store_item(item)) {
             msg_format(_("ザックには%sを入れる隙間がない。", "You have no room for %s."), item_name.data());
             item.marked.set(OmType::SUPRESS_MESSAGE);
             continue;
