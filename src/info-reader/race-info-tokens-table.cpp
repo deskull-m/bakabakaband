@@ -698,6 +698,7 @@ const std::unordered_map<std::string_view, BodyStructureType> r_info_body_struct
     { "SERPENTINE", BodyStructureType::SERPENTINE },
     { "AMORPHOUS", BodyStructureType::AMORPHOUS },
     { "INCORPOREAL", BodyStructureType::INCORPOREAL },
+    { "DRACONIC", BodyStructureType::DRACONIC },
 };
 
 const std::unordered_map<std::string_view, MonsterSpecialType> r_info_special_flags = {

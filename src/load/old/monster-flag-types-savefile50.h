@@ -23,4 +23,5 @@ enum class SaveDataMonsterFlagType {
     CLASS = 0x00080000,
     TRANSFORM = 0x00100000,
     INVENTORY = 0x00200000,
+    EXTENDED_INVENTORY = 0x00400000, //!< Phase 2: 拡張装備スロット
 };

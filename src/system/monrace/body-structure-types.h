@@ -15,5 +15,6 @@ enum class BodyStructureType : uint8_t {
     SERPENTINE = 3, //!< ヘビ・うなぎ型: 首と胴体のみ
     AMORPHOUS = 4, //!< スライム・ジェル: リングのみ (擬足にはめる)
     INCORPOREAL = 5, //!< 幽霊・ベクター: 装備一切不可
+    DRACONIC = 6, //!< ドラゴン: HUMANOID 装備可能 + 拡張スロット (尾の指輪)
     MAX,
 };

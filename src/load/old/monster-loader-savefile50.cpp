@@ -213,5 +213,30 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
                 }
             }
         }
+
+        // [Phase 2] 拡張装備スロットの読込
+        // body_structure 由来のスロット数だけ extended_inventory を確保した上で
+        // savefile から読み戻す。スロット数が変わった場合 (例: body_structure を
+        // 後から変更) 範囲外インデックスは無視する。
+        monster.init_extended_inventory();
+        if (any_bits(flags, SaveDataMonsterFlagType::EXTENDED_INVENTORY)) {
+            auto item_loader = ItemLoaderFactory::create_loader();
+            while (true) {
+                auto n = rd_u16b();
+                if (n == 0xFFFF) {
+                    break;
+                }
+                if (n >= monster.extended_inventory.size()) {
+                    // 範囲外: ダミー読込で savefile を進める
+                    auto dummy = std::make_shared<ItemEntity>();
+                    item_loader->rd_item(dummy.get());
+                    continue;
+                }
+                if (!monster.extended_inventory[n]) {
+                    monster.extended_inventory[n] = std::make_shared<ItemEntity>();
+                }
+                item_loader->rd_item(monster.extended_inventory[n].get());
+            }
+        }
     }
 }

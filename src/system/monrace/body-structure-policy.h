@@ -9,7 +9,9 @@
 
 #include "inventory/inventory-slot-types.h"
 #include "system/monrace/body-structure-types.h"
+#include "system/monrace/extended-slot.h"
 #include <bitset>
+#include <vector>
 
 /*!
  * @brief 体構造ごとの装備スロット可否ポリシー
@@ -22,8 +24,9 @@ public:
     static constexpr int SLOT_COUNT = INVEN_TOTAL - INVEN_MAIN_HAND;
     using SlotMask = std::bitset<SLOT_COUNT>;
 
-    explicit BodySlotPolicy(SlotMask mask = SlotMask{})
+    BodySlotPolicy(SlotMask mask = SlotMask{}, std::vector<ExtendedSlotType> extended = {})
         : allowed_slots(mask)
+        , extended_slots(std::move(extended))
     {
     }
 
@@ -36,8 +39,15 @@ public:
         return this->allowed_slots.test(slot - INVEN_MAIN_HAND);
     }
 
+    //! 拡張スロット一覧 (Phase 2)
+    const std::vector<ExtendedSlotType> &get_extended_slots() const
+    {
+        return this->extended_slots;
+    }
+
 private:
     SlotMask allowed_slots;
+    std::vector<ExtendedSlotType> extended_slots; //!< 拡張装備スロット (Phase 2)
 };
 
 /*!
