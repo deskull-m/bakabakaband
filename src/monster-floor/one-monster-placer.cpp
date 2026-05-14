@@ -264,8 +264,8 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     m_ptr->set_alliance_idx(monrace.alliance_idx);
 
-    m_ptr->get_monster_profile().mflag.clear();
-    m_ptr->get_monster_profile().mflag2.clear();
+    m_ptr->clear_temporary_flags();
+    m_ptr->clear_constant_flags();
     m_ptr->set_floor(player.get_floor());
 
     if (monrace.misc_flags.has(MonsterMiscType::CHAMELEON)) {
