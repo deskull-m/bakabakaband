@@ -65,7 +65,7 @@ void display_extended_slots_section(CreatureEntity &creature, int start_row)
     for (size_t i = 0; i < count; ++i, ++row) {
         const auto slot_type = creature.get_extended_slot_type(i);
         const auto name = get_extended_slot_name(slot_type);
-        const auto label = format("%-12s :", name.empty() ? std::string_view{ "" } : name);
+        const auto label = format("%-12s :", std::string(name.empty() ? std::string_view{ "" } : name).c_str());
         c_put_str(TERM_WHITE, label, row, EQUIPMENT_COL);
         if (i >= creature.extended_inventory.size() || !creature.extended_inventory[i] || !creature.extended_inventory[i]->is_valid()) {
             c_put_str(TERM_L_DARK, _("(なし)", "(empty)"), row, EQUIPMENT_COL + 14);
