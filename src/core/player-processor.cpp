@@ -128,7 +128,7 @@ void process_player(CreatureEntity &creature)
                 continue;
             }
 
-            monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
+            monster.set_constant_flags({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
             update_monster(creature, m_idx, false);
         }
 
@@ -366,9 +366,9 @@ void process_player(CreatureEntity &creature)
                 // 感知したターンはMFLAG2_SHOWを落とし、次のターンに感知中フラグのMFLAG2_MARKを落とす
                 if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::MARK)) {
                     if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::SHOW)) {
-                        monster.get_monster_profile().mflag2.reset(MonsterConstantFlagType::SHOW);
+                        monster.reset_constant_flag(MonsterConstantFlagType::SHOW);
                     } else {
-                        monster.get_monster_profile().mflag2.reset(MonsterConstantFlagType::MARK);
+                        monster.reset_constant_flag(MonsterConstantFlagType::MARK);
                         monster.set_visible_on_map(false);
                         update_monster(creature, m_idx, false);
                         HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);

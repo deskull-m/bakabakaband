@@ -355,7 +355,7 @@ bool check_store_item_to_inventory(const CreatureEntity &creature, const ItemEnt
     }
 
     for (int j = 0; j < INVEN_PACK; j++) {
-        auto *j_ptr = creature.inventory[j].get();
+        const auto *j_ptr = creature.inventory[j].get();
         if (!j_ptr->is_valid()) {
             continue;
         }

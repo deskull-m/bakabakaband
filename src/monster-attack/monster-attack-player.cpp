@@ -636,7 +636,7 @@ void MonsterAttackPlayer::process_sadist_reaction()
         (void)set_monster_monfear(*creature.get_floor(), this->m_idx, 0);
 
         // 一時的な攻撃力上昇（怒り状態付与）
-        this->m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::ANGER);
+        this->m_ptr->set_constant_flag(MonsterConstantFlagType::ANGER);
 
         if (this->m_ptr->is_visible_on_map()) {
             msg_format(_("%s^は他者の苦痛に興奮している！", "%s^ gets excited by others' pain!"), this->m_name);

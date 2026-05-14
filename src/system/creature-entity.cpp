@@ -116,13 +116,13 @@ bool CreatureEntity::try_resist_eldritch_horror() const
 void CreatureEntity::ride_monster(MONSTER_IDX m_idx)
 {
     if (is_monster(this->riding)) {
-        this->get_floor()->get_monster(this->riding).get_monster_profile().mflag2.reset(MonsterConstantFlagType::RIDING);
+        this->get_floor()->get_monster(this->riding).reset_constant_flag(MonsterConstantFlagType::RIDING);
     }
 
     this->riding = m_idx;
 
     if (is_monster(m_idx)) {
-        this->get_floor()->get_monster(m_idx).get_monster_profile().mflag2.set(MonsterConstantFlagType::RIDING);
+        this->get_floor()->get_monster(m_idx).set_constant_flag(MonsterConstantFlagType::RIDING);
     }
 }
 
@@ -726,12 +726,12 @@ void CreatureEntity::set_hostile()
         return;
     }
 
-    this->get_monster_profile().mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
+    this->reset_constant_flags({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
 
     if (this->get_alliance_idx() != AllianceType::NONE) {
         for (auto &monster : this->get_floor()->m_list) {
             if (monster.get_alliance_idx() == this->get_alliance_idx()) {
-                monster.get_monster_profile().mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
+                monster.reset_constant_flags({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
             }
         }
     }

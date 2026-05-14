@@ -271,16 +271,16 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     if (monrace.misc_flags.has(MonsterMiscType::CHAMELEON)) {
         m_ptr->r_idx = r_idx;
         choose_chameleon_polymorph(player, g_ptr->m_idx, g_ptr->get_terrain_id(), summoner_m_idx);
-        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::CHAMELEON);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::CHAMELEON);
     } else if (any_bits(mode, PM_CHAMELEON_FINAL_SUMMON)) {
         m_ptr->r_idx = r_idx;
         m_ptr->ap_r_idx = r_idx;
-        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::CHAMELEON);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::CHAMELEON);
     } else {
         m_ptr->r_idx = r_idx;
         if (any_bits(mode, PM_KAGE) && none_bits(mode, PM_FORCE_PET)) {
             m_ptr->ap_r_idx = MonraceId::KAGE;
-            m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::KAGE);
+            m_ptr->set_constant_flag(MonsterConstantFlagType::KAGE);
         } else {
             m_ptr->ap_r_idx = initial_r_appearance(const_cast<CreatureEntity &>(player), r_idx, mode);
         }
@@ -315,7 +315,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     if (same_appearance_as_parent) {
         m_ptr->ap_r_idx = summoner.ap_r_idx;
         if (summoner.is_kage()) {
-            m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::KAGE);
+            m_ptr->set_constant_flag(MonsterConstantFlagType::KAGE);
         }
     }
 
@@ -323,56 +323,56 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     struct tm *t = localtime(&now);
     if (t->tm_mon == 11 && t->tm_mday >= 24 && t->tm_mday <= 25 && one_in_(6)) {
         if (none_bits(mode, PM_MULTIPLY | PM_KAGE) && m_ptr->r_idx != MonraceId::SANTA) {
-            m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::SANTA);
+            m_ptr->set_constant_flag(MonsterConstantFlagType::SANTA);
         }
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && one_in_(100)) {
-        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::HUGE);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::HUGE);
     } else if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && !m_ptr->is_huge() && one_in_(15)) {
-        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::LARGE);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::LARGE);
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && !m_ptr->is_large() && !m_ptr->is_huge() && one_in_(18)) {
-        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::SMALL);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::SMALL);
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
         monrace.kind_flags.has_not(MonsterKindType::NONLIVING) && one_in_(20)) {
-        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::FAT);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::FAT);
     } else if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
                monrace.kind_flags.has_not(MonsterKindType::NONLIVING) && !m_ptr->is_fat() && one_in_(25)) {
-        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::GAUNT);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::GAUNT);
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
         monrace.kind_flags.has(MonsterKindType::HUMAN) && one_in_(80)) {
-        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::NAKED);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::NAKED);
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
         monrace.kind_flags.has_not(MonsterKindType::NONLIVING) &&
         monrace.kind_flags.has_not(MonsterKindType::UNDEAD) && one_in_(50)) {
-        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::ZOMBIFIED);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::ZOMBIFIED);
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
         monrace.misc_flags.has(MonsterMiscType::NO_WAIFUZATION) && one_in_(20)) {
-        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::WAIFUIZED);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::WAIFUIZED);
     }
 
     // 違法改造フラグの付与
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
         (monrace.kind_flags.has(MonsterKindType::GOLEM) || monrace.kind_flags.has(MonsterKindType::ROBOT)) &&
         one_in_(40)) {
-        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::ILLEGAL_MODIFIED);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::ILLEGAL_MODIFIED);
     }
 
     // 軽量化フラグの付与
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
         monrace.kind_flags.has(MonsterKindType::GOLEM) &&
         one_in_(15)) {
-        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::LIGHTWEIGHT);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::LIGHTWEIGHT);
     }
 
     if (!m_ptr->is_chameleon() && is_summoned && new_monrace.kind_flags.has_none_of(alignment_mask)) {
@@ -429,7 +429,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     if (is_summoned) {
         m_ptr->set_parent_m_idx(*summoner_m_idx);
         if (summoner.get_monrace().kind_flags.has(MonsterKindType::QUYLTHLUG)) {
-            m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::QUYLTHLUG_BORN);
+            m_ptr->set_constant_flag(MonsterConstantFlagType::QUYLTHLUG_BORN);
         }
     } else {
         m_ptr->set_parent_m_idx(0);
@@ -441,11 +441,11 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     m_ptr->get_monster_profile().has_transformed = false;
 
     if (any_bits(mode, PM_CLONE)) {
-        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::CLONED);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::CLONED);
     }
 
     if (any_bits(mode, PM_NO_PET)) {
-        m_ptr->get_monster_profile().mflag2.set(MonsterConstantFlagType::NOPET);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::NOPET);
     }
 
     // モンスターのフラグに基づいて対応するプレイヤー種族IDと職業IDを初期化
