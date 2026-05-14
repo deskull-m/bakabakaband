@@ -25,6 +25,7 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
+#include "system/monrace/extended-slot.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
@@ -164,6 +165,24 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
         if ((acquired_slot >= INVEN_MAIN_HAND) && (acquired_slot < INVEN_TOTAL) && player_can_see_bold(creature, ny, nx)) {
             const auto eq_name = describe_flavor(creature, *monster.inventory[acquired_slot], 0);
             msg_format(_("%s^は%sを装備した。", "%s^ wields %s."), m_name.data(), eq_name.data());
+        }
+        // [Phase 2.5] 拡張装備スロットへの装備メッセージ
+        if (acquired_slot >= INVEN_EXTENDED_BASE && player_can_see_bold(creature, ny, nx)) {
+            const auto ext_idx = static_cast<size_t>(acquired_slot - INVEN_EXTENDED_BASE);
+            if (ext_idx < monster.extended_inventory.size() && monster.extended_inventory[ext_idx]) {
+                const auto eq_name = describe_flavor(creature, *monster.extended_inventory[ext_idx], 0);
+                const auto slot_name = get_extended_slot_name(monster.get_extended_slot_type(ext_idx));
+                msg_format(_("%s^は%sに%sを装着した。", "%s^ attaches %s to its %s."),
+                    m_name.data(),
+#ifdef JP
+                    slot_name.empty() ? "拡張部位" : std::string(slot_name).c_str(),
+                    eq_name.data()
+#else
+                    eq_name.data(),
+                    slot_name.empty() ? "extended slot" : std::string(slot_name).c_str()
+#endif
+                );
+            }
         }
 
         RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::FOUND_ITEMS);
