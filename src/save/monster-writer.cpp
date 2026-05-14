@@ -132,7 +132,7 @@ uint32_t MonsterWriter::write_monster_flags() const
         set_bits(flags, SaveDataMonsterFlagType::CLASS);
     }
 
-    if (MonraceList::is_valid(this->monster.get_monster_profile().transform_r_idx) || this->monster.get_monster_profile().has_transformed) {
+    if (MonraceList::is_valid(this->monster.get_transform_r_idx()) || this->monster.has_transformed()) {
         set_bits(flags, SaveDataMonsterFlagType::TRANSFORM);
     }
 
@@ -231,9 +231,9 @@ void MonsterWriter::write_monster_info(uint32_t flags) const
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::TRANSFORM)) {
-        wr_s16b(static_cast<int16_t>(enum2i(this->monster.get_monster_profile().transform_r_idx)));
-        wr_byte(static_cast<byte>(this->monster.get_monster_profile().transform_hp_threshold));
-        wr_byte(this->monster.get_monster_profile().has_transformed ? 1 : 0);
+        wr_s16b(static_cast<int16_t>(enum2i(this->monster.get_transform_r_idx())));
+        wr_byte(static_cast<byte>(this->monster.get_transform_hp_threshold()));
+        wr_byte(this->monster.has_transformed() ? 1 : 0);
     }
 
     // インベントリの保存（PlayerTypeと同じ形式）

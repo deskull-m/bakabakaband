@@ -436,9 +436,9 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     }
 
     // 変身情報のコピー
-    m_ptr->get_monster_profile().transform_r_idx = new_monrace.transform_r_idx;
-    m_ptr->get_monster_profile().transform_hp_threshold = new_monrace.transform_hp_threshold;
-    m_ptr->get_monster_profile().has_transformed = false;
+    m_ptr->set_transform_r_idx(new_monrace.transform_r_idx);
+    m_ptr->set_transform_hp_threshold(new_monrace.transform_hp_threshold);
+    m_ptr->set_has_transformed(false);
 
     if (any_bits(mode, PM_CLONE)) {
         m_ptr->set_constant_flag(MonsterConstantFlagType::CLONED);
@@ -545,7 +545,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     m_ptr->dealt_damage = 0;
     if (monrace.suicide_dice_num && monrace.suicide_dice_side) {
-        m_ptr->get_monster_profile().death_count = Dice::roll(monrace.suicide_dice_num, monrace.suicide_dice_side);
+        m_ptr->set_death_count(Dice::roll(monrace.suicide_dice_num, monrace.suicide_dice_side));
     }
 
     m_ptr->set_individual_speed(floor.inside_arena);

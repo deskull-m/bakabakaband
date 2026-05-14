@@ -578,22 +578,22 @@ bool MonsterDamageProcessor::check_and_process_hp_transform()
     auto &monster = creature.get_floor()->get_monster(this->m_idx);
 
     // 変身条件のチェック
-    if (monster.get_monster_profile().has_transformed) {
+    if (monster.has_transformed()) {
         return false; // 既に変身済み
     }
 
-    if (!MonraceList::is_valid(monster.get_monster_profile().transform_r_idx) || monster.get_monster_profile().transform_hp_threshold == 0) {
+    if (!MonraceList::is_valid(monster.get_transform_r_idx()) || monster.get_transform_hp_threshold() == 0) {
         return false; // 変身設定がない
     }
 
     // HP閾値チェック（最大HPの%で判定）
     const auto hp_percent = (100 * monster.hp) / monster.maxhp;
-    if (hp_percent > monster.get_monster_profile().transform_hp_threshold) {
+    if (hp_percent > monster.get_transform_hp_threshold()) {
         return false; // まだ変身しない
     }
 
     // 変身先の種族情報を取得
-    const auto new_r_idx = monster.get_monster_profile().transform_r_idx;
+    const auto new_r_idx = monster.get_transform_r_idx();
     auto &new_monrace = MonraceList::get_instance().get_monrace(new_r_idx);
 
     // 変身前の情報を保存
@@ -623,11 +623,11 @@ bool MonsterDamageProcessor::check_and_process_hp_transform()
     monster.hp = old_hp * monster.maxhp / old_maxhp;
 
     // 変身フラグを設定
-    monster.get_monster_profile().has_transformed = true;
+    monster.set_has_transformed(true);
 
     // 変身先の変身情報をコピー
-    monster.get_monster_profile().transform_r_idx = new_monrace.transform_r_idx;
-    monster.get_monster_profile().transform_hp_threshold = new_monrace.transform_hp_threshold;
+    monster.set_transform_r_idx(new_monrace.transform_r_idx);
+    monster.set_transform_hp_threshold(new_monrace.transform_hp_threshold);
 
     // アライメントを維持
     monster.set_sub_align(old_sub_align);

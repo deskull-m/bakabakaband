@@ -158,18 +158,18 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
 
     // バージョン43以降: 変身情報の読み込み
     if (loading_savefile_version_is_older_than(43)) {
-        monster.get_monster_profile().transform_r_idx = MonraceId::PLAYER;
-        monster.get_monster_profile().transform_hp_threshold = 0;
-        monster.get_monster_profile().has_transformed = false;
+        monster.set_transform_r_idx(MonraceId::PLAYER);
+        monster.set_transform_hp_threshold(0);
+        monster.set_has_transformed(false);
     } else {
         if (any_bits(flags, SaveDataMonsterFlagType::TRANSFORM)) {
-            monster.get_monster_profile().transform_r_idx = i2enum<MonraceId>(rd_s16b());
-            monster.get_monster_profile().transform_hp_threshold = rd_byte();
-            monster.get_monster_profile().has_transformed = rd_byte() != 0;
+            monster.set_transform_r_idx(i2enum<MonraceId>(rd_s16b()));
+            monster.set_transform_hp_threshold(rd_byte());
+            monster.set_has_transformed(rd_byte() != 0);
         } else {
-            monster.get_monster_profile().transform_r_idx = MonraceId::PLAYER;
-            monster.get_monster_profile().transform_hp_threshold = 0;
-            monster.get_monster_profile().has_transformed = false;
+            monster.set_transform_r_idx(MonraceId::PLAYER);
+            monster.set_transform_hp_threshold(0);
+            monster.set_has_transformed(false);
         }
     }
 
