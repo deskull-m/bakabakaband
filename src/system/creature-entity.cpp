@@ -666,8 +666,8 @@ ExtendedSlotType CreatureEntity::get_extended_slot_type(size_t idx) const
 
 void CreatureEntity::init_extended_inventory()
 {
-    const auto count = this->get_extended_slot_count();
-    this->extended_inventory.resize(count);
+    const auto slot_count = this->get_extended_slot_count();
+    this->extended_inventory.resize(slot_count);
     for (auto &slot : this->extended_inventory) {
         if (!slot) {
             slot = std::make_shared<ItemEntity>();

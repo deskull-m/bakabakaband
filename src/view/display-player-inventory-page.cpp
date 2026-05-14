@@ -56,13 +56,13 @@ int display_equipment_section(CreatureEntity &creature)
 
 void display_extended_slots_section(CreatureEntity &creature, int start_row)
 {
-    const auto count = creature.get_extended_slot_count();
-    if (count == 0) {
+    const auto slot_count = creature.get_extended_slot_count();
+    if (slot_count == 0) {
         return;
     }
     put_section_header(start_row, EQUIPMENT_COL, _("== 拡張部位 ==", "== Extended =="));
     int row = start_row + 1;
-    for (size_t i = 0; i < count; ++i, ++row) {
+    for (size_t i = 0; i < slot_count; ++i, ++row) {
         const auto slot_type = creature.get_extended_slot_type(i);
         const auto name = get_extended_slot_name(slot_type);
         const auto label = format("%-12s :", std::string(name.empty() ? std::string_view{ "" } : name).c_str());
@@ -80,7 +80,7 @@ void display_inventory_section(CreatureEntity &creature)
 {
     put_section_header(HEADER_ROW, INVENTORY_COL, _("== 所持品 ==", "== Inventory =="));
     int row = HEADER_ROW + 1;
-    int count = 0;
+    int item_count = 0;
     for (auto slot = 0; slot < INVEN_PACK; ++slot, ++row) {
         const auto &item = *creature.inventory[slot];
         if (!item.is_valid()) {
@@ -91,10 +91,10 @@ void display_inventory_section(CreatureEntity &creature)
         const auto desc = describe_flavor(creature, item, 0);
         const auto line = format("%c) %s", letter, desc.substr(0, 33).data());
         c_put_str(TERM_L_GREEN, line, row, INVENTORY_COL);
-        ++count;
+        ++item_count;
     }
 
-    if (count == 0) {
+    if (item_count == 0) {
         c_put_str(TERM_L_DARK, _("(所持品なし)", "(nothing carried)"), HEADER_ROW + 1, INVENTORY_COL);
     }
 }
