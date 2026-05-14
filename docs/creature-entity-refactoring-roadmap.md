@@ -600,9 +600,298 @@ bakabakaband ではプレイヤーとモンスター双方が `CreatureEntity` �
 
 - ペット AI で攻撃 wand/rod を hostile monster に向けて発動
   (現状 `is_hostile()` ガードのため敵対モンスターのみ攻撃 wand 使用)
+  → **完了**: ペット AI 改善で対応済み (commit `25393af1f` 周辺)
 - 戦略的脱出 (SCROLL_DESTRUCTION/GENOCIDE)
 - POTION_NEO_TSUYOSHI 等の特殊効果対応
 - 装備耐久 (`apply_artifact` に近い仕組みでモンスター装備も損耗)
+
+---
+
+## 提案 14: AI ターゲット選定ロジックの共通化 ✅ 完了
+
+### 背景
+
+`for (MONSTER_IDX i = 1; i < floor.m_max; i++)` で `m_list` を直接走査して
+近接ターゲットを選ぶパターンが検出系・抹殺系・モンスター AI に多数散在し、
+重複コードと細かい条件漏れの温床になっていた。これを `CreatureEntity` 上の
+共通 API にまとめ、走査と is_valid 判定を基底クラスに集約する。
+
+### 作業内容
+
+- `using CreaturePredicate = std::function<bool(const CreatureEntity &)>;`
+  を導入
+- 共通 API 3 種を `CreatureEntity` に追加:
+  - `find_nearest_creature(predicate, require_projectable)` - 述語に
+    マッチする最近接モンスター (オプションで projectable() 必須)
+  - `has_visible_creature(predicate)` - 任意一致判定
+  - `collect_creatures(predicate)` - 該当 idx を vector で返す
+- 適用先 (commit `d5fa40fb2`):
+  - `monster-processor`: ai_is_in_fighting_context、wand/rod 発動先選択
+  - `cmd-pet`: ペット選択
+  - `target-preparation`: 表示候補絞り込み (一部)
+
+### 提案 14b: 残り走査箇所への横展開 ✅ 完了 (commit `5392b40c4`)
+
+- `spell-kind/spells-detection`: detect_monsters_normal/invis/evil/
+  nonliving/mind/string (6 箇所)
+- `spell-kind/spells-pet`: discharge_minion (2 箇所)
+- `spell-kind/spells-genocide`: mass_genocide / mass_genocide_undead
+- `wizard/wizard-special-process`: wiz_zap_surrounding/floor_monsters
+- `monster/monster-update`: update_monsters
+- `monster/monster-compaction`: 前段ループ (後段の dead-excise 逆順
+  ループはアルゴリズム特性上スキップ)
+
+### 効果
+
+- m_list 直接走査は `find_nearest_creature` / `collect_creatures` /
+  `has_visible_creature` の 3 つの共通 API に集約
+- ターゲット選定ロジックは predicate を渡すだけで宣言的に書ける
+- `is_valid()` チェック漏れが構造的に防止される
+
+---
+
+## 提案 15: mflag2 の virtual アクセサ集約 ✅ 完了
+
+### 背景
+
+`monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::X)`
+パターンが 70+ 箇所に散在し、`MonsterProfile` への直接アクセスを助長
+していた。CreatureEntity 上の virtual で一元化することで API の統一感
+向上と将来のフィールド変更時の影響範囲削減を狙う。
+
+### 作業内容
+
+- `has_constant_flag(flag)` 共通ヘルパを追加
+- 高頻度フラグの個別 virtual を実装 (commit `d4fe8ad4c`):
+  - `is_kage` / `is_frenzied` / `is_chameleon` / `is_cloned` /
+    `is_nopet`
+- 関連サイトの読取りを virtual 経由に変更
+
+### 提案 15b: 残り mflag2 フラグの virtual 化 ✅ 完了 (commit `12e6da091`)
+
+- 体格修飾子 (9 個): `is_huge` / `is_large` / `is_small` / `is_fat` /
+  `is_gaunt` / `is_lightweight` / `is_naked` / `is_zombified` /
+  `is_illegal_modified`
+- フレーバー個体 (4 個): `is_santa` / `is_angered` / `is_waifuized` /
+  `is_quylthlug_born`
+- 行動状態 (4 個): `is_defecated` / `is_vomited` / `has_noflow` /
+  `is_nogeno`
+- 13 ファイルで 50+ 箇所の `mflag2.has(...)` を virtual に変換
+
+### 効果
+
+- モンスターサイズ・特殊状態の判定が `monster.is_huge()` 等の自然な
+  読み方に統一
+- `MARK`/`SHOW` などの内部フラグ以外は virtual 経由で扱える状態に
+
+---
+
+## 提案 16: mflag (MonsterTemporaryFlagType) の virtual 化 ✅ 完了
+
+### 背景
+
+提案 15 と同じパターンで、一時フラグ (`mflag`) の参照・更新も多数の
+箇所に散在していた。
+
+### 作業内容 (commit `8e6668ab6`)
+
+- `has_temporary_flag(flag)` 共通ヘルパ
+- `set_temporary_flag(flag)` / `reset_temporary_flag(flag)` の write 系
+  virtual
+- 個別アクセサ (6 個):
+  - `is_in_view` (VIEW)
+  - `is_marked_for_los` (LOS)
+  - `is_sensed_by_esp` (ESP)
+  - `was_present_at_turn_start` (PRESENT_AT_TURN_START)
+  - `has_prevent_magic` (PREVENT_MAGIC)
+  - `has_sanity_blast` (SANITY_BLAST)
+- 10 ファイルで 40+ 箇所の `mflag` 直接アクセスを virtual 経由に変換
+
+### 効果
+
+- 一時フラグのテレパシー/視認/PREVENT_MAGIC 判定が OO 経由に統一
+- `mflag.clear()` (savefile 復元・初期化) のみ direct access を残置 →
+  提案 20 で virtual 化
+
+---
+
+## 提案 9b: MonsterProfile setter の virtual 集約 ✅ 完了
+
+### 背景
+
+提案 9 で read-side virtual を整備したのに対し、書込側はまだ
+`monster.get_monster_profile().alliance_idx = X` 等の直書きが残っていた。
+
+### 作業内容 (commit `243ad252b`)
+
+- 6 setter virtual を追加:
+  - `set_alliance_idx(AllianceType)`
+  - `set_sub_align(BIT_FLAGS8)` / `add_sub_align(BIT_FLAGS8)`
+  - `set_parent_m_idx(MONSTER_IDX)`
+  - `add_smart_flag(MonsterSmartLearnType)` / `clear_smart_flags()`
+- 11 ファイルで 40 箇所の MonsterProfile 直書きを virtual 経由に変換
+- 副次効果: `is_player()` ガードが基底側に集約され、誤ってプレイヤー
+  に書き込んでも no-op で安全になる
+
+---
+
+## 提案 17: モンスター inventory 操作の OO 統合 ✅ 完了
+
+### 背景
+
+`store_item_to_inventory(creature, ItemEntity *)` 等の free function
+が広く使われており、`creature.store_item(item)` の OO 形式と二重に
+存在していた。
+
+### 作業内容 (commit `53591dd83`)
+
+- `can_store_item(const ItemEntity &)` virtual を追加 (既存
+  `store_item` / `acquire_item` / `drop_all_inventory` を補完)
+- 約 20 箇所の `store_item_to_inventory(creature, &item)` →
+  `creature.store_item(item)` に変換
+- `monster_drop_carried_objects(creature, target)` ラッパを削除し
+  `target.drop_all_inventory(creature)` に直接置換 (cmd-pet /
+  monster-death の 2 箇所、ヘッダ宣言とインクルードも削除)
+
+### 効果
+
+- インベントリ操作はプレイヤー・モンスター共に同じ OO 形式で記述
+- free function は内部実装としてのみ存続 (CreatureEntity の virtual
+  実装が委譲)
+
+---
+
+## 提案 18: mflag2 書込パターンの virtual 集約 ✅ 完了
+
+### 背景
+
+提案 15/15b で読取り、提案 9b で MonsterProfile の他の setter を
+virtual 化したが、`mflag2.set/reset(...)` 直書きはまだ 60+ 箇所残存
+していた。
+
+### 作業内容 (commit `8185b0a6b`)
+
+- `set_constant_flag(flag)` / `reset_constant_flag(flag)` virtual 追加
+- 初期化リスト版 `set_constant_flags({...})` /
+  `reset_constant_flags({...})` も追加 (MARK/SHOW 同時セット等)
+- 14 ファイルで 60+ 箇所の `mflag2.set/reset(...)` を virtual に変換
+- 不随修正: `check_store_item_to_inventory()` を `const CreatureEntity &`
+  受けに変更し、提案 17 で追加した `can_store_item()` const メンバから
+  呼べるように修正。提案 17 の sed 移行で混入した
+  `check_creature.store_item(item)` 不正パターン 4 箇所も修正
+
+---
+
+## 提案 19: 変身・自壊カウンタの virtual 化 ✅ 完了
+
+### 背景
+
+`MonsterProfile::transform_r_idx` / `transform_hp_threshold` /
+`has_transformed` / `death_count` の各フィールドへの直書きが残存。
+
+### 作業内容 (commit `d44abbfcb`)
+
+- 9 virtual 追加:
+  - `get_transform_r_idx` / `set_transform_r_idx`
+  - `get_transform_hp_threshold` / `set_transform_hp_threshold`
+  - `has_transformed` / `set_has_transformed`
+  - `get_death_count` / `set_death_count` / `decrement_death_count`
+- 5 ファイルで 20 箇所を virtual 経由に変換 (one-monster-placer /
+  monster-damage / monster-processor / monster-loader-savefile50 /
+  monster-writer)
+
+### 効果
+
+- MonsterProfile への `=` 直接代入は基本的に消滅
+- 残るのは savefile 復元時の `mflag/mflag2.clear()` 一括クリアと
+  bitset 演算のみ → 提案 20 で対応
+
+---
+
+## 提案 20: 残り mflag/mflag2 一括操作の virtual 化 ✅ 完了
+
+### 背景
+
+提案 18 までで個別 set/reset は集約したが、savefile 復元時の bitset
+一括代入 (`mflag2[X] = bool`)、全クリア (`mflag.clear()`)、モンスター
+ボール捕獲時の bit 集合まるごとコピー等が残存していた。
+
+### 作業内容 (commit `72f4f76c3`)
+
+- 5 virtual 追加:
+  - `assign_constant_flag(flag, bool)` - savefile での `mflag2[X] = bool`
+    風代入の OO 形
+  - `clear_constant_flags()` - mflag2 全クリア
+  - `clear_temporary_flags()` - mflag 全クリア
+  - `get_all_constant_flags()` - モンスターボール捕獲時の mflag2 抽出
+  - `set_all_constant_flags(group)` - モンスターボール解放時の mflag2 適用
+- 4 ファイルで一括操作系 9 箇所を virtual 経由に変換 (one-monster-placer /
+  monster-loader-savefile50 / monster-ball / effect-monster-charm)
+
+### 効果
+
+- MonsterProfile の各フィールドへの外部からの直接書き込みは事実上
+  消滅
+- 残る direct access は `migrate_bitflag_to_flaggroup()` / `rd_FlagGroup()`
+  等の低レベルヘルパに参照を渡す savefile 専用箇所のみ
+
+---
+
+## 提案 21: MonsterProfile を class 化して private 化 ✅ 完了
+
+### 背景
+
+提案 9b〜20 で外部書き込みパスを CreatureEntity の virtual API に
+集約し終えたため、MonsterProfile の構造体を class に変更し、全データ
+メンバを private 化する。これにより今後フィールド追加時に CreatureEntity
+側へのアクセサ実装を強制できる。
+
+### 作業内容 (commit `e73be7d6b`)
+
+- `struct MonsterProfile` を `class MonsterProfile` に変更し、12
+  個のデータメンバを private に
+- friend 宣言:
+  - `CreatureEntity` (virtual アクセサ実装用)
+  - `MonsterLoader50` (savefile 復元時の bitset I/O)
+  - `MonsterWriter` (savefile 書出時の bitset / フラグ抽出)
+- 残っていた直接アクセス 3 箇所を migrate (player-processor /
+  monster-update / target-preparation)
+
+### 効果
+
+- MonsterProfile が完全にカプセル化された
+- フィールド追加時に CreatureEntity 側の virtual アクセサ整備が必須
+  となり、API 統一性が構造的に維持される
+
+---
+
+## 提案 22: モンスター identity setter の virtual 化 ✅ 完了
+
+### 背景
+
+CreatureEntity 直下フィールドのうち、polymorph・evolution・savefile
+復元等で書き換えられる identity 系 (`r_idx` / `ap_r_idx` / `riding`)
+は依然として直書きされていた。書き込み経路を virtual に集約することで
+identity 変化を追跡可能な形に整える。
+
+### 作業内容 (commit `63ad4d86b`)
+
+- 4 virtual 追加:
+  - `set_r_idx(MonraceId)`
+  - `set_ap_r_idx(MonraceId)`
+  - `polymorph_to(MonraceId)` - r_idx と ap_r_idx をまとめて同期
+  - `set_riding(MONSTER_IDX)` - mflag2 RIDING を更新しない低レベル setter
+    (compaction や floor 切替時の付替え用。通常の騎乗は `ride_monster()`)
+- 8 ファイル 11 箇所の write site を OO 経由に統一
+
+### 注記
+
+- read アクセス (`==` 比較等 70+ 箇所) はフィールド直接アクセスのまま
+  維持。書き込み経路の一元化が目的のため大規模な read 側変更は不要と
+  判断。
+- CreatureEntity 直下のその他の生フィールド (`inven_cnt` / `equip_cnt` /
+  `inventory[]` / `age` / `ht` / `wt` 等) のアクセサ整備は別提案
+  (24 以降) として残置。
 
 ---
 
@@ -614,6 +903,16 @@ bakabakaband ではプレイヤーとモンスター双方が `CreatureEntity` �
 - ✅ **提案 11**: モンスター inventory[] 統一 (フェーズ A、5 サブフェーズ)
 - ✅ **提案 12**: モンスター装備有効化 (フェーズ B、AC/耐性/攻撃/二刀流)
 - ✅ **提案 13**: モンスター AI アイテム使用 (フェーズ C、ポーション/巻物/杖/ロッド + UI)
+- ✅ **提案 14 / 14b**: AI ターゲット選定の共通 API 化 + m_list 走査の集約
+- ✅ **提案 15 / 15b**: mflag2 の virtual アクセサ集約 (体格・状態・行動修飾子)
+- ✅ **提案 16**: mflag (一時フラグ) の virtual 化
+- ✅ **提案 9b**: MonsterProfile setter の virtual 集約
+- ✅ **提案 17**: モンスター inventory 操作の OO 統合 + free function ラッパ削除
+- ✅ **提案 18**: mflag2 書込パターンの virtual 集約 (set/reset)
+- ✅ **提案 19**: 変身/自壊カウンタ (transform_*/death_count) の virtual 化
+- ✅ **提案 20**: mflag/mflag2 一括操作 (assign/clear/get_all/set_all) の virtual 化
+- ✅ **提案 21**: MonsterProfile を class 化してメンバを完全 private 化
+- ✅ **提案 22**: モンスター identity setter (r_idx / ap_r_idx / riding) の virtual 化
 
 ### 既存提案の残作業 (中規模)
 
@@ -624,9 +923,19 @@ bakabakaband ではプレイヤーとモンスター双方が `CreatureEntity` �
 5. **提案 3** - `PlayerType::get_instance()` 削減 ✅ 完了
 6. **提案 6** - フィールド命名統一（最後）
 
+### 今後の候補 (追加提案)
+
+- **提案 24**: CreatureEntity 直下の生フィールド (`inven_cnt` / `equip_cnt` /
+  `age` / `ht` / `wt` / `prestige` 等) のアクセサ整備
+- **提案 25**: モンスター inventory の cnt フィールド (`inven_cnt` /
+  `equip_cnt`) を `inventory[]` から自動計算する形への変更検討
+- **提案 26**: 残った plain field (`ambush_flag`, `food`, `town_num` 等)
+  の private 化検討
+
 ### 提案 13 の延長検討対象
 
 - ペット AI で攻撃 wand/rod を hostile monster に向けて発動
+  ✅ 完了
 - 戦略的脱出 (SCROLL_DESTRUCTION/GENOCIDE)
 - 装備耐久・損耗
 - B-3: 装備フラグキャッシュ (性能必要時)
