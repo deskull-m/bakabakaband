@@ -864,6 +864,14 @@ public:
     int16_t store_item(const ItemEntity &item);
 
     /*!
+     * @brief このクリーチャーの所持品にアイテムを格納可能か判定する (提案 17)
+     * @param item 判定対象のアイテム
+     * @return 格納可能なら true
+     * @details 既存の `check_store_item_to_inventory()` への薄いラッパ。
+     */
+    bool can_store_item(const ItemEntity &item) const;
+
+    /*!
      * @brief 装備可能なら装備スロットへ、不可ならパックへアイテムを格納する
      * @param item 格納するアイテム (内部でクローンされる)
      * @return 格納されたインベントリスロットID、失敗時 -1

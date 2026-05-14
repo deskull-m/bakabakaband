@@ -607,6 +607,11 @@ int16_t CreatureEntity::store_item(const ItemEntity &item)
     return store_item_to_inventory(*this, &clone);
 }
 
+bool CreatureEntity::can_store_item(const ItemEntity &item) const
+{
+    return check_store_item_to_inventory(*this, &item);
+}
+
 int16_t CreatureEntity::acquire_item(const ItemEntity &item)
 {
     // [フェーズ C-2] 装備可能なアイテムは空きスロットがあれば自動装備

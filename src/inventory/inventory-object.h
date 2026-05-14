@@ -12,6 +12,6 @@ void drop_from_inventory(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUM
 void combine_pack(CreatureEntity &creature);
 void reorder_pack(CreatureEntity &creature);
 int16_t store_item_to_inventory(CreatureEntity &creature, ItemEntity *o_ptr);
-bool check_store_item_to_inventory(CreatureEntity &creature, const ItemEntity *o_ptr);
+bool check_store_item_to_inventory(const CreatureEntity &creature, const ItemEntity *o_ptr);
 INVENTORY_IDX inven_takeoff(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUMBER amt);
 bool check_get_item(ItemEntity *o_ptr);

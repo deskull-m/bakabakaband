@@ -196,7 +196,7 @@ bool exchange_cash(CreatureEntity &creature)
              * Since a corpse is handed at first,
              * there is at least one empty slot.
              */
-            inventory_new = store_item_to_inventory(creature, &prize_item);
+            inventory_new = creature.store_item(prize_item);
             const auto got_item_name = describe_flavor(creature, prize_item, 0);
             msg_format(_("%s(%c)を貰った。", "You get %s (%c). "), got_item_name.data(), index_to_label(inventory_new));
 
