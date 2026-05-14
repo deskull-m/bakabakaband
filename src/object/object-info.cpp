@@ -22,7 +22,55 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
+#include "system/monrace/extended-slot.h"
 #include "util/int-char-converter.h"
+
+namespace {
+
+/*!
+ * @brief 指定されたアイテム種別を受け入れる拡張スロットを探す
+ * @param creature 対象クリーチャー
+ * @param tval アイテム種別
+ * @return 装備可能な拡張スロットの ID (INVEN_EXTENDED_BASE + idx)、
+ *         該当なしなら -1
+ * @details Phase 2.5: モンスターの体構造が持つ拡張スロットのうち、
+ *          指定アイテム種別を受け入れ可能かつ空きのものを探す。
+ */
+short find_extended_slot(CreatureEntity &creature, ItemKindType tval)
+{
+    const auto count = creature.get_extended_slot_count();
+    for (size_t i = 0; i < count; ++i) {
+        const auto slot_type = creature.get_extended_slot_type(i);
+        bool accepts = false;
+        switch (slot_type) {
+        case ExtendedSlotType::TAIL_RING:
+            accepts = (tval == ItemKindType::RING);
+            break;
+        case ExtendedSlotType::SECOND_NECK:
+            accepts = (tval == ItemKindType::AMULET || tval == ItemKindType::WHISTLE);
+            break;
+        case ExtendedSlotType::THIRD_HEAD:
+            accepts = (tval == ItemKindType::CROWN || tval == ItemKindType::HELM);
+            break;
+        case ExtendedSlotType::WING_LEFT:
+        case ExtendedSlotType::WING_RIGHT:
+            // 翼装飾 (アミュレット相当の装飾) を受け入れる
+            accepts = (tval == ItemKindType::AMULET);
+            break;
+        case ExtendedSlotType::MAX:
+            break;
+        }
+        if (!accepts) {
+            continue;
+        }
+        if (i >= creature.extended_inventory.size() || !creature.extended_inventory[i] || !creature.extended_inventory[i]->is_valid()) {
+            return static_cast<short>(INVEN_EXTENDED_BASE + i);
+        }
+    }
+    return -1;
+}
+
+}
 
 /*!
  * @brief オブジェクトの発動効果名称を返す (メインルーチン)
@@ -156,10 +204,34 @@ short wield_slot(CreatureEntity &creature, const ItemEntity &item)
         return -1;
     }
 
-    // [モンスター体構造] 体構造で装備不可なスロットなら -1 を返す
-    // (パック行きやドロップ扱いとなる)。プレイヤーは常に true なので影響なし。
+    // [モンスター体構造] 体構造で装備不可なスロットなら、拡張スロットを試す。
+    // それでもダメなら -1 (パック行き)。プレイヤーは常に can_equip_to=true。
     if (!creature.can_equip_to(desired)) {
-        return -1;
+        const auto extended = find_extended_slot(creature, item.bi_key.tval());
+        return extended;
+    }
+
+    // [Phase 2.5] 通常スロットが既に埋まっている場合、拡張スロットを試す。
+    // RING/AMULET 等で MAIN/SUB が両方埋まっているとき、TAIL_RING や
+    // SECOND_NECK 等に自動装備する。
+    if (creature.inventory[desired]->is_valid() && (item.bi_key.tval() == ItemKindType::RING || item.bi_key.tval() == ItemKindType::AMULET || item.bi_key.tval() == ItemKindType::WHISTLE)) {
+        // RING の場合は SUB_RING も埋まっているかチェック
+        if (item.bi_key.tval() == ItemKindType::RING) {
+            if (creature.inventory[INVEN_MAIN_RING]->is_valid() && creature.inventory[INVEN_SUB_RING]->is_valid()) {
+                const auto extended = find_extended_slot(creature, item.bi_key.tval());
+                if (extended >= INVEN_EXTENDED_BASE) {
+                    return extended;
+                }
+            }
+        } else {
+            // AMULET/WHISTLE は NECK が埋まっていれば拡張を試す
+            if (creature.inventory[INVEN_NECK]->is_valid()) {
+                const auto extended = find_extended_slot(creature, item.bi_key.tval());
+                if (extended >= INVEN_EXTENDED_BASE) {
+                    return extended;
+                }
+            }
+        }
     }
     return desired;
 }

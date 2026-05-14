@@ -561,6 +561,19 @@ int16_t CreatureEntity::acquire_item(const ItemEntity &item)
         *this->inventory[eq_slot] = item.clone();
         return eq_slot;
     }
+
+    // [Phase 2.5] 拡張スロットへの装備
+    if (eq_slot >= INVEN_EXTENDED_BASE && item.number == 1) {
+        const auto ext_idx = static_cast<size_t>(eq_slot - INVEN_EXTENDED_BASE);
+        if (ext_idx < this->extended_inventory.size()) {
+            if (!this->extended_inventory[ext_idx]) {
+                this->extended_inventory[ext_idx] = std::make_shared<ItemEntity>();
+            }
+            *this->extended_inventory[ext_idx] = item.clone();
+            return eq_slot;
+        }
+    }
+
     return this->store_item(item);
 }
 
