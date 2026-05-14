@@ -223,11 +223,13 @@ CreatureEntity
          transform_* 等。提案 21 で全メンバ private 化済)
 ```
 
-### Phase 9-22: MonsterProfile アクセス API の整備 ✅ 完了
+### Phase 9-26: MonsterProfile + CreatureEntity アクセス API の整備 ✅ 完了
 
 提案 9 系列 (read-side virtual)、提案 14-22 系列 (write-side virtual /
-共通走査 API / 一括操作 / class 化) により、`MonsterProfile` への
-外部アクセスは全て `CreatureEntity` の virtual API 経由に統一された。
+共通走査 API / 一括操作 / class 化)、提案 24-26 系列 (CreatureEntity
+直下フィールドの setter / 派生情報の自動計算化) により、モンスター
+状態への外部アクセスはほぼ全て `CreatureEntity` の virtual API 経由に
+統一された。
 
 - **提案 14 / 14b**: `find_nearest_creature` / `has_visible_creature` /
   `collect_creatures` で m_list 走査を集約
@@ -240,6 +242,11 @@ CreatureEntity
 - **提案 21**: `MonsterProfile` を class 化、全メンバ private 化、
   `friend` は `CreatureEntity` / `MonsterLoader50` / `MonsterWriter`
   の 3 つに限定
+- **提案 24**: `age` / `ht` / `wt` / `prestige` 等の setter virtual
+- **提案 25**: `inven_cnt` / `equip_cnt` フィールドを廃止し
+  inventory[] から自動計算 (`get_inven_cnt()` / `get_equip_cnt()`)
+- **提案 26**: `ambush_flag` / `food` / `town_num` / `level` の setter
+  virtual
 
 今後の残作業としては、現在 `CreatureEntity` 直下に残存するプレイヤー
 固有フィールド群（種族・職業・熟練度・ESP 等）を、モンスターにも
@@ -248,9 +255,9 @@ CreatureEntity
 方向は取らない。
 
 **残タスク詳細は [`docs/creature-entity-refactoring-roadmap.md`](docs/creature-entity-refactoring-roadmap.md) 参照。**
-Phase 1-22 完了後の継続提案（プレイヤー専用フィールドのクリーチャー
+Phase 1-26 完了後の継続提案（プレイヤー専用フィールドのクリーチャー
 共通化、プレイヤー専用仮想メソッドの共通化、TimedEffects 二重管理
-解消、CreatureEntity 直下生フィールドのアクセサ整備等）を同書で管理する。
+解消、戦闘ボーナス系フィールドのアクセサ整備等）を同書で管理する。
 新規の統合作業に着手する際は先に同書を参照し、作業完了後は同書と
 本ファイルの両方に進捗を反映すること。
 
@@ -569,6 +576,9 @@ bakabakaband 側と上流側でよくある構造的差異を以下のルール�
 | `monster.r_idx = X` / `monster.ap_r_idx = X` 書込 | `monster.set_r_idx(X)` / `monster.set_ap_r_idx(X)`、両方同期は `monster.polymorph_to(X)` (提案 22) |
 | `creature.riding = X` 書込 (compaction/floor 切替等の付替え) | `creature.set_riding(X)` (提案 22)。通常の騎乗開始/終了は `creature.ride_monster(X)` |
 | `MonsterProfile` 直接アクセス (`get_monster_profile().X`) | **提案 21 でメンバ private 化済み。** CreatureEntity の virtual API 経由でのみアクセス可能。例外は `friend` 宣言された `CreatureEntity` 自身、`MonsterLoader50`、`MonsterWriter` |
+| `creature.age = X` / `creature.ht = X` / `creature.wt = X` / `creature.prestige = X` 書込 | `creature.set_age(X)` / `set_ht(X)` / `set_wt(X)` / `set_prestige(X)`、加算は `add_age(d)` / `add_prestige(d)`、`prestige /= N` は `divide_prestige(N)` (提案 24) |
+| `creature.inven_cnt` / `creature.equip_cnt` フィールド | **提案 25 でフィールド廃止。** `creature.get_inven_cnt()` / `creature.get_equip_cnt()` を呼ぶ。インベントリ変更時の cnt 同期は不要 (inventory[] から自動計算) |
+| `creature.ambush_flag = X` / `creature.food = X` / `creature.town_num = X` / `creature.level = X` 書込 | `creature.set_ambush_flag(X)` / `set_food(X)` / `set_town_num(X)` / `set_level(X)` (提案 26) |
 
 **GCC 固有の注意**:
 上流は MSVC 前提のことが多く、`<cstdint>` 等のインクルード漏れがあれば追加する。
