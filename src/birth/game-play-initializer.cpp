@@ -63,8 +63,6 @@ void player_wipe_without_name(CreatureEntity &creature)
         quest.comptime = 0;
     }
 
-    creature.set_inven_cnt(0);
-    creature.set_equip_cnt(0);
     for (int i = 0; i < INVEN_TOTAL; i++) {
         creature.inventory[i]->wipe();
     }
