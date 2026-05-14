@@ -93,63 +93,75 @@ char index_to_label(int i)
  */
 short wield_slot(CreatureEntity &creature, const ItemEntity &item)
 {
+    short desired = -1;
     switch (item.bi_key.tval()) {
     case ItemKindType::DIGGING:
     case ItemKindType::HAFTED:
     case ItemKindType::POLEARM:
     case ItemKindType::SWORD:
         if (!creature.inventory[INVEN_MAIN_HAND]->bi_id) {
-            return INVEN_MAIN_HAND;
+            desired = INVEN_MAIN_HAND;
+        } else if (creature.inventory[INVEN_SUB_HAND]->bi_id) {
+            desired = INVEN_MAIN_HAND;
+        } else {
+            desired = INVEN_SUB_HAND;
         }
-
-        if (creature.inventory[INVEN_SUB_HAND]->bi_id) {
-            return INVEN_MAIN_HAND;
-        }
-
-        return INVEN_SUB_HAND;
+        break;
     case ItemKindType::CAPTURE:
     case ItemKindType::CARD:
     case ItemKindType::SHIELD:
         if (!creature.inventory[INVEN_SUB_HAND]->bi_id) {
-            return INVEN_SUB_HAND;
+            desired = INVEN_SUB_HAND;
+        } else if (creature.inventory[INVEN_MAIN_HAND]->bi_id) {
+            desired = INVEN_SUB_HAND;
+        } else {
+            desired = INVEN_MAIN_HAND;
         }
-
-        if (creature.inventory[INVEN_MAIN_HAND]->bi_id) {
-            return INVEN_SUB_HAND;
-        }
-
-        return INVEN_MAIN_HAND;
+        break;
     case ItemKindType::BOW:
-        return INVEN_BOW;
+        desired = INVEN_BOW;
+        break;
     case ItemKindType::RING:
-        if (!creature.inventory[INVEN_MAIN_RING]->bi_id) {
-            return INVEN_MAIN_RING;
-        }
-
-        return INVEN_SUB_RING;
+        desired = !creature.inventory[INVEN_MAIN_RING]->bi_id ? INVEN_MAIN_RING : INVEN_SUB_RING;
+        break;
     case ItemKindType::AMULET:
     case ItemKindType::WHISTLE:
-        return INVEN_NECK;
+        desired = INVEN_NECK;
+        break;
     case ItemKindType::ANAL_PLUG:
-        return INVEN_ASSHOLE;
+        desired = INVEN_ASSHOLE;
+        break;
     case ItemKindType::LITE:
-        return INVEN_LITE;
+        desired = INVEN_LITE;
+        break;
     case ItemKindType::DRAG_ARMOR:
     case ItemKindType::HARD_ARMOR:
     case ItemKindType::SOFT_ARMOR:
-        return INVEN_BODY;
+        desired = INVEN_BODY;
+        break;
     case ItemKindType::CLOAK:
-        return INVEN_OUTER;
+        desired = INVEN_OUTER;
+        break;
     case ItemKindType::CROWN:
     case ItemKindType::HELM:
-        return INVEN_HEAD;
+        desired = INVEN_HEAD;
+        break;
     case ItemKindType::GLOVES:
-        return INVEN_ARMS;
+        desired = INVEN_ARMS;
+        break;
     case ItemKindType::BOOTS:
-        return INVEN_FEET;
+        desired = INVEN_FEET;
+        break;
     default:
         return -1;
     }
+
+    // [モンスター体構造] 体構造で装備不可なスロットなら -1 を返す
+    // (パック行きやドロップ扱いとなる)。プレイヤーは常に true なので影響なし。
+    if (!creature.can_equip_to(desired)) {
+        return -1;
+    }
+    return desired;
 }
 
 /*!

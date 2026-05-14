@@ -1414,6 +1414,18 @@ public:
      */
     short get_equip_cnt() const;
 
+    /*!
+     * @brief 指定スロットに装備可能か判定する (提案: モンスター体構造)
+     * @param slot inventory_slot_type (INVEN_MAIN_HAND..INVEN_TOTAL-1)
+     * @return 体構造的に装備可能なら true
+     * @details プレイヤーは HUMANOID 固定で常に true。モンスターは
+     *          MonraceDefinition::body_structure を参照し、
+     *          BodySlotPolicy で許可されたスロットのみ true を返す。
+     *          slot が範囲外なら false。
+     *          docs/monster-body-structure-equipment-slots.md 参照。
+     */
+    virtual bool can_equip_to(int slot) const;
+
     /*! @brief 年齢を設定する (提案 24) */
     virtual void set_age(int16_t value)
     {
