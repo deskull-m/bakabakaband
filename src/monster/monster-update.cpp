@@ -593,7 +593,7 @@ void update_monster(CreatureEntity &creature, MONSTER_IDX m_idx, bool full)
         }
     }
 
-    if (um_ptr->m_ptr->get_monster_profile().mflag2.has(MonsterConstantFlagType::MARK)) {
+    if (um_ptr->m_ptr->has_constant_flag(MonsterConstantFlagType::MARK)) {
         um_ptr->flag = true;
     }
 

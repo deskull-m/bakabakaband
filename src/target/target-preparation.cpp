@@ -184,7 +184,7 @@ void target_sensing_monsters_prepare(CreatureEntity &creature, std::vector<MONST
         }
 
         // 感知魔法/スキルやESPで感知していない擬態モンスターはモンスター一覧に表示しない
-        if (monster.is_mimicry() && monster.get_monster_profile().mflag2.has_none_of({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW }) && monster.get_monster_profile().mflag.has_not(MonsterTemporaryFlagType::ESP)) {
+        if (monster.is_mimicry() && !monster.has_constant_flag(MonsterConstantFlagType::MARK) && !monster.has_constant_flag(MonsterConstantFlagType::SHOW) && !monster.has_temporary_flag(MonsterTemporaryFlagType::ESP)) {
             continue;
         }
 

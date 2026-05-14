@@ -364,8 +364,8 @@ void process_player(CreatureEntity &creature)
 
                 // 感知中のモンスターのフラグを落とす処理
                 // 感知したターンはMFLAG2_SHOWを落とし、次のターンに感知中フラグのMFLAG2_MARKを落とす
-                if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::MARK)) {
-                    if (monster.get_monster_profile().mflag2.has(MonsterConstantFlagType::SHOW)) {
+                if (monster.has_constant_flag(MonsterConstantFlagType::MARK)) {
+                    if (monster.has_constant_flag(MonsterConstantFlagType::SHOW)) {
                         monster.reset_constant_flag(MonsterConstantFlagType::SHOW);
                     } else {
                         monster.reset_constant_flag(MonsterConstantFlagType::MARK);
