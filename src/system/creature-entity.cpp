@@ -1071,12 +1071,20 @@ int CreatureEntity::get_ac() const
     // プレイヤーは calc_base_ac() / calc_to_ac() が update_creature() 経由で
     // 既に creature.ac と creature.to_a に含めているため再加算しない。
     if (this->has_monster_profile()) {
+        // 通常装備
         for (size_t i = INVEN_MAIN_HAND; i < this->inventory.size(); i++) {
             const auto &item = *this->inventory[i];
             if (!item.is_valid()) {
                 continue;
             }
             total_ac += item.ac + item.to_a;
+        }
+        // [Phase 2.6] 拡張装備スロット (尾の指輪・翼装飾など)
+        for (const auto &item_ptr : this->extended_inventory) {
+            if (!item_ptr || !item_ptr->is_valid()) {
+                continue;
+            }
+            total_ac += item_ptr->ac + item_ptr->to_a;
         }
     }
 
