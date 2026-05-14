@@ -95,7 +95,7 @@ bool genocide_aux(CreatureEntity &creature, MONSTER_IDX m_idx, int power, bool p
         }
 
         if (one_in_(13)) {
-            monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::NOGENO);
+            monster.set_constant_flag(MonsterConstantFlagType::NOGENO);
         }
     }
 

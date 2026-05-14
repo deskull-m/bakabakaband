@@ -231,12 +231,12 @@ void aggravate_monsters(CreatureEntity &creature, MONSTER_IDX src_idx)
             }
 
             if (!monster.is_pet()) {
-                monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::NOPET);
+                monster.set_constant_flag(MonsterConstantFlagType::NOPET);
             }
         }
 
         if (floor.has_los_at({ monster.y, monster.x }) && !monster.is_pet()) {
-            monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::ANGER);
+            monster.set_constant_flag(MonsterConstantFlagType::ANGER);
             (void)set_monster_fast(floor, i, monster.get_remaining_acceleration() + 100);
             speed = true;
         }
@@ -373,7 +373,7 @@ std::string probed_monster_info(CreatureEntity &creature, CreatureEntity &target
 {
     if (!target.is_original_ap()) {
         if (target.is_kage()) {
-            target.get_monster_profile().mflag2.reset(MonsterConstantFlagType::KAGE);
+            target.reset_constant_flag(MonsterConstantFlagType::KAGE);
         }
 
         target.ap_r_idx = target.r_idx;

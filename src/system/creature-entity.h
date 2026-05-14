@@ -21,6 +21,7 @@
 #include "util/point-2d.h"
 #include <array>
 #include <functional>
+#include <initializer_list>
 #include <map>
 #include <memory>
 #include <string>
@@ -998,6 +999,46 @@ public:
     bool has_constant_flag(MonsterConstantFlagType flag) const
     {
         return this->has_monster_profile() && this->get_monster_profile().mflag2.has(flag);
+    }
+
+    /*!
+     * @brief MonsterConstantFlagType を立てる (提案 18)
+     */
+    virtual void set_constant_flag(MonsterConstantFlagType flag)
+    {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().mflag2.set(flag);
+        }
+    }
+
+    /*!
+     * @brief MonsterConstantFlagType を複数まとめて立てる (提案 18)
+     */
+    virtual void set_constant_flags(std::initializer_list<MonsterConstantFlagType> flags)
+    {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().mflag2.set(flags);
+        }
+    }
+
+    /*!
+     * @brief MonsterConstantFlagType をクリアする (提案 18)
+     */
+    virtual void reset_constant_flag(MonsterConstantFlagType flag)
+    {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().mflag2.reset(flag);
+        }
+    }
+
+    /*!
+     * @brief MonsterConstantFlagType を複数まとめてクリアする (提案 18)
+     */
+    virtual void reset_constant_flags(std::initializer_list<MonsterConstantFlagType> flags)
+    {
+        if (this->has_monster_profile()) {
+            this->get_monster_profile().mflag2.reset(flags);
+        }
     }
 
     /*!

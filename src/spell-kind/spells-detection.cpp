@@ -347,7 +347,7 @@ bool detect_monsters_normal(CreatureEntity &creature, POSITION range)
     });
     for (auto i : matched) {
         auto &monster = floor.m_list[i];
-        monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
+        monster.set_constant_flags({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
         update_monster(creature, i, false);
         flag = true;
     }
@@ -391,7 +391,7 @@ bool detect_monsters_invis(CreatureEntity &creature, POSITION range)
         if (tracker.is_tracking(monster.r_idx)) {
             rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
         }
-        monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
+        monster.set_constant_flags({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
         update_monster(creature, i, false);
         flag = true;
     }
@@ -439,7 +439,7 @@ bool detect_monsters_evil(CreatureEntity &creature, POSITION range)
                 rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
             }
         }
-        monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
+        monster.set_constant_flags({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
         update_monster(creature, i, false);
         flag = true;
     }
@@ -480,7 +480,7 @@ bool detect_monsters_nonliving(CreatureEntity &creature, POSITION range)
         if (tracker.is_tracking(monster.r_idx)) {
             rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
         }
-        monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
+        monster.set_constant_flags({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
         update_monster(creature, i, false);
         flag = true;
     }
@@ -521,7 +521,7 @@ bool detect_monsters_mind(CreatureEntity &creature, POSITION range)
         if (tracker.is_tracking(monster.r_idx)) {
             rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
         }
-        monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
+        monster.set_constant_flags({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
         update_monster(creature, i, false);
         flag = true;
     }
@@ -563,7 +563,7 @@ bool detect_monsters_string(CreatureEntity &creature, POSITION range, concptr Ma
         if (tracker.is_tracking(monster.r_idx)) {
             rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
         }
-        monster.get_monster_profile().mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
+        monster.set_constant_flags({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
         update_monster(creature, i, false);
         flag = true;
     }

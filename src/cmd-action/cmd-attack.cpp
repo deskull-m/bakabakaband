@@ -474,7 +474,7 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
         // 1/20の確率で恐怖せず狂乱状態になる
         if (one_in_(20)) {
             auto &current_monster = floor.get_monster(grid.m_idx);
-            current_monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::FRENZY);
+            current_monster.set_constant_flag(MonsterConstantFlagType::FRENZY);
             (void)set_monster_monfear(*creature.get_floor(), grid.m_idx, 0);
             sound(SoundKind::FLEE);
             msg_format(_("%s^は恐怖を怒りに変えて狂乱状態になった！", "%s^ turns fear into rage and goes berserk!"), m_name.data());
@@ -569,7 +569,7 @@ bool do_cmd_headbutt(CreatureEntity &creature)
         // 1/20の確率で恐怖せず狂乱状態になる
         if (one_in_(20)) {
             auto &current_monster = floor.get_monster(grid.m_idx);
-            current_monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::FRENZY);
+            current_monster.set_constant_flag(MonsterConstantFlagType::FRENZY);
             (void)set_monster_monfear(*creature.get_floor(), grid.m_idx, 0);
             sound(SoundKind::FLEE);
             msg_format(_("%s^は恐怖を怒りに変えて狂乱状態になった！", "%s^ turns fear into rage and goes berserk!"), m_name.data());
@@ -641,7 +641,7 @@ void do_cmd_body_slam(CreatureEntity &creature)
         // 1/20の確率で恐怖せず狂乱状態になる
         if (one_in_(20)) {
             auto &current_monster = floor.get_monster(m_idx);
-            current_monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::FRENZY);
+            current_monster.set_constant_flag(MonsterConstantFlagType::FRENZY);
             (void)set_monster_monfear(*creature.get_floor(), m_idx, 0);
             sound(SoundKind::FLEE);
             msg_format(_("%s^は恐怖を怒りに変えて狂乱状態になった！", "%s^ turns fear into rage and goes berserk!"), m_name.data());
@@ -782,7 +782,7 @@ void do_cmd_enema(CreatureEntity &creature)
         // 1/20の確率で恐怖せず狂乱状態になる
         if (one_in_(20)) {
             auto &current_monster = floor.get_monster(m_idx);
-            current_monster.get_monster_profile().mflag2.set(MonsterConstantFlagType::FRENZY);
+            current_monster.set_constant_flag(MonsterConstantFlagType::FRENZY);
             (void)set_monster_monfear(*creature.get_floor(), m_idx, 0);
             sound(SoundKind::FLEE);
             msg_format(_("%s^は恐怖を怒りに変えて狂乱状態になった！", "%s^ turns fear into rage and goes berserk!"), m_name.data());
