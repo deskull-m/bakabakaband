@@ -440,7 +440,7 @@ static void curse_drain_mp(CreatureEntity &creature)
     const auto *item_ptr = choose_cursed_obj_name(creature, CurseTraitType::DRAIN_MANA);
     const auto item_name = describe_flavor(creature, *item_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     msg_format(_("%sはあなたの魔力を吸収した！", "Your %s drains mana from you!"), item_name.data());
-    creature.sub_csp(std::min<short>(creature.get_level(), 50));
+    creature.sub_csp(std::min<int>(creature.get_level(), 50));
     if (creature.get_csp() < 0) {
         creature.set_csp(0);
         creature.csp_frac = 0;
@@ -535,5 +535,5 @@ void execute_cursed_items_effect(CreatureEntity &creature)
         msg_print(_("なにかがあなたの体力を吸収した！", "Something drains life from you!"));
     }
 
-    take_hit(creature, DAMAGE_LOSELIFE, std::min<short>(creature.get_level(), 50), _("審判の宝石", "the Jewel of Judgement"));
+    take_hit(creature, DAMAGE_LOSELIFE, std::min<int>(creature.get_level(), 50), _("審判の宝石", "the Jewel of Judgement"));
 }

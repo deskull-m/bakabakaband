@@ -507,7 +507,7 @@ public:
      * @brief クリーチャーのレベルを取得
      * @return レベル値。個体レベルが設定されていればそれを返し、未設定なら種族レベルの半分を返す。
      */
-    virtual int get_level() const;
+    virtual PLAYER_LEVEL get_level() const;
 
     /*!
      * @brief クリーチャーがプレイヤーかどうかを判定
@@ -2361,6 +2361,15 @@ public:
      *          種族 feature_flags の CAN_FLY から判定。
      */
     virtual bool has_levitation() const;
+    /*!
+     * @brief 浮遊フラグ (BIT_FLAGS) を取得する
+     * @details FLAG_CAUSE_X ビットマスクを返す。 any_bits / reset_bits 等で
+     *          特定ビットを抽出するための raw アクセサ。
+     */
+    virtual BIT_FLAGS get_levitation_flags() const
+    {
+        return this->levitation;
+    }
     /*!
      * @brief 麻痺耐性の有無
      * @details プレイヤーは装備由来。モンスターは状態耐性が個別フラグ

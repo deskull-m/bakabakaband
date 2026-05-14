@@ -894,7 +894,7 @@ void do_cmd_pet(CreatureEntity &creature)
             break;
         }
         auto &floor = *creature.get_floor();
-        auto &target_pet = floor.get_monster(target_idx);
+        auto &pet_monster = floor.get_monster(target_idx);
         constexpr auto q = _("どのアイテムを渡しますか? ", "Give which item? ");
         constexpr auto s = _("渡せるアイテムがない。", "You have nothing to give.");
         const auto &[item, i_idx] = choose_item(creature, q, s, (USE_INVEN), AllMatchItemTester());
@@ -905,9 +905,9 @@ void do_cmd_pet(CreatureEntity &creature)
         given.number = 1;
         given.held_m_idx = 0;
         given.iy = given.ix = 0;
-        const auto pet_name = monster_desc(creature, target_pet, MD_INDEF_VISIBLE);
+        const auto pet_name = monster_desc(creature, pet_monster, MD_INDEF_VISIBLE);
         const auto item_name = describe_flavor(creature, given, OD_OMIT_PREFIX);
-        if (target_pet.acquire_item(given) >= 0) {
+        if (pet_monster.acquire_item(given) >= 0) {
             msg_format(_("%sに%sを渡した。", "You give %s to %s."), pet_name.data(), item_name.data());
             inven_item_increase(creature, i_idx, -1);
             inven_item_optimize(creature, i_idx);
@@ -924,28 +924,28 @@ void do_cmd_pet(CreatureEntity &creature)
             break;
         }
         auto &floor = *creature.get_floor();
-        auto &target_pet = floor.get_monster(target_idx);
+        auto &pet_monster = floor.get_monster(target_idx);
 
         // 装備スロット → パックスロットの順に番号付きで表示
         std::vector<INVENTORY_IDX> selectable_slots;
         screen_save();
-        const auto pet_name = monster_desc(creature, target_pet, MD_INDEF_VISIBLE);
+        const auto pet_name = monster_desc(creature, pet_monster, MD_INDEF_VISIBLE);
         prt(format(_("%s から受け取るアイテム:", "Take which item from %s?"), pet_name.data()), 0, 0);
         int line = 1;
         for (INVENTORY_IDX i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-            if (!target_pet.inventory[i]->is_valid()) {
+            if (!pet_monster.inventory[i]->is_valid()) {
                 continue;
             }
-            const auto name = describe_flavor(creature, *target_pet.inventory[i], 0);
+            const auto name = describe_flavor(creature, *pet_monster.inventory[i], 0);
             const char letter = static_cast<char>('a' + selectable_slots.size());
             selectable_slots.push_back(i);
             prt(format(_("%c) [装備] %s", "%c) [Equipped] %s"), letter, name.data()), line++, 2);
         }
         for (INVENTORY_IDX i = 0; i < INVEN_PACK; i++) {
-            if (!target_pet.inventory[i]->is_valid()) {
+            if (!pet_monster.inventory[i]->is_valid()) {
                 continue;
             }
-            const auto name = describe_flavor(creature, *target_pet.inventory[i], 0);
+            const auto name = describe_flavor(creature, *pet_monster.inventory[i], 0);
             const char letter = static_cast<char>('a' + selectable_slots.size());
             selectable_slots.push_back(i);
             prt(format(_("%c) %s", "%c) %s"), letter, name.data()), line++, 2);
@@ -972,7 +972,7 @@ void do_cmd_pet(CreatureEntity &creature)
         const auto src_slot = selectable_slots[sel];
         const bool was_equipped = (src_slot >= INVEN_MAIN_HAND);
 
-        auto &item_in_slot = *target_pet.inventory[src_slot];
+        auto &item_in_slot = *pet_monster.inventory[src_slot];
         auto received = item_in_slot.clone();
         received.held_m_idx = 0;
         received.iy = received.ix = 0;
@@ -981,10 +981,10 @@ void do_cmd_pet(CreatureEntity &creature)
         creature.store_item(received);
         item_in_slot.wipe();
         if (was_equipped) {
-            if (target_pet.get_equip_cnt() > 0) {
+            if (pet_monster.get_equip_cnt() > 0) {
             }
         } else {
-            if (target_pet.get_inven_cnt() > 0) {
+            if (pet_monster.get_inven_cnt() > 0) {
             }
         }
         break;
@@ -997,14 +997,14 @@ void do_cmd_pet(CreatureEntity &creature)
             break;
         }
         const auto &floor = *creature.get_floor();
-        auto &target_pet = floor.get_monster(target_idx);
-        const auto pet_name = monster_desc(creature, target_pet, MD_INDEF_VISIBLE);
+        auto &pet_monster = floor.get_monster(target_idx);
+        const auto pet_name = monster_desc(creature, pet_monster, MD_INDEF_VISIBLE);
         screen_save();
         prt(format(_("%s の所持品:", "%s's inventory:"), pet_name.data()), 0, 0);
         int line = 1;
         // 装備スロット
         for (size_t i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-            const auto &item = *target_pet.inventory[i];
+            const auto &item = *pet_monster.inventory[i];
             if (!item.is_valid()) {
                 continue;
             }
@@ -1013,7 +1013,7 @@ void do_cmd_pet(CreatureEntity &creature)
         }
         // パックスロット
         for (size_t i = 0; i < INVEN_PACK; i++) {
-            const auto &item = *target_pet.inventory[i];
+            const auto &item = *pet_monster.inventory[i];
             if (!item.is_valid()) {
                 continue;
             }

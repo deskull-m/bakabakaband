@@ -121,7 +121,7 @@ void riding_flags(CreatureEntity &creature, TrFlags &flags, TrFlags &negative_fl
         return;
     }
 
-    if (any_bits(creature.has_levitation(), FLAG_CAUSE_RIDING)) {
+    if (any_bits(creature.get_levitation_flags(), FLAG_CAUSE_RIDING)) {
         flags.set(TR_LEVITATION);
     } else {
         negative_flags.set(TR_LEVITATION);
