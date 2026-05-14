@@ -194,8 +194,7 @@ void choose_chameleon_polymorph(CreatureEntity &creature, short m_idx, short ter
         return;
     }
 
-    monster.r_idx = *new_monrace_id;
-    monster.ap_r_idx = *new_monrace_id;
+    monster.polymorph_to(*new_monrace_id);
 }
 
 /*!

@@ -182,7 +182,7 @@ void MonsterDamageProcessor::death_special_flag_monster()
     auto monrace_id = monster.r_idx;
     auto &monrace = monster.get_monrace();
     if (monrace.misc_flags.has(MonsterMiscType::TANUKI)) {
-        monster.ap_r_idx = monrace_id;
+        monster.set_ap_r_idx(monrace_id);
         if (monrace.r_sights < MAX_SHORT) {
             monrace.r_sights++;
         }
@@ -604,9 +604,9 @@ bool MonsterDamageProcessor::check_and_process_hp_transform()
 
     // 種族カウンターの更新
     monster.get_real_monrace().decrement_current_numbers();
-    monster.r_idx = new_r_idx;
+    monster.set_r_idx(new_r_idx);
     new_monrace.increment_current_numbers();
-    monster.ap_r_idx = new_r_idx;
+    monster.set_ap_r_idx(new_r_idx);
 
     // 新しいHPの計算
     monster.max_maxhp = new_monrace.misc_flags.has(MonsterMiscType::FORCE_MAXHP)

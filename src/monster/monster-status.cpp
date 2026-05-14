@@ -384,11 +384,11 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
     monster.get_real_monrace().decrement_current_numbers();
 
     const auto m_name = monster_desc(creature, monster, 0);
-    monster.r_idx = old_monrace.next_r_idx;
+    monster.set_r_idx(old_monrace.next_r_idx);
 
     /* Count the monsters on the level */
     monster.get_real_monrace().increment_current_numbers();
-    monster.ap_r_idx = monster.r_idx;
+    monster.set_ap_r_idx(monster.r_idx);
 
     const auto &new_monrace = monster.get_monrace(); //!< @details 進化後の種族.
     monster.max_maxhp = new_monrace.misc_flags.has(MonsterMiscType::FORCE_MAXHP) ? new_monrace.hit_dice.maxroll() : new_monrace.hit_dice.roll();

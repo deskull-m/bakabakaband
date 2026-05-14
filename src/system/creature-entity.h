@@ -1247,6 +1247,45 @@ public:
         return this->has_temporary_flag(MonsterTemporaryFlagType::SANITY_BLAST);
     }
 
+    /*!
+     * @brief モンスター実種族 ID を設定する (提案 22)
+     * @details ap_r_idx は変更しない。両方更新したい場合は polymorph_to() を使う。
+     */
+    virtual void set_r_idx(MonraceId new_r_idx)
+    {
+        this->r_idx = new_r_idx;
+    }
+
+    /*!
+     * @brief モンスター外見種族 ID を設定する (提案 22)
+     */
+    virtual void set_ap_r_idx(MonraceId new_ap_r_idx)
+    {
+        this->ap_r_idx = new_ap_r_idx;
+    }
+
+    /*!
+     * @brief 実種族と外見種族をまとめて設定する (提案 22)
+     * @details polymorph / 進化 / 変身などで両者を同期させたいときに使用。
+     */
+    virtual void polymorph_to(MonraceId new_r_idx)
+    {
+        this->r_idx = new_r_idx;
+        this->ap_r_idx = new_r_idx;
+    }
+
+    /*!
+     * @brief 騎乗中のモンスター m_idx を直接設定する (提案 22)
+     * @details ride_monster() と異なり mflag2/RIDING の更新を行わない低レベル
+     *          setter。compaction で m_idx 圧縮時に既に立っている RIDING を
+     *          別 idx へ付け替える等の用途。通常の騎乗開始/終了処理は
+     *          ride_monster() を使用すること。
+     */
+    virtual void set_riding(MONSTER_IDX m_idx)
+    {
+        this->riding = m_idx;
+    }
+
     /*! @brief 影 (KAGE) かどうか */
     virtual bool is_kage() const
     {
