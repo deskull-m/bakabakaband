@@ -88,7 +88,7 @@ static std::pair<short, Pos2D> decide_pet_index(CreatureEntity &creature, const 
     Pos2D pos(0, 0);
     if (current_monster == 0) {
         const auto m_idx = floor.pop_empty_index_monster();
-        creature.riding = m_idx;
+        creature.set_riding(m_idx);
         if (m_idx) {
             pos = p_pos;
         }

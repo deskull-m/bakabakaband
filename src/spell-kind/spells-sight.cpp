@@ -376,7 +376,7 @@ std::string probed_monster_info(CreatureEntity &creature, CreatureEntity &target
             target.reset_constant_flag(MonsterConstantFlagType::KAGE);
         }
 
-        target.ap_r_idx = target.r_idx;
+        target.set_ap_r_idx(target.r_idx);
         lite_spot(creature, target.get_position());
     }
 

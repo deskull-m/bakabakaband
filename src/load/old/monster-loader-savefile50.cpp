@@ -21,7 +21,7 @@
 void MonsterLoader50::rd_monster(CreatureEntity &monster)
 {
     auto flags = rd_u32b();
-    monster.r_idx = i2enum<MonraceId>(rd_s16b());
+    monster.set_r_idx(i2enum<MonraceId>(rd_s16b()));
 
     if (loading_savefile_version_is_older_than(16)) {
         MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(monster.r_idx);
@@ -45,7 +45,7 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
 
     monster.dealt_damage = rd_s32b();
 
-    monster.ap_r_idx = any_bits(flags, SaveDataMonsterFlagType::AP_R_IDX) ? i2enum<MonraceId>(rd_s16b()) : monster.r_idx;
+    monster.set_ap_r_idx(any_bits(flags, SaveDataMonsterFlagType::AP_R_IDX) ? i2enum<MonraceId>(rd_s16b()) : monster.r_idx);
     monster.set_sub_align(any_bits(flags, SaveDataMonsterFlagType::SUB_ALIGN) ? rd_byte() : 0);
     monster.set_timed_effect(CreatureTimedEffect::SLEEP_OR_PARALYSIS, any_bits(flags, SaveDataMonsterFlagType::SLEEP) ? rd_s16b() : 0);
     monster.speed = rd_byte();

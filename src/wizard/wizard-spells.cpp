@@ -114,8 +114,7 @@ void wiz_select_chameleon_polymorph(CreatureEntity &monster)
     msg_erase();
 
     if (const auto polymorph_monrace_id = wiz_select_summon_monrace_id()) {
-        monster.r_idx = *polymorph_monrace_id;
-        monster.ap_r_idx = *polymorph_monrace_id;
+        monster.polymorph_to(*polymorph_monrace_id);
     }
 }
 
