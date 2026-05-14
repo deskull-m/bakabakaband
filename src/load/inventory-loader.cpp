@@ -21,8 +21,8 @@
  */
 static errr rd_inventory(CreatureEntity &creature)
 {
-    creature.inven_cnt = 0;
-    creature.equip_cnt = 0;
+    creature.set_inven_cnt(0);
+    creature.set_equip_cnt(0);
 
     int slot = 0;
     auto item_loader = ItemLoaderFactory::create_loader();
@@ -42,7 +42,7 @@ static errr rd_inventory(CreatureEntity &creature)
         if (n >= INVEN_MAIN_HAND) {
             item.marked.set(OmType::TOUCHED);
             *creature.inventory[n] = std::move(item);
-            creature.equip_cnt++;
+            creature.increment_equip_cnt();
             continue;
         }
 
@@ -54,7 +54,7 @@ static errr rd_inventory(CreatureEntity &creature)
         n = slot++;
         item.marked.set(OmType::TOUCHED);
         *creature.inventory[n] = std::move(item);
-        creature.inven_cnt++;
+        creature.increment_inven_cnt();
     }
 
     return 0;

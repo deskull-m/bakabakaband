@@ -151,10 +151,10 @@ void load_prev_data(CreatureEntity &creature, bool swap)
         }
     }
 
-    creature.age = previous_char.age;
-    creature.ht = previous_char.ht;
-    creature.wt = previous_char.wt;
-    creature.prestige = previous_char.prestige;
+    creature.set_age(previous_char.age);
+    creature.set_ht(previous_char.ht);
+    creature.set_wt(previous_char.wt);
+    creature.set_prestige(previous_char.prestige);
     creature.au = previous_char.au;
 
     for (int i = 0; i < A_MAX; i++) {

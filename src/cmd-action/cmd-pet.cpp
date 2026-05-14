@@ -982,12 +982,12 @@ void do_cmd_pet(CreatureEntity &creature)
         creature.store_item(received);
         item_in_slot.wipe();
         if (was_equipped) {
-            if (pet_monster.equip_cnt > 0) {
-                pet_monster.equip_cnt--;
+            if (target_pet.equip_cnt > 0) {
+                target_pet.decrement_equip_cnt();
             }
         } else {
-            if (pet_monster.inven_cnt > 0) {
-                pet_monster.inven_cnt--;
+            if (target_pet.inven_cnt > 0) {
+                target_pet.decrement_inven_cnt();
             }
         }
         break;

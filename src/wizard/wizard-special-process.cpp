@@ -776,8 +776,8 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
 
         case 0: {
             auto blank_years = Dice::roll(8, 10);
-            creature.prestige /= 2;
-            creature.age += static_cast<int16_t>(blank_years);
+            creature.divide_prestige(2);
+            creature.add_age(static_cast<int16_t>(blank_years));
 
             creature.max_max_exp = (creature.max_max_exp * 6 / (randint1(3) + 6));
             creature.max_exp = creature.max_max_exp;
@@ -793,8 +793,8 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
 
         case 1: {
             auto blank_years = Dice::roll(2, 10);
-            creature.prestige /= 2;
-            creature.age += static_cast<int16_t>(blank_years);
+            creature.divide_prestige(2);
+            creature.add_age(static_cast<int16_t>(blank_years));
             msg_print(_("『猿先生何も考えてないと思うよ』", "\"I think that Mr.Sawatari thinks nothing.\""));
             msg_format(_("あなたは連載%d年の間猿空間に迷い込んでいた！ついでに死んだ設定も忘れ去られていた！",
                            "You have been lost in the *S*A*R*U* space for %d years! By the way, the dead setting was also forgotten!"),

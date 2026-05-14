@@ -107,16 +107,16 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
     // バージョン40以降: 所持金、身長、体重の読み込み
     if (loading_savefile_version_is_older_than(40)) {
         monster.au = 0;
-        monster.ht = 0;
-        monster.wt = 0;
+        monster.set_ht(0);
+        monster.set_wt(0);
     } else {
         monster.au = any_bits(flags, SaveDataMonsterFlagType::GOLD) ? rd_s32b() : 0;
         if (any_bits(flags, SaveDataMonsterFlagType::HEIGHT_WEIGHT)) {
-            monster.ht = rd_s16b();
-            monster.wt = rd_s16b();
+            monster.set_ht(rd_s16b());
+            monster.set_wt(rd_s16b());
         } else {
-            monster.ht = 0;
-            monster.wt = 0;
+            monster.set_ht(0);
+            monster.set_wt(0);
         }
     }
 
@@ -181,14 +181,14 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
                 item->wipe();
             }
         }
-        monster.inven_cnt = 0;
-        monster.equip_cnt = 0;
+        monster.set_inven_cnt(0);
+        monster.set_equip_cnt(0);
     } else {
         if (any_bits(flags, SaveDataMonsterFlagType::INVENTORY)) {
             // PlayerTypeと同じ形式で読み込み
             auto item_loader = ItemLoaderFactory::create_loader();
-            monster.inven_cnt = 0;
-            monster.equip_cnt = 0;
+            monster.set_inven_cnt(0);
+            monster.set_equip_cnt(0);
 
             while (true) {
                 auto n = rd_u16b();
@@ -207,7 +207,7 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
                 item_loader->rd_item(monster.inventory[n].get());
 
                 if (monster.inventory[n]->is_valid()) {
-                    monster.inven_cnt++;
+                    monster.increment_inven_cnt();
                 }
             }
         } else {
@@ -217,8 +217,8 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
                     item->wipe();
                 }
             }
-            monster.inven_cnt = 0;
-            monster.equip_cnt = 0;
+            monster.set_inven_cnt(0);
+            monster.set_equip_cnt(0);
         }
     }
 }

@@ -124,7 +124,7 @@ static std::string decide_social_class(CreatureEntity &creature)
         social_class = 1;
     }
 
-    creature.prestige = social_class;
+    creature.set_prestige(social_class);
     return ss.str();
 }
 

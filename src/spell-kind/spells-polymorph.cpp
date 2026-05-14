@@ -130,8 +130,8 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
                     *monster_polymorphed.inventory[i] = back_m.inventory[i]->clone();
                 }
             }
-            monster_polymorphed.inven_cnt = back_m.inven_cnt;
-            monster_polymorphed.equip_cnt = back_m.equip_cnt;
+            monster_polymorphed.set_inven_cnt(back_m.inven_cnt);
+            monster_polymorphed.set_equip_cnt(back_m.equip_cnt);
         }
         polymorphed = true;
     } else {

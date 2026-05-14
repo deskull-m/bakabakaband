@@ -92,9 +92,9 @@ void rd_base_info(CreatureEntity &creature)
     creature.expfact = rd_u16b();
 
     creature.death_count = rd_s32b();
-    creature.age = rd_s16b();
-    creature.ht = rd_s16b();
-    creature.wt = rd_s16b();
+    creature.set_age(rd_s16b());
+    creature.set_ht(rd_s16b());
+    creature.set_wt(rd_s16b());
 
     // 死亡履歴のロード（バージョン44以降）
     if (loading_savefile_version_is_older_than(44)) {
@@ -457,7 +457,7 @@ static void rd_player_status(CreatureEntity &creature)
     creature.max_plv = rd_s16b();
     rd_dungeons(creature);
     strip_bytes(8);
-    creature.prestige = rd_s16b();
+    creature.set_prestige(rd_s16b());
     if (loading_savefile_version_is_older_than(11)) {
         auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
         if (sniper_data) {

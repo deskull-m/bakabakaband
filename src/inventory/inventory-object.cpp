@@ -100,7 +100,7 @@ void inven_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (i_idx >= INVEN_MAIN_HAND) {
-        creature.equip_cnt--;
+        creature.decrement_equip_cnt();
         creature.inventory[i_idx]->wipe();
         static constexpr auto flags_srf = {
             StatusRecalculatingFlag::BONUS,
@@ -116,7 +116,7 @@ void inven_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
         return;
     }
 
-    creature.inven_cnt--;
+    creature.decrement_inven_cnt();
 
     auto first = creature.inventory.begin() + i_idx;
     auto last = creature.inventory.begin() + INVEN_PACK;
@@ -198,7 +198,7 @@ void combine_pack(CreatureEntity &creature)
                 if (item1.number + item2.number <= max_num) {
                     flag = true;
                     item2.absorb(item1);
-                    creature.inven_cnt--;
+                    creature.decrement_inven_cnt();
                     auto first = creature.inventory.begin() + i;
                     auto last = creature.inventory.begin() + INVEN_PACK;
                     std::rotate(first, first + 1, last + 1);
@@ -321,7 +321,7 @@ int16_t store_item_to_inventory(CreatureEntity &creature, ItemEntity *o_ptr)
     j_ptr->iy = j_ptr->ix = 0;
     j_ptr->marked.clear().set(OmType::TOUCHED);
 
-    creature.inven_cnt++;
+    creature.increment_inven_cnt();
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
         StatusRecalculatingFlag::COMBINATION,
