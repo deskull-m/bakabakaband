@@ -636,6 +636,10 @@ size_t CreatureEntity::get_extended_slot_count() const
         return 0;
     }
     const auto &monrace = this->get_monrace();
+    // [Phase 2.7] JSON で extended_slots_override が指定されていればそれを優先
+    if (!monrace.extended_slots_override.empty()) {
+        return monrace.extended_slots_override.size();
+    }
     const auto &policy = get_body_slot_policy(monrace.body_structure);
     return policy.get_extended_slots().size();
 }
@@ -646,6 +650,12 @@ ExtendedSlotType CreatureEntity::get_extended_slot_type(size_t idx) const
         return ExtendedSlotType::MAX;
     }
     const auto &monrace = this->get_monrace();
+    if (!monrace.extended_slots_override.empty()) {
+        if (idx >= monrace.extended_slots_override.size()) {
+            return ExtendedSlotType::MAX;
+        }
+        return monrace.extended_slots_override[idx];
+    }
     const auto &policy = get_body_slot_policy(monrace.body_structure);
     const auto &slots = policy.get_extended_slots();
     if (idx >= slots.size()) {

@@ -24,6 +24,7 @@
 #include "player-ability/player-ability-types.h"
 #include "system/angband.h"
 #include "system/monrace/body-structure-types.h"
+#include "system/monrace/extended-slot.h"
 #include "util/dice.h"
 #include "util/flag-group.h"
 #include "view/display-symbol.h"
@@ -202,6 +203,12 @@ public:
     //! 体構造。装備可能スロットを決定する。
     //! 詳細は docs/monster-body-structure-equipment-slots.md 参照。
     BodyStructureType body_structure{ BodyStructureType::HUMANOID };
+
+    //! 拡張装備スロットの個別上書き (Phase 2.7)。空なら body_structure の
+    //! デフォルトを使う。指定があればその種別・順序の拡張スロットを持つ。
+    //! 例: [SECOND_NECK, SECOND_NECK, THIRD_HEAD] でアミュレット 2 つと
+    //! 兜の追加スロットを持つカスタムモンスター。
+    std::vector<ExtendedSlotType> extended_slots_override{};
 
     bool is_valid() const;
     bool is_male() const;

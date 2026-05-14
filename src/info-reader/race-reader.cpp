@@ -336,6 +336,39 @@ static errr set_mon_body_structure(const nlohmann::json &body_data, MonraceDefin
 }
 
 /*!
+ * @brief JSON Object からモンスターの拡張装備スロット個別指定を読み込む (Phase 2.7)
+ * @param slots_data 拡張スロット名の配列 (例: ["TAIL_RING", "SECOND_NECK"])
+ * @param monrace 保管先
+ * @return エラーコード
+ * @details
+ * 指定があれば body_structure のデフォルト拡張スロットを上書き。
+ * 空配列または未指定の場合は body_structure 既定値を使用。
+ */
+static errr set_mon_extended_slots(const nlohmann::json &slots_data, MonraceDefinition &monrace)
+{
+    if (slots_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!slots_data.is_array()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    monrace.extended_slots_override.clear();
+    for (const auto &item : slots_data) {
+        if (!item.is_string()) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+        const auto key = item.get<std::string>();
+        const auto it = r_info_extended_slot.find(key);
+        if (it == r_info_extended_slot.end()) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+        monrace.extended_slots_override.push_back(it->second);
+    }
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief JSON Objectからモンスターの固定アーティファクトドロップ情報をセットする
  * @param artifact_data 固定アーティファクトドロップ情報の格納されたJSON Object
  * @param monrace 保管先のモンスター種族構造体
@@ -1320,6 +1353,11 @@ errr parse_monraces_info(nlohmann::json &mon_data, angband_header *)
     err = set_mon_body_structure(mon_data["body_structure"], monrace);
     if (err) {
         msg_format(_("モンスター体構造読込失敗。ID: '%d'。", "Failed to load monster body structure. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_extended_slots(mon_data["extended_equipment_slots"], monrace);
+    if (err) {
+        msg_format(_("モンスター拡張装備スロット読込失敗。ID: '%d'。", "Failed to load monster extended equipment slots. ID: '%d'."), error_idx);
         return err;
     }
     err = info_set_integer(mon_data["mob"], monrace.mob_num, false, Range(0, 9999999));
