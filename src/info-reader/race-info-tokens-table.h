@@ -19,6 +19,7 @@
 #include "monster-race/race-visual-flags.h"
 #include "monster-race/race-wilderness-flags.h"
 #include "system/angband.h"
+#include "system/monrace/body-structure-types.h"
 
 #include <string_view>
 #include <unordered_map>
@@ -63,3 +64,4 @@ extern const std::unordered_map<std::string_view, MonsterBrightnessType> r_info_
 extern const std::unordered_map<std::string_view, MonsterSpecialType> r_info_special_flags;
 extern const std::unordered_map<std::string_view, MonsterSex> r_info_sex;
 extern const std::unordered_map<std::string_view, MonsterMiscType> r_info_misc_flags;
+extern const std::unordered_map<std::string_view, BodyStructureType> r_info_body_structure;
