@@ -93,42 +93,42 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
                 wilderness.move_player_to(Direction(7));
                 creature.oldpy = floor.height - 2;
                 creature.oldpx = floor.width - 2;
-                creature.ambush_flag = false;
+                creature.set_ambush_flag(false);
             } else if ((pos.y == 0) && (pos.x == MAX_WID - 1)) {
                 wilderness.move_player_to(Direction(9));
                 creature.oldpy = floor.height - 2;
                 creature.oldpx = 1;
-                creature.ambush_flag = false;
+                creature.set_ambush_flag(false);
             } else if ((pos.y == MAX_HGT - 1) && (pos.x == 0)) {
                 wilderness.move_player_to(Direction(1));
                 creature.oldpy = 1;
                 creature.oldpx = floor.width - 2;
-                creature.ambush_flag = false;
+                creature.set_ambush_flag(false);
             } else if ((pos.y == MAX_HGT - 1) && (pos.x == MAX_WID - 1)) {
                 wilderness.move_player_to(Direction(3));
                 creature.oldpy = 1;
                 creature.oldpx = 1;
-                creature.ambush_flag = false;
+                creature.set_ambush_flag(false);
             } else if (pos.y == 0) {
                 wilderness.move_player_to(Direction(8));
                 creature.oldpy = floor.height - 2;
                 creature.oldpx = pos.x;
-                creature.ambush_flag = false;
+                creature.set_ambush_flag(false);
             } else if (pos.y == MAX_HGT - 1) {
                 wilderness.move_player_to(Direction(2));
                 creature.oldpy = 1;
                 creature.oldpx = pos.x;
-                creature.ambush_flag = false;
+                creature.set_ambush_flag(false);
             } else if (pos.x == 0) {
                 wilderness.move_player_to(Direction(4));
                 creature.oldpx = floor.width - 2;
                 creature.oldpy = pos.y;
-                creature.ambush_flag = false;
+                creature.set_ambush_flag(false);
             } else if (pos.x == MAX_WID - 1) {
                 wilderness.move_player_to(Direction(6));
                 creature.oldpx = 1;
                 creature.oldpy = pos.y;
-                creature.ambush_flag = false;
+                creature.set_ambush_flag(false);
             }
 
             creature.leaving = true;

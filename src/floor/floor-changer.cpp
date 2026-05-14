@@ -428,7 +428,7 @@ void change_floor(CreatureEntity &creature)
     panel_row_max = 0;
     panel_col_min = 0;
     panel_col_max = 0;
-    creature.ambush_flag = false;
+    creature.set_ambush_flag(false);
     update_floor(creature);
     place_pet(creature);
     Travel::get_instance().reset_goal();

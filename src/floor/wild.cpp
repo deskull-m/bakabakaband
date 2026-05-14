@@ -283,7 +283,7 @@ static void generate_area(CreatureEntity &creature, const Pos2D &pos, bool is_bo
 
     const auto &wilderness = WildernessGrids::get_instance();
     const auto &wg = wilderness.get_grid(pos);
-    creature.town_num = wg.get_town();
+    creature.set_town_num(wg.get_town());
     auto &floor = *creature.get_floor();
     floor.base_level = wg.get_level();
     floor.dun_level = 0;
@@ -593,7 +593,7 @@ void wilderness_gen(CreatureEntity &creature)
 
     generate_wild_monsters(creature);
     if (generate_encounter) {
-        creature.ambush_flag = true;
+        creature.set_ambush_flag(true);
     }
 
     generate_encounter = false;
@@ -665,7 +665,7 @@ void wilderness_gen_small(CreatureEntity &creature)
     panel_row_min = floor.height;
     panel_col_min = floor.width;
     creature.set_position(wilderness.get_player_position());
-    creature.town_num = 0;
+    creature.set_town_num(0);
 }
 
 /*!

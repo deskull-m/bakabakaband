@@ -115,7 +115,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
     Target::clear_last_target();
     creature.pet_t_m_idx = 0;
     creature.riding_t_m_idx = 0;
-    creature.ambush_flag = false;
+    creature.set_ambush_flag(false);
     health_track(creature, 0);
 
     disturb(creature, true, true);
