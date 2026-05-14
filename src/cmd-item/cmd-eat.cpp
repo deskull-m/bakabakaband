@@ -516,7 +516,7 @@ static bool exe_eat_charge_of_magic_device(CreatureEntity &creature, ItemEntity 
 
         /* Unstack the used item */
         o_ptr->number--;
-        i_idx = store_item_to_inventory(creature, &item);
+        i_idx = creature.store_item(item);
         msg_format(_("杖をまとめなおした。", "You unstack your staff."));
     }
 

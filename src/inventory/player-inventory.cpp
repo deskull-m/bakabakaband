@@ -116,7 +116,7 @@ static void py_pickup_single_item(CreatureEntity &creature, short i_idx, bool pi
         return;
     }
 
-    if (!check_store_item_to_inventory(creature, &item)) {
+    if (!check_creature.store_item(item)) {
         msg_print(_("ザックには{}を入れる隙間がない。", "You have no room for {}."), item_name);
         return;
     }
@@ -137,7 +137,7 @@ static void py_pickup_multiple_items(CreatureEntity &creature, bool pickup)
         return;
     }
 
-    const auto tester = FuncItemTester([&creature](const ItemEntity *o) { return check_store_item_to_inventory(creature, o); });
+    const auto tester = FuncItemTester([&creature](const ItemEntity *o) { return creature.can_store_item(*o); });
     const auto can_pickup = [&](auto i_idx) { return tester.okay(floor.o_list.at(i_idx).get()); };
     const auto count_of_pickable_items = ranges::count_if(grid.o_idx_list, can_pickup);
     if (count_of_pickable_items == 0) {
@@ -241,7 +241,7 @@ void process_player_pickup_item(CreatureEntity &creature, OBJECT_IDX o_idx)
     // delete_object_idx()で配列から削除した後にも使用するためshared_ptrをコピーする
     const std::shared_ptr<ItemEntity> picked_item_ptr = creature.get_floor()->o_list[o_idx];
 
-    const auto slot = store_item_to_inventory(creature, picked_item_ptr.get());
+    const auto slot = creature.store_item(*picked_item_ptr);
     delete_object_idx(creature, o_idx);
 
     auto &picked_slot_item = *creature.inventory[slot];
@@ -307,7 +307,7 @@ void carry(CreatureEntity &creature, bool pickup)
             continue;
         }
 
-        if (!check_store_item_to_inventory(creature, &item)) {
+        if (!check_creature.store_item(item)) {
             msg_format(_("ザックには%sを入れる隙間がない。", "You have no room for %s."), item_name.data());
             continue;
         }

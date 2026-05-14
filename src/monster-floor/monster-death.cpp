@@ -16,7 +16,6 @@
 #include "main/sound-of-music.h"
 #include "market/arena-entry.h"
 #include "monster-floor/monster-death-util.h"
-#include "monster-floor/monster-object.h"
 #include "monster-floor/special-death-switcher.h"
 #include "monster-race/monster-race-hook.h"
 #include "monster-race/race-brightness-mask.h"
@@ -449,7 +448,7 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
     }
 
     drop_corpse(creature, &md);
-    monster_drop_carried_objects(creature, *md.m_ptr);
+    md.m_ptr->drop_all_inventory(creature);
     decide_drop_quality(&md);
     switch_special_death(creature, &md, attribute_flags);
     drop_artifacts(creature, &md);

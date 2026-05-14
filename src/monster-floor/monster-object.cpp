@@ -219,20 +219,3 @@ void update_object_by_monster_movement(CreatureEntity &creature, turn_flags *tur
         monster_pickup_object(creature, turn_flags_ptr, m_idx, &item, is_unpickable_object, ny, nx, m_name, item_name, this_o_idx);
     }
 }
-
-/*!
- * @brief モンスターが盗みや拾いで確保していたアイテムを全てドロップさせる / Drop all items carried by a monster
- * @param creature クリーチャーへの参照 (フロア・UI 文脈)
- * @param target ドロップ元クリーチャー (モンスター)
- * @details
- * フェーズ A-2 で inventory[] からのドロップに切替済み、フェーズ A-4b で
- * レガシー hold_o_idx_list 経路を完全削除。フェーズ A-5 で
- * `target.drop_all_inventory(creature)` に集約。
- */
-void monster_drop_carried_objects(CreatureEntity &creature, CreatureEntity &target)
-{
-    if (!target.has_monster_profile()) {
-        return;
-    }
-    target.drop_all_inventory(creature);
-}
