@@ -119,10 +119,10 @@ void rd_base_info(CreatureEntity &creature)
 
 void rd_experience(CreatureEntity &creature)
 {
-    creature.max_exp = rd_s32b();
-    creature.max_max_exp = rd_s32b();
+    creature.set_max_exp(rd_s32b());
+    creature.set_max_max_exp(rd_s32b());
 
-    creature.exp = rd_s32b();
+    creature.set_exp(rd_s32b());
     creature.exp_frac = rd_u32b();
 
     creature.set_level(rd_s16b());
@@ -314,8 +314,8 @@ static void rd_hp(CreatureEntity &creature)
  */
 static void rd_mana(CreatureEntity &creature)
 {
-    creature.msp = rd_s32b();
-    creature.csp = rd_s32b();
+    creature.set_msp(rd_s32b());
+    creature.set_csp(rd_s32b());
     creature.csp_frac = rd_u32b();
 }
 
@@ -444,7 +444,7 @@ static void rd_player_status(CreatureEntity &creature)
 {
     rd_base_status(creature);
     strip_bytes(24);
-    creature.au = rd_s32b();
+    creature.set_au(rd_s32b());
     rd_experience(creature);
     rd_skills(creature);
     set_race(creature);
@@ -454,7 +454,7 @@ static void rd_player_status(CreatureEntity &creature)
     rd_dummy1();
     rd_hp(creature);
     rd_mana(creature);
-    creature.max_plv = rd_s16b();
+    creature.set_max_plv(rd_s16b());
     rd_dungeons(creature);
     strip_bytes(8);
     creature.set_prestige(rd_s16b());

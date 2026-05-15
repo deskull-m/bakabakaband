@@ -216,7 +216,7 @@ void WorldTurnProcessor::process_monster_arena_winner(int win_m_idx)
         msg_print(_("おめでとうございます。", "Congratulations."));
         const auto payback = melee_arena.get_payback();
         msg_format(_("%d＄を受け取った。", "You received %d gold."), payback);
-        this->creature.au += payback;
+        this->creature.add_au(payback);
     } else {
         msg_print(_("残念でした。", "You lost gold."));
     }
@@ -234,7 +234,7 @@ void WorldTurnProcessor::process_monster_arena_draw()
     }
 
     msg_print(_("申し訳ありませんが、この勝負は引き分けとさせていただきます。", "Sorry, but this battle ended in a draw."));
-    this->creature.au += MeleeArena::get_instance().get_payback(true);
+    this->creature.add_au(MeleeArena::get_instance().get_payback(true));
     msg_erase();
     this->creature.energy_need = 0;
     auto &melee_arena = MeleeArena::get_instance();

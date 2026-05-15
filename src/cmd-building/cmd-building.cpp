@@ -114,7 +114,7 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
         return false;
     case BACT_RESEARCH_ITEM:
         if (identify_fully(creature, false)) {
-            creature.au -= building_cost;
+            creature.sub_au(building_cost);
         }
 
         return false;
@@ -148,18 +148,18 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
     case BACT_RUMORS:
     case BACT_FOOD:
         if (inn_comm(creature, building_action)) {
-            creature.au -= building_cost;
+            creature.sub_au(building_cost);
         }
 
         return false;
     case BACT_RESEARCH_MONSTER:
         if (research_mon(creature)) {
-            creature.au -= building_cost;
+            creature.sub_au(building_cost);
         }
 
         return false;
     case BACT_COMPARE_WEAPONS:
-        creature.au -= compare_weapons(creature, building_cost);
+        creature.sub_au(compare_weapons(creature, building_cost));
         return false;
     case BACT_ENCHANT_WEAPON:
         enchant_item(creature, building_cost, 1, 1, 0, FuncItemTester(&ItemEntity::allow_enchant_melee_weapon));
@@ -180,11 +180,11 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
 
         identify_pack(creature);
         msg_print(_(" 持ち物全てが鑑定されました。", "Your possessions have been identified."));
-        creature.au -= building_cost;
+        creature.sub_au(building_cost);
         return false;
     case BACT_IDENT_ONE:
         if (ident_spell(creature, false)) {
-            creature.au -= building_cost;
+            creature.sub_au(building_cost);
         }
 
         return false;
@@ -193,13 +193,13 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
         return false;
     case BACT_HEALING:
         if (cure_critical_wounds(creature, 200)) {
-            creature.au -= building_cost;
+            creature.sub_au(building_cost);
         }
 
         return false;
     case BACT_RESTORE:
         if (restore_all_status(creature)) {
-            creature.au -= building_cost;
+            creature.sub_au(building_cost);
         }
 
         return false;
@@ -211,14 +211,14 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
         return false;
     case BACT_RECALL:
         if (recall_player(creature, 1)) {
-            creature.au -= building_cost;
+            creature.sub_au(building_cost);
         }
 
         return false;
     case BACT_TELEPORT_LEVEL:
         clear_bldg(4, 20);
         if (free_level_recall(creature)) {
-            creature.au -= building_cost;
+            creature.sub_au(building_cost);
         }
 
         screen_load();
@@ -235,7 +235,7 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
                 ;
             }
 
-            creature.au -= building_cost;
+            creature.sub_au(building_cost);
             return false;
         }
 
@@ -278,28 +278,28 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
         set_virtue(creature, Virtue::VALOUR, 0);
         set_virtue(creature, Virtue::INDIVIDUALISM, 0);
         initialize_virtues(creature);
-        creature.au -= building_cost;
+        creature.sub_au(building_cost);
         return false;
     case BACT_TELE_TOWN:
         if (!tele_town(creature)) {
             return false;
         }
 
-        creature.au -= building_cost;
+        creature.sub_au(building_cost);
         return true;
     case BACT_EVAL_AC:
         if (eval_ac(creature.dis_ac + creature.dis_to_a)) {
-            creature.au -= building_cost;
+            creature.sub_au(building_cost);
         }
 
         return false;
     case BACT_BROKEN_WEAPON:
-        creature.au -= repair_broken_weapon(creature, building_cost);
+        creature.sub_au(repair_broken_weapon(creature, building_cost));
         return false;
 
     case BACT_TRANS_SEX:
         if (trans_sex(creature)) {
-            creature.au -= building_cost;
+            creature.sub_au(building_cost);
         }
         return false;
 

@@ -1368,6 +1368,80 @@ public:
         this->level = value;
     }
 
+    /*! @brief 経験レベル最大値を設定する (提案 27) */
+    virtual void set_max_plv(int16_t value)
+    {
+        this->max_plv = value;
+    }
+
+    /*! @brief 最大 MP (msp) を設定する (提案 27) */
+    virtual void set_msp(int value)
+    {
+        this->msp = value;
+    }
+
+    /*! @brief 現在の経験値を設定する (提案 27) */
+    virtual void set_exp(EXP value)
+    {
+        this->exp = value;
+    }
+
+    /*! @brief 最大経験値を設定する (提案 27) */
+    virtual void set_max_exp(EXP value)
+    {
+        this->max_exp = value;
+    }
+
+    /*! @brief 最大の最大経験値を設定する (提案 27) */
+    virtual void set_max_max_exp(EXP value)
+    {
+        this->max_max_exp = value;
+    }
+
+    /*! @brief 所持金を設定する (提案 27b) */
+    virtual void set_au(int value)
+    {
+        this->au = value;
+    }
+
+    /*! @brief 所持金を加算する (提案 27b) */
+    virtual void add_au(int delta)
+    {
+        this->au += delta;
+    }
+
+    /*! @brief 所持金を減算する (提案 27b) */
+    virtual void sub_au(int delta)
+    {
+        this->au -= delta;
+    }
+
+    /*! @brief 所持金を比率変更する (提案 27b) */
+    virtual void divide_au(int divisor)
+    {
+        if (divisor != 0) {
+            this->au /= divisor;
+        }
+    }
+
+    /*! @brief 現在の MP を設定する (提案 27b) */
+    virtual void set_csp(int value)
+    {
+        this->csp = value;
+    }
+
+    /*! @brief 現在の MP を加算する (提案 27b) */
+    virtual void add_csp(int delta)
+    {
+        this->csp += delta;
+    }
+
+    /*! @brief 現在の MP を減算する (提案 27b) */
+    virtual void sub_csp(int delta)
+    {
+        this->csp -= delta;
+    }
+
     /*! @brief 影 (KAGE) かどうか */
     virtual bool is_kage() const
     {

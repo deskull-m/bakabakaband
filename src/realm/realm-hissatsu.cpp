@@ -614,10 +614,10 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
                 }
                 if (is_new) {
                     /* Reserve needed mana point */
-                    creature.csp -= spell.smana;
+                    creature.sub_csp(spell.smana);
                     is_new = false;
                 } else {
-                    creature.csp -= mana_cost_per_monster;
+                    creature.sub_csp(mana_cost_per_monster);
                 }
 
                 if (!mdeath) {
@@ -634,7 +634,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
             }
 
             /* Restore reserved mana */
-            creature.csp += spell.smana;
+            creature.add_csp(spell.smana);
         }
         break;
 

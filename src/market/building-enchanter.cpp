@@ -80,7 +80,7 @@ bool enchant_item(CreatureEntity &creature, PRICE cost, HIT_PROB to_hit, int to_
     msg_format("Improved into %s for %d gold.", item_name.data(), total_cost);
 #endif
 
-    creature.au -= total_cost;
+    creature.sub_au(total_cost);
     if (i_idx >= INVEN_MAIN_HAND) {
         calc_android_exp(creature);
     }

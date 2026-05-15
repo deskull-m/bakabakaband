@@ -466,7 +466,7 @@ static MULTIPLY calc_shot_damage_with_slay(
         }
 
         if ((flags.has(TR_FORCE_WEAPON)) && (creature.csp > (creature.msp / 30))) {
-            creature.csp -= (1 + (creature.msp / 30));
+            creature.sub_csp((1 + (creature.msp / 30)));
             RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
             mult = mult * 5 / 2;
         }

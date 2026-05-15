@@ -701,7 +701,7 @@ static void update_max_mana(CreatureEntity &creature)
         levels = creature.level;
     } else {
         if (mp_ptr->spell_first > creature.level) {
-            creature.msp = 0;
+            creature.set_msp(0);
             RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
             return;
         }
@@ -895,7 +895,7 @@ static void update_max_mana(CreatureEntity &creature)
 
     if (creature.msp != msp) {
         if ((creature.csp >= msp) && !pc.equals(PlayerClassType::SAMURAI)) {
-            creature.csp = msp;
+            creature.set_csp(msp);
             creature.csp_frac = 0;
         }
 
@@ -904,7 +904,7 @@ static void update_max_mana(CreatureEntity &creature)
             msg_format("最大マジック・ポイントが %d 増加した！", (msp - creature.msp));
         }
 #endif
-        creature.msp = msp;
+        creature.set_msp(msp);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::MP);
         static constexpr auto flags = {
@@ -2774,30 +2774,30 @@ void check_experience(CreatureEntity &creature)
         return;
     }
     if (creature.exp < 0) {
-        creature.exp = 0;
+        creature.set_exp(0);
     }
     if (creature.max_exp < 0) {
-        creature.max_exp = 0;
+        creature.set_max_exp(0);
     }
     if (creature.max_max_exp < 0) {
-        creature.max_max_exp = 0;
+        creature.set_max_max_exp(0);
     }
 
     if (creature.exp > PY_MAX_EXP) {
-        creature.exp = PY_MAX_EXP;
+        creature.set_exp(PY_MAX_EXP);
     }
     if (creature.max_exp > PY_MAX_EXP) {
-        creature.max_exp = PY_MAX_EXP;
+        creature.set_max_exp(PY_MAX_EXP);
     }
     if (creature.max_max_exp > PY_MAX_EXP) {
-        creature.max_max_exp = PY_MAX_EXP;
+        creature.set_max_max_exp(PY_MAX_EXP);
     }
 
     if (creature.exp > creature.max_exp) {
-        creature.max_exp = creature.exp;
+        creature.set_max_exp(creature.exp);
     }
     if (creature.max_exp > creature.max_max_exp) {
-        creature.max_max_exp = creature.max_exp;
+        creature.set_max_max_exp(creature.max_exp);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -2831,7 +2831,7 @@ void check_experience(CreatureEntity &creature)
     while ((creature.level < PY_MAX_LEVEL) && (creature.exp >= ((android ? player_exp_a : player_exp)[creature.level - 1] * creature.expfact / 100L))) {
         creature.level++;
         if (creature.level > creature.max_plv) {
-            creature.max_plv = creature.level;
+            creature.set_max_plv(creature.level);
 
             if (CreatureClass(creature).equals(PlayerClassType::CHAOS_WARRIOR) || creature.get_mutations().has(PlayerMutationType::CHAOS_GIFT)) {
                 level_reward = true;

@@ -20,9 +20,9 @@ bool comvert_hp_to_mp(CreatureEntity &creature)
         return true;
     }
 
-    creature.csp += gain_sp;
+    creature.add_csp(gain_sp);
     if (creature.csp > creature.msp) {
-        creature.csp = creature.msp;
+        creature.set_csp(creature.msp);
         creature.csp_frac = 0;
     }
 
@@ -33,7 +33,7 @@ bool comvert_hp_to_mp(CreatureEntity &creature)
 bool comvert_mp_to_hp(CreatureEntity &creature)
 {
     if (creature.csp >= creature.level / 5) {
-        creature.csp -= creature.level / 5;
+        creature.sub_csp(creature.level / 5);
         hp_player(creature, creature.level);
     } else {
         msg_print(_("変換に失敗した。", "You failed to convert."));

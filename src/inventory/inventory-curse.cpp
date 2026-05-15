@@ -261,12 +261,12 @@ static void curse_drain_exp(CreatureEntity &creature)
 
     creature.exp -= (creature.level + 1) / 2;
     if (creature.exp < 0) {
-        creature.exp = 0;
+        creature.set_exp(0);
     }
 
     creature.max_exp -= (creature.level + 1) / 2;
     if (creature.max_exp < 0) {
-        creature.max_exp = 0;
+        creature.set_max_exp(0);
     }
 
     check_experience(creature);
@@ -440,9 +440,9 @@ static void curse_drain_mp(CreatureEntity &creature)
     const auto *item_ptr = choose_cursed_obj_name(creature, CurseTraitType::DRAIN_MANA);
     const auto item_name = describe_flavor(creature, *item_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     msg_format(_("%sはあなたの魔力を吸収した！", "Your %s drains mana from you!"), item_name.data());
-    creature.csp -= std::min<short>(creature.level, 50);
+    creature.sub_csp(std::min<short>(creature.level, 50));
     if (creature.csp < 0) {
-        creature.csp = 0;
+        creature.set_csp(0);
         creature.csp_frac = 0;
     }
 

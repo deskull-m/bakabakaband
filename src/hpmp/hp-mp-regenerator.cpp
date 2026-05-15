@@ -169,7 +169,7 @@ void regenmana(CreatureEntity &creature, MANA_POINT upkeep_factor, MANA_POINT re
         s64b_lshift(&decay, &decay_frac, 16);
         s64b_sub(&(creature.csp), &(creature.csp_frac), decay, decay_frac);
         if (creature.csp < creature.msp) {
-            creature.csp = creature.msp;
+            creature.set_csp(creature.msp);
             creature.csp_frac = 0;
         }
     }
@@ -181,7 +181,7 @@ void regenmana(CreatureEntity &creature, MANA_POINT upkeep_factor, MANA_POINT re
         s64b_lshift(&new_mana, &new_mana_frac, 16);
         s64b_add(&(creature.csp), &(creature.csp_frac), new_mana, new_mana_frac);
         if (creature.csp >= creature.msp) {
-            creature.csp = creature.msp;
+            creature.set_csp(creature.msp);
             creature.csp_frac = 0;
         }
     }
@@ -193,7 +193,7 @@ void regenmana(CreatureEntity &creature, MANA_POINT upkeep_factor, MANA_POINT re
         s64b_lshift(&reduce_mana, &reduce_mana_frac, 16);
         s64b_sub(&(creature.csp), &(creature.csp_frac), reduce_mana, reduce_mana_frac);
         if (creature.csp < 0) {
-            creature.csp = 0;
+            creature.set_csp(0);
             creature.csp_frac = 0;
         }
     }

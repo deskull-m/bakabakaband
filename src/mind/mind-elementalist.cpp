@@ -876,7 +876,7 @@ static bool try_cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx
         const auto element = get_element_types(creature.element_realm)[0];
         constexpr auto flags = PROJECT_JUMP | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM;
         project(creature, PROJECT_WHO_UNCTRL_POWER, 2 + plev / 10, creature.y, creature.x, plev * 2, element, flags);
-        creature.csp = std::max(0, creature.csp - creature.msp * 10 / (20 + randint1(10)));
+        creature.set_csp(std::max(0, creature.csp - creature.msp * 10 / (20 + randint1(10))));
 
         PlayerEnergy(creature).set_player_turn_energy(100);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -916,10 +916,10 @@ void do_cmd_element(CreatureEntity &creature)
     }
 
     if (mana_cost <= creature.csp) {
-        creature.csp -= mana_cost;
+        creature.sub_csp(mana_cost);
     } else {
         int oops = mana_cost;
-        creature.csp = 0;
+        creature.set_csp(0);
         creature.csp_frac = 0;
         msg_print(_("精神を集中しすぎて気を失ってしまった！", "You faint from the effort!"));
         (void)BadStatusSetter(creature).mod_paralysis(randnum1<short>(5 * oops + 1));

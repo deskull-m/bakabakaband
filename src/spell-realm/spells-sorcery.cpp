@@ -80,7 +80,7 @@ bool alchemy(CreatureEntity &creature)
     }
 
     msg_format(_("%sを＄%d の金に変えた。", "You turn %s to %d coins worth of gold."), item_name.data(), price);
-    creature.au += price;
+    creature.add_au(price);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::GOLD);
     rfu.set_flag(SubWindowRedrawingFlag::PLAYER);

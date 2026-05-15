@@ -123,7 +123,7 @@ void player_wipe_without_name(CreatureEntity &creature)
     WildernessGrids::get_instance().initialize_position();
 
     creature.set_level(1);
-    creature.max_plv = 1;
+    creature.set_max_plv(1);
     ArenaEntryList::get_instance().reset_entry();
     world.set_arena(true);
     world.knows_daily_bounty = false;

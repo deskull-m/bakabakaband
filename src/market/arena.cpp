@@ -79,7 +79,7 @@ static bool go_to_arena(CreatureEntity &creature)
 {
     const auto prize_money = process_ostensible_arena_victory();
     if (prize_money) {
-        creature.au += *prize_money;
+        creature.add_au(*prize_money);
         return false;
     }
 

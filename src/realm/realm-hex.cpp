@@ -517,7 +517,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
 
             if (d > 0) {
                 if (d < r) {
-                    creature.exp = creature.max_exp;
+                    creature.set_exp(creature.max_exp);
                 } else {
                     creature.exp += r;
                 }
@@ -577,12 +577,12 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
                 return "";
             }
 
-            creature.csp += (creature.level / 5) + randint1(creature.level / 5);
+            creature.add_csp((creature.level / 5) + randint1(creature.level / 5));
             if (item->get_flags().has(TR_TY_CURSE) || item->curse_flags.has(CurseTraitType::TY_CURSE)) {
-                creature.csp += randint1(5);
+                creature.add_csp(randint1(5));
             }
             if (creature.csp > creature.msp) {
-                creature.csp = creature.msp;
+                creature.set_csp(creature.msp);
             }
 
             if (item->curse_flags.has(CurseTraitType::PERMA_CURSE)) {

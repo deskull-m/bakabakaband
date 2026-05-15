@@ -259,7 +259,7 @@ void store_purchase(CreatureEntity &creature, StoreSaleType store_num)
     }
 
     sound(SoundKind::BUY);
-    creature.au -= res.value();
+    creature.sub_au(res.value());
     store_prt_gold(creature.au);
     object_aware(creature, item);
     creature.plus_incident_tree("STORE_BUY", 1);

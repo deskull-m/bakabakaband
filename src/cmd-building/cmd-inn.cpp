@@ -117,7 +117,7 @@ static void back_to_health(CreatureEntity &creature)
     (void)bss.set_confusion(0);
     creature.set_timed_effect(CreatureTimedEffect::STUN, 0);
     creature.hp = creature.maxhp;
-    creature.csp = creature.msp;
+    creature.set_csp(creature.msp);
 }
 
 /*!

@@ -211,7 +211,7 @@ int calc_attack_damage_with_slay(CreatureEntity &creature, ItemEntity *o_ptr, in
         }
 
         if (!pc.equals(PlayerClassType::SAMURAI) && (flags.has(TR_FORCE_WEAPON)) && (creature.csp > (o_ptr->damage_dice.maxroll() / 5))) {
-            creature.csp -= (1 + (o_ptr->damage_dice.maxroll() / 5));
+            creature.sub_csp((1 + (o_ptr->damage_dice.maxroll() / 5)));
             RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
             mult = mult * 3 / 2 + 20;
         }
