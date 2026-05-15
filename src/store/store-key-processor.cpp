@@ -189,9 +189,9 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
         break;
     }
     case 'C': {
-        creature.town_num = old_town_num;
+        creature.set_town_num(old_town_num);
         do_cmd_player_status(creature);
-        creature.town_num = inner_town_num;
+        creature.set_town_num(inner_town_num);
         display_store(creature, store_num);
         break;
     }
@@ -199,27 +199,27 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
         term_user();
         break;
     case '"': {
-        creature.town_num = old_town_num;
+        creature.set_town_num(old_town_num);
         do_cmd_pref(creature);
-        creature.town_num = inner_town_num;
+        creature.set_town_num(inner_town_num);
         break;
     }
     case '@': {
-        creature.town_num = old_town_num;
+        creature.set_town_num(old_town_num);
         do_cmd_macros(creature);
-        creature.town_num = inner_town_num;
+        creature.set_town_num(inner_town_num);
         break;
     }
     case '%': {
-        creature.town_num = old_town_num;
+        creature.set_town_num(old_town_num);
         do_cmd_visuals(creature);
-        creature.town_num = inner_town_num;
+        creature.set_town_num(inner_town_num);
         break;
     }
     case '&': {
-        creature.town_num = old_town_num;
+        creature.set_town_num(old_town_num);
         do_cmd_colors(creature);
-        creature.town_num = inner_town_num;
+        creature.set_town_num(inner_town_num);
         break;
     }
     case '=': {

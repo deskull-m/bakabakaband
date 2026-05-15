@@ -100,7 +100,6 @@ void inven_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (i_idx >= INVEN_MAIN_HAND) {
-        creature.equip_cnt--;
         creature.inventory[i_idx]->wipe();
         static constexpr auto flags_srf = {
             StatusRecalculatingFlag::BONUS,
@@ -115,8 +114,6 @@ void inven_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
         rfu.set_flags(flags_swrf);
         return;
     }
-
-    creature.inven_cnt--;
 
     auto first = creature.inventory.begin() + i_idx;
     auto last = creature.inventory.begin() + INVEN_PACK;
@@ -198,7 +195,6 @@ void combine_pack(CreatureEntity &creature)
                 if (item1.number + item2.number <= max_num) {
                     flag = true;
                     item2.absorb(item1);
-                    creature.inven_cnt--;
                     auto first = creature.inventory.begin() + i;
                     auto last = creature.inventory.begin() + INVEN_PACK;
                     std::rotate(first, first + 1, last + 1);
@@ -244,7 +240,7 @@ void reorder_pack(CreatureEntity &creature)
         return object_sort_comp(creature, *item1, *item2);
     };
 
-    const auto sort_count = std::min(enum2i(INVEN_PACK), creature.inven_cnt);
+    const auto sort_count = std::min(enum2i(INVEN_PACK), creature.get_inven_cnt());
 
     auto first = creature.inventory.begin();
     auto last = creature.inventory.begin() + sort_count;
@@ -291,7 +287,7 @@ int16_t store_item_to_inventory(CreatureEntity &creature, ItemEntity *o_ptr)
         }
     }
 
-    if (creature.inven_cnt > INVEN_PACK) {
+    if (creature.get_inven_cnt() > INVEN_PACK) {
         return -1;
     }
 
@@ -321,7 +317,6 @@ int16_t store_item_to_inventory(CreatureEntity &creature, ItemEntity *o_ptr)
     j_ptr->iy = j_ptr->ix = 0;
     j_ptr->marked.clear().set(OmType::TOUCHED);
 
-    creature.inven_cnt++;
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
         StatusRecalculatingFlag::COMBINATION,
@@ -350,7 +345,7 @@ bool check_get_item(ItemEntity *o_ptr)
  */
 bool check_store_item_to_inventory(const CreatureEntity &creature, const ItemEntity *o_ptr)
 {
-    if (creature.inven_cnt < INVEN_PACK) {
+    if (creature.get_inven_cnt() < INVEN_PACK) {
         return true;
     }
 

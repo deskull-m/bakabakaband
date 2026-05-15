@@ -84,11 +84,11 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
     //   この辺はリファクタしたい。
     old_town_num = creature.town_num;
     if ((store_num == StoreSaleType::HOME) || (store_num == StoreSaleType::MUSEUM)) {
-        creature.town_num = 1;
+        creature.set_town_num(1);
     }
 
     if (floor.is_underground()) {
-        creature.town_num = VALID_TOWNS;
+        creature.set_town_num(VALID_TOWNS);
     }
 
     inner_town_num = creature.town_num;
@@ -97,7 +97,7 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
     auto &world = AngbandWorld::get_instance();
     if ((store.store_open >= world.game_turn) || ironman_shops) {
         msg_print(_("ドアに鍵がかかっている。", "The doors are locked."));
-        creature.town_num = old_town_num;
+        creature.set_town_num(old_town_num);
         return;
     }
 
@@ -208,7 +208,7 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
     }
 
     // 現在地の偽装を解除。
-    creature.town_num = old_town_num;
+    creature.set_town_num(old_town_num);
 
     select_floor_music(creature);
     PlayerEnergy(creature).set_player_turn_energy(100);

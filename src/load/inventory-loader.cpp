@@ -21,8 +21,6 @@
  */
 static errr rd_inventory(CreatureEntity &creature)
 {
-    creature.inven_cnt = 0;
-    creature.equip_cnt = 0;
 
     int slot = 0;
     auto item_loader = ItemLoaderFactory::create_loader();
@@ -42,11 +40,10 @@ static errr rd_inventory(CreatureEntity &creature)
         if (n >= INVEN_MAIN_HAND) {
             item.marked.set(OmType::TOUCHED);
             *creature.inventory[n] = std::move(item);
-            creature.equip_cnt++;
             continue;
         }
 
-        if (creature.inven_cnt == INVEN_PACK) {
+        if (creature.get_inven_cnt() == INVEN_PACK) {
             load_note(_("持ち物の中のアイテムが多すぎる！", "Too many items in the inventory"));
             return 54;
         }
@@ -54,7 +51,6 @@ static errr rd_inventory(CreatureEntity &creature)
         n = slot++;
         item.marked.set(OmType::TOUCHED);
         *creature.inventory[n] = std::move(item);
-        creature.inven_cnt++;
     }
 
     return 0;

@@ -92,9 +92,9 @@ void rd_base_info(CreatureEntity &creature)
     creature.expfact = rd_u16b();
 
     creature.death_count = rd_s32b();
-    creature.age = rd_s16b();
-    creature.ht = rd_s16b();
-    creature.wt = rd_s16b();
+    creature.set_age(rd_s16b());
+    creature.set_ht(rd_s16b());
+    creature.set_wt(rd_s16b());
 
     // 死亡履歴のロード（バージョン44以降）
     if (loading_savefile_version_is_older_than(44)) {
@@ -125,7 +125,7 @@ void rd_experience(CreatureEntity &creature)
     creature.exp = rd_s32b();
     creature.exp_frac = rd_u32b();
 
-    creature.level = rd_s16b();
+    creature.set_level(rd_s16b());
     for (int i = 0; i < 64; i++) {
         creature.spell_exp[i] = rd_s16b();
     }
@@ -269,7 +269,7 @@ static void rd_arena(CreatureEntity &creature)
 {
     set_gambling_monsters();
 
-    creature.town_num = rd_s16b();
+    creature.set_town_num(rd_s16b());
     auto &entries = ArenaEntryList::get_instance();
     entries.load_current_entry(rd_s16b());
     if (loading_savefile_version < 28) {
@@ -330,7 +330,7 @@ static void rd_bad_status(CreatureEntity &creature)
     effects->blindness().set(rd_s16b());
     effects->paralysis().set(rd_s16b());
     effects->confusion().set(rd_s16b());
-    creature.food = rd_s16b();
+    creature.set_food(rd_s16b());
     strip_bytes(4); /* Old "food_digested" / "protection" */
 }
 
@@ -457,7 +457,7 @@ static void rd_player_status(CreatureEntity &creature)
     creature.max_plv = rd_s16b();
     rd_dungeons(creature);
     strip_bytes(8);
-    creature.prestige = rd_s16b();
+    creature.set_prestige(rd_s16b());
     if (loading_savefile_version_is_older_than(11)) {
         auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
         if (sniper_data) {

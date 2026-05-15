@@ -63,8 +63,6 @@ void player_wipe_without_name(CreatureEntity &creature)
         quest.comptime = 0;
     }
 
-    creature.inven_cnt = 0;
-    creature.equip_cnt = 0;
     for (int i = 0; i < INVEN_TOTAL; i++) {
         creature.inventory[i]->wipe();
     }
@@ -87,7 +85,7 @@ void player_wipe_without_name(CreatureEntity &creature)
         monrace.r_akills = 0;
     }
 
-    creature.food = PY_FOOD_FULL - 1;
+    creature.set_food(PY_FOOD_FULL - 1);
 
     PlayerSpellStatus pss(creature);
     pss.realm1().initialize();
@@ -124,7 +122,8 @@ void player_wipe_without_name(CreatureEntity &creature)
     world.set_wild_mode(false);
     WildernessGrids::get_instance().initialize_position();
 
-    creature.max_plv = creature.level = 1;
+    creature.set_level(1);
+    creature.max_plv = 1;
     ArenaEntryList::get_instance().reset_entry();
     world.set_arena(true);
     world.knows_daily_bounty = false;

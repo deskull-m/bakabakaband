@@ -1286,6 +1286,88 @@ public:
         this->riding = m_idx;
     }
 
+    /*!
+     * @brief パック内の所持品数を inventory[] から計算する (提案 25)
+     * @details inventory[0..INVEN_PACK) の有効アイテム数を返す。
+     *          以前は `inven_cnt` フィールドにキャッシュしていたが、
+     *          inventory[] が単一の真実源となるよう自動計算化。
+     */
+    short get_inven_cnt() const;
+
+    /*!
+     * @brief 装備品数を inventory[] から計算する (提案 25)
+     * @details inventory[INVEN_MAIN_HAND..INVEN_TOTAL) の有効アイテム数を返す。
+     */
+    short get_equip_cnt() const;
+
+    /*! @brief 年齢を設定する (提案 24) */
+    virtual void set_age(int16_t value)
+    {
+        this->age = value;
+    }
+
+    /*! @brief 年齢を加算する (提案 24) */
+    virtual void add_age(int16_t delta)
+    {
+        this->age += delta;
+    }
+
+    /*! @brief 身長を設定する (提案 24) */
+    virtual void set_ht(int16_t value)
+    {
+        this->ht = value;
+    }
+
+    /*! @brief 体重を設定する (提案 24) */
+    virtual void set_wt(int16_t value)
+    {
+        this->wt = value;
+    }
+
+    /*! @brief 名声を設定する (提案 24) */
+    virtual void set_prestige(int16_t value)
+    {
+        this->prestige = value;
+    }
+
+    /*! @brief 名声を加算する (提案 24) */
+    virtual void add_prestige(int16_t delta)
+    {
+        this->prestige += delta;
+    }
+
+    /*! @brief 名声を半減する等の比率変更 (提案 24) */
+    virtual void divide_prestige(int divisor)
+    {
+        if (divisor != 0) {
+            this->prestige = static_cast<int16_t>(this->prestige / divisor);
+        }
+    }
+
+    /*! @brief 待ち伏せ状態を設定する (提案 26) */
+    virtual void set_ambush_flag(bool value)
+    {
+        this->ambush_flag = value;
+    }
+
+    /*! @brief 滋養度を設定する (提案 26) */
+    virtual void set_food(int16_t value)
+    {
+        this->food = value;
+    }
+
+    /*! @brief 現在いる街番号を設定する (提案 26) */
+    virtual void set_town_num(int16_t value)
+    {
+        this->town_num = value;
+    }
+
+    /*! @brief レベルを設定する (提案 26) */
+    virtual void set_level(int16_t value)
+    {
+        this->level = value;
+    }
+
     /*! @brief 影 (KAGE) かどうか */
     virtual bool is_kage() const
     {
@@ -2107,8 +2189,8 @@ public:
 
     // インベントリ関連
     std::vector<std::shared_ptr<ItemEntity>> inventory{}; /*!< 所持品リスト / The creature's inventory */
-    int16_t inven_cnt{}; /*!< 所持品数 / Number of items in inventory */
-    int16_t equip_cnt{}; /*!< 装備品数 / Number of items in equipment */
+    // 所持品数 inven_cnt / 装備品数 equip_cnt は提案 25 で inventory[] から自動計算する
+    // get_inven_cnt() / get_equip_cnt() に置換済み。
 
     // 座標関連
     POSITION oldpy{}; /*!< 前回のY座標 / Previous location (Y) */

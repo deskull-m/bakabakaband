@@ -476,7 +476,7 @@ static void dump_aux_mutations(CreatureEntity &creature, FILE *fff)
  */
 static void dump_aux_equipment_inventory(CreatureEntity &creature, FILE *fff)
 {
-    if (creature.equip_cnt) {
+    if (creature.get_equip_cnt()) {
         fmt::println(fff, _("  [キャラクタの装備]\n", "  [Character Equipment]\n"));
         for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
             auto item_name = describe_flavor(creature, *creature.inventory[i], 0);

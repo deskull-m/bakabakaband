@@ -971,7 +971,6 @@ void do_cmd_pet(CreatureEntity &creature)
             break;
         }
         const auto src_slot = selectable_slots[sel];
-        const bool was_equipped = (src_slot >= INVEN_MAIN_HAND);
 
         auto &item_in_slot = *pet_monster.inventory[src_slot];
         auto received = item_in_slot.clone();
@@ -981,15 +980,6 @@ void do_cmd_pet(CreatureEntity &creature)
         msg_format(_("%sから%sを受け取った。", "You receive %s from %s."), pet_name.data(), item_name.data());
         creature.store_item(received);
         item_in_slot.wipe();
-        if (was_equipped) {
-            if (pet_monster.equip_cnt > 0) {
-                pet_monster.equip_cnt--;
-            }
-        } else {
-            if (pet_monster.inven_cnt > 0) {
-                pet_monster.inven_cnt--;
-            }
-        }
         break;
     }
 

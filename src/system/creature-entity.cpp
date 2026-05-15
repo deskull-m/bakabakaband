@@ -619,7 +619,6 @@ int16_t CreatureEntity::acquire_item(const ItemEntity &item)
     const bool can_auto_equip = (eq_slot >= INVEN_MAIN_HAND) && (eq_slot < INVEN_TOTAL) && !this->inventory[eq_slot]->is_valid() && (item.number == 1);
     if (can_auto_equip) {
         *this->inventory[eq_slot] = item.clone();
-        this->equip_cnt++;
         return eq_slot;
     }
     return this->store_item(item);
@@ -637,8 +636,28 @@ void CreatureEntity::drop_all_inventory(CreatureEntity &dropper)
         (void)drop_near(dropper, drop_item, this->get_position());
         held.wipe();
     }
-    this->inven_cnt = 0;
-    this->equip_cnt = 0;
+}
+
+short CreatureEntity::get_inven_cnt() const
+{
+    short cnt = 0;
+    for (auto i = 0; i < INVEN_PACK; i++) {
+        if (this->inventory[i] && this->inventory[i]->is_valid()) {
+            cnt++;
+        }
+    }
+    return cnt;
+}
+
+short CreatureEntity::get_equip_cnt() const
+{
+    short cnt = 0;
+    for (auto i = static_cast<int>(INVEN_MAIN_HAND); i < INVEN_TOTAL; i++) {
+        if (this->inventory[i] && this->inventory[i]->is_valid()) {
+            cnt++;
+        }
+    }
+    return cnt;
 }
 
 void CreatureEntity::make_lore_treasure(int num_item, int num_gold) const

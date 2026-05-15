@@ -895,6 +895,118 @@ identity 変化を追跡可能な形に整える。
 
 ---
 
+## 提案 23: ロードマップと CLAUDE.md の更新 ✅ 完了
+
+### 背景
+
+提案 14-22 (および本提案以降の 24-26) を実装した状態を反映できておらず、
+CLAUDE.md の上流マージ用変換マッピング表も古い情報のままだった。
+
+### 作業内容
+
+- `docs/creature-entity-refactoring-roadmap.md` に提案 14 / 14b / 15 /
+  15b / 16 / 9b / 17 / 18 / 19 / 20 / 21 / 22 (+ 後に 24 / 25 / 26) の
+  節を追加
+- `CLAUDE.md` の変換マッピング表に新規 virtual 全種を網羅
+- Phase 9-22 の節を新設、API 整備の到達点を要約
+
+提案 23 自体は文書のみで実装変更なし。提案 24 以降が新たに完了する都度、
+随時更新する運用を継続する。
+
+---
+
+## 提案 24: CreatureEntity 直下生フィールドの setter 整備 ✅ 完了
+
+### 背景
+
+`inven_cnt` / `equip_cnt` / `age` / `ht` / `wt` / `prestige` の直書きが
+各所に残存していたため、書き込み経路を OO 形式に統一する。
+
+### 作業内容 (commit `1fff01033`)
+
+- 新規 virtual (13 個):
+  - `set_inven_cnt(short)` / `increment_inven_cnt()` /
+    `decrement_inven_cnt()` (提案 25 で削除)
+  - `set_equip_cnt(short)` / `increment_equip_cnt()` /
+    `decrement_equip_cnt()` (提案 25 で削除)
+  - `set_age(int16_t)` / `add_age(int16_t)`
+  - `set_ht(int16_t)` / `set_wt(int16_t)`
+  - `set_prestige(int16_t)` / `add_prestige(int16_t)` /
+    `divide_prestige(int)`
+- 15 ファイル約 30 箇所の生フィールド書込を OO 経由に統一
+
+### 注記
+
+`birther` 構造体 (`previous_char`) は CreatureEntity ではないため、
+load/birth-loader での age/ht/wt/prestige 代入は直接フィールド
+アクセスのまま維持。
+
+---
+
+## 提案 25: inven_cnt / equip_cnt の inventory[] からの自動計算化 ✅ 完了
+
+### 背景
+
+提案 24 で setter virtual を整備したが、これらカウントフィールドは
+本来 inventory[] からの派生情報であり二重管理 (cache + 真実源) を
+強いていた。inventory[] を唯一の真実源とし、カウントは on-the-fly
+計算する形に整える。
+
+### 作業内容 (commit `0d8b73e04`)
+
+- フィールド `inven_cnt` / `equip_cnt` を CreatureEntity から削除
+- 提案 24 で追加した cnt 系 setter virtual (`set_*` / `increment_*` /
+  `decrement_*` 計 6 個) を全削除
+- 計算 virtual を新設:
+  - `get_inven_cnt()` - inventory[0..INVEN_PACK) を走査
+  - `get_equip_cnt()` - inventory[INVEN_MAIN_HAND..INVEN_TOTAL) を走査
+- 15 ファイルで読取り 14 箇所を `get_*()` に置換、setter 呼出を全削除
+- savefile loader (inventory-loader / monster-loader-savefile50) も
+  簡潔化 (cnt 操作を削除、inventory[] を埋めるだけに)
+
+### 副次効果
+
+- inventory[] を直接いじる箇所での cnt 同期忘れバグを構造的に防止
+- フィールド数 2 個分メモリ削減
+- savefile 互換性に影響なし (cnt は元々保存されておらず、ロード時に
+  再計算されていた)
+
+### 性能影響
+
+- `get_inven_cnt()` は最大 INVEN_PACK (23) スロットの線形スキャン
+- ホットパスで性能影響を観測した場合、提案 25b (キャッシュ層の再導入)
+  を検討する余地あり
+
+---
+
+## 提案 26: ambush/food/town_num/level に setter virtual 追加 ✅ 完了
+
+### 背景
+
+CreatureEntity 直下の残り plain field のうち、書き換え経路が散在
+していた ambush_flag / food / town_num / level に setter virtual を
+整備し、書き込みを OO 経由に統一する。
+
+### 作業内容 (commit `d3a5db8cd`)
+
+- 新規 virtual (4 個):
+  - `set_ambush_flag(bool)`
+  - `set_food(int16_t)`
+  - `set_town_num(int16_t)`
+  - `set_level(int16_t)`
+- 12 ファイル約 35 箇所の write site を OO 経由に統一
+  - `ambush_flag` (12 箇所): wild / floor-changer / dungeon-processor /
+    movement-execution / world-loader
+  - `food` (3 箇所): player-info-loader / digestion-processor /
+    game-play-initializer
+  - `town_num` (15 箇所): wild / player-info-loader /
+    store-key-processor / cmd-store
+  - `level` (4 箇所): wizard-spoiler / game-closer /
+    player-info-loader / game-play-initializer
+- 読取りはフィールド直接アクセスのまま維持
+
+---
+
 ## 推奨実施順序
 
 ### 完了済み (大規模フェーズ)
@@ -913,6 +1025,12 @@ identity 変化を追跡可能な形に整える。
 - ✅ **提案 20**: mflag/mflag2 一括操作 (assign/clear/get_all/set_all) の virtual 化
 - ✅ **提案 21**: MonsterProfile を class 化してメンバを完全 private 化
 - ✅ **提案 22**: モンスター identity setter (r_idx / ap_r_idx / riding) の virtual 化
+- ✅ **提案 23**: ロードマップと CLAUDE.md の更新 (随時継続)
+- ✅ **提案 24**: CreatureEntity 直下の生フィールド (age / ht / wt /
+  prestige + 旧 cnt 系) の setter virtual 整備
+- ✅ **提案 25**: inven_cnt / equip_cnt を inventory[] からの自動計算に
+  変更してフィールド廃止
+- ✅ **提案 26**: ambush_flag / food / town_num / level の setter virtual 化
 
 ### 既存提案の残作業 (中規模)
 
@@ -925,12 +1043,13 @@ identity 変化を追跡可能な形に整える。
 
 ### 今後の候補 (追加提案)
 
-- **提案 24**: CreatureEntity 直下の生フィールド (`inven_cnt` / `equip_cnt` /
-  `age` / `ht` / `wt` / `prestige` 等) のアクセサ整備
-- **提案 25**: モンスター inventory の cnt フィールド (`inven_cnt` /
-  `equip_cnt`) を `inventory[]` から自動計算する形への変更検討
-- **提案 26**: 残った plain field (`ambush_flag`, `food`, `town_num` 等)
-  の private 化検討
+- **提案 27**: 戦闘ボーナス系 plain field (`max_plv`, `au`, `csp`/`msp`,
+  `dis_to_d`, `to_h`/`to_d` 等) のアクセサ整備
+- **提案 28**: read 側もアクセサ化 (`r_idx` / `ap_r_idx` / `level` 等の
+  `==` 比較・読取り箇所を `get_*()` 経由に統一)
+- **提案 29**: CreatureEntity の更なる private 化 (アクセサ整備済みの
+  フィールドを実際に private へ移動)
+- **提案 25b**: 性能影響が出た場合の `get_inven_cnt()` キャッシュ層再導入
 
 ### 提案 13 の延長検討対象
 
