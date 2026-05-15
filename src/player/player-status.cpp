@@ -895,7 +895,7 @@ static void update_max_mana(CreatureEntity &creature)
 
     if (creature.msp != msp) {
         if ((creature.csp >= msp) && !pc.equals(PlayerClassType::SAMURAI)) {
-            creature.csp = msp;
+            creature.set_csp(msp);
             creature.csp_frac = 0;
         }
 

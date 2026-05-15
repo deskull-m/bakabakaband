@@ -48,7 +48,7 @@ bool eat_magic(CreatureEntity &creature, int power)
             if (item->timeout > (item->number - 1) * base_pval) {
                 msg_print(_("充填中のロッドから魔力を吸収することはできません。", "You can't absorb energy from a discharged rod."));
             } else {
-                creature.csp += item_level;
+                creature.add_csp(item_level);
                 item->timeout += base_pval;
             }
         }
@@ -62,7 +62,7 @@ bool eat_magic(CreatureEntity &creature, int power)
             is_eating_successful = false;
         } else {
             if (item->pval > 0) {
-                creature.csp += item_level / 2;
+                creature.add_csp(item_level / 2);
                 item->pval--;
 
                 if ((tval == ItemKindType::STAFF) && (i_idx >= 0) && (item->number > 1)) {

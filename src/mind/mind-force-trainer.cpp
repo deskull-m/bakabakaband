@@ -83,9 +83,9 @@ bool clear_mind(CreatureEntity &creature)
 
     msg_print(_("少し頭がハッキリした。", "You feel your head clear a little."));
 
-    creature.csp += (3 + creature.level / 20);
+    creature.add_csp((3 + creature.level / 20));
     if (creature.csp >= creature.msp) {
-        creature.csp = creature.msp;
+        creature.set_csp(creature.msp);
         creature.csp_frac = 0;
     }
 

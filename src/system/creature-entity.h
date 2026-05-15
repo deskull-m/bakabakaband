@@ -1398,6 +1398,50 @@ public:
         this->max_max_exp = value;
     }
 
+    /*! @brief 所持金を設定する (提案 27b) */
+    virtual void set_au(int value)
+    {
+        this->au = value;
+    }
+
+    /*! @brief 所持金を加算する (提案 27b) */
+    virtual void add_au(int delta)
+    {
+        this->au += delta;
+    }
+
+    /*! @brief 所持金を減算する (提案 27b) */
+    virtual void sub_au(int delta)
+    {
+        this->au -= delta;
+    }
+
+    /*! @brief 所持金を比率変更する (提案 27b) */
+    virtual void divide_au(int divisor)
+    {
+        if (divisor != 0) {
+            this->au /= divisor;
+        }
+    }
+
+    /*! @brief 現在の MP を設定する (提案 27b) */
+    virtual void set_csp(int value)
+    {
+        this->csp = value;
+    }
+
+    /*! @brief 現在の MP を加算する (提案 27b) */
+    virtual void add_csp(int delta)
+    {
+        this->csp += delta;
+    }
+
+    /*! @brief 現在の MP を減算する (提案 27b) */
+    virtual void sub_csp(int delta)
+    {
+        this->csp -= delta;
+    }
+
     /*! @brief 影 (KAGE) かどうか */
     virtual bool is_kage() const
     {

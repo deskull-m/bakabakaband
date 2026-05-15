@@ -104,7 +104,7 @@ bool melee_arena_comm(CreatureEntity &creature)
 
     msg_erase();
     melee_arena.set_wager(*wager);
-    creature.au -= *wager;
+    creature.sub_au(*wager);
     reset_tim_flags(creature);
 
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::SAVE_FLOORS);

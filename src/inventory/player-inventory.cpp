@@ -88,7 +88,7 @@ static void py_pickup_all_golds_on_floor(CreatureEntity &creature, const Grid &g
 
         const auto value = item.pval;
         const auto item_name = describe_flavor(creature, item, 0);
-        creature.au += value;
+        creature.add_au(value);
 
         msg_print(_(" ${} の価値がある{}を見つけた。", "You have found {} gold pieces worth of {}."), value, item_name);
         sound(SoundKind::SELL);

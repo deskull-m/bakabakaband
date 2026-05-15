@@ -354,9 +354,9 @@ void concentration(CreatureEntity &creature)
 
     msg_print(_("精神を集中して気合いを溜めた。", "You concentrate to charge your power."));
 
-    creature.csp += creature.msp / 2;
+    creature.add_csp(creature.msp / 2);
     if (creature.csp >= max_csp) {
-        creature.csp = max_csp;
+        creature.set_csp(max_csp);
         creature.csp_frac = 0;
     }
 
@@ -525,7 +525,7 @@ void musou_counterattack(CreatureEntity &creature, MonsterAttackPlayer *monap_pt
     }
 
     const auto m_target_name = monster_desc(creature, *monap_ptr->m_ptr, 0);
-    creature.csp -= 7;
+    creature.sub_csp(7);
     msg_format(_("%s^に反撃した！", "You counterattacked %s!"), m_target_name.data());
     do_cmd_attack(creature, monap_ptr->m_ptr->y, monap_ptr->m_ptr->x, HISSATSU_COUNTER);
     monap_ptr->fear = false;

@@ -58,7 +58,7 @@ void gamble_comm(CreatureEntity &creature, int cmd)
     prt(format(_("ゲーム前の所持金: %9d", "Gold before game: %9d"), oldgold), 20, 2);
     prt(format(_("現在の掛け金:     %9d", "Current Wager:    %9d"), *wager), 21, 2);
     while (true) {
-        creature.au -= *wager;
+        creature.sub_au(*wager);
         switch (cmd) {
         case BACT_IN_BETWEEN: {
             c_put_str(TERM_GREEN, _("イン・ビトイーン", "In Between"), 5, 2);
@@ -224,7 +224,7 @@ void gamble_comm(CreatureEntity &creature, int cmd)
 
         if (win) {
             prt(_("あなたの勝ち", "YOU WON"), 16, 37);
-            creature.au += odds * *wager;
+            creature.add_au(odds * *wager);
             prt(format(_("倍率: %d", "Payoff: %d"), odds), 17, 37);
         } else {
             prt(_("あなたの負け", "You Lost"), 16, 37);

@@ -73,10 +73,10 @@ bool do_cmd_cast_learned(CreatureEntity &creature)
     }
 
     if (need_mana <= creature.csp) {
-        creature.csp -= need_mana;
+        creature.sub_csp(need_mana);
     } else {
         int oops = need_mana;
-        creature.csp = 0;
+        creature.set_csp(0);
         creature.csp_frac = 0;
         msg_print(_("精神を集中しすぎて気を失ってしまった！", "You faint from the effort!"));
         (void)BadStatusSetter(creature).mod_paralysis(randnum1<short>(5 * oops + 1));

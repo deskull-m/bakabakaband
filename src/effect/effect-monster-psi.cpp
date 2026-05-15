@@ -257,9 +257,9 @@ static void effect_monster_psi_drain_resist(CreatureEntity &creature, EffectMons
     }
 
     msg_print(_("超能力パワーを吸いとられた！", "Your psychic energy is drained!"));
-    creature.csp -= Dice::roll(5, em_ptr->dam) / 2;
+    creature.sub_csp(Dice::roll(5, em_ptr->dam) / 2);
     if (creature.csp < 0) {
-        creature.csp = 0;
+        creature.set_csp(0);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -282,7 +282,7 @@ static void effect_monster_psi_drain_change_power(CreatureEntity &creature, Effe
     msg_format(msg, em_ptr->m_name, str);
 
     b = std::min(creature.msp, creature.csp + b);
-    creature.csp = b;
+    creature.set_csp(b);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
     rfu.set_flag(SubWindowRedrawingFlag::SPELL);

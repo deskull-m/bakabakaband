@@ -35,10 +35,10 @@ void effect_player_drain_mana(CreatureEntity &creature, EffectPlayerType *ep_ptr
 
     if (ep_ptr->dam >= creature.csp) {
         ep_ptr->dam = creature.csp;
-        creature.csp = 0;
+        creature.set_csp(0);
         creature.csp_frac = 0;
     } else {
-        creature.csp -= ep_ptr->dam;
+        creature.sub_csp(ep_ptr->dam);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -93,9 +93,9 @@ void effect_player_mind_blast(CreatureEntity &creature, EffectPlayerType *ep_ptr
         (void)bss.mod_hallucination(randint0(250) + 150);
     }
 
-    creature.csp -= 50;
+    creature.sub_csp(50);
     if (creature.csp < 0) {
-        creature.csp = 0;
+        creature.set_csp(0);
         creature.csp_frac = 0;
     }
 
@@ -112,9 +112,9 @@ void effect_player_brain_smash(CreatureEntity &creature, EffectPlayerType *ep_pt
 
     if (!check_multishadow(creature)) {
         msg_print(_("霊的エネルギーで精神が攻撃された。", "Your mind is blasted by psionic energy."));
-        creature.csp -= 100;
+        creature.sub_csp(100);
         if (creature.csp < 0) {
-            creature.csp = 0;
+            creature.set_csp(0);
             creature.csp_frac = 0;
         }
 

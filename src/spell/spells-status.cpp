@@ -532,7 +532,7 @@ bool restore_mana(CreatureEntity &creature, bool magic_eater)
         return false;
     }
 
-    creature.csp = creature.msp;
+    creature.set_csp(creature.msp);
     creature.csp_frac = 0;
     msg_print(_("頭がハッキリとした。", "You feel your head clear."));
     rfu.set_flag(MainWindowRedrawingFlag::MP);

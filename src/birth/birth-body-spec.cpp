@@ -84,5 +84,5 @@ void get_money(CreatureEntity &creature)
         gold /= 5;
     }
 
-    creature.au = gold;
+    creature.set_au(gold);
 }

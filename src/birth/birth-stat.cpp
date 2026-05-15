@@ -118,7 +118,7 @@ void get_money_for_creature(CreatureEntity &creature)
         gold = minimum_deposit;
     }
 
-    creature.au = gold;
+    creature.set_au(gold);
 }
 
 /*!

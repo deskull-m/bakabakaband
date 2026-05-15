@@ -106,11 +106,11 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
 
     // バージョン40以降: 所持金、身長、体重の読み込み
     if (loading_savefile_version_is_older_than(40)) {
-        monster.au = 0;
+        monster.set_au(0);
         monster.set_ht(0);
         monster.set_wt(0);
     } else {
-        monster.au = any_bits(flags, SaveDataMonsterFlagType::GOLD) ? rd_s32b() : 0;
+        monster.set_au(any_bits(flags, SaveDataMonsterFlagType::GOLD) ? rd_s32b() : 0);
         if (any_bits(flags, SaveDataMonsterFlagType::HEIGHT_WEIGHT)) {
             monster.set_ht(rd_s16b());
             monster.set_wt(rd_s16b());

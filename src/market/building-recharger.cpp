@@ -46,7 +46,7 @@ void building_recharge(CreatureEntity &creature)
         msg_format(_("充填する前に鑑定されている必要があります！", "The item must be identified first!"));
         msg_erase();
         if ((creature.au >= 50) && input_check(_("＄50で鑑定しますか？ ", "Identify for 50 gold? "))) {
-            creature.au -= 50;
+            creature.sub_au(50);
             identify_item(creature, item.get());
             const auto item_name = describe_flavor(creature, *item, 0);
             msg_format(_("%s です。", "You have: %s."), item_name.data());
@@ -154,7 +154,7 @@ void building_recharge(CreatureEntity &creature)
     };
     rfu.set_flags(flags);
     rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
-    creature.au -= price;
+    creature.sub_au(price);
 }
 
 /*!
@@ -272,5 +272,5 @@ void building_recharge_all(CreatureEntity &creature)
     };
     rfu.set_flags(flags);
     rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
-    creature.au -= total_cost;
+    creature.sub_au(total_cost);
 }

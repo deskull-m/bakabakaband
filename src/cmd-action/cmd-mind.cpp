@@ -238,7 +238,7 @@ static void check_mind_mindcrafter(CreatureEntity &creature, cm_type *cm_ptr)
     msg_format(_("%sの力が制御できない氾流となって解放された！", "Your mind unleashes its power in an uncontrollable storm!"), cm_ptr->mind_explanation);
     project(creature, PROJECT_WHO_UNCTRL_POWER, 2 + cm_ptr->plev / 10, creature.y, creature.x, cm_ptr->plev * 2, AttributeType::MANA,
         PROJECT_JUMP | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM);
-    creature.csp = std::max(0, creature.csp - cm_ptr->plev * std::max(1, cm_ptr->plev / 10));
+    creature.set_csp(std::max(0, creature.csp - cm_ptr->plev * std::max(1, cm_ptr->plev / 10)));
 }
 
 static void check_mind_mirror_master(CreatureEntity &creature, cm_type *cm_ptr)
@@ -266,7 +266,7 @@ static void check_mind_mirror_master(CreatureEntity &creature, cm_type *cm_ptr)
     msg_format(_("%sの力が制御できない氾流となって解放された！", "Your mind unleashes its power in an uncontrollable storm!"), cm_ptr->mind_explanation);
     project(creature, PROJECT_WHO_UNCTRL_POWER, 2 + cm_ptr->plev / 10, creature.y, creature.x, cm_ptr->plev * 2, AttributeType::MANA,
         PROJECT_JUMP | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM);
-    creature.csp = std::max(0, creature.csp - cm_ptr->plev * std::max(1, cm_ptr->plev / 10));
+    creature.set_csp(std::max(0, creature.csp - cm_ptr->plev * std::max(1, cm_ptr->plev / 10)));
 }
 
 static void check_mind_class(CreatureEntity &creature, cm_type *cm_ptr)
@@ -354,7 +354,7 @@ static void mind_reflection(CreatureEntity &creature, cm_type *cm_ptr)
         creature.csp_frac = 0;
     }
 
-    creature.csp = std::max(0, creature.csp - cm_ptr->mana_cost);
+    creature.set_csp(std::max(0, creature.csp - cm_ptr->mana_cost));
     msg_print(_(format("%sを集中しすぎて気を失ってしまった！", cm_ptr->mind_explanation), "You faint from the effort!"));
     (void)BadStatusSetter(creature).mod_paralysis(randnum1<short>(5 * oops + 1));
     if (one_in_(2)) {
@@ -379,13 +379,13 @@ static void process_hard_concentration(CreatureEntity &creature, cm_type *cm_ptr
         return;
     }
 
-    creature.csp -= cm_ptr->mana_cost;
+    creature.sub_csp(cm_ptr->mana_cost);
     if (creature.csp < 0) {
-        creature.csp = 0;
+        creature.set_csp(0);
     }
 
     if ((cm_ptr->use_mind == MindKindType::MINDCRAFTER) && (cm_ptr->n == 13)) {
-        creature.csp = 0;
+        creature.set_csp(0);
         creature.csp_frac = 0;
     }
 }
