@@ -53,7 +53,7 @@ static void compact_monsters_aux(CreatureEntity &creature, MONSTER_IDX i1, MONST
         creature.riding_t_m_idx = i2;
     }
 
-    if (monster.is_riding()) { // creature.riding == i1 のままの方がいい？
+    if (monster.is_riding()) { // creature.get_riding() == i1 のままの方がいい？
         creature.set_riding(i2);
     }
 

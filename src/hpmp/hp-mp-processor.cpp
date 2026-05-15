@@ -312,11 +312,11 @@ void process_player_hp_mp(CreatureEntity &creature)
         take_hit(creature, DAMAGE_NOESCAPE, damage, _("冷気のオーラ", "Cold aura"));
     }
 
-    if (creature.riding) {
+    if (creature.get_riding()) {
         int damage;
-        auto auras = floor.get_monster(creature.riding).get_monrace().aura_flags;
+        auto auras = floor.get_monster(creature.get_riding()).get_monrace().aura_flags;
         if (auras.has(MonsterAuraType::FIRE) && !creature.has_immune_fire()) {
-            damage = floor.get_monster(creature.riding).get_monrace().level / 2;
+            damage = floor.get_monster(creature.get_riding()).get_monrace().level / 2;
             if (race.tr_flags().has(TR_VUL_FIRE)) {
                 damage += damage / 3;
             }
@@ -333,7 +333,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         }
 
         if (auras.has(MonsterAuraType::ELEC) && !creature.has_immune_elec()) {
-            damage = floor.get_monster(creature.riding).get_monrace().level / 2;
+            damage = floor.get_monster(creature.get_riding()).get_monrace().level / 2;
             if (race.tr_flags().has(TR_VUL_ELEC)) {
                 damage += damage / 3;
             }
@@ -350,7 +350,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         }
 
         if (auras.has(MonsterAuraType::COLD) && !creature.has_immune_cold()) {
-            damage = floor.get_monster(creature.riding).get_monrace().level / 2;
+            damage = floor.get_monster(creature.get_riding()).get_monrace().level / 2;
             if (race.tr_flags().has(TR_VUL_COLD)) {
                 damage += damage / 3;
             }

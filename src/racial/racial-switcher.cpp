@@ -145,7 +145,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
             return false;
         }
 
-        if (creature.riding) {
+        if (creature.get_riding()) {
             msg_print(_("乗馬中はできません。", "You need to get off a pet."));
             return false;
         }

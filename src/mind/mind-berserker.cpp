@@ -29,7 +29,7 @@ bool cast_berserk_spell(CreatureEntity &creature, MindBerserkerType spell)
         detect_monsters_mind(creature, DETECT_RAD_DEFAULT);
         return true;
     case MindBerserkerType::CHARGE: {
-        if (creature.riding) {
+        if (creature.get_riding()) {
             msg_print(_("乗馬中には無理だ。", "You cannot do it when riding."));
             return false;
         }

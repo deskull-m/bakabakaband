@@ -43,18 +43,18 @@
 
 static void check_riding_preservation(CreatureEntity &creature)
 {
-    if (!creature.riding) {
+    if (!creature.get_riding()) {
         return;
     }
 
-    const auto &monster = creature.get_floor()->m_list[creature.riding];
+    const auto &monster = creature.get_floor()->m_list[creature.get_riding()];
     if (monster.has_parent()) {
         creature.ride_monster(0);
         creature.pet_extra_flags &= ~(PF_TWO_HANDS);
         creature.riding_ryoute = creature.old_riding_ryoute = false;
     } else {
         party_monsters[0] = monster;
-        delete_monster_idx(creature, creature.riding);
+        delete_monster_idx(creature, creature.get_riding());
     }
 }
 
@@ -281,7 +281,7 @@ static void preserve_info(CreatureEntity &creature)
 
     for (short i = 1; i < floor.m_max; i++) {
         const auto &monster = floor.m_list[i];
-        if (!monster.is_valid() || (quest_monrace_id != monster.r_idx)) {
+        if (!monster.is_valid() || (quest_monrace_id != monster.get_r_idx())) {
             continue;
         }
 

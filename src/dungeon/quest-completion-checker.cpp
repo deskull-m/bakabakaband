@@ -76,7 +76,7 @@ static bool check_quest_completion(CreatureEntity &creature, const QuestType &qu
         return true;
     }
 
-    auto is_target = (quest.type == QuestKindType::RANDOM) && (quest.r_idx == monster.r_idx);
+    auto is_target = (quest.type == QuestKindType::RANDOM) && (quest.r_idx == monster.get_r_idx());
     if ((quest.type == QuestKindType::KILL_LEVEL) || is_target) {
         return true;
     }

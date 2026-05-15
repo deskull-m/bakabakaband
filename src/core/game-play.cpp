@@ -208,7 +208,7 @@ static void init_world_floor_info(CreatureEntity &creature, std::optional<QuestI
 /*!
  * @brief フロア情報をゲームロード時に復帰
  * @todo 3.0.Xで削除予定
- * 1.0.9 以前はセーブ前に creature.riding = -1 としていたので、再設定が必要だった。
+ * 1.0.9 以前はセーブ前に creature.get_riding() = -1 としていたので、再設定が必要だった。
  * もう不要だが、以前のセーブファイルとの互換のために残しておく。
  */
 static void restore_world_floor_info(CreatureEntity &creature)
@@ -218,7 +218,7 @@ static void restore_world_floor_info(CreatureEntity &creature)
     const auto &floor = *creature.get_floor();
     exe_write_diary(floor, DiaryKind::GAMESTART, 1, mes);
 
-    if (creature.riding != -1) {
+    if (creature.get_riding() != -1) {
         return;
     }
 

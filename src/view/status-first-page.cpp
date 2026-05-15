@@ -595,7 +595,7 @@ static MonsterActionSkills calc_monster_action_skills(const MonraceDefinition &m
  */
 static void display_monster_first_page(CreatureEntity &creature)
 {
-    const auto &monrace = MonraceList::get_instance().get_monrace(creature.r_idx);
+    const auto &monrace = MonraceList::get_instance().get_monrace(creature.get_r_idx());
     const auto skills = calc_monster_action_skills(monrace);
 
     auto sd = likert(skills.skill_thn, 12);

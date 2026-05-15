@@ -388,7 +388,7 @@ bool detect_monsters_invis(CreatureEntity &creature, POSITION range)
     });
     for (auto i : matched) {
         auto &monster = floor.m_list[i];
-        if (tracker.is_tracking(monster.r_idx)) {
+        if (tracker.is_tracking(monster.get_r_idx())) {
             rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
         }
         monster.set_constant_flags({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
@@ -435,7 +435,7 @@ bool detect_monsters_evil(CreatureEntity &creature, POSITION range)
         auto &monrace = monster.get_monrace();
         if (monster.is_original_ap()) {
             monrace.r_kind_flags.set(MonsterKindType::EVIL);
-            if (tracker.is_tracking(monster.r_idx)) {
+            if (tracker.is_tracking(monster.get_r_idx())) {
                 rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
             }
         }
@@ -477,7 +477,7 @@ bool detect_monsters_nonliving(CreatureEntity &creature, POSITION range)
     });
     for (auto i : matched) {
         auto &monster = floor.m_list[i];
-        if (tracker.is_tracking(monster.r_idx)) {
+        if (tracker.is_tracking(monster.get_r_idx())) {
             rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
         }
         monster.set_constant_flags({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
@@ -518,7 +518,7 @@ bool detect_monsters_mind(CreatureEntity &creature, POSITION range)
     });
     for (auto i : matched) {
         auto &monster = floor.m_list[i];
-        if (tracker.is_tracking(monster.r_idx)) {
+        if (tracker.is_tracking(monster.get_r_idx())) {
             rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
         }
         monster.set_constant_flags({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
@@ -560,7 +560,7 @@ bool detect_monsters_string(CreatureEntity &creature, POSITION range, concptr Ma
     });
     for (auto i : matched) {
         auto &monster = floor.m_list[i];
-        if (tracker.is_tracking(monster.r_idx)) {
+        if (tracker.is_tracking(monster.get_r_idx())) {
             rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
         }
         monster.set_constant_flags({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });

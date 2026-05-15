@@ -503,11 +503,11 @@ bool has_kill_wall(CreatureEntity &creature)
         return true;
     }
 
-    if (creature.riding == 0) {
+    if (creature.get_riding() == 0) {
         return false;
     }
 
-    const auto &riding_monster = creature.get_floor()->get_monster(creature.riding);
+    const auto &riding_monster = creature.get_floor()->get_monster(creature.get_riding());
     const auto &riding_monrace = riding_monster.get_monrace();
     return riding_monrace.feature_flags.has(MonsterFeatureType::KILL_WALL);
 }
@@ -524,11 +524,11 @@ bool has_pass_wall(CreatureEntity &creature)
     auto can_player_pass_wall = creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM) > 0;
     can_player_pass_wall |= creature.get_timed_effect(CreatureTimedEffect::TIM_PASS_WALL) > 0;
     can_player_pass_wall |= CreatureRace(&creature).equals(PlayerRaceType::SPECTRE);
-    if (creature.riding == 0) {
+    if (creature.get_riding() == 0) {
         return can_player_pass_wall;
     }
 
-    const auto &monster = creature.get_floor()->get_monster(creature.riding);
+    const auto &monster = creature.get_floor()->get_monster(creature.get_riding());
     const auto &monrace = monster.get_monrace();
     return can_player_pass_wall && monrace.feature_flags.has(MonsterFeatureType::PASS_WALL);
 }
@@ -1032,18 +1032,18 @@ BIT_FLAGS has_levitation(CreatureEntity &creature)
     }
 
     // 乗馬中は実際に浮遊するかどうかは乗馬中のモンスターに依存する
-    if (creature.riding == 0) {
+    if (creature.get_riding() == 0) {
         return result;
     }
 
-    const auto &monster = creature.get_floor()->get_monster(creature.riding);
+    const auto &monster = creature.get_floor()->get_monster(creature.get_riding());
     const auto &monrace = monster.get_monrace();
     return monrace.feature_flags.has(MonsterFeatureType::CAN_FLY) ? FLAG_CAUSE_RIDING : FLAG_CAUSE_NONE;
 }
 
 bool has_can_swim(CreatureEntity &creature)
 {
-    if (creature.riding == 0) {
+    if (creature.get_riding() == 0) {
         return false;
     }
 
@@ -1051,7 +1051,7 @@ bool has_can_swim(CreatureEntity &creature)
         return false;
     }
 
-    const auto &monster = creature.get_floor()->get_monster(creature.riding);
+    const auto &monster = creature.get_floor()->get_monster(creature.get_riding());
     const auto &monrace = monster.get_monrace();
     return monrace.feature_flags.has_any_of({ MonsterFeatureType::CAN_SWIM, MonsterFeatureType::AQUATIC });
 }
@@ -1808,7 +1808,7 @@ bool is_wielding_icky_riding_weapon(CreatureEntity &creature, int i)
     const auto tval = o_ptr->bi_key.tval();
     const auto has_no_weapon = (tval == ItemKindType::NONE) || (tval == ItemKindType::SHIELD);
     const auto is_suitable = o_ptr->is_lance() || flags.has(TR_RIDING);
-    return (creature.riding > 0) && !has_no_weapon && !is_suitable;
+    return (creature.get_riding() > 0) && !has_no_weapon && !is_suitable;
 }
 
 bool has_not_ninja_weapon(CreatureEntity &creature, int i)

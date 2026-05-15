@@ -145,7 +145,7 @@ static bool scene_monster(CreatureEntity &creature, scene_type *value)
         return true;
     } else {
         value->type = TERM_XTRA_MUSIC_MONSTER;
-        value->val = enum2i(monster.ap_r_idx);
+        value->val = enum2i(monster.get_ap_r_idx());
         return true;
     }
 }

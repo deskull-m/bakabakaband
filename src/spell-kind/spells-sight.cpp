@@ -248,7 +248,7 @@ void aggravate_monsters(CreatureEntity &creature, MONSTER_IDX src_idx)
         msg_print(_("何かが突如興奮したような騒々しい音が遠くに聞こえた！", "You hear a sudden stirring in the distance!"));
     }
 
-    if (creature.riding) {
+    if (creature.get_riding()) {
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     }
 }
@@ -376,7 +376,7 @@ std::string probed_monster_info(CreatureEntity &creature, CreatureEntity &target
             target.reset_constant_flag(MonsterConstantFlagType::KAGE);
         }
 
-        target.set_ap_r_idx(target.r_idx);
+        target.set_ap_r_idx(target.get_r_idx());
         lite_spot(creature, target.get_position());
     }
 
@@ -472,7 +472,7 @@ bool probing(CreatureEntity &creature)
         if (mes) {
             msg_print(*mes);
             msg_erase();
-            if (LoreTracker::get_instance().is_tracking(monster.r_idx)) {
+            if (LoreTracker::get_instance().is_tracking(monster.get_r_idx())) {
                 RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
             }
         }

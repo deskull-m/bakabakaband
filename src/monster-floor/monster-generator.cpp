@@ -127,7 +127,7 @@ tl::optional<MONSTER_IDX> multiply_monster(CreatureEntity &creature, MONSTER_IDX
 {
     auto &floor = *creature.get_floor();
     auto &monster = floor.get_monster(m_idx);
-    const auto pos = mon_scatter(creature, monster.r_idx, monster.get_position(), 1);
+    const auto pos = mon_scatter(creature, monster.get_r_idx(), monster.get_position(), 1);
     if (!pos) {
         return tl::nullopt;
     }

@@ -316,7 +316,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
             /* Find the closest point in the blast */
             auto effective_dist = breath ? dist_to_line(pos, pos_source, pos_impact) : dist;
 
-            if (creature.riding && creature.is_located_at(pos)) {
+            if (creature.get_riding() && creature.is_located_at(pos)) {
                 if (flag & PROJECT_PLAYER) {
                     if (flag & (PROJECT_BEAM | PROJECT_REFLECTABLE | PROJECT_AIMED)) {
                         /*
@@ -383,7 +383,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
                 auto &monster = floor.get_monster(grid.m_idx);
                 if (monster.is_visible_on_map()) {
                     if (!creature.is_hallucinated()) {
-                        tracker.set_trackee(monster.ap_r_idx);
+                        tracker.set_trackee(monster.get_ap_r_idx());
                     }
 
                     health_track(creature, grid.m_idx);
@@ -401,7 +401,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
             /* Find the closest point in the blast */
             auto effective_dist = breath ? dist_to_line(pos, pos_source, pos_impact) : dist;
 
-            if (creature.riding) {
+            if (creature.get_riding()) {
                 if (flag & PROJECT_PLAYER) {
                     /* Hit the creature with full damage */
                 }

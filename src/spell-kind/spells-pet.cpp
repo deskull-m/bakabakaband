@@ -26,7 +26,7 @@ void discharge_minion(CreatureEntity &creature)
         return mon.is_pet() && mon.is_named();
     });
 
-    if (has_named_pet || creature.riding) {
+    if (has_named_pet || creature.get_riding()) {
         if (!input_check(_("本当に全ペットを爆破しますか？", "You will blast all pets. Are you sure? "))) {
             return;
         }

@@ -23,7 +23,7 @@ static bool message_fire_ball(CreatureEntity &creature, MONSTER_IDX m_idx, MONST
     mspell_cast_msg_blind msg;
     const auto &monster = creature.get_floor()->get_monster(m_idx);
 
-    if (monster.r_idx == MonraceId::ROLENTO) {
+    if (monster.get_r_idx() == MonraceId::ROLENTO) {
         msg.blind = _("%sが何かを投げた。", "%s^ throws something.");
         msg.to_player = _("%sは手榴弾を投げた。", "%s^ throws a hand grenade.");
         msg.to_mons = _("%s^が%s^に向かって手榴弾を投げた。", "%s^ throws a hand grenade.");

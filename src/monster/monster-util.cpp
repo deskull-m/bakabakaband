@@ -490,7 +490,7 @@ static bool summon_specific_okay(CreatureEntity &creature, MonraceId monrace_id,
     }
 
     const auto &monster = floor.get_monster(*condition.summoner_m_idx);
-    return check_summon_specific(creature, monster.r_idx, monrace_id, condition.type);
+    return check_summon_specific(creature, monster.get_r_idx(), monrace_id, condition.type);
 }
 
 /*!

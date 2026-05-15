@@ -938,9 +938,9 @@ bool cave_player_teleportable_bold(CreatureEntity &creature, POSITION y, POSITIO
 bool player_can_enter(CreatureEntity &creature, FEAT_IDX feature, BIT_FLAGS16 mode)
 {
     const auto &terrain = TerrainList::get_instance().get_terrain(feature);
-    if (creature.riding) {
+    if (creature.get_riding()) {
         return monster_can_cross_terrain(
-            creature, feature, creature.get_floor()->get_monster(creature.riding).get_monrace(), mode | CEM_RIDING);
+            creature, feature, creature.get_floor()->get_monster(creature.get_riding()).get_monrace(), mode | CEM_RIDING);
     }
 
     if (terrain.flags.has(TerrainCharacteristics::PATTERN)) {

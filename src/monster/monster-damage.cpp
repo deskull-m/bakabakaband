@@ -179,7 +179,7 @@ bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, cons
 void MonsterDamageProcessor::death_special_flag_monster()
 {
     auto &monster = creature.get_floor()->get_monster(this->m_idx);
-    auto monrace_id = monster.r_idx;
+    auto monrace_id = monster.get_r_idx();
     auto &monrace = monster.get_monrace();
     if (monrace.misc_flags.has(MonsterMiscType::TANUKI)) {
         monster.set_ap_r_idx(monrace_id);
@@ -252,7 +252,7 @@ void MonsterDamageProcessor::increase_kill_numbers()
         monrace.decrement_mob_numbers();
     }
 
-    LoreTracker::get_instance().set_trackee(monster.ap_r_idx);
+    LoreTracker::get_instance().set_trackee(monster.get_ap_r_idx());
 }
 
 void MonsterDamageProcessor::death_amberites(std::string_view m_name)
@@ -328,7 +328,7 @@ void MonsterDamageProcessor::dying_scream(std::string_view m_name)
     }
 
 #ifdef WORLD_SCORE
-    if (monster.r_idx == MonraceId::SERPENT) {
+    if (monster.get_r_idx() == MonraceId::SERPENT) {
         screen_dump = make_screen_dump(creature);
     }
 #endif
@@ -447,7 +447,7 @@ void MonsterDamageProcessor::get_exp_from_mon(const CreatureEntity &target, int 
     s64b_div(&new_exp, &new_exp_frac, div_h, div_l);
 
     /* Special penalty for mutiply-monster */
-    if (monrace.misc_flags.has(MonsterMiscType::MULTIPLY) || (target.r_idx == MonraceId::DAWN)) {
+    if (monrace.misc_flags.has(MonsterMiscType::MULTIPLY) || (target.get_r_idx() == MonraceId::DAWN)) {
         int monnum_penarty = monrace.r_akills / 400;
         if (monnum_penarty > 8) {
             monnum_penarty = 8;

@@ -58,7 +58,7 @@ static void escape_monster(CreatureEntity &player, turn_flags *turn_flags_ptr, c
         };
 
         auto speak = monster.get_monrace().speak_flags.has_any_of(flags);
-        speak &= !is_acting_monster(monster.r_idx);
+        speak &= !is_acting_monster(monster.get_r_idx());
         const auto &floor = *player.get_floor();
         const auto p_pos = player.get_position();
         const auto m_pos = monster.get_position();

@@ -158,7 +158,7 @@ bool fetch_monster(CreatureEntity &creature)
 
     if (monster.is_visible_on_map()) {
         if (!creature.is_hallucinated()) {
-            LoreTracker::get_instance().set_trackee(monster.ap_r_idx);
+            LoreTracker::get_instance().set_trackee(monster.get_ap_r_idx());
         }
 
         health_track(creature, m_idx);

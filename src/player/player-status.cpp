@@ -1445,7 +1445,7 @@ static int16_t calc_num_blow(CreatureEntity &creature, int i)
             wgt = player_class.wgt;
             mul = player_class.mul;
 
-            if (pc.equals(PlayerClassType::CAVALRY) && creature.riding && o_ptr->get_flags().has(TR_RIDING)) {
+            if (pc.equals(PlayerClassType::CAVALRY) && creature.get_riding() && o_ptr->get_flags().has(TR_RIDING)) {
                 num = 5;
                 wgt = 70;
                 mul = 4;
@@ -1896,7 +1896,7 @@ int16_t calc_double_weapon_penalty(CreatureEntity &creature, INVENTORY_IDX slot)
 
 static bool is_riding_two_hands(CreatureEntity &creature)
 {
-    if (!creature.riding) {
+    if (!creature.get_riding()) {
         return false;
     }
 
@@ -1921,7 +1921,7 @@ static bool is_riding_two_hands(CreatureEntity &creature)
 static int16_t calc_riding_bow_penalty(CreatureEntity &creature)
 {
     const auto &floor = *creature.get_floor();
-    if (!creature.riding) {
+    if (!creature.get_riding()) {
         return 0;
     }
 
@@ -1932,7 +1932,7 @@ static int16_t calc_riding_bow_penalty(CreatureEntity &creature)
             penalty = 5;
         }
     } else {
-        penalty = floor.get_monster(creature.riding).get_monrace().level - creature.get_skill_exp(PlayerSkillKindType::RIDING) / 80;
+        penalty = floor.get_monster(creature.get_riding()).get_monrace().level - creature.get_skill_exp(PlayerSkillKindType::RIDING) / 80;
         penalty += 30;
         if (penalty < 30) {
             penalty = 30;
@@ -1978,7 +1978,7 @@ void put_equipment_warning(CreatureEntity &creature)
         if (creature.old_riding_wield[i] != creature.is_icky_riding_wield[i]) {
             if (creature.is_icky_riding_wield[i]) {
                 msg_print(_("この武器は乗馬中に使うにはむかないようだ。", "This weapon is not suitable for use while riding."));
-            } else if (!creature.riding) {
+            } else if (!creature.get_riding()) {
                 msg_print(_("この武器は徒歩で使いやすい。", "This weapon is suitable for use on foot."));
             } else if (has_melee_weapon(creature, INVEN_MAIN_HAND + i)) {
                 msg_print(_("これなら乗馬中にぴったりだ。", "This weapon is suitable for use while riding."));
@@ -2005,7 +2005,7 @@ void put_equipment_warning(CreatureEntity &creature)
         creature.old_icky_wield[i] = creature.is_icky_wield[i];
     }
 
-    if (creature.riding && (creature.old_riding_ryoute != creature.riding_ryoute)) {
+    if (creature.get_riding() && (creature.old_riding_ryoute != creature.riding_ryoute)) {
         if (creature.riding_ryoute) {
 #ifdef JP
             msg_format("%s馬を操れない。", (empty_hands(creature, false) == EMPTY_HAND_NONE) ? "両手がふさがっていて" : "");
@@ -2233,12 +2233,12 @@ static short calc_to_hit(CreatureEntity &creature, INVENTORY_IDX slot, bool is_r
     if (main_attack_hand(creature) == calc_hand) {
         switch (player_melee_type(creature)) {
         case MELEE_TYPE_BAREHAND_MAIN:
-            if (creature.riding) {
+            if (creature.get_riding()) {
                 break;
             }
             [[fallthrough]];
         case MELEE_TYPE_BAREHAND_SUB:
-            if (creature.riding) {
+            if (creature.get_riding()) {
                 break;
             }
             [[fallthrough]];
@@ -2283,7 +2283,7 @@ static short calc_to_hit(CreatureEntity &creature, INVENTORY_IDX slot, bool is_r
 
         /* Riding bonus and penalty */
         const auto flags = o_ptr->get_flags();
-        if (creature.riding > 0) {
+        if (creature.get_riding() > 0) {
             if (o_ptr->is_lance()) {
                 hit += 15;
             } else if (flags.has_not(TR_RIDING)) {
@@ -2291,7 +2291,7 @@ static short calc_to_hit(CreatureEntity &creature, INVENTORY_IDX slot, bool is_r
                 if (CreatureClass(creature).is_tamer()) {
                     penalty = 5;
                 } else {
-                    penalty = creature.get_floor()->get_monster(creature.riding).get_monrace().level - creature.get_skill_exp(PlayerSkillKindType::RIDING) / 80;
+                    penalty = creature.get_floor()->get_monster(creature.get_riding()).get_monrace().level - creature.get_skill_exp(PlayerSkillKindType::RIDING) / 80;
                     penalty += 30;
                     if (penalty < 30) {
                         penalty = 30;
@@ -2586,7 +2586,7 @@ static int16_t calc_to_hit_misc(CreatureEntity &creature)
 static int calc_to_weapon_dice_num(CreatureEntity &creature, INVENTORY_IDX slot)
 {
     auto *o_ptr = creature.inventory[slot].get();
-    return (creature.riding > 0) && o_ptr->is_lance() ? 2 : 0;
+    return (creature.get_riding() > 0) && o_ptr->is_lance() ? 2 : 0;
 }
 
 /*!

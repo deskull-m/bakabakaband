@@ -152,7 +152,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 6:
         if (cast) {
-            if (creature.riding) {
+            if (creature.get_riding()) {
                 msg_print(_("乗馬中には無理だ。", "You cannot do it when riding."));
                 return tl::nullopt;
             }
@@ -163,7 +163,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 7:
         if (cast) {
-            if (creature.riding) {
+            if (creature.get_riding()) {
                 msg_print(_("乗馬中には無理だ。", "You cannot do it when riding."));
                 return tl::nullopt;
             }

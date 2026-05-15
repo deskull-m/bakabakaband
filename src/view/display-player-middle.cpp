@@ -154,19 +154,19 @@ static TERM_COLOR decide_speed_color(CreatureEntity &creature, const int base_sp
 {
     TERM_COLOR attr;
     if (base_speed > 0) {
-        if (!creature.riding) {
+        if (!creature.get_riding()) {
             attr = TERM_L_GREEN;
         } else {
             attr = TERM_GREEN;
         }
     } else if (base_speed == 0) {
-        if (!creature.riding) {
+        if (!creature.get_riding()) {
             attr = TERM_L_BLUE;
         } else {
             attr = TERM_GREEN;
         }
     } else {
-        if (!creature.riding) {
+        if (!creature.get_riding()) {
             attr = TERM_L_UMBER;
         } else {
             attr = TERM_RED;
@@ -187,7 +187,7 @@ static int calc_temporary_speed(CreatureEntity &creature)
         return 0;
     }
     int tmp_speed = 0;
-    if (!creature.riding) {
+    if (!creature.get_riding()) {
         if (creature.is_fast()) {
             tmp_speed += 10;
         }
@@ -200,7 +200,7 @@ static int calc_temporary_speed(CreatureEntity &creature)
             tmp_speed = 99;
         }
     } else {
-        const auto &m_ref = creature.get_floor()->get_monster(creature.riding);
+        const auto &m_ref = creature.get_floor()->get_monster(creature.get_riding());
         if (m_ref.is_accelerated()) {
             tmp_speed += 10;
         }
@@ -224,7 +224,7 @@ static void display_player_speed(CreatureEntity &creature, TERM_COLOR attr, int 
 {
     char buf[160];
     if (tmp_speed) {
-        if (!creature.riding) {
+        if (!creature.get_riding()) {
             if (creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED)) {
                 sprintf(buf, _("光速化 (+99)", "Lightspeed (+99)"));
             } else {
@@ -240,7 +240,7 @@ static void display_player_speed(CreatureEntity &creature, TERM_COLOR attr, int 
             attr = TERM_VIOLET;
         }
     } else {
-        if (!creature.riding) {
+        if (!creature.get_riding()) {
             sprintf(buf, "(%+d)", base_speed);
         } else {
             sprintf(buf, _("乗馬中 (%+d)", "Riding (%+d)"), base_speed);

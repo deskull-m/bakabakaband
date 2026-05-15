@@ -328,7 +328,7 @@ void wr_player(CreatureEntity &creature)
     wr_s32b(world.arena_start_turn);
     wr_s16b(enum2i(world.today_mon));
     wr_s16b(world.knows_daily_bounty ? 1 : 0); // 現在bool型だが、かつてモンスター種族IDを保存していた仕様に合わせる
-    wr_s16b(creature.riding);
+    wr_s16b(creature.get_riding());
     wr_s16b(creature.floor_id);
 
     /* Save temporary preserved pets (obsolated) */

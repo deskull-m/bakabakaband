@@ -139,7 +139,7 @@ void lore_treasure(CreatureEntity &creature, MONSTER_IDX m_idx, ITEM_NUMBER num_
         monrace.r_drop_flags.set(MonsterDropType::DROP_NASTY);
     }
 
-    if (LoreTracker::get_instance().is_tracking(monster.r_idx)) {
+    if (LoreTracker::get_instance().is_tracking(monster.get_r_idx())) {
         RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
     }
 }

@@ -103,10 +103,10 @@ void reset_tim_flags(CreatureEntity &creature)
 
     creature.timewalk = false;
 
-    if (creature.riding) {
-        (void)set_monster_fast(*creature.get_floor(), creature.riding, 0);
-        (void)set_monster_slow(*creature.get_floor(), creature.riding, 0);
-        (void)set_monster_invulner(*creature.get_floor(), creature.riding, 0, false);
+    if (creature.get_riding()) {
+        (void)set_monster_fast(*creature.get_floor(), creature.get_riding(), 0);
+        (void)set_monster_slow(*creature.get_floor(), creature.get_riding(), 0);
+        (void)set_monster_invulner(*creature.get_floor(), creature.get_riding(), 0, false);
     }
 
     if (CreatureClass(creature).equals(PlayerClassType::BARD)) {
