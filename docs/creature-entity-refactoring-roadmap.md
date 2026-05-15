@@ -1068,6 +1068,57 @@ CreatureEntity 直下の戦闘ボーナス・経験値系フィールドのう�
 
 ---
 
+## 提案 28: r_idx / ap_r_idx / riding に getter virtual を追加 ✅ 完了
+
+### 背景
+
+提案 22 で setter virtual を整備した monster identity 系
+(r_idx / ap_r_idx / riding) について、対応する getter virtual を
+追加し、散在していた `monster.r_idx == X` 等の直接フィールド読取りを
+`monster.get_r_idx() == X` 形式に統一する。これは将来的なフィールド
+private 化 (提案 29) の前提条件となる。
+
+### 作業内容 (commit `a4a41bf95`)
+
+- 新規 virtual (3 個):
+  - `get_r_idx()` / `get_ap_r_idx()` / `get_riding()`
+- 75 ファイル約 210 箇所の `(creature|monster|target|m_ref|back_m).r_idx`
+  / `.ap_r_idx` / `.riding` パターンの直接アクセスを sed で機械的に
+  getter 経由に変換
+
+ポインタ経由 (`m_ptr->r_idx` 等) のパターンは別途扱うため未対応 →
+提案 28b で対応。
+
+---
+
+## 提案 28b: ポインタ経由の r_idx / ap_r_idx / riding を getter へ移行 ✅ 完了
+
+### 背景
+
+提案 28 で対象外とした `m_ptr->r_idx` 等のポインタ経由パターンを
+getter virtual 経由に変換する。pointer dereference 経由でも
+`->get_r_idx()` 等で読み取れる。
+
+### 作業内容 (commit `5c56b14c0`)
+
+- 22 ファイル約 80 箇所の `(m_ptr|md_ptr->m_ptr|md.m_ptr|m1_ptr|
+  m2_ptr|y_ptr|t_ptr)->(r_idx|ap_r_idx|riding)` 読取りパターンを
+  sed で `->get_*()` 形式に変換
+- sed の trailing char クラス `[^a-zA-Z_0-9]` が末尾の空白を許容して
+  しまったため、`m_ptr->r_idx = X` (write site) が誤って
+  `m_ptr->get_r_idx() = X` に変換されていた箇所
+  (one-monster-placer.cpp の chameleon 処理 6 箇所 + appearance 同期
+  1 箇所) を発見し、適切な setter (`set_r_idx` / `set_ap_r_idx` /
+  `polymorph_to`) に修正
+
+### 効果
+
+pointer dereference 経由の r_idx / ap_r_idx / riding 読取りも
+すべて virtual API 経由になり、フィールド private 化 (提案 29) の
+前提条件が完全に整った。
+
+---
+
 ## 推奨実施順序
 
 ### 完了済み (大規模フェーズ)
@@ -1094,6 +1145,8 @@ CreatureEntity 直下の戦闘ボーナス・経験値系フィールドのう�
 - ✅ **提案 26**: ambush_flag / food / town_num / level の setter virtual 化
 - ✅ **提案 27**: max_plv / msp / 経験値系 (exp/max_exp/max_max_exp) の setter virtual 化
 - ✅ **提案 27b**: au (所持金) / csp (現在 MP) に add/sub/divide virtual 整備、110 箇所の compound assignment 移行
+- ✅ **提案 28**: r_idx / ap_r_idx / riding に getter virtual を追加し読取り (約 210 箇所、参照形式) を移行
+- ✅ **提案 28b**: ポインタ経由 (`m_ptr->X`) の同フィールド読取り (約 80 箇所) を getter virtual 経由に移行
 
 ### 既存提案の残作業 (中規模)
 
@@ -1106,14 +1159,16 @@ CreatureEntity 直下の戦闘ボーナス・経験値系フィールドのう�
 
 ### 今後の候補 (追加提案)
 
-- **提案 28**: read 側もアクセサ化 (`r_idx` / `ap_r_idx` / `level` 等の
-  `==` 比較・読取り箇所を `get_*()` 経由に統一)
 - **提案 29**: CreatureEntity の更なる private 化 (アクセサ整備済みの
-  フィールドを実際に private へ移動)
+  `r_idx` / `ap_r_idx` / `riding` を実際に private へ移動)
 - **提案 30**: 残りの戦闘ボーナス系 (`to_h` / `to_d` / `to_a` /
   `dis_to_h` / `dis_to_d` 等) と stat 系 (`stat_max[]` /
   `stat_cur[]` 等) の compound assignment 移行
+- **提案 31**: その他の plain field (`au` / `csp` / `food` / `level`
+  / `town_num` / `age` / `ht` / `wt` / `prestige` 等) の read 側
+  アクセサ化と private 化
 - **提案 25b**: 性能影響が出た場合の `get_inven_cnt()` キャッシュ層再導入
+  → **検証済 (不要)**
   → **検証済 (不要)**: 全 12 call site が低頻度 (savefile load / inventory
   pickup / death message / character dump / 個別 UI コマンド)。最頻箇所
   でも `INVEN_PACK = 23` の線形スキャン (~70ns) × 数十回/ターン 程度
