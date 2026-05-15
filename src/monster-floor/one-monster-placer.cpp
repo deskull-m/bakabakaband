@@ -45,7 +45,9 @@
 #include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
 #include "world/world.h"
+#include "util/enum-converter.h"
 #include <algorithm>
+#include <cstdio>
 #include <range/v3/algorithm.hpp>
 #include <time.h>
 
@@ -232,15 +234,46 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     auto *g_ptr = &floor.grid_array[y][x];
     auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
     const auto &world = AngbandWorld::get_instance();
-    if (world.is_wild_mode() || !floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE) || !MonraceList::is_valid(r_idx)) {
+
+    // [診断] place_monster_one の早期 return をファイルに出力 (一時) - /tmp/mongen.log
+    auto dbg_log = [&](const char *reason) {
+        if (auto *fp = std::fopen("/tmp/mongen.log", "a")) {
+            std::fprintf(fp, "  [POM] r_idx=%d (%s) EARLY: %s @ (%d,%d) mode=0x%lx\n",
+                (int)enum2i(r_idx),
+                monrace.name.string().c_str(),
+                reason, (int)y, (int)x, (unsigned long)mode);
+            std::fclose(fp);
+        }
+    };
+
+    if (world.is_wild_mode()) {
+        dbg_log("wild_mode");
+        return tl::nullopt;
+    }
+    if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
+        dbg_log("out of floor");
+        return tl::nullopt;
+    }
+    if (!MonraceList::is_valid(r_idx)) {
+        dbg_log("invalid r_idx");
         return tl::nullopt;
     }
 
     if (none_bits(mode, PM_IGNORE_TERRAIN) && (g_ptr->has(TerrainCharacteristics::PATTERN) || !monster_can_enter(player, pos.y, pos.x, monrace, 0))) {
+        dbg_log("terrain block");
         return tl::nullopt;
     }
 
-    if (!check_unique_placeable(floor, r_idx, mode) || !check_quest_placeable(floor, r_idx) || !check_procection_rune(const_cast<CreatureEntity &>(player), r_idx, pos)) {
+    if (!check_unique_placeable(floor, r_idx, mode)) {
+        dbg_log("unique blocked");
+        return tl::nullopt;
+    }
+    if (!check_quest_placeable(floor, r_idx)) {
+        dbg_log("quest blocked");
+        return tl::nullopt;
+    }
+    if (!check_procection_rune(const_cast<CreatureEntity &>(player), r_idx, pos)) {
+        dbg_log("rune blocked");
         return tl::nullopt;
     }
 
@@ -252,6 +285,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     const auto m_idx = floor.pop_empty_index_monster();
     g_ptr->m_idx = m_idx;
     if (!g_ptr->has_monster()) {
+        dbg_log("pop_empty_index_monster failed");
         return tl::nullopt;
     }
 
@@ -618,5 +652,11 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     warn_unique_generation(const_cast<CreatureEntity &>(player), r_idx);
     activate_explosive_rune(player, pos, new_monrace);
-    return m_ptr->is_valid() ? tl::make_optional(g_ptr->m_idx) : tl::nullopt;
+    const bool ok = m_ptr->is_valid();
+    if (auto *fp = std::fopen("/tmp/mongen.log", "a")) {
+        std::fprintf(fp, "  [POM] r_idx=%d FINAL: %s (m_idx=%d)\n",
+            (int)enum2i(r_idx), ok ? "OK" : "INVALID", (int)g_ptr->m_idx);
+        std::fclose(fp);
+    }
+    return ok ? tl::make_optional(g_ptr->m_idx) : tl::nullopt;
 }

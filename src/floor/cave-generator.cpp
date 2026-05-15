@@ -39,6 +39,7 @@
 #include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
 #include "world/world-collapsion.h"
+#include <cstdio>
 #include <functional>
 #include <vector>
 
@@ -462,18 +463,39 @@ static bool allocate_dungeon_data(CreatureEntity &creature, DungeonData *dd_ptr,
     dd_ptr->alloc_monster_num += randint1(8);
     auto &floor = *creature.get_floor();
 
+    // [診断] モンスター配置数をファイルに出力 (一時) - /tmp/mongen.log
+    int dbg_attempts = 0;
+    int dbg_success_alloc = 0;
+    int dbg_success_party = 0;
+    const int dbg_initial_num = dd_ptr->alloc_monster_num + dd_ptr->alloc_object_num;
+    if (auto *fp = std::fopen("/tmp/mongen.log", "a")) {
+        std::fprintf(fp, "[MONGEN] dungeon_id=%d dun_level=%d alloc_monster_num=%d alloc_object_num=%d initial_total=%d height=%d width=%d\n",
+            (int)enum2i(floor.dungeon_id), (int)floor.dun_level,
+            dd_ptr->alloc_monster_num, dd_ptr->alloc_object_num, dbg_initial_num,
+            (int)floor.height, (int)floor.width);
+        std::fclose(fp);
+    }
+
     for (dd_ptr->alloc_monster_num = dd_ptr->alloc_monster_num + dd_ptr->alloc_object_num; dd_ptr->alloc_monster_num > 0; dd_ptr->alloc_monster_num--) {
+        ++dbg_attempts;
         if (one_in_(30)) {
             // ランダムな位置を決定
             Pos2D pos(randint0(floor.height), randint0(floor.width));
             if (alloc_creature_party(creature, pos)) {
-                // パーティ生成に成功した場合、このイテレーションをスキップ
+                ++dbg_success_party;
                 continue;
             }
         }
 
         // 通常のモンスター生成
-        (void)alloc_monster(creature, 0, PM_ALLOW_SLEEP, summon_specific);
+        if (alloc_monster(creature, 0, PM_ALLOW_SLEEP, summon_specific)) {
+            ++dbg_success_alloc;
+        }
+    }
+    if (auto *fp = std::fopen("/tmp/mongen.log", "a")) {
+        std::fprintf(fp, "[MONGEN] result: attempts=%d alloc_success=%d party_success=%d\n",
+            dbg_attempts, dbg_success_alloc, dbg_success_party);
+        std::fclose(fp);
     }
 
     alloc_object(creature, ALLOC_SET_BOTH, ALLOC_TYP_TRAP, randint1(dd_ptr->alloc_object_num * dungeon.trap_rate / 100));
