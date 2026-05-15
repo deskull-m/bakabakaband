@@ -223,13 +223,13 @@ CreatureEntity
          transform_* 等。提案 21 で全メンバ private 化済)
 ```
 
-### Phase 9-26: MonsterProfile + CreatureEntity アクセス API の整備 ✅ 完了
+### Phase 9-27b: MonsterProfile + CreatureEntity アクセス API の整備 ✅ 完了
 
 提案 9 系列 (read-side virtual)、提案 14-22 系列 (write-side virtual /
-共通走査 API / 一括操作 / class 化)、提案 24-26 系列 (CreatureEntity
-直下フィールドの setter / 派生情報の自動計算化) により、モンスター
-状態への外部アクセスはほぼ全て `CreatureEntity` の virtual API 経由に
-統一された。
+共通走査 API / 一括操作 / class 化)、提案 24-27b 系列 (CreatureEntity
+直下フィールドの setter / 派生情報の自動計算化 / compound assignment
+の OO 化) により、モンスター状態への外部アクセスはほぼ全て
+`CreatureEntity` の virtual API 経由に統一された。
 
 - **提案 14 / 14b**: `find_nearest_creature` / `has_visible_creature` /
   `collect_creatures` で m_list 走査を集約
@@ -247,6 +247,10 @@ CreatureEntity
   inventory[] から自動計算 (`get_inven_cnt()` / `get_equip_cnt()`)
 - **提案 26**: `ambush_flag` / `food` / `town_num` / `level` の setter
   virtual
+- **提案 27**: `max_plv` / `msp` / 経験値系 (exp / max_exp /
+  max_max_exp) の setter virtual
+- **提案 27b**: `au` (所持金) / `csp` (現在 MP) の set/add/sub/divide
+  virtual。約 110 箇所の compound assignment (`+=` / `-=`) を OO 化
 
 今後の残作業としては、現在 `CreatureEntity` 直下に残存するプレイヤー
 固有フィールド群（種族・職業・熟練度・ESP 等）を、モンスターにも
@@ -255,9 +259,9 @@ CreatureEntity
 方向は取らない。
 
 **残タスク詳細は [`docs/creature-entity-refactoring-roadmap.md`](docs/creature-entity-refactoring-roadmap.md) 参照。**
-Phase 1-26 完了後の継続提案（プレイヤー専用フィールドのクリーチャー
+Phase 1-27b 完了後の継続提案（プレイヤー専用フィールドのクリーチャー
 共通化、プレイヤー専用仮想メソッドの共通化、TimedEffects 二重管理
-解消、戦闘ボーナス系フィールドのアクセサ整備等）を同書で管理する。
+解消、read 側のアクセサ化、フィールド完全 private 化等）を同書で管理する。
 新規の統合作業に着手する際は先に同書を参照し、作業完了後は同書と
 本ファイルの両方に進捗を反映すること。
 
@@ -579,6 +583,9 @@ bakabakaband 側と上流側でよくある構造的差異を以下のルール�
 | `creature.age = X` / `creature.ht = X` / `creature.wt = X` / `creature.prestige = X` 書込 | `creature.set_age(X)` / `set_ht(X)` / `set_wt(X)` / `set_prestige(X)`、加算は `add_age(d)` / `add_prestige(d)`、`prestige /= N` は `divide_prestige(N)` (提案 24) |
 | `creature.inven_cnt` / `creature.equip_cnt` フィールド | **提案 25 でフィールド廃止。** `creature.get_inven_cnt()` / `creature.get_equip_cnt()` を呼ぶ。インベントリ変更時の cnt 同期は不要 (inventory[] から自動計算) |
 | `creature.ambush_flag = X` / `creature.food = X` / `creature.town_num = X` / `creature.level = X` 書込 | `creature.set_ambush_flag(X)` / `set_food(X)` / `set_town_num(X)` / `set_level(X)` (提案 26) |
+| `creature.max_plv = X` / `creature.msp = X` 書込 | `creature.set_max_plv(X)` / `creature.set_msp(X)` (提案 27) |
+| `creature.exp = X` / `creature.max_exp = X` / `creature.max_max_exp = X` 書込 | `creature.set_exp(X)` / `set_max_exp(X)` / `set_max_max_exp(X)` (提案 27) |
+| `creature.au [+\-/]= X` / `creature.csp [+\-]= X` の compound assignment | `creature.set_au(X)` / `add_au(X)` / `sub_au(X)` / `divide_au(X)`、`set_csp(X)` / `add_csp(X)` / `sub_csp(X)` (提案 27b)。約 110 箇所の `+=` / `-=` を移行済み |
 
 **GCC 固有の注意**:
 上流は MSVC 前提のことが多く、`<cstdint>` 等のインクルード漏れがあれば追加する。

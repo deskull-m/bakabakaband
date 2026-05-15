@@ -1007,6 +1007,63 @@ CreatureEntity 直下の残り plain field のうち、書き換え経路が散�
 
 ---
 
+## 提案 27: max_plv / msp / 経験値系の setter virtual ✅ 完了
+
+### 背景
+
+CreatureEntity 直下の戦闘ボーナス・経験値系フィールドのうち、
+書き換え経路が散在している max_plv / msp / max_max_exp / max_exp / exp
+に setter virtual を整備する。
+
+### 作業内容 (commit `b996eb87b`)
+
+- 新規 virtual (5 個):
+  - `set_max_plv(int16_t)`
+  - `set_msp(int)`
+  - `set_exp(EXP)` / `set_max_exp(EXP)` / `set_max_max_exp(EXP)`
+- 14 ファイル約 30 箇所の write site を OO 経由に統一
+  - max_plv (6 箇所): player-info-loader / world-loader /
+    dungeon-processor / display-lore / player-status /
+    game-play-initializer
+  - msp (3 箇所): player-info-loader / player-status
+  - exp/max_exp/max_max_exp (約 20 箇所): wizard-special-process /
+    player-info-loader / realm-hex / racial-android / inventory-curse /
+    status/experience / player-status / monster-status / game-closer /
+    monster-loader-savefile50
+
+`au` / `csp` 等の compound assignment 中心のフィールドは別提案 (27b)
+で対応。
+
+---
+
+## 提案 27b: au / csp の add/sub 系 virtual と compound assignment 移行 ✅ 完了
+
+### 背景
+
+提案 27 で残置した、`+=` / `-=` が大量に存在する `au` (所持金) /
+`csp` (現在 MP) に setter / add / sub virtual を整備し、書き込み
+経路を一元化する。
+
+### 作業内容 (commit `b07bc1a33`)
+
+- 新規 virtual (7 個):
+  - `set_au(int)` / `add_au(int)` / `sub_au(int)` / `divide_au(int)`
+  - `set_csp(int)` / `add_csp(int)` / `sub_csp(int)`
+- 49 ファイル約 110 箇所の compound assignment を OO 経由に統一
+  - au (45 箇所): cmd-building / cmd-trade / store / wizard / load /
+    birth / racial-android / process-death 等
+  - csp (66 箇所): spell-realm / realm / mind / cmd-* / mutation /
+    hpmp / racial-android 等
+
+### 効果
+
+- 「魔法消費 → MP 減」「金額決済 → AU 減」等の操作が `add_csp` /
+  `sub_au` 等の意味の明確な API に集約された
+- 将来的に「MP/金額変化を hook で記録」「変化量を制限する rule」
+  等の組み込みポイントとして利用可能
+
+---
+
 ## 推奨実施順序
 
 ### 完了済み (大規模フェーズ)
@@ -1031,6 +1088,8 @@ CreatureEntity 直下の残り plain field のうち、書き換え経路が散�
 - ✅ **提案 25**: inven_cnt / equip_cnt を inventory[] からの自動計算に
   変更してフィールド廃止
 - ✅ **提案 26**: ambush_flag / food / town_num / level の setter virtual 化
+- ✅ **提案 27**: max_plv / msp / 経験値系 (exp/max_exp/max_max_exp) の setter virtual 化
+- ✅ **提案 27b**: au (所持金) / csp (現在 MP) に add/sub/divide virtual 整備、110 箇所の compound assignment 移行
 
 ### 既存提案の残作業 (中規模)
 
@@ -1043,12 +1102,13 @@ CreatureEntity 直下の残り plain field のうち、書き換え経路が散�
 
 ### 今後の候補 (追加提案)
 
-- **提案 27**: 戦闘ボーナス系 plain field (`max_plv`, `au`, `csp`/`msp`,
-  `dis_to_d`, `to_h`/`to_d` 等) のアクセサ整備
 - **提案 28**: read 側もアクセサ化 (`r_idx` / `ap_r_idx` / `level` 等の
   `==` 比較・読取り箇所を `get_*()` 経由に統一)
 - **提案 29**: CreatureEntity の更なる private 化 (アクセサ整備済みの
   フィールドを実際に private へ移動)
+- **提案 30**: 残りの戦闘ボーナス系 (`to_h` / `to_d` / `to_a` /
+  `dis_to_h` / `dis_to_d` 等) と stat 系 (`stat_max[]` /
+  `stat_cur[]` 等) の compound assignment 移行
 - **提案 25b**: 性能影響が出た場合の `get_inven_cnt()` キャッシュ層再導入
 
 ### 提案 13 の延長検討対象
