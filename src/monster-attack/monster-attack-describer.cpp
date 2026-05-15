@@ -46,9 +46,9 @@ static void monster_attack_show(MonsterAttackPlayer *monap_ptr)
 #ifdef JP
     monap_ptr->abbreviate = -1;
 #endif
-    if (monap_ptr->m_ptr->r_idx == MonraceId::JAIAN) {
+    if (monap_ptr->m_ptr->get_r_idx() == MonraceId::JAIAN) {
         show_jaian_song(monap_ptr);
-    } else if (monap_ptr->m_ptr->r_idx == MonraceId::POLYGON_SPIN) {
+    } else if (monap_ptr->m_ptr->get_r_idx() == MonraceId::POLYGON_SPIN) {
         monap_ptr->act = _("はハラヘリーを唱えた。", "chanted a hunger spell.");
     } else {
         if (one_in_(3)) {
@@ -206,7 +206,7 @@ void describe_monster_attack_method(MonsterAttackPlayer *monap_ptr)
 #ifdef JP
         monap_ptr->abbreviate = -1;
 #endif
-        monap_ptr->act = desc_insult[randint0(monap_ptr->m_ptr->r_idx == MonraceId::DEBBY ? 10 : 8)];
+        monap_ptr->act = desc_insult[randint0(monap_ptr->m_ptr->get_r_idx() == MonraceId::DEBBY ? 10 : 8)];
         sound(SoundKind::MOAN);
         break;
     }
@@ -214,9 +214,9 @@ void describe_monster_attack_method(MonsterAttackPlayer *monap_ptr)
 #ifdef JP
         monap_ptr->abbreviate = -1;
 #endif
-        if (monap_ptr->m_ptr->ap_r_idx == MonraceId::MAGGOT) {
+        if (monap_ptr->m_ptr->get_ap_r_idx() == MonraceId::MAGGOT) {
             monap_ptr->act = rand_choice(desc_moan);
-        } else if (monap_ptr->m_ptr->ap_r_idx == MonraceId::MISUMI) {
+        } else if (monap_ptr->m_ptr->get_ap_r_idx() == MonraceId::MISUMI) {
             monap_ptr->act = rand_choice(desc_moan3);
         } else {
             monap_ptr->act = rand_choice(desc_moan2);

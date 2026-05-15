@@ -67,7 +67,7 @@ static ProcessResult is_affective(EffectMonster *em_ptr)
     if (em_ptr->is_monster() && (em_ptr->g_ptr->m_idx == em_ptr->src_idx)) {
         return ProcessResult::PROCESS_FALSE;
     }
-    if (sukekaku && ((em_ptr->m_ptr->r_idx == MonraceId::SUKE) || (em_ptr->m_ptr->r_idx == MonraceId::KAKU))) {
+    if (sukekaku && ((em_ptr->m_ptr->get_r_idx() == MonraceId::SUKE) || (em_ptr->m_ptr->get_r_idx() == MonraceId::KAKU))) {
         return ProcessResult::PROCESS_FALSE;
     }
     if (em_ptr->m_ptr->hp < 0) {
@@ -191,7 +191,7 @@ static void effect_damage_killed_pet(CreatureEntity &creature, EffectMonster *em
     }
 
     if (em_ptr->is_monster()) {
-        monster_gain_exp(creature, em_ptr->src_idx, em_ptr->m_ptr->r_idx);
+        monster_gain_exp(creature, em_ptr->src_idx, em_ptr->m_ptr->get_r_idx());
     }
 
     monster_death(creature, em_ptr->g_ptr->m_idx, false, em_ptr->attribute);
@@ -758,7 +758,7 @@ bool affect_monster(
     }
 
     lite_spot(creature, em_ptr->get_position());
-    if (LoreTracker::get_instance().is_tracking(em_ptr->m_ptr->r_idx) && (em_ptr->seen || !monster_is_valid)) {
+    if (LoreTracker::get_instance().is_tracking(em_ptr->m_ptr->get_r_idx()) && (em_ptr->seen || !monster_is_valid)) {
         RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
     }
 
