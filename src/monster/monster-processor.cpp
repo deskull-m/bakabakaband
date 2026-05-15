@@ -348,8 +348,6 @@ static bool monster_quaff_potion(CreatureEntity &creature, CreatureEntity &monst
         potion.number--;
     } else {
         potion.wipe();
-        if (monster.get_inven_cnt() > 0) {
-        }
     }
     return true;
 }
@@ -478,8 +476,6 @@ static bool monster_read_scroll(CreatureEntity &creature, CreatureEntity &monste
         scroll.number--;
     } else {
         scroll.wipe();
-        if (monster.get_inven_cnt() > 0) {
-        }
     }
     return true;
 }
