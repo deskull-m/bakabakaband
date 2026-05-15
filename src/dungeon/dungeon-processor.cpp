@@ -127,7 +127,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
     }
 
     if (creature.max_plv < creature.level) {
-        creature.max_plv = creature.level;
+        creature.set_max_plv(creature.level);
     }
 
     auto &dungeon_record = DungeonRecords::get_instance().get_record(floor.dungeon_id);

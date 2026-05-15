@@ -58,7 +58,7 @@ bool restore_level(CreatureEntity &creature)
 {
     if (creature.exp < creature.max_exp) {
         msg_print(_("経験値が戻ってきた気がする。", "You feel your experience returning."));
-        creature.exp = creature.max_exp;
+        creature.set_exp(creature.max_exp);
         check_experience(creature);
         return true;
     }

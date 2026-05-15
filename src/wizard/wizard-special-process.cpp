@@ -310,8 +310,8 @@ static void wiz_change_status_max(CreatureEntity &creature)
         return;
     }
 
-    creature.max_exp = 99999999;
-    creature.exp = 99999999;
+    creature.set_max_exp(99999999);
+    creature.set_exp(99999999);
     creature.exp_frac = 0;
 }
 
@@ -390,8 +390,8 @@ void wiz_change_status(CreatureEntity &creature)
         return;
     }
 
-    creature.max_exp = *experience;
-    creature.exp = *experience;
+    creature.set_max_exp(*experience);
+    creature.set_exp(*experience);
     creature.exp_frac = 0;
 }
 
@@ -779,9 +779,9 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
             creature.divide_prestige(2);
             creature.add_age(static_cast<int16_t>(blank_years));
 
-            creature.max_max_exp = (creature.max_max_exp * 6 / (randint1(3) + 6));
-            creature.max_exp = creature.max_max_exp;
-            creature.exp = creature.max_max_exp;
+            creature.set_max_max_exp((creature.max_max_exp * 6 / (randint1(3) + 6)));
+            creature.set_max_exp(creature.max_max_exp);
+            creature.set_exp(creature.max_max_exp);
             creature.au /= 2;
 
             msg_print(_("『ぬわああああん、疲れたなもおおおおん！』", "\"Aaaaaah! I'm hellish tireeeed!\""));

@@ -1368,6 +1368,36 @@ public:
         this->level = value;
     }
 
+    /*! @brief 経験レベル最大値を設定する (提案 27) */
+    virtual void set_max_plv(int16_t value)
+    {
+        this->max_plv = value;
+    }
+
+    /*! @brief 最大 MP (msp) を設定する (提案 27) */
+    virtual void set_msp(int value)
+    {
+        this->msp = value;
+    }
+
+    /*! @brief 現在の経験値を設定する (提案 27) */
+    virtual void set_exp(EXP value)
+    {
+        this->exp = value;
+    }
+
+    /*! @brief 最大経験値を設定する (提案 27) */
+    virtual void set_max_exp(EXP value)
+    {
+        this->max_exp = value;
+    }
+
+    /*! @brief 最大の最大経験値を設定する (提案 27) */
+    virtual void set_max_max_exp(EXP value)
+    {
+        this->max_max_exp = value;
+    }
+
     /*! @brief 影 (KAGE) かどうか */
     virtual bool is_kage() const
     {

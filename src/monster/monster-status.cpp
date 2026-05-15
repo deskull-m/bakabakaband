@@ -420,7 +420,7 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
         }
     }
 
-    monster.exp = 0;
+    monster.set_exp(0);
     if (monster.is_pet() || monster.is_visible_on_map()) {
         const auto is_hallucinated = creature.is_hallucinated();
         if (!ignore_unview || player_can_see_bold(creature, monster.y, monster.x)) {
