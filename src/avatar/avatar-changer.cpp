@@ -33,7 +33,7 @@ void AvatarChanger::change_virtue()
     this->change_virtue_non_beginner();
     this->change_virtue_unique();
     const auto &r_ref = this->m_ptr->get_real_monrace();
-    if (this->m_ptr->r_idx == MonraceId::BEGGAR || this->m_ptr->r_idx == MonraceId::LEPER) {
+    if (this->m_ptr->get_r_idx() == MonraceId::BEGGAR || this->m_ptr->get_r_idx() == MonraceId::LEPER) {
         chg_virtue(this->creature, Virtue::COMPASSION, -1);
     }
 

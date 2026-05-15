@@ -146,7 +146,7 @@ static std::string describe_weapon_dice(CreatureEntity &creature, const ItemEnti
         return "";
     }
 
-    const auto is_bonus = (creature.riding > 0) && item.is_lance();
+    const auto is_bonus = (creature.get_riding() > 0) && item.is_lance();
     auto bonused_dice = item.damage_dice;
     if (is_bonus) {
         bonused_dice.num += 2;

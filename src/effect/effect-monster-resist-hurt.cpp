@@ -288,7 +288,7 @@ ProcessResult effect_monster_water(CreatureEntity &creature, EffectMonster *em_p
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    if ((em_ptr->m_ptr->r_idx == MonraceId::WATER_ELEM) || (em_ptr->m_ptr->r_idx == MonraceId::UNMAKER)) {
+    if ((em_ptr->m_ptr->get_r_idx() == MonraceId::WATER_ELEM) || (em_ptr->m_ptr->get_r_idx() == MonraceId::UNMAKER)) {
         em_ptr->note = _("には完全な耐性がある！", " is immune.");
         em_ptr->dam = 0;
     } else {

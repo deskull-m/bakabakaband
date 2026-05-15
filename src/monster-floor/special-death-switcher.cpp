@@ -400,9 +400,9 @@ static void on_dead_death_sword(CreatureEntity &killer, MonsterDeath *md_ptr)
 static void on_dead_can_angel(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
     auto is_drop_can = md_ptr->drop_chosen_item;
-    auto is_silver = md_ptr->m_ptr->r_idx == MonraceId::A_SILVER;
+    auto is_silver = md_ptr->m_ptr->get_r_idx() == MonraceId::A_SILVER;
     is_silver &= md_ptr->r_ptr->r_akills % 5 == 0;
-    is_drop_can &= (md_ptr->m_ptr->r_idx == MonraceId::A_GOLD) || is_silver;
+    is_drop_can &= (md_ptr->m_ptr->get_r_idx() == MonraceId::A_GOLD) || is_silver;
     if (!is_drop_can) {
         return;
     }
@@ -533,7 +533,7 @@ static void on_dead_mimics(CreatureEntity &killer, MonsterDeath *md_ptr)
         drop_specific_item_on_dead(killer, md_ptr, kind_is_hafted);
         return;
     case '|':
-        if (md_ptr->m_ptr->r_idx == MonraceId::STORMBRINGER) {
+        if (md_ptr->m_ptr->get_r_idx() == MonraceId::STORMBRINGER) {
             return;
         }
 

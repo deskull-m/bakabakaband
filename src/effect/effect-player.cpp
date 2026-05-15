@@ -219,7 +219,7 @@ bool affect_player(MONSTER_IDX src_idx, CreatureEntity &creature, concptr src_na
         }
     }
 
-    if (creature.riding) {
+    if (creature.get_riding()) {
         fall_off_horse_effect.set_fall_off(ep_ptr->dam);
     }
 

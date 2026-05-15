@@ -146,7 +146,7 @@ static void check_arena(const FloorType &floor, melee_spell_type *ms_ptr)
     }
 
     ms_ptr->ability_flags.reset(RF_ABILITY_SUMMON_MASK).reset(MonsterAbilityType::TELE_LEVEL);
-    if (ms_ptr->m_ptr->r_idx == MonraceId::ROLENTO) {
+    if (ms_ptr->m_ptr->get_r_idx() == MonraceId::ROLENTO) {
         ms_ptr->ability_flags.reset(MonsterAbilityType::SPECIAL);
     }
 }
@@ -250,7 +250,7 @@ static void check_melee_spell_special(CreatureEntity &creature, melee_spell_type
         return;
     }
 
-    if (ms_ptr->m_ptr->r_idx == MonraceId::ROLENTO) {
+    if (ms_ptr->m_ptr->get_r_idx() == MonraceId::ROLENTO) {
         if ((creature.pet_extra_flags & (PF_ATTACK_SPELL | PF_SUMMON_SPELL)) != (PF_ATTACK_SPELL | PF_SUMMON_SPELL)) {
             ms_ptr->ability_flags.reset(MonsterAbilityType::SPECIAL);
         }
@@ -329,7 +329,7 @@ static void check_non_stupid(CreatureEntity &creature, melee_spell_type *ms_ptr)
         ms_ptr->ability_flags.reset(MonsterAbilityType::RAISE_DEAD);
     }
 
-    if (ms_ptr->ability_flags.has(MonsterAbilityType::SPECIAL) && (ms_ptr->m_ptr->r_idx == MonraceId::ROLENTO) && !summon_possible(creature, ms_ptr->t_ptr->y, ms_ptr->t_ptr->x)) {
+    if (ms_ptr->ability_flags.has(MonsterAbilityType::SPECIAL) && (ms_ptr->m_ptr->get_r_idx() == MonraceId::ROLENTO) && !summon_possible(creature, ms_ptr->t_ptr->y, ms_ptr->t_ptr->x)) {
         ms_ptr->ability_flags.reset(MonsterAbilityType::SPECIAL);
     }
 }
@@ -382,7 +382,7 @@ bool check_melee_spell_set(CreatureEntity &creature, melee_spell_type *ms_ptr)
         ms_ptr->ability_flags.reset(MonsterAbilityType::BR_LITE);
     }
 
-    if (ms_ptr->ability_flags.has(MonsterAbilityType::SPECIAL) && (ms_ptr->m_ptr->r_idx != MonraceId::ROLENTO) && !ms_ptr->r_ptr->symbol_char_is_any_of("B")) {
+    if (ms_ptr->ability_flags.has(MonsterAbilityType::SPECIAL) && (ms_ptr->m_ptr->get_r_idx() != MonraceId::ROLENTO) && !ms_ptr->r_ptr->symbol_char_is_any_of("B")) {
         ms_ptr->ability_flags.reset(MonsterAbilityType::SPECIAL);
     }
 

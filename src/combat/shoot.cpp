@@ -374,7 +374,7 @@ static MULTIPLY calc_shot_damage_with_slay(
 
             auto can_eliminate_smaug = arrow_ptr->is_specific_artifact(FixedArtifactId::BARD_ARROW);
             can_eliminate_smaug &= creature.is_wielding(FixedArtifactId::BARD);
-            can_eliminate_smaug &= monster.r_idx == MonraceId::SMAUG;
+            can_eliminate_smaug &= monster.get_r_idx() == MonraceId::SMAUG;
             if (can_eliminate_smaug) {
                 mult *= 5;
             }
@@ -761,7 +761,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
                     PlayerSkill(creature).gain_range_weapon_exp(j_ptr);
                 }
 
-                if (creature.riding) {
+                if (creature.get_riding()) {
                     PlayerSkill(creature).gain_riding_skill_exp_on_range_attack();
                 }
 
@@ -789,7 +789,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
 
                         if (monster.is_visible_on_map()) {
                             if (!creature.is_hallucinated()) {
-                                tracker.set_trackee(monster.ap_r_idx);
+                                tracker.set_trackee(monster.get_ap_r_idx());
                             }
 
                             health_track(creature, c_mon_ptr->m_idx);
@@ -1014,7 +1014,7 @@ bool test_hit_fire(CreatureEntity &creature, int chance, CreatureEntity &target,
     ac = static_cast<ARMOUR_CLASS>(target.get_ac());
     ac = ac * (8 - sniper_concent) / 8;
 
-    if (target.r_idx == MonraceId::GOEMON && !target.is_asleep()) {
+    if (target.get_r_idx() == MonraceId::GOEMON && !target.is_asleep()) {
         ac *= 3;
     }
 
@@ -1025,7 +1025,7 @@ bool test_hit_fire(CreatureEntity &creature, int chance, CreatureEntity &target,
 
     /* Power competes against armor */
     if (randint0(chance) < (ac * 3 / 4)) {
-        if (target.r_idx == MonraceId::GOEMON && !target.is_asleep()) {
+        if (target.get_r_idx() == MonraceId::GOEMON && !target.is_asleep()) {
             const auto m_name = monster_desc(creature, target, MD_IGNORE_HALLU | MD_INDEF_HIDDEN);
             msg_format(_("%sは%sを斬り捨てた！", "%s cuts down %s!"), m_name.data(), item_name.data());
         }

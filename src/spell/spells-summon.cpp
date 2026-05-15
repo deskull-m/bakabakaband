@@ -337,7 +337,7 @@ void mitokohmon(CreatureEntity &creature)
             if (!monster.is_valid()) {
                 continue;
             }
-            if (!((monster.r_idx == MonraceId::SUKE) || (monster.r_idx == MonraceId::KAKU))) {
+            if (!((monster.get_r_idx() == MonraceId::SUKE) || (monster.get_r_idx() == MonraceId::KAKU))) {
                 continue;
             }
 

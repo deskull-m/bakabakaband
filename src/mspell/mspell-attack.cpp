@@ -87,7 +87,7 @@ static void check_mspell_arena(const FloorType &floor, msa_type *msa_ptr)
 
     msa_ptr->ability_flags.reset(RF_ABILITY_SUMMON_MASK).reset(MonsterAbilityType::TELE_LEVEL);
 
-    if (msa_ptr->m_ptr->r_idx == MonraceId::ROLENTO) {
+    if (msa_ptr->m_ptr->get_r_idx() == MonraceId::ROLENTO) {
         msa_ptr->ability_flags.reset(MonsterAbilityType::SPECIAL);
     }
 }
@@ -115,7 +115,7 @@ static bool check_mspell_non_stupid(CreatureEntity &creature, msa_type *msa_ptr)
         msa_ptr->ability_flags.reset(MonsterAbilityType::RAISE_DEAD);
     }
 
-    if (msa_ptr->ability_flags.has(MonsterAbilityType::SPECIAL) && (msa_ptr->m_ptr->r_idx == MonraceId::ROLENTO) &&
+    if (msa_ptr->ability_flags.has(MonsterAbilityType::SPECIAL) && (msa_ptr->m_ptr->get_r_idx() == MonraceId::ROLENTO) &&
         !summon_possible(creature, msa_ptr->y, msa_ptr->x)) {
         msa_ptr->ability_flags.reset(MonsterAbilityType::SPECIAL);
     }

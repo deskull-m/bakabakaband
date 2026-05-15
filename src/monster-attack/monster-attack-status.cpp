@@ -26,7 +26,7 @@ void process_blind_attack(CreatureEntity &creature, MonsterAttackPlayer *monap_p
         return;
     }
 
-    auto is_dio = monap_ptr->m_ptr->r_idx == MonraceId::DIO;
+    auto is_dio = monap_ptr->m_ptr->get_r_idx() == MonraceId::DIO;
     auto dio_msg = _("どうだッ！この血の目潰しはッ！", "How is it! This blood-blinding!");
     if (is_dio && CreatureRace(&creature).equals(PlayerRaceType::SKELETON)) {
         msg_print(dio_msg);

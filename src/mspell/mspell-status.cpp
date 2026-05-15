@@ -651,7 +651,7 @@ MonsterSpellResult spell_RF6_INVULNER(CreatureEntity &creature, MONSTER_IDX m_id
     monspell_message_base(creature, m_idx, t_idx, msg, !seen, target_type);
 
     if (monster.is_visible_on_map()) {
-        MonraceId r_idx = monster.r_idx;
+        MonraceId r_idx = monster.get_r_idx();
         const auto m_name = monster_desc(creature, monster, MD_NONE);
         switch (r_idx) {
         case MonraceId::MARIO:

@@ -355,7 +355,7 @@ MONSTER_NUMBER summon_LAFFEY_II(CreatureEntity &creature, const Pos2D &position,
 
     if (!floor.inside_arena && real_num < MAX_BUNBUN_NUM) {
         for (auto &monster : floor.m_list) {
-            if (monster.r_idx == MonraceId::BUNBUN_STRIKERS) {
+            if (monster.get_r_idx() == MonraceId::BUNBUN_STRIKERS) {
                 const auto current_position = monster.get_position();
                 auto &current_grid = floor.get_grid(current_position);
                 auto target_m_idx = current_grid.m_idx;

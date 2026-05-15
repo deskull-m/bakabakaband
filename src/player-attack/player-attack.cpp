@@ -75,7 +75,7 @@ player_attack_type::player_attack_type(FloorType &floor, POSITION y, POSITION x,
 {
     this->m_idx = this->g_ptr->m_idx;
     this->m_ptr = &floor.get_monster(this->g_ptr->m_idx);
-    this->r_idx = this->m_ptr->r_idx;
+    this->r_idx = this->m_ptr->get_r_idx();
     this->r_ptr = &this->m_ptr->get_monrace();
     this->ma_ptr = &ma_blows[0];
 }
@@ -95,7 +95,7 @@ static void attack_classify(CreatureEntity &creature, player_attack_type *pa_ptr
     case PlayerClassType::MONK:
     case PlayerClassType::FORCETRAINER:
     case PlayerClassType::BERSERKER:
-        if ((empty_hands(creature, true) & EMPTY_HAND_MAIN) && !creature.riding) {
+        if ((empty_hands(creature, true) & EMPTY_HAND_MAIN) && !creature.get_riding()) {
             pa_ptr->monk_attack = true;
         }
         return;

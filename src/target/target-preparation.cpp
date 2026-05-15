@@ -158,7 +158,7 @@ std::vector<Pos2D> target_set_prepare(CreatureEntity &creature, target_type mode
         });
     }
 
-    if (creature.riding == 0 || !target_pet || (std::ssize(pos_list) <= 1) || !is_killable) {
+    if (creature.get_riding() == 0 || !target_pet || (std::ssize(pos_list) <= 1) || !is_killable) {
         return pos_list;
     }
 

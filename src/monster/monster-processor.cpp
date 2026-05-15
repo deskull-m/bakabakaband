@@ -348,8 +348,6 @@ static bool monster_quaff_potion(CreatureEntity &creature, CreatureEntity &monst
         potion.number--;
     } else {
         potion.wipe();
-        if (monster.get_inven_cnt() > 0) {
-        }
     }
     return true;
 }
@@ -478,8 +476,6 @@ static bool monster_read_scroll(CreatureEntity &creature, CreatureEntity &monste
         scroll.number--;
     } else {
         scroll.wipe();
-        if (monster.get_inven_cnt() > 0) {
-        }
     }
     return true;
 }
@@ -737,7 +733,7 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
             break;
         case SV_WAND_CLONE_MONSTER:
             // モンスター自身の分身を生成 (PM_NO_PET で勝手に味方にならないよう)
-            (void)multiply_monster(creature, m_idx, monster.r_idx, true, PM_NO_PET);
+            (void)multiply_monster(creature, m_idx, monster.get_r_idx(), true, PM_NO_PET);
             break;
         }
         device.pval--;
@@ -1055,7 +1051,7 @@ void decide_drop_from_monster(CreatureEntity &creature, MONSTER_IDX m_idx, bool 
 #ifdef JP
         msg_print("地面に落とされた。");
 #else
-        const auto m_name = monster_desc(creature, creature.get_floor()->get_monster(creature.riding), 0);
+        const auto m_name = monster_desc(creature, creature.get_floor()->get_monster(creature.get_riding()), 0);
         msg_format("You have fallen from %s.", m_name.data());
 #endif
     }
@@ -1203,7 +1199,7 @@ bool explode_grenade(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
 
     const auto &monster = creature.get_floor()->get_monster(m_idx);
-    if (monster.r_idx != MonraceId::GRENADE) {
+    if (monster.get_r_idx() != MonraceId::GRENADE) {
         return false;
     }
 
@@ -1223,7 +1219,7 @@ void process_special(CreatureEntity &creature, MONSTER_IDX m_idx)
     const auto &monster = creature.get_floor()->get_monster(m_idx);
     auto &monrace = monster.get_monrace();
     auto can_do_special = monrace.ability_flags.has(MonsterAbilityType::SPECIAL);
-    can_do_special &= monster.r_idx == MonraceId::OHMU;
+    can_do_special &= monster.get_r_idx() == MonraceId::OHMU;
     can_do_special &= !creature.get_floor()->inside_arena;
     can_do_special &= !AngbandSystem::get_instance().is_phase_out();
     can_do_special &= monrace.freq_spell != 0;
@@ -1322,7 +1318,7 @@ bool decide_monster_multiplication(CreatureEntity &creature, MONSTER_IDX m_idx, 
 void process_monster_spawn_item(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     CreatureEntity *m_ptr = &creature.get_floor()->get_monster(m_idx);
-    MonraceDefinition &monrace = MonraceList::get_instance().get_monrace(m_ptr->r_idx);
+    MonraceDefinition &monrace = MonraceList::get_instance().get_monrace(m_ptr->get_r_idx());
     for (const auto &spawn_info : monrace.spawn_items) {
         auto num = std::get<0>(spawn_info);
         auto deno = std::get<1>(spawn_info);
@@ -1343,7 +1339,7 @@ void process_monster_spawn_item(CreatureEntity &creature, MONSTER_IDX m_idx)
 void process_monster_spawn_zanki(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     CreatureEntity *m_ptr = &creature.get_floor()->get_monster(m_idx);
-    MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
+    MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->get_r_idx());
     if (r_ptr->level < 30 || !r_ptr->kind_flags.has(MonsterKindType::UNIQUE) || r_ptr->r_misc_flags.has(MonsterMiscType::EMPTY_MIND)) {
         return;
     }
@@ -1356,7 +1352,7 @@ void process_monster_spawn_zanki(CreatureEntity &creature, MONSTER_IDX m_idx)
     ItemEntity item;
     item.generate(684);
     item.number = 1;
-    item.pval = enum2i(m_ptr->ap_r_idx);
+    item.pval = enum2i(m_ptr->get_ap_r_idx());
     (void)drop_near(creature, item, m_ptr->get_position());
 }
 
@@ -1367,7 +1363,7 @@ void process_monster_spawn_zanki(CreatureEntity &creature, MONSTER_IDX m_idx)
 void process_monster_change_feat(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     auto *m_ptr = &creature.get_floor()->get_monster(m_idx);
-    auto *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
+    auto *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->get_r_idx());
     for (const auto &spawn_info : r_ptr->change_feats) {
         auto num = std::get<0>(spawn_info);
         auto deno = std::get<1>(spawn_info);
@@ -1390,7 +1386,7 @@ bool process_monster_spawn_monster(CreatureEntity &creature, MONSTER_IDX m_idx, 
 {
 
     CreatureEntity *m_ptr = &creature.get_floor()->get_monster(m_idx);
-    MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
+    MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->get_r_idx());
     if ((r_ptr->spawn_monsters.size() == 0) || (creature.get_floor()->num_repro >= MAX_REPRODUCTION)) {
         return false;
     }

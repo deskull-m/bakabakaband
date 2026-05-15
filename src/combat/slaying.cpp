@@ -216,7 +216,7 @@ int calc_attack_damage_with_slay(CreatureEntity &creature, ItemEntity *o_ptr, in
             mult = mult * 3 / 2 + 20;
         }
 
-        if ((o_ptr->is_specific_artifact(FixedArtifactId::NOTHUNG)) && (target.r_idx == MonraceId::FAFNER)) {
+        if ((o_ptr->is_specific_artifact(FixedArtifactId::NOTHUNG)) && (target.get_r_idx() == MonraceId::FAFNER)) {
             mult = 150;
         }
 

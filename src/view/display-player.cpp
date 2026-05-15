@@ -356,11 +356,11 @@ tl::optional<int> display_player(CreatureEntity &creature, const int tmp_mode)
     }
 
     // 実際の種族と見かけの種族を表示
-    const auto &actual_monrace = MonraceList::get_instance().get_monrace(creature.r_idx);
+    const auto &actual_monrace = MonraceList::get_instance().get_monrace(creature.get_r_idx());
     display_player_one_line(ENTRY_ACTUAL_RACE, actual_monrace.name, TERM_L_GREEN);
-    if (creature.r_idx != creature.ap_r_idx) {
-        const auto &apparent_monrace = MonraceList::get_instance().get_monrace(creature.ap_r_idx);
-        auto color = (creature.r_idx == creature.ap_r_idx) ? TERM_L_GREEN : TERM_YELLOW;
+    if (creature.get_r_idx() != creature.get_ap_r_idx()) {
+        const auto &apparent_monrace = MonraceList::get_instance().get_monrace(creature.get_ap_r_idx());
+        auto color = (creature.get_r_idx() == creature.get_ap_r_idx()) ? TERM_L_GREEN : TERM_YELLOW;
         display_player_one_line(ENTRY_APPARENT_RACE, apparent_monrace.name, color);
     }
 

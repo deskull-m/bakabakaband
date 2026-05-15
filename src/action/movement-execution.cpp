@@ -164,7 +164,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
             m_name = monster_desc(creature, monster, 0);
             if (monster.is_visible_on_map()) {
                 if (!is_hallucinated) {
-                    LoreTracker::get_instance().set_trackee(monster.ap_r_idx);
+                    LoreTracker::get_instance().set_trackee(monster.get_ap_r_idx());
                 }
 
                 health_track(creature, grid.m_idx);
@@ -186,10 +186,10 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
         }
     }
 
-    const auto &riding_monster = floor.get_monster(creature.riding);
+    const auto &riding_monster = floor.get_monster(creature.get_riding());
     const auto &riding_monrace = riding_monster.get_monrace();
     PlayerEnergy energy(creature);
-    if (can_move && creature.riding) {
+    if (can_move && creature.get_riding()) {
         if (riding_monrace.behavior_flags.has(MonsterBehaviorType::NEVER_MOVE)) {
             msg_print(_("動けない！", "Can't move!"));
             energy.reset_player_turn();
@@ -241,7 +241,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
         creature.running = 0;
         can_move = false;
     } else if (terrain.flags.has(TerrainCharacteristics::TREE) && !p_can_kill_walls) {
-        const auto riding_wild_wood = creature.riding && riding_monrace.wilderness_flags.has(MonsterWildernessType::WILD_WOOD);
+        const auto riding_wild_wood = creature.get_riding() && riding_monrace.wilderness_flags.has(MonsterWildernessType::WILD_WOOD);
         if (!CreatureClass(creature).equals(PlayerClassType::RANGER) && !creature.has_levitation() && !riding_wild_wood) {
             energy.mul_player_turn_energy(2);
         }

@@ -67,7 +67,7 @@ void delete_monster_idx(CreatureEntity &creature, short m_idx)
     if (creature.riding_t_m_idx == m_idx) {
         creature.riding_t_m_idx = 0;
     }
-    if (monster.is_riding()) { // creature.riding == m_idx のままの方がいい？
+    if (monster.is_riding()) { // creature.get_riding() == m_idx のままの方がいい？
         creature.ride_monster(0);
     }
 

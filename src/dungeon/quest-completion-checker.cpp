@@ -76,7 +76,7 @@ static bool check_quest_completion(CreatureEntity &creature, const QuestType &qu
         return true;
     }
 
-    auto is_target = (quest.type == QuestKindType::RANDOM) && (quest.r_idx == monster.r_idx);
+    auto is_target = (quest.type == QuestKindType::RANDOM) && (quest.r_idx == monster.get_r_idx());
     if ((quest.type == QuestKindType::KILL_LEVEL) || is_target) {
         return true;
     }
@@ -148,7 +148,7 @@ void QuestCompletionChecker::complete_kill_all()
 
 std::tuple<bool, bool> QuestCompletionChecker::complete_random()
 {
-    if (this->q_ptr->r_idx != this->m_ptr->r_idx) {
+    if (this->q_ptr->r_idx != this->m_ptr->get_r_idx()) {
         return std::make_tuple(false, false);
     }
 

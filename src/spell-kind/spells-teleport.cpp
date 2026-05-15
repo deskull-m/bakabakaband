@@ -490,7 +490,7 @@ void teleport_player_to(CreatureEntity &creature, POSITION ny, POSITION nx, tele
         auto is_anywhere = world.wizard;
         is_anywhere &= (mode & TELEPORT_PASSIVE) == 0;
         const auto &grid = floor.get_grid(pos);
-        is_anywhere &= grid.has_monster() || grid.m_idx == creature.riding;
+        is_anywhere &= grid.has_monster() || grid.m_idx == creature.get_riding();
         if (is_anywhere) {
             break;
         }

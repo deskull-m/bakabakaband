@@ -25,7 +25,7 @@
  */
 bool rodeo(CreatureEntity &creature)
 {
-    if (creature.riding) {
+    if (creature.get_riding()) {
         msg_print(_("今は乗馬中だ。", "You ARE riding."));
         return false;
     }
@@ -34,7 +34,7 @@ bool rodeo(CreatureEntity &creature)
         return true;
     }
 
-    auto &monster = creature.get_floor()->get_monster(creature.riding);
+    auto &monster = creature.get_floor()->get_monster(creature.get_riding());
     const auto &monrace = monster.get_monrace();
     const auto m_name = monster_desc(creature, monster, 0);
     msg_format(_("%sに乗った。", "You ride on %s."), m_name.data());

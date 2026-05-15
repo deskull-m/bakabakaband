@@ -258,8 +258,8 @@ void print_speed(CreatureEntity &creature)
     TERM_COLOR attr = TERM_WHITE;
     const auto is_slow = creature.is_decelerated();
     if (speed > 0) {
-        if (creature.riding) {
-            const auto &monster = floor.get_monster(creature.riding);
+        if (creature.get_riding()) {
+            const auto &monster = floor.get_monster(creature.get_riding());
             if (monster.is_accelerated() && !monster.is_decelerated()) {
                 attr = TERM_L_BLUE;
             } else if (monster.is_decelerated() && !monster.is_accelerated()) {
@@ -274,10 +274,10 @@ void print_speed(CreatureEntity &creature)
         } else {
             attr = TERM_L_GREEN;
         }
-        sprintf(buf, "%s(+%d)", (creature.riding ? _("乗馬", "Ride") : _("加速", "Fast")), speed);
+        sprintf(buf, "%s(+%d)", (creature.get_riding() ? _("乗馬", "Ride") : _("加速", "Fast")), speed);
     } else if (speed < 0) {
-        if (creature.riding) {
-            const auto &monster = floor.get_monster(creature.riding);
+        if (creature.get_riding()) {
+            const auto &monster = floor.get_monster(creature.get_riding());
             if (monster.is_accelerated() && !monster.is_decelerated()) {
                 attr = TERM_L_BLUE;
             } else if (monster.is_decelerated() && !monster.is_accelerated()) {
@@ -292,8 +292,8 @@ void print_speed(CreatureEntity &creature)
         } else {
             attr = TERM_L_UMBER;
         }
-        sprintf(buf, "%s(%d)", (creature.riding ? _("乗馬", "Ride") : _("減速", "Slow")), speed);
-    } else if (creature.riding) {
+        sprintf(buf, "%s(%d)", (creature.get_riding() ? _("乗馬", "Ride") : _("減速", "Slow")), speed);
+    } else if (creature.get_riding()) {
         attr = TERM_GREEN;
         strcpy(buf, _("乗馬中", "Riding"));
     }
