@@ -71,7 +71,8 @@ void get_stats(CreatureEntity &creature)
                 auto stat = i * 3 + j;
                 auto val = auto_roller_distribution[tmp % random_distribution];
                 sum += val;
-                creature.stat_cur[stat] = creature.stat_max[stat] = val;
+                creature.set_stat_max(stat, val);
+                creature.set_stat_cur(stat, val);
                 tmp /= random_distribution;
             }
         }
@@ -86,8 +87,8 @@ void get_stats(CreatureEntity &creature)
     // プレイヤーは後段の calc_bonuses() で stat_use を再計算するが、
     // モンスターは calc_bonuses() を呼ばないので stat_use がここで確定する。
     for (auto i = 0; i < A_MAX; i++) {
-        creature.stat_max_max[i] = creature.stat_max[i];
-        creature.stat_use[i] = creature.stat_max[i];
+        creature.set_stat_max_max(i, creature.stat_max[i]);
+        creature.set_stat_use(i, creature.stat_max[i]);
     }
 }
 
@@ -215,12 +216,12 @@ void get_max_stats(CreatureEntity &creature)
     for (auto i = 0; i < A_MAX; i++) {
         // 新形式: 180 + 60 + dice[i] * 10 = 240 + 10~70 = 250~310 (25.0~31.0)
         short max_max = 180 + 60 + dice[i] * 10;
-        creature.stat_max_max[i] = max_max;
+        creature.set_stat_max_max(i, max_max);
         if (creature.stat_max[i] > max_max) {
-            creature.stat_max[i] = max_max;
+            creature.set_stat_max(i, max_max);
         }
         if (creature.stat_cur[i] > max_max) {
-            creature.stat_cur[i] = max_max;
+            creature.set_stat_cur(i, max_max);
         }
     }
 

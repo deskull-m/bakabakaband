@@ -208,7 +208,7 @@ static void update_ability_scores(CreatureEntity &creature)
     PlayerCharisma player_chr(creature);
     PlayerBasicStatistics *player_stats[] = { &player_str, &player_int, &player_wis, &player_dex, &player_con, &player_chr };
     for (auto i = 0; i < A_MAX; ++i) {
-        creature.stat_add[i] = player_stats[i]->modification_value();
+        creature.set_stat_add(i, player_stats[i]->modification_value());
         player_stats[i]->update_value();
     }
 }
@@ -347,14 +347,14 @@ static void update_bonuses(CreatureEntity &creature)
     creature.to_h[1] = calc_to_hit(creature, INVEN_SUB_HAND, true);
     creature.dis_to_h[0] = calc_to_hit(creature, INVEN_MAIN_HAND, false);
     creature.dis_to_h[1] = calc_to_hit(creature, INVEN_SUB_HAND, false);
-    creature.to_h_b = calc_to_hit_bow(creature, true);
+    creature.set_to_h_b(calc_to_hit_bow(creature, true));
     creature.dis_to_h_b = calc_to_hit_bow(creature, false);
-    creature.to_d_m = calc_to_damage_misc(creature);
-    creature.to_h_m = calc_to_hit_misc(creature);
+    creature.set_to_d_m(calc_to_damage_misc(creature));
+    creature.set_to_h_m(calc_to_hit_misc(creature));
     creature.skill_dig = calc_skill_dig(creature);
     creature.to_m_chance = calc_to_magic_chance(creature);
     creature.ac = calc_base_ac(creature);
-    creature.to_a = calc_to_ac(creature, true);
+    creature.set_to_a(calc_to_ac(creature, true));
     creature.dis_ac = calc_base_ac(creature);
     creature.dis_to_a = calc_to_ac(creature, false);
 

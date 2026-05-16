@@ -281,8 +281,8 @@ void wiz_create_named_art(CreatureEntity &creature)
 static void wiz_change_status_max(CreatureEntity &creature)
 {
     for (auto i = 0; i < A_MAX; ++i) {
-        creature.stat_cur[i] = creature.stat_max_max[i];
-        creature.stat_max[i] = creature.stat_max_max[i];
+        creature.set_stat_cur(i, creature.stat_max_max[i]);
+        creature.set_stat_max(i, creature.stat_max_max[i]);
     }
 
     for (auto tval : TV_WEAPON_RANGE) {
@@ -340,8 +340,8 @@ void wiz_change_status(CreatureEntity &creature)
             return;
         }
 
-        creature.stat_cur[i] = *new_ability_score;
-        creature.stat_max[i] = *new_ability_score;
+        creature.set_stat_cur(i, *new_ability_score);
+        creature.set_stat_max(i, *new_ability_score);
     }
 
     const auto unskilled = PlayerSkill::weapon_exp_at(PlayerSkillRank::UNSKILLED);
