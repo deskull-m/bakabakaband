@@ -187,7 +187,7 @@ void print_monster_list(const FloorType &floor, const std::vector<MONSTER_IDX> &
         } // dead?
 
         // ソート済みなので同じモンスターは連続する．これを利用して同じモンスターをカウント，まとめて表示する．
-        if (monster_list_info.empty() || (monster_list_info.back().monster_entity->ap_r_idx != monster.get_ap_r_idx())) {
+        if (monster_list_info.empty() || (monster_list_info.back().monster_entity->get_ap_r_idx() != monster.get_ap_r_idx())) {
             monster_list_info.push_back({ &monster, 0, 0 });
         }
 

@@ -218,7 +218,7 @@ void target_sensing_monsters_prepare(CreatureEntity &creature, std::vector<MONST
         }
 
         /* Sort by index if all conditions are same */
-        return monster1.ap_r_idx > monster2.ap_r_idx;
+        return monster1.get_ap_r_idx() > monster2.get_ap_r_idx();
     };
 
     std::sort(monster_list.begin(), monster_list.end(), comp_importance);

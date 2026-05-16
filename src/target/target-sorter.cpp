@@ -83,11 +83,11 @@ bool TargetSorter::compare_importance(const FloorType &floor, const Pos2D &pos_a
             }
         }
 
-        if (monster_a.ap_r_idx > monster_b.ap_r_idx) {
+        if (monster_a.get_ap_r_idx() > monster_b.get_ap_r_idx()) {
             return true;
         }
 
-        if (monster_a.ap_r_idx < monster_b.ap_r_idx) {
+        if (monster_a.get_ap_r_idx() < monster_b.get_ap_r_idx()) {
             return false;
         }
     }
