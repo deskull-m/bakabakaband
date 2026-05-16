@@ -532,13 +532,13 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
             for (i = A_STR; i < A_MAX; i++) {
                 if (creature.stat_cur[i] < creature.stat_max[i]) {
                     if (creature.stat_cur[i] < 180) {
-                        creature.stat_cur[i] += 10;
+                        creature.add_stat_cur(i, 10);
                     } else {
-                        creature.stat_cur[i] += 10;
+                        creature.add_stat_cur(i, 10);
                     }
 
                     if (creature.stat_cur[i] > creature.stat_max[i]) {
-                        creature.stat_cur[i] = creature.stat_max[i];
+                        creature.set_stat_cur(i, creature.stat_max[i]);
                     }
 
                     rfu.set_flag(StatusRecalculatingFlag::BONUS);

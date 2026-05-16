@@ -104,7 +104,7 @@ void PlayerBasicStatistics::update_top_status()
     int top = modify_stat_value(this->creature.stat_max[status], this->creature.stat_add[status]);
 
     if (this->creature.stat_top[status] != top) {
-        this->creature.stat_top[status] = (int16_t)top;
+        this->creature.set_stat_top(status, (int16_t)top);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
         rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
@@ -138,7 +138,7 @@ void PlayerBasicStatistics::update_use_status()
     use = this->set_exception_use_status(use);
 
     if (this->creature.stat_use[status] != use) {
-        this->creature.stat_use[status] = (int16_t)use;
+        this->creature.set_stat_use(status, (int16_t)use);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
         rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
@@ -171,7 +171,7 @@ void PlayerBasicStatistics::update_index_status()
         return;
     }
 
-    this->creature.stat_index[status] = (int16_t)index;
+    this->creature.set_stat_index(status, (int16_t)index);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags = {
         StatusRecalculatingFlag::MP,

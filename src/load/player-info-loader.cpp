@@ -217,23 +217,23 @@ static void rd_base_status(CreatureEntity &creature)
     bool is_old_format = loading_savefile_version_is_older_than(36);
 
     for (int i = 0; i < A_MAX; i++) {
-        creature.stat_max[i] = rd_s16b();
+        creature.set_stat_max(i, rd_s16b());
         if (is_old_format) {
-            creature.stat_max[i] = convert_old_stat_to_new(creature.stat_max[i]);
+            creature.set_stat_max(i, convert_old_stat_to_new(creature.stat_max[i]));
         }
     }
 
     for (int i = 0; i < A_MAX; i++) {
-        creature.stat_max_max[i] = rd_s16b();
+        creature.set_stat_max_max(i, rd_s16b());
         if (is_old_format) {
-            creature.stat_max_max[i] = convert_old_stat_to_new(creature.stat_max_max[i]);
+            creature.set_stat_max_max(i, convert_old_stat_to_new(creature.stat_max_max[i]));
         }
     }
 
     for (int i = 0; i < A_MAX; i++) {
-        creature.stat_cur[i] = rd_s16b();
+        creature.set_stat_cur(i, rd_s16b());
         if (is_old_format) {
-            creature.stat_cur[i] = convert_old_stat_to_new(creature.stat_cur[i]);
+            creature.set_stat_cur(i, convert_old_stat_to_new(creature.stat_cur[i]));
         }
     }
 }

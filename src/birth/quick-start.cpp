@@ -158,8 +158,9 @@ void load_prev_data(CreatureEntity &creature, bool swap)
     creature.set_au(previous_char.au);
 
     for (int i = 0; i < A_MAX; i++) {
-        creature.stat_cur[i] = creature.stat_max[i] = previous_char.stat_max[i];
-        creature.stat_max_max[i] = previous_char.stat_max_max[i];
+        creature.set_stat_max(i, previous_char.stat_max[i]);
+        creature.set_stat_cur(i, previous_char.stat_max[i]);
+        creature.set_stat_max_max(i, previous_char.stat_max_max[i]);
     }
 
     for (int i = 0; i < PY_MAX_LEVEL; i++) {
