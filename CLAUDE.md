@@ -223,13 +223,15 @@ CreatureEntity
          transform_* 等。提案 21 で全メンバ private 化済)
 ```
 
-### Phase 9-27b: MonsterProfile + CreatureEntity アクセス API の整備 ✅ 完了
+### Phase 9-29: MonsterProfile + CreatureEntity アクセス API の整備 ✅ 完了
 
 提案 9 系列 (read-side virtual)、提案 14-22 系列 (write-side virtual /
 共通走査 API / 一括操作 / class 化)、提案 24-27b 系列 (CreatureEntity
 直下フィールドの setter / 派生情報の自動計算化 / compound assignment
-の OO 化) により、モンスター状態への外部アクセスはほぼ全て
-`CreatureEntity` の virtual API 経由に統一された。
+の OO 化)、提案 28-29 系列 (read getter 整備と完全 private 化) により、
+モンスター状態への外部アクセスはほぼ全て `CreatureEntity` の virtual
+API 経由に統一された。一部フィールド (r_idx / ap_r_idx / riding) は
+完全 private 化されている。
 
 - **提案 14 / 14b**: `find_nearest_creature` / `has_visible_creature` /
   `collect_creatures` で m_list 走査を集約
@@ -253,7 +255,11 @@ CreatureEntity
   virtual。約 110 箇所の compound assignment (`+=` / `-=`) を OO 化
 - **提案 28 / 28b**: `r_idx` / `ap_r_idx` / `riding` の getter virtual
   整備と全 read site (約 290 箇所、参照とポインタ経由両方) の getter
-  経由化。フィールド private 化 (将来の提案 29) 前提条件が整備済み
+  経由化
+- **提案 29**: `r_idx` / `ap_r_idx` / `riding` を CreatureEntity の
+  private 化。CreatureEntity 直下フィールドの完全 private 化に成功
+  した最初の例。これらフィールドへのアクセスは get_*() / set_*() /
+  polymorph_to() / ride_monster() の virtual API 経由でのみ可能
 
 今後の残作業としては、現在 `CreatureEntity` 直下に残存するプレイヤー
 固有フィールド群（種族・職業・熟練度・ESP 等）を、モンスターにも
@@ -262,9 +268,10 @@ CreatureEntity
 方向は取らない。
 
 **残タスク詳細は [`docs/creature-entity-refactoring-roadmap.md`](docs/creature-entity-refactoring-roadmap.md) 参照。**
-Phase 1-27b 完了後の継続提案（プレイヤー専用フィールドのクリーチャー
+Phase 1-29 完了後の継続提案（プレイヤー専用フィールドのクリーチャー
 共通化、プレイヤー専用仮想メソッドの共通化、TimedEffects 二重管理
-解消、read 側のアクセサ化、フィールド完全 private 化等）を同書で管理する。
+解消、戦闘ボーナス系の compound assignment 移行、その他フィールドの
+read 側アクセサ化と private 化等）を同書で管理する。
 新規の統合作業に着手する際は先に同書を参照し、作業完了後は同書と
 本ファイルの両方に進捗を反映すること。
 
