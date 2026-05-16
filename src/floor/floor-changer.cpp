@@ -145,7 +145,7 @@ static void place_pet(CreatureEntity &creature)
     const auto max_num = AngbandWorld::get_instance().is_wild_mode() ? 1 : PartyMonsters::MAX_SIZE;
     auto &floor = *creature.get_floor();
     for (int current_monster = 0; current_monster < max_num; current_monster++) {
-        if (!MonraceList::is_valid(party_monsters[current_monster].r_idx)) {
+        if (!MonraceList::is_valid(party_monsters[current_monster].get_r_idx())) {
             continue;
         }
 

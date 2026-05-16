@@ -248,7 +248,7 @@ std::string monster_desc(CreatureEntity &subject, const CreatureEntity &monster,
     if (monster.get_parent_m_idx() > 0) {
         const auto &parent_monster = subject.get_floor()->get_monster(monster.get_parent_m_idx());
         // 親ID＝自身のIDでは主を失った状態なのでスキップ
-        if (parent_monster.r_idx != monster.get_r_idx()) {
+        if (parent_monster.get_r_idx() != monster.get_r_idx()) {
             auto parent_name = subject.get_floor()->get_monster(monster.get_parent_m_idx()).get_monrace().name;
             if (monster.is_quylthlug_born()) {
                 ss << parent_name << _("が産んだ", "-born ");

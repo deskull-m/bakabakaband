@@ -195,7 +195,7 @@ static bool activate_whistle(CreatureEntity &user, ae_type *ae_ptr)
     std::vector<short> pet_index;
     for (short pet_indice = floor.m_max - 1; pet_indice >= 1; pet_indice--) {
         const auto &monster = floor.get_monster(pet_indice);
-        if (monster.is_pet() && (user.riding != pet_indice)) {
+        if (monster.is_pet() && (user.get_riding() != pet_indice)) {
             pet_index.push_back(pet_indice);
         }
     }

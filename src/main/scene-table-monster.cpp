@@ -97,7 +97,7 @@ static bool is_high_rate(CreatureEntity &creature, MONSTER_IDX m_idx1, MONSTER_I
     }
 
     /* Sort by index if all conditions are same */
-    return monster1.ap_r_idx > monster2.ap_r_idx;
+    return monster1.get_ap_r_idx() > monster2.get_ap_r_idx();
 }
 
 /*!

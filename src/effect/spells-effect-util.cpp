@@ -40,7 +40,7 @@ void FallOffHorseEffect::set_fall_off(int damage)
 
 void FallOffHorseEffect::apply() const
 {
-    if (!this->creature_ptr->riding) {
+    if (!this->creature_ptr->get_riding()) {
         return;
     }
 
@@ -49,7 +49,7 @@ void FallOffHorseEffect::apply() const
     }
 
     const auto &floor = *this->creature_ptr->get_floor();
-    const auto m_name = monster_desc(*this->creature_ptr, floor.get_monster(creature_ptr->riding), 0);
+    const auto m_name = monster_desc(*this->creature_ptr, floor.get_monster(creature_ptr->get_riding()), 0);
 
     if (this->shake_off_damage > 0) {
         if (process_fall_off_horse(*this->creature_ptr, this->shake_off_damage, false)) {
