@@ -1159,6 +1159,42 @@ private に移動する。これらは CreatureEntity 直下フィールドで
 
 ---
 
+## 提案 30: 戦闘ボーナスと stat[] 配列に setter virtual を追加 ✅ 完了
+
+### 背景
+
+CreatureEntity 直下の戦闘ボーナス系 (to_h_b / to_h_m / to_d_m /
+to_a) と能力値配列 stat_*[A_MAX] への直接書込が散在していた。
+to_h*/to_a 系は `calc_*()` 経由で再計算されるため write site は
+少ないが、stat[] は 50 箇所以上の write site があった。
+
+### 作業内容 (commit `1ef9f7722`)
+
+- 新規 virtual (11 個):
+  - 戦闘ボーナス: `set_to_h_b` / `set_to_h_m` / `set_to_d_m` /
+    `set_to_a`
+  - 能力値配列: `set_stat_max(idx, val)` / `set_stat_cur(idx, val)` /
+    `add_stat_cur(idx, delta)` / `set_stat_max_max` /
+    `set_stat_use` / `set_stat_top` / `set_stat_add` /
+    `set_stat_index`
+- 10 ファイル約 55 箇所を OO 経由に統一
+  - 戦闘ボーナス (4 箇所): player-status
+  - 能力値配列 (約 51 箇所): wizard-special-process / player-status /
+    realm-hex / spells-status / base-status / birth-stat /
+    quick-start / player-info-loader / player-basic-statistics
+
+### 注記
+
+- `previous_char` (struct birther) は CreatureEntity ではないため、
+  load/birth-loader での stat 系代入は migration 対象外
+- sed が誤って `creature.set_stat_cur(i, creature.set_stat_max(i,
+  val))` のように void 戻り値を引数に渡す形に変換していた 2 箇所
+  を 2 行に分けて修正
+- 読取り (`stat_use[A_DEX]` 等の比較・参照) は引き続きフィールド
+  直接アクセスのまま維持
+
+---
+
 ## 推奨実施順序
 
 ### 完了済み (大規模フェーズ)
@@ -1188,6 +1224,7 @@ private に移動する。これらは CreatureEntity 直下フィールドで
 - ✅ **提案 28**: r_idx / ap_r_idx / riding に getter virtual を追加し読取り (約 210 箇所、参照形式) を移行
 - ✅ **提案 28b**: ポインタ経由 (`m_ptr->X`) の同フィールド読取り (約 80 箇所) を getter virtual 経由に移行
 - ✅ **提案 29**: `r_idx` / `ap_r_idx` / `riding` を CreatureEntity の private 化 (CreatureEntity 直下フィールドの完全 private 化に成功した最初の例)
+- ✅ **提案 30**: 戦闘ボーナス系 (to_h_b / to_h_m / to_d_m / to_a) と stat 系 (stat_max / stat_cur / stat_max_max / stat_use / stat_top / stat_add / stat_index) の setter virtual 整備、約 55 箇所 migration
 
 ### 既存提案の残作業 (中規模)
 
@@ -1200,12 +1237,9 @@ private に移動する。これらは CreatureEntity 直下フィールドで
 
 ### 今後の候補 (追加提案)
 
-- **提案 30**: 残りの戦闘ボーナス系 (`to_h` / `to_d` / `to_a` /
-  `dis_to_h` / `dis_to_d` 等) と stat 系 (`stat_max[]` /
-  `stat_cur[]` 等) の compound assignment 移行
 - **提案 31**: その他の plain field (`au` / `csp` / `food` / `level`
-  / `town_num` / `age` / `ht` / `wt` / `prestige` 等) の read 側
-  アクセサ化
+  / `town_num` / `age` / `ht` / `wt` / `prestige` / `to_h` /
+  `to_d` / `to_a` / `stat_*` 等) の read 側アクセサ化
 - **提案 32**: 提案 31 完了後に同フィールドを実際に private 化
   (提案 29 と同じパターン)
 - **提案 25b**: 性能影響が出た場合の `get_inven_cnt()` キャッシュ層再導入
