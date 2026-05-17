@@ -339,12 +339,12 @@ static void update_bonuses(CreatureEntity &creature)
     creature.skill_thb = calc_to_hit_shoot(creature);
     creature.skill_tht = calc_to_hit_throw(creature);
     creature.riding_ryoute = is_riding_two_hands(creature);
-    creature.to_d[0] = calc_to_damage(creature, INVEN_MAIN_HAND, true);
-    creature.to_d[1] = calc_to_damage(creature, INVEN_SUB_HAND, true);
+    creature.set_to_d(0, calc_to_damage(creature, INVEN_MAIN_HAND, true));
+    creature.set_to_d(1, calc_to_damage(creature, INVEN_SUB_HAND, true));
     creature.dis_to_d[0] = calc_to_damage(creature, INVEN_MAIN_HAND, false);
     creature.dis_to_d[1] = calc_to_damage(creature, INVEN_SUB_HAND, false);
-    creature.to_h[0] = calc_to_hit(creature, INVEN_MAIN_HAND, true);
-    creature.to_h[1] = calc_to_hit(creature, INVEN_SUB_HAND, true);
+    creature.set_to_h(0, calc_to_hit(creature, INVEN_MAIN_HAND, true));
+    creature.set_to_h(1, calc_to_hit(creature, INVEN_SUB_HAND, true));
     creature.dis_to_h[0] = calc_to_hit(creature, INVEN_MAIN_HAND, false);
     creature.dis_to_h[1] = calc_to_hit(creature, INVEN_SUB_HAND, false);
     creature.set_to_h_b(calc_to_hit_bow(creature, true));
@@ -412,7 +412,7 @@ static void update_bonuses(CreatureEntity &creature)
  */
 static void update_max_hitpoints(CreatureEntity &creature)
 {
-    int bonus = ((int)(adj_con_mhp[creature.stat_index[A_CON]]) - 128) * creature.level / 4;
+    int bonus = ((int)(adj_con_mhp[creature.get_stat_index(A_CON)]) - 128) * creature.level / 4;
     int mhp = creature.player_hp[creature.level - 1];
 
     CreatureClass pc(creature);
@@ -504,7 +504,7 @@ static void update_num_of_spells(CreatureEntity &creature)
         levels = 0;
     }
 
-    int num_allowed = (adj_mag_study[creature.stat_index[mp_ptr->spell_stat]] * levels / 2);
+    int num_allowed = (adj_mag_study[creature.get_stat_index(mp_ptr->spell_stat)] * levels / 2);
     int bonus = 0;
     if (!pc.equals(PlayerClassType::SAMURAI) && (mp_ptr->spell_book != ItemKindType::LIFE_BOOK)) {
         bonus = 4;
@@ -711,12 +711,12 @@ static void update_max_mana(CreatureEntity &creature)
 
     int msp;
     if (pc.equals(PlayerClassType::SAMURAI)) {
-        msp = (adj_mag_mana[creature.stat_index[mp_ptr->spell_stat]] + 10) * 2;
+        msp = (adj_mag_mana[creature.get_stat_index(mp_ptr->spell_stat)] + 10) * 2;
         if (msp) {
             msp += (msp * creature.get_race_info()->r_adj[mp_ptr->spell_stat] / 20);
         }
     } else {
-        msp = adj_mag_mana[creature.stat_index[mp_ptr->spell_stat]] * (levels + 3) / 4;
+        msp = adj_mag_mana[creature.get_stat_index(mp_ptr->spell_stat)] * (levels + 3) / 4;
         if (msp) {
             msp++;
         }
@@ -1038,8 +1038,8 @@ static ACTION_SKILL_POWER calc_disarming(CreatureEntity &creature)
 
     pow = tmp_race_ptr->r_dis + player_class.c_dis + player_personality.a_dis;
     pow += (((*creature.get_class_info()).x_dis * creature.level / 10) + ((*creature.get_personality_info()).a_dis * creature.level / 50));
-    pow += adj_dex_dis[creature.stat_index[A_DEX]];
-    pow += adj_int_dis[creature.stat_index[A_INT]];
+    pow += adj_dex_dis[creature.get_stat_index(A_DEX)];
+    pow += adj_int_dis[creature.get_stat_index(A_INT)];
     return pow;
 }
 
@@ -1083,7 +1083,7 @@ static ACTION_SKILL_POWER calc_device_ability(CreatureEntity &creature)
         }
     }
 
-    pow += adj_int_dev[creature.stat_index[A_INT]];
+    pow += adj_int_dev[creature.get_stat_index(A_INT)];
 
     if (creature.is_shero()) {
         pow -= 20;
@@ -1139,7 +1139,7 @@ static ACTION_SKILL_POWER calc_saving_throw(CreatureEntity &creature)
         pow += 6 + (creature.level - 1) / 10;
     }
 
-    pow += adj_wis_sav[creature.stat_index[A_WIS]];
+    pow += adj_wis_sav[creature.get_stat_index(A_WIS)];
 
     if (creature.has_vuln_curse()) {
         pow -= 10;
@@ -1378,7 +1378,7 @@ static ACTION_SKILL_POWER calc_skill_dig(CreatureEntity &creature)
         pow += 30;
     }
 
-    pow += adj_str_dig[creature.stat_index[A_STR]];
+    pow += adj_str_dig[creature.get_stat_index(A_STR)];
 
     if (CreatureClass(creature).equals(PlayerClassType::BERSERKER)) {
         pow += (100 + creature.level * 8);
@@ -1458,7 +1458,7 @@ static int16_t calc_num_blow(CreatureEntity &creature, int i)
             }
 
             div = ((o_ptr->weight < wgt) ? wgt : o_ptr->weight);
-            str_index = (adj_str_blow[creature.stat_index[A_STR]] * mul / div);
+            str_index = (adj_str_blow[creature.get_stat_index(A_STR)] * mul / div);
 
             if (creature.has_two_handed_weapons() && !has_disable_two_handed_bonus(creature, 0)) {
                 str_index += pc.equals(PlayerClassType::WARRIOR) || pc.equals(PlayerClassType::BERSERKER) ? (creature.level / 23 + 1) : 1;
@@ -1470,7 +1470,7 @@ static int16_t calc_num_blow(CreatureEntity &creature, int i)
                 str_index = 11;
             }
 
-            dex_index = (adj_dex_blow[creature.stat_index[A_DEX]]);
+            dex_index = (adj_dex_blow[creature.get_stat_index(A_DEX)]);
             if (dex_index > 11) {
                 dex_index = 11;
             }
@@ -1485,7 +1485,7 @@ static int16_t calc_num_blow(CreatureEntity &creature, int i)
                 num_blow += (creature.level / 40);
             } else if (pc.equals(PlayerClassType::BERSERKER)) {
                 num_blow += (creature.level / 23);
-            } else if (pc.equals(PlayerClassType::ROGUE) && (o_ptr->weight < 50) && (creature.stat_index[A_DEX] >= 30)) {
+            } else if (pc.equals(PlayerClassType::ROGUE) && (o_ptr->weight < 50) && (creature.get_stat_index(A_DEX) >= 30)) {
                 num_blow++;
             }
 
@@ -1512,7 +1512,7 @@ static int16_t calc_num_blow(CreatureEntity &creature, int i)
     }
     /* Different calculation for monks with empty hands */
     if (is_martial_arts_mode(creature)) {
-        int blow_base = creature.level + adj_dex_blow[creature.stat_index[A_DEX]];
+        int blow_base = creature.level + adj_dex_blow[creature.get_stat_index(A_DEX)];
         num_blow = 0;
 
         if (pc.equals(PlayerClassType::FORCETRAINER)) {
@@ -1675,7 +1675,7 @@ static ARMOUR_CLASS calc_to_ac(CreatureEntity &creature, bool is_real_value)
         return 0;
     }
 
-    ac += ((int)(adj_dex_ta[creature.stat_index[A_DEX]]) - 128);
+    ac += ((int)(adj_dex_ta[creature.get_stat_index(A_DEX)]) - 128);
 
     switch (creature.get_mimic_form()) {
     case MimicKindType::NONE:
@@ -2057,7 +2057,7 @@ static short calc_to_damage(CreatureEntity &creature, INVENTORY_IDX slot, bool i
     }
 
     auto damage = 0;
-    damage += ((int)(adj_str_td[creature.stat_index[A_STR]]) - 128);
+    damage += ((int)(adj_str_td[creature.get_stat_index(A_STR)]) - 128);
 
     if (creature.is_shero()) {
         damage += 3 + (creature.level / 5);
@@ -2175,7 +2175,7 @@ static short calc_to_damage(CreatureEntity &creature, INVENTORY_IDX slot, bool i
     if (main_attack_hand(creature) == calc_hand) {
         if (is_bare_knuckle(creature) || !has_disable_two_handed_bonus(creature, calc_hand)) {
             int bonus_to_d = 0;
-            bonus_to_d = ((int)(adj_str_td[creature.stat_index[A_STR]]) - 128) / 2;
+            bonus_to_d = ((int)(adj_str_td[creature.get_stat_index(A_STR)]) - 128) / 2;
             damage += std::max<int>(bonus_to_d, 1);
         }
     }
@@ -2204,8 +2204,8 @@ static short calc_to_hit(CreatureEntity &creature, INVENTORY_IDX slot, bool is_r
     auto hit = 0;
 
     /* Base bonuses */
-    hit += ((int)(adj_dex_th[creature.stat_index[A_DEX]]) - 128);
-    hit += ((int)(adj_str_th[creature.stat_index[A_STR]]) - 128);
+    hit += ((int)(adj_dex_th[creature.get_stat_index(A_DEX)]) - 128);
+    hit += ((int)(adj_str_th[creature.get_stat_index(A_STR)]) - 128);
 
     /* Temporary bonuses */
     if (creature.is_blessed()) {
@@ -2252,7 +2252,7 @@ static short calc_to_hit(CreatureEntity &creature, INVENTORY_IDX slot, bool is_r
 
         if (is_bare_knuckle(creature) || !has_disable_two_handed_bonus(creature, calc_hand)) {
             int bonus_to_h = 0;
-            bonus_to_h = ((int)(adj_str_th[creature.stat_index[A_STR]]) - 128) + ((int)(adj_dex_th[creature.stat_index[A_DEX]]) - 128);
+            bonus_to_h = ((int)(adj_str_th[creature.get_stat_index(A_STR)]) - 128) + ((int)(adj_dex_th[creature.get_stat_index(A_DEX)]) - 128);
             hit += std::max<int>(bonus_to_h, 1);
         }
     }
@@ -2438,8 +2438,8 @@ static int16_t calc_to_hit_bow(CreatureEntity &creature, bool is_real_value)
 {
     int16_t pow = 0;
 
-    pow += ((int)(adj_dex_th[creature.stat_index[A_DEX]]) - 128);
-    pow += ((int)(adj_str_th[creature.stat_index[A_STR]]) - 128);
+    pow += ((int)(adj_dex_th[creature.get_stat_index(A_DEX)]) - 128);
+    pow += ((int)(adj_str_th[creature.get_stat_index(A_STR)]) - 128);
 
     {
         ItemEntity *o_ptr;
@@ -2539,7 +2539,7 @@ static int16_t calc_to_damage_misc(CreatureEntity &creature)
     }
 
     to_dam -= creature.get_stun_damage_penalty();
-    to_dam += ((int)(adj_str_td[creature.stat_index[A_STR]]) - 128);
+    to_dam += ((int)(adj_str_td[creature.get_stat_index(A_STR)]) - 128);
     return to_dam;
 }
 
@@ -2577,8 +2577,8 @@ static int16_t calc_to_hit_misc(CreatureEntity &creature)
     }
 
     to_hit -= creature.get_stun_damage_penalty();
-    to_hit += ((int)(adj_dex_th[creature.stat_index[A_DEX]]) - 128);
-    to_hit += ((int)(adj_str_th[creature.stat_index[A_STR]]) - 128);
+    to_hit += ((int)(adj_dex_th[creature.get_stat_index(A_DEX)]) - 128);
+    to_hit += ((int)(adj_str_th[creature.get_stat_index(A_STR)]) - 128);
 
     return to_hit;
 }
@@ -2596,7 +2596,7 @@ static int calc_to_weapon_dice_num(CreatureEntity &creature, INVENTORY_IDX slot)
  */
 int calc_weight_limit(CreatureEntity &creature)
 {
-    auto i = adj_str_wgt[creature.stat_index[A_STR]] * 50;
+    auto i = adj_str_wgt[creature.get_stat_index(A_STR)] * 50;
     if (CreatureClass(creature).equals(PlayerClassType::BERSERKER)) {
         i = i * 3 / 2;
     }
@@ -2872,12 +2872,12 @@ void check_experience(CreatureEntity &creature)
                 while (true) {
                     int n;
 
-                    prt(format(_("        a) 腕力 (現在値 %s)", "        a) Str (cur %s)"), cnv_stat(creature.stat_max[0]).data()), 2, 14);
-                    prt(format(_("        b) 知能 (現在値 %s)", "        b) Int (cur %s)"), cnv_stat(creature.stat_max[1]).data()), 3, 14);
-                    prt(format(_("        c) 賢さ (現在値 %s)", "        c) Wis (cur %s)"), cnv_stat(creature.stat_max[2]).data()), 4, 14);
-                    prt(format(_("        d) 器用 (現在値 %s)", "        d) Dex (cur %s)"), cnv_stat(creature.stat_max[3]).data()), 5, 14);
-                    prt(format(_("        e) 耐久 (現在値 %s)", "        e) Con (cur %s)"), cnv_stat(creature.stat_max[4]).data()), 6, 14);
-                    prt(format(_("        f) 魅力 (現在値 %s)", "        f) Chr (cur %s)"), cnv_stat(creature.stat_max[5]).data()), 7, 14);
+                    prt(format(_("        a) 腕力 (現在値 %s)", "        a) Str (cur %s)"), cnv_stat(creature.get_stat_max(0)).data()), 2, 14);
+                    prt(format(_("        b) 知能 (現在値 %s)", "        b) Int (cur %s)"), cnv_stat(creature.get_stat_max(1)).data()), 3, 14);
+                    prt(format(_("        c) 賢さ (現在値 %s)", "        c) Wis (cur %s)"), cnv_stat(creature.get_stat_max(2)).data()), 4, 14);
+                    prt(format(_("        d) 器用 (現在値 %s)", "        d) Dex (cur %s)"), cnv_stat(creature.get_stat_max(3)).data()), 5, 14);
+                    prt(format(_("        e) 耐久 (現在値 %s)", "        e) Con (cur %s)"), cnv_stat(creature.get_stat_max(4)).data()), 6, 14);
+                    prt(format(_("        f) 魅力 (現在値 %s)", "        f) Chr (cur %s)"), cnv_stat(creature.get_stat_max(5)).data()), 7, 14);
 
                     prt("", 8, 14);
                     prt(_("        どの能力値を上げますか？", "        Which stat do you want to raise?"), 1, 14);
@@ -3088,7 +3088,7 @@ void stop_mouth(CreatureEntity &creature)
 
 int calc_weapon_weight_limit(CreatureEntity &creature)
 {
-    auto weight = adj_str_hold[creature.stat_index[A_STR]];
+    auto weight = adj_str_hold[creature.get_stat_index(A_STR)];
     if (creature.has_two_handed_weapons()) {
         weight *= 2;
     }
@@ -3098,7 +3098,7 @@ int calc_weapon_weight_limit(CreatureEntity &creature)
 
 int calc_bow_weight_limit(CreatureEntity &creature)
 {
-    auto weight = adj_str_hold[creature.stat_index[A_STR]];
+    auto weight = adj_str_hold[creature.get_stat_index(A_STR)];
     return weight;
 }
 

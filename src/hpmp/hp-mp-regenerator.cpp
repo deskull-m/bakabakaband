@@ -222,7 +222,7 @@ void regenmagic(CreatureEntity &creature, int regen_amount)
     }
 
     const int dev = 30;
-    const int mult = (dev + adj_mag_mana[creature.stat_index[A_INT]]); /* x1 to x2 speed bonus for recharging */
+    const int mult = (dev + adj_mag_mana[creature.get_stat_index(A_INT)]); /* x1 to x2 speed bonus for recharging */
 
     for (auto tval : { ItemKindType::STAFF, ItemKindType::WAND }) {
         for (auto &item : magic_eater_data->get_item_group(tval)) {

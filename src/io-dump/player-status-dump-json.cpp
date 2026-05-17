@@ -102,10 +102,10 @@ static void add_stats_to_json(nlohmann::json &j, CreatureEntity &creature)
     for (int i = 0; i < A_MAX; i++) {
         nlohmann::json stat;
         stat["name"] = stat_names[i];
-        stat["current"] = creature.stat_cur[i];
-        stat["max"] = creature.stat_max[i];
-        stat["use"] = creature.stat_use[i];
-        stat["top"] = creature.stat_top[i];
+        stat["current"] = creature.get_stat_cur(i);
+        stat["max"] = creature.get_stat_max(i);
+        stat["use"] = creature.get_stat_use(i);
+        stat["top"] = creature.get_stat_top(i);
         stats.push_back(stat);
     }
 
@@ -146,10 +146,10 @@ static void add_status_to_json(nlohmann::json &j, CreatureEntity &creature)
  */
 static void add_combat_to_json(nlohmann::json &j, CreatureEntity &creature)
 {
-    j["combat"]["base_to_hit"] = creature.to_h_b;
-    j["combat"]["melee_to_hit"] = creature.to_h_m;
-    j["combat"]["melee_to_damage"] = creature.to_d_m;
-    j["combat"]["ranged_to_hit"] = creature.to_h_b;
+    j["combat"]["base_to_hit"] = creature.get_to_h_b();
+    j["combat"]["melee_to_hit"] = creature.get_to_h_m();
+    j["combat"]["melee_to_damage"] = creature.get_to_d_m();
+    j["combat"]["ranged_to_hit"] = creature.get_to_h_b();
 
     // 攻撃回数
     j["combat"]["num_blow"] = creature.num_blow[0];

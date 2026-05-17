@@ -177,12 +177,12 @@ static void decide_mind_chance(CreatureEntity &creature, cm_type *cm_ptr)
 
     cm_ptr->chance -= 3 * (cm_ptr->plev - cm_ptr->spell.min_lev);
     cm_ptr->chance += creature.to_m_chance;
-    cm_ptr->chance -= 3 * (adj_mag_stat[creature.stat_index[mp_ptr->spell_stat]] - 1);
+    cm_ptr->chance -= 3 * (adj_mag_stat[creature.get_stat_index(mp_ptr->spell_stat)] - 1);
     if ((cm_ptr->mana_cost > creature.get_csp()) && (cm_ptr->use_mind != MindKindType::BERSERKER) && (cm_ptr->use_mind != MindKindType::NINJUTSU)) {
         cm_ptr->chance += 5 * (cm_ptr->mana_cost - creature.get_csp());
     }
 
-    cm_ptr->minfail = adj_mag_fail[creature.stat_index[mp_ptr->spell_stat]];
+    cm_ptr->minfail = adj_mag_fail[creature.get_stat_index(mp_ptr->spell_stat)];
     if (cm_ptr->chance < cm_ptr->minfail) {
         cm_ptr->chance = cm_ptr->minfail;
     }

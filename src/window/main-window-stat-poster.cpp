@@ -47,15 +47,15 @@
  */
 void print_stat(CreatureEntity &creature, int stat)
 {
-    if (creature.stat_cur[stat] < creature.stat_max[stat]) {
+    if (creature.get_stat_cur(stat) < creature.get_stat_max(stat)) {
         put_str(stat_names_reduced[stat], ROW_STAT + stat, 0);
-        c_put_str(TERM_YELLOW, cnv_stat(creature.stat_use[stat]), ROW_STAT + stat, COL_STAT + 6);
+        c_put_str(TERM_YELLOW, cnv_stat(creature.get_stat_use(stat)), ROW_STAT + stat, COL_STAT + 6);
     } else {
         put_str(stat_names[stat], ROW_STAT + stat, 0);
-        c_put_str(TERM_L_GREEN, cnv_stat(creature.stat_use[stat]), ROW_STAT + stat, COL_STAT + 6);
+        c_put_str(TERM_L_GREEN, cnv_stat(creature.get_stat_use(stat)), ROW_STAT + stat, COL_STAT + 6);
     }
 
-    if (creature.stat_max[stat] != creature.stat_max_max[stat]) {
+    if (creature.get_stat_max(stat) != creature.get_stat_max_max(stat)) {
         return;
     }
 

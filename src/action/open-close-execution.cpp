@@ -347,7 +347,7 @@ bool exe_bash(CreatureEntity &creature, POSITION y, POSITION x, const Direction 
     const Pos2D pos(y, x);
     const auto &grid = floor.get_grid(pos);
     const auto &terrain = grid.get_terrain();
-    int bash = adj_str_blow[creature.stat_index[A_STR]];
+    int bash = adj_str_blow[creature.get_stat_index(A_STR)];
     int power = terrain.power;
     const auto &name = grid.get_terrain(TerrainKind::MIMIC).name;
     PlayerEnergy(creature).set_player_turn_energy(100);
@@ -373,7 +373,7 @@ bool exe_bash(CreatureEntity &creature, POSITION y, POSITION x, const Direction 
         }
 
         exe_movement(creature, dir, false, false);
-    } else if (evaluate_percent(adj_dex_safe[creature.stat_index[A_DEX]] + creature.level)) {
+    } else if (evaluate_percent(adj_dex_safe[creature.get_stat_index(A_DEX)] + creature.level)) {
         msg_format(_("この%sは頑丈だ。", "The %s holds firm."), name.data());
         more = true;
     } else {

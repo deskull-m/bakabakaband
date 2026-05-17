@@ -780,7 +780,7 @@ static void display_spell_list(CreatureEntity &creature)
 
             chance = spell.fail;
             chance -= 3 * (creature.level - spell.min_lev);
-            chance -= 3 * (adj_mag_stat[creature.stat_index[mp_ptr->spell_stat]] - 1);
+            chance -= 3 * (adj_mag_stat[creature.get_stat_index(mp_ptr->spell_stat)] - 1);
             if (!use_hp) {
                 if (spell.mana_cost > creature.get_csp()) {
                     chance += 5 * (spell.mana_cost - creature.get_csp());
@@ -793,7 +793,7 @@ static void display_spell_list(CreatureEntity &creature)
                 }
             }
 
-            minfail = adj_mag_fail[creature.stat_index[mp_ptr->spell_stat]];
+            minfail = adj_mag_fail[creature.get_stat_index(mp_ptr->spell_stat)];
             if (chance < minfail) {
                 chance = minfail;
             }

@@ -530,15 +530,15 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
 
             auto &rfu = RedrawingFlagsUpdater::get_instance();
             for (i = A_STR; i < A_MAX; i++) {
-                if (creature.stat_cur[i] < creature.stat_max[i]) {
-                    if (creature.stat_cur[i] < 180) {
+                if (creature.get_stat_cur(i) < creature.get_stat_max(i)) {
+                    if (creature.get_stat_cur(i) < 180) {
                         creature.add_stat_cur(i, 10);
                     } else {
                         creature.add_stat_cur(i, 10);
                     }
 
-                    if (creature.stat_cur[i] > creature.stat_max[i]) {
-                        creature.set_stat_cur(i, creature.stat_max[i]);
+                    if (creature.get_stat_cur(i) > creature.get_stat_max(i)) {
+                        creature.set_stat_cur(i, creature.get_stat_max(i));
                     }
 
                     rfu.set_flag(StatusRecalculatingFlag::BONUS);

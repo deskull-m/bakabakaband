@@ -168,8 +168,8 @@ void do_cmd_knowledge_stat(CreatureEntity &creature)
 
     fprintf(fff, _("能力の最大値\n\n", "Limits of maximum stats\n\n"));
     for (int v_nr = 0; v_nr < A_MAX; v_nr++) {
-        if ((creature.knowledge & KNOW_STAT) || creature.stat_max[v_nr] == creature.stat_max_max[v_nr]) {
-            fprintf(fff, "%s 18/%d\n", stat_names[v_nr], creature.stat_max_max[v_nr] - 18);
+        if ((creature.knowledge & KNOW_STAT) || creature.get_stat_max(v_nr) == creature.get_stat_max_max(v_nr)) {
+            fprintf(fff, "%s 18/%d\n", stat_names[v_nr], creature.get_stat_max_max(v_nr) - 18);
         } else {
             fprintf(fff, "%s ???\n", stat_names[v_nr]);
         }

@@ -184,7 +184,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
     switch (randint1(22)) {
     case 1: {
         if (creature.get_mutations().has_not(PlayerMutationType::MORONIC)) {
-            if ((creature.stat_use[A_INT] < 4) && (creature.stat_use[A_WIS] < 4)) {
+            if ((creature.get_stat_use(A_INT) < 4) && (creature.get_stat_use(A_WIS) < 4)) {
                 msg_print(_("あなたは完璧な馬鹿になったような気がした。しかしそれは元々だった。", "You turn into an utter moron!"));
             } else {
                 msg_print(_("あなたは完璧な馬鹿になった！", "You turn into an utter moron!"));

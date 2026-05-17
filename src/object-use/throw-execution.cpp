@@ -119,7 +119,7 @@ void ObjectThrowEntity::calc_throw_range()
         div /= 2;
     }
 
-    this->tdis = (adj_str_blow[creature.stat_index[A_STR]] + 20) * mul / div;
+    this->tdis = (adj_str_blow[creature.get_stat_index(A_STR)] + 20) * mul / div;
     if (this->tdis > mul) {
         this->tdis = mul;
     }
@@ -192,7 +192,7 @@ void ObjectThrowEntity::set_racial_chance()
 {
     auto &creature = *this->creature_ptr;
     auto compensation = this->obj_flags.has(TR_THROW) ? this->q_ptr->to_h : 0;
-    this->chance = creature.skill_tht + (creature.to_h_b + compensation) * BTH_PLUS_ADJ;
+    this->chance = creature.skill_tht + (creature.get_to_h_b() + compensation) * BTH_PLUS_ADJ;
     if (this->shuriken != 0) {
         this->chance *= 2;
     }
@@ -280,7 +280,7 @@ void ObjectThrowEntity::check_boomerang_throw()
         return;
     }
 
-    this->back_chance = randint1(30) + 20 + ((int)(adj_dex_th[creature.stat_index[A_DEX]]) - 128);
+    this->back_chance = randint1(30) + 20 + ((int)(adj_dex_th[creature.get_stat_index(A_DEX)]) - 128);
     this->super_boomerang = ((this->q_ptr->is_specific_artifact(FixedArtifactId::MJOLLNIR) || this->q_ptr->is_specific_artifact(FixedArtifactId::AEGISFANG)) && this->boomerang);
     this->corruption_possibility = -1;
     if (this->boomerang) {
@@ -518,10 +518,10 @@ void ObjectThrowEntity::calc_racial_power_damage()
     this->tdam += (this->q_ptr->to_d > 0 ? 1 : -1) * this->q_ptr->to_d;
     if (this->boomerang) {
         this->tdam *= (this->mult + creature.num_blow[this->i_idx - INVEN_MAIN_HAND]);
-        this->tdam += creature.to_d_m;
+        this->tdam += creature.get_to_d_m();
     } else if (this->obj_flags.has(TR_THROW)) {
         this->tdam *= (3 + this->mult);
-        this->tdam += creature.to_d_m;
+        this->tdam += creature.get_to_d_m();
     } else {
         this->tdam *= this->mult;
     }

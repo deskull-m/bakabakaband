@@ -264,13 +264,13 @@ static tl::optional<BaseitemKey> select_magic_eater(CreatureEntity &creature, bo
                 const auto &baseitem = baseitems.lookup_baseitem({ tval, sval_ctr });
                 level = (tval == ItemKindType::ROD ? baseitem.level * 5 / 6 - 5 : baseitem.level);
                 chance = level * 4 / 5 + 20;
-                chance -= 3 * (adj_mag_stat[creature.stat_index[mp_ptr->spell_stat]] - 1);
+                chance -= 3 * (adj_mag_stat[creature.get_stat_index(mp_ptr->spell_stat)] - 1);
                 level /= 2;
                 if (creature.level > level) {
                     chance -= 3 * (creature.level - level);
                 }
                 chance = mod_spell_chance_1(creature, chance);
-                chance = std::max<int>(chance, adj_mag_fail[creature.stat_index[mp_ptr->spell_stat]]);
+                chance = std::max<int>(chance, adj_mag_fail[creature.get_stat_index(mp_ptr->spell_stat)]);
                 chance += creature.get_stun_magic_chance_penalty();
                 if (chance > 95) {
                     chance = 95;
@@ -505,13 +505,13 @@ bool do_cmd_magic_eater(CreatureEntity &creature, bool only_browse, bool powerfu
     const auto &baseitem = baseitems.lookup_baseitem(*bi_key);
     auto level = (bi_key->tval() == ItemKindType::ROD ? baseitem.level * 5 / 6 - 5 : baseitem.level);
     auto chance = level * 4 / 5 + 20;
-    chance -= 3 * (adj_mag_stat[creature.stat_index[mp_ptr->spell_stat]] - 1);
+    chance -= 3 * (adj_mag_stat[creature.get_stat_index(mp_ptr->spell_stat)] - 1);
     level /= 2;
     if (creature.level > level) {
         chance -= 3 * (creature.level - level);
     }
     chance = mod_spell_chance_1(creature, chance);
-    chance = std::max<int>(chance, adj_mag_fail[creature.stat_index[mp_ptr->spell_stat]]);
+    chance = std::max<int>(chance, adj_mag_fail[creature.get_stat_index(mp_ptr->spell_stat)]);
     chance += creature.get_stun_magic_chance_penalty();
     if (chance > 95) {
         chance = 95;

@@ -21,10 +21,10 @@ int AllianceSexyCommandoClub::calcImpressionPoint([[maybe_unused]] const Creatur
 
     // 基本ステータス評価 - バランス重視だが特殊
     /*
-    auto str = creature.stat_index[A_STR];
-    auto dex = creature.stat_index[A_DEX];
-    auto con = creature.stat_index[A_CON];
-    auto cha = creature.stat_index[A_CHR];
+    auto str = creature.get_stat_index(A_STR);
+    auto dex = creature.get_stat_index(A_DEX);
+    auto con = creature.get_stat_index(A_CON);
+    auto cha = creature.get_stat_index(A_CHR);
 
     // 器用さを最重視（フラフープなど）
     if (dex >= 18) {

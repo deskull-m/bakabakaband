@@ -139,7 +139,7 @@ static void display_shoot_magnification(CreatureEntity &creature)
             tmul++;
         }
 
-        tmul = tmul * (100 + (int)(adj_str_td[creature.stat_index[A_STR]]) - 128);
+        tmul = tmul * (100 + (int)(adj_str_td[creature.get_stat_index(A_STR)]) - 128);
     }
 
     display_player_one_line(ENTRY_SHOOT_POWER, format("x%d.%02d", tmul / 100, tmul % 100), TERM_L_BLUE);

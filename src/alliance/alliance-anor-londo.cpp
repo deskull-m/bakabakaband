@@ -15,7 +15,7 @@ int AllianceAnorLondo::calcImpressionPoint(const CreatureEntity &creature) const
     int bias = 12;
     int level = 25;
 
-    int base_stat = (creature.stat_max[A_INT] + creature.stat_max[A_CHR]) / 2;
+    int base_stat = (creature.get_stat_max(A_INT) + creature.get_stat_max(A_CHR)) / 2;
     int impression = base_stat + bias + creature.level / level;
     impression += calcIronmanHostilityPenalty();
 

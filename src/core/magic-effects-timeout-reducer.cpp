@@ -234,18 +234,18 @@ void reduce_magic_effects_timeout(CreatureEntity &creature)
     }
 
     if (effects->poison().is_poisoned()) {
-        int adjust = adj_con_fix[creature.stat_index[A_CON]] + 1;
+        int adjust = adj_con_fix[creature.get_stat_index(A_CON)] + 1;
         (void)bss.mod_poison(-adjust);
     }
 
     if (effects->stun().is_stunned()) {
-        int adjust = adj_con_fix[creature.stat_index[A_CON]] + 1;
+        int adjust = adj_con_fix[creature.get_stat_index(A_CON)] + 1;
         (void)bss.mod_stun(-adjust);
     }
 
     auto &player_cut = effects->cut();
     if (player_cut.is_cut()) {
-        short adjust = adj_con_fix[creature.stat_index[A_CON]] + 1;
+        short adjust = adj_con_fix[creature.get_stat_index(A_CON)] + 1;
         if (player_cut.get_rank() == PlayerCutRank::MORTAL) {
             adjust = 0;
         }
