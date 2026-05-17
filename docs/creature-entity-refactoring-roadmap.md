@@ -1358,6 +1358,70 @@ private 化したフィールド (7 個):
 
 ---
 
+## 提案 32b: 残り 14 個の plain field を private 化 ✅ 完了
+
+### 背景
+
+提案 32 で安全な 7 フィールドのみ private 化したが、提案 32 で他クラス
+との名前衝突を避けるためスコープから除外していた残りのフィールドに
+ついても、個別に build エラーを fix する形で完全 private 化する。
+
+### 作業内容 (commit `5221ea0ba`)
+
+private 化したフィールド (15 個、to_a 再確認分含む):
+- 基本情報: `age` / `ht` / `wt`
+- ステータス配列: `stat_max[]` / `stat_max_max[]` / `stat_cur[]` /
+  `stat_use[]` / `stat_top[]` / `stat_add[]` / `stat_index[]` (7 個)
+- 経験値: `max_exp` / `exp`
+- MP: `msp` / `csp`
+- 街番号: `town_num`
+- レベル: `level`
+- 所持金: `au`
+- 食料: `food`
+- 戦闘ボーナス配列: `to_h[]` / `to_d[]`
+
+新規 virtual (3 個):
+- `add_csp_with_frac(int, uint32_t)` / `sub_csp_with_frac(int, uint32_t)`
+- `add_exp_with_frac(EXP, uint32_t)`
+
+(`s64b_add/sub` に `&creature.csp` のような private フィールドへの
+lvalue 参照を直接渡せないため、ラッパとして導入)
+
+### migration (10 ファイル)
+
+- `core/player-processor`: cost s64b_sub
+- `hpmp/hp-mp-regenerator`: this->food / s64b_add/sub for csp
+- `mind/mind-power-getter`: level / csp / stat_index 関連
+- `monster-floor/monster-sweep-grid`: csp/msp 比較式
+- `monster-floor/one-monster-placer`: stat_max/cur/max_max/use の
+  modifiers 適用 + `m_ptr->exp` 初期化
+- `player-base/player-race`: `creature_ptr->level` 系
+- `player/player-damage`: `this->level`
+- `specific-object/stone-of-lore`: msp/csp 消費処理
+- `spell-class/spells-mirror-master`: csp/msp/level
+- `spell-realm/spells-hex`: s64b_sub for csp
+- `spell-realm/spells-song`: s64b_sub for csp
+- `status/experience`: s64b_add for exp
+- `view/display-lore`: `dummy.level` 初期化
+- `wizard/wizard-spoiler`: `dummy_p.level` 初期化
+
+### 最終到達点
+
+| カテゴリ | 完全 private 化済 |
+|---|---|
+| MonsterProfile (提案 21) | 12 個 |
+| r_idx / ap_r_idx / riding (提案 29) | 3 個 |
+| 提案 32 安全フィールド | 7 個 |
+| 提案 32b 残りフィールド | 15 個 |
+| **合計** | **37 個** |
+| inven_cnt / equip_cnt (提案 25) | フィールド廃止 |
+
+CreatureEntity のフィールドカプセル化が**事実上最終形**に到達。
+これらフィールドへのアクセスは全て virtual API 経由でのみ可能となり、
+将来 friend 宣言を撤廃すれば完全閉鎖系となる。
+
+---
+
 ## 推奨実施順序
 
 ### 完了済み (大規模フェーズ)
@@ -1392,6 +1456,7 @@ private 化したフィールド (7 個):
 - ✅ **提案 31b**: stat_*[] (7 種) と to_h_b / to_h_m / to_d_m / to_a / to_h[hand] / to_d[hand] の getter virtual 整備と read site 約 270 箇所の migration
 - ✅ **提案 31c**: level read site (628 箇所) を get_level() 経由に統一 (175 ファイル migration)
 - ✅ **提案 32**: 安全な 7 フィールド (ambush_flag / prestige / max_max_exp / max_plv / to_h_b / to_h_m / to_d_m) を CreatureEntity の private 化 (縮小スコープ。他クラス名前衝突を避けたため)
+- ✅ **提案 32b**: 残り 14 個の plain field (age / ht / wt / stat_*[] / max_exp / exp / msp / csp / town_num / level / au / food / to_h[] / to_d[]) を CreatureEntity の private 化 (個別 fix で対応、合計 37 フィールドが完全 private 化)
 
 ### 既存提案の残作業 (中規模)
 
@@ -1404,13 +1469,15 @@ private 化したフィールド (7 個):
 
 ### 今後の候補 (追加提案)
 
-- **提案 32b**: 残りの getter 整備済みフィールド (au / csp / food /
-  town_num / level / age / ht / wt / msp / exp / max_exp / to_h[] /
-  to_d[] / to_a / stat_*[]) を個別ファイル単位で慎重に private 化。
-  他クラス (ItemEntity / MonraceDefinition / ArtifactType /
-  ActivationType / QuestType 等) との名前衝突を避けるため、機械的
-  sed 移行ではなく対象型 (CreatureEntity / PlayerType) と特定可能
-  な call site を 1 つずつ手作業で fix する必要がある
+提案 14-32b で CreatureEntity の主要フィールド (37 個) は完全 private
+化に到達した。残作業は以下のロードマップ既存提案 (1, 2, 4, 5, 6) に
+集約される:
+
+1. **提案 1** - プレイヤー専用フィールドのクリーチャー共通化
+2. **提案 2** - プレイヤー専用 virtual メソッドの共通化
+3. **提案 5** - TimedEffects 二重管理解消
+4. **提案 4** - 残存状態チェック関数の仮想化
+5. **提案 6** - フィールド命名統一
 - **提案 25b**: 性能影響が出た場合の `get_inven_cnt()` キャッシュ層再導入
   → **検証済 (不要)**: 全 12 call site が低頻度 (savefile load / inventory
   pickup / death message / character dump / 個別 UI コマンド)。最頻箇所
