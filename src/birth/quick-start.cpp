@@ -106,8 +106,8 @@ void save_prev_data(CreatureEntity &creature, birther *birther_ptr)
     birther_ptr->au = creature.get_au();
 
     for (int i = 0; i < A_MAX; i++) {
-        birther_ptr->stat_max[i] = creature.stat_max[i];
-        birther_ptr->stat_max_max[i] = creature.stat_max_max[i];
+        birther_ptr->stat_max[i] = creature.get_stat_max(i);
+        birther_ptr->stat_max_max[i] = creature.get_stat_max_max(i);
     }
 
     for (int i = 0; i < PY_MAX_LEVEL; i++) {

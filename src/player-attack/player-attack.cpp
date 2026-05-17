@@ -337,7 +337,7 @@ static void process_weapon_attack(CreatureEntity &creature, player_attack_type *
 
     auto do_impact = does_weapon_has_flag(creature.impact, pa_ptr);
     if ((o_ptr->bi_key != BaseitemKey(ItemKindType::SWORD, SV_POISON_NEEDLE)) && !(pa_ptr->mode == HISSATSU_KYUSHO)) {
-        pa_ptr->attack_damage = critical_norm(creature, o_ptr->weight, o_ptr->to_h, pa_ptr->attack_damage, creature.to_h[pa_ptr->hand], pa_ptr->mode, do_impact);
+        pa_ptr->attack_damage = critical_norm(creature, o_ptr->weight, o_ptr->to_h, pa_ptr->attack_damage, creature.get_to_h(pa_ptr->hand), pa_ptr->mode, do_impact);
     }
 
     pa_ptr->drain_result = pa_ptr->attack_damage;
@@ -376,8 +376,8 @@ static void calc_attack_damage(CreatureEntity &creature, player_attack_type *pa_
  */
 static void apply_damage_bonus(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    pa_ptr->attack_damage += creature.to_d[pa_ptr->hand];
-    pa_ptr->drain_result += creature.to_d[pa_ptr->hand];
+    pa_ptr->attack_damage += creature.get_to_d(pa_ptr->hand);
+    pa_ptr->drain_result += creature.get_to_d(pa_ptr->hand);
 
     if ((pa_ptr->mode == HISSATSU_SUTEMI) || (pa_ptr->mode == HISSATSU_3DAN)) {
         pa_ptr->attack_damage *= 2;

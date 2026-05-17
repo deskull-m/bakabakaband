@@ -83,15 +83,15 @@ void wr_player(CreatureEntity &creature)
     }
 
     for (int i = 0; i < A_MAX; ++i) {
-        wr_s16b(creature.stat_max[i]);
+        wr_s16b(creature.get_stat_max(i));
     }
 
     for (int i = 0; i < A_MAX; ++i) {
-        wr_s16b(creature.stat_max_max[i]);
+        wr_s16b(creature.get_stat_max_max(i));
     }
 
     for (int i = 0; i < A_MAX; ++i) {
-        wr_s16b(creature.stat_cur[i]);
+        wr_s16b(creature.get_stat_cur(i));
     }
 
     for (int i = 0; i < 12; ++i) {

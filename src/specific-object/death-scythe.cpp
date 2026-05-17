@@ -156,9 +156,9 @@ void process_death_scythe_reflection(CreatureEntity &creature, player_attack_typ
     compensate_death_scythe_reflection_magnification(creature, &magnification, death_scythe_flags);
     pa_ptr->attack_damage *= (int)magnification;
     pa_ptr->attack_damage /= 10;
-    pa_ptr->attack_damage = critical_norm(creature, o_ptr->weight, o_ptr->to_h, pa_ptr->attack_damage, creature.to_h[pa_ptr->hand], pa_ptr->mode);
+    pa_ptr->attack_damage = critical_norm(creature, o_ptr->weight, o_ptr->to_h, pa_ptr->attack_damage, creature.get_to_h(pa_ptr->hand), pa_ptr->mode);
     death_scythe_reflection_critial_hit(pa_ptr);
-    pa_ptr->attack_damage += (creature.to_d[pa_ptr->hand] + o_ptr->to_d);
+    pa_ptr->attack_damage += (creature.get_to_d(pa_ptr->hand) + o_ptr->to_d);
     if (pa_ptr->attack_damage < 0) {
         pa_ptr->attack_damage = 0;
     }

@@ -78,7 +78,7 @@ PERCENTAGE racial_chance(CreatureEntity &creature, rpi_type *rpi_ptr)
     }
 
     difficulty = difficulty / 2;
-    const auto stat = creature.stat_cur[rpi_ptr->stat];
+    const auto stat = creature.get_stat_cur(rpi_ptr->stat);
     auto sum = 0;
     for (auto i = 1; i <= stat; i++) {
         int val = i - difficulty;
@@ -145,7 +145,7 @@ racial_level_check_result check_racial_level(CreatureEntity &creature, rpi_type 
 
     adjust_racial_power_difficulty(creature, rpi_ptr, &difficulty);
     energy.set_player_turn_energy(100);
-    if (randint1(creature.stat_cur[rpi_ptr->stat]) >= ((difficulty / 2) + randint1(difficulty / 2))) {
+    if (randint1(creature.get_stat_cur(rpi_ptr->stat)) >= ((difficulty / 2) + randint1(difficulty / 2))) {
         return RACIAL_SUCCESS;
     }
 

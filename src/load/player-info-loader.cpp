@@ -219,21 +219,21 @@ static void rd_base_status(CreatureEntity &creature)
     for (int i = 0; i < A_MAX; i++) {
         creature.set_stat_max(i, rd_s16b());
         if (is_old_format) {
-            creature.set_stat_max(i, convert_old_stat_to_new(creature.stat_max[i]));
+            creature.set_stat_max(i, convert_old_stat_to_new(creature.get_stat_max(i)));
         }
     }
 
     for (int i = 0; i < A_MAX; i++) {
         creature.set_stat_max_max(i, rd_s16b());
         if (is_old_format) {
-            creature.set_stat_max_max(i, convert_old_stat_to_new(creature.stat_max_max[i]));
+            creature.set_stat_max_max(i, convert_old_stat_to_new(creature.get_stat_max_max(i)));
         }
     }
 
     for (int i = 0; i < A_MAX; i++) {
         creature.set_stat_cur(i, rd_s16b());
         if (is_old_format) {
-            creature.set_stat_cur(i, convert_old_stat_to_new(creature.stat_cur[i]));
+            creature.set_stat_cur(i, convert_old_stat_to_new(creature.get_stat_cur(i)));
         }
     }
 }

@@ -428,9 +428,9 @@ void MonsterAttackPlayer::process_player_stun()
         accumulation_rank++;
     }
 
-    auto str = this->stat_value(creature.stat_cur[A_STR]);
-    auto dex = this->stat_value(creature.stat_cur[A_DEX]);
-    auto con = this->stat_value(creature.stat_cur[A_CON]);
+    auto str = this->stat_value(creature.get_stat_cur(A_STR));
+    auto dex = this->stat_value(creature.get_stat_cur(A_DEX));
+    auto con = this->stat_value(creature.get_stat_cur(A_CON));
     auto is_powerful_body = str + dex + con > 80;
     if (is_powerful_body) {
         accumulation_rank--;

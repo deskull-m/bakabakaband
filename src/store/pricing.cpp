@@ -39,7 +39,7 @@ int price_item(CreatureEntity &creature, const ItemEntity *o_ptr, int greed, boo
     }
 
     int factor = rgold_adj[enum2i(ot_ptr->owner_race)][enum2i(creature.prace)] - std::min(creature.get_prestige() / 10, 30);
-    factor += adj_chr_gold[creature.stat_index[A_CHR]];
+    factor += adj_chr_gold[creature.get_stat_index(A_CHR)];
     int adjust;
     if (flip) {
         adjust = 100 + (300 - (greed + factor));

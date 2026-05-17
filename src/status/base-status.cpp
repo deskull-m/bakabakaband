@@ -44,30 +44,30 @@ static concptr desc_stat_neg[] = {
  */
 bool inc_stat(CreatureEntity &creature, int stat)
 {
-    auto value = creature.stat_cur[stat];
-    if (value >= creature.stat_max_max[stat]) {
+    auto value = creature.get_stat_cur(stat);
+    if (value >= creature.get_stat_max_max(stat)) {
         return false;
     }
 
     // 新形式: 30-180は10-20増加、それ以上はスケール調整
     if (value < 180) {
         value += evaluate_percent(75) ? 10 : 20;
-    } else if (value < (creature.stat_max_max[stat] - 20)) {
-        auto gain = (((creature.stat_max_max[stat]) - value) / 2 + 30) / 2;
+    } else if (value < (creature.get_stat_max_max(stat) - 20)) {
+        auto gain = (((creature.get_stat_max_max(stat)) - value) / 2 + 30) / 2;
         if (gain < 10) {
             gain = 10;
         }
 
         value += randint1(gain) + gain / 2;
-        if (value > (creature.stat_max_max[stat] - 10)) {
-            value = creature.stat_max_max[stat] - 10;
+        if (value > (creature.get_stat_max_max(stat) - 10)) {
+            value = creature.get_stat_max_max(stat) - 10;
         }
     } else {
         value += 10;
     }
 
     creature.set_stat_cur(stat, value);
-    if (value > creature.stat_max[stat]) {
+    if (value > creature.get_stat_max(stat)) {
         creature.set_stat_max(stat, value);
     }
 
@@ -95,8 +95,8 @@ bool inc_stat(CreatureEntity &creature, int stat)
 bool dec_stat(CreatureEntity &creature, int stat, int amount, int permanent)
 {
     auto res = false;
-    auto cur = creature.stat_cur[stat];
-    auto max = creature.stat_max[stat];
+    auto cur = creature.get_stat_cur(stat);
+    auto max = creature.get_stat_max(stat);
     int same = (cur == max);
     if (cur > 30) {
         if (cur <= 180) {
@@ -131,7 +131,7 @@ bool dec_stat(CreatureEntity &creature, int stat, int amount, int permanent)
             cur = 30;
         }
 
-        if (cur != creature.stat_cur[stat]) {
+        if (cur != creature.get_stat_cur(stat)) {
             res = true;
         }
     }
@@ -170,7 +170,7 @@ bool dec_stat(CreatureEntity &creature, int stat, int amount, int permanent)
             max = cur;
         }
 
-        if (max != creature.stat_max[stat]) {
+        if (max != creature.get_stat_max(stat)) {
             res = true;
         }
     }
@@ -193,8 +193,8 @@ bool dec_stat(CreatureEntity &creature, int stat, int amount, int permanent)
  */
 bool res_stat(CreatureEntity &creature, int stat)
 {
-    if (creature.stat_cur[stat] != creature.stat_max[stat]) {
-        creature.set_stat_cur(stat, creature.stat_max[stat]);
+    if (creature.get_stat_cur(stat) != creature.get_stat_max(stat)) {
+        creature.set_stat_cur(stat, creature.get_stat_max(stat));
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(StatusRecalculatingFlag::BONUS);
         rfu.set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);

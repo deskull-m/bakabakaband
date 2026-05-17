@@ -18,7 +18,7 @@ int AllianceIde::calcImpressionPoint(const CreatureEntity &creature) const
     int bias = 20;
     int level = 35;
 
-    int base_stat = (creature.stat_max[A_INT] + creature.stat_max[A_WIS]) / 2;
+    int base_stat = (creature.get_stat_max(A_INT) + creature.get_stat_max(A_WIS)) / 2;
     int impression = base_stat + bias + creature.level / level;
 
     // 最低値保証

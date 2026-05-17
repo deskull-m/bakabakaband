@@ -382,7 +382,7 @@ static bool decide_initial_stat(CreatureEntity &creature)
 
     bool accept = true;
     for (int i = 0; i < A_MAX; i++) {
-        if (creature.stat_max[i] < stat_limit[i]) {
+        if (creature.get_stat_max(i) < stat_limit[i]) {
             accept = false;
             break;
         }
