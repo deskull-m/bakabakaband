@@ -4,6 +4,7 @@
 #include "info-reader/parse-error-types.h"
 #include "info-reader/race-info-tokens-table.h"
 #include "io/tokenizer.h"
+#include "locale/japanese.h"
 #include "main/angband-headers.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
@@ -529,6 +530,15 @@ errr parse_dungeons_info_json(nlohmann::json &dungeon_data, angband_header *head
     if (dungeon_data.contains("name") && dungeon_data["name"].contains("ja")) {
         name_ja = dungeon_data["name"]["ja"].get<std::string>();
     }
+#ifdef JP
+    if (!name_ja.empty()) {
+        auto name_ja_sys = utf8_to_sys(name_ja);
+        if (!name_ja_sys) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+        name_ja = std::move(*name_ja_sys);
+    }
+#endif
     if (auto err = emit_token("N:" + std::to_string(id) + ":" + name_ja, head); err != PARSE_ERROR_NONE) {
         return err;
     }
@@ -557,8 +567,15 @@ errr parse_dungeons_info_json(nlohmann::json &dungeon_data, angband_header *head
     if (dungeon_data.contains("description")) {
         const auto &desc = dungeon_data["description"];
         if (desc.contains("ja")) {
-            const auto ja = desc["ja"].get<std::string>();
+            auto ja = desc["ja"].get<std::string>();
             if (!ja.empty()) {
+#ifdef JP
+                auto ja_sys = utf8_to_sys(ja);
+                if (!ja_sys) {
+                    return PARSE_ERROR_INVALID_FLAG;
+                }
+                ja = std::move(*ja_sys);
+#endif
                 if (auto err = emit_token("D:" + ja, head); err != PARSE_ERROR_NONE) {
                     return err;
                 }
