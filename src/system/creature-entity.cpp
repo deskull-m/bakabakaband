@@ -1223,12 +1223,12 @@ int CreatureEntity::calc_life_rating() const
     return actual_hp * 100 / expected_hp;
 }
 
-int CreatureEntity::get_level() const
+PLAYER_LEVEL CreatureEntity::get_level() const
 {
     if (this->level > 0) {
         return this->level;
     }
-    return this->get_monrace().level / 2;
+    return static_cast<PLAYER_LEVEL>(this->get_monrace().level / 2);
 }
 
 /*!
