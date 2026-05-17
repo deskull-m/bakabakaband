@@ -120,7 +120,7 @@ void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
     item->mark_as_tried();
     if (ident && !item->is_aware()) {
         object_aware(this->creature, *item);
-        gain_exp(this->creature, (item_level + (this->creature.level >> 1)) / this->creature.level);
+        gain_exp(this->creature, (item_level + (this->creature.get_level() >> 1)) / this->creature.get_level());
     }
 
     static constexpr auto flags_swrf = {

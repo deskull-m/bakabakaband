@@ -53,7 +53,7 @@ void high_score::copy_info(const CreatureEntity &creature)
     std::copy_n(pclass.begin(), pclass.length(), this->p_c);
     const auto ppersonality = format("%2d", std::min(creature.ppersonality, MAX_PERSONALITIES));
     std::copy_n(ppersonality.begin(), ppersonality.length(), this->p_a);
-    const auto current_level = format("%3d", std::min<ushort>(creature.level, 999));
+    const auto current_level = format("%3d", std::min<ushort>(creature.get_level(), 999));
     std::copy_n(current_level.begin(), current_level.length(), this->cur_lev);
     const auto &floor = *creature.get_floor();
     const auto current_dungeon = format("%3d", floor.dun_level);

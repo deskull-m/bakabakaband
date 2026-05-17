@@ -147,7 +147,7 @@ static bool snipe_concentrate(CreatureEntity &creature)
         return false;
     }
 
-    if (sniper_data->concent < (2 + (creature.level + 5) / 10)) {
+    if (sniper_data->concent < (2 + (creature.get_level() + 5) / 10)) {
         sniper_data->concent++;
     }
 
@@ -199,7 +199,7 @@ void display_snipe_list(CreatureEntity &creature)
     int i;
     TERM_LEN y = 1;
     TERM_LEN x = 1;
-    PLAYER_LEVEL plev = creature.level;
+    PLAYER_LEVEL plev = creature.get_level();
     snipe_power spell;
 
     /* Display a list of spells */
@@ -250,7 +250,7 @@ static int get_snipe_power(CreatureEntity &creature, COMMAND_CODE *sn, bool only
     int num = 0;
     TERM_LEN y = 1;
     TERM_LEN x = 20;
-    PLAYER_LEVEL plev = creature.level;
+    PLAYER_LEVEL plev = creature.get_level();
     concptr p = _("射撃術", "power");
     snipe_power spell;
     bool flag, redraw;

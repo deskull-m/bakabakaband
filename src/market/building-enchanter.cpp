@@ -25,7 +25,7 @@
 bool enchant_item(CreatureEntity &creature, PRICE cost, HIT_PROB to_hit, int to_dam, ARMOUR_CLASS to_ac, const ItemTester &item_tester)
 {
     clear_bldg(4, 18);
-    int maxenchant = (creature.level / 5);
+    int maxenchant = (creature.get_level() / 5);
     prt(format(_("現在のあなたの技量だと、+%d まで改良できます。", "  Based on your skill, we can improve up to +%d."), maxenchant), 5, 0);
     prt(format(_(" 改良の料金は一個につき＄%d です。", "  The price for the service is %d gold per item."), cost), 7, 0);
 

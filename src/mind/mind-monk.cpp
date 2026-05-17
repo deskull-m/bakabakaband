@@ -43,7 +43,7 @@ bool choose_monk_stance(CreatureEntity &creature)
     screen_save();
     prt(_(" a) 構えをとく", " a) No form"), 2, 20);
     for (auto i = 0U; i < monk_stances.size(); i++) {
-        if (creature.level >= monk_stances[i].min_level) {
+        if (creature.get_level() >= monk_stances[i].min_level) {
             const auto buf = format(" %c) %-12s  %s", I2A(i + 1), monk_stances[i].desc, monk_stances[i].info);
             prt(buf, 3 + i, 20);
         }
@@ -73,13 +73,13 @@ bool choose_monk_stance(CreatureEntity &creature)
         if ((choice == 'b') || (choice == 'B')) {
             new_stance = MonkStanceType::GENBU;
             break;
-        } else if (((choice == 'c') || (choice == 'C')) && (creature.level > 29)) {
+        } else if (((choice == 'c') || (choice == 'C')) && (creature.get_level() > 29)) {
             new_stance = MonkStanceType::BYAKKO;
             break;
-        } else if (((choice == 'd') || (choice == 'D')) && (creature.level > 34)) {
+        } else if (((choice == 'd') || (choice == 'D')) && (creature.get_level() > 34)) {
             new_stance = MonkStanceType::SEIRYU;
             break;
-        } else if (((choice == 'e') || (choice == 'E')) && (creature.level > 39)) {
+        } else if (((choice == 'e') || (choice == 'E')) && (creature.get_level() > 39)) {
             new_stance = MonkStanceType::SUZAKU;
             break;
         }

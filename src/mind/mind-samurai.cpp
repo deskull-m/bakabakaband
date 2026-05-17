@@ -340,7 +340,7 @@ MULTIPLY mult_hissatsu(CreatureEntity &creature, MULTIPLY mult, const TrFlags &f
 
 void concentration(CreatureEntity &creature)
 {
-    int max_csp = std::max(creature.get_msp() * 4, creature.level * 5 + 5);
+    int max_csp = std::max(creature.get_msp() * 4, creature.get_level() * 5 + 5);
 
     if (total_friends) {
         msg_print(_("今はペットを操ることに集中していないと。", "Your pets demand all of your attention."));
@@ -388,7 +388,7 @@ bool choose_samurai_stance(CreatureEntity &creature)
     screen_save();
     prt(_(" a) 型を崩す", " a) No Form"), 2, 20);
     for (auto i = 0U; i < samurai_stances.size(); i++) {
-        if (creature.level >= samurai_stances[i].min_level) {
+        if (creature.get_level() >= samurai_stances[i].min_level) {
             const auto buf = format(_(" %c) %sの型    %s", " %c) Stance of %-12s  %s"), I2A(i + 1), samurai_stances[i].desc, samurai_stances[i].info);
             prt(buf, 3 + i, 20);
         }
@@ -415,13 +415,13 @@ bool choose_samurai_stance(CreatureEntity &creature)
         } else if ((choice == 'b') || (choice == 'B')) {
             new_stance = SamuraiStanceType::IAI;
             break;
-        } else if (((choice == 'c') || (choice == 'C')) && (creature.level > 29)) {
+        } else if (((choice == 'c') || (choice == 'C')) && (creature.get_level() > 29)) {
             new_stance = SamuraiStanceType::FUUJIN;
             break;
-        } else if (((choice == 'd') || (choice == 'D')) && (creature.level > 34)) {
+        } else if (((choice == 'd') || (choice == 'D')) && (creature.get_level() > 34)) {
             new_stance = SamuraiStanceType::KOUKIJIN;
             break;
-        } else if (((choice == 'e') || (choice == 'E')) && (creature.level > 39)) {
+        } else if (((choice == 'e') || (choice == 'E')) && (creature.get_level() > 39)) {
             new_stance = SamuraiStanceType::MUSOU;
             break;
         }
@@ -501,7 +501,7 @@ void mineuchi(CreatureEntity &creature, player_attack_type *pa_ptr)
         return;
     }
 
-    int tmp = (10 + randint1(15) + creature.level / 5);
+    int tmp = (10 + randint1(15) + creature.get_level() / 5);
     if (pa_ptr->m_ptr->get_remaining_stun()) {
         msg_format(_("%sはひどくもうろうとした。", "%s is more dazed."), pa_ptr->m_name);
         tmp /= 2;

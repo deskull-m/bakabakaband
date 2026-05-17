@@ -108,7 +108,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         break;
     }
     case HEX_STINKING_MIST: {
-        const Dice dice(1, creature.level / 2 + 5);
+        const Dice dice(1, creature.get_level() / 2 + 5);
         if (info) {
             return info_damage(dice);
         }
@@ -280,7 +280,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         break;
     }
     case HEX_VAMP_MIST: {
-        const Dice dice(1, creature.level / 2 + 5);
+        const Dice dice(1, creature.get_level() / 2 + 5);
         if (info) {
             return info_damage(dice);
         }
@@ -326,7 +326,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         break;
     }
     case HEX_ANTI_TELE: {
-        power = creature.level * 3 / 2;
+        power = creature.get_level() * 3 / 2;
         if (info) {
             return info_power(power);
         }
@@ -359,7 +359,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         break;
     }
     case HEX_RECHARGE: {
-        power = creature.level * 2;
+        power = creature.get_level() * 2;
         if (info) {
             return info_power(power);
         }
@@ -483,7 +483,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         break;
     }
     case HEX_PAIN_TO_MANA: {
-        const Dice dice(1, creature.level * 3 / 2);
+        const Dice dice(1, creature.get_level() * 3 / 2);
         if (info) {
             return info_damage(dice);
         }
@@ -577,7 +577,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
                 return "";
             }
 
-            creature.add_csp((creature.level / 5) + randint1(creature.level / 5));
+            creature.add_csp((creature.get_level() / 5) + randint1(creature.get_level() / 5));
             if (item->get_flags().has(TR_TY_CURSE) || item->curse_flags.has(CurseTraitType::TY_CURSE)) {
                 creature.add_csp(randint1(5));
             }
@@ -623,7 +623,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
         break;
     }
     case HEX_STUN_MONSTERS: {
-        power = creature.level * 4;
+        power = creature.get_level() * 4;
         if (info) {
             return info_power(power);
         }
@@ -653,7 +653,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
 
                 const auto p_pos = creature.get_position();
                 const auto dist = Grid::calc_distance(*pos_target, p_pos);
-                if (!floor.is_empty_at(*pos_target) || (*pos_target == p_pos) || floor.get_grid(*pos_target).is_icky() || (dist > creature.level + 2)) {
+                if (!floor.is_empty_at(*pos_target) || (*pos_target == p_pos) || floor.get_grid(*pos_target).is_icky() || (dist > creature.get_level() + 2)) {
                     msg_print(_("そこには移動できない。", "Can not teleport to there."));
                     continue;
                 }
@@ -661,7 +661,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
                 break;
             }
 
-            if (flag && randint0(creature.level * creature.level / 2)) {
+            if (flag && randint0(creature.get_level() * creature.get_level() / 2)) {
                 teleport_player_to(creature, pos_target->y, pos_target->x, TELEPORT_SPONTANEOUS);
             } else {
                 msg_print(_("おっと！", "Oops!"));
@@ -673,7 +673,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
 
         break;
     case HEX_ANTI_MAGIC: {
-        power = creature.level * 3 / 2;
+        power = creature.get_level() * 3 / 2;
         if (info) {
             return info_power(power);
         }

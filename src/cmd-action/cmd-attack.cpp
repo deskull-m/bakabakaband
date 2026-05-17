@@ -104,7 +104,7 @@ static void natural_attack(CreatureEntity &creature, MONSTER_IDX m_idx, PlayerMu
     }
 
     const auto m_name = monster_desc(creature, monster, 0);
-    int bonus = creature.get_to_h_m() + (creature.level * 6 / 5);
+    int bonus = creature.get_to_h_m() + (creature.get_level() * 6 / 5);
     int chance = (creature.get_skill_to_hit_melee() + (bonus * BTH_PLUS_ADJ));
 
     creature.plus_incident_tree("ATTACK_EXE_COUNT", 1);
@@ -169,7 +169,7 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     concptr atk_desc = _("頭突き", "headbutt");
 
     const auto m_name = monster_desc(creature, monster, 0);
-    int bonus = creature.get_to_h_m() + (creature.level * 6 / 5);
+    int bonus = creature.get_to_h_m() + (creature.get_level() * 6 / 5);
 
     // 狂戦士状態の場合は命中とダメージにボーナス
     if (creature.is_shero()) {
@@ -253,10 +253,10 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     concptr atk_desc = _("体当たり", "body slam");
 
     // プレイヤーの体重による影響（推定）
-    int body_weight_bonus = (creature.level + creature.get_stat_index(A_STR)) / 3;
+    int body_weight_bonus = (creature.get_level() + creature.get_stat_index(A_STR)) / 3;
 
     const auto m_name = monster_desc(creature, monster, 0);
-    int bonus = creature.get_to_h_m() + (creature.level * 6 / 5) + body_weight_bonus;
+    int bonus = creature.get_to_h_m() + (creature.get_level() * 6 / 5) + body_weight_bonus;
 
     // 狂戦士状態や英雄状態での強化
     if (creature.is_shero()) {
@@ -670,7 +670,7 @@ static void enema_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear
     concptr atk_desc = _("浣腸", "enema");
 
     const auto m_name = monster_desc(creature, monster, 0);
-    int bonus = creature.get_to_h_m() + (creature.level * 6 / 5) + (creature.level + creature.get_stat_index(A_DEX)) / 3;
+    int bonus = creature.get_to_h_m() + (creature.get_level() * 6 / 5) + (creature.get_level() + creature.get_stat_index(A_DEX)) / 3;
     ;
 
     int chance = (creature.get_skill_to_hit_melee() + (bonus * BTH_PLUS_ADJ));

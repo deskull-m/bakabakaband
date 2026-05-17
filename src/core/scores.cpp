@@ -326,9 +326,9 @@ void show_highclass(CreatureEntity &creature)
     }
 
 #ifdef JP
-    snprintf(out_val, sizeof(out_val), "あなた) %sの%s (レベル %2d)", race_info[enum2i(creature.prace)].title.data(), creature.name.data(), creature.level);
+    snprintf(out_val, sizeof(out_val), "あなた) %sの%s (レベル %2d)", race_info[enum2i(creature.prace)].title.data(), creature.name.data(), creature.get_level());
 #else
-    snprintf(out_val, sizeof(out_val), "You) %s the %s (Level %2d)", creature.name.data(), race_info[enum2i(creature.prace)].title.data(), creature.level);
+    snprintf(out_val, sizeof(out_val), "You) %s the %s (Level %2d)", creature.name.data(), race_info[enum2i(creature.prace)].title.data(), creature.get_level());
 #endif
 
     prt(out_val, (m + 8), 0);
@@ -406,12 +406,12 @@ void race_score(CreatureEntity &creature, int race_num)
     }
 
     /* add player if qualified */
-    if ((enum2i(creature.prace) == race_num) && (creature.level >= lastlev)) {
+    if ((enum2i(creature.prace) == race_num) && (creature.get_level() >= lastlev)) {
         char out_val[256];
 #ifdef JP
-        snprintf(out_val, sizeof(out_val), "あなた) %sの%s (レベル %2d)", race_info[enum2i(creature.prace)].title.data(), creature.name.data(), creature.level);
+        snprintf(out_val, sizeof(out_val), "あなた) %sの%s (レベル %2d)", race_info[enum2i(creature.prace)].title.data(), creature.name.data(), creature.get_level());
 #else
-        snprintf(out_val, sizeof(out_val), "You) %s the %s (Level %3d)", creature.name.data(), race_info[enum2i(creature.prace)].title.data(), creature.level);
+        snprintf(out_val, sizeof(out_val), "You) %s the %s (Level %3d)", creature.name.data(), race_info[enum2i(creature.prace)].title.data(), creature.get_level());
 #endif
 
         prt(out_val, (m + 8), 0);

@@ -48,7 +48,7 @@ void print_title(CreatureEntity &creature)
             p = _("***勝利者***", "***WINNER***");
         }
     } else {
-        p = player_titles.at(creature.pclass).at((creature.level - 1) / 5);
+        p = player_titles.at(creature.pclass).at((creature.get_level() - 1) / 5);
     }
 
     print_field(p, ROW_TITLE, COL_TITLE);
@@ -59,8 +59,8 @@ void print_title(CreatureEntity &creature)
  */
 void print_level(CreatureEntity &creature)
 {
-    const auto tmp = format("%5d", creature.level);
-    if (creature.level >= creature.get_max_plv()) {
+    const auto tmp = format("%5d", creature.get_level());
+    if (creature.get_level() >= creature.get_max_plv()) {
         put_str(_("レベル ", "LEVEL "), ROW_LEVEL, 0);
         c_put_str(TERM_L_GREEN, tmp, ROW_LEVEL, COL_LEVEL + 7);
     } else {
@@ -84,10 +84,10 @@ void print_exp(CreatureEntity &creature)
     } else if ((!exp_need) || pr.equals(PlayerRaceType::ANDROID)) {
         out_val = format("%8d", creature.get_exp());
     } else {
-        if (creature.level >= PY_MAX_LEVEL) {
+        if (creature.get_level() >= PY_MAX_LEVEL) {
             (void)sprintf(out_val.data(), "********");
         } else {
-            out_val = format("%8d", player_exp[creature.level - 1] * creature.expfact / 100 - creature.get_exp());
+            out_val = format("%8d", player_exp[creature.get_level() - 1] * creature.expfact / 100 - creature.get_exp());
         }
     }
 

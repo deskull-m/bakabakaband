@@ -21,7 +21,7 @@
 bool cleansing_nova(CreatureEntity &creature, bool magic, bool powerful)
 {
     auto ident = dispel_evil(creature, powerful ? 225 : 150);
-    const auto k = 3 * creature.level;
+    const auto k = 3 * creature.get_level();
     const short turns = randint1(25) + k;
     BodyImprovement improvement(creature);
     if (magic) {

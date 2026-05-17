@@ -20,27 +20,27 @@ bool activate_charm_directional(CreatureEntity &creature, SpellFunc spell, int p
 
 bool activate_charm_animal(CreatureEntity &creature)
 {
-    return activate_charm_directional(creature, charm_animal, creature.level);
+    return activate_charm_directional(creature, charm_animal, creature.get_level());
 }
 
 bool activate_charm_undead(CreatureEntity &creature)
 {
-    return activate_charm_directional(creature, control_one_undead, creature.level);
+    return activate_charm_directional(creature, control_one_undead, creature.get_level());
 }
 
 bool activate_charm_other(CreatureEntity &creature)
 {
-    return activate_charm_directional(creature, charm_monster, creature.level * 2);
+    return activate_charm_directional(creature, charm_monster, creature.get_level() * 2);
 }
 
 bool activate_charm_animals(CreatureEntity &creature)
 {
-    (void)charm_animals(creature, creature.level * 2);
+    (void)charm_animals(creature, creature.get_level() * 2);
     return true;
 }
 
 bool activate_charm_others(CreatureEntity &creature)
 {
-    (void)charm_monsters(creature, creature.level * 2);
+    (void)charm_monsters(creature, creature.get_level() * 2);
     return true;
 }

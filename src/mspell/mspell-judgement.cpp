@@ -270,7 +270,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
     }
 
     if (monrace.ability_flags.has(MonsterAbilityType::BR_FIRE)) {
-        if (!(CreatureRace(&creature).equals(PlayerRaceType::BALROG) && creature.level > 44)) {
+        if (!(CreatureRace(&creature).equals(PlayerRaceType::BALROG) && creature.get_level() > 44)) {
             if (!creature.has_immune_fire() && (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE) || music_singing(creature, MUSIC_RESIST))) {
                 return true;
             }
@@ -301,7 +301,7 @@ bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
         }
     }
 
-    if (monrace.ability_flags.has_any_of({ MonsterAbilityType::BR_POIS, MonsterAbilityType::BR_NUKE }) && !(pc.equals(PlayerClassType::NINJA) && (creature.level > 44))) {
+    if (monrace.ability_flags.has_any_of({ MonsterAbilityType::BR_POIS, MonsterAbilityType::BR_NUKE }) && !(pc.equals(PlayerClassType::NINJA) && (creature.get_level() > 44))) {
         if (creature.get_timed_effect(CreatureTimedEffect::OPPOSE_POIS) || music_singing(creature, MUSIC_RESIST)) {
             return true;
         }

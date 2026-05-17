@@ -106,7 +106,7 @@ void update_lite_radius(CreatureEntity &creature)
     }
 
     if (creature.get_timed_effect(CreatureTimedEffect::TIM_EMISSION) > 0) {
-        creature.cur_lite += creature.level / 5;
+        creature.cur_lite += creature.get_level() / 5;
     }
 
     if (creature.get_floor()->get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS) && creature.cur_lite > 1) {

@@ -110,7 +110,7 @@ bool show_gold_on_floor = false;
 static std::string evaluate_monster_exp(CreatureEntity &creature, const CreatureEntity &monster)
 {
     const auto &monrace = monster.get_appearance_monrace();
-    if ((creature.level >= PY_MAX_LEVEL) || CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
+    if ((creature.get_level() >= PY_MAX_LEVEL) || CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
         return "**";
     }
 
@@ -124,7 +124,7 @@ static std::string evaluate_monster_exp(CreatureEntity &creature, const Creature
     uint32_t exp_mon_frac = 0;
     s64b_div(&exp_mon, &exp_mon_frac, 0, (creature.get_max_plv() + 2));
 
-    int32_t exp_adv = player_exp[creature.level - 1] * creature.expfact;
+    int32_t exp_adv = player_exp[creature.get_level() - 1] * creature.expfact;
     uint32_t exp_adv_frac = 0;
     s64b_div(&exp_adv, &exp_adv_frac, 0, 100);
 

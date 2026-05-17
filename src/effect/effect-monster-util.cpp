@@ -49,7 +49,7 @@ EffectMonster::EffectMonster(CreatureEntity &creature, MONSTER_IDX src_idx, POSI
     this->slept = this->m_ptr->is_asleep();
     this->known = (Grid::calc_distance(creature.get_position(), this->m_ptr->get_position()) <= MAX_PLAYER_SIGHT) || AngbandSystem::get_instance().is_phase_out();
     this->note_dies = this->m_ptr->get_died_message();
-    this->caster_lev = (this->is_monster() && (this->m_caster_ptr != nullptr)) ? this->m_caster_ptr->get_monrace().level : (creature.level * 2);
+    this->caster_lev = (this->is_monster() && (this->m_caster_ptr != nullptr)) ? this->m_caster_ptr->get_monrace().level : (creature.get_level() * 2);
 }
 
 bool EffectMonster::is_player() const

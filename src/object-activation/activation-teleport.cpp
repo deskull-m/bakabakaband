@@ -18,7 +18,7 @@ bool activate_teleport_away(CreatureEntity &creature)
         return false;
     }
 
-    (void)fire_beam(creature, AttributeType::AWAY_ALL, dir, creature.level);
+    (void)fire_beam(creature, AttributeType::AWAY_ALL, dir, creature.get_level());
     return true;
 }
 

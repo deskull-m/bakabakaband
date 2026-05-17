@@ -13,7 +13,7 @@
 
 static tl::optional<std::pair<AttributeType, std::string>> decide_breath_kind(CreatureEntity &creature)
 {
-    if (randint1(100) >= creature.level) {
+    if (randint1(100) >= creature.get_level()) {
         return tl::nullopt;
     }
 
@@ -110,6 +110,6 @@ bool draconian_breath(CreatureEntity &creature)
 
     stop_mouth(creature);
     msg_format(_("あなたは%sのブレスを吶いた。", "You breathe %s."), breath_type_description.data());
-    fire_breath(creature, breath_type, dir, creature.level * 2, (creature.level / 15) + 1);
+    fire_breath(creature, breath_type, dir, creature.get_level() * 2, (creature.get_level() / 15) + 1);
     return true;
 }

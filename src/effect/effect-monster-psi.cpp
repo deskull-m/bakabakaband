@@ -78,7 +78,7 @@ static bool resisted_psi_because_weird_mind_or_powerful(EffectMonster *em_ptr)
 static bool reflects_psi_with_currupted_mind(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     bool is_corrupted = em_ptr->r_ptr->kind_flags.has_any_of(has_corrupted_mind);
-    is_corrupted &= (em_ptr->r_ptr->level > creature.level / 2);
+    is_corrupted &= (em_ptr->r_ptr->level > creature.get_level() / 2);
     is_corrupted &= one_in_(2);
     if (!is_corrupted) {
         return false;

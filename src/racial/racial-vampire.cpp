@@ -35,7 +35,7 @@ bool vampirism(CreatureEntity &creature)
 
     msg_print(_("あなたはニヤリとして牙をむいた...", "You grin and bare your fangs..."));
 
-    int dummy = creature.level * 2;
+    int dummy = creature.get_level() * 2;
     if (!hypodynamic_bolt(creature, dir, dummy)) {
         msg_print(_("げぇ！ひどい味だ。", "Yechh. That tastes foul."));
         return true;

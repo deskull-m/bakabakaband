@@ -129,7 +129,7 @@ static ProcessResult check_continue_player_effect(CreatureEntity &creature, Effe
     }
 
     auto is_effective = ep_ptr->dam > 0;
-    is_effective &= randint0(55) < (creature.level * 3 / 5 + 20);
+    is_effective &= randint0(55) < (creature.get_level() * 3 / 5 + 20);
     is_effective &= ep_ptr->is_monster();
     is_effective &= !ep_ptr->src_ptr || !ep_ptr->src_ptr->is_riding();
     if (is_effective && kawarimi(creature, true)) {

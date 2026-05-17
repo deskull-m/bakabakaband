@@ -315,7 +315,7 @@ bool starlight(CreatureEntity &creature, bool magic)
         }
 
         constexpr uint flags = PROJECT_BEAM | PROJECT_THRU | PROJECT_GRID | PROJECT_KILL | PROJECT_LOS;
-        project(creature, 0, 0, pos.y, pos.x, Dice::roll(6 + creature.level / 8, 10), AttributeType::LITE_WEAK, flags);
+        project(creature, 0, 0, pos.y, pos.x, Dice::roll(6 + creature.get_level() / 8, 10), AttributeType::LITE_WEAK, flags);
     }
 
     return true;

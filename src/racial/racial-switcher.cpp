@@ -103,12 +103,12 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         [[fallthrough]];
     case PlayerClassType::MAGE:
     case PlayerClassType::SORCERER:
-        return eat_magic(creature, creature.level * 2);
+        return eat_magic(creature, creature.get_level() * 2);
     case PlayerClassType::PRIEST:
         if (!PlayerRealm(creature).realm1().is_good_attribute()) {
-            (void)dispel_monsters(creature, creature.level * 4);
-            turn_monsters(creature, creature.level * 4);
-            banish_monsters(creature, creature.level * 4);
+            (void)dispel_monsters(creature, creature.get_level() * 4);
+            turn_monsters(creature, creature.get_level() * 4);
+            banish_monsters(creature, creature.get_level() * 4);
             return true;
         }
 
@@ -126,7 +126,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
             return false;
         }
 
-        fire_beam(creature, PlayerRealm(creature).realm1().is_good_attribute() ? AttributeType::HOLY_FIRE : AttributeType::HELL_FIRE, dir, creature.level * 3);
+        fire_beam(creature, PlayerRealm(creature).realm1().is_good_attribute() ? AttributeType::HOLY_FIRE : AttributeType::HELL_FIRE, dir, creature.get_level() * 3);
         return true;
     }
     case PlayerClassType::WARRIOR_MAGE:
@@ -190,12 +190,12 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
                 return false;
             }
 
-            (void)fire_ball_hide(creature, AttributeType::CHARM_LIVING, dir, creature.level, 0);
+            (void)fire_ball_hide(creature, AttributeType::CHARM_LIVING, dir, creature.get_level(), 0);
             return true;
         }
 
         if (command == -4) {
-            project_all_los(creature, AttributeType::CHARM_LIVING, creature.level);
+            project_all_los(creature, AttributeType::CHARM_LIVING, creature.get_level());
         }
 
         return true;
@@ -261,7 +261,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
     case PlayerClassType::BERSERKER:
         return recall_player(creature, randint0(21) + 15);
     case PlayerClassType::SMITH:
-        if (creature.level <= 29) {
+        if (creature.get_level() <= 29) {
             return ident_spell(creature, true);
         }
 
@@ -318,7 +318,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
             return false;
         }
         msg_print(_("社会的抹殺ボルトを放った！", "You fire a social genocide bolt!"));
-        fire_bolt(creature, AttributeType::SOCIAL_GENOCIDE, dir, creature.level * 2);
+        fire_bolt(creature, AttributeType::SOCIAL_GENOCIDE, dir, creature.get_level() * 2);
         return true;
     }
 
@@ -341,7 +341,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         return true;
     case PlayerRaceType::HALF_TROLL:
         msg_print(_("うがぁぁ！", "RAAAGH!"));
-        (void)berserk(creature, 10 + randint1(creature.level));
+        (void)berserk(creature, 10 + randint1(creature.get_level()));
         return true;
     case PlayerRaceType::AMBERITE:
         if (command == -1) {
@@ -361,7 +361,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         return true;
     case PlayerRaceType::BARBARIAN:
         msg_print(_("うぉぉおお！", "Raaagh!"));
-        (void)berserk(creature, 10 + randint1(creature.level));
+        (void)berserk(creature, 10 + randint1(creature.get_level()));
         return true;
     case PlayerRaceType::HALF_OGRE:
         msg_print(_("爆発のルーンを慎重に仕掛けた...", "You carefully set an explosive rune..."));
@@ -387,7 +387,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         }
 
         msg_print(_("巨大な岩を投げた。", "You throw a huge boulder."));
-        (void)fire_bolt(creature, AttributeType::MISSILE, dir, (3 * creature.level) / 2);
+        (void)fire_bolt(creature, AttributeType::MISSILE, dir, (3 * creature.get_level()) / 2);
         return true;
     }
     case PlayerRaceType::YEEK: {
@@ -398,7 +398,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
 
         stop_mouth(creature);
         msg_print(_("身の毛もよだつ叫び声を上げた！", "You make a horrible scream!"));
-        (void)fear_monster(creature, dir, creature.level);
+        (void)fear_monster(creature, dir, creature.get_level());
         return true;
     }
     case PlayerRaceType::KLACKON: {
@@ -409,10 +409,10 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
 
         stop_mouth(creature);
         msg_print(_("酸を吐いた。", "You spit acid."));
-        if (creature.level < 25) {
-            (void)fire_bolt(creature, AttributeType::ACID, dir, creature.level);
+        if (creature.get_level() < 25) {
+            (void)fire_bolt(creature, AttributeType::ACID, dir, creature.get_level());
         } else {
-            (void)fire_ball(creature, AttributeType::ACID, dir, creature.level, 2);
+            (void)fire_ball(creature, AttributeType::ACID, dir, creature.get_level(), 2);
         }
 
         return true;
@@ -424,7 +424,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         }
 
         msg_print(_("毒のダーツを投げた。", "You throw a poisoned dart."));
-        (void)fire_bolt(creature, AttributeType::POIS, dir, creature.level);
+        (void)fire_bolt(creature, AttributeType::POIS, dir, creature.get_level());
         return true;
     }
     case PlayerRaceType::NIBELUNG:
@@ -440,7 +440,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         }
 
         msg_print(_("マジック・ミサイルを放った。", "You cast a magic missile."));
-        (void)fire_bolt_or_beam(creature, 10, AttributeType::MISSILE, dir, Dice::roll(3 + ((creature.level - 1) / 5), 4));
+        (void)fire_bolt_or_beam(creature, 10, AttributeType::MISSILE, dir, Dice::roll(3 + ((creature.get_level() - 1) / 5), 4));
         return true;
     }
     case PlayerRaceType::DRACONIAN:
@@ -452,7 +452,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         }
 
         msg_print(_("あなたは集中し、目が赤く輝いた...", "You concentrate and your eyes glow red..."));
-        (void)fire_bolt(creature, AttributeType::PSI, dir, creature.level);
+        (void)fire_bolt(creature, AttributeType::PSI, dir, creature.get_level());
         return true;
     }
     case PlayerRaceType::IMP: {
@@ -461,12 +461,12 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
             return false;
         }
 
-        if (creature.level >= 30) {
+        if (creature.get_level() >= 30) {
             msg_print(_("ファイア・ボールを放った。", "You cast a ball of fire."));
-            (void)fire_ball(creature, AttributeType::FIRE, dir, creature.level, 2);
+            (void)fire_ball(creature, AttributeType::FIRE, dir, creature.get_level(), 2);
         } else {
             msg_print(_("ファイア・ボルトを放った。", "You cast a bolt of fire."));
-            (void)fire_bolt(creature, AttributeType::FIRE, dir, creature.level);
+            (void)fire_bolt(creature, AttributeType::FIRE, dir, creature.get_level());
         }
 
         return true;
@@ -490,15 +490,15 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
 
         stop_mouth(creature);
         msg_print(_("あなたはおどろおどろしい叫び声をあげた！", "You emit an eldritch howl!"));
-        (void)fear_monster(creature, dir, creature.level);
+        (void)fear_monster(creature, dir, creature.get_level());
         return true;
     }
     case PlayerRaceType::SPRITE:
         msg_print(_("あなたは魔法の粉を投げつけた...", "You throw some magic dust..."));
-        if (creature.level < 25) {
+        if (creature.get_level() < 25) {
             (void)sleep_monsters_touch(creature);
         } else {
-            (void)sleep_monsters(creature, creature.level);
+            (void)sleep_monsters(creature, creature.get_level());
         }
 
         return true;

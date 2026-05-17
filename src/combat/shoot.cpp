@@ -757,7 +757,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
                     }
                 }
 
-                if ((monrace.level + 10) > creature.level) {
+                if ((monrace.level + 10) > creature.get_level()) {
                     PlayerSkill(creature).gain_range_weapon_exp(j_ptr);
                 }
 

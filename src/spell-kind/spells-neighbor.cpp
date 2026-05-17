@@ -113,7 +113,7 @@ bool disarm_traps_touch(CreatureEntity &creature)
 bool sleep_monsters_touch(CreatureEntity &creature)
 {
     BIT_FLAGS flg = PROJECT_KILL | PROJECT_HIDE;
-    return project(creature, 0, 1, creature.y, creature.x, creature.level, AttributeType::OLD_SLEEP, flg).notice;
+    return project(creature, 0, 1, creature.y, creature.x, creature.get_level(), AttributeType::OLD_SLEEP, flg).notice;
 }
 
 /*!
@@ -138,7 +138,7 @@ void wall_breaker(CreatureEntity &creature)
 {
     const auto p_pos = creature.get_position();
     auto attempts = 1000;
-    if (randint1(80 + creature.level) < 70) {
+    if (randint1(80 + creature.get_level()) < 70) {
         Pos2D pos(0, 0);
         while (attempts--) {
             pos = scatter(*creature.get_floor(), p_pos, 4, PROJECT_NONE);

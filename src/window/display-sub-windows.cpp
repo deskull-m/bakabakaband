@@ -735,7 +735,7 @@ static void display_spell_list(CreatureEntity &creature)
 
     if (pc.has_listed_magics()) {
         PERCENTAGE minfail = 0;
-        PLAYER_LEVEL plev = creature.level;
+        PLAYER_LEVEL plev = creature.get_level();
         PERCENTAGE chance = 0;
         MindKindType use_mind;
         bool use_hp = false;
@@ -779,7 +779,7 @@ static void display_spell_list(CreatureEntity &creature)
             }
 
             chance = spell.fail;
-            chance -= 3 * (creature.level - spell.min_lev);
+            chance -= 3 * (creature.get_level() - spell.min_lev);
             chance -= 3 * (adj_mag_stat[creature.get_stat_index(mp_ptr->spell_stat)] - 1);
             if (!use_hp) {
                 if (spell.mana_cost > creature.get_csp()) {

@@ -78,7 +78,7 @@ static cm_type *initialize_cm_type(CreatureEntity &creature, cm_type *cm_ptr)
     cm_ptr->n = 0;
     cm_ptr->b = 0;
     cm_ptr->minfail = 0;
-    cm_ptr->plev = creature.level;
+    cm_ptr->plev = creature.get_level();
     cm_ptr->old_csp = creature.get_csp();
     cm_ptr->on_mirror = false;
     return cm_ptr;

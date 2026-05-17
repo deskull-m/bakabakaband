@@ -273,7 +273,7 @@ static void effect_monster_domination_corrupted_addition(CreatureEntity &creatur
 // Powerful demons & undead can turn a mindcrafter's attacks back on them.
 static void effect_monster_domination_corrupted(CreatureEntity &creature, EffectMonster *em_ptr)
 {
-    bool is_corrupted = em_ptr->r_ptr->kind_flags.has_any_of(has_corrupted_mind) && (em_ptr->r_ptr->level > creature.level / 2) && (one_in_(2));
+    bool is_corrupted = em_ptr->r_ptr->kind_flags.has_any_of(has_corrupted_mind) && (em_ptr->r_ptr->level > creature.get_level() / 2) && (one_in_(2));
     if (!is_corrupted) {
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
         em_ptr->obvious = false;

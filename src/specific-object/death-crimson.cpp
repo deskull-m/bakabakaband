@@ -30,22 +30,22 @@ static bool fire_crimson(CreatureEntity &creature)
 
     int num = 1;
     if (CreatureClass(creature).equals(PlayerClassType::ARCHER)) {
-        if (creature.level >= 10) {
+        if (creature.get_level() >= 10) {
             num++;
         }
 
-        if (creature.level >= 30) {
+        if (creature.get_level() >= 30) {
             num++;
         }
 
-        if (creature.level >= 45) {
+        if (creature.get_level() >= 45) {
             num++;
         }
     }
 
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL;
     for (int i = 0; i < num; i++) {
-        (void)project(creature, 0, creature.level / 20 + 1, ty, tx, creature.level * creature.level * 6 / 50, AttributeType::ROCKET, flg);
+        (void)project(creature, 0, creature.get_level() / 20 + 1, ty, tx, creature.get_level() * creature.get_level() * 6 / 50, AttributeType::ROCKET, flg);
     }
 
     return true;

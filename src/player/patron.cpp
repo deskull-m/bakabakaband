@@ -168,11 +168,11 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
         }
     }
 
-    if (creature.level == 13) {
+    if (creature.get_level() == 13) {
         nasty_chance = 2;
-    } else if (!(creature.level % 13)) {
+    } else if (!(creature.get_level() % 13)) {
         nasty_chance = 3;
-    } else if (!(creature.level % 14)) {
+    } else if (!(creature.get_level() % 14)) {
         nasty_chance = 12;
     }
 
@@ -343,8 +343,8 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
         case REW_HURT_LOT:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「苦しむがよい、無能な愚か者よ！」", "'Suffer, pathetic fool!'"));
-            fire_ball(creature, AttributeType::DISINTEGRATE, Direction::self(), creature.level * 4, 4);
-            take_hit(creature, DAMAGE_NOESCAPE, creature.level * 4, wrath_reason);
+            fire_ball(creature, AttributeType::DISINTEGRATE, Direction::self(), creature.get_level() * 4, 4);
+            take_hit(creature, DAMAGE_NOESCAPE, creature.get_level() * 4, wrath_reason);
             reward = _("分解の球が発生した。", "generating disintegration ball");
             break;
         case REW_HEAL_FUL:
@@ -440,7 +440,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
         case REW_WRATH:
             msg_format(_("%sの声が轟き渡った:", "The voice of %s thunders:"), this->name.data());
             msg_print(_("「死ぬがよい、下僕よ！」", "'Die, mortal!'"));
-            take_hit(creature, DAMAGE_LOSELIFE, creature.level * 4, wrath_reason);
+            take_hit(creature, DAMAGE_LOSELIFE, creature.get_level() * 4, wrath_reason);
             for (int stat = 0; stat < A_MAX; stat++) {
                 (void)dec_stat(creature, stat, 10 + randint1(15), false);
             }
@@ -488,7 +488,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
             break;
         case REW_DISPEL_C:
             msg_format(_("%sの力が敵を攻撃するのを感じた！", "You can feel the power of %s assault your enemies!"), this->name.data());
-            (void)dispel_monsters(creature, creature.level * 4);
+            (void)dispel_monsters(creature, creature.get_level() * 4);
             break;
         case REW_GOOD_HAFTED:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());

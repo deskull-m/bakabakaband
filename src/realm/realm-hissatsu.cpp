@@ -63,7 +63,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 {
     bool cast = mode == SpellProcessType::CAST;
 
-    PLAYER_LEVEL plev = creature.level;
+    PLAYER_LEVEL plev = creature.get_level();
 
     switch (spell_id) {
     case 0:

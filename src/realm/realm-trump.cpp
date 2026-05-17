@@ -42,7 +42,7 @@ tl::optional<std::string> do_trump_spell(CreatureEntity &creature, SPELL_IDX spe
     bool cast = mode == SpellProcessType::CAST;
     bool fail = mode == SpellProcessType::FAIL;
 
-    PLAYER_LEVEL plev = creature.level;
+    PLAYER_LEVEL plev = creature.get_level();
 
     switch (spell) {
     case 0: {

@@ -72,7 +72,7 @@ static bool calc_fall_off_possibility(CreatureEntity &creature, const int dam, c
         return true;
     }
 
-    if ((CreatureClass(creature).is_tamer() && !creature.riding_ryoute) || !one_in_(creature.level * (creature.riding_ryoute ? 2 : 3) + 30)) {
+    if ((CreatureClass(creature).is_tamer() && !creature.riding_ryoute) || !one_in_(creature.get_level() * (creature.riding_ryoute ? 2 : 3) + 30)) {
         return false;
     }
 

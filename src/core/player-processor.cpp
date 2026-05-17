@@ -383,8 +383,8 @@ void process_player(CreatureEntity &creature)
 
             if (CreatureClass(creature).equals(PlayerClassType::IMITATOR)) {
                 auto mane_data = CreatureClass(creature).get_specific_data<mane_data_type>();
-                if (static_cast<int>(mane_data->mane_list.size()) > (creature.level > 44 ? 3 : creature.level > 29 ? 2
-                                                                                                                   : 1)) {
+                if (static_cast<int>(mane_data->mane_list.size()) > (creature.get_level() > 44 ? 3 : creature.get_level() > 29 ? 2
+                                                                                                                               : 1)) {
                     mane_data->mane_list.pop_front();
                 }
 

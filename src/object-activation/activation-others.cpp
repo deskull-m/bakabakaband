@@ -100,7 +100,7 @@ bool activate_scare(CreatureEntity &creature)
     }
 
     msg_print(_("あなたは力強い突風を吹き鳴らした。周囲の敵が震え上っている!", "You wind a mighty blast; your enemies tremble!"));
-    (void)turn_monsters(creature, (3 * creature.level / 2) + 10);
+    (void)turn_monsters(creature, (3 * creature.get_level() / 2) + 10);
     return true;
 }
 
@@ -217,14 +217,14 @@ bool activate_call_chaos(CreatureEntity &creature)
 bool activate_dispel_evil(CreatureEntity &creature)
 {
     msg_print(_("神聖な雰囲気が充満した...", "It floods the area with goodness..."));
-    dispel_evil(creature, creature.level * 5);
+    dispel_evil(creature, creature.get_level() * 5);
     return true;
 }
 
 bool activate_dispel_good(CreatureEntity &creature)
 {
     msg_print(_("邪悪な雰囲気が充満した...", "It floods the area with evil..."));
-    dispel_good(creature, creature.level * 5);
+    dispel_good(creature, creature.get_level() * 5);
     return true;
 }
 
@@ -297,7 +297,7 @@ bool activate_blinding_light(CreatureEntity &creature, std::string_view name)
 {
     msg_format(_("%sが眩しい光で輝いた...", "The %s gleams with blinding light..."), name.data());
     (void)fire_ball(creature, AttributeType::LITE, Direction::self(), 300, 6);
-    confuse_monsters(creature, 3 * creature.level / 2);
+    confuse_monsters(creature, 3 * creature.get_level() / 2);
     return true;
 }
 
@@ -338,13 +338,13 @@ bool activate_shikofumi(CreatureEntity &creature)
     msg_print(_("力強く四股を踏んだ。", "You stamp. (as if you are in a ring.)"));
     (void)BadStatusSetter(creature).set_fear(0);
     (void)set_hero(creature, randint1(20) + 20, false);
-    (void)dispel_evil(creature, creature.level * 3);
+    (void)dispel_evil(creature, creature.get_level() * 3);
     return true;
 }
 
 bool activate_terror(CreatureEntity &creature)
 {
-    turn_monsters(creature, 40 + creature.level);
+    turn_monsters(creature, 40 + creature.get_level());
     return true;
 }
 

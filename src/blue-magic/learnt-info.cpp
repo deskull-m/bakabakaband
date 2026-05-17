@@ -18,7 +18,7 @@
  */
 PLAYER_LEVEL get_pseudo_monstetr_level(CreatureEntity &creature)
 {
-    PLAYER_LEVEL monster_level = creature.level + 40;
+    PLAYER_LEVEL monster_level = creature.get_level() + 40;
     return (monster_level * monster_level - 1550) / 130;
 }
 

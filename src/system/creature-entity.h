@@ -418,7 +418,7 @@ public:
      * @brief クリーチャーのレベルを取得
      * @return レベル値。個体レベルが設定されていればそれを返し、未設定なら種族レベルの半分を返す。
      */
-    virtual int get_level() const;
+    virtual PLAYER_LEVEL get_level() const;
 
     /*!
      * @brief クリーチャーがプレイヤーかどうかを判定

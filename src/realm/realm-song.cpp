@@ -68,7 +68,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
     bool cont = mode == SpellProcessType::CONTNUATION;
     bool stop = mode == SpellProcessType::STOP;
 
-    PLAYER_LEVEL plev = creature.level;
+    PLAYER_LEVEL plev = creature.get_level();
 
     switch (spell) {
     case 0:

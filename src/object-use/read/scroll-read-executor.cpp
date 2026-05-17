@@ -127,7 +127,7 @@ bool ScrollReadExecutor::read()
 
         break;
     case SV_SCROLL_SUMMON_KIN:
-        if (summon_kin_player(this->creature, this->creature.level, this->creature.y, this->creature.x, PM_FORCE_PET | PM_ALLOW_GROUP)) {
+        if (summon_kin_player(this->creature, this->creature.get_level(), this->creature.y, this->creature.x, PM_FORCE_PET | PM_ALLOW_GROUP)) {
             this->ident = true;
         }
 
@@ -319,7 +319,7 @@ bool ScrollReadExecutor::read()
         this->ident = true;
         break;
     case SV_SCROLL_PROTECTION_FROM_EVIL: {
-        const auto k = 3 * this->creature.level;
+        const auto k = 3 * this->creature.get_level();
         BodyImprovement improvement(this->creature);
         improvement.mod_protection(randint1(25) + k);
         if (improvement.has_effect()) {
@@ -370,11 +370,11 @@ bool ScrollReadExecutor::read()
         this->ident = true;
         break;
     case SV_SCROLL_ACQUIREMENT:
-        acquirement(this->creature, this->creature.y, this->creature.x, this->creature.level / 12 + 1, true);
+        acquirement(this->creature, this->creature.y, this->creature.x, this->creature.get_level() / 12 + 1, true);
         this->ident = true;
         break;
     case SV_SCROLL_STAR_ACQUIREMENT:
-        acquirement(this->creature, this->creature.y, this->creature.x, this->creature.level / 6 + 3, true);
+        acquirement(this->creature, this->creature.y, this->creature.x, this->creature.get_level() / 6 + 3, true);
         this->ident = true;
         break;
     case SV_SCROLL_FIRE:

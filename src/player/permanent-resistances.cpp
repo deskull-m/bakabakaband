@@ -83,7 +83,7 @@ static void add_personality_flags(CreatureEntity &creature, TrFlags &flags)
     if (!CreatureClass(creature).equals(PlayerClassType::NINJA)) {
         flags.set(TR_LITE_1);
     }
-    if (creature.level > 9) {
+    if (creature.get_level() > 9) {
         flags.set(TR_SPEED);
     }
 }

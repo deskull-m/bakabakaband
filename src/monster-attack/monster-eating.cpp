@@ -29,7 +29,7 @@
 void process_eat_gold(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
     const auto is_paralyzed = creature.is_paralyzed();
-    if (!is_paralyzed && evaluate_percent((adj_dex_safe[creature.get_stat_index(A_DEX)] + creature.level))) {
+    if (!is_paralyzed && evaluate_percent((adj_dex_safe[creature.get_stat_index(A_DEX)] + creature.get_level()))) {
         msg_print(_("しかし素早く財布を守った！", "You quickly protect your money pouch!"));
         if (randint0(3)) {
             monap_ptr->blinked = true;
@@ -87,7 +87,7 @@ bool check_eat_item(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
     }
 
     const auto is_paralyzed = creature.is_paralyzed();
-    if (!is_paralyzed && evaluate_percent((adj_dex_safe[creature.get_stat_index(A_DEX)] + creature.level))) {
+    if (!is_paralyzed && evaluate_percent((adj_dex_safe[creature.get_stat_index(A_DEX)] + creature.get_level()))) {
         msg_print(_("しかしあわててザックを取り返した！", "You grab hold of your backpack!"));
         monap_ptr->blinked = true;
         monap_ptr->obvious = true;

@@ -87,7 +87,7 @@ bool SpellHex::stop_spells_with_selection()
     }
 
     auto casting_num = this->get_casting_num();
-    if ((casting_num == 1) || (this->creature.level < 35)) {
+    if ((casting_num == 1) || (this->creature.get_level() < 35)) {
         this->stop_all_spells();
         return true;
     }
@@ -292,7 +292,7 @@ void SpellHex::gain_exp()
  */
 bool SpellHex::is_casting_full_capacity() const
 {
-    auto k_max = (this->creature.level / 15) + 1;
+    auto k_max = (this->creature.get_level() / 15) + 1;
     k_max = std::min(k_max, MAX_KEEP);
     return this->get_casting_num() >= k_max;
 }
@@ -341,7 +341,7 @@ bool SpellHex::check_hex_barrier(MONSTER_IDX m_idx, spell_hex_type type) const
 {
     const auto &monster = this->creature.get_floor()->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
-    return this->is_spelling_specific(type) && ((this->creature.level * 3 / 2) >= randint1(monrace.level));
+    return this->is_spelling_specific(type) && ((this->creature.get_level() * 3 / 2) >= randint1(monrace.level));
 }
 
 bool SpellHex::is_spelling_specific(int hex) const
