@@ -122,7 +122,7 @@ racial_level_check_result check_racial_level(CreatureEntity &creature, rpi_type 
     const PLAYER_LEVEL min_level = rpi_ptr->min_level;
     int difficulty = rpi_ptr->fail;
     rpi_ptr->racial_cost = rpi_ptr->cost;
-    const int use_hp = creature.csp < rpi_ptr->racial_cost ? rpi_ptr->racial_cost - creature.csp : 0;
+    const int use_hp = creature.get_csp() < rpi_ptr->racial_cost ? rpi_ptr->racial_cost - creature.get_csp() : 0;
 
     PlayerEnergy energy(creature);
     if (creature.level < min_level) {

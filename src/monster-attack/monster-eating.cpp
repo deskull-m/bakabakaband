@@ -38,23 +38,23 @@ void process_eat_gold(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
         return;
     }
 
-    PRICE gold = (creature.au / 10) + randint1(25);
+    PRICE gold = (creature.get_au() / 10) + randint1(25);
     if (gold < 2) {
         gold = 2;
     }
 
     if (gold > 5000) {
-        gold = (creature.au / 20) + randint1(3000);
+        gold = (creature.get_au() / 20) + randint1(3000);
     }
 
-    if (gold > creature.au) {
-        gold = creature.au;
+    if (gold > creature.get_au()) {
+        gold = creature.get_au();
     }
 
     creature.sub_au(gold);
     if (gold <= 0) {
         msg_print(_("しかし何も盗まれなかった。", "Nothing was stolen."));
-    } else if (creature.au > 0) {
+    } else if (creature.get_au() > 0) {
         msg_print(_("財布が軽くなった気がする。", "Your purse feels lighter."));
         msg_print(_("${} のお金が盗まれた！", "{} coins were stolen!"), gold);
         chg_virtue(creature, Virtue::SACRIFICE, 1);
@@ -305,7 +305,7 @@ void process_drain_mana(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr
 
     monap_ptr->do_cut = 0;
     creature.sub_csp(monap_ptr->damage);
-    if (creature.csp < 0) {
+    if (creature.get_csp() < 0) {
         creature.set_csp(0);
         creature.csp_frac = 0;
     }
@@ -322,10 +322,10 @@ void process_drain_mana(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr
 void process_monster_attack_hungry(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
     msg_format(_("あなたは腹が減った！", "You feel hungry!"));
-    auto subtracted_food = static_cast<int16_t>(creature.food - monap_ptr->damage);
-    if ((creature.food >= PY_FOOD_ALERT) && (PY_FOOD_ALERT > subtracted_food)) {
+    auto subtracted_food = static_cast<int16_t>(creature.get_food() - monap_ptr->damage);
+    if ((creature.get_food() >= PY_FOOD_ALERT) && (PY_FOOD_ALERT > subtracted_food)) {
         set_food(creature, PY_FOOD_ALERT - 1);
-    } else if ((creature.food > PY_FOOD_FAINT) && (PY_FOOD_FAINT >= subtracted_food)) {
+    } else if ((creature.get_food() > PY_FOOD_FAINT) && (PY_FOOD_FAINT >= subtracted_food)) {
         set_food(creature, PY_FOOD_FAINT);
     } else {
         set_food(creature, subtracted_food);

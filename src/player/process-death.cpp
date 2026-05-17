@@ -77,9 +77,9 @@ static void show_basic_params(CreatureEntity &creature)
 {
     show_tomb_line(fmt::format(_("レベル: {}", "Level: {}"), creature.level), GRAVE_LEVEL_ROW);
 
-    show_tomb_line(fmt::format(_("経験値: {}", "Exp: {}"), creature.exp), GRAVE_EXP_ROW);
+    show_tomb_line(fmt::format(_("経験値: {}", "Exp: {}"), creature.get_exp()), GRAVE_EXP_ROW);
 
-    show_tomb_line(fmt::format(_("所持金: {}", "AU: {}"), creature.au), GRAVE_AU_ROW);
+    show_tomb_line(fmt::format(_("所持金: {}", "AU: {}"), creature.get_au()), GRAVE_AU_ROW);
 }
 
 #ifdef JP
@@ -146,7 +146,7 @@ static void show_dead_place(CreatureEntity &creature, int extra_line)
 
     std::string place;
     if (!creature.get_floor()->is_underground()) {
-        concptr field_name = creature.town_num ? "街" : "荒野";
+        concptr field_name = creature.get_town_num() ? "街" : "荒野";
         if (streq(creature.died_from, "途中終了")) {
             place = format("%sで死んで飽きた", field_name);
         } else {

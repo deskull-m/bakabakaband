@@ -329,12 +329,12 @@ void process_command(CreatureEntity &creature)
                 break;
             }
 
-            if (creature.ambush_flag) {
+            if (creature.get_ambush_flag()) {
                 msg_print(_("襲撃から逃げるにはマップの端まで移動しなければならない。", "To flee the ambush you have to reach the edge of the map."));
                 break;
             }
 
-            if (creature.food < PY_FOOD_WEAK) {
+            if (creature.get_food() < PY_FOOD_WEAK) {
                 msg_print(_("その前に食事をとらないと。", "You must eat something here."));
                 break;
             }

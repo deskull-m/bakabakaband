@@ -401,17 +401,17 @@ static bool decide_body_spec(CreatureEntity &creature, chara_limit_type chara_li
     get_history(creature);
 
     if (autochara) {
-        if ((creature.age < chara_limit.agemin) || (creature.age > chara_limit.agemax)) {
+        if ((creature.get_age() < chara_limit.agemin) || (creature.get_age() > chara_limit.agemax)) {
             *accept = false;
         }
-        const auto ht = _(inch_to_cm(creature.ht), creature.ht);
+        const auto ht = _(inch_to_cm(creature.get_ht()), creature.get_ht());
         if ((ht < chara_limit.htmin) || (ht > chara_limit.htmax)) {
             *accept = false;
         }
-        const auto wt = _(lb_to_kg(creature.wt), creature.wt);
+        const auto wt = _(lb_to_kg(creature.get_wt()), creature.get_wt());
         if ((wt < chara_limit.wtmin) || (wt > chara_limit.wtmax)) {
             *accept = false;
-            if ((creature.prestige < chara_limit.scmin) || (creature.prestige > chara_limit.scmax)) {
+            if ((creature.get_prestige() < chara_limit.scmin) || (creature.get_prestige() > chara_limit.scmax)) {
                 *accept = false;
             }
         }
@@ -477,7 +477,7 @@ static bool display_auto_roller_result(CreatureEntity &creature, bool prev, char
         rfu.set_flags(flags);
         update_creature(creature);
         creature.hp = creature.maxhp;
-        creature.set_csp(creature.msp);
+        creature.set_csp(creature.get_msp());
         (void)display_player(creature, mode);
         term_gotoxy(2, 23);
         const char b1 = '[';

@@ -289,7 +289,7 @@ static void generate_area(CreatureEntity &creature, const Pos2D &pos, bool is_bo
     floor.dun_level = 0;
     floor.monster_level = floor.base_level;
     floor.object_level = floor.base_level;
-    if (creature.town_num) {
+    if (creature.get_town_num()) {
         init_buildings();
         if (is_border || is_corner) {
             init_flags = i2enum<init_flags_type>(INIT_CREATE_DUNGEON | INIT_ONLY_FEATURES);
@@ -308,7 +308,7 @@ static void generate_area(CreatureEntity &creature, const Pos2D &pos, bool is_bo
         }
 
         if (!is_corner && !is_border) {
-            creature.visit |= (1UL << (creature.town_num - 1));
+            creature.visit |= (1UL << (creature.get_town_num() - 1));
         }
     } else {
         generate_wilderness_area(floor, wg, is_corner);
@@ -418,7 +418,7 @@ static void generate_wild_monsters(CreatureEntity &creature)
     // 通常のランダムモンスター生成（襲撃時も追加で生成）
     for (auto i = 0; i < lim; i++) {
         BIT_FLAGS mode = 0;
-        if (!(generate_encounter || (one_in_(2) && (!creature.town_num)))) {
+        if (!(generate_encounter || (one_in_(2) && (!creature.get_town_num())))) {
             mode |= PM_ALLOW_SLEEP;
         }
 
@@ -556,7 +556,7 @@ void wilderness_gen(CreatureEntity &creature)
                 continue;
             }
 
-            if ((terrain.subtype != 4) && !((creature.town_num == 1) && (terrain.subtype == 0))) {
+            if ((terrain.subtype != 4) && !((creature.get_town_num() == 1) && (terrain.subtype == 0))) {
                 continue;
             }
 

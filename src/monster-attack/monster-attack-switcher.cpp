@@ -218,7 +218,7 @@ static void calc_blow_paralysis(CreatureEntity &creature, MonsterAttackPlayer *m
  */
 static void calc_blow_drain_exp(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr, const int drain_value, const int hold_exp_prob)
 {
-    int32_t d = Dice::roll(drain_value, 6) + (creature.exp / 100) * MON_DRAIN_LIFE;
+    int32_t d = Dice::roll(drain_value, 6) + (creature.get_exp() / 100) * MON_DRAIN_LIFE;
     monap_ptr->obvious = true;
     int damage_ratio = 1000;
     if (has_hold_exp(creature)) {
@@ -264,7 +264,7 @@ static void calc_blow_time(CreatureEntity &creature, MonsterAttackPlayer *monap_
  */
 static void calc_blow_drain_life(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    int32_t d = Dice::roll(60, 6) + (creature.exp / 100) * MON_DRAIN_LIFE;
+    int32_t d = Dice::roll(60, 6) + (creature.get_exp() / 100) * MON_DRAIN_LIFE;
     monap_ptr->obvious = true;
     if (creature.has_hold_exp()) {
         monap_ptr->damage = monap_ptr->damage * 9 / 10;
@@ -554,7 +554,7 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
                     return;
                 }
 
-                int32_t d = Dice::roll(60, 6) + (creature.exp / 100) * MON_DRAIN_LIFE;
+                int32_t d = Dice::roll(60, 6) + (creature.get_exp() / 100) * MON_DRAIN_LIFE;
 
                 bool resist_drain = check_drain_hp(creature, d);
                 process_drain_life(monap_ptr, resist_drain);

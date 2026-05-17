@@ -141,7 +141,7 @@ void display_store(CreatureEntity &creature, StoreSaleType store_num)
             put_str(_("  重さ", "Weight"), 5, 70);
         }
 
-        store_prt_gold(creature.au);
+        store_prt_gold(creature.get_au());
         display_store_inventory(creature, store_num);
         return;
     }
@@ -153,7 +153,7 @@ void display_store(CreatureEntity &creature, StoreSaleType store_num)
             put_str(_("  重さ", "Weight"), 5, 70);
         }
 
-        store_prt_gold(creature.au);
+        store_prt_gold(creature.get_au());
         display_store_inventory(creature, store_num);
         return;
     }
@@ -171,6 +171,6 @@ void display_store(CreatureEntity &creature, StoreSaleType store_num)
     }
 
     put_str(_(" 価格", "Price"), 5, 72);
-    store_prt_gold(creature.au);
+    store_prt_gold(creature.get_au());
     display_store_inventory(creature, store_num);
 }

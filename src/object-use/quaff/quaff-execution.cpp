@@ -133,26 +133,26 @@ void ObjectQuaffEntity::moisten(const ItemEntity &o_ref)
     switch (CreatureRace(&this->creature).food()) {
     case PlayerRaceFoodType::WATER:
         msg_print(_("水分を取り込んだ。", "You are moistened."));
-        set_food(this->creature, std::min<short>(this->creature.food + o_ref.pval + std::max<short>(0, o_ref.pval * 10) + 2000, PY_FOOD_MAX - 1));
+        set_food(this->creature, std::min<short>(this->creature.get_food() + o_ref.pval + std::max<short>(0, o_ref.pval * 10) + 2000, PY_FOOD_MAX - 1));
         return;
     case PlayerRaceFoodType::OIL:
         if (o_ref.bi_key.tval() != ItemKindType::FLASK) {
-            set_food(this->creature, this->creature.food + ((o_ref.pval) / 20));
+            set_food(this->creature, this->creature.get_food() + ((o_ref.pval) / 20));
             return;
         }
 
         msg_print(_("オイルを補給した。", "You replenish yourself with the oil."));
-        set_food(this->creature, this->creature.food + 5000);
+        set_food(this->creature, this->creature.get_food() + 5000);
         return;
     case PlayerRaceFoodType::BLOOD:
-        (void)set_food(this->creature, this->creature.food + (o_ref.pval / 10));
+        (void)set_food(this->creature, this->creature.get_food() + (o_ref.pval / 10));
         return;
     case PlayerRaceFoodType::MANA:
     case PlayerRaceFoodType::MONSTER_REMAINS:
-        set_food(this->creature, this->creature.food + ((o_ref.pval) / 20));
+        set_food(this->creature, this->creature.get_food() + ((o_ref.pval) / 20));
         return;
     default:
-        (void)set_food(this->creature, this->creature.food + o_ref.pval);
+        (void)set_food(this->creature, this->creature.get_food() + o_ref.pval);
         return;
     }
 }

@@ -1156,7 +1156,7 @@ void display_monster_exp(CreatureEntity &creature, lore_type *lore_ptr)
     }
 
     int64_t base_exp = lore_ptr->r_ptr->mexp * lore_ptr->r_ptr->level * 3 / 2;
-    int64_t player_factor = (int64_t)creature.max_plv + 2;
+    int64_t player_factor = (int64_t)creature.get_max_plv() + 2;
 
     int64_t exp_integer = base_exp / player_factor;
     int64_t exp_decimal = ((base_exp % player_factor * 1000 / player_factor) + 5) / 10;

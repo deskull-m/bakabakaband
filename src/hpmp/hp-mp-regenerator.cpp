@@ -156,20 +156,20 @@ void regenhp(CreatureEntity &creature, int percent)
  */
 void regenmana(CreatureEntity &creature, MANA_POINT upkeep_factor, MANA_POINT regen_amount)
 {
-    MANA_POINT old_csp = creature.csp;
+    MANA_POINT old_csp = creature.get_csp();
     int32_t regen_rate = regen_amount * 100 - upkeep_factor * PY_REGEN_NORMAL;
 
     /*
      * Excess mana will decay 32 times faster than normal
      * regeneration rate.
      */
-    if (creature.csp > creature.msp) {
+    if (creature.get_csp() > creature.get_msp()) {
         int32_t decay = 0;
-        uint32_t decay_frac = (creature.msp * 32 * PY_REGEN_NORMAL + PY_REGEN_MNBASE);
+        uint32_t decay_frac = (creature.get_msp() * 32 * PY_REGEN_NORMAL + PY_REGEN_MNBASE);
         s64b_lshift(&decay, &decay_frac, 16);
         s64b_sub(&(creature.csp), &(creature.csp_frac), decay, decay_frac);
-        if (creature.csp < creature.msp) {
-            creature.set_csp(creature.msp);
+        if (creature.get_csp() < creature.get_msp()) {
+            creature.set_csp(creature.get_msp());
             creature.csp_frac = 0;
         }
     }
@@ -177,11 +177,11 @@ void regenmana(CreatureEntity &creature, MANA_POINT upkeep_factor, MANA_POINT re
     /* Regenerating mana (unless the creature has excess mana) */
     else if (regen_rate > 0) {
         MANA_POINT new_mana = 0;
-        uint32_t new_mana_frac = (creature.msp * regen_rate / 100 + PY_REGEN_MNBASE);
+        uint32_t new_mana_frac = (creature.get_msp() * regen_rate / 100 + PY_REGEN_MNBASE);
         s64b_lshift(&new_mana, &new_mana_frac, 16);
         s64b_add(&(creature.csp), &(creature.csp_frac), new_mana, new_mana_frac);
-        if (creature.csp >= creature.msp) {
-            creature.set_csp(creature.msp);
+        if (creature.get_csp() >= creature.get_msp()) {
+            creature.set_csp(creature.get_msp());
             creature.csp_frac = 0;
         }
     }
@@ -189,16 +189,16 @@ void regenmana(CreatureEntity &creature, MANA_POINT upkeep_factor, MANA_POINT re
     /* Reduce mana (even when the creature has excess mana) */
     if (regen_rate < 0) {
         int32_t reduce_mana = 0;
-        uint32_t reduce_mana_frac = (creature.msp * (-1) * regen_rate / 100 + PY_REGEN_MNBASE);
+        uint32_t reduce_mana_frac = (creature.get_msp() * (-1) * regen_rate / 100 + PY_REGEN_MNBASE);
         s64b_lshift(&reduce_mana, &reduce_mana_frac, 16);
         s64b_sub(&(creature.csp), &(creature.csp_frac), reduce_mana, reduce_mana_frac);
-        if (creature.csp < 0) {
+        if (creature.get_csp() < 0) {
             creature.set_csp(0);
             creature.csp_frac = 0;
         }
     }
 
-    if (old_csp != creature.csp) {
+    if (old_csp != creature.get_csp()) {
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::MP);
         static constexpr auto flags = {
@@ -287,7 +287,7 @@ void regenerate_monsters(CreatureEntity &creature)
         if (monster.hp < monster.maxhp) {
             regenhp(monster, regen_amount);
         }
-        if (monster.csp < monster.msp) {
+        if (monster.get_csp() < monster.get_msp()) {
             regenmana(monster, 0, regen_amount);
         }
 

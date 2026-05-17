@@ -54,7 +54,7 @@ bool melee_arena_comm(CreatureEntity &creature)
     screen_save();
 
     /* No money */
-    if (creature.au <= 1) {
+    if (creature.get_au() <= 1) {
         msg_print(_("おい！おまえ一文なしじゃないか！こっから出ていけ！", "Hey! You don't have gold - get out of here!"));
         msg_erase();
         screen_load();
@@ -87,7 +87,7 @@ bool melee_arena_comm(CreatureEntity &creature)
     }
 
     auto maxbet = creature.level * 200;
-    maxbet = std::min(maxbet, creature.au);
+    maxbet = std::min(maxbet, creature.get_au());
     constexpr auto prompt = _("賭け金？", "Your wager? ");
     const auto wager = input_integer(prompt, 1, maxbet, 1);
     if (!wager) {
@@ -95,7 +95,7 @@ bool melee_arena_comm(CreatureEntity &creature)
         return false;
     }
 
-    if (wager > creature.au) {
+    if (wager > creature.get_au()) {
         msg_print(_("おい！金が足りないじゃないか！出ていけ！", "Hey! You don't have the gold - get out of here!"));
         msg_erase();
         screen_load();

@@ -103,7 +103,7 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
     }
 
     const auto building_action = bldg.actions[i];
-    if ((building_action != BACT_RECHARGE) && (((bldg.member_costs[i] > creature.au) && can_be_owner) || ((bldg.other_costs[i] > creature.au) && !can_be_owner))) {
+    if ((building_action != BACT_RECHARGE) && (((bldg.member_costs[i] > creature.get_au()) && can_be_owner) || ((bldg.other_costs[i] > creature.get_au()) && !can_be_owner))) {
         msg_print(_("お金が足りません！", "You do not have the gold!"));
         return false;
     }
@@ -427,7 +427,7 @@ void do_cmd_building(CreatureEntity &creature)
     while (true) {
         display_building_service(creature, bldg);
         prt("", 1, 0);
-        building_prt_gold(creature.au);
+        building_prt_gold(creature.get_au());
         const auto command = inkey();
         if (command == ESCAPE) {
             floor.inside_arena = false;

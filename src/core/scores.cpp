@@ -192,7 +192,7 @@ errr top_twenty(CreatureEntity &creature)
     snprintf(the_score.pts, sizeof(the_score.pts), "%9u", calc_score(creature));
     the_score.pts[9] = '\0';
 
-    snprintf(the_score.gold, sizeof(the_score.gold), "%9d", creature.au);
+    snprintf(the_score.gold, sizeof(the_score.gold), "%9d", creature.get_au());
     the_score.gold[9] = '\0';
 
     const auto &igd = InnerGameData::get_instance();
@@ -257,7 +257,7 @@ errr predict_score(CreatureEntity &creature)
     const auto &igd = InnerGameData::get_instance();
     snprintf(the_score.what, sizeof(the_score.what), "%u.%u.%u", H_VER_MAJOR, H_VER_MINOR, H_VER_PATCH);
     snprintf(the_score.pts, sizeof(the_score.pts), "%9u", calc_score(creature));
-    snprintf(the_score.gold, sizeof(the_score.gold), "%9d", creature.au);
+    snprintf(the_score.gold, sizeof(the_score.gold), "%9d", creature.get_au());
     snprintf(the_score.turns, sizeof(the_score.turns), "%9d", igd.get_real_turns(AngbandWorld::get_instance().game_turn));
     angband_strcpy(the_score.day, _("今日", "TODAY"), sizeof(the_score.day));
     the_score.copy_info(creature);

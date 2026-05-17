@@ -53,12 +53,12 @@ static void add_basic_info_to_json(nlohmann::json &j, CreatureEntity &creature)
 {
     j["basic"]["name"] = to_utf8_safe(creature.name);
     j["basic"]["level"] = creature.get_level();
-    j["basic"]["experience"] = creature.exp;
-    j["basic"]["max_experience"] = creature.max_exp;
-    j["basic"]["age"] = creature.age;
-    j["basic"]["height"] = creature.ht;
-    j["basic"]["weight"] = creature.wt;
-    j["basic"]["prestige"] = creature.prestige;
+    j["basic"]["experience"] = creature.get_exp();
+    j["basic"]["max_experience"] = creature.get_max_exp();
+    j["basic"]["age"] = creature.get_age();
+    j["basic"]["height"] = creature.get_ht();
+    j["basic"]["weight"] = creature.get_wt();
+    j["basic"]["prestige"] = creature.get_prestige();
 
     if (creature.race != nullptr) {
         j["basic"]["race"] = localized_to_utf8_safe(creature.get_race_info()->title);
@@ -121,13 +121,13 @@ static void add_status_to_json(nlohmann::json &j, CreatureEntity &creature)
 {
     j["status"]["hitpoints"] = creature.hp;
     j["status"]["max_hitpoints"] = creature.maxhp;
-    j["status"]["mana"] = creature.csp;
-    j["status"]["max_mana"] = creature.msp;
+    j["status"]["mana"] = creature.get_csp();
+    j["status"]["max_mana"] = creature.get_msp();
     j["status"]["armor_class"] = creature.ac;
     j["status"]["display_armor_class"] = creature.dis_ac;
 
     // 所持金とアイテム
-    j["status"]["gold"] = creature.au;
+    j["status"]["gold"] = creature.get_au();
 
     // ダンジョン情報
     j["status"]["dungeon_level"] = creature.get_floor()->dun_level;

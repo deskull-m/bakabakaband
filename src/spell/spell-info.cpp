@@ -133,8 +133,8 @@ PERCENTAGE spell_chance(CreatureEntity &creature, SPELL_IDX spell_id, RealmType 
     }
 
     MANA_POINT need_mana = mod_need_mana(creature, spell.smana, spell_id, use_realm);
-    if (need_mana > creature.csp) {
-        chance += 5 * (need_mana - creature.csp);
+    if (need_mana > creature.get_csp()) {
+        chance += 5 * (need_mana - creature.get_csp());
     }
 
     CreatureClass pc(creature);
@@ -305,7 +305,7 @@ void print_spells(CreatureEntity &creature, SPELL_IDX target_spell_id, const SPE
         PlayerSpellStatus pss(creature);
         const auto realm_status = pr.realm1().equals(use_realm) ? pss.realm1() : pss.realm2();
         if (pc.is_every_magic()) {
-            if (spell.slevel > creature.max_plv) {
+            if (spell.slevel > creature.get_max_plv()) {
                 comment = _("未知", "unknown");
                 line_attr = TERM_L_BLUE;
             } else if (spell.slevel > creature.level) {

@@ -97,8 +97,8 @@ static void kingly(CreatureEntity &creature)
         creature.died_from = _("ripe", "Ripe Old Age");
     }
 
-    creature.set_exp(creature.max_exp);
-    creature.set_level(creature.max_plv);
+    creature.set_exp(creature.get_max_exp());
+    creature.set_level(creature.get_max_plv());
     creature.add_au(10000000L);
     term_clear();
 

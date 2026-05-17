@@ -196,7 +196,7 @@ std::string process_pref_file_expr(CreatureEntity &creature, char **sp, char *fp
             v = "0";
         }
     } else if (streq(b + 1, "MONEY")) {
-        v = format("%09ld", (long int)creature.au);
+        v = format("%09ld", (long int)creature.get_au());
     }
 
     *fp = f;

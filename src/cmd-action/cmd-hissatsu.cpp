@@ -329,7 +329,7 @@ void do_cmd_hissatsu(CreatureEntity &creature)
     const auto &spell = PlayerRealm::get_spell_info(RealmType::HISSATSU, n);
 
     /* Verify "dangerous" spells */
-    if (spell.smana > creature.csp) {
+    if (spell.smana > creature.get_csp()) {
         if (flush_failure) {
             flush();
         }
@@ -348,7 +348,7 @@ void do_cmd_hissatsu(CreatureEntity &creature)
     creature.plus_incident_tree("USE_HISSATSU", 1);
     PlayerEnergy(creature).set_player_turn_energy(100);
     creature.sub_csp(spell.smana);
-    if (creature.csp < 0) {
+    if (creature.get_csp() < 0) {
         creature.set_csp(0);
     }
 

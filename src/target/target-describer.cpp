@@ -122,13 +122,13 @@ static std::string evaluate_monster_exp(CreatureEntity &creature, const Creature
 
     int32_t exp_mon = monrace.mexp * monrace.level;
     uint32_t exp_mon_frac = 0;
-    s64b_div(&exp_mon, &exp_mon_frac, 0, (creature.max_plv + 2));
+    s64b_div(&exp_mon, &exp_mon_frac, 0, (creature.get_max_plv() + 2));
 
     int32_t exp_adv = player_exp[creature.level - 1] * creature.expfact;
     uint32_t exp_adv_frac = 0;
     s64b_div(&exp_adv, &exp_adv_frac, 0, 100);
 
-    s64b_sub(&exp_adv, &exp_adv_frac, creature.exp, creature.exp_frac);
+    s64b_sub(&exp_adv, &exp_adv_frac, creature.get_exp(), creature.exp_frac);
 
     s64b_add(&exp_adv, &exp_adv_frac, exp_mon, exp_mon_frac);
     s64b_sub(&exp_adv, &exp_adv_frac, 0, 1);

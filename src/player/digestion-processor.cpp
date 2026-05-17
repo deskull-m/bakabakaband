@@ -30,8 +30,8 @@ void starve_player(CreatureEntity &creature)
         return;
     }
 
-    if (creature.food >= PY_FOOD_MAX) {
-        (void)set_food(creature, creature.food - 100);
+    if (creature.get_food() >= PY_FOOD_MAX) {
+        (void)set_food(creature, creature.get_food() - 100);
     } else if (AngbandWorld::get_instance().game_turn % (TURNS_PER_TICK * 5) == 0) {
         int digestion = speed_to_energy(static_cast<byte>(creature.get_speed()));
         if (creature.has_regen_flag()) {
@@ -60,10 +60,10 @@ void starve_player(CreatureEntity &creature)
             digestion *= 100;
         }
 
-        (void)set_food(creature, creature.food - digestion);
+        (void)set_food(creature, creature.get_food() - digestion);
     }
 
-    if ((creature.food >= PY_FOOD_FAINT)) {
+    if ((creature.get_food() >= PY_FOOD_FAINT)) {
         return;
     }
 
@@ -73,8 +73,8 @@ void starve_player(CreatureEntity &creature)
         (void)BadStatusSetter(creature).mod_paralysis(1 + randint0(5));
     }
 
-    if (creature.food < PY_FOOD_STARVE) {
-        int dam = (PY_FOOD_STARVE - creature.food) / 10;
+    if (creature.get_food() < PY_FOOD_STARVE) {
+        int dam = (PY_FOOD_STARVE - creature.get_food()) / 10;
         if (!creature.is_invulnerable()) {
             take_hit(creature, DAMAGE_LOSELIFE, dam, _("空腹", "starvation"));
         }
@@ -118,15 +118,15 @@ bool set_food(CreatureEntity &creature, TIME_EFFECT v)
     bool notice = false;
     v = (v > 20000) ? 20000 : (v < 0) ? 0
                                       : v;
-    if (creature.food < PY_FOOD_FAINT) {
+    if (creature.get_food() < PY_FOOD_FAINT) {
         old_aux = 0;
-    } else if (creature.food < PY_FOOD_WEAK) {
+    } else if (creature.get_food() < PY_FOOD_WEAK) {
         old_aux = 1;
-    } else if (creature.food < PY_FOOD_ALERT) {
+    } else if (creature.get_food() < PY_FOOD_ALERT) {
         old_aux = 2;
-    } else if (creature.food < PY_FOOD_FULL) {
+    } else if (creature.get_food() < PY_FOOD_FULL) {
         old_aux = 3;
-    } else if (creature.food < PY_FOOD_MAX) {
+    } else if (creature.get_food() < PY_FOOD_MAX) {
         old_aux = 4;
     } else {
         old_aux = 5;

@@ -247,9 +247,9 @@ bool report_score(CreatureEntity &creature)
              << fmt::format("score: {}\n", calc_score(creature))
              << fmt::format("level: {}\n", creature.level)
              << fmt::format("depth: {}\n", creature.get_floor()->dun_level)
-             << fmt::format("maxlv: {}\n", creature.max_plv)
+             << fmt::format("maxlv: {}\n", creature.get_max_plv())
              << fmt::format("maxdp: {}\n", DungeonRecords::get_instance().get_record(DungeonId::ANGBAND).get_max_level())
-             << fmt::format("au: {}\n", creature.au);
+             << fmt::format("au: {}\n", creature.get_au());
     const auto &igd = InnerGameData::get_instance();
     score_ss << fmt::format("turns: {}\n", igd.get_real_turns(AngbandWorld::get_instance().game_turn))
              << fmt::format("sex: {}\n", enum2i(creature.psex))

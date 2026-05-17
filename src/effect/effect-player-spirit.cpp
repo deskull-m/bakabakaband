@@ -22,7 +22,7 @@ void effect_player_drain_mana(CreatureEntity &creature, EffectPlayerType *ep_ptr
         return;
     }
 
-    if (creature.csp == 0) {
+    if (creature.get_csp() == 0) {
         ep_ptr->dam = 0;
         return;
     }
@@ -33,8 +33,8 @@ void effect_player_drain_mana(CreatureEntity &creature, EffectPlayerType *ep_ptr
         msg_print(_("精神エネルギーを吸い取られてしまった！", "Your psychic energy is drained!"));
     }
 
-    if (ep_ptr->dam >= creature.csp) {
-        ep_ptr->dam = creature.csp;
+    if (ep_ptr->dam >= creature.get_csp()) {
+        ep_ptr->dam = creature.get_csp();
         creature.set_csp(0);
         creature.csp_frac = 0;
     } else {
@@ -94,7 +94,7 @@ void effect_player_mind_blast(CreatureEntity &creature, EffectPlayerType *ep_ptr
     }
 
     creature.sub_csp(50);
-    if (creature.csp < 0) {
+    if (creature.get_csp() < 0) {
         creature.set_csp(0);
         creature.csp_frac = 0;
     }
@@ -113,7 +113,7 @@ void effect_player_brain_smash(CreatureEntity &creature, EffectPlayerType *ep_pt
     if (!check_multishadow(creature)) {
         msg_print(_("霊的エネルギーで精神が攻撃された。", "Your mind is blasted by psionic energy."));
         creature.sub_csp(100);
-        if (creature.csp < 0) {
+        if (creature.get_csp() < 0) {
             creature.set_csp(0);
             creature.csp_frac = 0;
         }

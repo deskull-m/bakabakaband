@@ -362,13 +362,13 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
         new_exp /= 5;
     }
 
-    monster.exp += new_exp;
+    monster.add_exp(new_exp);
     if (monster.is_chameleon()) {
         return;
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (monster.exp < old_monrace.next_exp) {
+    if (monster.get_exp() < old_monrace.next_exp) {
         if (monster.is_riding()) {
             rfu.set_flag(StatusRecalculatingFlag::BONUS);
         }

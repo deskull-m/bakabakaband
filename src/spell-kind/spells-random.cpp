@@ -182,7 +182,7 @@ bool activate_ty_curse(CreatureEntity &creature, bool stop_ty, int *count)
         case 11:
         case 12:
             msg_print(_("経験値が体から吸い取られた気がする！", "You feel your experience draining away..."));
-            lose_exp(creature, creature.exp / 16);
+            lose_exp(creature, creature.get_exp() / 16);
             if (!one_in_(6)) {
                 break;
             }

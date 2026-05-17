@@ -219,11 +219,11 @@ void cast_shuffle(CreatureEntity &creature)
     }
 
     msg_print(_("《世界》だ。", "It's the World."));
-    if (creature.exp >= PY_MAX_EXP) {
+    if (creature.get_exp() >= PY_MAX_EXP) {
         return;
     }
 
-    int32_t ee = (creature.exp / 25) + 1;
+    int32_t ee = (creature.get_exp() / 25) + 1;
     if (ee > 5000) {
         ee = 5000;
     }

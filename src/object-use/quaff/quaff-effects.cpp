@@ -364,13 +364,13 @@ bool QuaffEffects::sleep()
  */
 bool QuaffEffects::lose_memories()
 {
-    if (this->creature.has_hold_exp() || (this->creature.exp <= 0)) {
+    if (this->creature.has_hold_exp() || (this->creature.get_exp() <= 0)) {
         return false;
     }
 
     msg_print(_("過去の記憶が薄れていく気がする。", "You feel your memories fade."));
     chg_virtue(this->creature, Virtue::KNOWLEDGE, -5);
-    lose_exp(this->creature, this->creature.exp / 4);
+    lose_exp(this->creature, this->creature.get_exp() / 4);
     return true;
 }
 
@@ -514,11 +514,11 @@ bool QuaffEffects::experience()
     }
 
     chg_virtue(this->creature, Virtue::ENLIGHTEN, 1);
-    if (this->creature.exp >= PY_MAX_EXP) {
+    if (this->creature.get_exp() >= PY_MAX_EXP) {
         return false;
     }
 
-    auto ee = (this->creature.exp / 2) + 10;
+    auto ee = (this->creature.get_exp() / 2) + 10;
     constexpr int max_exp = 100000;
     if (ee > max_exp) {
         ee = max_exp;

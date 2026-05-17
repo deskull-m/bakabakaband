@@ -45,13 +45,13 @@ void building_recharge(CreatureEntity &creature)
     if (!item->is_known()) {
         msg_format(_("充填する前に鑑定されている必要があります！", "The item must be identified first!"));
         msg_erase();
-        if ((creature.au >= 50) && input_check(_("＄50で鑑定しますか？ ", "Identify for 50 gold? "))) {
+        if ((creature.get_au() >= 50) && input_check(_("＄50で鑑定しますか？ ", "Identify for 50 gold? "))) {
             creature.sub_au(50);
             identify_item(creature, item.get());
             const auto item_name = describe_flavor(creature, *item, 0);
             msg_format(_("%s です。", "You have: %s."), item_name.data());
             autopick_alter_item(creature, i_idx, false);
-            building_prt_gold(creature.au);
+            building_prt_gold(creature.get_au());
         }
 
         return;
@@ -100,7 +100,7 @@ void building_recharge(CreatureEntity &creature)
         return;
     }
 
-    if (creature.au < price) {
+    if (creature.get_au() < price) {
         const auto item_name = describe_flavor(creature, *item, OD_NAME_ONLY);
 #ifdef JP
         msg_format("%sを再充填するには＄%d 必要です！", item_name.data(), price);
@@ -131,7 +131,7 @@ void building_recharge(CreatureEntity &creature)
         }
 
         const auto mes = _("一回分＄%d で何回分充填しますか？", "Add how many charges for %d gold apiece? ");
-        const auto charges = input_quantity(std::min(creature.au / price, max_charges), format(mes, price));
+        const auto charges = input_quantity(std::min(creature.get_au() / price, max_charges), format(mes, price));
         if (charges < 1) {
             return;
         }
@@ -218,7 +218,7 @@ void building_recharge_all(CreatureEntity &creature)
         return;
     }
 
-    if (creature.au < total_cost) {
+    if (creature.get_au() < total_cost) {
         msg_format(_("すべてのアイテムを再充填するには＄%d 必要です！", "You need %d gold to recharge all items!"), total_cost);
         msg_erase();
         return;

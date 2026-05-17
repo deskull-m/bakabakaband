@@ -119,9 +119,9 @@ void blood_curse_to_enemy(CreatureEntity &creature, MONSTER_IDX m_idx)
 
             msg_print(_("経験値が体から吸い取られた気がする！", "You feel your experience draining away..."));
             if (creature.has_hold_exp()) {
-                lose_exp(creature, creature.exp / 160);
+                lose_exp(creature, creature.get_exp() / 160);
             } else {
-                lose_exp(creature, creature.exp / 16);
+                lose_exp(creature, creature.get_exp() / 16);
             }
             if (!one_in_(6)) {
                 break;
