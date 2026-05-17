@@ -53,12 +53,12 @@ bool eat_rock(CreatureEntity &creature)
     } else if (terrain.flags.has(TerrainCharacteristics::GLASS)) {
         msg_print(_("ガラスの味は好きじゃない！", "You don't like the glassy taste!"));
     } else if (terrain.flags.has(TerrainCharacteristics::DOOR) || terrain.flags.has(TerrainCharacteristics::CAN_DIG)) {
-        (void)set_food(creature, creature.food + 3000);
+        (void)set_food(creature, creature.get_food() + 3000);
     } else if (terrain.flags.has(TerrainCharacteristics::MAY_HAVE_GOLD) || terrain.flags.has(TerrainCharacteristics::HAS_GOLD)) {
-        (void)set_food(creature, creature.food + 5000);
+        (void)set_food(creature, creature.get_food() + 5000);
     } else {
         msg_format(_("この%sはとてもおいしい！", "This %s is very filling!"), terrain_mimic.name.data());
-        (void)set_food(creature, creature.food + 10000);
+        (void)set_food(creature, creature.get_food() + 10000);
     }
 
     cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::STONE);

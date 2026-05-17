@@ -1009,7 +1009,7 @@ bool do_cmd_cast(CreatureEntity &creature)
     need_mana = mod_need_mana(creature, spell.smana, spell_id, use_realm);
 
     /* Verify "dangerous" spells */
-    if (need_mana > creature.csp) {
+    if (need_mana > creature.get_csp()) {
         if (flush_failure) {
             flush();
         }
@@ -1264,7 +1264,7 @@ bool do_cmd_cast(CreatureEntity &creature)
     PlayerEnergy(creature).set_player_turn_energy(100);
 
     /* Sufficient mana */
-    if (need_mana <= creature.csp) {
+    if (need_mana <= creature.get_csp()) {
         /* Use some mana */
         creature.sub_csp(need_mana);
     } else {

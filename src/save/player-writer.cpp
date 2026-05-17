@@ -66,9 +66,9 @@ void wr_player(CreatureEntity &creature)
     wr_u16b(creature.expfact);
 
     wr_s32b(creature.death_count);
-    wr_s16b(creature.age);
-    wr_s16b(creature.ht);
-    wr_s16b(creature.wt);
+    wr_s16b(creature.get_age());
+    wr_s16b(creature.get_ht());
+    wr_s16b(creature.get_wt());
 
     // 死亡履歴のセーブ
     wr_u32b(static_cast<uint32_t>(creature.death_history.size()));
@@ -98,10 +98,10 @@ void wr_player(CreatureEntity &creature)
         wr_s16b(0);
     }
 
-    wr_u32b(creature.au);
-    wr_u32b(creature.max_exp);
-    wr_u32b(creature.max_max_exp);
-    wr_u32b(creature.exp);
+    wr_u32b(creature.get_au());
+    wr_u32b(creature.get_max_exp());
+    wr_u32b(creature.get_max_max_exp());
+    wr_u32b(creature.get_exp());
     wr_u32b(creature.exp_frac);
     wr_s16b(creature.level);
 
@@ -145,7 +145,7 @@ void wr_player(CreatureEntity &creature)
         wr_u32b(gladiator.odds);
     }
 
-    wr_s16b(creature.town_num);
+    wr_s16b(creature.get_town_num());
     const auto &entries = ArenaEntryList::get_instance();
     wr_s16b(static_cast<int16_t>(entries.get_current_entry()));
     const auto defeated_entry = entries.get_defeated_entry();
@@ -164,10 +164,10 @@ void wr_player(CreatureEntity &creature)
     wr_s32b(creature.hp);
     wr_u32b(creature.hp_frac);
     wr_s32b(creature.dealt_damage); // セーブファイルバージョン35以降で与ダメージ蓄積を保存
-    wr_s32b(creature.msp);
-    wr_s32b(creature.csp);
+    wr_s32b(creature.get_msp());
+    wr_s32b(creature.get_csp());
     wr_u32b(creature.csp_frac);
-    wr_s16b(creature.max_plv);
+    wr_s16b(creature.get_max_plv());
 
     const auto &dungeon_records = DungeonRecords::get_instance();
     auto tmp8u = static_cast<uint8_t>(dungeon_records.size());
@@ -180,14 +180,14 @@ void wr_player(CreatureEntity &creature)
     wr_s16b(0);
     wr_s16b(0);
     wr_s16b(0);
-    wr_s16b(creature.prestige);
+    wr_s16b(creature.get_prestige());
 
     auto effects = creature.effects();
     wr_s16b(0); /* old "rest" */
     wr_s16b(effects->blindness().current());
     wr_s16b(effects->paralysis().current());
     wr_s16b(effects->confusion().current());
-    wr_s16b(creature.food);
+    wr_s16b(creature.get_food());
     wr_s16b(0); /* old "food_digested" */
     wr_s16b(0); /* old "protection" */
     wr_s16b(creature.energy_need);

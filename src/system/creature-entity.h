@@ -1467,6 +1467,114 @@ public:
         this->csp -= delta;
     }
 
+    /*! @brief 所持金を取得する (提案 31) */
+    virtual int get_au() const
+    {
+        return this->au;
+    }
+
+    /*! @brief 現在の MP を取得する (提案 31) */
+    virtual int get_csp() const
+    {
+        return this->csp;
+    }
+
+    /*! @brief 滋養度を取得する (提案 31) */
+    virtual int16_t get_food() const
+    {
+        return this->food;
+    }
+
+    /*! @brief 現在いる街番号を取得する (提案 31) */
+    virtual int16_t get_town_num() const
+    {
+        return this->town_num;
+    }
+
+    /*! @brief 年齢を取得する (提案 31) */
+    virtual int16_t get_age() const
+    {
+        return this->age;
+    }
+
+    /*! @brief 身長を取得する (提案 31) */
+    virtual int16_t get_ht() const
+    {
+        return this->ht;
+    }
+
+    /*! @brief 体重を取得する (提案 31) */
+    virtual int16_t get_wt() const
+    {
+        return this->wt;
+    }
+
+    /*! @brief 名声を取得する (提案 31) */
+    virtual int16_t get_prestige() const
+    {
+        return this->prestige;
+    }
+
+    /*! @brief 経験レベル最大値を取得する (提案 31) */
+    virtual int16_t get_max_plv() const
+    {
+        return this->max_plv;
+    }
+
+    /*! @brief 最大 MP (msp) を取得する (提案 31) */
+    virtual int get_msp() const
+    {
+        return this->msp;
+    }
+
+    /*! @brief 現在の経験値を取得する (提案 31) */
+    virtual EXP get_exp() const
+    {
+        return this->exp;
+    }
+
+    /*! @brief 最大経験値を取得する (提案 31) */
+    virtual EXP get_max_exp() const
+    {
+        return this->max_exp;
+    }
+
+    /*! @brief 最大の最大経験値を取得する (提案 31) */
+    virtual EXP get_max_max_exp() const
+    {
+        return this->max_max_exp;
+    }
+
+    /*! @brief 経験値を加算する (提案 31) */
+    virtual void add_exp(EXP delta)
+    {
+        this->exp += delta;
+    }
+
+    /*! @brief 経験値を減算する (提案 31) */
+    virtual void sub_exp(EXP delta)
+    {
+        this->exp -= delta;
+    }
+
+    /*! @brief 最大経験値を加算する (提案 31) */
+    virtual void add_max_exp(EXP delta)
+    {
+        this->max_exp += delta;
+    }
+
+    /*! @brief 最大経験値を減算する (提案 31) */
+    virtual void sub_max_exp(EXP delta)
+    {
+        this->max_exp -= delta;
+    }
+
+    /*! @brief 待ち伏せ状態を取得する (提案 31) */
+    virtual bool get_ambush_flag() const
+    {
+        return this->ambush_flag;
+    }
+
     /*! @brief 命中ボーナス (近接利き手分以外) を設定する (提案 30) */
     virtual void set_to_h_b(int16_t value)
     {

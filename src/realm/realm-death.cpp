@@ -303,10 +303,10 @@ tl::optional<std::string> do_death_spell(CreatureEntity &creature, SPELL_IDX spe
                  * ARE Gorged, it won't cure
                  * us
                  */
-                dam = creature.food + std::min(5000, 100 * dam);
+                dam = creature.get_food() + std::min(5000, 100 * dam);
 
                 /* Not gorged already */
-                if (creature.food < PY_FOOD_MAX) {
+                if (creature.get_food() < PY_FOOD_MAX) {
                     set_food(creature, dam >= PY_FOOD_MAX ? PY_FOOD_MAX - 1 : dam);
                 }
             }

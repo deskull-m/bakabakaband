@@ -1195,6 +1195,45 @@ to_h*/to_a 系は `calc_*()` 経由で再計算されるため write site は
 
 ---
 
+## 提案 31: 残り plain field の getter virtual 整備と read 側移行 ✅ 完了
+
+### 背景
+
+提案 24-30 で setter 系を整備した CreatureEntity 直下フィールドに
+ついて、対応する getter virtual を追加し、散在していた直接読取りを
+getter 経由に統一する。これは将来的なフィールド private 化
+(提案 32) の前提条件となる。
+
+### 作業内容 (commit `b809ce221`)
+
+新規 virtual (18 個):
+- getter (14 個): `get_au` / `get_csp` / `get_food` / `get_town_num` /
+  `get_age` / `get_ht` / `get_wt` / `get_prestige` / `get_max_plv` /
+  `get_msp` / `get_exp` / `get_max_exp` / `get_max_max_exp` /
+  `get_ambush_flag`
+- 補助 (4 個): `add_exp` / `sub_exp` / `add_max_exp` / `sub_max_exp`
+  (sed 誤変換修正用)
+
+migration 対象 (109 ファイル, 約 350 箇所):
+- `creature/monster/target.field` 直接アクセスの読取りパターンを
+  getter 経由に sed で機械的に変換
+- `s64b_sub/add(&creature.csp, ...)` のような lvalue が必要な 5 箇所
+  は直接フィールドアクセスに戻す (hpmp-regenerator / experience /
+  spells-song / spells-hex / player-processor)
+- 後置 `creature.get_csp()--` 等の inc/dec 残骸は `sub_csp` /
+  `sub_exp` 等に再修正
+- write 操作 (`+=` / `-=`) が誤って `get_*() +=` 形に化けた約 8 箇所
+  は `add_*` / `sub_*` virtual に再修正 (ring-of-power /
+  realm-hex / inventory-curse / status/experience /
+  monster/monster-status)
+
+### 残置
+
+- `level` (628 read sites) は分量が多いため別提案 (31b) として残置
+- `stat_*[]` 配列 (200+ read sites) も同様に別提案として残置
+
+---
+
 ## 推奨実施順序
 
 ### 完了済み (大規模フェーズ)
@@ -1225,6 +1264,7 @@ to_h*/to_a 系は `calc_*()` 経由で再計算されるため write site は
 - ✅ **提案 28b**: ポインタ経由 (`m_ptr->X`) の同フィールド読取り (約 80 箇所) を getter virtual 経由に移行
 - ✅ **提案 29**: `r_idx` / `ap_r_idx` / `riding` を CreatureEntity の private 化 (CreatureEntity 直下フィールドの完全 private 化に成功した最初の例)
 - ✅ **提案 30**: 戦闘ボーナス系 (to_h_b / to_h_m / to_d_m / to_a) と stat 系 (stat_max / stat_cur / stat_max_max / stat_use / stat_top / stat_add / stat_index) の setter virtual 整備、約 55 箇所 migration
+- ✅ **提案 31**: 残り plain field 14 種 (au / csp / food / town_num / age / ht / wt / prestige / max_plv / msp / exp / max_exp / max_max_exp / ambush_flag) の getter virtual 整備と read site 約 350 箇所の migration
 
 ### 既存提案の残作業 (中規模)
 
@@ -1237,13 +1277,13 @@ to_h*/to_a 系は `calc_*()` 経由で再計算されるため write site は
 
 ### 今後の候補 (追加提案)
 
-- **提案 31**: その他の plain field (`au` / `csp` / `food` / `level`
-  / `town_num` / `age` / `ht` / `wt` / `prestige` / `to_h` /
-  `to_d` / `to_a` / `stat_*` 等) の read 側アクセサ化
-- **提案 32**: 提案 31 完了後に同フィールドを実際に private 化
-  (提案 29 と同じパターン)
+- **提案 31b**: `level` (628 read sites) と `stat_*[]` 配列
+  (200+ read sites) / `to_h` / `to_d` / `to_a` の read 側 getter 化
+- **提案 32**: 提案 31 で getter 整備済みのフィールド (au / csp /
+  food / town_num / age / ht / wt / prestige / max_plv / msp /
+  exp / max_exp / max_max_exp / ambush_flag) を CreatureEntity の
+  private 化 (提案 29 と同じパターン)
 - **提案 25b**: 性能影響が出た場合の `get_inven_cnt()` キャッシュ層再導入
-  → **検証済 (不要)**
   → **検証済 (不要)**: 全 12 call site が低頻度 (savefile load / inventory
   pickup / death message / character dump / 個別 UI コマンド)。最頻箇所
   でも `INVEN_PACK = 23` の線形スキャン (~70ns) × 数十回/ターン 程度

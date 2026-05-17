@@ -203,7 +203,7 @@ int16_t PlayerSpeed::time_effect_bonus()
         }
     }
 
-    if (this->creature.food >= PY_FOOD_MAX) {
+    if (this->creature.get_food() >= PY_FOOD_MAX) {
         bonus -= 10;
     }
 

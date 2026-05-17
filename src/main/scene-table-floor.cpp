@@ -16,7 +16,7 @@ using scene_feel_func = bool (*)(CreatureEntity &creature, scene_type *value);
 
 static bool scene_basic(CreatureEntity &creature, scene_type *value)
 {
-    if (creature.ambush_flag) {
+    if (creature.get_ambush_flag()) {
         value->type = TERM_XTRA_MUSIC_BASIC;
         value->val = MUSIC_BASIC_AMBUSH;
         return true;
@@ -71,17 +71,17 @@ static bool scene_quest_basic(CreatureEntity &creature, scene_type *value)
 
 static bool scene_town(CreatureEntity &creature, scene_type *value)
 {
-    const auto enable = !creature.get_floor()->is_underground() && (creature.town_num > 0);
+    const auto enable = !creature.get_floor()->is_underground() && (creature.get_town_num() > 0);
     if (enable) {
         value->type = TERM_XTRA_MUSIC_TOWN;
-        value->val = creature.town_num;
+        value->val = creature.get_town_num();
     }
     return enable;
 }
 
 static bool scene_town_basic(CreatureEntity &creature, scene_type *value)
 {
-    const auto enable = !creature.get_floor()->is_underground() && (creature.town_num > 0);
+    const auto enable = !creature.get_floor()->is_underground() && (creature.get_town_num() > 0);
     if (enable) {
         value->type = TERM_XTRA_MUSIC_BASIC;
         value->val = MUSIC_BASIC_TOWN;

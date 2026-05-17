@@ -19,8 +19,8 @@ void gain_exp_64(CreatureEntity &creature, int32_t amount, uint32_t amount_frac)
 
     s64b_add(&(creature.exp), &(creature.exp_frac), amount, amount_frac);
 
-    if (creature.exp < creature.max_exp) {
-        creature.max_exp += amount / 5;
+    if (creature.get_exp() < creature.get_max_exp()) {
+        creature.add_max_exp(amount / 5);
     }
 
     check_experience(creature);
@@ -42,11 +42,11 @@ void lose_exp(CreatureEntity &creature, int32_t amount)
     if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
         return;
     }
-    if (amount > creature.exp) {
-        amount = creature.exp;
+    if (amount > creature.get_exp()) {
+        amount = creature.get_exp();
     }
 
-    creature.exp -= amount;
+    creature.sub_exp(amount);
 
     check_experience(creature);
 }
@@ -56,9 +56,9 @@ void lose_exp(CreatureEntity &creature, int32_t amount)
  */
 bool restore_level(CreatureEntity &creature)
 {
-    if (creature.exp < creature.max_exp) {
+    if (creature.get_exp() < creature.get_max_exp()) {
         msg_print(_("経験値が戻ってきた気がする。", "You feel your experience returning."));
-        creature.set_exp(creature.max_exp);
+        creature.set_exp(creature.get_max_exp());
         check_experience(creature);
         return true;
     }

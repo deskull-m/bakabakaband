@@ -125,7 +125,7 @@ static AttributeFlags shot_attribute(CreatureEntity &creature, ItemEntity *bow_p
         }
     }
 
-    if ((flags.has(TR_FORCE_WEAPON)) && (creature.csp > (creature.msp / 30))) {
+    if ((flags.has(TR_FORCE_WEAPON)) && (creature.get_csp() > (creature.get_msp() / 30))) {
         attribute_flags.set(AttributeType::MANA);
     }
 
@@ -465,8 +465,8 @@ static MULTIPLY calc_shot_damage_with_slay(
             }
         }
 
-        if ((flags.has(TR_FORCE_WEAPON)) && (creature.csp > (creature.msp / 30))) {
-            creature.sub_csp((1 + (creature.msp / 30)));
+        if ((flags.has(TR_FORCE_WEAPON)) && (creature.get_csp() > (creature.get_msp() / 30))) {
+            creature.sub_csp((1 + (creature.get_msp() / 30)));
             RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
             mult = mult * 5 / 2;
         }
@@ -1291,7 +1291,7 @@ uint32_t calc_expect_dice(
     // 理力
     bool is_force = !CreatureClass(creature).equals(PlayerClassType::SAMURAI);
     is_force &= flags.has(TR_FORCE_WEAPON);
-    is_force &= creature.csp > (o_ptr->damage_dice.maxroll() / 5);
+    is_force &= creature.get_csp() > (o_ptr->damage_dice.maxroll() / 5);
 
     dam = calc_slaydam(dam, 1, 1, is_force);
     dam = calc_expect_crit(creature, o_ptr->weight, o_ptr->to_h, dam, to_h, false, impact);

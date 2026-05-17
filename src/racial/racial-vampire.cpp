@@ -41,7 +41,7 @@ bool vampirism(CreatureEntity &creature)
         return true;
     }
 
-    if (creature.food < PY_FOOD_FULL) {
+    if (creature.get_food() < PY_FOOD_FULL) {
         (void)hp_player(creature, dummy);
     } else {
         msg_print(_("あなたは空腹ではありません。", "You were not hungry."));
@@ -51,8 +51,8 @@ bool vampirism(CreatureEntity &creature)
     /* A Food ration gives 5000 food points (by contrast) */
     /* Don't ever get more than "Full" this way */
     /* But if we ARE Gorged,  it won't cure us */
-    dummy = creature.food + std::min(5000, 100 * dummy);
-    if (creature.food < PY_FOOD_MAX) { /* Not gorged already */
+    dummy = creature.get_food() + std::min(5000, 100 * dummy);
+    if (creature.get_food() < PY_FOOD_MAX) { /* Not gorged already */
         (void)set_food(creature, dummy >= PY_FOOD_MAX ? PY_FOOD_MAX - 1 : dummy);
     }
 

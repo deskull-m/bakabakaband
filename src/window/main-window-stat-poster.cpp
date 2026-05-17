@@ -109,27 +109,27 @@ void print_hunger(CreatureEntity &creature)
     const auto [width, height] = term_get_size();
     const auto row = height + ROW_HUNGRY;
 
-    if (creature.food < PY_FOOD_FAINT) {
+    if (creature.get_food() < PY_FOOD_FAINT) {
         c_put_str(TERM_RED, _("衰弱  ", "Weak  "), row, COL_HUNGRY);
         return;
     }
 
-    if (creature.food < PY_FOOD_WEAK) {
+    if (creature.get_food() < PY_FOOD_WEAK) {
         c_put_str(TERM_ORANGE, _("衰弱  ", "Weak  "), row, COL_HUNGRY);
         return;
     }
 
-    if (creature.food < PY_FOOD_ALERT) {
+    if (creature.get_food() < PY_FOOD_ALERT) {
         c_put_str(TERM_YELLOW, _("空腹  ", "Hungry"), row, COL_HUNGRY);
         return;
     }
 
-    if (creature.food < PY_FOOD_FULL) {
+    if (creature.get_food() < PY_FOOD_FULL) {
         c_put_str(TERM_L_GREEN, "      ", row, COL_HUNGRY);
         return;
     }
 
-    if (creature.food < PY_FOOD_MAX) {
+    if (creature.get_food() < PY_FOOD_MAX) {
         c_put_str(TERM_L_GREEN, _("満腹  ", "Full  "), row, COL_HUNGRY);
         return;
     }

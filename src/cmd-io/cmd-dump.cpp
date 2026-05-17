@@ -253,8 +253,8 @@ void do_cmd_feeling(CreatureEntity &creature)
         return;
     }
 
-    if (creature.town_num && !floor.is_underground()) {
-        if (towns_info[creature.town_num].name == _("荒野", "wilderness")) {
+    if (creature.get_town_num() && !floor.is_underground()) {
+        if (towns_info[creature.get_town_num()].name == _("荒野", "wilderness")) {
             msg_print(_("何かありそうな荒野のようだ。", "Looks like a strange wilderness."));
             return;
         }

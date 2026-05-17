@@ -333,7 +333,7 @@ static void store_create(CreatureEntity &creature, short fix_k_idx, StoreSaleTyp
         }
 
         if (store_num == StoreSaleType::BLACK) {
-            if (black_market_crap(creature.town_num, *q_ptr) || (q_ptr->calc_price() < 10)) {
+            if (black_market_crap(creature.get_town_num(), *q_ptr) || (q_ptr->calc_price() < 10)) {
                 continue;
             }
         } else {
@@ -368,7 +368,7 @@ void store_maintenance(CreatureEntity &creature, int town_num, StoreSaleType sto
     if (store_num == StoreSaleType::BLACK) {
         for (INVENTORY_IDX j = st_ptr->stock_num - 1; j >= 0; j--) {
             auto &item = *st_ptr->stock[j];
-            if (black_market_crap(creature.town_num, item)) {
+            if (black_market_crap(creature.get_town_num(), item)) {
                 st_ptr->increase_item(j, 0 - item.number);
                 st_ptr->optimize_item(j);
             }

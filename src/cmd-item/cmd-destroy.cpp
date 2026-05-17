@@ -138,11 +138,11 @@ static bool decide_magic_book_exp(CreatureEntity &creature, const ItemEntity &de
 static void gain_exp_by_destroying_magic_book(CreatureEntity &creature, const ItemEntity &destroyed_item)
 {
     const auto gain_expr = decide_magic_book_exp(creature, destroyed_item);
-    if (!gain_expr || (creature.exp >= PY_MAX_EXP)) {
+    if (!gain_expr || (creature.get_exp() >= PY_MAX_EXP)) {
         return;
     }
 
-    auto tester_exp = creature.max_exp / 20;
+    auto tester_exp = creature.get_max_exp() / 20;
     if (tester_exp > 10000) {
         tester_exp = 10000;
     }

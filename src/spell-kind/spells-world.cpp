@@ -284,7 +284,7 @@ bool tele_town(CreatureEntity &creature)
     auto num = 0;
     const int towns_size = towns_info.size();
     for (auto i = 1; i < towns_size; i++) {
-        if ((i == VALID_TOWNS) || (i == SECRET_TOWN) || (i == creature.town_num) || !(creature.visit & (1UL << (i - 1)))) {
+        if ((i == VALID_TOWNS) || (i == SECRET_TOWN) || (i == creature.get_town_num()) || !(creature.visit & (1UL << (i - 1)))) {
             continue;
         }
 
@@ -315,7 +315,7 @@ bool tele_town(CreatureEntity &creature)
         }
 
         const auto town_num = key - 'a' + 1;
-        if ((town_num == creature.town_num) || (town_num == VALID_TOWNS) || (town_num == SECRET_TOWN) || !(creature.visit & (1UL << (key - 'a')))) {
+        if ((town_num == creature.get_town_num()) || (town_num == VALID_TOWNS) || (town_num == SECRET_TOWN) || !(creature.visit & (1UL << (key - 'a')))) {
             continue;
         }
 

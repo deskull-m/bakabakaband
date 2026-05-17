@@ -192,7 +192,7 @@ void effect_player_nether(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     ep_ptr->dam = ep_ptr->dam * calc_nether_damage_rate(creature, CALC_RAND) / 100;
 
     if (!creature.has_resist_neth() && !evaded) {
-        drain_exp(creature, 200 + (creature.exp / 100), 200 + (creature.exp / 1000), 75);
+        drain_exp(creature, 200 + (creature.get_exp() / 100), 200 + (creature.get_exp() / 1000), 75);
     }
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
@@ -262,7 +262,7 @@ void effect_player_chaos(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         }
     }
     if (!creature.has_resist_neth() && !creature.has_resist_chaos()) {
-        drain_exp(creature, 5000 + (creature.exp / 100), 500 + (creature.exp / 1000), 75);
+        drain_exp(creature, 5000 + (creature.get_exp() / 100), 500 + (creature.get_exp() / 1000), 75);
     }
 
     if (!creature.has_resist_chaos() || one_in_(9)) {
@@ -482,7 +482,7 @@ static void effect_player_time_addition(CreatureEntity &creature)
         }
 
         msg_print(_("人生が逆戻りした気がする。", "You feel like a chunk of the past has been ripped away."));
-        lose_exp(creature, 100 + (creature.exp / 100) * MON_DRAIN_LIFE);
+        lose_exp(creature, 100 + (creature.get_exp() / 100) * MON_DRAIN_LIFE);
         break;
     }
     case 6:

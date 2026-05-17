@@ -37,7 +37,7 @@ bool enchant_item(CreatureEntity &creature, PRICE cost, HIT_PROB to_hit, int to_
     }
 
     const PRICE total_cost = cost * item->number;
-    if (creature.au < total_cost) {
+    if (creature.get_au() < total_cost) {
         const auto item_name = describe_flavor(creature, *item, OD_NAME_ONLY);
         msg_format(_("%sを改良するだけのゴールドがありません！", "You do not have the gold to improve %s!"), item_name.data());
         return false;

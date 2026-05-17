@@ -62,7 +62,7 @@ void AvatarChanger::change_virtue_non_beginner()
         return;
     }
 
-    if (!floor.is_underground() && !this->creature.ambush_flag && !floor.inside_arena) {
+    if (!floor.is_underground() && !this->creature.get_ambush_flag() && !floor.inside_arena) {
         chg_virtue(this->creature, Virtue::VALOUR, -1);
     } else if (monrace.level > floor.dun_level) {
         if (randint1(10) <= (monrace.level - floor.dun_level)) {

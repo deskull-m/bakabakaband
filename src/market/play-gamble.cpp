@@ -26,7 +26,7 @@ void gamble_comm(CreatureEntity &creature, int cmd)
         return;
     }
 
-    if (creature.au < 1) {
+    if (creature.get_au() < 1) {
         msg_print(_("おい！おまえ一文なしじゃないか！こっから出ていけ！", "Hey! You don't have gold - get out of here!"));
         msg_erase();
         screen_load();
@@ -35,7 +35,7 @@ void gamble_comm(CreatureEntity &creature, int cmd)
 
     clear_bldg(5, 23);
     auto maxbet = creature.level * 200;
-    maxbet = std::min(maxbet, creature.au);
+    maxbet = std::min(maxbet, creature.get_au());
     constexpr auto prompt = _("賭け金？", "Your wager ?");
     const auto wager = input_integer(prompt, 1, maxbet, 1);
     if (!wager) {
@@ -44,7 +44,7 @@ void gamble_comm(CreatureEntity &creature, int cmd)
         return;
     }
 
-    if (wager > creature.au) {
+    if (wager > creature.get_au()) {
         msg_print(_("おい！金が足りないじゃないか！出ていけ！", "Hey! You don't have the gold - get out of here!"));
         msg_erase();
         screen_load();
@@ -54,7 +54,7 @@ void gamble_comm(CreatureEntity &creature, int cmd)
     msg_erase();
     auto win = 0;
     auto odds = 0;
-    auto oldgold = creature.au;
+    auto oldgold = creature.get_au();
     prt(format(_("ゲーム前の所持金: %9d", "Gold before game: %9d"), oldgold), 20, 2);
     prt(format(_("現在の掛け金:     %9d", "Current Wager:    %9d"), *wager), 21, 2);
     while (true) {
@@ -231,14 +231,14 @@ void gamble_comm(CreatureEntity &creature, int cmd)
             prt("", 17, 37);
         }
 
-        prt(format(_("現在の所持金:     %9d", "Current Gold:     %9d"), creature.au), 22, 2);
+        prt(format(_("現在の所持金:     %9d", "Current Gold:     %9d"), creature.get_au()), 22, 2);
         prt(_("もう一度(Y/N)？", "Again(Y/N)?"), 18, 37);
         move_cursor(18, 52);
         auto again = inkey();
         prt("", 16, 37);
         prt("", 17, 37);
         prt("", 18, 37);
-        if (wager > creature.au) {
+        if (wager > creature.get_au()) {
             msg_print(_("おい！金が足りないじゃないか！ここから出て行け！", "Hey! You don't have the gold - get out of here!"));
             msg_erase();
             break;
@@ -252,7 +252,7 @@ void gamble_comm(CreatureEntity &creature, int cmd)
     }
 
     prt("", 18, 37);
-    if (creature.au >= oldgold) {
+    if (creature.get_au() >= oldgold) {
         msg_print(_("「今回は儲けたな！でも次はこっちが勝ってやるからな、絶対に！」", "You came out a winner! We'll win next time, I'm sure."));
         chg_virtue(creature, Virtue::CHANCE, 3);
     } else {

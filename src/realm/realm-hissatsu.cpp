@@ -627,7 +627,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
                 RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
                 handle_stuff(creature);
-            } while (creature.csp > mana_cost_per_monster);
+            } while (creature.get_csp() > mana_cost_per_monster);
 
             if (is_new) {
                 return tl::nullopt;

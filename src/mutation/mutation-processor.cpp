@@ -498,7 +498,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
     if (creature.get_mutations().has(PlayerMutationType::SP_TO_HP) && one_in_(2000)) {
         MANA_POINT wounds = (MANA_POINT)(creature.maxhp - creature.hp);
         if (wounds > 0) {
-            int healing = creature.csp;
+            int healing = creature.get_csp();
             if (healing > wounds) {
                 healing = wounds;
             }
@@ -510,7 +510,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
     }
 
     if (creature.get_mutations().has(PlayerMutationType::HP_TO_SP) && !creature.has_anti_magic() && one_in_(4000)) {
-        int wounds = (int)(creature.msp - creature.csp);
+        int wounds = (int)(creature.get_msp() - creature.get_csp());
         if (wounds > 0) {
             int healing = creature.hp;
             if (healing > wounds) {
@@ -526,7 +526,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
     if (creature.get_mutations().has(PlayerMutationType::DISARM) && one_in_(10000)) {
         disturb(creature, false, true);
         msg_print(_("足がもつれて転んだ！", "You trip over your own feet!"));
-        take_hit(creature, DAMAGE_NOESCAPE, randint1(creature.wt / 6), _("転倒", "tripping"));
+        take_hit(creature, DAMAGE_NOESCAPE, randint1(creature.get_wt() / 6), _("転倒", "tripping"));
         drop_weapons(creature);
     }
 }

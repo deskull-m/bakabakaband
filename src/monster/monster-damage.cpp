@@ -428,7 +428,7 @@ void MonsterDamageProcessor::get_exp_from_mon(const CreatureEntity &target, int 
     auto new_exp = monrace.level * speed_to_energy(static_cast<byte>(target.speed)) * exp_dam;
     auto new_exp_frac = 0U;
     auto div_h = 0;
-    auto div_l = (uint)((creature.max_plv + 2) * speed_to_energy(monrace.speed));
+    auto div_l = (uint)((creature.get_max_plv() + 2) * speed_to_energy(monrace.speed));
 
     /* Use (average maxhp * 2) as a denominator */
     int compensation = monrace.misc_flags.has(MonsterMiscType::FORCE_MAXHP) ? monrace.hit_dice.maxroll() * 2 : monrace.hit_dice.floored_expected_value_multiplied_by(2);

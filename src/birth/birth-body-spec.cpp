@@ -23,12 +23,12 @@ void get_height_weight(CreatureEntity &creature)
     switch (creature.psex) {
     case SEX_MALE:
         creature.set_ht(randnor(creature.get_race_info()->m_b_ht, creature.get_race_info()->m_m_ht));
-        deviation = (int)(creature.ht) * 100 / (int)(creature.get_race_info()->m_b_ht);
+        deviation = (int)(creature.get_ht()) * 100 / (int)(creature.get_race_info()->m_b_ht);
         creature.set_wt(randnor((int)(creature.get_race_info()->m_b_wt) * deviation / 100, (int)(creature.get_race_info()->m_m_wt) * deviation / 300));
         return;
     case SEX_FEMALE:
         creature.set_ht(randnor(creature.get_race_info()->f_b_ht, creature.get_race_info()->f_m_ht));
-        deviation = (int)(creature.ht) * 100 / (int)(creature.get_race_info()->f_b_ht);
+        deviation = (int)(creature.get_ht()) * 100 / (int)(creature.get_race_info()->f_b_ht);
         creature.set_wt(randnor((int)(creature.get_race_info()->f_b_wt) * deviation / 100, (int)(creature.get_race_info()->f_m_wt) * deviation / 300));
         return;
     default:
@@ -52,7 +52,7 @@ void get_ahw(CreatureEntity &creature)
  */
 void get_money(CreatureEntity &creature)
 {
-    int gold = (creature.prestige * 6) + randint1(100) + 300;
+    int gold = (creature.get_prestige() * 6) + randint1(100) + 300;
     if (CreatureClass(creature).equals(PlayerClassType::TOURIST)) {
         gold += 2000;
     }

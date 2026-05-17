@@ -375,7 +375,7 @@ void wiz_change_status(CreatureEntity &creature)
         creature.spell_exp[k] = std::min(PlayerSkill::spell_exp_at(PlayerSkillRank::EXPERT), *proficiency);
     }
 
-    const auto gold = input_numerics("Gold: ", 0, MAX_INT, creature.au);
+    const auto gold = input_numerics("Gold: ", 0, MAX_INT, creature.get_au());
     if (!gold.has_value()) {
         return;
     }
@@ -385,7 +385,7 @@ void wiz_change_status(CreatureEntity &creature)
         return;
     }
 
-    const auto experience = input_numerics("Experience: ", 0, MAX_INT, creature.max_exp);
+    const auto experience = input_numerics("Experience: ", 0, MAX_INT, creature.get_max_exp());
     if (!experience) {
         return;
     }
@@ -779,9 +779,9 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
             creature.divide_prestige(2);
             creature.add_age(static_cast<int16_t>(blank_years));
 
-            creature.set_max_max_exp((creature.max_max_exp * 6 / (randint1(3) + 6)));
-            creature.set_max_exp(creature.max_max_exp);
-            creature.set_exp(creature.max_max_exp);
+            creature.set_max_max_exp((creature.get_max_max_exp() * 6 / (randint1(3) + 6)));
+            creature.set_max_exp(creature.get_max_max_exp());
+            creature.set_exp(creature.get_max_max_exp());
             creature.divide_au(2);
 
             msg_print(_("『ぬわああああん、疲れたなもおおおおん！』", "\"Aaaaaah! I'm hellish tireeeed!\""));
