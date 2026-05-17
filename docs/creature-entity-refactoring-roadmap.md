@@ -1304,6 +1304,60 @@ migration 対象 (175 ファイル, 約 628 箇所):
 
 ---
 
+## 提案 32: 安全な 7 フィールドを private 化 ✅ 完了 (縮小スコープ)
+
+### 背景
+
+提案 24-31c で setter + getter virtual を整備した CreatureEntity 直下
+フィールドを、提案 29 と同じパターンで実際に private に移動する。
+当初は約 20 フィールドの一括 private 化を試みたが、`level` /
+`food` / `csp` / `exp` 等の名前が ItemEntity / MonraceDefinition /
+ArtifactType / ActivationType / QuestType 等多くのクラスと衝突する
+ため、広範な sed 移行では誤って他クラスのフィールドも書き換えて
+しまう問題が発生した。
+
+そのため、本提案は他クラスと名前が衝突しない**安全な 7 フィールド
+のみ**を対象とする縮小スコープで完了とする。
+
+### 作業内容 (commit `7dc9857ba`)
+
+private 化したフィールド (7 個):
+- `ambush_flag` - `get_ambush_flag()` / `set_ambush_flag()` 経由
+- `prestige` - `get_prestige()` / `set_prestige()` / `add_prestige()` /
+  `divide_prestige()` 経由
+- `max_max_exp` - `get_max_max_exp()` / `set_max_max_exp()` 経由
+- `max_plv` - `get_max_plv()` / `set_max_plv()` 経由
+- `to_h_b` - `get_to_h_b()` / `set_to_h_b()` 経由
+- `to_h_m` - `get_to_h_m()` / `set_to_h_m()` 経由
+- `to_d_m` - `get_to_d_m()` / `set_to_d_m()` 経由
+
+各フィールドは提案 24-31c で migration 済みのため、private 化しても
+直接アクセス エラーなしでビルドが通る (全 read/write が virtual API
+経由になっている)。
+
+### 未対応 (他クラスとの名前衝突のため)
+
+以下のフィールドは他クラスに同名フィールドが存在し、広範な sed
+移行が困難:
+- `level` (MonraceDefinition / QuestType / BaseitemDefinition /
+  ArtifactType / ActivationType 等)
+- `food` / `age` / `ht` / `wt` / `town_num` / `au` / `csp` / `msp` /
+  `exp` / `max_exp` / `to_h[]` / `to_d[]` / `to_a` / `stat_*[]`
+
+これらは setter + getter virtual は完備されているため、call site の
+直接アクセスは構造的に減らされている。完全な private 化には個別
+ファイルごとに型を判別して手作業で migration する必要があり、別途
+提案 32b 以降で順次対応する方針。
+
+### 到達点
+
+- **MonsterProfile** (12 フィールド) + **r_idx / ap_r_idx / riding**
+  + **本提案の 7 フィールド** = 計 **22 フィールドが完全 private 化**
+- `inven_cnt` / `equip_cnt` は提案 25 でフィールド自体を廃止
+  (inventory[] から自動計算)
+
+---
+
 ## 推奨実施順序
 
 ### 完了済み (大規模フェーズ)
@@ -1337,6 +1391,7 @@ migration 対象 (175 ファイル, 約 628 箇所):
 - ✅ **提案 31**: 残り plain field 14 種 (au / csp / food / town_num / age / ht / wt / prestige / max_plv / msp / exp / max_exp / max_max_exp / ambush_flag) の getter virtual 整備と read site 約 350 箇所の migration
 - ✅ **提案 31b**: stat_*[] (7 種) と to_h_b / to_h_m / to_d_m / to_a / to_h[hand] / to_d[hand] の getter virtual 整備と read site 約 270 箇所の migration
 - ✅ **提案 31c**: level read site (628 箇所) を get_level() 経由に統一 (175 ファイル migration)
+- ✅ **提案 32**: 安全な 7 フィールド (ambush_flag / prestige / max_max_exp / max_plv / to_h_b / to_h_m / to_d_m) を CreatureEntity の private 化 (縮小スコープ。他クラス名前衝突を避けたため)
 
 ### 既存提案の残作業 (中規模)
 
@@ -1349,11 +1404,13 @@ migration 対象 (175 ファイル, 約 628 箇所):
 
 ### 今後の候補 (追加提案)
 
-- **提案 32**: 提案 31 / 31b / 31c で getter 整備済みのフィールド
-  (au / csp / food / town_num / level / age / ht / wt / prestige /
-  max_plv / msp / exp / max_exp / max_max_exp / ambush_flag /
-  to_h_b / to_h_m / to_d_m / to_a / to_h[] / to_d[] / stat_*[]) を
-  CreatureEntity の private 化 (提案 29 と同じパターン)
+- **提案 32b**: 残りの getter 整備済みフィールド (au / csp / food /
+  town_num / level / age / ht / wt / msp / exp / max_exp / to_h[] /
+  to_d[] / to_a / stat_*[]) を個別ファイル単位で慎重に private 化。
+  他クラス (ItemEntity / MonraceDefinition / ArtifactType /
+  ActivationType / QuestType 等) との名前衝突を避けるため、機械的
+  sed 移行ではなく対象型 (CreatureEntity / PlayerType) と特定可能
+  な call site を 1 つずつ手作業で fix する必要がある
 - **提案 25b**: 性能影響が出た場合の `get_inven_cnt()` キャッシュ層再導入
   → **検証済 (不要)**: 全 12 call site が低頻度 (savefile load / inventory
   pickup / death message / character dump / 個別 UI コマンド)。最頻箇所
