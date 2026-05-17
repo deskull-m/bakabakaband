@@ -241,7 +241,7 @@ void process_player(CreatureEntity &creature)
             creature.csp_frac = 0;
             set_action(creature, ACTION_NONE);
         } else {
-            s64b_sub(&(creature.csp), &(creature.csp_frac), cost, cost_frac);
+            creature.sub_csp_with_frac(cost, cost_frac);
         }
 
         rfu.set_flag(MainWindowRedrawingFlag::MP);

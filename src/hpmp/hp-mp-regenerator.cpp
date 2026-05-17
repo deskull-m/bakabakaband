@@ -83,13 +83,13 @@ bool PlayerType::should_skip_natural_regen() const
 
 int PlayerType::get_base_natural_regen_amount() const
 {
-    if (this->food >= PY_FOOD_WEAK) {
+    if (this->get_food() >= PY_FOOD_WEAK) {
         return PY_REGEN_NORMAL;
     }
-    if (this->food < PY_FOOD_STARVE) {
+    if (this->get_food() < PY_FOOD_STARVE) {
         return 0;
     }
-    if (this->food < PY_FOOD_FAINT) {
+    if (this->get_food() < PY_FOOD_FAINT) {
         return PY_REGEN_FAINT;
     }
     return PY_REGEN_WEAK;
@@ -167,7 +167,7 @@ void regenmana(CreatureEntity &creature, MANA_POINT upkeep_factor, MANA_POINT re
         int32_t decay = 0;
         uint32_t decay_frac = (creature.get_msp() * 32 * PY_REGEN_NORMAL + PY_REGEN_MNBASE);
         s64b_lshift(&decay, &decay_frac, 16);
-        s64b_sub(&(creature.csp), &(creature.csp_frac), decay, decay_frac);
+        creature.sub_csp_with_frac(decay, decay_frac);
         if (creature.get_csp() < creature.get_msp()) {
             creature.set_csp(creature.get_msp());
             creature.csp_frac = 0;
@@ -179,7 +179,7 @@ void regenmana(CreatureEntity &creature, MANA_POINT upkeep_factor, MANA_POINT re
         MANA_POINT new_mana = 0;
         uint32_t new_mana_frac = (creature.get_msp() * regen_rate / 100 + PY_REGEN_MNBASE);
         s64b_lshift(&new_mana, &new_mana_frac, 16);
-        s64b_add(&(creature.csp), &(creature.csp_frac), new_mana, new_mana_frac);
+        creature.add_csp_with_frac(new_mana, new_mana_frac);
         if (creature.get_csp() >= creature.get_msp()) {
             creature.set_csp(creature.get_msp());
             creature.csp_frac = 0;
@@ -191,7 +191,7 @@ void regenmana(CreatureEntity &creature, MANA_POINT upkeep_factor, MANA_POINT re
         int32_t reduce_mana = 0;
         uint32_t reduce_mana_frac = (creature.get_msp() * (-1) * regen_rate / 100 + PY_REGEN_MNBASE);
         s64b_lshift(&reduce_mana, &reduce_mana_frac, 16);
-        s64b_sub(&(creature.csp), &(creature.csp_frac), reduce_mana, reduce_mana_frac);
+        creature.sub_csp_with_frac(reduce_mana, reduce_mana_frac);
         if (creature.get_csp() < 0) {
             creature.set_csp(0);
             creature.csp_frac = 0;
