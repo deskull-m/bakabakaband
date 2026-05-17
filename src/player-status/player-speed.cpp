@@ -24,7 +24,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 
 PlayerSpeed::PlayerSpeed(CreatureEntity &creature)

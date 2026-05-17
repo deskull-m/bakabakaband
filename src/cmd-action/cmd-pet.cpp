@@ -61,7 +61,6 @@
 #include "target/target-setter.h"
 #include "target/target-types.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "util/int-char-converter.h"

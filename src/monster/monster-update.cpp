@@ -37,7 +37,6 @@
 #include "system/monrace/monrace-list.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
-#include "timed-effect/timed-effects.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "world/world.h"

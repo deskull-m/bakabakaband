@@ -17,7 +17,7 @@
 #include "status/sight-setter.h"
 #include "status/temporary-resistance.h"
 #include "system/creature-entity.h"
-#include "timed-effect/timed-effects.h"
+#include "timed-effect/player-cut.h"
 
 /*!
  * @brief 10ゲームターンが進行するごとに魔法効果の残りターンを減らしていく処理
@@ -30,12 +30,11 @@ void reduce_magic_effects_timeout(CreatureEntity &creature)
     }
 
     BadStatusSetter bss(creature);
-    const auto effects = creature.effects();
-    if (effects->hallucination().is_hallucinated()) {
+    if (creature.is_hallucinated()) {
         (void)bss.mod_hallucination(-1);
     }
 
-    if (effects->blindness().is_blind()) {
+    if (creature.is_blind()) {
         (void)bss.mod_blindness(-1);
     }
 
@@ -137,7 +136,7 @@ void reduce_magic_effects_timeout(CreatureEntity &creature)
         (void)set_pass_wall(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_PASS_WALL) - 1, true);
     }
 
-    if (effects->paralysis().is_paralyzed()) {
+    if (creature.is_paralyzed()) {
         (void)bss.mod_paralysis(-1);
     }
 
@@ -149,15 +148,15 @@ void reduce_magic_effects_timeout(CreatureEntity &creature)
         (void)bss.mod_fear(-1);
     }
 
-    if (effects->acceleration().is_fast()) {
+    if (creature.is_fast()) {
         (void)mod_acceleration(creature, -1, true);
     }
 
-    if (effects->deceleration().is_slow()) {
+    if (creature.is_decelerated()) {
         (void)bss.mod_deceleration(-1, true);
     }
 
-    if (effects->protection().is_protected()) {
+    if (creature.is_protected_from_evil()) {
         BodyImprovement(creature).mod_protection(-1, true);
     }
 
@@ -233,20 +232,19 @@ void reduce_magic_effects_timeout(CreatureEntity &creature)
         (void)set_ultimate_res(creature, creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) - 1, true);
     }
 
-    if (effects->poison().is_poisoned()) {
+    if (creature.is_poisoned()) {
         int adjust = adj_con_fix[creature.get_stat_index(A_CON)] + 1;
         (void)bss.mod_poison(-adjust);
     }
 
-    if (effects->stun().is_stunned()) {
+    if (creature.is_stunned()) {
         int adjust = adj_con_fix[creature.get_stat_index(A_CON)] + 1;
         (void)bss.mod_stun(-adjust);
     }
 
-    auto &player_cut = effects->cut();
-    if (player_cut.is_cut()) {
+    if (creature.is_cut()) {
         short adjust = adj_con_fix[creature.get_stat_index(A_CON)] + 1;
-        if (player_cut.get_rank() == PlayerCutRank::MORTAL) {
+        if (PlayerCut::get_rank(creature.get_timed_effect(CreatureTimedEffect::CUT)) == PlayerCutRank::MORTAL) {
             adjust = 0;
         }
 

@@ -49,7 +49,6 @@
 #include "target/projection-path-calculator.h"
 #include "target/target-checker.h"
 #include "target/target-getter.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
 /*!
@@ -69,16 +68,15 @@ bool kawarimi(CreatureEntity &creature, bool success)
         return false;
     }
 
-    const auto effects = creature.effects();
-    const auto is_confused = effects->confusion().is_confused();
-    const auto is_blind = effects->blindness().is_blind();
-    const auto is_hallucinated = effects->hallucination().is_hallucinated();
-    const auto is_paralyzed = effects->paralysis().is_paralyzed();
+    const auto is_confused = creature.is_confused();
+    const auto is_blind = creature.is_blind();
+    const auto is_hallucinated = creature.is_hallucinated();
+    const auto is_paralyzed = creature.is_paralyzed();
     if (is_confused || is_blind || is_paralyzed || is_hallucinated) {
         return false;
     }
 
-    if (effects->stun().current() > randint0(200)) {
+    if (creature.get_timed_effect(CreatureTimedEffect::STUN) > randint0(200)) {
         return false;
     }
 

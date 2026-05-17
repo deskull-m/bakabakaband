@@ -142,14 +142,20 @@ tl::optional<MonraceId> select_pit_nest_monrace_id(CreatureEntity &creature, uin
 ### Phase 3: タイムドエフェクトの統一 ✅ 完了
 
 全てのタイムドエフェクトは `CreatureEntity::timed_effects_map`
-（`std::map<CreatureTimedEffect, TIME_EFFECT>`）に集約済み。
+（`std::map<CreatureTimedEffect, TIME_EFFECT>`）に**単一管理**されている。
 
 - 共通列挙型: `CreatureTimedEffect`（`src/system/creature-timed-effect-types.h`）
 - 共通 API: `get_timed_effect(effect)` / `set_timed_effect(effect, value)`
-  (virtual, プレイヤー側は特定効果のみ `TimedEffects` オブジェクト経由)
+  (virtual, プレイヤー・モンスター完全同一経路)
 - プレイヤーの旧 41 個の直接 `TIME_EFFECT` フィールド (`hero` / `invuln` 等)
   および `word_recall` / `alter_reality` は削除済み
 - モンスター側の旧 `MonsterProfile::mtimed` も削除済み
+- 旧 `TimedEffects` オブジェクトおよび配下 9 簡易ヘルパクラス
+  (`PlayerAcceleration` / `PlayerBlindness` / `PlayerConfusion` /
+  `PlayerDeceleration` / `PlayerFear` / `PlayerHallucination` /
+  `PlayerParalysis` / `PlayerPoison` / `PlayerProtection`) は
+  **提案 5 完了で削除済み**。残る `PlayerStun` / `PlayerCut` は
+  stateless static utility (`get_rank(short value)` 等) に変換済み
 - 全セーブ/ロード・ステータスセッター等が統一 API 経由で動作
 
 ### Phase 4: ダメージ処理の完全統一 ✅ 完了
@@ -744,7 +750,12 @@ EOF
   creature.has_telepathy()/has_esp_X()/can_see_invisible()/has_can_swim()/
   has_levitation() 等
 - creature.special_attack & FLAG → creature.has_special_attack(FLAG)
-- creature.effects()->X().current() → creature.get_timed_effect(...)
+- creature.effects()->X().current()/set/reset → creature.get/set_timed_effect(...)
+  (提案 5 完了で effects() API 自体が削除済み)
+- creature.effects()->stun().get_rank() / get_magic_chance_penalty 等 →
+  PlayerStun::get_rank(creature.get_timed_effect(STUN)) / get_magic_chance_penalty(...)
+- creature.effects()->cut().get_accumulation/get_damage/get_expr →
+  PlayerCut::get_accumulation/get_damage/get_expr (static)
 - HALLUCINATION/CUT/POISON も CreatureTimedEffect 経由 OK
 
 作業後:

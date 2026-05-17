@@ -13,7 +13,7 @@
 #include "system/monrace/monrace-list.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
-#include "timed-effect/timed-effects.h"
+#include "term/term-color-types.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-symbol.h"
 #include "window/main-window-util.h"

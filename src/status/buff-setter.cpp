@@ -19,8 +19,8 @@
 #include "status/buff-setter.h"
 #include "status/element-resistance.h"
 #include "system/creature-entity.h"
+#include "system/creature-timed-effect-types.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
 /*!
@@ -28,21 +28,18 @@
  */
 void reset_tim_flags(CreatureEntity &creature)
 {
-    // TimedEffects オブジェクト経由のリセット
-    auto effects = creature.effects();
-    effects->acceleration().reset();
-    effects->deceleration().reset();
-    effects->blindness().reset();
-    effects->paralysis().reset();
-    effects->confusion().reset();
-    effects->fear().reset();
-    effects->hallucination().reset();
-    effects->poison().reset();
-    effects->cut().reset();
-    effects->stun().reset();
-    effects->protection().reset();
+    creature.set_timed_effect(CreatureTimedEffect::ACCELERATION, 0);
+    creature.set_timed_effect(CreatureTimedEffect::DECELERATION, 0);
+    creature.set_timed_effect(CreatureTimedEffect::BLINDNESS, 0);
+    creature.set_timed_effect(CreatureTimedEffect::PARALYSIS, 0);
+    creature.set_timed_effect(CreatureTimedEffect::CONFUSION, 0);
+    creature.set_timed_effect(CreatureTimedEffect::FEAR, 0);
+    creature.set_timed_effect(CreatureTimedEffect::HALLUCINATION, 0);
+    creature.set_timed_effect(CreatureTimedEffect::POISON, 0);
+    creature.set_timed_effect(CreatureTimedEffect::CUT, 0);
+    creature.set_timed_effect(CreatureTimedEffect::STUN, 0);
+    creature.set_timed_effect(CreatureTimedEffect::PROTECTION, 0);
 
-    // CreatureTimedEffect 経由のリセット
     creature.set_timed_effect(CreatureTimedEffect::INVULNERABILITY, 0);
     creature.set_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE, 0);
     creature.set_timed_effect(CreatureTimedEffect::HERO, 0);
@@ -131,20 +128,21 @@ bool set_acceleration(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         return false;
     }
 
-    auto &acceleration = creature.effects()->acceleration();
+    const auto acceleration = creature.get_timed_effect(CreatureTimedEffect::ACCELERATION);
+    const auto is_fast = creature.is_fast();
     if (v) {
-        if (acceleration.is_fast() && !do_dec) {
-            if (acceleration.current() > v) {
+        if ((acceleration > 0) && !do_dec) {
+            if (acceleration > v) {
                 return false;
             }
-        } else if (!creature.is_fast() && !creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED)) {
+        } else if (!is_fast && !creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED)) {
             msg_print(_("素早く動けるようになった！", "You feel yourself moving much faster!"));
             notice = true;
             chg_virtue(creature, Virtue::PATIENCE, -1);
             chg_virtue(creature, Virtue::DILIGENCE, 1);
         }
     } else {
-        if (acceleration.is_fast() && !creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED)) {
+        if ((acceleration > 0) && !creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED)) {
             auto is_singing = music_singing(creature, MUSIC_SPEED);
             is_singing |= music_singing(creature, MUSIC_SHERO);
             if (!is_singing) {
@@ -155,7 +153,7 @@ bool set_acceleration(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         }
     }
 
-    acceleration.set(v);
+    creature.set_timed_effect(CreatureTimedEffect::ACCELERATION, v);
     if (!notice) {
         return false;
     }

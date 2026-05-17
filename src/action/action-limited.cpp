@@ -14,7 +14,6 @@
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
 /*!

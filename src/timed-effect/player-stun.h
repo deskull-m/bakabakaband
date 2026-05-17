@@ -7,29 +7,17 @@
 enum class PlayerStunRank;
 class PlayerStun {
 public:
-    PlayerStun() = default;
-    ~PlayerStun() = default;
-    PlayerStun(const PlayerStun &) = delete;
-    PlayerStun(PlayerStun &&) = delete;
-    PlayerStun &operator=(const PlayerStun &) = delete;
-    PlayerStun &operator=(PlayerStun &&) = delete;
+    PlayerStun() = delete;
 
     static PlayerStunRank get_rank(short value);
     static std::string_view get_stun_mes(PlayerStunRank stun_rank);
     static short get_accumulation(int rank);
     static int get_accumulation_rank(int total, int damage);
 
-    short current() const;
-    PlayerStunRank get_rank() const;
-    int get_magic_chance_penalty() const;
-    int get_item_chance_penalty() const;
-    short get_damage_penalty() const;
-    bool is_stunned() const;
-    bool is_knocked_out() const;
-    std::tuple<term_color_type, std::string_view> get_expr() const;
-    void set(short value);
-    void reset();
-
-private:
-    short stun = 0;
+    static int get_magic_chance_penalty(short value);
+    static int get_item_chance_penalty(short value);
+    static short get_damage_penalty(short value);
+    static bool is_stunned(short value);
+    static bool is_knocked_out(short value);
+    static std::tuple<term_color_type, std::string_view> get_expr(short value);
 };

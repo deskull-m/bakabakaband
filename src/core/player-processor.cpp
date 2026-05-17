@@ -48,6 +48,7 @@
 #include "status/action-setter.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
+#include "system/creature-timed-effect-types.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"
@@ -55,7 +56,7 @@
 #include "system/monrace/monrace-list.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
+#include "timed-effect/player-stun.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -180,8 +181,7 @@ void process_player(CreatureEntity &creature)
         }
     }
 
-    const auto effects = creature.effects();
-    if (creature.get_riding() && !effects->confusion().is_confused() && !effects->blindness().is_blind()) {
+    if (creature.get_riding() && !creature.is_confused() && !creature.is_blind()) {
         const auto &monster = creature.get_floor()->m_list[creature.get_riding()];
         const auto &monrace = monster.get_monrace();
         if (monster.is_asleep()) {
@@ -277,8 +277,8 @@ void process_player(CreatureEntity &creature)
 
         PlayerEnergy energy(creature);
         energy.reset_player_turn();
-        const auto is_knocked_out = effects->stun().is_knocked_out();
-        const auto is_paralyzed = effects->paralysis().is_paralyzed();
+        const auto is_knocked_out = PlayerStun::is_knocked_out(creature.get_timed_effect(CreatureTimedEffect::STUN));
+        const auto is_paralyzed = creature.is_paralyzed();
         if (system.is_phase_out()) {
             move_cursor_relative(creature.y, creature.x);
             command_cmd = SPECIAL_KEY_BUILDING;
@@ -335,7 +335,7 @@ void process_player(CreatureEntity &creature)
                 creature.energy_need += (int16_t)((int32_t)creature.energy_use * ENERGY_NEED() / 100L);
             }
 
-            if (effects->hallucination().is_hallucinated()) {
+            if (creature.is_hallucinated()) {
                 rfu.set_flag(MainWindowRedrawingFlag::MAP);
             }
 

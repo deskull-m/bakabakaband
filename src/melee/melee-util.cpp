@@ -6,7 +6,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "timed-effect/timed-effects.h"
 
 mam_type *initialize_mam_type(CreatureEntity &creature, mam_type *mam_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx)
 {

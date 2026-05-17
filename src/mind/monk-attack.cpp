@@ -29,7 +29,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "target/target-getter.h"
-#include "timed-effect/timed-effects.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -111,9 +110,8 @@ static int select_blow(CreatureEntity &creature, player_attack_type *pa_ptr, int
             }
         } while ((min_level > creature.get_level()) || (randint1(creature.get_level()) < pa_ptr->ma_ptr->chance));
 
-        const auto effects = creature.effects();
-        const auto is_stunned = effects->stun().is_stunned();
-        const auto is_confused = effects->confusion().is_confused();
+        const auto is_stunned = creature.is_stunned();
+        const auto is_confused = creature.is_confused();
         if ((pa_ptr->ma_ptr->min_level <= old_ptr->min_level) || is_stunned || is_confused) {
             pa_ptr->ma_ptr = old_ptr;
             continue;

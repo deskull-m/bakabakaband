@@ -22,6 +22,7 @@
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/gameterm.h"
+#include "term/term-color-types.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"

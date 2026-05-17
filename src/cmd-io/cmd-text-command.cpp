@@ -27,7 +27,7 @@
 #include "system/item-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
+#include "timed-effect/player-cut.h"
 #include "util/int-char-converter.h"
 #include "util/probability-table.h"
 #include "view/display-messages.h"

@@ -67,7 +67,6 @@
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
@@ -512,10 +511,9 @@ void PlayerType::on_death(std::string_view cause)
             this->died_from = _("切腹", "Seppuku");
         }
     } else {
-        const auto effects = this->effects();
-        const auto is_hallucinated = effects->hallucination().is_hallucinated();
+        const auto is_hallucinated = this->is_hallucinated();
         auto paralysis_state = "";
-        if (effects->paralysis().is_paralyzed()) {
+        if (this->is_paralyzed()) {
             paralysis_state = this->has_free_act() ? _("彫像状態で", " while being the statue") : _("麻痺状態で", " while paralyzed");
         }
 

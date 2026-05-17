@@ -42,7 +42,6 @@
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 

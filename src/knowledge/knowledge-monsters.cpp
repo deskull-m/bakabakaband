@@ -24,6 +24,7 @@
 #include "system/monrace/monrace-list.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
+#include "term/term-color-types.h"
 #include "tracking/lore-tracker.h"
 #include "util/angband-files.h"
 #include "util/int-char-converter.h"

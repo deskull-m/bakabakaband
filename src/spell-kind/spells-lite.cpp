@@ -16,7 +16,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 #include <range/v3/view.hpp>

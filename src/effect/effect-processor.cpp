@@ -25,7 +25,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "target/projection-path-calculator.h"
-#include "timed-effect/timed-effects.h"
 #include "tracking/lore-tracker.h"
 #include "view/display-messages.h"
 #include <vector>

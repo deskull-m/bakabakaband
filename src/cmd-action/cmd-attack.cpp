@@ -51,7 +51,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "target/target-getter.h"
-#include "timed-effect/timed-effects.h"
 #include "tracking/lore-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -372,8 +371,7 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
     }
 
     const auto m_name = monster_desc(creature, monster, 0);
-    const auto effects = creature.effects();
-    const auto is_hallucinated = effects->hallucination().is_hallucinated();
+    const auto is_hallucinated = creature.is_hallucinated();
     if (monster.is_visible_on_map()) {
         if (!is_hallucinated) {
             LoreTracker::get_instance().set_trackee(monster.get_ap_r_idx());
@@ -382,8 +380,8 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
         health_track(creature, grid.m_idx);
     }
 
-    const auto is_confused = effects->confusion().is_confused();
-    const auto is_stunned = effects->stun().is_stunned();
+    const auto is_confused = creature.is_confused();
+    const auto is_stunned = creature.is_stunned();
     if (monster.is_female() && !(is_stunned || is_confused || is_hallucinated || !monster.is_visible_on_map())) {
         if (creature.is_wielding(FixedArtifactId::ZANTETSU)) {
             sound(SoundKind::ATTACK_FAILED);
@@ -418,7 +416,7 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
         }
     }
 
-    if (effects->fear().is_fearful()) {
+    if (creature.is_fearful()) {
         if (monster.is_visible_on_map()) {
             sound(SoundKind::ATTACK_FAILED);
             msg_format(_("恐くて%sを攻撃できない！", "You are too fearful to attack %s!"), m_name.data());
@@ -522,15 +520,14 @@ bool do_cmd_headbutt(CreatureEntity &creature)
     PlayerEnergy(creature).set_player_turn_energy(100);
 
     // 混乱状態では方向がずれる可能性
-    const auto effects = creature.effects();
-    const auto is_confused = effects->confusion().is_confused();
+    const auto is_confused = creature.is_confused();
     if (is_confused && one_in_(3)) {
         msg_print(_("混乱して方向を間違えた！", "You are confused and miss the direction!"));
         return false;
     }
 
     // 恐怖状態では攻撃できない
-    if (effects->fear().is_fearful()) {
+    if (creature.is_fearful()) {
         sound(SoundKind::ATTACK_FAILED);
         msg_format(_("恐くて%sに頭突きできない！", "You are too fearful to headbutt %s!"), m_name.data());
         return false;
@@ -544,8 +541,8 @@ bool do_cmd_headbutt(CreatureEntity &creature)
     }
 
     // 敵対的でないモンスターへの確認
-    const auto is_stunned = effects->stun().is_stunned();
-    const auto is_hallucinated = effects->hallucination().is_hallucinated();
+    const auto is_stunned = creature.is_stunned();
+    const auto is_hallucinated = creature.is_hallucinated();
     if (!monster.is_hostile() && !(is_stunned || is_confused || is_hallucinated || creature.is_shero() || !monster.is_visible_on_map())) {
         if (!CreatureClass(creature).equals(PlayerClassType::BERSERKER)) {
             if (!input_check(_("本当に頭突きしますか？", "Really headbutt it? "))) {
@@ -610,15 +607,14 @@ void do_cmd_body_slam(CreatureEntity &creature)
     PlayerEnergy(creature).set_player_turn_energy(100);
 
     // 混乱状態では方向がずれる可能性
-    const auto effects = creature.effects();
-    const auto is_confused = effects->confusion().is_confused();
+    const auto is_confused = creature.is_confused();
     if (is_confused && one_in_(3)) {
         msg_print(_("混乱して方向を間違えた！", "You are confused and miss the direction!"));
         return;
     }
 
     // 恐怖状態では攻撃できない
-    if (effects->fear().is_fearful()) {
+    if (creature.is_fearful()) {
         sound(SoundKind::ATTACK_FAILED);
         msg_format(_("恐くて%sに体当たりできない！", "You are too fearful to body slam %s!"), m_name.data());
         return;
@@ -751,15 +747,14 @@ void do_cmd_enema(CreatureEntity &creature)
     PlayerEnergy(creature).set_player_turn_energy(100);
 
     // 混乱状態では方向がずれる可能性
-    const auto effects = creature.effects();
-    const auto is_confused = effects->confusion().is_confused();
+    const auto is_confused = creature.is_confused();
     if (is_confused && one_in_(3)) {
         msg_print(_("混乱して方向を間違えた！", "You are confused and miss the direction!"));
         return;
     }
 
     // 恐怖状態では攻撃できない
-    if (effects->fear().is_fearful()) {
+    if (creature.is_fearful()) {
         sound(SoundKind::ATTACK_FAILED);
         msg_format(_("恐くて%sに浣腸できない！", "You are too fearful to enema %s!"), m_name.data());
         return;
