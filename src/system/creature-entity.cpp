@@ -44,6 +44,7 @@
 #include "term/term-color-types.h"
 #include "term/z-form.h"
 #include "term/z-rand.h"
+#include "term/z-util.h"
 #include "timed-effect/timed-effects.h"
 #include "tracking/lore-tracker.h"
 #include "util/bit-flags-calculator.h"
@@ -658,6 +659,21 @@ short CreatureEntity::get_equip_cnt() const
         }
     }
     return cnt;
+}
+
+void CreatureEntity::add_csp_with_frac(int delta, uint32_t delta_frac)
+{
+    s64b_add(&this->csp, &this->csp_frac, delta, delta_frac);
+}
+
+void CreatureEntity::sub_csp_with_frac(int delta, uint32_t delta_frac)
+{
+    s64b_sub(&this->csp, &this->csp_frac, delta, delta_frac);
+}
+
+void CreatureEntity::add_exp_with_frac(EXP delta, uint32_t delta_frac)
+{
+    s64b_add(&this->exp, &this->exp_frac, delta, delta_frac);
 }
 
 void CreatureEntity::make_lore_treasure(int num_item, int num_gold) const

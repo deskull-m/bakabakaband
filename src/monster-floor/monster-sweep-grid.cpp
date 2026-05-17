@@ -226,7 +226,7 @@ public:
             room -= 2;
         }
 
-        if (room >= (8 * (this->creature_ptr->hp + this->creature_ptr->csp)) / (this->creature_ptr->maxhp + this->creature_ptr->msp)) {
+        if (room >= (8 * (this->creature_ptr->hp + this->creature_ptr->get_csp())) / (this->creature_ptr->maxhp + this->creature_ptr->get_msp())) {
             return tl::nullopt;
         }
 

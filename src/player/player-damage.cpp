@@ -563,7 +563,7 @@ void PlayerType::on_death(std::string_view cause)
     death_record.day = static_cast<int16_t>(day);
     death_record.hour = static_cast<int16_t>(hour);
     death_record.min = static_cast<int16_t>(min);
-    death_record.player_level = this->level;
+    death_record.player_level = this->get_level();
     death_record.cause = this->died_from;
     death_record.killer_monrace_id = this->killer_monrace_id;
     this->death_history.push_back(death_record);
@@ -582,7 +582,7 @@ void PlayerType::on_death(std::string_view cause)
         auto &quests = QuestList::get_instance();
         auto &quest = quests.get_quest(q_idx);
         if (quest.status == QuestStatusType::TAKEN) {
-            record_quest_final_status(&quest, this->level, QuestStatusType::FAILED);
+            record_quest_final_status(&quest, this->get_level(), QuestStatusType::FAILED);
             if (quest.type == QuestKindType::RANDOM) {
                 if (record_rand_quest) {
                     exe_write_diary_quest(*this, DiaryKind::RAND_QUEST_F, q_idx);

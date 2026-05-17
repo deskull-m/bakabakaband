@@ -53,7 +53,7 @@ void check_music(CreatureEntity &creature)
         return;
     }
 
-    s64b_sub(&(creature.csp), &(creature.csp_frac), need_mana, need_mana_frac);
+    creature.sub_csp_with_frac(need_mana, need_mana_frac);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
     if (interupting_song_effect != 0) {

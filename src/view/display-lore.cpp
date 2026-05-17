@@ -120,7 +120,7 @@ void output_monster_spoiler(MonraceId r_idx, hook_c_roff_pf roff_func)
     hook_c_roff = roff_func;
     PlayerType dummy;
 
-    dummy.level = 1;
+    dummy.set_level(1);
     dummy.set_max_plv(1);
     process_monster_lore(dummy, r_idx, MONSTER_LORE_DEBUG);
 }

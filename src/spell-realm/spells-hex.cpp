@@ -223,7 +223,7 @@ bool SpellHex::process_mana_cost(const bool need_restart)
         return false;
     }
 
-    s64b_sub(&(this->creature.csp), &(this->creature.csp_frac), need_mana, need_mana_frac);
+    this->creature.sub_csp_with_frac(need_mana, need_mana_frac);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
     if (!need_restart) {

@@ -42,7 +42,7 @@ TrFlags CreatureRace::tr_flags() const
     }
 
     for (auto &cond : race_ptr->extra_flags) {
-        if (this->creature_ptr->level < cond.level) {
+        if (this->creature_ptr->get_level() < cond.level) {
             continue;
         }
         if (cond.pclass) {
@@ -118,7 +118,7 @@ bool CreatureRace::has_cut_immunity() const
     auto cut_immunity = this->equals(PlayerRaceType::GOLEM);
     cut_immunity |= this->equals(PlayerRaceType::SKELETON);
     cut_immunity |= this->equals(PlayerRaceType::SPECTRE);
-    cut_immunity |= this->equals(PlayerRaceType::ZOMBIE) && (this->creature_ptr->level > 11);
+    cut_immunity |= this->equals(PlayerRaceType::ZOMBIE) && (this->creature_ptr->get_level() > 11);
     return cut_immunity;
 }
 
@@ -153,7 +153,7 @@ int16_t CreatureRace::speed() const
             result -= 10;
         }
         if (this->equals(PlayerRaceType::KLACKON) || this->equals(PlayerRaceType::SPRITE)) {
-            result += (this->creature_ptr->level) / 10;
+            result += (this->creature_ptr->get_level()) / 10;
         }
     }
 
@@ -161,7 +161,7 @@ int16_t CreatureRace::speed() const
         const auto &floor = *this->creature_ptr->get_floor();
         const auto &terrain = floor.get_grid(this->creature_ptr->get_position()).get_terrain();
         if (terrain.flags.has(TerrainCharacteristics::WATER)) {
-            result += (2 + this->creature_ptr->level / 10);
+            result += (2 + this->creature_ptr->get_level() / 10);
         } else if (!this->creature_ptr->has_levitation()) {
             result -= 2;
         }
@@ -197,13 +197,13 @@ int16_t CreatureRace::additional_strength() const
     int16_t result = 0;
 
     if (this->equals(PlayerRaceType::ENT)) {
-        if (this->creature_ptr->level > 25) {
+        if (this->creature_ptr->get_level() > 25) {
             result++;
         }
-        if (this->creature_ptr->level > 40) {
+        if (this->creature_ptr->get_level() > 40) {
             result++;
         }
-        if (this->creature_ptr->level > 45) {
+        if (this->creature_ptr->get_level() > 45) {
             result++;
         }
     }
@@ -223,13 +223,13 @@ int16_t CreatureRace::additional_dexterity() const
     int16_t result = 0;
 
     if (this->equals(PlayerRaceType::ENT)) {
-        if (this->creature_ptr->level > 25) {
+        if (this->creature_ptr->get_level() > 25) {
             result--;
         }
-        if (this->creature_ptr->level > 40) {
+        if (this->creature_ptr->get_level() > 40) {
             result--;
         }
-        if (this->creature_ptr->level > 45) {
+        if (this->creature_ptr->get_level() > 45) {
             result--;
         }
     }
@@ -249,13 +249,13 @@ int16_t CreatureRace::additional_constitution() const
     int16_t result = 0;
 
     if (CreatureRace(this->creature_ptr).equals(PlayerRaceType::ENT)) {
-        if (this->creature_ptr->level > 25) {
+        if (this->creature_ptr->get_level() > 25) {
             result++;
         }
-        if (this->creature_ptr->level > 40) {
+        if (this->creature_ptr->get_level() > 40) {
             result++;
         }
-        if (this->creature_ptr->level > 45) {
+        if (this->creature_ptr->get_level() > 45) {
             result++;
         }
     }
