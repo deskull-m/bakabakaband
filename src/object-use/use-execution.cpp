@@ -118,7 +118,7 @@ void ObjectUseEntity::execute()
     item->mark_as_tried();
     if (ident && !item->is_aware()) {
         object_aware(creature, *item);
-        gain_exp(creature, (item_level + (creature.level >> 1)) / creature.level);
+        gain_exp(creature, (item_level + (creature.get_level() >> 1)) / creature.get_level());
     }
 
     static constexpr auto flags_swrf = {

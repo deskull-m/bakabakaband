@@ -86,7 +86,7 @@ bool melee_arena_comm(CreatureEntity &creature)
         }
     }
 
-    auto maxbet = creature.level * 200;
+    auto maxbet = creature.get_level() * 200;
     maxbet = std::min(maxbet, creature.get_au());
     constexpr auto prompt = _("賭け金？", "Your wager? ");
     const auto wager = input_integer(prompt, 1, maxbet, 1);

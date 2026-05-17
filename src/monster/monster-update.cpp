@@ -588,7 +588,7 @@ void update_monster(CreatureEntity &creature, MONSTER_IDX m_idx, bool full)
     um_type *um_ptr = initialize_um_type(creature, &tmp_um, m_idx, full);
     if (disturb_high) {
         auto *ap_r_ptr = &um_ptr->m_ptr->get_appearance_monrace();
-        if (ap_r_ptr->r_tkills && ap_r_ptr->level >= creature.level) {
+        if (ap_r_ptr->r_tkills && ap_r_ptr->level >= creature.get_level()) {
             um_ptr->do_disturb = true;
         }
     }

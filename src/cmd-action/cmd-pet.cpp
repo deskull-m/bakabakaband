@@ -263,7 +263,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
 
             return false;
         }
-        if (monster.get_monrace().level > randint1((creature.get_skill_exp(PlayerSkillKindType::RIDING) / 50 + creature.level / 2 + 20))) {
+        if (monster.get_monrace().level > randint1((creature.get_skill_exp(PlayerSkillKindType::RIDING) / 50 + creature.get_level() / 2 + 20))) {
             msg_print(_("うまく乗れなかった。", "You failed to ride."));
             PlayerEnergy(creature).set_player_turn_energy(100);
             return false;

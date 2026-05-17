@@ -373,7 +373,7 @@ bool exe_bash(CreatureEntity &creature, POSITION y, POSITION x, const Direction 
         }
 
         exe_movement(creature, dir, false, false);
-    } else if (evaluate_percent(adj_dex_safe[creature.get_stat_index(A_DEX)] + creature.level)) {
+    } else if (evaluate_percent(adj_dex_safe[creature.get_stat_index(A_DEX)] + creature.get_level())) {
         msg_format(_("この%sは頑丈だ。", "The %s holds firm."), name.data());
         more = true;
     } else {

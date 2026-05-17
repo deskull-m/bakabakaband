@@ -259,12 +259,12 @@ static void curse_drain_exp(CreatureEntity &creature)
         return;
     }
 
-    creature.sub_exp((creature.level + 1) / 2);
+    creature.sub_exp((creature.get_level() + 1) / 2);
     if (creature.get_exp() < 0) {
         creature.set_exp(0);
     }
 
-    creature.sub_max_exp((creature.level + 1) / 2);
+    creature.sub_max_exp((creature.get_level() + 1) / 2);
     if (creature.get_max_exp() < 0) {
         creature.set_max_exp(0);
     }
@@ -401,7 +401,7 @@ static void curse_berserk_rage(CreatureEntity &creature)
 
     auto *o_ptr = choose_cursed_obj_name(creature, CurseTraitType::BERS_RAGE);
     auto chance = 1500;
-    short duration = 10 + randint1(creature.level);
+    short duration = 10 + randint1(creature.get_level());
 
     if (o_ptr->curse_flags.has(CurseTraitType::HEAVY_CURSE)) {
         chance = 150;
@@ -428,7 +428,7 @@ static void curse_drain_hp(CreatureEntity &creature)
     const auto *item_ptr = choose_cursed_obj_name(creature, CurseTraitType::DRAIN_HP);
     const auto item_name = describe_flavor(creature, *item_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     msg_format(_("%sはあなたの体力を吸収した！", "Your %s drains HP from you!"), item_name.data());
-    take_hit(creature, DAMAGE_LOSELIFE, std::min(creature.level * 2, 100), item_name);
+    take_hit(creature, DAMAGE_LOSELIFE, std::min(creature.get_level() * 2, 100), item_name);
 }
 
 static void curse_drain_mp(CreatureEntity &creature)
@@ -440,7 +440,7 @@ static void curse_drain_mp(CreatureEntity &creature)
     const auto *item_ptr = choose_cursed_obj_name(creature, CurseTraitType::DRAIN_MANA);
     const auto item_name = describe_flavor(creature, *item_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     msg_format(_("%sはあなたの魔力を吸収した！", "Your %s drains mana from you!"), item_name.data());
-    creature.sub_csp(std::min<short>(creature.level, 50));
+    creature.sub_csp(std::min<short>(creature.get_level(), 50));
     if (creature.get_csp() < 0) {
         creature.set_csp(0);
         creature.csp_frac = 0;
@@ -535,5 +535,5 @@ void execute_cursed_items_effect(CreatureEntity &creature)
         msg_print(_("なにかがあなたの体力を吸収した！", "Something drains life from you!"));
     }
 
-    take_hit(creature, DAMAGE_LOSELIFE, std::min<short>(creature.level, 50), _("審判の宝石", "the Jewel of Judgement"));
+    take_hit(creature, DAMAGE_LOSELIFE, std::min<short>(creature.get_level(), 50), _("審判の宝石", "the Jewel of Judgement"));
 }

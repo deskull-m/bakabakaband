@@ -530,7 +530,7 @@ ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, in
         }
         const auto expression = format("?:[AND [EQU $RACE %s] [EQU $CLASS %s] [GEQ $LEVEL %02d]]",
             creature.get_race_info()->title.en_string().data(), (*creature.get_class_info()).title.en_string().data(),
-            creature.level);
+            creature.get_level());
         tb->cx = 0;
         insert_return_code(tb);
         tb->lines_list[tb->cy] = std::make_unique<std::string>(expression);

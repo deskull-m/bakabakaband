@@ -65,7 +65,7 @@ void acquire_chaos_weapon(CreatureEntity &creature)
         SV_BLADE_OF_CHAOS, // LV50
     };
 
-    const auto candidates = std::span(weapons).first(creature.level);
+    const auto candidates = std::span(weapons).first(creature.get_level());
     const auto sval = rand_choice(candidates);
 
     ItemEntity item({ ItemKindType::SWORD, sval });

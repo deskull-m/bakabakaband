@@ -207,14 +207,14 @@ void process_surprise_attack(CreatureEntity &creature, player_attack_type *pa_pt
         return;
     }
 
-    int tmp = creature.level * 6 + (creature.get_skill_stealth() + 10) * 4;
+    int tmp = creature.get_level() * 6 + (creature.get_skill_stealth() + 10) * 4;
     if (creature.monlite && (pa_ptr->mode != HISSATSU_NYUSIN)) {
         tmp /= 3;
     }
     if (has_aggravate(creature)) {
         tmp /= 2;
     }
-    if (monrace.level > (creature.level * creature.level / 20 + 10)) {
+    if (monrace.level > (creature.get_level() * creature.get_level() / 20 + 10)) {
         tmp /= 3;
     }
 
@@ -254,12 +254,12 @@ void print_surprise_attack(player_attack_type *pa_ptr)
 void calc_surprise_attack_damage(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
     if (pa_ptr->backstab) {
-        pa_ptr->attack_damage *= (3 + (creature.level / 20));
+        pa_ptr->attack_damage *= (3 + (creature.get_level() / 20));
         return;
     }
 
     if (pa_ptr->surprise_attack) {
-        pa_ptr->attack_damage = pa_ptr->attack_damage * (5 + (creature.level * 2 / 25)) / 2;
+        pa_ptr->attack_damage = pa_ptr->attack_damage * (5 + (creature.get_level() * 2 / 25)) / 2;
         return;
     }
 
@@ -351,7 +351,7 @@ bool set_superstealth(CreatureEntity &creature, bool set)
  */
 bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
 {
-    PLAYER_LEVEL plev = creature.level;
+    PLAYER_LEVEL plev = creature.get_level();
     auto ninja_data = CreatureClass(creature).get_specific_data<ninja_data_type>();
     switch (spell) {
     case MindNinjaType::DARKNESS_CREATION:

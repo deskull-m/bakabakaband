@@ -285,7 +285,7 @@ static std::vector<TextCommand> get_text_commands()
                 int count = 0;
                 for (int k = 0; k < 2 + randint1(3); k++) {
                     // プレイヤー周辺に敵対的にホモを召喚
-                    if (summon_specific(creature, creature.y, creature.x, creature.level,
+                    if (summon_specific(creature, creature.y, creature.x, creature.get_level(),
                             SUMMON_HOMO, PM_NO_PET)) {
                         count++;
                     }

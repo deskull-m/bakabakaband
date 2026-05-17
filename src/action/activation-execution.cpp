@@ -167,7 +167,7 @@ static void activate_artifact(CreatureEntity &creature, std::shared_ptr<ItemEnti
         item->timeout = item->bi_key == BaseitemKey(ItemKindType::RING, SV_RING_ICE) ? 200 : 250;
         return;
     case RandomArtActType::TERROR:
-        item->timeout = 3 * (creature.level + 10);
+        item->timeout = 3 * (creature.get_level() + 10);
         return;
     case RandomArtActType::MURAMASA:
         return;
@@ -231,7 +231,7 @@ static bool activate_firethrowing(CreatureEntity &creature, ae_type *ae_ptr)
     }
 
     msg_print(_("汚物は消毒だあ！", "The filth must be disinfected!"));
-    fire_breath(creature, AttributeType::FIRE, dir, 20 + creature.level * 5, 2);
+    fire_breath(creature, AttributeType::FIRE, dir, 20 + creature.get_level() * 5, 2);
     return true;
 }
 
@@ -246,7 +246,7 @@ static bool activate_rosmarinus(CreatureEntity &creature, ae_type *ae_ptr)
         return false;
     }
 
-    fire_breath(creature, AttributeType::MISSILE, dir, 20 + creature.level * 5, 2);
+    fire_breath(creature, AttributeType::MISSILE, dir, 20 + creature.get_level() * 5, 2);
     return true;
 }
 
@@ -263,7 +263,7 @@ static bool activate_stungun(CreatureEntity &creature, ae_type *ae_ptr)
     }
 
     msg_print(_("『バチィ』", "'bzzt'"));
-    fire_ball(creature, AttributeType::STUNGUN, dir, creature.level, 0);
+    fire_ball(creature, AttributeType::STUNGUN, dir, creature.get_level(), 0);
     project_length = 0;
     return true;
 }
@@ -280,7 +280,7 @@ static bool activate_raygun(CreatureEntity &creature, ae_type *ae_ptr)
     }
 
     msg_print(_("『ビィーム！』", "'ZAP! ZAP!'"));
-    fire_bolt(creature, AttributeType::MISSILE, dir, 10 + creature.level * 2);
+    fire_bolt(creature, AttributeType::MISSILE, dir, 10 + creature.get_level() * 2);
     return true;
 }
 

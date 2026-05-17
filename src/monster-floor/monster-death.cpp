@@ -406,7 +406,7 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
     if (md.r_ptr->kind_flags.has(MonsterKindType::UNIQUE) && !md.m_ptr->is_cloned()) {
         world.play_time.update();
         md.r_ptr->defeat_time = world.play_time.elapsed_sec();
-        md.r_ptr->defeat_level = creature.level;
+        md.r_ptr->defeat_level = creature.get_level();
     }
 
     if (md.r_ptr->brightness_flags.has_any_of(ld_mask)) {

@@ -29,7 +29,7 @@
 void do_poly_wounds(CreatureEntity &creature)
 {
     int16_t hit_p = (creature.maxhp - creature.hp);
-    auto change = static_cast<TIME_EFFECT>(Dice::roll(creature.level, 5));
+    auto change = static_cast<TIME_EFFECT>(Dice::roll(creature.get_level(), 5));
     auto nasty_effect = one_in_(5);
     if (!creature.is_cut() && (hit_p == 0) && !nasty_effect) {
         return;
@@ -104,7 +104,7 @@ void change_race(CreatureEntity &creature, PlayerRaceType new_race, concptr effe
 
 void do_poly_self(CreatureEntity &creature)
 {
-    int power = creature.level;
+    int power = creature.get_level();
 
     msg_print(_("あなたは変化の訪れを感じた...", "You feel a change coming over you..."));
     chg_virtue(creature, Virtue::CHANCE, 1);
@@ -175,7 +175,7 @@ void do_poly_self(CreatureEntity &creature)
         }
         if (one_in_(6)) {
             msg_print(_("現在の姿で生きていくのは困難なようだ！", "You find living difficult in your present form!"));
-            take_hit(creature, DAMAGE_LOSELIFE, Dice::roll(randint1(10), creature.level), _("致命的な突然変異", "a lethal mutation"));
+            take_hit(creature, DAMAGE_LOSELIFE, Dice::roll(randint1(10), creature.get_level()), _("致命的な突然変異", "a lethal mutation"));
 
             power -= 10;
         }

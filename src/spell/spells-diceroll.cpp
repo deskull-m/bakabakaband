@@ -95,11 +95,11 @@ PERCENTAGE beam_chance(CreatureEntity &creature)
 {
     CreatureClass pc(creature);
     if (pc.equals(PlayerClassType::MAGE)) {
-        return (PERCENTAGE)(creature.level);
+        return (PERCENTAGE)(creature.get_level());
     }
     if (pc.equals(PlayerClassType::HIGH_MAGE) || pc.equals(PlayerClassType::SORCERER)) {
-        return (PERCENTAGE)(creature.level + 10);
+        return (PERCENTAGE)(creature.get_level() + 10);
     }
 
-    return (PERCENTAGE)(creature.level / 2);
+    return (PERCENTAGE)(creature.get_level() / 2);
 }

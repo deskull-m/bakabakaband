@@ -112,7 +112,7 @@ bool sleep_monster(CreatureEntity &creature, const Direction &dir, int power)
  */
 bool stasis_monster(CreatureEntity &creature, const Direction &dir)
 {
-    return fire_ball_hide(creature, AttributeType::STASIS, dir, creature.level * 2, 0);
+    return fire_ball_hide(creature, AttributeType::STASIS, dir, creature.get_level() * 2, 0);
 }
 
 /*!
@@ -124,7 +124,7 @@ bool stasis_monster(CreatureEntity &creature, const Direction &dir)
  */
 bool stasis_evil(CreatureEntity &creature, const Direction &dir)
 {
-    return fire_ball_hide(creature, AttributeType::STASIS_EVIL, dir, creature.level * 2, 0);
+    return fire_ball_hide(creature, AttributeType::STASIS_EVIL, dir, creature.get_level() * 2, 0);
 }
 
 /*!
@@ -651,7 +651,7 @@ std::shared_ptr<ItemEntity> cosmic_cast_off(CreatureEntity &creature, const Item
     (void)mod_acceleration(creature, t, false);
     (void)set_berserk(creature, creature.get_timed_effect(CreatureTimedEffect::BERSERK) + t, false);
     if (CreatureClass(creature).equals(PlayerClassType::FORCETRAINER)) {
-        set_current_ki(creature, true, creature.level * 5 + 190);
+        set_current_ki(creature, true, creature.get_level() * 5 + 190);
         msg_print(_("気が爆発寸前になった。", "Your force absorbs the explosion."));
     }
 

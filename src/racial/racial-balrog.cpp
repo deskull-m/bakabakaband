@@ -15,6 +15,6 @@ bool demonic_breath(CreatureEntity &creature)
     }
     stop_mouth(creature);
     msg_format(_("あなたは%sのブレスを吶いた。", "You breathe %s."), ((type == AttributeType::NETHER) ? _("地獄", "nether") : _("火炎", "fire")));
-    fire_breath(creature, type, dir, creature.level * 3, (creature.level / 15) + 1);
+    fire_breath(creature, type, dir, creature.get_level() * 3, (creature.get_level() / 15) + 1);
     return true;
 }

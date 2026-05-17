@@ -110,7 +110,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
         disturb(creature, false, true);
         msg_print(_("ウガァァア！", "RAAAAGHH!"));
         msg_print(_("激怒の発作に襲われた！", "You feel a fit of rage coming over you!"));
-        (void)set_berserk(creature, 10 + randint1(creature.level), false);
+        (void)set_berserk(creature, 10 + randint1(creature.get_level()), false);
         (void)bss.set_fear(0);
     }
 
@@ -175,14 +175,14 @@ void process_world_aux_mutation(CreatureEntity &creature)
         disturb(creature, false, true);
         msg_print(_("ブゥーーッ！おっと。", "BRRAAAP! Oops."));
         msg_erase();
-        fire_ball(creature, AttributeType::POIS, Direction::self(), creature.level, 3);
+        fire_ball(creature, AttributeType::POIS, Direction::self(), creature.get_level(), 3);
     }
 
     if (creature.get_mutations().has(PlayerMutationType::IKISUGI) && (randint1(3000) == 13)) {
         disturb(creature, false, true);
         msg_print(_("ンアアアアー！", "NAAAAAAAH!"));
         msg_erase();
-        fire_ball(creature, AttributeType::SOUND, Direction::self(), creature.level, 3);
+        fire_ball(creature, AttributeType::SOUND, Direction::self(), creature.get_level(), 3);
         aggravate_monsters(creature, 0);
     }
 
@@ -200,8 +200,8 @@ void process_world_aux_mutation(CreatureEntity &creature)
         RedrawingFlagsUpdater::get_instance().set_flags(flags);
 
         (void)bss.mod_hallucination(randint0(10) + 20);
-        (void)set_berserk(creature, 10 + randint1(creature.level), false);
-        (void)set_acceleration(creature, 10 + randint1(creature.level), false);
+        (void)set_berserk(creature, 10 + randint1(creature.get_level()), false);
+        (void)set_acceleration(creature, 10 + randint1(creature.get_level()), false);
     }
 
     if (creature.get_mutations().has(PlayerMutationType::PROD_MANA) && !creature.has_anti_magic() && one_in_(9000)) {
@@ -212,7 +212,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
         flush();
         msg_erase();
         const auto dir = get_aim_dir(creature, false);
-        fire_ball(creature, AttributeType::MANA, dir ? dir : Direction::self(), creature.level * 2, 3);
+        fire_ball(creature, AttributeType::MANA, dir ? dir : Direction::self(), creature.get_level() * 2, 3);
     }
 
     if (creature.get_mutations().has(PlayerMutationType::ATT_DEMON) && !creature.has_anti_magic() && (randint1(6666) == 666)) {
@@ -343,7 +343,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
         disturb(creature, false, true);
         msg_print(_("周りの空間が歪んでいる気がする！", "You feel the world warping around you!"));
         msg_erase();
-        fire_ball(creature, AttributeType::CHAOS, Direction::self(), creature.level, 8);
+        fire_ball(creature, AttributeType::CHAOS, Direction::self(), creature.get_level(), 8);
     }
 
     if (creature.get_mutations().has(PlayerMutationType::NORMALITY) && one_in_(5000)) {
@@ -356,7 +356,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
         disturb(creature, false, true);
         msg_print(_("非物質化した！", "You feel insubstantial!"));
         msg_erase();
-        set_wraith_form(creature, randint1(creature.level / 2) + (creature.level / 2), false);
+        set_wraith_form(creature, randint1(creature.get_level() / 2) + (creature.get_level() / 2), false);
     }
 
     if (creature.get_mutations().has(PlayerMutationType::POLY_WOUND) && one_in_(3000)) {
@@ -432,7 +432,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
             set_tim_esp(creature, 0, true);
         } else {
             msg_print(_("精神が広がった！", "Your mind expands!"));
-            set_tim_esp(creature, creature.level, false);
+            set_tim_esp(creature, creature.get_level(), false);
         }
     }
 
@@ -464,8 +464,8 @@ void process_world_aux_mutation(CreatureEntity &creature)
                 continue;
             }
 
-            if (monrace.level >= creature.level) {
-                danger_amount += monrace.level - creature.level + 1;
+            if (monrace.level >= creature.get_level()) {
+                danger_amount += monrace.level - creature.get_level() + 1;
             }
         }
 

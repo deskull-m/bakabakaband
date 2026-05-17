@@ -124,7 +124,7 @@ EnchantWeaponSmithInfo::EnchantWeaponSmithInfo(SmithEffectType effect, concptr n
 
 bool EnchantWeaponSmithInfo::add_essence(CreatureEntity &creature, ItemEntity *o_ptr, int) const
 {
-    const auto max_val = creature.level / 5 + 5;
+    const auto max_val = creature.get_level() / 5 + 5;
     if ((o_ptr->to_h >= max_val) && (o_ptr->to_d >= max_val)) {
         return false;
     }
@@ -152,7 +152,7 @@ EnchantArmourSmithInfo::EnchantArmourSmithInfo(SmithEffectType effect, concptr n
 
 bool EnchantArmourSmithInfo::add_essence(CreatureEntity &creature, ItemEntity *o_ptr, int) const
 {
-    const auto max_val = creature.level / 5 + 5;
+    const auto max_val = creature.get_level() / 5 + 5;
     if (o_ptr->to_a >= max_val) {
         return false;
     }

@@ -75,7 +75,7 @@ static void show_tomb_line(std::string_view str, int row)
  */
 static void show_basic_params(CreatureEntity &creature)
 {
-    show_tomb_line(fmt::format(_("レベル: {}", "Level: {}"), creature.level), GRAVE_LEVEL_ROW);
+    show_tomb_line(fmt::format(_("レベル: {}", "Level: {}"), creature.get_level()), GRAVE_LEVEL_ROW);
 
     show_tomb_line(fmt::format(_("経験値: {}", "Exp: {}"), creature.get_exp()), GRAVE_EXP_ROW);
 
@@ -220,7 +220,7 @@ void print_tomb(CreatureEntity &creature)
 
     term_clear();
     read_dead_file(wc_ptr->is_blown_away());
-    std::string p = AngbandWorld::get_instance().total_winner ? _("偉大なる者", "Magnificent") : player_titles.at(creature.pclass)[(creature.level - 1) / 5];
+    std::string p = AngbandWorld::get_instance().total_winner ? _("偉大なる者", "Magnificent") : player_titles.at(creature.pclass)[(creature.get_level() - 1) / 5];
 
     show_tomb_line(creature.name, GRAVE_PLAYER_NAME_ROW);
 
@@ -283,7 +283,7 @@ void print_monster_tomb(CreatureEntity &creature, CreatureEntity &target)
     show_tomb_line("Monster", GRAVE_PLAYER_TITLE_ROW);
 #endif
 
-    show_tomb_line(format(_("レベル: %d", "Level: %d"), target.level), GRAVE_LEVEL_ROW);
+    show_tomb_line(format(_("レベル: %d", "Level: %d"), target.get_level()), GRAVE_LEVEL_ROW);
     show_tomb_line(format(_("HP: %d/%d", "HP: %d/%d"), target.hp, target.maxhp), GRAVE_EXP_ROW);
 
     time_t ct = time((time_t *)0);

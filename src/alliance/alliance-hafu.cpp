@@ -27,7 +27,7 @@ int AllianceHafu::calcImpressionPoint(const CreatureEntity &creature) const
     impression += (creature.get_stat_use(A_WIS) - 10) * 2;
 
     // レベルによる権威の評価
-    impression += creature.level * 2;
+    impression += creature.get_level() * 2;
     /*
     // 覇府関連のモンスター討伐による減点
     impression -= MonraceList::get_instance().get_monrace(MonraceId::HAFU_SHOGUN).r_akills * 100;

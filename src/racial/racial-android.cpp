@@ -28,32 +28,32 @@ bool android_inside_weapon(CreatureEntity &creature)
         return false;
     }
 
-    if (creature.level < 10) {
+    if (creature.get_level() < 10) {
         msg_print(_("レイガンを発射した。", "You fire your ray gun."));
-        fire_bolt(creature, AttributeType::MISSILE, dir, (creature.level + 1) / 2);
+        fire_bolt(creature, AttributeType::MISSILE, dir, (creature.get_level() + 1) / 2);
         return true;
     }
 
-    if (creature.level < 25) {
+    if (creature.get_level() < 25) {
         msg_print(_("ブラスターを発射した。", "You fire your blaster."));
-        fire_bolt(creature, AttributeType::MISSILE, dir, creature.level);
+        fire_bolt(creature, AttributeType::MISSILE, dir, creature.get_level());
         return true;
     }
 
-    if (creature.level < 35) {
+    if (creature.get_level() < 35) {
         msg_print(_("バズーカを発射した。", "You fire your bazooka."));
-        fire_ball(creature, AttributeType::MISSILE, dir, creature.level * 2, 2);
+        fire_ball(creature, AttributeType::MISSILE, dir, creature.get_level() * 2, 2);
         return true;
     }
 
-    if (creature.level < 45) {
+    if (creature.get_level() < 45) {
         msg_print(_("ビームキャノンを発射した。", "You fire a beam cannon."));
-        fire_beam(creature, AttributeType::MISSILE, dir, creature.level * 2);
+        fire_beam(creature, AttributeType::MISSILE, dir, creature.get_level() * 2);
         return true;
     }
 
     msg_print(_("ロケットを発射した。", "You fire a rocket."));
-    fire_rocket(creature, AttributeType::ROCKET, dir, creature.level * 5, 2);
+    fire_rocket(creature, AttributeType::ROCKET, dir, creature.get_level() * 5, 2);
     return true;
 }
 

@@ -1162,12 +1162,12 @@ void display_monster_exp(CreatureEntity &creature, lore_type *lore_ptr)
     int64_t exp_decimal = ((base_exp % player_factor * 1000 / player_factor) + 5) / 10;
 
 #ifdef JP
-    hooked_roff(format(" %d レベルのキャラクタにとって 約%lld.%02lld ポイントの経験となる。", creature.level, exp_integer, exp_decimal));
+    hooked_roff(format(" %d レベルのキャラクタにとって 約%lld.%02lld ポイントの経験となる。", creature.get_level(), exp_integer, exp_decimal));
 #else
     hooked_roff(format(" is worth about %lld.%02lld point%s", exp_integer, exp_decimal, ((exp_integer == 1) && (exp_decimal == 0)) ? "" : "s"));
 
     concptr ordinal;
-    switch (creature.level % 10) {
+    switch (creature.get_level() % 10) {
     case 1:
         ordinal = "st";
         break;
@@ -1183,7 +1183,7 @@ void display_monster_exp(CreatureEntity &creature, lore_type *lore_ptr)
     }
 
     concptr vowel;
-    switch (creature.level) {
+    switch (creature.get_level()) {
     case 8:
     case 11:
     case 18:
@@ -1194,7 +1194,7 @@ void display_monster_exp(CreatureEntity &creature, lore_type *lore_ptr)
         break;
     }
 
-    hooked_roff(format(" for a%s %d%s level character.  ", vowel, creature.level, ordinal));
+    hooked_roff(format(" for a%s %d%s level character.  ", vowel, creature.get_level(), ordinal));
 #endif
 }
 

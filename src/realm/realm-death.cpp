@@ -41,7 +41,7 @@ tl::optional<std::string> do_death_spell(CreatureEntity &creature, SPELL_IDX spe
     bool info = mode == SpellProcessType::INFO;
     bool cast = mode == SpellProcessType::CAST;
 
-    PLAYER_LEVEL plev = creature.level;
+    PLAYER_LEVEL plev = creature.get_level();
 
     switch (spell) {
     case 0: {

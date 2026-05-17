@@ -269,7 +269,7 @@ static bool spell_okay(CreatureEntity &creature, int spell_id, bool learned, boo
     const auto &spell = PlayerRealm::get_spell_info(use_realm, spell_id);
 
     /* Spell is illegal */
-    if (spell.slevel > creature.level) {
+    if (spell.slevel > creature.get_level()) {
         return false;
     }
 
@@ -932,7 +932,7 @@ bool do_cmd_cast(CreatureEntity &creature)
             auto flag = false;
             msg_print(_("これ以上新しい呪文を詠唱することはできない。", "Can not cast more spells."));
             flush();
-            if (creature.level >= 35) {
+            if (creature.get_level() >= 35) {
                 flag = SpellHex(creature).stop_spells_with_selection();
             }
 
@@ -1176,80 +1176,80 @@ bool do_cmd_cast(CreatureEntity &creature)
         }
         switch (use_realm) {
         case RealmType::LIFE:
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::TEMPERANCE, 1);
             }
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::COMPASSION, 1);
             }
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::VITALITY, 1);
             }
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::DILIGENCE, 1);
             }
             break;
         case RealmType::DEATH:
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::UNLIFE, 1);
             }
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::JUSTICE, -1);
             }
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::FAITH, -1);
             }
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::VITALITY, -1);
             }
             break;
         case RealmType::DAEMON:
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::JUSTICE, -1);
             }
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::FAITH, -1);
             }
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::HONOUR, -1);
             }
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::TEMPERANCE, -1);
             }
             break;
         case RealmType::CRUSADE:
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::FAITH, 1);
             }
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::JUSTICE, 1);
             }
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::SACRIFICE, 1);
             }
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::HONOUR, 1);
             }
             break;
         case RealmType::NATURE:
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::NATURE, 1);
             }
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::HARMONY, 1);
             }
             break;
         case RealmType::HEX:
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::JUSTICE, -1);
             }
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::FAITH, -1);
             }
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::HONOUR, -1);
             }
-            if (randint1(100 + creature.level) < need_mana) {
+            if (randint1(100 + creature.get_level()) < need_mana) {
                 chg_virtue(creature, Virtue::COMPASSION, -1);
             }
             break;

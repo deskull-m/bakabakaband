@@ -7,7 +7,7 @@
 rc_type::rc_type(CreatureEntity &creature)
 {
     this->ask = true;
-    this->lvl = creature.level;
+    this->lvl = creature.get_level();
     CreatureClass pc(creature);
     this->is_warrior = pc.equals(PlayerClassType::WARRIOR) || pc.equals(PlayerClassType::BERSERKER);
 }

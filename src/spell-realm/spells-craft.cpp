@@ -202,7 +202,7 @@ bool choose_ele_attack(CreatureEntity &creature, TIME_EFFECT turn)
     }
 
     screen_save();
-    int num = (creature.level - 20) / 5;
+    int num = (creature.get_level() - 20) / 5;
     c_prt(TERM_RED, _("        a) 焼棄", "        a) Fire Brand"), 2, 14);
 
     if (num >= 2) {

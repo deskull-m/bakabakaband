@@ -44,8 +44,8 @@ static void rd_hengband_dungeons()
 void rd_dungeons(CreatureEntity &creature)
 {
     rd_hengband_dungeons();
-    if (creature.get_max_plv() < creature.level) {
-        creature.set_max_plv(creature.level);
+    if (creature.get_max_plv() < creature.get_level()) {
+        creature.set_max_plv(creature.get_level());
     }
 }
 

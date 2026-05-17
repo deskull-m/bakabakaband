@@ -293,8 +293,8 @@ static std::string describe_ammo_detail(CreatureEntity &creature, const ItemEnti
 static std::string describe_spike_detail(const CreatureEntity &creature)
 {
     auto avgdam = creature.mighty_throw ? (1 + 3) : 1;
-    avgdam += ((creature.level + 30) * (creature.level + 30) - 900) / 55;
-    const auto energy_fire = 100 - creature.level;
+    avgdam += ((creature.get_level() + 30) * (creature.get_level() + 30) - 900) / 55;
+    const auto energy_fire = 100 - creature.get_level();
     const auto avgdam_per_turn = 100 * avgdam / energy_fire;
 
     return format(" (%d/%d)", avgdam, avgdam_per_turn);

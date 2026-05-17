@@ -47,7 +47,7 @@
 int rod_effect(CreatureEntity &creature, int sval, const Direction &dir, bool *use_charge, bool powerful)
 {
     int ident = false;
-    PLAYER_LEVEL lev = powerful ? creature.level * 2 : creature.level;
+    PLAYER_LEVEL lev = powerful ? creature.get_level() * 2 : creature.get_level();
     POSITION detect_rad = powerful ? DETECT_RAD_DEFAULT * 3 / 2 : DETECT_RAD_DEFAULT;
     POSITION rad = powerful ? 3 : 2;
 

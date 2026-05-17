@@ -80,5 +80,5 @@ bool heavy_armor(CreatureEntity &creature)
     monk_arm_wgt += creature.inventory[INVEN_ARMS]->weight;
     monk_arm_wgt += creature.inventory[INVEN_FEET]->weight;
 
-    return monk_arm_wgt > (100 + (creature.level * 4));
+    return monk_arm_wgt > (100 + (creature.get_level() * 4));
 }

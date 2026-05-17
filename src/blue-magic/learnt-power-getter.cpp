@@ -251,10 +251,10 @@ static bool switch_blue_magic_choice(const char key, int &menu_line, const bluem
 int calculate_blue_magic_failure_probability(CreatureEntity &creature, const monster_power &mp, int need_mana)
 {
     auto chance = mp.fail;
-    if (creature.level > mp.level) {
-        chance -= 3 * (creature.level - mp.level);
+    if (creature.get_level() > mp.level) {
+        chance -= 3 * (creature.get_level() - mp.level);
     } else {
-        chance += (mp.level - creature.level);
+        chance += (mp.level - creature.get_level());
     }
 
     chance -= 3 * (adj_mag_stat[creature.get_stat_index(A_INT)] - 1);

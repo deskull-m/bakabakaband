@@ -103,7 +103,7 @@ void wr_player(CreatureEntity &creature)
     wr_u32b(creature.get_max_max_exp());
     wr_u32b(creature.get_exp());
     wr_u32b(creature.exp_frac);
-    wr_s16b(creature.level);
+    wr_s16b(creature.get_level());
 
     for (int i = 0; i < 64; i++) {
         wr_s16b(creature.get_spell_exp(i));

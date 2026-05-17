@@ -163,21 +163,21 @@ std::pair<bool, std::shared_ptr<ItemEntity>> switch_activation(CreatureEntity &c
     case RandomArtActType::CHARM_OTHERS:
         return { activate_charm_others(creature), nullptr };
     case RandomArtActType::SUMMON_ANIMAL:
-        (void)summon_specific(creature, creature.y, creature.x, creature.level, SUMMON_ANIMAL_RANGER, PM_ALLOW_GROUP | PM_FORCE_PET);
+        (void)summon_specific(creature, creature.y, creature.x, creature.get_level(), SUMMON_ANIMAL_RANGER, PM_ALLOW_GROUP | PM_FORCE_PET);
         return { true, nullptr };
     case RandomArtActType::SUMMON_PHANTOM:
         msg_print(_("幻霊を召喚した。", "You summon a phantasmal servant."));
         (void)summon_specific(creature, creature.y, creature.x, creature.get_floor()->dun_level, SUMMON_PHANTOM, PM_ALLOW_GROUP | PM_FORCE_PET);
         return { true, nullptr };
     case RandomArtActType::SUMMON_ELEMENTAL:
-        return { cast_summon_elemental(creature, (creature.level * 3) / 2), nullptr };
+        return { cast_summon_elemental(creature, (creature.get_level() * 3) / 2), nullptr };
     case RandomArtActType::SUMMON_DEMON:
-        cast_summon_demon(creature, (creature.level * 3) / 2);
+        cast_summon_demon(creature, (creature.get_level() * 3) / 2);
         return { true, nullptr };
     case RandomArtActType::SUMMON_UNDEAD:
-        return { cast_summon_undead(creature, (creature.level * 3) / 2), nullptr };
+        return { cast_summon_undead(creature, (creature.get_level() * 3) / 2), nullptr };
     case RandomArtActType::SUMMON_HOUND:
-        return { cast_summon_hound(creature, (creature.level * 3) / 2), nullptr };
+        return { cast_summon_hound(creature, (creature.get_level() * 3) / 2), nullptr };
     case RandomArtActType::SUMMON_DAWN:
         msg_print(_("暁の師団を召喚した。", "You summon the Legion of the Dawn."));
         (void)summon_specific(creature, creature.y, creature.x, creature.get_floor()->dun_level, SUMMON_DAWN, PM_ALLOW_GROUP | PM_FORCE_PET);
@@ -237,7 +237,7 @@ std::pair<bool, std::shared_ptr<ItemEntity>> switch_activation(CreatureEntity &c
         return { true, nullptr };
     case RandomArtActType::PROT_EVIL:
         msg_format(_("%sから鋭い音が流れ出た...", "The %s lets out a shrill wail..."), name.data());
-        BodyImprovement(creature).set_protection(randint1(25) + creature.level * 3);
+        BodyImprovement(creature).set_protection(randint1(25) + creature.get_level() * 3);
         return { true, nullptr };
     case RandomArtActType::RESIST_ALL:
         return { activate_resistance_elements(creature), nullptr };
@@ -254,7 +254,7 @@ std::pair<bool, std::shared_ptr<ItemEntity>> switch_activation(CreatureEntity &c
         (void)set_acceleration(creature, randint1(75) + 75, false);
         return { true, nullptr };
     case RandomArtActType::WRAITH:
-        set_wraith_form(creature, randint1(creature.level / 2) + (creature.level / 2), false);
+        set_wraith_form(creature, randint1(creature.get_level() / 2) + (creature.get_level() / 2), false);
         return { true, nullptr };
     case RandomArtActType::INVULN:
         (void)set_invuln(creature, randint1(8) + 8, false);

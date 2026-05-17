@@ -200,7 +200,7 @@ static std::string parse_fixed_map_expression(CreatureEntity &creature, char **s
     } else if (streq(b + 1, "TOWN")) {
         v = std::to_string(creature.get_town_num());
     } else if (streq(b + 1, "LEVEL")) {
-        v = std::to_string(creature.level);
+        v = std::to_string(creature.get_level());
     } else if (streq(b + 1, "QUEST_NUMBER")) {
         v = std::to_string(enum2i(creature.get_floor()->quest_number));
     } else if (streq(b + 1, "LEAVING_QUEST")) {

@@ -273,18 +273,18 @@ static void display_player_exp(CreatureEntity &creature)
 
     e = pr.equals(PlayerRaceType::ANDROID) ? ENTRY_EXP_TO_ADV_ANDR : ENTRY_EXP_TO_ADV;
 
-    if (!creature.is_player() || creature.level <= 0) {
+    if (!creature.is_player() || creature.get_level() <= 0) {
         // モンスター (または無効レベル) は player_exp テーブルを参照できない
         display_player_one_line(e, "-----", TERM_L_GREEN);
         return;
     }
 
-    if (creature.level >= PY_MAX_LEVEL) {
+    if (creature.get_level() >= PY_MAX_LEVEL) {
         display_player_one_line(e, "*****", TERM_L_GREEN);
     } else if (pr.equals(PlayerRaceType::ANDROID)) {
-        display_player_one_line(e, format("%ld", (int32_t)(player_exp_a[creature.level - 1] * creature.expfact / 100L)), TERM_L_GREEN);
+        display_player_one_line(e, format("%ld", (int32_t)(player_exp_a[creature.get_level() - 1] * creature.expfact / 100L)), TERM_L_GREEN);
     } else {
-        display_player_one_line(e, format("%ld", (int32_t)(player_exp[creature.level - 1] * creature.expfact / 100L)), TERM_L_GREEN);
+        display_player_one_line(e, format("%ld", (int32_t)(player_exp[creature.get_level() - 1] * creature.expfact / 100L)), TERM_L_GREEN);
     }
 }
 

@@ -176,7 +176,7 @@ void ObjectThrowEntity::set_class_specific_throw_params()
     energy.set_player_turn_energy(100);
     CreatureClass pc(creature);
     if (pc.equals(PlayerClassType::ROGUE) || pc.equals(PlayerClassType::NINJA)) {
-        energy.sub_player_turn_energy(creature.level);
+        energy.sub_player_turn_energy(creature.get_level());
     }
 
     this->y = creature.y;
@@ -527,7 +527,7 @@ void ObjectThrowEntity::calc_racial_power_damage()
     }
 
     if (this->shuriken != 0) {
-        this->tdam += ((creature.level + 30) * (creature.level + 30) - 900) / 55;
+        this->tdam += ((creature.get_level() + 30) * (creature.get_level() + 30) - 900) / 55;
     }
 
     if (this->tdam < 0) {

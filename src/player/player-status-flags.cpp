@@ -781,14 +781,14 @@ void check_no_flowed(CreatureEntity &creature)
     CreatureClass pc(creature);
     if (has_sw && (pr.realm1().equals(RealmType::NATURE) || pr.realm2().equals(RealmType::NATURE) || pc.equals(PlayerClassType::SORCERER))) {
         const auto &spell = PlayerRealm::get_spell_info(RealmType::NATURE, SPELL_SW);
-        if (creature.level >= spell.slevel) {
+        if (creature.get_level() >= spell.slevel) {
             creature.no_flowed = true;
         }
     }
 
     if (has_kabe && (pr.realm1().equals(RealmType::CRAFT) || pr.realm2().equals(RealmType::CRAFT) || pc.equals(PlayerClassType::SORCERER))) {
         const auto &spell = PlayerRealm::get_spell_info(RealmType::CRAFT, SPELL_WALL);
-        if (creature.level >= spell.slevel) {
+        if (creature.get_level() >= spell.slevel) {
             creature.no_flowed = true;
         }
     }

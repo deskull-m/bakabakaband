@@ -85,7 +85,7 @@ bool project_all_los(CreatureEntity &creature, AttributeType typ, int dam)
  */
 bool speed_monsters(CreatureEntity &creature)
 {
-    return project_all_los(creature, AttributeType::OLD_SPEED, creature.level);
+    return project_all_los(creature, AttributeType::OLD_SPEED, creature.get_level());
 }
 
 /*!
@@ -124,7 +124,7 @@ bool banish_evil(CreatureEntity &creature, int dist)
  */
 bool turn_undead(CreatureEntity &creature)
 {
-    bool tester = (project_all_los(creature, AttributeType::TURN_UNDEAD, creature.level));
+    bool tester = (project_all_los(creature, AttributeType::TURN_UNDEAD, creature.get_level()));
     if (tester) {
         chg_virtue(creature, Virtue::UNLIFE, -1);
     }
@@ -202,7 +202,7 @@ bool dispel_demons(CreatureEntity &creature, int dam)
  */
 bool crusade(CreatureEntity &creature)
 {
-    return project_all_los(creature, AttributeType::CRUSADE, creature.level * 4);
+    return project_all_los(creature, AttributeType::CRUSADE, creature.get_level() * 4);
 }
 
 /*!
@@ -359,7 +359,7 @@ bool turn_monsters(CreatureEntity &creature, int dam)
  */
 bool deathray_monsters(CreatureEntity &creature)
 {
-    return project_all_los(creature, AttributeType::DEATH_RAY, creature.level * 200);
+    return project_all_los(creature, AttributeType::DEATH_RAY, creature.get_level() * 200);
 }
 
 /*!

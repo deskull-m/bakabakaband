@@ -46,7 +46,7 @@ bool exe_racial_power(CreatureEntity &creature, const int32_t command)
  */
 PERCENTAGE racial_chance(CreatureEntity &creature, rpi_type *rpi_ptr)
 {
-    if ((creature.level < rpi_ptr->min_level) || creature.is_confused()) {
+    if ((creature.get_level() < rpi_ptr->min_level) || creature.is_confused()) {
         return 0;
     }
 
@@ -57,8 +57,8 @@ PERCENTAGE racial_chance(CreatureEntity &creature, rpi_type *rpi_ptr)
 
     if (creature.is_stunned()) {
         difficulty += creature.get_remaining_stun();
-    } else if (creature.level > rpi_ptr->min_level) {
-        PERCENTAGE lev_adj = (PERCENTAGE)((creature.level - rpi_ptr->min_level) / 3);
+    } else if (creature.get_level() > rpi_ptr->min_level) {
+        PERCENTAGE lev_adj = (PERCENTAGE)((creature.get_level() - rpi_ptr->min_level) / 3);
         if (lev_adj > 10) {
             lev_adj = 10;
         }
@@ -98,8 +98,8 @@ static void adjust_racial_power_difficulty(CreatureEntity &creature, rpi_type *r
 
     if (creature.is_stunned()) {
         *difficulty += creature.get_remaining_stun();
-    } else if (creature.level > rpi_ptr->min_level) {
-        int lev_adj = ((creature.level - rpi_ptr->min_level) / 3);
+    } else if (creature.get_level() > rpi_ptr->min_level) {
+        int lev_adj = ((creature.get_level() - rpi_ptr->min_level) / 3);
         if (lev_adj > 10) {
             lev_adj = 10;
         }
@@ -125,7 +125,7 @@ racial_level_check_result check_racial_level(CreatureEntity &creature, rpi_type 
     const int use_hp = creature.get_csp() < rpi_ptr->racial_cost ? rpi_ptr->racial_cost - creature.get_csp() : 0;
 
     PlayerEnergy energy(creature);
-    if (creature.level < min_level) {
+    if (creature.get_level() < min_level) {
         msg_format(_("この能力を使用するにはレベル %d に達していなければなりません。", "You need to attain level %d to use this power."), min_level);
         energy.reset_player_turn();
         return RACIAL_CANCEL;

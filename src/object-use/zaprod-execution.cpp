@@ -141,7 +141,7 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
     item->mark_as_tried();
     if ((ident != 0) && !item->is_aware()) {
         object_aware(creature, *item);
-        gain_exp(creature, (item_level + (creature.level >> 1)) / creature.level);
+        gain_exp(creature, (item_level + (creature.get_level() >> 1)) / creature.get_level());
     }
 
     static constexpr auto flags_swrf = {

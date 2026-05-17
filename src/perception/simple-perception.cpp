@@ -144,7 +144,7 @@ static void sense_inventory_aux(CreatureEntity &creature, INVENTORY_IDX slot, bo
  */
 void sense_inventory1(CreatureEntity &creature)
 {
-    PLAYER_LEVEL plev = creature.level;
+    PLAYER_LEVEL plev = creature.get_level();
     bool heavy = false;
     ItemEntity *o_ptr;
     if (creature.is_confused()) {
@@ -332,7 +332,7 @@ void sense_inventory1(CreatureEntity &creature)
  */
 void sense_inventory2(CreatureEntity &creature)
 {
-    PLAYER_LEVEL plev = creature.level;
+    PLAYER_LEVEL plev = creature.get_level();
     ItemEntity *o_ptr;
 
     if (creature.is_confused()) {

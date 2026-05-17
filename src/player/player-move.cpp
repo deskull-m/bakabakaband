@@ -223,7 +223,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
     const Pos2D pos(ny, nx);
     if (mpe_mode & MPE_ENERGY_USE) {
         if (music_singing(creature, MUSIC_WALL)) {
-            (void)project(creature, 0, 0, creature.y, creature.x, (60 + creature.level), AttributeType::DISINTEGRATE, PROJECT_KILL | PROJECT_ITEM);
+            (void)project(creature, 0, 0, creature.y, creature.x, (60 + creature.get_level()), AttributeType::DISINTEGRATE, PROJECT_KILL | PROJECT_ITEM);
             if (!creature.is_located_at(pos) || creature.is_dead() || creature.leaving) {
                 return false;
             }
