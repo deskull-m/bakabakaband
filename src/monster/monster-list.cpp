@@ -136,9 +136,15 @@ MonraceId get_mon_num(CreatureEntity &creature, int min_level, int max_level, ui
             int level_in_range = 0;
             for (auto i = 0U; i < table.size(); i++) {
                 const auto &e = table.get_entry(i);
-                if (e.prob1 > 0) ++positive;
-                if (e.prob2 > 0) ++prob2_positive;
-                if (e.level >= min_level && e.level <= max_level) ++level_in_range;
+                if (e.prob1 > 0) {
+                    ++positive;
+                }
+                if (e.prob2 > 0) {
+                    ++prob2_positive;
+                }
+                if (e.level >= min_level && e.level <= max_level) {
+                    ++level_in_range;
+                }
             }
             std::fprintf(fp, "  [GMN] prob_table EMPTY: min_lv=%d max_lv=%d mode=0x%x table_sz=%zu prob1_pos=%d prob2_pos=%d level_pass=%d\n",
                 min_level, max_level, (unsigned)mode, table.size(), positive, prob2_positive, level_in_range);

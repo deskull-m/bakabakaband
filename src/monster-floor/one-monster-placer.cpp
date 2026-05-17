@@ -42,10 +42,10 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/redrawing-flags-updater.h"
+#include "util/enum-converter.h"
 #include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
 #include "world/world.h"
-#include "util/enum-converter.h"
 #include <algorithm>
 #include <cstdio>
 #include <range/v3/algorithm.hpp>
