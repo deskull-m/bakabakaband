@@ -533,7 +533,7 @@ void MonsterAttackPlayer::gain_armor_exp()
         increment += 1 + addition;
     }
 
-    creature.skill_exp[PlayerSkillKindType::SHIELD] = std::min<short>(max, cur + increment);
+    creature.set_skill_exp(PlayerSkillKindType::SHIELD, std::min<short>(max, cur + increment));
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
 

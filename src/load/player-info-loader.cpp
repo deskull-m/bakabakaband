@@ -126,18 +126,18 @@ void rd_experience(CreatureEntity &creature)
 
     creature.set_level(rd_s16b());
     for (int i = 0; i < 64; i++) {
-        creature.spell_exp[i] = rd_s16b();
+        creature.set_spell_exp(i, rd_s16b());
     }
 
     const int max_weapon_exp_size = 64;
     for (auto tval : TV_WEAPON_RANGE) {
         for (int j = 0; j < max_weapon_exp_size; j++) {
-            creature.weapon_exp[tval][j] = rd_s16b();
+            creature.set_weapon_exp(tval, j, rd_s16b());
         }
     }
 
     for (auto i : PLAYER_SKILL_KIND_TYPE_RANGE) {
-        creature.skill_exp[i] = rd_s16b();
+        creature.set_skill_exp(i, rd_s16b());
     }
 
     // resreved skills

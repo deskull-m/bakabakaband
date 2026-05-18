@@ -31,7 +31,7 @@ bool object_is_favorite(CreatureEntity &creature, const ItemEntity *o_ptr)
     case PlayerClassType::MONK:
     case PlayerClassType::FORCETRAINER:
         /* Icky to wield? */
-        return creature.weapon_exp_max[tval][sval] != PlayerSkill::weapon_exp_at(PlayerSkillRank::UNSKILLED);
+        return creature.get_weapon_exp_max(tval, sval) != PlayerSkill::weapon_exp_at(PlayerSkillRank::UNSKILLED);
     case PlayerClassType::BEASTMASTER:
     case PlayerClassType::CAVALRY: {
         /* Is it known to be suitable to using while riding? */
@@ -39,10 +39,10 @@ bool object_is_favorite(CreatureEntity &creature, const ItemEntity *o_ptr)
         return flags.has(TR_RIDING);
     }
     case PlayerClassType::SORCERER:
-        return creature.weapon_exp_max[tval][sval] >= PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER);
+        return creature.get_weapon_exp_max(tval, sval) >= PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER);
     case PlayerClassType::NINJA:
         /* Icky to wield? */
-        return creature.weapon_exp_max[tval][sval] > PlayerSkill::weapon_exp_at(PlayerSkillRank::BEGINNER);
+        return creature.get_weapon_exp_max(tval, sval) > PlayerSkill::weapon_exp_at(PlayerSkillRank::BEGINNER);
     default:
         return true;
     }

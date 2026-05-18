@@ -679,7 +679,7 @@ static void change_realm2(CreatureEntity &creature, PlayerRealm &pr, RealmType n
     PlayerSpellStatus(creature).realm2().initialize();
 
     for (auto i = 32; i < 64; i++) {
-        creature.spell_exp[i] = PlayerSkill::spell_exp_at(PlayerSkillRank::UNSKILLED);
+        creature.set_spell_exp(i, PlayerSkill::spell_exp_at(PlayerSkillRank::UNSKILLED));
     }
 
     constexpr auto fmt_realm = _("魔法の領域を%sから%sに変更した。", "changed magic realm from %s to %s.");
