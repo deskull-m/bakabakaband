@@ -124,7 +124,7 @@ static void add_status_to_json(nlohmann::json &j, CreatureEntity &creature)
     j["status"]["mana"] = creature.get_csp();
     j["status"]["max_mana"] = creature.get_msp();
     j["status"]["armor_class"] = creature.ac;
-    j["status"]["display_armor_class"] = creature.dis_ac;
+    j["status"]["display_armor_class"] = creature.get_dis_ac();
 
     // 所持金とアイテム
     j["status"]["gold"] = creature.get_au();

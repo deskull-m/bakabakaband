@@ -236,7 +236,7 @@ static void calc_two_hands(CreatureEntity &creature, int *damage, int *to_h)
 
     for (int i = 0; i < 2; i++) {
         int basedam;
-        damage[i] = creature.dis_to_d[i] * 100;
+        damage[i] = creature.get_dis_to_d(i) * 100;
         CreatureClass pc(creature);
         if (pc.is_martial_arts_pro() && (empty_hands(creature, true) & EMPTY_HAND_MAIN)) {
             if (!calc_weapon_damage_limit(creature, i, damage, &basedam, o_ptr)) {

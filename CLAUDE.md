@@ -294,6 +294,11 @@ API 経由に統一された。一部フィールド (r_idx / ap_r_idx / riding)
   / `remove_special_attack(flag)` 等の compound assignment 用 virtual を
   整備し、約 70 箇所の write/read site を migration。**合計 private 化
   フィールド数: 37 → 72** (約 2 倍に到達)
+- **提案 34**: 表示用既知値 5 個 (dis_to_h[2] / dis_to_h_b / dis_to_d[2]
+  / dis_to_a / dis_ac) を private 化。`get_dis_X()` / `set_dis_X()`
+  virtual を整備し、19 箇所の access site を migration。提案 30
+  (to_h/d/a 本体) と対称な仕上げタスク。**合計 private 化フィールド数:
+  72 → 77**
 
 今後の残作業としては、現在 `CreatureEntity` 直下に残存するプレイヤー
 固有フィールド群（種族・職業・熟練度等）を、モンスターにも

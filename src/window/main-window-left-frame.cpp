@@ -114,11 +114,11 @@ void print_ac(CreatureEntity &creature)
 #ifdef JP
     /* AC の表示方式を変更している */
     put_str(" ＡＣ(     )", ROW_AC, COL_AC);
-    sprintf(tmp, "%5d", creature.dis_ac + creature.dis_to_a);
+    sprintf(tmp, "%5d", creature.get_dis_ac() + creature.get_dis_to_a());
     c_put_str(TERM_L_GREEN, tmp, ROW_AC, COL_AC + 6);
 #else
     put_str("Cur AC ", ROW_AC, COL_AC);
-    sprintf(tmp, "%5d", creature.dis_ac + creature.dis_to_a);
+    sprintf(tmp, "%5d", creature.get_dis_ac() + creature.get_dis_to_a());
     c_put_str(TERM_L_GREEN, tmp, ROW_AC, COL_AC + 7);
 #endif
 }
