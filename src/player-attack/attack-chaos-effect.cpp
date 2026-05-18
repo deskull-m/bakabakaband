@@ -48,7 +48,7 @@
 static void attack_confuse(CreatureEntity &creature, player_attack_type *pa_ptr, bool can_resist = true)
 {
     if (creature.has_special_attack(ATTACK_CONFUSE)) {
-        creature.special_attack &= ~(ATTACK_CONFUSE);
+        creature.remove_special_attack(ATTACK_CONFUSE);
         msg_print(_("手の輝きがなくなった。", "Your hands stop glowing."));
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     }
@@ -290,7 +290,7 @@ static void attack_golden_hammer(CreatureEntity &creature, player_attack_type *p
  */
 void change_monster_stat(CreatureEntity &creature, player_attack_type *pa_ptr, const POSITION y, const POSITION x, int *num)
 {
-    auto should_confuse = any_bits(creature.special_attack, ATTACK_CONFUSE);
+    auto should_confuse = creature.has_special_attack(ATTACK_CONFUSE);
     should_confuse |= pa_ptr->chaos_effect == CE_CONFUSION;
     should_confuse |= pa_ptr->mode == HISSATSU_CONF;
     should_confuse |= SpellHex(creature).is_spelling_specific(HEX_CONFUSION);

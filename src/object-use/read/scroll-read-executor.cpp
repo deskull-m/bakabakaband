@@ -308,12 +308,12 @@ bool ScrollReadExecutor::read()
 
         break;
     case SV_SCROLL_MONSTER_CONFUSION:
-        if (any_bits(this->creature.special_attack, ATTACK_CONFUSE)) {
+        if (this->creature.has_special_attack(ATTACK_CONFUSE)) {
             break;
         }
 
         msg_print(_("手が輝き始めた。", "Your hands begin to glow."));
-        this->creature.special_attack |= ATTACK_CONFUSE;
+        this->creature.add_special_attack(ATTACK_CONFUSE);
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
         this->ident = true;
         break;

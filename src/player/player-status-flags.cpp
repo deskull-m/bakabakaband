@@ -135,7 +135,7 @@ BIT_FLAGS player_flags_brand_pois(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_BRAND_POIS);
 
-    if (creature.special_attack & ATTACK_POIS) {
+    if (creature.has_special_attack(ATTACK_POIS)) {
         set_bits(result, FLAG_CAUSE_MAGIC_TIME_EFFECT);
     }
 
@@ -146,7 +146,7 @@ BIT_FLAGS player_flags_brand_acid(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_BRAND_ACID);
 
-    if (creature.special_attack & ATTACK_ACID) {
+    if (creature.has_special_attack(ATTACK_ACID)) {
         set_bits(result, FLAG_CAUSE_MAGIC_TIME_EFFECT);
     }
 
@@ -157,7 +157,7 @@ BIT_FLAGS player_flags_brand_elec(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_BRAND_ELEC);
 
-    if (creature.special_attack & ATTACK_ELEC) {
+    if (creature.has_special_attack(ATTACK_ELEC)) {
         set_bits(result, FLAG_CAUSE_MAGIC_TIME_EFFECT);
     }
 
@@ -168,7 +168,7 @@ BIT_FLAGS player_flags_brand_fire(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_BRAND_FIRE);
 
-    if (creature.special_attack & ATTACK_FIRE) {
+    if (creature.has_special_attack(ATTACK_FIRE)) {
         set_bits(result, FLAG_CAUSE_MAGIC_TIME_EFFECT);
     }
 
@@ -179,7 +179,7 @@ BIT_FLAGS player_flags_brand_cold(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_BRAND_COLD);
 
-    if (creature.special_attack & ATTACK_COLD) {
+    if (creature.has_special_attack(ATTACK_COLD)) {
         set_bits(result, FLAG_CAUSE_MAGIC_TIME_EFFECT);
     }
 
@@ -1576,7 +1576,7 @@ BIT_FLAGS has_immune_acid(CreatureEntity &creature)
     BIT_FLAGS result = common_cause_flags(creature, TR_IM_ACID);
 
     if (creature.get_timed_effect(CreatureTimedEffect::ELE_IMMUNE)) {
-        if (creature.special_defense & DEFENSE_ACID) {
+        if (creature.has_special_defense(DEFENSE_ACID)) {
             result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
         }
     }
@@ -1589,7 +1589,7 @@ BIT_FLAGS has_immune_elec(CreatureEntity &creature)
     BIT_FLAGS result = common_cause_flags(creature, TR_IM_ELEC);
 
     if (creature.get_timed_effect(CreatureTimedEffect::ELE_IMMUNE)) {
-        if (creature.special_defense & DEFENSE_ELEC) {
+        if (creature.has_special_defense(DEFENSE_ELEC)) {
             result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
         }
     }
@@ -1602,7 +1602,7 @@ BIT_FLAGS has_immune_fire(CreatureEntity &creature)
     BIT_FLAGS result = common_cause_flags(creature, TR_IM_FIRE);
 
     if (creature.get_timed_effect(CreatureTimedEffect::ELE_IMMUNE)) {
-        if (creature.special_defense & DEFENSE_FIRE) {
+        if (creature.has_special_defense(DEFENSE_FIRE)) {
             result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
         }
     }
@@ -1615,7 +1615,7 @@ BIT_FLAGS has_immune_cold(CreatureEntity &creature)
     BIT_FLAGS result = common_cause_flags(creature, TR_IM_COLD);
 
     if (creature.get_timed_effect(CreatureTimedEffect::ELE_IMMUNE)) {
-        if (creature.special_defense & DEFENSE_COLD) {
+        if (creature.has_special_defense(DEFENSE_COLD)) {
             result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
         }
     }

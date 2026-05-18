@@ -11,7 +11,7 @@
 void rd_special_attack(CreatureEntity &creature)
 {
     creature.set_timed_effect(CreatureTimedEffect::ELE_ATTACK, rd_s16b());
-    creature.special_attack = rd_u32b();
+    creature.set_special_attack_flags(rd_u32b());
 }
 
 void rd_special_action(CreatureEntity &creature)
@@ -29,7 +29,7 @@ void rd_special_action(CreatureEntity &creature)
 void rd_special_defense(CreatureEntity &creature)
 {
     creature.set_timed_effect(CreatureTimedEffect::ELE_IMMUNE, rd_s16b());
-    creature.special_defense = rd_u32b();
+    creature.set_special_defense_flags(rd_u32b());
 }
 
 void rd_action(CreatureEntity &creature)

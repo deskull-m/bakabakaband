@@ -497,7 +497,7 @@ void MonsterAttackPlayer::describe_attack_evasion()
 
     disturb(creature, true, true);
 #ifdef JP
-    auto is_suiken = any_bits(creature.special_attack, ATTACK_SUIKEN);
+    auto is_suiken = creature.has_special_attack(ATTACK_SUIKEN);
     if (this->abbreviate) {
         msg_format("%sかわした。", is_suiken ? "奇妙な動きで" : "");
     } else {
