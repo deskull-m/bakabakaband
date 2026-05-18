@@ -30,36 +30,35 @@
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-self-info.h"
 
-static void set_bad_status_info(const TimedEffects &effects, self_info_type *self_ptr)
+static void set_bad_status_info(const CreatureEntity &subject, self_info_type *self_ptr)
 {
-    if (effects.blindness().is_blind()) {
+    if (subject.is_blind()) {
         self_ptr->info_list.emplace_back(_("あなたは目が見えない。", "You cannot see."));
     }
 
-    if (effects.confusion().is_confused()) {
+    if (subject.is_confused()) {
         self_ptr->info_list.emplace_back(_("あなたは混乱している。", "You are confused."));
     }
 
-    if (effects.fear().is_fearful()) {
+    if (subject.is_fearful()) {
         self_ptr->info_list.emplace_back(_("あなたは恐怖に侵されている。", "You are terrified."));
     }
 
-    if (effects.cut().is_cut()) {
+    if (subject.is_cut()) {
         self_ptr->info_list.emplace_back(_("あなたは出血している。", "You are bleeding."));
     }
 
-    if (effects.stun().is_stunned()) {
+    if (subject.is_stunned()) {
         self_ptr->info_list.emplace_back(_("あなたはもうろうとしている。", "You are stunned."));
     }
 
-    if (effects.poison().is_poisoned()) {
+    if (subject.is_poisoned()) {
         self_ptr->info_list.emplace_back(_("あなたは毒に侵されている。", "You are poisoned."));
     }
 
-    if (effects.hallucination().is_hallucinated()) {
+    if (subject.is_hallucinated()) {
         self_ptr->info_list.emplace_back(_("あなたは幻覚を見ている。", "You are hallucinating."));
     }
 }
@@ -256,7 +255,7 @@ void self_knowledge(CreatureEntity &subject)
 
     set_class_ability_info(subject, self_ptr);
     set_mutation_info(subject, self_ptr);
-    set_bad_status_info(*subject.effects(), self_ptr);
+    set_bad_status_info(subject, self_ptr);
     set_curse_info(subject, self_ptr);
     set_body_improvement_info_1(subject, self_ptr);
     set_special_attack_info(subject, self_ptr);
@@ -313,34 +312,28 @@ static const std::vector<std::string> report_magic_durations = { _("ごく短い
 void report_magics(CreatureEntity &subject)
 {
     std::vector<std::pair<int, std::string>> info;
-    const auto effects = subject.effects();
-    const auto &blindness = effects->blindness();
-    if (blindness.is_blind()) {
-        info.emplace_back(report_magics_aux(blindness.current()),
+    if (subject.is_blind()) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::BLINDNESS)),
             _("あなたは目が見えない", "You cannot see"));
     }
 
-    const auto &confusion = effects->confusion();
-    if (confusion.is_confused()) {
-        info.emplace_back(report_magics_aux(confusion.current()),
+    if (subject.is_confused()) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::CONFUSION)),
             _("あなたは混乱している", "You are confused"));
     }
 
-    const auto &fear = effects->fear();
-    if (fear.is_fearful()) {
-        info.emplace_back(report_magics_aux(fear.current()),
+    if (subject.is_fearful()) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::FEAR)),
             _("あなたは恐怖に侵されている", "You are terrified"));
     }
 
-    const auto &player_poison = effects->poison();
-    if (player_poison.is_poisoned()) {
-        info.emplace_back(report_magics_aux(player_poison.current()),
+    if (subject.is_poisoned()) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::POISON)),
             _("あなたは毒に侵されている", "You are poisoned"));
     }
 
-    const auto &hallucination = effects->hallucination();
-    if (hallucination.is_hallucinated()) {
-        info.emplace_back(report_magics_aux(hallucination.current()),
+    if (subject.is_hallucinated()) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::HALLUCINATION)),
             _("あなたは幻覚を見ている", "You are hallucinating"));
     }
 
@@ -359,9 +352,8 @@ void report_magics(CreatureEntity &subject)
             _("あなたは戦闘狂だ", "You are in a battle rage"));
     }
 
-    const auto &protection = effects->protection();
-    if (protection.is_protected()) {
-        info.emplace_back(report_magics_aux(protection.current()),
+    if (subject.is_protected_from_evil()) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::PROTECTION)),
             _("あなたは邪悪なる存在から守られている", "You are protected from evil"));
     }
 

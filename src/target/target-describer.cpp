@@ -34,7 +34,7 @@
 #include "system/terrain/terrain-list.h"
 #include "target/target-types.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
+#include "term/term-color-types.h"
 #include "tracking/lore-tracker.h"
 #include "view/display-lore.h"
 #include "view/display-messages.h"

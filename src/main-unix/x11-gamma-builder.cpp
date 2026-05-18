@@ -50,6 +50,7 @@
 
 #include "main-unix/x11-gamma-builder.h"
 #include "system/angband.h"
+#include "term/term-color-types.h"
 
 /* Table of gamma values */
 byte gamma_table[256];

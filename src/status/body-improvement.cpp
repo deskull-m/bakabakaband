@@ -11,8 +11,8 @@
 #include "realm/realm-song-numbers.h"
 #include "spell-realm/spells-song.h"
 #include "system/creature-entity.h"
+#include "system/creature-timed-effect-types.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
 BodyImprovement::BodyImprovement(CreatureEntity &creature)
@@ -46,11 +46,11 @@ void BodyImprovement::set_protection(short v, bool is_decrease)
         return;
     }
 
-    auto &protection = this->creature_ptr->effects()->protection();
-    const auto is_protected = protection.is_protected();
+    const auto protection = this->creature_ptr->get_timed_effect(CreatureTimedEffect::PROTECTION);
+    const auto is_protected = protection > 0;
     if (v) {
         if (is_protected && !is_decrease) {
-            if (protection.is_larger_than(v)) {
+            if (protection > v) {
                 return;
             }
         } else if (!is_protected) {
@@ -65,7 +65,7 @@ void BodyImprovement::set_protection(short v, bool is_decrease)
         }
     }
 
-    protection.set(v);
+    this->creature_ptr->set_timed_effect(CreatureTimedEffect::PROTECTION, v);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return;

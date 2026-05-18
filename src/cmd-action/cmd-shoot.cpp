@@ -72,7 +72,6 @@ void do_cmd_fire(CreatureEntity &creature, SPELL_IDX snipe_type)
         teleport_player(creature, 10 + (sniper_data->concent * 2), TELEPORT_SPONTANEOUS);
     }
 
-    auto effects = creature.effects();
     if (snipe_type == SP_FINAL) {
         msg_print(_("射撃の反動が体を襲った。", "The weapon's recoil stuns you. "));
         BadStatusSetter bss(creature);

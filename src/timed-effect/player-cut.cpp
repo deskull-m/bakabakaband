@@ -88,24 +88,14 @@ short PlayerCut::get_accumulation(int total, int damage)
     }
 }
 
-short PlayerCut::current() const
+bool PlayerCut::is_cut(short value)
 {
-    return this->cut;
+    return value > 0;
 }
 
-PlayerCutRank PlayerCut::get_rank() const
+std::tuple<term_color_type, std::string> PlayerCut::get_expr(short value)
 {
-    return this->get_rank(this->cut);
-}
-
-bool PlayerCut::is_cut() const
-{
-    return this->cut > 0;
-}
-
-std::tuple<term_color_type, std::string> PlayerCut::get_expr() const
-{
-    switch (this->get_rank()) {
+    switch (get_rank(value)) {
     case PlayerCutRank::NONE: // dummy.
         return std::make_tuple(TERM_WHITE, "");
     case PlayerCutRank::GRAZING:
@@ -127,9 +117,9 @@ std::tuple<term_color_type, std::string> PlayerCut::get_expr() const
     }
 }
 
-int PlayerCut::get_damage() const
+int PlayerCut::get_damage(short value)
 {
-    switch (this->get_rank()) {
+    switch (get_rank(value)) {
     case PlayerCutRank::NONE:
         return 0;
     case PlayerCutRank::GRAZING:
@@ -149,16 +139,6 @@ int PlayerCut::get_damage() const
     default:
         THROW_EXCEPTION(std::logic_error, "Invalid CutRank is specified!");
     }
-}
-
-void PlayerCut::set(short value)
-{
-    this->cut = value;
-}
-
-void PlayerCut::reset()
-{
-    this->set(0);
 }
 
 /*!

@@ -238,61 +238,59 @@ Phase 2 で主要な `is_xxx()` 系は仮想化済みだが、以下はまだ自
 
 ---
 
-## 提案 5: TimedEffects オブジェクトとの二重管理解消 🚧 一部完了
+## 提案 5: TimedEffects オブジェクトとの二重管理解消 ✅ 完了
 
 ### 背景
 
-現状、プレイヤーの一部効果 (スタン / 混乱 / 恐怖 / 加速 / 減速 / 麻痺 / 盲目)
-は `timed_effects` (`TimedEffects` オブジェクト) と `timed_effects_map`
-の両方で管理されている。`PlayerType::get_timed_effect()` は前者を
-優先参照する特殊分岐を持つ。一方モンスターは `timed_effects_map` のみ使用。
+かつてプレイヤーの一部効果 (スタン / 混乱 / 恐怖 / 加速 / 減速 / 麻痺 / 盲目 /
+幻覚 / 切り傷 / 毒 / 対邪悪結界) は `timed_effects` (`TimedEffects` オブジェクト)
+と `timed_effects_map` の両方で管理されており、`get_timed_effect()` は
+TimedEffects 優先の特殊分岐を持っていた。一方モンスターは map のみ使用。
 
-この二重管理はバグ誘発要因（同期漏れ）であり、理想的には一本化したい。
+提案 5 完了で、選択肢 **(a) 全 effect を `timed_effects_map` に寄せる**
+を採用した。
 
-### 選択肢
+### 完了内容
 
-- **(a) 全 effect を `timed_effects_map` に寄せる**
-  - `TimedEffects` オブジェクト (stun/confusion 等の高機能タイマー) を廃止
-  - メッセージ処理・ティック処理は別途共通関数に分離
-  - モンスターとの完全統一が可能
-  - diff 規模大
+- ✅ `TimedEffects` クラスおよび配下 9 クラス
+  (`PlayerAcceleration` / `PlayerBlindness` / `PlayerConfusion` /
+  `PlayerDeceleration` / `PlayerFear` / `PlayerHallucination` /
+  `PlayerParalysis` / `PlayerPoison` / `PlayerProtection`) を**完全削除**
+- ✅ `PlayerStun` / `PlayerCut` は **stateless な static utility class**
+  に変換。高機能 API (`get_rank` / `get_magic_chance_penalty` /
+  `get_accumulation` / `get_expr` / `get_damage` / `is_knocked_out` 等)
+  は全て `static T method(short value)` の形に統一
+- ✅ `CreatureEntity::effects()` と `timed_effects` shared_ptr を削除
+- ✅ `get_timed_effect()` / `set_timed_effect()` を **map 単一管理に簡略化**
+  (`SLEEP_OR_PARALYSIS` のみ `PARALYSIS` への正規化分岐を残置)
+- ✅ 全外部 callsite (~30 箇所、約 25 ファイル) を migration
+  - `effects()->X().is_X()` → `creature.is_X()` (virtual)
+  - `effects()->X().current()` → `creature.get_timed_effect(...)`
+  - `effects()->X().set(v)` → `creature.set_timed_effect(..., v)`
+  - `effects()->X().reset()` → `creature.set_timed_effect(..., 0)`
+  - `effects()->stun().get_rank()` → `PlayerStun::get_rank(creature.get_timed_effect(STUN))` 等
+- ✅ `Makefile.am` から 10 ファイル分のエントリ削除
+- ✅ `#include "timed-effect/timed-effects.h"` を 60 ファイル超から一括削除
+- ✅ 切断された transitive include 経路 (TERM_COLOR 型等) を必要箇所に
+  `#include "term/term-color-types.h"` で再導入
 
-- **(b) モンスターも `TimedEffects` オブジェクトを持つ**
-  - 全クリーチャーに shared_ptr が付与される（メモリコスト増）
-  - 分岐ロジックが消える
-  - `TimedEffects` 内のメッセージ処理等をプレイヤー専用部分から分離する必要あり
-  - 提案 1 の「プレイヤー専用フィールドをモンスターにも開放する」方針とも整合
+### 効果
 
-### 推奨: (b)
+- **二重管理を完全解消**: 全タイムドエフェクトの単一ストレージは
+  `CreatureEntity::timed_effects_map` の 1 箇所のみ
+- **クリーチャー共通**: プレイヤー・モンスターで完全に同一の API 経路、
+  同一のストレージ機構を使用
+- **メモリ削減**: 全 CreatureEntity から shared_ptr<TimedEffects>
+  ヘッダオーバーヘッドが消失。プレイヤーで参照していた 11 個の
+  `short` フィールドも消失 (map エントリで代替)
+- **保守性向上**: PlayerStun / PlayerCut は static utility に集約され、
+  値と計算ロジックが疎結合化
 
-本書の設計方針に合わせ、モンスターにも `TimedEffects` オブジェクトを
-持たせて運用する方向で統一する。メッセージ処理・ティック処理の
-プレイヤー依存部分は virtual メソッド経由で差し替え可能にしておく。
+### 残作業
 
-### 進捗
-
-- ✅ 全クリーチャーが `timed_effects` shared_ptr を基底クラス
-  コンストラクタで確保する形に統一（`CreatureEntity()`）
-- ✅ 基底クラス `CreatureEntity::get_timed_effect` / `set_timed_effect` に
-  TimedEffects オブジェクト優先の分岐ロジックを集約。`PlayerType` 側の
-  オーバーライドを廃止し、プレイヤー・モンスターで API 経路を統一
-- ✅ `CreatureTimedEffect` enum に `HALLUCINATION` / `CUT` / `POISON` /
-  `PROTECTION` を追加し、これまで TimedEffects オブジェクト経由でのみ
-  アクセスできた効果も `get/set_timed_effect()` 統一 API からアクセス可能に
-  (TimedEffects オブジェクトが持つ 11 効果すべてが enum 統合済み)
-- ✅ `is_cut()` / `is_poisoned()` を virtual メソッド化 (既存
-  `is_blind()` / `is_paralyzed()` 等と同等のデフォルト実装)
-- ✅ `bad-status-setter.cpp` / `buff-setter.cpp` / `cmd-inn.cpp`
-  の単純な `effects()->X().current()` / `reset()` / `is_X()` 呼出を
-  統一 API 経由に置換 (10 箇所超)
-- 🚧 残り: 残効果（HERO/BLESSED/INVULN 等の map 経由効果）も
-  `TimedEffects` オブジェクトに移すか、`TimedEffects` を縮退させて
-  全て map 経由にするかの方針決定・実装。PlayerStun::get_rank() /
-  PlayerCut::get_accumulation() 等の高機能 API を呼ぶ箇所は
-  プレイヤー固有機能として残存 (17 箇所)。完全統合にはこれらを
-  static ユーティリティに分離してから map 値と組み合わせる再設計が
-  必要で、工数大。現状の「API 経路統一 + 個別高機能 API 残置」で
-  機能上問題ないため、優先度低。
+無し (提案 5 完了)。なお `PlayerStun` / `PlayerCut` は名前空間として
+`Stun` / `Cut` に改名する余地があるが、上流変愚との衝突回避のため
+現状の `Player*` プレフィックスを維持する。
 
 ---
 

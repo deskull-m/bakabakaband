@@ -22,7 +22,6 @@
 #include "system/angband.h"
 #include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
 /*!
@@ -40,12 +39,11 @@ void learn_spell(CreatureEntity &creature, MonsterAbilityType monspell)
         return;
     }
 
-    const auto effects = creature.effects();
-    const auto is_confused = effects->confusion().is_confused();
-    const auto is_blind = effects->blindness().is_blind();
-    const auto is_stunned = effects->stun().is_stunned();
-    const auto is_hallucinated = effects->hallucination().is_hallucinated();
-    const auto is_paralyzed = effects->paralysis().is_paralyzed();
+    const auto is_confused = creature.is_confused();
+    const auto is_blind = creature.is_blind();
+    const auto is_stunned = creature.is_stunned();
+    const auto is_hallucinated = creature.is_hallucinated();
+    const auto is_paralyzed = creature.is_paralyzed();
     if (is_confused || is_blind || is_hallucinated || is_stunned || is_paralyzed) {
         return;
     }

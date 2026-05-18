@@ -25,7 +25,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/terrain/terrain-definition.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 #include "world/world-movement-processor.h"
 #include "world/world.h"
@@ -181,10 +180,9 @@ bool pattern_seq(CreatureEntity &creature, const Pos2D &pos)
     int pattern_type_cur = is_pattern_tile_cur ? terrain_current.subtype : NOT_PATTERN_TILE;
     int pattern_type_new = is_pattern_tile_new ? terrain_new.subtype : NOT_PATTERN_TILE;
     if (pattern_type_new == PATTERN_TILE_START) {
-        const auto effects = creature.effects();
         const auto is_stunned = creature.is_stunned();
         const auto is_confused = creature.is_confused();
-        const auto is_hallucinated = effects->hallucination().is_hallucinated();
+        const auto is_hallucinated = creature.is_hallucinated();
         if (is_pattern_tile_cur || is_confused || is_stunned || is_hallucinated) {
             return true;
         }

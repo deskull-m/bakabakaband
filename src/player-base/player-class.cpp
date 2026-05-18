@@ -29,7 +29,6 @@
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 
 CreatureClass::CreatureClass(CreatureEntity &creature)

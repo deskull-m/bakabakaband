@@ -18,8 +18,10 @@
 #include "status/buff-setter.h"
 #include "system/angband-exceptions.h"
 #include "system/creature-entity.h"
+#include "system/creature-timed-effect-types.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
+#include "timed-effect/player-cut.h"
+#include "timed-effect/player-stun.h"
 #include "view/display-messages.h"
 #include <algorithm>
 
@@ -47,8 +49,7 @@ bool BadStatusSetter::set_blindness(const TIME_EFFECT tmp_v)
     }
 
     CreatureRace pr(&this->creature);
-    auto &blindness = this->creature.effects()->blindness();
-    const auto is_blind = blindness.is_blind();
+    const auto is_blind = this->creature.is_blind();
     if (v > 0) {
         if (!is_blind) {
             if (pr.equals(PlayerRaceType::ANDROID)) {
@@ -72,7 +73,7 @@ bool BadStatusSetter::set_blindness(const TIME_EFFECT tmp_v)
         }
     }
 
-    blindness.set(v);
+    this->creature.set_timed_effect(CreatureTimedEffect::BLINDNESS, v);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -163,7 +164,7 @@ bool BadStatusSetter::set_confusion(const TIME_EFFECT tmp_v)
         }
     }
 
-    this->creature.effects()->confusion().set(v);
+    this->creature.set_timed_effect(CreatureTimedEffect::CONFUSION, v);
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;
@@ -195,8 +196,7 @@ bool BadStatusSetter::set_poison(const TIME_EFFECT tmp_v)
         return false;
     }
 
-    auto &player_poison = this->creature.effects()->poison();
-    const auto is_poisoned = player_poison.is_poisoned();
+    const auto is_poisoned = this->creature.is_poisoned();
     if (v > 0) {
         if (!is_poisoned) {
             msg_print(_("毒に侵されてしまった！", "You are poisoned!"));
@@ -209,7 +209,7 @@ bool BadStatusSetter::set_poison(const TIME_EFFECT tmp_v)
         }
     }
 
-    player_poison.set(v);
+    this->creature.set_timed_effect(CreatureTimedEffect::POISON, v);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;
@@ -241,9 +241,9 @@ bool BadStatusSetter::set_fear(const TIME_EFFECT tmp_v)
         return false;
     }
 
-    auto &fear = this->creature.effects()->fear();
+    const auto is_fearful = this->creature.is_fearful();
     if (v > 0) {
-        if (!fear.is_fearful()) {
+        if (!is_fearful) {
             msg_print(_("何もかも恐くなってきた！", "You are terrified!"));
             if (CreatureClass(this->creature).lose_balance()) {
                 msg_print(_("型が崩れた。", "You lose your stance."));
@@ -254,13 +254,13 @@ bool BadStatusSetter::set_fear(const TIME_EFFECT tmp_v)
             chg_virtue(this->creature, Virtue::VALOUR, -1);
         }
     } else {
-        if (fear.is_fearful()) {
+        if (is_fearful) {
             msg_print(_("やっと恐怖を振り払った。", "You feel bolder now."));
             notice = true;
         }
     }
 
-    fear.set(v);
+    this->creature.set_timed_effect(CreatureTimedEffect::FEAR, v);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;
@@ -292,9 +292,9 @@ bool BadStatusSetter::set_paralysis(const TIME_EFFECT tmp_v)
         return false;
     }
 
-    auto &paralysis = this->creature.effects()->paralysis();
+    const auto is_paralyzed = this->creature.is_paralyzed();
     if (v > 0) {
-        if (!paralysis.is_paralyzed()) {
+        if (!is_paralyzed) {
             msg_print(_("体が麻痺してしまった！", "You are paralyzed!"));
             reset_concentration(this->creature, true);
 
@@ -307,13 +307,13 @@ bool BadStatusSetter::set_paralysis(const TIME_EFFECT tmp_v)
             notice = true;
         }
     } else {
-        if (paralysis.is_paralyzed()) {
+        if (is_paralyzed) {
             msg_print(_("やっと動けるようになった。", "You can move again."));
             notice = true;
         }
     }
 
-    paralysis.set(v);
+    this->creature.set_timed_effect(CreatureTimedEffect::PARALYSIS, v);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;
@@ -351,10 +351,10 @@ bool BadStatusSetter::hallucination(const TIME_EFFECT tmp_v)
         v = 0;
     }
 
-    auto &hallucination = this->creature.effects()->hallucination();
+    const auto is_hallucinated = this->creature.is_hallucinated();
     if (v > 0) {
         set_tsuyoshi(this->creature, 0, true);
-        if (!hallucination.is_hallucinated()) {
+        if (!is_hallucinated) {
             msg_print(_("ワーオ！何もかも虹色に見える！", "Oh, wow! Everything looks so cosmic now!"));
             reset_concentration(this->creature, true);
 
@@ -362,13 +362,13 @@ bool BadStatusSetter::hallucination(const TIME_EFFECT tmp_v)
             notice = true;
         }
     } else {
-        if (hallucination.is_hallucinated()) {
+        if (is_hallucinated) {
             msg_print(_("やっとはっきりと物が見えるようになった。", "You can see clearly again."));
             notice = true;
         }
     }
 
-    hallucination.set(v);
+    this->creature.set_timed_effect(CreatureTimedEffect::HALLUCINATION, v);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -414,11 +414,10 @@ bool BadStatusSetter::set_deceleration(const TIME_EFFECT tmp_v, bool do_dec)
         return false;
     }
 
-    auto &deceleration = this->creature.effects()->deceleration();
-    auto is_slow = deceleration.is_slow();
+    const auto is_slow = this->creature.is_decelerated();
     if (v > 0) {
         if (is_slow && !do_dec) {
-            if (deceleration.current() > v) {
+            if (this->creature.get_timed_effect(CreatureTimedEffect::DECELERATION) > v) {
                 return false;
             }
         } else if (!is_slow) {
@@ -432,7 +431,7 @@ bool BadStatusSetter::set_deceleration(const TIME_EFFECT tmp_v, bool do_dec)
         }
     }
 
-    deceleration.set(v);
+    this->creature.set_timed_effect(CreatureTimedEffect::DECELERATION, v);
     if (!notice) {
         return false;
     }
@@ -470,7 +469,7 @@ bool BadStatusSetter::set_stun(const TIME_EFFECT tmp_v)
     }
 
     auto notice = this->process_stun_effect(v);
-    this->creature.effects()->stun().set(v);
+    this->creature.set_timed_effect(CreatureTimedEffect::STUN, v);
     if (!notice) {
         return false;
     }
@@ -510,7 +509,7 @@ bool BadStatusSetter::set_cut(const TIME_EFFECT tmp_v)
     }
 
     auto notice = this->process_cut_effect(v);
-    this->creature.effects()->cut().set(v);
+    this->creature.set_timed_effect(CreatureTimedEffect::CUT, v);
     if (!notice) {
         return false;
     }
@@ -533,7 +532,7 @@ bool BadStatusSetter::mod_cut(const TIME_EFFECT tmp_v)
 
 bool BadStatusSetter::process_stun_effect(const short v)
 {
-    auto old_rank = this->creature.effects()->stun().get_rank();
+    auto old_rank = PlayerStun::get_rank(this->creature.get_timed_effect(CreatureTimedEffect::STUN));
     auto new_rank = PlayerStun::get_rank(v);
     if (new_rank > old_rank) {
         this->process_stun_status(new_rank, v);
@@ -620,9 +619,8 @@ void BadStatusSetter::decrease_int_wis(const short v)
 
 bool BadStatusSetter::process_cut_effect(const short v)
 {
-    const auto &player_cut = this->creature.effects()->cut();
-    auto old_rank = player_cut.get_rank();
-    auto new_rank = player_cut.get_rank(v);
+    auto old_rank = PlayerCut::get_rank(this->creature.get_timed_effect(CreatureTimedEffect::CUT));
+    auto new_rank = PlayerCut::get_rank(v);
     if (new_rank > old_rank) {
         this->decrease_charisma(new_rank, v);
         return true;

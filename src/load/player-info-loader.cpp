@@ -29,7 +29,6 @@
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/inner-game-data.h"
-#include "timed-effect/timed-effects.h"
 #include "world/world.h"
 
 /*!
@@ -325,11 +324,10 @@ static void rd_mana(CreatureEntity &creature)
  */
 static void rd_bad_status(CreatureEntity &creature)
 {
-    const auto effects = creature.effects();
     strip_bytes(2); /* Old "rest" */
-    effects->blindness().set(rd_s16b());
-    effects->paralysis().set(rd_s16b());
-    effects->confusion().set(rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::BLINDNESS, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::PARALYSIS, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::CONFUSION, rd_s16b());
     creature.set_food(rd_s16b());
     strip_bytes(4); /* Old "food_digested" / "protection" */
 }
@@ -347,15 +345,14 @@ static void rd_energy(CreatureEntity &creature)
  */
 static void rd_status(CreatureEntity &creature)
 {
-    const auto effects = creature.effects();
-    effects->acceleration().set(rd_s16b());
-    effects->deceleration().set(rd_s16b());
-    effects->fear().set(rd_s16b());
-    effects->cut().set(rd_s16b());
-    effects->stun().set(rd_s16b());
-    effects->poison().set(rd_s16b());
-    effects->hallucination().set(rd_s16b());
-    effects->protection().set(rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::ACCELERATION, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::DECELERATION, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::FEAR, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::CUT, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::STUN, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::POISON, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::HALLUCINATION, rd_s16b());
+    creature.set_timed_effect(CreatureTimedEffect::PROTECTION, rd_s16b());
     creature.set_timed_effect(CreatureTimedEffect::INVULNERABILITY, rd_s16b());
     creature.set_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE, rd_s16b());
 }

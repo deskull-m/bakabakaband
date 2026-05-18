@@ -31,7 +31,6 @@
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
 /*!
@@ -62,12 +61,11 @@ bool exe_open(CreatureEntity &creature, POSITION y, POSITION x)
     }
 
     int i = creature.get_skill_disarm();
-    const auto effects = creature.effects();
-    if (effects->blindness().is_blind() || no_lite(creature)) {
+    if (creature.is_blind() || no_lite(creature)) {
         i = i / 10;
     }
 
-    if (effects->confusion().is_confused() || effects->hallucination().is_hallucinated()) {
+    if (creature.is_confused() || creature.is_hallucinated()) {
         i = i / 10;
     }
 
@@ -165,12 +163,11 @@ bool easy_open_door(CreatureEntity &creature, const Pos2D &pos)
         msg_format(fmt, grid.get_terrain(TerrainKind::MIMIC).name.data());
     } else if (terrain.power) {
         auto power_disarm = creature.get_skill_disarm();
-        const auto effects = creature.effects();
-        if (effects->blindness().is_blind() || no_lite(creature)) {
+        if (creature.is_blind() || no_lite(creature)) {
             power_disarm = power_disarm / 10;
         }
 
-        if (effects->confusion().is_confused() || effects->hallucination().is_hallucinated()) {
+        if (creature.is_confused() || creature.is_hallucinated()) {
             power_disarm = power_disarm / 10;
         }
 
@@ -220,12 +217,11 @@ bool exe_disarm_chest(CreatureEntity &creature, POSITION y, POSITION x, OBJECT_I
     auto *o_ptr = creature.get_floor()->o_list[o_idx].get();
     PlayerEnergy(creature).set_player_turn_energy(100);
     int i = creature.get_skill_disarm();
-    const auto effects = creature.effects();
-    if (effects->blindness().is_blind() || no_lite(creature)) {
+    if (creature.is_blind() || no_lite(creature)) {
         i = i / 10;
     }
 
-    if (effects->confusion().is_confused() || effects->hallucination().is_hallucinated()) {
+    if (creature.is_confused() || creature.is_hallucinated()) {
         i = i / 10;
     }
 
@@ -286,12 +282,11 @@ bool exe_disarm(CreatureEntity &creature, POSITION y, POSITION x, const Directio
     int power = terrain.power;
     int i = creature.get_skill_disarm();
     PlayerEnergy(creature).set_player_turn_energy(100);
-    auto effects = creature.effects();
-    if (effects->blindness().is_blind() || no_lite(creature)) {
+    if (creature.is_blind() || no_lite(creature)) {
         i = i / 10;
     }
 
-    if (effects->confusion().is_confused() || effects->hallucination().is_hallucinated()) {
+    if (creature.is_confused() || creature.is_hallucinated()) {
         i = i / 10;
     }
 

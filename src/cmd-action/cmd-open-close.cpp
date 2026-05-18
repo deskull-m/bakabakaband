@@ -28,7 +28,6 @@
 #include "system/terrain/terrain-definition.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -52,12 +51,11 @@ static bool exe_open_chest(CreatureEntity &creature, const Pos2D &pos, OBJECT_ID
     if (o_ptr->pval > 0) {
         flag = false;
         int i = creature.get_skill_disarm();
-        const auto effects = creature.effects();
-        if (effects->blindness().is_blind() || no_lite(creature)) {
+        if (creature.is_blind() || no_lite(creature)) {
             i = i / 10;
         }
 
-        if (effects->confusion().is_confused() || effects->hallucination().is_hallucinated()) {
+        if (creature.is_confused() || creature.is_hallucinated()) {
             i = i / 10;
         }
 
