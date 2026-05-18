@@ -1412,7 +1412,8 @@ lvalue 参照を直接渡せないため、ラッパとして導入)
 | 提案 32 安全フィールド | 7 個 |
 | 提案 32b 残りフィールド | 15 個 |
 | 提案 33 BIT_FLAGS 群 (ESP / 装備集計 / 特殊攻撃防御) | 35 個 |
-| **合計** | **72 個** |
+| 提案 34 表示用既知値 (dis_to_h/d/a/ac) | 5 個 |
+| **合計** | **77 個** |
 | inven_cnt / equip_cnt (提案 25) | フィールド廃止 |
 
 CreatureEntity のフィールドカプセル化が**事実上最終形**に到達。
@@ -1487,6 +1488,52 @@ virtual に統一済みだったため、書込みパターンの集約と差分
 `cur_lite` / `old_lite` (POSITION 型キャッシュ、提案 24 系列で
 扱う候補)、`hack_mutation` / `is_fired` / `level_up_message` /
 `invoking_midnight_curse` (短命 bool フラグ、private 化価値低) のみ。
+
+---
+
+## 提案 34: 表示用既知値 (dis_to_h/d/a/ac) の private 化 ✅ 完了
+
+### 背景
+
+提案 30 で戦闘ボーナス本体 (to_h / to_d / to_a) を private 化したのに
+対称な仕上げタスク。表示用の既知値キャッシュ 5 フィールド:
+
+- `HIT_PROB dis_to_h[2]`: 表記上の近接武器命中修正値
+- `HIT_PROB dis_to_h_b`: 表記上の射撃武器命中修正値
+- `int dis_to_d[2]`: 表記上の近接武器ダメージ修正値
+- `ARMOUR_CLASS dis_to_a`: 表記上の装備 AC 修正値
+- `ARMOUR_CLASS dis_ac`: 表記上の装備 AC 基礎値
+
+これらは player-status.cpp の update_creature() が装備状態から再計算し、
+画面表示系 (display-player-middle / main-window-left-frame /
+status-first-page / io-dump / cmd-building) が読み取るキャッシュ。
+
+### 完了内容
+
+- ✅ 5 フィールドの getter / setter virtual (合計 10 virtual) を追加
+  - `get_dis_to_h(hand)` / `set_dis_to_h(hand, val)`
+  - `get_dis_to_h_b()` / `set_dis_to_h_b(val)`
+  - `get_dis_to_d(hand)` / `set_dis_to_d(hand, val)`
+  - `get_dis_to_a()` / `set_dis_to_a(val)`
+  - `get_dis_ac()` / `set_dis_ac(val)`
+- ✅ 全 19 アクセスサイト migration
+  - player-status.cpp 内 write 7 箇所
+  - player-status.cpp 内 diff-check read 3 箇所
+  - display-player-middle.cpp / main-window-left-frame.cpp /
+    status-first-page.cpp / io-dump / cmd-building.cpp 内 read 9 箇所
+- ✅ 5 フィールドを private 化
+
+### 効果
+
+- **合計 private 化フィールド数: 72 → 77**
+- 提案 30 (to_h/d/a 本体) と提案 34 (表示用キャッシュ) で
+  戦闘ボーナス系のカプセル化が完結
+- 将来「装備変更時に dis_* と to_* を同時更新するインバリアント」を
+  setter 内で強制可能に
+
+### 残作業
+
+なし。
 
 ---
 

@@ -39,8 +39,8 @@
  */
 static void display_player_melee_bonus(CreatureEntity &creature, int hand, int hand_entry)
 {
-    HIT_PROB show_tohit = creature.dis_to_h[hand];
-    int show_todam = creature.dis_to_d[hand];
+    HIT_PROB show_tohit = creature.get_dis_to_h(hand);
+    int show_todam = creature.get_dis_to_d(hand);
     auto *o_ptr = creature.inventory[INVEN_MAIN_HAND + hand].get();
 
     if (o_ptr->is_known()) {
@@ -97,7 +97,7 @@ static void display_sub_hand(CreatureEntity &creature)
 static void display_bow_hit_damage(CreatureEntity &creature)
 {
     const auto &item = *creature.inventory[INVEN_BOW];
-    auto show_tohit = creature.dis_to_h_b;
+    auto show_tohit = creature.get_dis_to_h_b();
     auto show_todam = 0;
     if (item.is_known()) {
         show_tohit += item.to_h;
@@ -338,7 +338,7 @@ void display_player_middle(CreatureEntity &creature)
         display_bow_hit_damage(creature);
         display_shoot_magnification(creature);
     }
-    display_player_one_line(ENTRY_BASE_AC, format("[%d,%+d]", creature.dis_ac, creature.dis_to_a), TERM_L_BLUE);
+    display_player_one_line(ENTRY_BASE_AC, format("[%d,%+d]", creature.get_dis_ac(), creature.get_dis_to_a()), TERM_L_BLUE);
 
     int base_speed = creature.get_speed() - 110;
     if (creature.action == ACTION_SEARCH) {

@@ -1655,6 +1655,51 @@ public:
         return this->to_d[hand];
     }
 
+    // [提案 34] 表示用既知値 dis_to_h / dis_to_d / dis_to_h_b / dis_to_a / dis_ac
+    // の getter / setter virtual。書込は player-status.cpp の update_creature()
+    // から、読取は表示系 (display-player-middle / main-window-left-frame /
+    // status-first-page / io-dump 等) から行われる。
+    virtual HIT_PROB get_dis_to_h(int hand) const
+    {
+        return this->dis_to_h[hand];
+    }
+    virtual void set_dis_to_h(int hand, HIT_PROB value)
+    {
+        this->dis_to_h[hand] = value;
+    }
+    virtual HIT_PROB get_dis_to_h_b() const
+    {
+        return this->dis_to_h_b;
+    }
+    virtual void set_dis_to_h_b(HIT_PROB value)
+    {
+        this->dis_to_h_b = value;
+    }
+    virtual int get_dis_to_d(int hand) const
+    {
+        return this->dis_to_d[hand];
+    }
+    virtual void set_dis_to_d(int hand, int value)
+    {
+        this->dis_to_d[hand] = value;
+    }
+    virtual ARMOUR_CLASS get_dis_to_a() const
+    {
+        return this->dis_to_a;
+    }
+    virtual void set_dis_to_a(ARMOUR_CLASS value)
+    {
+        this->dis_to_a = value;
+    }
+    virtual ARMOUR_CLASS get_dis_ac() const
+    {
+        return this->dis_ac;
+    }
+    virtual void set_dis_ac(ARMOUR_CLASS value)
+    {
+        this->dis_ac = value;
+    }
+
     /*! @brief 能力値最大値 stat_max[idx] を取得する (提案 31b) */
     virtual short get_stat_max(int idx) const
     {
@@ -3024,12 +3069,16 @@ public:
      */
     void plus_incident_tree(const std::string &incident_id, int num);
 
+    // [提案 34] 表示用既知値 dis_to_h / dis_to_d / dis_to_h_b / dis_to_a / dis_ac
+    // を private 化。アクセスは get_dis_X() / set_dis_X() 経由。
+private:
     HIT_PROB dis_to_h[2]{}; /*!< 判明している現在の表記上の近接武器命中修正値 /  Known bonus to hit (wield) */
     HIT_PROB dis_to_h_b{}; /*!< 判明している現在の表記上の射撃武器命中修正値 / Known bonus to hit (bow) */
     int dis_to_d[2]{}; /*!< 判明している現在の表記上の近接武器ダメージ修正値 / Known bonus to dam (wield) */
     ARMOUR_CLASS dis_to_a{}; /*!< 判明している現在の表記上の装備AC修正値 / Known bonus to ac */
     ARMOUR_CLASS dis_ac{}; /*!< 判明している現在の表記上の装備AC基礎値 / Known base ac */
 
+public:
     // [提案 32b] to_h[] / to_d[] / to_h_b / to_h_m / to_d_m を private 化済。get_to_h(hand) / set_to_h(hand, val) 等経由。
 private:
     int16_t to_h[2]{}; /* Bonus to hit (wield) */
