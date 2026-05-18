@@ -353,26 +353,26 @@ void wiz_change_status(CreatureEntity &creature)
 
     for (auto tval : TV_WEAPON_RANGE) {
         for (int i = 0; i < 64; i++) {
-            creature.weapon_exp[tval][i] = *proficiency;
+            creature.set_weapon_exp(tval, i, *proficiency);
         }
     }
 
     PlayerSkill(creature).limit_weapon_skills_by_max_value();
     for (auto j : PLAYER_SKILL_KIND_TYPE_RANGE) {
-        creature.skill_exp[j] = *proficiency;
+        creature.set_skill_exp(j, *proficiency);
         auto short_pclass = enum2i(creature.pclass);
         if (creature.get_skill_exp(j) > class_skills_info[short_pclass].s_max[j]) {
-            creature.skill_exp[j] = class_skills_info[short_pclass].s_max[j];
+            creature.set_skill_exp(j, class_skills_info[short_pclass].s_max[j]);
         }
     }
 
     int k;
     for (k = 0; k < 32; k++) {
-        creature.spell_exp[k] = std::min(PlayerSkill::spell_exp_at(PlayerSkillRank::MASTER), *proficiency);
+        creature.set_spell_exp(k, std::min(PlayerSkill::spell_exp_at(PlayerSkillRank::MASTER), *proficiency));
     }
 
     for (; k < 64; k++) {
-        creature.spell_exp[k] = std::min(PlayerSkill::spell_exp_at(PlayerSkillRank::EXPERT), *proficiency);
+        creature.set_spell_exp(k, std::min(PlayerSkill::spell_exp_at(PlayerSkillRank::EXPERT), *proficiency));
     }
 
     const auto gold = input_numerics("Gold: ", 0, MAX_INT, creature.get_au());

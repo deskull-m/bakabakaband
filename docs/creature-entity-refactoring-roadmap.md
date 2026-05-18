@@ -318,46 +318,77 @@ TimedEffects 優先の特殊分岐を持っていた。一方モンスターは 
 
 ---
 
-## 提案 10: 配列フィールド virtual インデックスアクセサ ✅ 一部完了
+## 提案 10/36: 熟練度配列の virtual アクセサ ✅ 完了
 
 ### 背景
 
 `spell_exp[64]` (固定配列) / `weapon_exp` / `weapon_exp_max` /
 `skill_exp` (`std::map`) はプレイヤーの熟練度システム用フィールドだが
 `CreatureEntity` 直下に存在するため、モンスターからもアクセス可能な
-構造になっている。直アクセスのみで virtual がなく、将来モンスターに
-熟練度概念を導入する際の拡張点が無かった。
+構造になっている。
 
 ### 作業内容
 
-`CreatureEntity` に 3 つの read-only virtual インデックサを追加:
+#### read 側 (提案 10 前半、既完了)
 
-| 仮想関数 | 役割 | デフォルト動作 |
-|---|---|---|
-| `get_spell_exp(int idx)` | 呪文熟練度 | `spell_exp[idx]` を返す |
-| `get_skill_exp(PlayerSkillKindType)` | スキル熟練度 | map に存在すれば値、無ければ 0 |
-| `get_weapon_exp(ItemKindType, int sval)` | 武器熟練度 | map に存在すれば値、無ければ 0 |
+3 つの read-only virtual インデックサ:
+
+| 仮想関数 | 役割 |
+|---|---|
+| `get_spell_exp(int idx)` | 呪文熟練度を返す |
+| `get_skill_exp(PlayerSkillKindType)` | スキル熟練度を返す (map に無ければ 0) |
+| `get_weapon_exp(ItemKindType, int sval)` | 武器熟練度を返す (map に無ければ 0) |
+
+#### write 側 (提案 36、新規完了)
+
+7 つの write virtual を追加:
+
+| 仮想関数 | 役割 |
+|---|---|
+| `set_spell_exp(int idx, SUB_EXP value)` | 呪文熟練度を設定 |
+| `add_spell_exp(int idx, SUB_EXP delta)` | 呪文熟練度に加算 |
+| `set_skill_exp(PlayerSkillKindType, SUB_EXP)` | スキル熟練度を設定 |
+| `add_skill_exp(PlayerSkillKindType, SUB_EXP delta)` | スキル熟練度に加算 |
+| `set_weapon_exp(ItemKindType, int sval, SUB_EXP)` | 武器熟練度を設定 |
+| `add_weapon_exp(ItemKindType, int sval, SUB_EXP delta)` | 武器熟練度に加算 |
+| `set_weapon_exp_max(ItemKindType, int sval, SUB_EXP)` | 武器熟練度上限を設定 |
+
+加えて `get_weapon_exp_max(tval, sval)` virtual も新規追加。
 
 ### 移行結果
 
-- 読取り 31 箇所 (spell_exp 4, skill_exp 22, weapon_exp 5) を新 virtual 経由に置換
-- 書込み・参照取得 (`auto &exp = ...`)・複合代入 16 箇所は従来通り
-  直接配列アクセス形式で残置 (mutation/reference 取得には virtual が
-  対応できないため)
+- 読取り 31 箇所 (spell_exp 4, skill_exp 22, weapon_exp 5) を get_X_exp() 経由に置換 (提案 10)
+- 書込み 13 箇所を新 virtual 経由に置換 (提案 36)
+  - wizard-special-process.cpp: 7 site
+  - load/player-info-loader.cpp: 3 site
+  - cmd-action/cmd-spell / monster-attack-player /
+    quaff-effects / birth-stat: 各 1-2 site
+- `weapon_exp_max[tval][sval]` 読取り 4 箇所を `get_weapon_exp_max()` に置換
+  (object-hook/hook-weapon, knowledge-experiences)
+
+### 残存パターン (private 化できない理由)
+
+以下のパターンは API 抽象化が困難なため direct access 残置:
+
+- `auto &exp = creature.weapon_exp[tval][sval]` のリファレンス取得
+  (player-skill.cpp の `gain_attack_skill_exp` が `SUB_EXP &` を受ける)
+- `for (auto &[type, exp] : creature.skill_exp)` の構造化束縛
+- `for (auto &exp : creature.weapon_exp[tval])` の配列走査
+- `std::span(creature.spell_exp)` の span 構築
+- `creature.weapon_exp = class_skills_info[pclass].w_start` の map 全体代入
+- `for (auto sval = 0U; sval < creature.weapon_exp[tval].size(); ++sval)` の
+  size() 経由イテレーション
+
+これらの抽象化には functor 受け取り API (e.g.
+`apply_to_weapon_exp(tval, [&](SUB_EXP &exp){ ... })`) や
+配列スパン返却 virtual (e.g. `get_weapon_exp_span(tval)`) が
+必要だが、コール側の書き換えコストが大きく抽象化価値が低いため見送り。
 
 ### 効果
 
-- 読取りパスがプレイヤー・モンスター共通の API を通る
-- 将来モンスターに `get_X_exp()` を override させて種族別/個体別の
-  熟練度ロジックを導入可能
-
-### 残作業
-
-- 書込み setter virtual 整備は呼び出しパターン (集計加算/上限クランプ/
-  `auto &` 経由 in-place 変更) が多様で抽象コストが大きく、優先度低
-  として保留
-- 配列全体走査 (`for (auto &exp : creature.weapon_exp[tval])`) は
-  span 経由の virtual 化も検討余地あり
+- 単純な write/read パターンはプレイヤー・モンスター共通の API を通る
+- 将来モンスター熟練度導入時の override 点を確保
+- 「set_X_exp で書込みすると整合性チェックが走る」等の拡張余地
 
 ---
 

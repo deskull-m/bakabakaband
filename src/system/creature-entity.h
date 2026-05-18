@@ -1970,6 +1970,51 @@ public:
     }
 
     /*!
+     * @brief 指定武器種別・サブ種別の武器熟練度の上限値を取得する (提案 10/36)
+     */
+    virtual SUB_EXP get_weapon_exp_max(ItemKindType tval, int sval) const
+    {
+        const auto it = this->weapon_exp_max.find(tval);
+        return (it != this->weapon_exp_max.end()) ? it->second[sval] : 0;
+    }
+
+    // [提案 10/36] 熟練度書込みの setter virtual 群。
+    // 参照取得 (auto &) パターンは player-skill.cpp / wizard-special-process.cpp
+    // 等の一部で残存するため、フィールドの private 化はせず、API として
+    // 提供のみ行う。
+    virtual void set_spell_exp(int spell_idx, SUB_EXP value)
+    {
+        this->spell_exp[spell_idx] = value;
+    }
+    virtual void add_spell_exp(int spell_idx, SUB_EXP delta)
+    {
+        this->spell_exp[spell_idx] += delta;
+    }
+
+    virtual void set_skill_exp(PlayerSkillKindType skill, SUB_EXP value)
+    {
+        this->skill_exp[skill] = value;
+    }
+    virtual void add_skill_exp(PlayerSkillKindType skill, SUB_EXP delta)
+    {
+        this->skill_exp[skill] += delta;
+    }
+
+    virtual void set_weapon_exp(ItemKindType tval, int sval, SUB_EXP value)
+    {
+        this->weapon_exp[tval][sval] = value;
+    }
+    virtual void add_weapon_exp(ItemKindType tval, int sval, SUB_EXP delta)
+    {
+        this->weapon_exp[tval][sval] += delta;
+    }
+
+    virtual void set_weapon_exp_max(ItemKindType tval, int sval, SUB_EXP value)
+    {
+        this->weapon_exp_max[tval][sval] = value;
+    }
+
+    /*!
      * @brief クリーチャーがフレンドリー状態かどうかを判定
      * @return フレンドリーならtrue、デフォルトはfalse（プレイヤーはフレンドリー判定対象外）
      */
