@@ -277,10 +277,10 @@ static bool does_equip_cause_earthquake(CreatureEntity &creature, player_attack_
     auto do_quake = false;
 
     auto hand = (pa_ptr->hand == 0) ? FLAG_CAUSE_INVEN_MAIN_HAND : FLAG_CAUSE_INVEN_SUB_HAND;
-    if (any_bits(creature.earthquake, hand)) {
+    if (any_bits(creature.get_earthquake_flags(), hand)) {
         do_quake = true;
     } else {
-        auto flags = creature.earthquake;
+        auto flags = creature.get_earthquake_flags();
         reset_bits(flags, FLAG_CAUSE_INVEN_MAIN_HAND | FLAG_CAUSE_INVEN_SUB_HAND);
         do_quake = flags != 0;
     }
@@ -298,7 +298,7 @@ static bool does_equip_cause_earthquake(CreatureEntity &creature, player_attack_
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  * @return 持つならtrue、持たないならfalse
  */
-static bool does_weapon_has_flag(BIT_FLAGS &attacker_flags, player_attack_type *pa_ptr)
+static bool does_weapon_has_flag(BIT_FLAGS attacker_flags, player_attack_type *pa_ptr)
 {
     if (!attacker_flags) {
         return false;
@@ -334,7 +334,7 @@ static void process_weapon_attack(CreatureEntity &creature, player_attack_type *
         *do_quake = true;
     }
 
-    auto do_impact = does_weapon_has_flag(creature.impact, pa_ptr);
+    auto do_impact = does_weapon_has_flag(creature.get_impact_flags(), pa_ptr);
     if ((o_ptr->bi_key != BaseitemKey(ItemKindType::SWORD, SV_POISON_NEEDLE)) && !(pa_ptr->mode == HISSATSU_KYUSHO)) {
         pa_ptr->attack_damage = critical_norm(creature, o_ptr->weight, o_ptr->to_h, pa_ptr->attack_damage, creature.get_to_h(pa_ptr->hand), pa_ptr->mode, do_impact);
     }

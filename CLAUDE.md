@@ -288,9 +288,15 @@ API 経由に統一された。一部フィールド (r_idx / ap_r_idx / riding)
   to_h[] / to_d[]) を個別 fix で完全 private 化。**合計 37 フィールド
   が完全 private 化**に到達し、CreatureEntity のフィールドカプセル化
   は事実上最終形
+- **提案 33**: ESP 系 15 個 + 装備集計系 19 個 + special_attack の合計
+  35 個の BIT_FLAGS フィールドを private 化。`set_X(BIT_FLAGS)` setter,
+  `get_X_flags()` getter (差分検出キャッシュ用), `add_special_attack(flag)`
+  / `remove_special_attack(flag)` 等の compound assignment 用 virtual を
+  整備し、約 70 箇所の write/read site を migration。**合計 private 化
+  フィールド数: 37 → 72** (約 2 倍に到達)
 
 今後の残作業としては、現在 `CreatureEntity` 直下に残存するプレイヤー
-固有フィールド群（種族・職業・熟練度・ESP 等）を、モンスターにも
+固有フィールド群（種族・職業・熟練度等）を、モンスターにも
 共通で持たせて運用できる形に整備していく方針。プレイヤー専用構造体
 （`PlayerProfile` のようなもの）に切り出してモンスターから隔離する
 方向は取らない。
@@ -709,7 +715,10 @@ EOF
    `creature.special_attack & FLAG` 等の読取りは
    `creature.get_skill_save()` / `creature.get_infravision()` /
    `creature.has_telepathy()` / `creature.has_special_attack(FLAG)` に変換済み。
-   書き込み (代入・ビットマスク更新) は直接フィールドのまま。
+   **提案 33 完了で telepathy / esp_* / 装備集計 BIT_FLAGS / special_attack
+   の書き込みも `set_X(BIT_FLAGS)` / `add_special_attack(flag)` /
+   `remove_special_attack(flag)` virtual 経由に統一済み。**
+   フィールド直接アクセスは private 化されており不可。
 
 9. **PlayerType::get_timed_effect() オーバーライドの廃止**: 上流では PlayerType が
    この virtual を override して TimedEffects オブジェクト経由でアクセスしているが、
@@ -748,8 +757,17 @@ EOF
   creature.get_infravision()
 - creature.telepathy/esp_X/see_inv/can_swim/levitation 等の読取り →
   creature.has_telepathy()/has_esp_X()/can_see_invisible()/has_can_swim()/
-  has_levitation() 等
+  has_levitation() 等。**書込みは creature.set_telepathy(BIT_FLAGS) /
+  set_esp_X(BIT_FLAGS) / set_can_swim(bool) / set_levitation(BIT_FLAGS)
+  virtual 経由 (提案 33 完了)。** 差分検出キャッシュ用 read は
+  `creature.get_telepathy_flags()` / `get_esp_X_flags()` / `get_see_inv_flags()`
+  / `get_mighty_throw_flags()` / `get_impact_flags()` /
+  `get_earthquake_flags()` 経由
 - creature.special_attack & FLAG → creature.has_special_attack(FLAG)
+  / 書込みは `add_special_attack(flag)` / `remove_special_attack(flag)`
+  / `set_special_attack_flags(BIT_FLAGS)` / `get_special_attack_flags()`
+  経由 (提案 33 完了)。`creature.special_attack |= ATTACK_X` は
+  `creature.add_special_attack(ATTACK_X)` に変換
 - creature.effects()->X().current()/set/reset → creature.get/set_timed_effect(...)
   (提案 5 完了で effects() API 自体が削除済み)
 - creature.effects()->stun().get_rank() / get_magic_chance_penalty 等 →

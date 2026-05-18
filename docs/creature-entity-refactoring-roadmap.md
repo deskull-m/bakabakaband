@@ -1411,12 +1411,82 @@ lvalue 参照を直接渡せないため、ラッパとして導入)
 | r_idx / ap_r_idx / riding (提案 29) | 3 個 |
 | 提案 32 安全フィールド | 7 個 |
 | 提案 32b 残りフィールド | 15 個 |
-| **合計** | **37 個** |
+| 提案 33 BIT_FLAGS 群 (ESP / 装備集計 / 特殊攻撃防御) | 35 個 |
+| **合計** | **72 個** |
 | inven_cnt / equip_cnt (提案 25) | フィールド廃止 |
 
 CreatureEntity のフィールドカプセル化が**事実上最終形**に到達。
 これらフィールドへのアクセスは全て virtual API 経由でのみ可能となり、
 将来 friend 宣言を撤廃すれば完全閉鎖系となる。
+
+---
+
+## 提案 33: ESP / 装備集計 BIT_FLAGS の private 化 ✅ 完了
+
+### 背景
+
+提案 32 / 32b で plain field (能力値・経験値・所持金等) の private 化に
+成功した後、CreatureEntity 直下に残る public BIT_FLAGS フィールド
+(ESP 系 15 個 + 装備集計系 19 個 + special_attack/defense 2 個 = 36 個) を
+カプセル化する。
+
+read 側は既に提案 4 系列で `has_telepathy()` / `has_esp_X()` 等の
+virtual に統一済みだったため、書込みパターンの集約と差分検出キャッシュ
+読取りの整備のみで private 化可能。
+
+### 完了内容
+
+- ✅ ESP 15 個 (telepathy / esp_animal / esp_nasty / esp_homo /
+  esp_undead / esp_demon / esp_orc / esp_troll / esp_giant /
+  esp_dragon / esp_human / esp_evil / esp_good / esp_nonliving /
+  esp_unique) の `set_X(BIT_FLAGS)` virtual を追加
+- ✅ 装備集計系 19 個 (can_swim / levitation / free_act / see_inv /
+  regenerate / hold_exp / slow_digest / lite / warning / impact /
+  earthquake / dec_mana / easy_spell / hard_spell / mighty_throw /
+  see_nocto / anti_magic / anti_tele / bless_blade / xtra_might) の
+  `set_X(BIT_FLAGS)` virtual を追加
+- ✅ `has_bless_blade()` virtual を新規追加 (既存 `has_X()` 群に
+  欠けていたため補完)
+- ✅ `get_X_flags()` 系 read virtual を 15 ESP + see_inv +
+  mighty_throw + impact + earthquake に追加 (差分検出キャッシュ・
+  bitmask 読取り用)
+- ✅ special_attack / special_defense に
+  `set_X_flags(BIT_FLAGS)` / `get_X_flags()` /
+  `add_X(flag)` / `remove_X(flag)` の 4 virtual セットを追加
+- ✅ player-status.cpp の update_creature() 内 35 箇所の
+  `creature.X = has_X(creature)` 形式書込みを `creature.set_X(...)`
+  形式に migration
+- ✅ player-status.cpp の差分検出キャッシュ 15 箇所の
+  `creature.X != old_X` を `creature.get_X_flags() != old_X` に migration
+- ✅ special_attack/defense の compound assignment 約 18 箇所
+  (`|= flag` / `&= ~flag`) を `add_X(flag)` / `remove_X(flag)` に migration
+  (spell-realm/spells-craft / mspell/mspell-dispel / realm/realm-chaos /
+   player-attack/attack-chaos-effect / scroll-read-executor / quaff-effects
+   / status/bad-status-setter)
+- ✅ savefile load/save 経路 (player-attack-loader / player-writer)
+  と reset 経路 (status/buff-setter) を `set_X_flags(value)` 経由に
+- ✅ player-attack/player-attack の `does_weapon_has_flag(BIT_FLAGS &)`
+  を `does_weapon_has_flag(BIT_FLAGS)` に変更 (rvalue 受け入れのため)
+- ✅ body-improvement-info.cpp / flavor-describer.cpp の bool 用途
+  read を `has_X()` に置換
+- ✅ **ESP 15 + 装備集計 19 + special_attack 1 = 35 個を private 化**
+
+### 効果
+
+- CreatureEntity 直下の plain public BIT_FLAGS field がほぼ消滅
+- **合計 private 化フィールド数: 37 → 72** (約 2 倍)
+- 装備変更時の状態再計算経路が明示的な setter API 経由に統一され、
+  将来 setter 内で監査ログ・レンダフラグ自動連動などを追加可能
+- special_attack/defense の compound assignment 約 18 箇所が
+  意味的に明確な OO 形式 (`add_special_attack(ATTACK_X)`) に統一
+
+### 残作業
+
+なし。残る public BIT_FLAGS は `cursed` / `cursed_special`
+(EnumClassFlagGroup 型、外部走査多数のため別提案で扱う)、
+`cur_lite` / `old_lite` (POSITION 型キャッシュ、提案 24 系列で
+扱う候補)、`hack_mutation` / `is_fired` / `level_up_message` /
+`invoking_midnight_curse` (短命 bool フラグ、private 化価値低) のみ。
 
 ---
 

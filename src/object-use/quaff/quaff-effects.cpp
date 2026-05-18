@@ -305,7 +305,7 @@ bool QuaffEffects::booze()
     if (!is_monk) {
         chg_virtue(this->creature, Virtue::HARMONY, -1);
     } else if (!has_resist_conf(this->creature)) {
-        set_bits(this->creature.special_attack, ATTACK_SUIKEN);
+        this->creature.add_special_attack(ATTACK_SUIKEN);
     }
 
     BadStatusSetter bss(this->creature);

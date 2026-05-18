@@ -291,9 +291,9 @@ void wr_player(CreatureEntity &creature)
     }
 
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::ELE_ATTACK));
-    wr_u32b(creature.special_attack);
+    wr_u32b(creature.get_special_attack_flags());
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::ELE_IMMUNE));
-    wr_u32b(creature.special_defense);
+    wr_u32b(creature.get_special_defense_flags());
     wr_byte(creature.knowledge);
     wr_bool(creature.autopick_autoregister);
     wr_byte(0);

@@ -260,7 +260,7 @@ static std::string describe_ammo_detail(CreatureEntity &creature, const ItemEnti
         avgdam += (ammo.to_d * 10);
     }
 
-    if (creature.xtra_might) {
+    if (creature.has_xtra_might()) {
         tmul++;
     }
 
@@ -292,7 +292,7 @@ static std::string describe_ammo_detail(CreatureEntity &creature, const ItemEnti
 
 static std::string describe_spike_detail(const CreatureEntity &creature)
 {
-    auto avgdam = creature.mighty_throw ? (1 + 3) : 1;
+    auto avgdam = creature.has_mighty_throw() ? (1 + 3) : 1;
     avgdam += ((creature.get_level() + 30) * (creature.get_level() + 30) - 900) / 55;
     const auto energy_fire = 100 - creature.get_level();
     const auto avgdam_per_turn = 100 * avgdam / energy_fire;

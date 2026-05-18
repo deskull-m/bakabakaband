@@ -91,8 +91,8 @@ void reset_tim_flags(CreatureEntity &creature)
     // 非 CreatureTimedEffect のリセット
     creature.sutemi = false;
     creature.counter = false;
-    creature.special_attack = 0L;
-    creature.special_defense = 0L;
+    creature.set_special_attack_flags(0L);
+    creature.set_special_defense_flags(0L);
 
     while (creature.get_energy_need() < 0) {
         creature.set_energy_need(creature.get_energy_need() + ENERGY_NEED());
