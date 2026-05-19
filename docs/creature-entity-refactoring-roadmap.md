@@ -1568,6 +1568,69 @@ status-first-page / io-dump / cmd-building) が読み取るキャッシュ。
 
 ---
 
+## 提案 35: is_player() 分岐の縮減 ✅ 完了 (調査ベース・縮小スコープ)
+
+### 背景
+
+CreatureEntity 統合進行に伴い、コード中に `if (!creature.is_player()) return;`
+等の早期 return ガードや `if (creature.is_player()) { ... }` の正の分岐が
+合計約 83 サイト残存している。これらを virtual メソッド経由に変換できれば、
+プレイヤー/モンスター分岐の明示性を減らせるという仮説の下に着手。
+
+### 調査結果
+
+調査の結果、コードベース上の `is_player()` 分岐は以下のように分類され、
+**機械的な削減で得られる改善は極めて限定的**であることが判明:
+
+| カテゴリ | サイト数 | 削減可否 |
+|---|---:|---|
+| 早期 return ガード (関数の player-only 契約) | ~63 | 削除不可 (型契約) |
+| 表示分岐 (player/monster で表示内容が異なる) | ~10 | virtual 化可能だが大手術 |
+| 真の振る舞い分岐 (chg_virtue 等) | ~10 | 多くは内部 no-op で機能上問題なし |
+| **冗長な外部ガード (内部 no-op 関数を囲む)** | **1** | **削除可能** |
+
+特筆すべきは、`disturb()` / `chg_virtue()` のような「内部で
+is_player() ガードを持つ関数」を外部から `if (is_player()) X(...)` で
+囲うパターンは、コードベース全体で **1 サイトのみ** だった
+(`melee/monster-attack-monster.cpp:365`)。
+
+### 完了内容
+
+- ✅ `melee/monster-attack-monster.cpp:365` の冗長ガード削除
+  (`if (creature.is_player() && is_riding()) disturb(...)` →
+   `if (is_riding()) disturb(...)`)
+- ✅ コメント追加で「disturb は no-op なのでガード不要」を明記
+
+### 削減できなかった理由
+
+1. **早期 return ガード (63 サイト)**: `spells-status.cpp` 15 個,
+   `spell-kind/spells-world.cpp` 6 個, `player-class.cpp` 8 個 等の
+   ガードは「この関数はプレイヤー専用」という意味的契約を表現する
+   もの。CreatureEntity 統合方針 (関数引数を `CreatureEntity &` で
+   統一) と整合的で、削除すると型安全性が失われる。
+   - 削除には `bool foo(PlayerType &)` への signature 変更が必要
+   - これは別提案 (例: 「プレイヤー専用関数の型契約化」) として扱うべき
+
+2. **表示分岐 (10 サイト)**: `display-player-middle.cpp` 等の
+   表示ロジックが player と monster で異なるケース。virtual 化は
+   可能だが、表示テーブル全体の再設計が必要で工数大。
+
+3. **真の振る舞い分岐**: `effect-monster-*.cpp` の
+   `em_ptr->is_player()` は EffectMonster の「攻撃者がプレイヤーか」
+   判定で、`CreatureEntity::is_player()` とは別概念。
+
+### 教訓
+
+「機械的な branch reduction」よりも「特定の関数群を player-only
+にする型契約化」のほうが有意義。提案 35 は現状の整理されたコード
+ベースでは投資対効果が低い。
+
+### 残作業
+
+なし (現状のコードベースでは追加の冗長ガード除去候補なし)。
+
+---
+
 ## 推奨実施順序
 
 ### 完了済み (大規模フェーズ)
