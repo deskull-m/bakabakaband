@@ -299,6 +299,13 @@ API 経由に統一された。一部フィールド (r_idx / ap_r_idx / riding)
   virtual を整備し、19 箇所の access site を migration。提案 30
   (to_h/d/a 本体) と対称な仕上げタスク。**合計 private 化フィールド数:
   72 → 77**
+- **提案 35**: `is_player()` 分岐の削減を試みたが、コードベース調査
+  の結果、機械的削減可能な冗長ガードは 1 サイトのみと判明 (現コード
+  ベースの 83 サイトのうち約 63 は型契約を表す早期 return ガード、
+  残りは真の振る舞い分岐)。`monster-attack-monster.cpp:365` の
+  `if (creature.is_player() && ...) disturb(...)` を `disturb` 内部
+  ガードに委ねる形に簡素化。さらなる削減は signature 変更
+  (`bool foo(PlayerType &)`) が必要で別提案として扱う方針。
 
 今後の残作業としては、現在 `CreatureEntity` 直下に残存するプレイヤー
 固有フィールド群（種族・職業・熟練度等）を、モンスターにも
