@@ -150,12 +150,12 @@ static errr load_hp(CreatureEntity &creature)
 
 static void load_spells(CreatureEntity &creature)
 {
-    creature.spell_learned1 = rd_u32b();
-    creature.spell_learned2 = rd_u32b();
-    creature.spell_worked1 = rd_u32b();
-    creature.spell_worked2 = rd_u32b();
-    creature.spell_forgotten1 = rd_u32b();
-    creature.spell_forgotten2 = rd_u32b();
+    creature.set_spell_learned_flags(0, rd_u32b());
+    creature.set_spell_learned_flags(1, rd_u32b());
+    creature.set_spell_worked_flags(0, rd_u32b());
+    creature.set_spell_worked_flags(1, rd_u32b());
+    creature.set_spell_forgotten_flags(0, rd_u32b());
+    creature.set_spell_forgotten_flags(1, rd_u32b());
     creature.learned_spells = rd_s16b();
     creature.add_spells = rd_s16b();
 }
