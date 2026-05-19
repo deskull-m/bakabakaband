@@ -1444,7 +1444,8 @@ lvalue 参照を直接渡せないため、ラッパとして導入)
 | 提案 32b 残りフィールド | 15 個 |
 | 提案 33 BIT_FLAGS 群 (ESP / 装備集計 / 特殊攻撃防御) | 35 個 |
 | 提案 34 表示用既知値 (dis_to_h/d/a/ac) | 5 個 |
-| **合計** | **77 個** |
+| 提案 41 呪文マスク (spell_learned/worked/forgotten 1/2) | 6 個 |
+| **合計** | **83 個** |
 | inven_cnt / equip_cnt (提案 25) | フィールド廃止 |
 
 CreatureEntity のフィールドカプセル化が**事実上最終形**に到達。
@@ -1631,7 +1632,66 @@ is_player() ガードを持つ関数」を外部から `if (is_player()) X(...)`
 
 ---
 
-## 推奨実施順序
+## 提案 41: 呪文マスク (spell_learned/worked/forgotten) の集約 ✅ 完了
+
+### 背景
+
+`BIT_FLAGS spell_learned1` / `spell_learned2` / `spell_worked1` / `spell_worked2`
+/ `spell_forgotten1` / `spell_forgotten2` の 6 フィールドは、64 個の呪文
+(2 領域 × 32 呪文) の習得/使用/忘却状態をビットマスクで保持する古い仕様。
+
+各呼び出し箇所では `is_realm1 ? *_1 : *_2` の三項演算子で領域選択し、
+`(1UL << spell_id)` でビット操作する冗長なパターンが反復していた。
+
+### 完了内容
+
+#### API 整備 (12 個の virtual メソッド)
+
+`CreatureEntity` に realm_idx (0/1) ベースの virtual API を追加:
+
+| メソッド | 役割 |
+|---|---|
+| `get_spell_learned_flags(realm_idx)` | 領域全体の BIT_FLAGS 取得 (savefile 用) |
+| `get_spell_worked_flags(realm_idx)` | 同上 (worked) |
+| `get_spell_forgotten_flags(realm_idx)` | 同上 (forgotten) |
+| `set_spell_learned_flags(realm_idx, value)` | 領域全体の BIT_FLAGS 設定 |
+| `set_spell_worked_flags(realm_idx, value)` | 同上 (worked) |
+| `set_spell_forgotten_flags(realm_idx, value)` | 同上 (forgotten) |
+| `has_learned_spell(realm_idx, spell_id)` | 個別呪文の習得判定 (0..31) |
+| `has_worked_spell(realm_idx, spell_id)` | 個別呪文の使用判定 |
+| `has_forgotten_spell(realm_idx, spell_id)` | 個別呪文の忘却判定 |
+| `set_learned_spell(realm_idx, spell_id, value)` | 個別呪文の習得状態設定 |
+| `set_worked_spell(realm_idx, spell_id, value)` | 個別呪文の使用状態設定 |
+| `set_forgotten_spell(realm_idx, spell_id, value)` | 個別呪文の忘却状態設定 |
+
+#### 移行
+
+- `player/player-spell-status.cpp`: 9 site (PlayerSpellStatus::Realm の
+  initialize/is_X/set_X 各メソッドが三項演算子で *_1/*_2 を選択していた)。
+  全て virtual API 経由に書き換え、コード行数も大幅減
+- `window/display-sub-window-spells.cpp`: 3 site (表示色判定の
+  ネスト三項演算子) を `has_X_spell(j, i % 32)` に簡素化
+- `load/load.cpp`: 6 site (savefile load を `set_spell_X_flags()` 経由)
+- `save/save.cpp`: 6 site (savefile save を `get_spell_X_flags()` 経由)
+
+#### Private 化
+
+6 フィールド (spell_learned1/2, spell_worked1/2, spell_forgotten1/2)
+を完全 private 化。
+
+### 効果
+
+- **合計 private 化フィールド数: 77 → 83**
+- 三項演算子による領域選択ロジックが realm_idx パラメータの伝播に簡素化
+- 個別呪文アクセスが `has_X_spell(realm, idx)` の意図明示形に
+- savefile load/save の API 統一
+- 将来モンスター呪文習得概念を導入する際の override 点を確保
+
+### 残作業
+
+`std::vector<int> spell_order_learned` も呪文関連のフィールドだが、
+これは vector 型でマスクとは別の構造 (習得順序リスト) を持つ。
+`std::erase_if` での mutation も含むため、抽象化価値が低く今回は対象外。
 
 ### 完了済み (大規模フェーズ)
 

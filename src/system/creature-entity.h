@@ -3201,12 +3201,80 @@ public:
      * prevents the player from getting more than one at a time.
      */
 
+    // [提案 41] 呪文マスクを private 化。
+    // realm_idx は 0 (第 1 領域) / 1 (第 2 領域)、spell_id は 0..31。
+    // savefile load/save 時は get_spell_*_flags() / set_spell_*_flags() を使用。
+    // 通常アクセスは has_*_spell() / set_*_spell() を使用。
+private:
     BIT_FLAGS spell_learned1{}; /* bit mask of spells learned */
     BIT_FLAGS spell_learned2{}; /* bit mask of spells learned */
     BIT_FLAGS spell_worked1{}; /* bit mask of spells tried and worked */
     BIT_FLAGS spell_worked2{}; /* bit mask of spells tried and worked */
     BIT_FLAGS spell_forgotten1{}; /* bit mask of spells learned but forgotten */
     BIT_FLAGS spell_forgotten2{}; /* bit mask of spells learned but forgotten */
+
+public:
+    // [提案 41] 呪文マスクの virtual API。
+    // realm_idx: 0 (realm1) または 1 (realm2)。
+    // spell_id: 0..31 (realm 内呪文番号)。
+    virtual BIT_FLAGS get_spell_learned_flags(int realm_idx) const
+    {
+        return (realm_idx == 0) ? this->spell_learned1 : this->spell_learned2;
+    }
+    virtual BIT_FLAGS get_spell_worked_flags(int realm_idx) const
+    {
+        return (realm_idx == 0) ? this->spell_worked1 : this->spell_worked2;
+    }
+    virtual BIT_FLAGS get_spell_forgotten_flags(int realm_idx) const
+    {
+        return (realm_idx == 0) ? this->spell_forgotten1 : this->spell_forgotten2;
+    }
+    virtual void set_spell_learned_flags(int realm_idx, BIT_FLAGS value)
+    {
+        (realm_idx == 0 ? this->spell_learned1 : this->spell_learned2) = value;
+    }
+    virtual void set_spell_worked_flags(int realm_idx, BIT_FLAGS value)
+    {
+        (realm_idx == 0 ? this->spell_worked1 : this->spell_worked2) = value;
+    }
+    virtual void set_spell_forgotten_flags(int realm_idx, BIT_FLAGS value)
+    {
+        (realm_idx == 0 ? this->spell_forgotten1 : this->spell_forgotten2) = value;
+    }
+
+    virtual bool has_learned_spell(int realm_idx, int spell_id) const
+    {
+        return (this->get_spell_learned_flags(realm_idx) & (1UL << spell_id)) != 0;
+    }
+    virtual bool has_worked_spell(int realm_idx, int spell_id) const
+    {
+        return (this->get_spell_worked_flags(realm_idx) & (1UL << spell_id)) != 0;
+    }
+    virtual bool has_forgotten_spell(int realm_idx, int spell_id) const
+    {
+        return (this->get_spell_forgotten_flags(realm_idx) & (1UL << spell_id)) != 0;
+    }
+    virtual void set_learned_spell(int realm_idx, int spell_id, bool value)
+    {
+        const auto bit = 1UL << spell_id;
+        auto flags = this->get_spell_learned_flags(realm_idx);
+        flags = value ? (flags | bit) : (flags & ~bit);
+        this->set_spell_learned_flags(realm_idx, flags);
+    }
+    virtual void set_worked_spell(int realm_idx, int spell_id, bool value)
+    {
+        const auto bit = 1UL << spell_id;
+        auto flags = this->get_spell_worked_flags(realm_idx);
+        flags = value ? (flags | bit) : (flags & ~bit);
+        this->set_spell_worked_flags(realm_idx, flags);
+    }
+    virtual void set_forgotten_spell(int realm_idx, int spell_id, bool value)
+    {
+        const auto bit = 1UL << spell_id;
+        auto flags = this->get_spell_forgotten_flags(realm_idx);
+        flags = value ? (flags | bit) : (flags & ~bit);
+        this->set_spell_forgotten_flags(realm_idx, flags);
+    }
     std::vector<int> spell_order_learned{}; /* order spells learned */
 
     int player_hp[PY_MAX_LEVEL]{};
