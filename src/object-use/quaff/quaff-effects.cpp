@@ -206,7 +206,7 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
         msg_erase();
         this->creature.set_timed_effect(CreatureTimedEffect::TSUYOSHI, 1);
         (void)set_tsuyoshi(this->creature, 0, true);
-        if (!has_resist_chaos(this->creature)) {
+        if (!this->creature.has_resist_chaos()) {
             (void)BadStatusSetter(this->creature).mod_hallucination(50 + randint1(100));
         }
         return true;
@@ -274,7 +274,7 @@ bool QuaffEffects::salt_water()
  */
 bool QuaffEffects::poison()
 {
-    if (has_resist_pois(this->creature) || is_oppose_pois(this->creature)) {
+    if (this->creature.has_resist_pois() || is_oppose_pois(this->creature)) {
         return false;
     }
 
@@ -287,7 +287,7 @@ bool QuaffEffects::poison()
  */
 bool QuaffEffects::blindness()
 {
-    if (has_resist_blind(this->creature)) {
+    if (this->creature.has_resist_blind()) {
         return false;
     }
 
@@ -304,16 +304,16 @@ bool QuaffEffects::booze()
     auto is_monk = CreatureClass(this->creature).equals(PlayerClassType::MONK);
     if (!is_monk) {
         chg_virtue(this->creature, Virtue::HARMONY, -1);
-    } else if (!has_resist_conf(this->creature)) {
+    } else if (!this->creature.has_resist_conf()) {
         this->creature.add_special_attack(ATTACK_SUIKEN);
     }
 
     BadStatusSetter bss(this->creature);
-    if (!has_resist_conf(this->creature) && bss.set_confusion(randint0(20) + 15)) {
+    if (!this->creature.has_resist_conf() && bss.set_confusion(randint0(20) + 15)) {
         ident = true;
     }
 
-    if (has_resist_chaos(this->creature)) {
+    if (this->creature.has_resist_chaos()) {
         return ident;
     }
 
@@ -577,7 +577,7 @@ bool QuaffEffects::tsuyoshi()
     msg_erase();
     this->creature.set_timed_effect(CreatureTimedEffect::TSUYOSHI, 1);
     (void)set_tsuyoshi(this->creature, 0, true);
-    if (!has_resist_chaos(this->creature)) {
+    if (!this->creature.has_resist_chaos()) {
         (void)BadStatusSetter(this->creature).hallucination(50 + randint1(50));
     }
 

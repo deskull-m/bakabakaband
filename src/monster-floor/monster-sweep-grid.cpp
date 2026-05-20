@@ -310,7 +310,7 @@ public:
         }
 
         const auto can_open_door = monrace.behavior_flags.has_any_of({ MonsterBehaviorType::BASH_DOOR, MonsterBehaviorType::OPEN_DOOR });
-        const auto can_pass_wall = monrace.feature_flags.has(MonsterFeatureType::PASS_WALL) && (!monster.is_riding() || has_pass_wall(*creature_ptr));
+        const auto can_pass_wall = monrace.feature_flags.has(MonsterFeatureType::PASS_WALL) && (!monster.is_riding() || creature_ptr->has_pass_wall());
         const auto can_kill_wall = monrace.feature_flags.has(MonsterFeatureType::KILL_WALL) && !monster.is_riding();
 
         auto best = 999;
@@ -469,7 +469,7 @@ public:
         const auto dist_to_player = m_grid.get_distance(gf); // 経由グリッド数換算(Grid::dists)による距離
         const auto distance_to_player = Grid::calc_distance(m_pos, p_pos); // Grid::calc_distance()による直線距離
         const auto no_flow = monster.has_noflow() && (m_grid.get_cost(gf) > 2);
-        const auto can_pass_wall = monrace.feature_flags.has(MonsterFeatureType::PASS_WALL) && (!monster.is_riding() || has_pass_wall(*creature_ptr));
+        const auto can_pass_wall = monrace.feature_flags.has(MonsterFeatureType::PASS_WALL) && (!monster.is_riding() || creature_ptr->has_pass_wall());
         const auto can_kill_wall = monrace.feature_flags.has(MonsterFeatureType::KILL_WALL) && !monster.is_riding();
         const auto is_visible_from_player = m_grid.has_los() && projectable(floor, p_pos, m_pos);
         const auto can_see_player = los(floor, m_pos, p_pos) && projectable(floor, m_pos, p_pos);
