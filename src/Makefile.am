@@ -1465,6 +1465,7 @@ hengband_SOURCES = \
 	view/display-messages.cpp view/display-messages.h \
 	view/display-player-stat-info.cpp view/display-player-stat-info.h \
 	view/display-player-misc-info.cpp view/display-player-misc-info.h \
+	view/display-player-inventory-page.cpp view/display-player-inventory-page.h \
 	view/display-player-middle.cpp view/display-player-middle.h \
 	view/display-player.cpp view/display-player.h \
 	view/display-scores.cpp view/display-scores.h \
