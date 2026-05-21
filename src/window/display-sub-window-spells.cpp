@@ -60,7 +60,7 @@ static void display_spell_list(CreatureEntity &creature)
         put_str(_("名前", "Name"), y, x + 5);
         put_str(_("Lv   MP 失率 効果", "Lv Mana Fail Info"), y, x + 35);
 
-        switch (creature.pclass) {
+        switch (creature.get_pclass()) {
         case PlayerClassType::MINDCRAFTER:
             use_mind = MindKindType::MINDCRAFTER;
             break;
@@ -88,7 +88,7 @@ static void display_spell_list(CreatureEntity &creature)
 
         for (int i = 0; i < MAX_MIND_POWERS; i++) {
             byte a = TERM_WHITE;
-            const auto *mp_ptr = &class_info[enum2i(creature.pclass)];
+            const auto *mp_ptr = &class_info[enum2i(creature.get_pclass())];
             spell = mind_powers[static_cast<int>(use_mind)].info[i];
             if (spell.min_lev > plev) {
                 break;
@@ -127,11 +127,11 @@ static void display_spell_list(CreatureEntity &creature)
         return;
     }
 
-    if (REALM_NONE == creature.realm1) {
+    if (REALM_NONE == creature.get_realm1()) {
         return;
     }
 
-    for (int j = 0; j < ((creature.realm2 > REALM_NONE) ? 2 : 1); j++) {
+    for (int j = 0; j < ((creature.get_realm2() > REALM_NONE) ? 2 : 1); j++) {
         m[j] = 0;
         y = (j < 3) ? 0 : (m[j - 3] + 2);
         x = 27 * (j % 3);
@@ -139,14 +139,14 @@ static void display_spell_list(CreatureEntity &creature)
         for (int i = 0; i < 32; i++) {
             byte a = TERM_WHITE;
 
-            if (!is_magic((j < 1) ? creature.realm1 : creature.realm2)) {
-                s_ptr = &technic_info[((j < 1) ? creature.realm1 : creature.realm2) - MIN_TECHNIC][i % 32];
+            if (!is_magic((j < 1) ? creature.get_realm1() : creature.get_realm2())) {
+                s_ptr = &technic_info[((j < 1) ? creature.get_realm1() : creature.get_realm2()) - MIN_TECHNIC][i % 32];
             } else {
-                const auto *mp_ptr = &class_info[enum2i(creature.pclass)];
-                s_ptr = &mp_ptr->info[((j < 1) ? creature.realm1 : creature.realm2) - 1][i % 32];
+                const auto *mp_ptr = &class_info[enum2i(creature.get_pclass())];
+                s_ptr = &mp_ptr->info[((j < 1) ? creature.get_realm1() : creature.get_realm2()) - 1][i % 32];
             }
 
-            const auto spell_name = exe_spell(creature, (j < 1) ? creature.realm1 : creature.realm2, i % 32, SpellProcessType::NAME);
+            const auto spell_name = exe_spell(creature, (j < 1) ? creature.get_realm1() : creature.get_realm2(), i % 32, SpellProcessType::NAME);
             strcpy(name, spell_name->data());
 
             if (s_ptr->slevel >= 99) {
