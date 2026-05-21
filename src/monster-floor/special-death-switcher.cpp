@@ -115,7 +115,7 @@ static void on_dead_spawn_monsters(CreatureEntity &killer, MonsterDeath *md_ptr)
     }
     bool notice = false;
 
-    for (auto race : md_ptr->r_ptr->dead_spawns) {
+    for (auto race : md_ptr->monrace->dead_spawns) {
         int num = std::get<0>(race);
         int deno = std::get<1>(race);
         if (randint1(deno) > num) {
@@ -149,7 +149,7 @@ static void on_dead_spawn_monsters(CreatureEntity &killer, MonsterDeath *md_ptr)
  */
 static void on_dead_drop_kind_item(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
-    for (auto kind : md_ptr->r_ptr->drop_kinds) {
+    for (auto kind : md_ptr->monrace->drop_kinds) {
         ItemEntity item;
         int num = std::get<0>(kind);
         int deno = std::get<1>(kind);
@@ -208,7 +208,7 @@ static void on_dead_drop_kind_item(CreatureEntity &killer, MonsterDeath *md_ptr)
  */
 static void on_dead_drop_tval_item(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
-    for (auto kind : md_ptr->r_ptr->drop_tvals) {
+    for (auto kind : md_ptr->monrace->drop_tvals) {
         ItemEntity item;
         int num = std::get<0>(kind);
         int deno = std::get<1>(kind);
@@ -401,7 +401,7 @@ static void on_dead_can_angel(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
     auto is_drop_can = md_ptr->drop_chosen_item;
     auto is_silver = md_ptr->m_ptr->get_r_idx() == MonraceId::A_SILVER;
-    is_silver &= md_ptr->r_ptr->r_akills % 5 == 0;
+    is_silver &= md_ptr->monrace->r_akills % 5 == 0;
     is_drop_can &= (md_ptr->m_ptr->get_r_idx() == MonraceId::A_GOLD) || is_silver;
     if (!is_drop_can) {
         return;
@@ -503,7 +503,7 @@ static void on_dead_mimics(CreatureEntity &killer, MonsterDeath *md_ptr)
         return;
     }
 
-    switch (md_ptr->r_ptr->symbol_definition.character) {
+    switch (md_ptr->monrace->symbol_definition.character) {
     case '(':
         if (killer.get_floor()->dun_level <= 0) {
             return;
@@ -562,7 +562,7 @@ static void on_dead_swordfish(CreatureEntity &killer, MonsterDeath *md_ptr, Attr
 
 void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, AttributeFlags attribute_flags)
 {
-    auto &monrace = MonraceList::get_instance().get_monrace(md_ptr->ap_r_ptr->idx);
+    auto &monrace = MonraceList::get_instance().get_monrace(md_ptr->apparent_monrace->idx);
     const auto &summon_list = monrace.get_final_summons();
     if (!summon_list.empty()) {
         auto do_message = false;
@@ -581,26 +581,7 @@ void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, Attrib
         return;
     }
 
-    on_dead_drop_kind_item(creature, md_ptr);
-    on_dead_drop_tval_item(creature, md_ptr);
-    on_dead_spawn_monsters(creature, md_ptr);
-
-    if (md_ptr->r_ptr->kind_flags.has(MonsterKindType::NINJA)) {
-        on_dead_ninja(creature, md_ptr);
-        return;
-    }
-
-    if (creature.is_sushi_eater()) {
-        drop_sushi(creature, md_ptr);
-    }
-
-    switch (md_ptr->ap_r_ptr->idx) {
-    case MonraceId::EARTH_DESTROYER:
-        on_dead_earth_destroyer(creature, md_ptr);
-        return;
-    case MonraceId::BOTTLE_GNOME:
-        on_dead_bottle_gnome(creature, md_ptr);
-        return;
+    switch (md_ptr->apparent_monrace->idx) {
     case MonraceId::BLOODLETTER:
         on_dead_bloodletter(creature, md_ptr);
         return;

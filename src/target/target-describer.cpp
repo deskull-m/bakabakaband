@@ -109,7 +109,7 @@ bool show_gold_on_floor = false;
  */
 static std::string evaluate_monster_exp(CreatureEntity &creature, const CreatureEntity &monster)
 {
-    const auto &monrace = monster.get_appearance_monrace();
+    const auto &monrace = monster.get_apparent_monrace();
     if ((creature.get_level() >= PY_MAX_LEVEL) || CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
         return "**";
     }

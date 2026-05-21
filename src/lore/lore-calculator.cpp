@@ -90,25 +90,22 @@ void set_flags_for_full_knowledge(lore_type *lore_ptr)
         return;
     }
 
-    lore_ptr->drop_gold = lore_ptr->drop_item = ((lore_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_4D2) ? 8 : 0) + (lore_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_3D2) ? 6 : 0) + (lore_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_2D2) ? 4 : 0) + (lore_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_1D2) ? 2 : 0) + (lore_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_90) ? 1 : 0) + (lore_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_60) ? 1 : 0));
+    lore_ptr->drop_gold = lore_ptr->drop_item = ((lore_ptr->monrace->drop_flags.has(MonsterDropType::DROP_4D2) ? 8 : 0) + (lore_ptr->monrace->drop_flags.has(MonsterDropType::DROP_3D2) ? 6 : 0) + (lore_ptr->monrace->drop_flags.has(MonsterDropType::DROP_2D2) ? 4 : 0) + (lore_ptr->monrace->drop_flags.has(MonsterDropType::DROP_1D2) ? 2 : 0) + (lore_ptr->monrace->drop_flags.has(MonsterDropType::DROP_90) ? 1 : 0) + (lore_ptr->monrace->drop_flags.has(MonsterDropType::DROP_60) ? 1 : 0));
 
-    if (lore_ptr->r_ptr->drop_flags.has(MonsterDropType::ONLY_GOLD)) {
+    if (lore_ptr->monrace->drop_flags.has(MonsterDropType::ONLY_GOLD)) {
         lore_ptr->drop_item = 0;
     }
 
-    if (lore_ptr->r_ptr->drop_flags.has(MonsterDropType::ONLY_ITEM)) {
+    if (lore_ptr->monrace->drop_flags.has(MonsterDropType::ONLY_ITEM)) {
         lore_ptr->drop_gold = 0;
     }
 
-    lore_ptr->ability_flags = lore_ptr->r_ptr->ability_flags;
-    lore_ptr->aura_flags = lore_ptr->r_ptr->aura_flags;
-    lore_ptr->behavior_flags = lore_ptr->r_ptr->behavior_flags;
-    lore_ptr->visual_flags = lore_ptr->r_ptr->visual_flags;
-    lore_ptr->kind_flags = lore_ptr->r_ptr->kind_flags;
-    lore_ptr->era_flags = lore_ptr->r_ptr->era_flags;
-    lore_ptr->resistance_flags = lore_ptr->r_ptr->resistance_flags;
-    lore_ptr->feature_flags = lore_ptr->r_ptr->feature_flags;
-    lore_ptr->drop_flags = lore_ptr->r_ptr->drop_flags;
-    lore_ptr->special_flags = lore_ptr->r_ptr->special_flags;
-    lore_ptr->misc_flags = lore_ptr->r_ptr->misc_flags;
+    lore_ptr->ability_flags = lore_ptr->monrace->ability_flags;
+    lore_ptr->aura_flags = lore_ptr->monrace->aura_flags;
+    lore_ptr->behavior_flags = lore_ptr->monrace->behavior_flags;
+    lore_ptr->resistance_flags = lore_ptr->monrace->resistance_flags;
+    lore_ptr->feature_flags = lore_ptr->monrace->feature_flags;
+    lore_ptr->drop_flags = lore_ptr->monrace->drop_flags;
+    lore_ptr->special_flags = lore_ptr->monrace->special_flags;
+    lore_ptr->misc_flags = lore_ptr->monrace->misc_flags;
 }

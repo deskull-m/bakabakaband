@@ -342,10 +342,19 @@ public:
     MonraceDefinition &get_monrace() const;
 
     /*!
+     * @brief クリーチャーの実種族定義を shared_ptr で取得する
+     * @return 実種族定義への shared_ptr
+     */
+    std::shared_ptr<MonraceDefinition> get_monrace_shared();
+    std::shared_ptr<const MonraceDefinition> get_monrace_shared() const;
+
+    /*!
      * @brief クリーチャーの外見種族定義を取得する
      * @return 外見種族定義への参照（通常は get_monrace() と同じ、変身・誤認時は異なる）
      */
-    MonraceDefinition &get_appearance_monrace() const;
+    MonraceDefinition &get_apparent_monrace() const;
+    std::shared_ptr<MonraceDefinition> get_apparent_monrace_shared();
+    std::shared_ptr<const MonraceDefinition> get_apparent_monrace_shared() const;
 
     /*!
      * @brief クリーチャーの真の種族IDを取得する（カメレオン変身考慮）

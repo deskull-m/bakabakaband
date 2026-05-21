@@ -65,71 +65,71 @@ static std::vector<MonraceId> collect_monsters(short grp_cur, monster_lore_mode 
     const auto &monraces = MonraceList::get_instance();
     std::vector<MonraceId> monrace_ids;
     for (const auto &[monrace_id, monrace] : monraces) {
-        if (((mode != MONSTER_LORE_DEBUG) && (mode != MONSTER_LORE_RESEARCH)) && !cheat_know && !monrace.r_sights) {
+        if (((mode != MONSTER_LORE_DEBUG) && (mode != MONSTER_LORE_RESEARCH)) && !cheat_know && !monrace->r_sights) {
             continue;
         }
 
         if (grp_unique) {
-            if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::UNIQUE)) {
                 continue;
             }
         } else if (grp_riding) {
-            if (monrace.misc_flags.has_not(MonsterMiscType::RIDING)) {
+            if (monrace->misc_flags.has_not(MonsterMiscType::RIDING)) {
                 continue;
             }
         } else if (grp_wanted) {
             const auto &world = AngbandWorld::get_instance();
             auto wanted = world.knows_daily_bounty && (world.today_mon == monrace_id);
-            wanted |= monrace.is_bounty(false);
+            wanted |= monrace->is_bounty(false);
             if (!wanted) {
                 continue;
             }
         } else if (grp_amberite) {
-            if (monrace.kind_flags.has_not(MonsterKindType::AMBERITE)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::AMBERITE)) {
                 continue;
             }
         } else if (grp_chaosian) {
-            if (monrace.kind_flags.has_not(MonsterKindType::CHOASIAN)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::CHOASIAN)) {
                 continue;
             }
         } else if (grp_skeleton) {
-            if (monrace.kind_flags.has_not(MonsterKindType::SKELETON)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::SKELETON)) {
                 continue;
             }
         } else if (grp_zombie) {
-            if (monrace.kind_flags.has_not(MonsterKindType::ZOMBIE)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::ZOMBIE)) {
                 continue;
             }
         } else if (grp_cancer) {
-            if (monrace.kind_flags.has_not(MonsterKindType::CANCER)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::CANCER)) {
                 continue;
             }
         } else if (grp_fungas) {
-            if (monrace.kind_flags.has_not(MonsterKindType::FUNGAS)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::FUNGAS)) {
                 continue;
             }
         } else if (grp_turtle) {
-            if (monrace.kind_flags.has_not(MonsterKindType::TURTLE)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::TURTLE)) {
                 continue;
             }
         } else if (grp_mimic) {
-            if (monrace.kind_flags.has_not(MonsterKindType::MIMIC)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::MIMIC)) {
                 continue;
             }
         } else if (grp_ixitxachitl) {
-            if (monrace.kind_flags.has_not(MonsterKindType::IXITXACHITL)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::IXITXACHITL)) {
                 continue;
             }
         } else if (grp_naga) {
-            if (monrace.kind_flags.has_not(MonsterKindType::NAGA)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::NAGA)) {
                 continue;
             }
         } else if (grp_pervert) {
-            if (monrace.kind_flags.has_not(MonsterKindType::PERVERT)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::PERVERT)) {
                 continue;
             }
         } else {
-            if (angband_strchr(group_char.data(), monrace.symbol_definition.character) == nullptr) {
+            if (angband_strchr(group_char.data(), monrace->symbol_definition.character) == nullptr) {
                 continue;
             }
         }

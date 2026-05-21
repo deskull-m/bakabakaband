@@ -65,7 +65,7 @@ static void write_pet_death(CreatureEntity &creature, MonsterDeath *md_ptr)
 
 static void on_dead_explosion(CreatureEntity &creature, MonsterDeath *md_ptr)
 {
-    for (const auto &blow : md_ptr->r_ptr->blows) {
+    for (const auto &blow : md_ptr->monrace->blows) {
         if (blow.method != RaceBlowMethodType::EXPLODE) {
             continue;
         }
@@ -117,19 +117,19 @@ static void on_defeat_arena_monster(CreatureEntity &creature, MonsterDeath *md_p
 static void drop_corpse(CreatureEntity &creature, MonsterDeath *md_ptr)
 {
     const auto &floor = *creature.get_floor();
-    auto is_drop_corpse = one_in_(md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) ? 1 : 4);
-    is_drop_corpse &= md_ptr->r_ptr->drop_flags.has_any_of({ MonsterDropType::DROP_CORPSE, MonsterDropType::DROP_SKELETON, MonsterDropType::DROP_JUNK });
+    auto is_drop_corpse = one_in_(md_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE) ? 1 : 4);
+    is_drop_corpse &= md_ptr->monrace->drop_flags.has_any_of({ MonsterDropType::DROP_CORPSE, MonsterDropType::DROP_SKELETON });
     is_drop_corpse &= !(floor.inside_arena || AngbandSystem::get_instance().is_phase_out() || md_ptr->cloned || ((md_ptr->m_ptr->get_r_idx() == AngbandWorld::get_instance().today_mon) && md_ptr->m_ptr->is_pet()));
     if (!is_drop_corpse) {
         return;
     }
 
     bool corpse = false;
-    if (md_ptr->r_ptr->drop_flags.has_not(MonsterDropType::DROP_SKELETON)) {
+    if (md_ptr->monrace->drop_flags.has_not(MonsterDropType::DROP_SKELETON)) {
         corpse = true;
-    } else if (md_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_CORPSE) && md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
+    } else if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_CORPSE) && md_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE)) {
         corpse = true;
-    } else if (md_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_CORPSE)) {
+    } else if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_CORPSE)) {
         if ((0 - ((md_ptr->m_ptr->maxhp) / 4)) > md_ptr->m_ptr->hp) {
             if (one_in_(5)) {
                 corpse = true;
@@ -147,7 +147,7 @@ static void drop_corpse(CreatureEntity &creature, MonsterDeath *md_ptr)
     (void)drop_near(creature, item, md_ptr->get_position());
 
     try {
-        if (one_in_(md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) ? 1 : 4)) {
+        if (one_in_(md_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE) ? 1 : 4)) {
             item.generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::MONSTER_REMAINS, SV_SOUL }));
             item.pval = enum2i(md_ptr->m_ptr->get_r_idx());
             (void)drop_near(creature, item, md_ptr->get_position());
@@ -159,7 +159,7 @@ static void drop_corpse(CreatureEntity &creature, MonsterDeath *md_ptr)
 #endif
     }
 
-    if (md_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_JUNK)) {
+    if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_JUNK)) {
         ItemEntity item_junk({ ItemKindType::MONSTER_REMAINS, SV_JUNK });
         item_junk.pval = enum2i(md_ptr->m_ptr->get_r_idx());
         (void)drop_near(creature, item_junk, md_ptr->get_position());
@@ -175,7 +175,7 @@ static void drop_corpse(CreatureEntity &creature, MonsterDeath *md_ptr)
 static void drop_artifact_from_unique(CreatureEntity &creature, MonsterDeath *md_ptr)
 {
     const auto is_wizard = AngbandWorld::get_instance().wizard;
-    for (const auto &[a_idx, chance] : md_ptr->r_ptr->drop_artifacts) {
+    for (const auto &[a_idx, chance] : md_ptr->monrace->get_drop_artifacts()) {
         if (!is_wizard && !evaluate_percent(chance)) {
             continue;
         }
@@ -231,7 +231,7 @@ static void drop_artifacts(CreatureEntity &creature, MonsterDeath *md_ptr)
     drop_artifact_from_unique(creature, md_ptr);
     const auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
-    if (md_ptr->r_ptr->misc_flags.has_not(MonsterMiscType::GUARDIAN) || (dungeon.final_guardian != md_ptr->m_ptr->get_r_idx())) {
+    if (md_ptr->monrace->misc_flags.has_not(MonsterMiscType::GUARDIAN) || (dungeon.final_guardian != md_ptr->m_ptr->get_r_idx())) {
         return;
     }
 
@@ -248,15 +248,15 @@ static void drop_artifacts(CreatureEntity &creature, MonsterDeath *md_ptr)
 static void decide_drop_quality(MonsterDeath *md_ptr)
 {
     md_ptr->mo_mode = 0L;
-    if (md_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_GOOD)) {
+    if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_GOOD)) {
         md_ptr->mo_mode |= AM_GOOD;
     }
 
-    if (md_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_GREAT)) {
+    if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_GREAT)) {
         md_ptr->mo_mode |= (AM_GOOD | AM_GREAT);
     }
 
-    if (md_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_NASTY)) {
+    if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_NASTY)) {
         md_ptr->mo_mode |= AM_NASTY;
     }
 }
@@ -264,36 +264,31 @@ static void decide_drop_quality(MonsterDeath *md_ptr)
 static int decide_drop_numbers(CreatureEntity &creature, MonsterDeath *md_ptr, const bool drop_item, const bool inside_arena)
 {
     int drop_numbers = 0;
-    if (md_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_60) && evaluate_percent(60)) {
+    if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_60) && evaluate_percent(60)) {
         drop_numbers++;
     }
 
-    if (md_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_90) && evaluate_percent(90)) {
+    if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_90) && evaluate_percent(90)) {
         drop_numbers++;
     }
 
-    if (md_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_1D2)) {
+    if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_1D2)) {
         drop_numbers += Dice::roll(1, 2);
     }
 
-    if (md_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_2D2)) {
+    if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_2D2)) {
         drop_numbers += Dice::roll(2, 2);
     }
 
-    if (md_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_3D2)) {
+    if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_3D2)) {
         drop_numbers += Dice::roll(3, 2);
     }
 
-    if (md_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_4D2)) {
+    if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_4D2)) {
         drop_numbers += Dice::roll(4, 2);
     }
 
-    if (md_ptr->m_ptr->is_santa()) {
-        drop_numbers += Dice::roll(3, 3);
-    }
-
-    // クローンは、クローン地獄内のユニークモンスター以外はドロップしない
-    if (md_ptr->cloned && !(md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) && (creature.get_floor()->quest_number == QuestId::CLONE))) {
+    if (md_ptr->cloned && md_ptr->monrace->kind_flags.has_not(MonsterKindType::UNIQUE)) {
         drop_numbers = 0;
     }
 
@@ -301,11 +296,11 @@ static int decide_drop_numbers(CreatureEntity &creature, MonsterDeath *md_ptr, c
         drop_numbers = 0;
     }
 
-    if (!drop_item && !md_ptr->r_ptr->symbol_char_is_any_of("$")) {
+    if (!drop_item && !md_ptr->monrace->symbol_char_is_any_of("$")) {
         drop_numbers = 0;
     }
 
-    if (md_ptr->r_ptr->misc_flags.has(MonsterMiscType::MULTIPLY) && (md_ptr->r_ptr->r_akills > 1024)) {
+    if (md_ptr->monrace->misc_flags.has(MonsterMiscType::MULTIPLY) && (md_ptr->monrace->r_akills > 1024)) {
         drop_numbers = 0;
     }
 
@@ -335,7 +330,7 @@ static void drop_items_golds(CreatureEntity &creature, MonsterDeath *md_ptr, int
 
     floor.object_level = floor.base_level;
     auto visible = md_ptr->m_ptr->is_visible_on_map() && !creature.is_hallucinated();
-    visible |= (md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE));
+    visible |= (md_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE));
     if (visible && (dump_item || dump_gold)) {
         md_ptr->m_ptr->make_lore_treasure(dump_item, dump_gold);
     }
@@ -402,13 +397,13 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
     }
 
     // プレイヤーしかユニークを倒せないのでここで時間を記録
-    if (md.r_ptr->kind_flags.has(MonsterKindType::UNIQUE) && !md.m_ptr->is_cloned()) {
+    if (md.monrace->kind_flags.has(MonsterKindType::UNIQUE) && !md.m_ptr->has_constant_flag(MonsterConstantFlagType::CLONED)) {
         world.play_time.update();
-        md.r_ptr->defeat_time = world.play_time.elapsed_sec();
-        md.r_ptr->defeat_level = creature.get_level();
+        md.monrace->defeat_time = world.play_time.elapsed_sec();
+        md.monrace->defeat_level = creature.get_level();
     }
 
-    if (md.r_ptr->brightness_flags.has_any_of(ld_mask)) {
+    if (md.monrace->brightness_flags.has_any_of(ld_mask)) {
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
     }
 
@@ -416,7 +411,7 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
     on_dead_explosion(creature, &md);
     if (md.m_ptr->is_chameleon()) {
         md.m_ptr->reset_chameleon_polymorph();
-        md.r_ptr = &md.m_ptr->get_monrace();
+        md.monrace = md.m_ptr->get_monrace_shared();
     }
 
     // ジョークオプション：モンスターの墓石を立てる
@@ -434,14 +429,14 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
         msg_print(_("地面に落とされた。", "You have fallen from the pet you were riding."));
     }
 
-    wc_ptr->plus_collapsion(md.r_ptr->plus_collapse);
+    wc_ptr->plus_collapsion(md.monrace->plus_collapse);
 
     // オディオアライアンスがNONLIVINGでないモンスター死亡時に戦力を増加
-    if (md.r_ptr->kind_flags.has_not(MonsterKindType::NONLIVING)) {
+    if (md.monrace->kind_flags.has_not(MonsterKindType::NONLIVING)) {
         auto it = alliance_list.find(AllianceType::ODIO);
         if (it != alliance_list.end()) {
             // モンスターのレベルに応じて戦力を増加（レベル * 10）
-            const auto power_gain = md.r_ptr->level * 10;
+            const auto power_gain = md.monrace->level * 10;
             it->second->base_power += power_gain;
         }
     }
@@ -452,9 +447,9 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
     switch_special_death(creature, &md, attribute_flags);
     drop_artifacts(creature, &md);
     const auto drop_numbers = decide_drop_numbers(creature, &md, drop_item, floor.inside_arena);
-    floor.object_level = (floor.dun_level + md.r_ptr->level) / 2;
+    floor.object_level = (floor.dun_level + md.monrace->level) / 2;
     drop_items_golds(creature, &md, drop_numbers);
-    if ((md.r_ptr->misc_flags.has_not(MonsterMiscType::QUESTOR)) || AngbandSystem::get_instance().is_phase_out() || (md.m_ptr->get_r_idx() != MonraceId::MELKO) || md.cloned) {
+    if ((md.monrace->misc_flags.has_not(MonsterMiscType::QUESTOR)) || AngbandSystem::get_instance().is_phase_out() || (md.m_ptr->get_r_idx() != MonraceId::SERPENT) || md.cloned) {
         return;
     }
 

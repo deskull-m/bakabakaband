@@ -73,9 +73,9 @@ player_attack_type::player_attack_type(FloorType &floor, POSITION y, POSITION x,
     , magical_effect(MagicalBrandEffectType::NONE)
 {
     this->m_idx = this->g_ptr->m_idx;
-    this->m_ptr = &floor.get_monster(this->g_ptr->m_idx);
+    this->m_ptr = &floor.m_list[this->g_ptr->m_idx];
     this->r_idx = this->m_ptr->get_r_idx();
-    this->r_ptr = &this->m_ptr->get_monrace();
+    this->monrace = this->m_ptr->get_monrace_shared();
     this->ma_ptr = &ma_blows[0];
 }
 
@@ -542,8 +542,8 @@ void exe_player_attack_to_monster(CreatureEntity &creature, POSITION y, POSITION
     player_attack_type tmp_attack(*creature.get_floor(), y, x, hand, mode, fear, mdeath);
     auto pa_ptr = &tmp_attack;
 
-    const auto is_human = pa_ptr->r_ptr->symbol_char_is_any_of("p");
-    const auto is_lowlevel = (pa_ptr->r_ptr->level < (creature.get_level() - 15));
+    const auto is_human = pa_ptr->monrace->symbol_char_is_any_of("p");
+    const auto is_lowlevel = (pa_ptr->monrace->level < (creature.get_level() - 15));
 
     attack_classify(creature, pa_ptr);
     get_attack_exp(creature, pa_ptr);
@@ -554,8 +554,8 @@ void exe_player_attack_to_monster(CreatureEntity &creature, POSITION y, POSITION
 
     int chance = calc_attack_quality(creature, pa_ptr);
     auto *o_ptr = creature.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
-    const auto is_zantetsu_nullified = o_ptr->is_specific_artifact(FixedArtifactId::ZANTETSU) && pa_ptr->r_ptr->symbol_char_is_any_of("j");
-    const auto is_ej_nullified = o_ptr->is_specific_artifact(FixedArtifactId::EXCALIBUR_J) && pa_ptr->r_ptr->symbol_char_is_any_of("S");
+    const auto is_zantetsu_nullified = o_ptr->is_specific_artifact(FixedArtifactId::ZANTETSU) && pa_ptr->monrace->symbol_char_is_any_of("j");
+    const auto is_ej_nullified = o_ptr->is_specific_artifact(FixedArtifactId::EXCALIBUR_J) && pa_ptr->monrace->symbol_char_is_any_of("S");
     calc_num_blow(creature, pa_ptr);
 
     /* Attack once for each legal blow */

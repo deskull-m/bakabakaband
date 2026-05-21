@@ -36,17 +36,17 @@ void UniqueList::sweep()
 {
     auto &monraces = MonraceList::get_instance();
     for (auto &[monrace_id, monrace] : monraces) {
-        if (!monrace.is_valid() || !monrace.should_display(this->is_alive)) {
+        if (!monrace->is_valid() || !monrace->should_display(this->is_alive)) {
             continue;
         }
 
-        if (!monrace.level) {
+        if (!monrace->level) {
             this->num_uniques_surface++;
             this->monrace_ids.push_back(monrace_id);
             continue;
         }
 
-        const auto lev = (monrace.level - 1) / 10;
+        const auto lev = (monrace->level - 1) / 10;
         if (lev >= 10) {
             this->num_uniques_over100++;
             this->monrace_ids.push_back(monrace_id);

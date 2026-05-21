@@ -525,7 +525,7 @@ static void update_invisible_monster(CreatureEntity &creature, um_type *um_ptr, 
     }
 
     const auto &world = AngbandWorld::get_instance();
-    if (world.is_loading_now && world.character_dungeon && !AngbandSystem::get_instance().is_phase_out() && monster.get_appearance_monrace().misc_flags.has(MonsterMiscType::ELDRITCH_HORROR)) {
+    if (world.is_loading_now && world.character_dungeon && !AngbandSystem::get_instance().is_phase_out() && monster.get_apparent_monrace().misc_flags.has(MonsterMiscType::ELDRITCH_HORROR)) {
         monster.set_temporary_flag(MonsterTemporaryFlagType::SANITY_BLAST);
     }
 
@@ -586,8 +586,8 @@ void update_monster(CreatureEntity &creature, MONSTER_IDX m_idx, bool full)
     um_type tmp_um;
     um_type *um_ptr = initialize_um_type(creature, &tmp_um, m_idx, full);
     if (disturb_high) {
-        auto *ap_r_ptr = &um_ptr->m_ptr->get_appearance_monrace();
-        if (ap_r_ptr->r_tkills && ap_r_ptr->level >= creature.get_level()) {
+        const auto &apparent_monrace = um_ptr->m_ptr->get_apparent_monrace();
+        if (apparent_monrace.r_tkills && apparent_monrace.level >= creature.get_level()) {
             um_ptr->do_disturb = true;
         }
     }
