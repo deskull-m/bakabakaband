@@ -194,6 +194,29 @@ const player_personality *CreatureEntity::get_personality_info() const
     return &null_personality;
 }
 
+const player_race_info *CreatureEntity::get_race_info() const
+{
+    if (this->race) {
+        return this->race;
+    }
+
+    // モンスター等で race ポインタが未設定の場合、空のフォールバックを返す。
+    // title が空文字列となるためモンスター c コマンド 3 ページ目の表示で
+    // クラッシュしない (旧コードでは null deref で UB だった)。
+    static const player_race_info null_race{};
+    return &null_race;
+}
+
+const player_class_info *CreatureEntity::get_class_info() const
+{
+    if (this->pclass_ref) {
+        return this->pclass_ref;
+    }
+
+    static const player_class_info null_class{};
+    return &null_class;
+}
+
 bool CreatureEntity::has_living_flag(bool is_appearance) const
 {
     const auto &monrace = is_appearance ? this->get_appearance_monrace() : this->get_monrace();

@@ -2786,10 +2786,7 @@ public:
      *          モンスター時は nullptr。将来モンスター側でも種族情報を
      *          返す形に override できる。
      */
-    virtual const player_race_info *get_race_info() const
-    {
-        return this->race;
-    }
+    virtual const player_race_info *get_race_info() const;
     /*!
      * @brief 性格情報ポインタ
      */
@@ -2798,10 +2795,7 @@ public:
     /*!
      * @brief 職業情報ポインタ
      */
-    virtual const player_class_info *get_class_info() const
-    {
-        return this->pclass_ref;
-    }
+    virtual const player_class_info *get_class_info() const;
     /*!
      * @brief 赤外線視能力の強さ
      */
