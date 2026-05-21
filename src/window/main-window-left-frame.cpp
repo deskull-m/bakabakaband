@@ -48,7 +48,7 @@ void print_title(CreatureEntity &creature)
             p = _("***勝利者***", "***WINNER***");
         }
     } else {
-        p = player_titles.at(creature.pclass).at((creature.get_level() - 1) / 5);
+        p = player_titles.at(creature.get_pclass()).at((creature.get_level() - 1) / 5);
     }
 
     print_field(p, ROW_TITLE, COL_TITLE);

@@ -227,7 +227,7 @@ static void dump_blue_mage(CreatureEntity &creature, FILE *fff)
  */
 void dump_aux_class_special(CreatureEntity &creature, FILE *fff)
 {
-    switch (creature.pclass) {
+    switch (creature.get_pclass()) {
     case PlayerClassType::MAGIC_EATER: {
         dump_magic_eater(creature, fff);
         return;
