@@ -38,6 +38,7 @@
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "view/display-characteristic.h"
+#include "view/display-player-inventory-page.h"
 #include "view/display-player-middle.h"
 #include "view/display-player-misc-info.h"
 #include "view/display-player-stat-info.h"
@@ -76,6 +77,11 @@ static bool display_player_info(CreatureEntity &creature, int mode)
     }
 
     if (mode == 5) {
+        display_player_inventory_page(creature);
+        return true;
+    }
+
+    if (mode == 6) {
         TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, tl::nullopt);
         do_cmd_knowledge_mutations(creature);
         return true;
@@ -338,7 +344,9 @@ tl::optional<int> display_player(CreatureEntity &creature, const int tmp_mode)
     auto has_any_mutation = (creature.muta.any() || has_good_luck(creature) || has_pervert_attraction(creature)) && display_mutations;
     // モンスター閲覧時もページ送りを許可。プレイヤー前提の値はサブ関数側で
     // 0/空フォールバックされる（ENTRY_RACE/CLASS が「なし」になるなど）。
-    auto mode = has_any_mutation ? tmp_mode % 6 : tmp_mode % 5;
+    // ページ構成: 0=基本ステータス, 1=キャラクタ生い立ち, 2=能力詳細1,
+    //            3=能力詳細2, 4=能力詳細3, 5=装備＆所持品, 6=突然変異(任意)
+    auto mode = has_any_mutation ? tmp_mode % 7 : tmp_mode % 6;
     {
         TermOffsetSetter tos(0, 0);
         clear_from(0);
