@@ -7,7 +7,6 @@
 
 #include "autopick/autopick-matcher.h"
 #include "autopick/autopick-flags-table.h"
-#include "autopick/autopick-key-flag-process.h"
 #include "autopick/autopick-util.h"
 #include "inventory/inventory-slot-types.h"
 #include "object-enchant/item-feeling.h"
