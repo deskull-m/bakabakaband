@@ -1,5 +1,8 @@
 #pragma once
 
-#include "system/angband.h"
+#include <cstdint>
+#include <string>
+#include <string_view>
+#include <vector>
 
-int16_t tokenize(char *buf, int16_t num, char **tokens);
+std::vector<std::string> tokenize(std::string_view buf, size_t num);

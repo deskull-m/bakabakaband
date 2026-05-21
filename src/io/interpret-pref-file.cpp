@@ -14,6 +14,7 @@
 #include "io/input-key-requester.h"
 #include "io/macro-configurations-store.h"
 #include "io/tokenizer.h"
+#include "locale/language-switcher.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
@@ -46,16 +47,16 @@ static void add_history_from_pref_line(std::string_view t)
  * @param buf バッファ
  * @return 解釈に成功したか否か
  */
-static bool interpret_r_token(char *buf)
+static bool interpret_r_token(std::string_view buf)
 {
-    char *zz[16];
-    if (tokenize(buf + 2, 3, zz) != 3) {
+    const auto tokens = tokenize(buf.substr(2), 3);
+    if (tokens.size() != 3) {
         return false;
     }
 
-    const auto i = std::stoi(zz[0], nullptr, 0);
-    const auto n1 = static_cast<uint8_t>(std::stoi(zz[1], nullptr, 0));
-    const auto n2 = static_cast<char>(std::stoi(zz[2], nullptr, 0));
+    const auto i = std::stoi(tokens[0], nullptr, 0);
+    const auto n1 = static_cast<uint8_t>(std::stoi(tokens[1], nullptr, 0));
+    const auto n2 = static_cast<char>(std::stoi(tokens[2], nullptr, 0));
     auto &monraces = MonraceList::get_instance();
     if (i >= std::ssize(monraces)) {
         return false;
@@ -79,16 +80,16 @@ static bool interpret_r_token(char *buf)
  * @param buf バッファ
  * @return 解釈に成功したか否か
  */
-static bool interpret_k_token(char *buf)
+static bool interpret_k_token(std::string_view buf)
 {
-    char *zz[16];
-    if (tokenize(buf + 2, 3, zz) != 3) {
+    const auto tokens = tokenize(buf.substr(2), 3);
+    if (tokens.size() != 3) {
         return false;
     }
 
-    const auto i = static_cast<short>(std::stoi(zz[0], nullptr, 0));
-    const auto color = static_cast<uint8_t>(std::stoi(zz[1], nullptr, 0));
-    const auto character = static_cast<char>(std::stoi(zz[2], nullptr, 0));
+    const auto i = static_cast<short>(std::stoi(tokens[0], nullptr, 0));
+    const auto color = static_cast<uint8_t>(std::stoi(tokens[1], nullptr, 0));
+    const auto character = static_cast<char>(std::stoi(tokens[2], nullptr, 0));
     auto &baseitems = BaseitemList::get_instance();
     if (i >= static_cast<int>(baseitems.size())) {
         return false;
@@ -111,13 +112,13 @@ static bool interpret_k_token(char *buf)
  * @brief トークン数によって地形の文字形と色を決定する
  * @param i 地形種別
  * @param num トークン数
- * @param zz トークン内容
+ * @param tokens トークン内容
  */
-static void decide_feature_type(int i, int num, char **zz)
+static void decide_feature_type(int i, int num, const std::vector<std::string> &tokens)
 {
     auto &terrain = TerrainList::get_instance().get_terrain(static_cast<short>(i));
-    const auto color_token = static_cast<uint8_t>(std::stoi(zz[1], nullptr, 0));
-    const auto character_token = static_cast<char>(std::stoi(zz[2], nullptr, 0));
+    const auto color_token = static_cast<uint8_t>(std::stoi(tokens[1], nullptr, 0));
+    const auto character_token = static_cast<char>(std::stoi(tokens[2], nullptr, 0));
     const auto has_character_token = character_token != '\0';
 
     /* Allow TERM_DARK text */
@@ -145,8 +146,8 @@ static void decide_feature_type(int i, int num, char **zz)
     case F_LIT_MAX * 2 + 1:
         /* Use desired lighting */
         for (auto j = F_LIT_NS_BEGIN; j < F_LIT_MAX; j++) {
-            const auto color = static_cast<uint8_t>(std::stoi(zz[j * 2 + 1], nullptr, 0));
-            const auto character = static_cast<char>(std::stoi(zz[j * 2 + 2], nullptr, 0));
+            const auto color = static_cast<uint8_t>(std::stoi(tokens[j * 2 + 1], nullptr, 0));
+            const auto character = static_cast<char>(std::stoi(tokens[j * 2 + 2], nullptr, 0));
             const auto has_character = character != '\0';
             auto &symbol = terrain.symbol_configs[j];
 
@@ -175,25 +176,24 @@ static void decide_feature_type(int i, int num, char **zz)
  * "F:<num>:<a>/<c>:LIT"
  * "F:<num>:<a>/<c>:<la>/<lc>:<da>/<dc>"
  */
-static bool interpret_f_token(char *buf)
+static bool interpret_f_token(std::string_view buf)
 {
-    char *zz[16];
-    int num = tokenize(buf + 2, F_LIT_MAX * 2 + 1, zz);
-
+    const auto tokens = tokenize(buf.substr(2), F_LIT_MAX * 2 + 1);
+    const auto num = tokens.size();
     if ((num != 3) && (num != 4) && (num != F_LIT_MAX * 2 + 1)) {
         return false;
     }
 
-    if ((num == 4) && !streq(zz[3], "LIT")) {
+    if ((num == 4) && tokens[3] != "LIT") {
         return false;
     }
 
-    int i = (int)strtol(zz[0], nullptr, 0);
+    const auto i = std::stoi(tokens[0], nullptr, 0);
     if (i >= static_cast<int>(TerrainList::get_instance().size())) {
         return false;
     }
 
-    decide_feature_type(i, num, zz);
+    decide_feature_type(i, num, tokens);
     return true;
 }
 
@@ -202,16 +202,16 @@ static bool interpret_f_token(char *buf)
  * @param buf バッファ
  * @return 解釈に成功したか否か
  */
-static bool interpret_s_token(char *buf)
+static bool interpret_s_token(std::string_view buf)
 {
-    char *zz[16];
-    if (tokenize(buf + 2, 3, zz) != 3) {
+    const auto tokens = tokenize(buf.substr(2), 3);
+    if (tokens.size() != 3) {
         return false;
     }
 
-    const auto num = std::stoi(zz[0], nullptr, 0);
-    const auto color = static_cast<uint8_t>(std::stoi(zz[1], nullptr, 0));
-    const auto character = static_cast<char>(std::stoi(zz[2], nullptr, 0));
+    const auto num = std::stoi(tokens[0], nullptr, 0);
+    const auto color = static_cast<uint8_t>(std::stoi(tokens[1], nullptr, 0));
+    const auto character = static_cast<char>(std::stoi(tokens[2], nullptr, 0));
     ds_bolt[num] = DisplaySymbol(color, character);
     return true;
 }
@@ -221,24 +221,24 @@ static bool interpret_s_token(char *buf)
  * @param buf バッファ
  * @return 解釈に成功したか否か
  */
-static bool interpret_u_token(char *buf)
+static bool interpret_u_token(std::string_view buf)
 {
-    char *zz[16];
-    if (tokenize(buf + 2, 3, zz) != 3) {
+    const auto tokens = tokenize(buf.substr(2), 3);
+    if (tokens.size() != 3) {
         return false;
     }
 
-    const auto tval = i2enum<ItemKindType>(std::stoi(zz[0], nullptr, 0));
-    const auto n1 = static_cast<uint8_t>(std::stoi(zz[1], nullptr, 0));
-    const auto n2 = static_cast<char>(strtol(zz[2], nullptr, 0));
+    const auto tval = i2enum<ItemKindType>(std::stoi(tokens[0], nullptr, 0));
+    const auto color = static_cast<uint8_t>(std::stoi(tokens[1], nullptr, 0));
+    const auto character = static_cast<char>(std::stoi(tokens[2], nullptr, 0));
     for (auto &baseitem : BaseitemList::get_instance()) {
         if (baseitem.is_valid() && (baseitem.bi_key.tval() == tval)) {
-            if (n1) {
-                baseitem.symbol_definition.color = n1;
+            if (color) {
+                baseitem.symbol_definition.color = color;
             }
 
-            if (n2) {
-                baseitem.symbol_definition.character = n2;
+            if (character) {
+                baseitem.symbol_definition.character = character;
             }
         }
     }
@@ -251,17 +251,17 @@ static bool interpret_u_token(char *buf)
  * @param buf バッファ
  * @return 解釈に成功したか否か
  */
-static bool interpret_e_token(char *buf)
+static bool interpret_e_token(std::string_view buf)
 {
-    char *zz[16];
-    if (tokenize(buf + 2, 2, zz) != 2) {
+    const auto tokens = tokenize(buf.substr(2), 2);
+    if (tokens.size() != 2) {
         return false;
     }
 
-    int j = (byte)strtol(zz[0], nullptr, 0) % 128;
-    TERM_COLOR n1 = (TERM_COLOR)strtol(zz[1], nullptr, 0);
-    if (n1) {
-        tval_to_attr[j] = n1;
+    const auto num = std::stoi(tokens[0], nullptr, 0) % 128;
+    const auto color = static_cast<uint8_t>(std::stoi(tokens[1], nullptr, 0));
+    if (color > 0) {
+        tval_to_attr[num] = color;
     }
     return true;
 }
@@ -271,10 +271,10 @@ static bool interpret_e_token(char *buf)
  * @param buf バッファ
  * @return エラーコード
  */
-static int interpret_p_token(char *buf)
+static int interpret_p_token(std::string_view buf)
 {
     char tmp[1024];
-    text_to_ascii(tmp, buf + 2, sizeof(tmp));
+    text_to_ascii(tmp, buf.substr(2), sizeof(tmp));
     return macro_add(tmp, macro_buffers.data());
 }
 
@@ -283,20 +283,20 @@ static int interpret_p_token(char *buf)
  * @param buf バッファ
  * @return 解釈に成功したか否か
  */
-static bool interpret_c_token(char *buf)
+static bool interpret_c_token(std::string_view buf)
 {
-    char *zz[16];
-    if (tokenize(buf + 2, 2, zz) != 2) {
+    const auto tokens = tokenize(buf.substr(2), 2);
+    if (tokens.size() != 2) {
         return false;
     }
 
-    const auto mode = i2enum<KeymapMode>(std::stoi(zz[0], nullptr, 0));
+    const auto mode = i2enum<KeymapMode>(std::stoi(tokens[0], nullptr, 0));
     if ((mode < KeymapMode::ORIGINAL) || (mode > KeymapMode::ROGUE)) {
         return false;
     }
 
     char tmp[1024];
-    text_to_ascii(tmp, zz[1], sizeof(tmp));
+    text_to_ascii(tmp, tokens[1], sizeof(tmp));
     if (!tmp[0] || tmp[1]) {
         return false;
     }
@@ -311,18 +311,18 @@ static bool interpret_c_token(char *buf)
  * @param buf バッファ
  * @return 解釈に成功したか否か
  */
-static bool interpret_v_token(char *buf)
+static bool interpret_v_token(std::string_view buf)
 {
-    char *zz[16];
-    if (tokenize(buf + 2, 5, zz) != 5) {
+    const auto tokens = tokenize(buf.substr(2), 5);
+    if (tokens.size() != 5) {
         return false;
     }
 
-    int i = (byte)strtol(zz[0], nullptr, 0);
-    angband_color_table[i][0] = (byte)strtol(zz[1], nullptr, 0);
-    angband_color_table[i][1] = (byte)strtol(zz[2], nullptr, 0);
-    angband_color_table[i][2] = (byte)strtol(zz[3], nullptr, 0);
-    angband_color_table[i][3] = (byte)strtol(zz[4], nullptr, 0);
+    const auto num = std::stoi(tokens[0], nullptr, 0);
+    angband_color_table[num][0] = static_cast<uint8_t>(std::stoi(tokens[1], nullptr, 0));
+    angband_color_table[num][1] = static_cast<uint8_t>(std::stoi(tokens[2], nullptr, 0));
+    angband_color_table[num][2] = static_cast<uint8_t>(std::stoi(tokens[3], nullptr, 0));
+    angband_color_table[num][3] = static_cast<uint8_t>(std::stoi(tokens[4], nullptr, 0));
     return true;
 }
 
@@ -335,18 +335,18 @@ static bool interpret_v_token(char *buf)
  * Process "Y:<str>" -- turn option on
  * オプションの名前が正しくない時も、パース自体は続行する (V2以前からの仕様)
  */
-static void interpret_xy_token(CreatureEntity &creature, char *buf)
+static void interpret_xy_token(CreatureEntity &creature, std::string_view buf)
 {
     const auto &world = AngbandWorld::get_instance();
     for (auto &option : option_info) {
-        if (option.text != buf + 2) {
+        if (option.text != buf.substr(2)) {
             continue;
         }
 
         int os = option.flag_position;
         int ob = option.offset;
         if ((creature.playing || world.character_xtra) && (GameOptionPage::BIRTH == option.page) && !world.wizard) {
-            msg_format(_("初期オプションは変更できません! '%s'", "Birth options can not be changed! '%s'"), buf);
+            msg_print(_("初期オプションは変更できません! '{}'", "Birth options can not be changed! '{}'"), buf);
             msg_erase();
             return;
         }
@@ -362,14 +362,14 @@ static void interpret_xy_token(CreatureEntity &creature, char *buf)
         return;
     }
 
-    msg_format(_("オプションの名前が正しくありません： %s", "Ignored invalid option: %s"), buf);
+    msg_print(_("オプションの名前が正しくありません： {}", "Ignored invalid option: {}"), buf);
     msg_erase();
 }
 
 /*!
  * @brief Zトークンの解釈 / Process "Z:<type>:<str>" -- set spell color
  * @param line トークン1行
- * @param zz トークン保管文字列
+ * @param tokens トークン保管文字列
  * @return 解釈に成功したか
  */
 static bool interpret_z_token(std::string_view line)
@@ -395,10 +395,10 @@ static bool interpret_z_token(std::string_view line)
 /*!
  * @brief Tトークンの解釈 / Process "T:<template>:<modifier chr>:<modifier name>:..." for 4 tokens
  * @param num_tokens トークン数
- * @param zz トークン保管文字列
+ * @param tokens トークン保管文字列
  * @return 解釈に成功したか否か
  */
-static bool decide_template_modifier(size_t num_tokens, char **zz)
+static bool decide_template_modifier(size_t num_tokens, const std::vector<std::string> &tokens)
 {
     if (macro_template) {
         const size_t macro_modifier_length = macro_modifier_chr ? macro_modifier_chr->length() : 0;
@@ -417,20 +417,20 @@ static bool decide_template_modifier(size_t num_tokens, char **zz)
         max_macrotrigger = 0;
     }
 
-    if (*zz[0] == '\0') {
+    if (tokens[0].empty()) {
         return true;
     }
 
-    size_t zz_length = strlen(zz[1]);
+    auto zz_length = tokens[1].length();
     zz_length = std::min(MAX_MACRO_MOD, zz_length);
     if (2 + zz_length != num_tokens) {
         return false;
     }
 
-    macro_template = zz[0];
-    macro_modifier_chr = zz[1];
+    macro_template = tokens[0];
+    macro_modifier_chr = tokens[1];
     for (size_t i = 0; i < zz_length; i++) {
-        macro_modifier_names[i] = zz[2 + i];
+        macro_modifier_names[i] = tokens[2 + i];
     }
 
     return true;
@@ -439,10 +439,10 @@ static bool decide_template_modifier(size_t num_tokens, char **zz)
 /*!
  * @brief Tトークンの解釈 / Process "T:<trigger>:<keycode>:<shift-keycode>" for 2 or 3 tokens
  * @param tok トークン数
- * @param zz トークン保管文字列
+ * @param tokens トークン保管文字列
  * @return 解釈に成功したか否か
  */
-static bool interpret_macro_keycodes(int tok, char **zz)
+static bool interpret_macro_keycodes(int tok, const std::vector<std::string> &tokens)
 {
     if (max_macrotrigger >= MAX_MACRO_TRIG) {
         msg_print(_("マクロトリガーの設定が多すぎます!", "Too many macro triggers!"));
@@ -452,23 +452,28 @@ static bool interpret_macro_keycodes(int tok, char **zz)
     auto m = max_macrotrigger;
     max_macrotrigger++;
     std::string t;
-    const auto *s = zz[0];
-    while (*s != '\0') {
-        if ('\\' == *s) {
-            s++;
+    t.reserve(tokens[0].size());
+    std::string_view s = tokens[0];
+    while (!s.empty()) {
+        if (s.starts_with('\\')) {
+            s.remove_prefix(1);
+            if (s.empty()) {
+                break;
+            }
         }
 
-        t.push_back(*s++);
+        t.push_back(s[0]);
+        s.remove_prefix(1);
     }
 
     macro_trigger_names[m] = std::move(t);
-    macro_trigger_keycodes.at(ShiftStatus::OFF).at(m) = zz[1];
+    macro_trigger_keycodes.at(ShiftStatus::OFF).at(m) = tokens[1];
     if (tok == 3) {
-        macro_trigger_keycodes.at(ShiftStatus::ON).at(m) = zz[2];
+        macro_trigger_keycodes.at(ShiftStatus::ON).at(m) = tokens[2];
         return true;
     }
 
-    macro_trigger_keycodes.at(ShiftStatus::ON).at(m) = zz[1];
+    macro_trigger_keycodes.at(ShiftStatus::ON).at(m) = tokens[1];
     return true;
 }
 
@@ -478,18 +483,19 @@ static bool interpret_macro_keycodes(int tok, char **zz)
  * @return 解釈に成功したか否か
  * @todo 2.2.1r時点のコードからトークン数0～1の場合もエラーコード0だが、1であるべきでは？
  */
-static bool interpret_t_token(char *buf)
+static bool interpret_t_token(std::string_view buf)
 {
-    char *zz[16];
-    int tok = tokenize(buf + 2, 2 + MAX_MACRO_MOD, zz);
-    if (tok >= 4) {
-        return decide_template_modifier(tok, zz);
+    const auto tokens = tokenize(buf.substr(2), 2 + MAX_MACRO_MOD);
+    const auto size = tokens.size();
+    if (size >= 4) {
+        return decide_template_modifier(size, tokens);
     }
-    if (tok < 2) {
+
+    if (size < 2) {
         return true;
     }
 
-    return interpret_macro_keycodes(tok, zz);
+    return interpret_macro_keycodes(size, tokens);
 }
 
 /*!
@@ -514,7 +520,7 @@ static bool interpret_t_token(char *buf)
  * used for the "nothing" attr/char.
  * </pre>
  */
-int interpret_pref_file(CreatureEntity &creature, char *buf)
+int interpret_pref_file(CreatureEntity &creature, std::string_view buf)
 {
     if (buf[1] != ':') {
         return 1;
@@ -523,7 +529,7 @@ int interpret_pref_file(CreatureEntity &creature, char *buf)
     switch (buf[0]) {
     case 'H':
         /* Process "H:<history>" */
-        add_history_from_pref_line(buf + 2);
+        add_history_from_pref_line(buf.substr(2));
         return 0;
     case 'R':
         return interpret_r_token(buf) ? 0 : 1;
@@ -539,7 +545,7 @@ int interpret_pref_file(CreatureEntity &creature, char *buf)
         return interpret_e_token(buf) ? 0 : 1;
     case 'A':
         /* Process "A:<str>" -- save an "action" for later */
-        text_to_ascii(macro_buffers.data(), buf + 2, macro_buffers.size());
+        text_to_ascii(macro_buffers.data(), buf.substr(2), macro_buffers.size());
         return 0;
     case 'P':
         return interpret_p_token(buf);
