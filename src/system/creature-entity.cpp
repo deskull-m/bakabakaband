@@ -37,6 +37,7 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/body-structure-policy.h"
+#include "system/monrace/extended-slot.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-profile.h"
@@ -614,6 +615,41 @@ bool CreatureEntity::can_equip_to(int slot) const
     const auto &monrace = this->get_monrace();
     const auto &policy = get_body_slot_policy(monrace.body_structure);
     return policy.is_allowed(slot);
+}
+
+size_t CreatureEntity::get_extended_slot_count() const
+{
+    if (this->is_player()) {
+        return 0;
+    }
+    const auto &monrace = this->get_monrace();
+    const auto &policy = get_body_slot_policy(monrace.body_structure);
+    return policy.get_extended_slots().size();
+}
+
+ExtendedSlotType CreatureEntity::get_extended_slot_type(size_t idx) const
+{
+    if (this->is_player()) {
+        return ExtendedSlotType::MAX;
+    }
+    const auto &monrace = this->get_monrace();
+    const auto &policy = get_body_slot_policy(monrace.body_structure);
+    const auto &slots = policy.get_extended_slots();
+    if (idx >= slots.size()) {
+        return ExtendedSlotType::MAX;
+    }
+    return slots[idx];
+}
+
+void CreatureEntity::init_extended_inventory()
+{
+    const auto count = this->get_extended_slot_count();
+    this->extended_inventory.resize(count);
+    for (auto &slot : this->extended_inventory) {
+        if (!slot) {
+            slot = std::make_shared<ItemEntity>();
+        }
+    }
 }
 
 void CreatureEntity::add_csp_with_frac(int delta, uint32_t delta_frac)

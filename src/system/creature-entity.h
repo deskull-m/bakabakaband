@@ -46,6 +46,7 @@ enum class ItemKindType : short;
 enum class MimicKindType;
 enum class CurseTraitType;
 enum class CurseSpecialTraitType;
+enum class ExtendedSlotType : uint8_t;
 enum class MonraceId : int16_t;
 enum class MonsterAbilityType;
 enum class PlayerSkillKindType;
@@ -1425,6 +1426,26 @@ public:
      *          docs/monster-body-structure-equipment-slots.md 参照。
      */
     virtual bool can_equip_to(int slot) const;
+
+    /*!
+     * @brief 拡張装備スロット数を取得する (Phase 2)
+     * @return body_structure に依存する拡張スロット数。プレイヤーは 0。
+     */
+    virtual size_t get_extended_slot_count() const;
+
+    /*!
+     * @brief 指定インデックスの拡張スロットの種別を取得する (Phase 2)
+     * @param idx 拡張スロットインデックス (0..get_extended_slot_count()-1)
+     * @return 拡張スロット種別。範囲外なら ExtendedSlotType::MAX
+     */
+    virtual ExtendedSlotType get_extended_slot_type(size_t idx) const;
+
+    /*!
+     * @brief 拡張インベントリを初期化する (Phase 2)
+     * @details body_structure から得られる拡張スロット数分の
+     *          空の ItemEntity を確保する。生成時に呼ぶ。
+     */
+    void init_extended_inventory();
 
     /*! @brief 年齢を設定する (提案 24) */
     virtual void set_age(int16_t value)
@@ -3046,6 +3067,12 @@ public:
     std::vector<std::shared_ptr<ItemEntity>> inventory{}; /*!< 所持品リスト / The creature's inventory */
     // 所持品数 inven_cnt / 装備品数 equip_cnt は提案 25 で inventory[] から自動計算する
     // get_inven_cnt() / get_equip_cnt() に置換済み。
+
+    // [Phase 2] 拡張装備スロット (尾の指輪、第二の首など、種族固有部位)。
+    // body_structure の get_extended_slots() で定義されるスロットに対応し、
+    // インデックス順に格納される。プレイヤーは HUMANOID で空。
+    // モンスター生成時に init_extended_inventory() で初期化。
+    std::vector<std::shared_ptr<ItemEntity>> extended_inventory{};
 
     // 座標関連
     POSITION oldpy{}; /*!< 前回のY座標 / Previous location (Y) */
