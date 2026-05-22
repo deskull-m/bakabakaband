@@ -701,6 +701,14 @@ const std::unordered_map<std::string_view, BodyStructureType> r_info_body_struct
     { "DRACONIC", BodyStructureType::DRACONIC },
 };
 
+const std::unordered_map<std::string_view, ExtendedSlotType> r_info_extended_slot = {
+    { "TAIL_RING", ExtendedSlotType::TAIL_RING },
+    { "SECOND_NECK", ExtendedSlotType::SECOND_NECK },
+    { "THIRD_HEAD", ExtendedSlotType::THIRD_HEAD },
+    { "WING_LEFT", ExtendedSlotType::WING_LEFT },
+    { "WING_RIGHT", ExtendedSlotType::WING_RIGHT },
+};
+
 const std::unordered_map<std::string_view, MonsterSpecialType> r_info_special_flags = {
     { "DIMINISH_MAX_DAMAGE", MonsterSpecialType::DIMINISH_MAX_DAMAGE },
 };
