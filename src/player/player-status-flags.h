@@ -28,7 +28,8 @@ enum flag_cause : uint32_t {
     FLAG_CAUSE_RIDING = 0x01U << 19, /*!< 乗馬による効果 */
     FLAG_CAUSE_INVEN_PACK = 0x01U << 20, /*!< その他インベントリによる効果 重量超過等 */
     FLAG_CAUSE_ACTION = 0x01U << 21, /*!< ACTIONによる効果 探索モード等 */
-    FLAG_CAUSE_MAX = 0x01U << 21
+    FLAG_CAUSE_INVEN_EXTENDED = 0x01U << 22, /*!< モンスター拡張装備スロット (Phase 2) */
+    FLAG_CAUSE_MAX = 0x01U << 22
 };
 
 enum melee_type {

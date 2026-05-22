@@ -547,6 +547,9 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         m_ptr->set_death_count(Dice::roll(monrace.suicide_dice_num, monrace.suicide_dice_side));
     }
 
+    // [Phase 2] body_structure 由来の拡張装備スロットを初期化
+    m_ptr->init_extended_inventory();
+
     m_ptr->set_individual_speed(floor.inside_arena);
 
     // Initialize AC from monster race

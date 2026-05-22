@@ -1394,6 +1394,7 @@ hengband_SOURCES = \
 	\
 	system/monrace/body-structure-types.h \
 	system/monrace/body-structure-policy.cpp system/monrace/body-structure-policy.h \
+	system/monrace/extended-slot.cpp system/monrace/extended-slot.h \
 	system/monrace/monrace-allocation.cpp system/monrace/monrace-allocation.h \
 	system/monrace/monrace-definition.cpp system/monrace/monrace-definition.h \
 	system/monrace/monrace-list.cpp system/monrace/monrace-list.h \

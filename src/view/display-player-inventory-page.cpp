@@ -12,6 +12,7 @@
 #include "inventory/inventory-slot-types.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
+#include "system/monrace/extended-slot.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
@@ -28,7 +29,7 @@ void put_section_header(int row, int col, std::string_view title)
     c_put_str(TERM_L_BLUE, title, row, col);
 }
 
-void display_equipment_section(CreatureEntity &creature)
+int display_equipment_section(CreatureEntity &creature)
 {
     put_section_header(HEADER_ROW, EQUIPMENT_COL, _("== 装備 ==", "== Equipment =="));
     int row = HEADER_ROW + 1;
@@ -48,6 +49,29 @@ void display_equipment_section(CreatureEntity &creature)
         }
 
         const auto desc = describe_flavor(creature, item, OD_OMIT_PREFIX | OD_NAME_AND_ENCHANT);
+        c_put_str(TERM_L_GREEN, desc.substr(0, 24), row, EQUIPMENT_COL + 14);
+    }
+    return row;
+}
+
+void display_extended_slots_section(CreatureEntity &creature, int start_row)
+{
+    const auto count = creature.get_extended_slot_count();
+    if (count == 0) {
+        return;
+    }
+    put_section_header(start_row, EQUIPMENT_COL, _("== 拡張部位 ==", "== Extended =="));
+    int row = start_row + 1;
+    for (size_t i = 0; i < count; ++i, ++row) {
+        const auto slot_type = creature.get_extended_slot_type(i);
+        const auto name = get_extended_slot_name(slot_type);
+        const auto label = format("%-12s :", name.empty() ? "" : name.data());
+        c_put_str(TERM_WHITE, label, row, EQUIPMENT_COL);
+        if (i >= creature.extended_inventory.size() || !creature.extended_inventory[i] || !creature.extended_inventory[i]->is_valid()) {
+            c_put_str(TERM_L_DARK, _("(なし)", "(empty)"), row, EQUIPMENT_COL + 14);
+            continue;
+        }
+        const auto desc = describe_flavor(creature, *creature.extended_inventory[i], OD_OMIT_PREFIX | OD_NAME_AND_ENCHANT);
         c_put_str(TERM_L_GREEN, desc.substr(0, 24), row, EQUIPMENT_COL + 14);
     }
 }
@@ -85,6 +109,7 @@ void display_player_inventory_page(CreatureEntity &creature)
     const auto summary = format(_(" - 所持: %d / 装備: %d", " - Carried: %d / Equipped: %d"), cnt_inven, cnt_equip);
     c_put_str(TERM_SLATE, summary, 1, 25);
 
-    display_equipment_section(creature);
+    const auto next_row = display_equipment_section(creature);
+    display_extended_slots_section(creature, next_row + 1);
     display_inventory_section(creature);
 }

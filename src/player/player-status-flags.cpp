@@ -128,6 +128,16 @@ BIT_FLAGS check_equipment_flags(CreatureEntity &creature, tr_type tr_flag)
             set_bits(result, convert_inventory_slot_type_to_flag_cause(i2enum<inventory_slot_type>(i)));
         }
     }
+
+    // [Phase 2.6] 拡張装備スロット (モンスターのみ) も集計対象に含める
+    for (const auto &item_ptr : creature.extended_inventory) {
+        if (!item_ptr || !item_ptr->is_valid()) {
+            continue;
+        }
+        if (item_ptr->get_flags().has(tr_flag)) {
+            set_bits(result, FLAG_CAUSE_INVEN_EXTENDED);
+        }
+    }
     return result;
 }
 

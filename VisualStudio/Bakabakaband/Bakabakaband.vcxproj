@@ -752,6 +752,7 @@
     <ClCompile Include="..\..\src\system\angband-version.cpp" />
     <ClCompile Include="..\..\src\system\item-entity.cpp" />
     <ClCompile Include="..\..\src\system\monrace\body-structure-policy.cpp" />
+    <ClCompile Include="..\..\src\system\monrace\extended-slot.cpp" />
     <ClCompile Include="..\..\src\system\monrace\monrace-definition.cpp" />
     <ClCompile Include="..\..\src\system\monrace\monrace-message.cpp" />
     <ClCompile Include="..\..\src\system\player-type-definition.cpp" />
@@ -1843,6 +1844,7 @@
     <ClInclude Include="..\..\src\game-option\game-option-page.h" />
     <ClInclude Include="..\..\src\system\monrace\body-structure-policy.h" />
     <ClInclude Include="..\..\src\system\monrace\body-structure-types.h" />
+    <ClInclude Include="..\..\src\system\monrace\extended-slot.h" />
     <ClInclude Include="..\..\src\system\monrace\monrace-definition.h" />
     <ClInclude Include="..\..\src\system\monrace\monrace-message.h" />
     <ClInclude Include="..\..\src\system\item-entity.h" />

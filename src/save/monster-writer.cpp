@@ -148,6 +148,18 @@ uint32_t MonsterWriter::write_monster_flags() const
         set_bits(flags, SaveDataMonsterFlagType::INVENTORY);
     }
 
+    // [Phase 2] 拡張装備スロットの有効アイテムがあるかチェック
+    bool has_extended = false;
+    for (const auto &item : this->monster.extended_inventory) {
+        if (item && item->is_valid()) {
+            has_extended = true;
+            break;
+        }
+    }
+    if (has_extended) {
+        set_bits(flags, SaveDataMonsterFlagType::EXTENDED_INVENTORY);
+    }
+
     wr_u32b(flags);
     return flags;
 }
@@ -244,6 +256,21 @@ void MonsterWriter::write_monster_info(uint32_t flags) const
                 continue;
             }
 
+            wr_u16b(static_cast<uint16_t>(i));
+            wr_item(*item);
+        }
+        wr_u16b(0xFFFF); // 終端マーカー
+    }
+
+    // [Phase 2] 拡張装備スロットの保存。各エントリは
+    //   u16b インデックス (0xFFFF で終端) + wr_item
+    // の繰り返し。インベントリと同じ形式。
+    if (any_bits(flags, SaveDataMonsterFlagType::EXTENDED_INVENTORY)) {
+        for (size_t i = 0; i < this->monster.extended_inventory.size(); i++) {
+            const auto &item = this->monster.extended_inventory[i];
+            if (!item || !item->is_valid()) {
+                continue;
+            }
             wr_u16b(static_cast<uint16_t>(i));
             wr_item(*item);
         }

@@ -19,6 +19,10 @@ enum inventory_slot_type : short {
     INVEN_ASSHOLE = 36, /*!< アイテムスロット…尻の穴 */
     INVEN_AMMO = 23, /*!< used for get_random_ego()  */
     INVEN_TOTAL = 37, /*!< Total number of inventory slots (hard-coded). */
+    //! [Phase 2] 拡張装備スロット ID の起点。wield_slot() が返す値は
+    //! INVEN_EXTENDED_BASE + extended_inventory のインデックス。
+    //! 通常スロット (INVEN_*) と区別するため十分離した値を使う。
+    INVEN_EXTENDED_BASE = 100,
     INVEN_NONE = 1000, /*!< アイテムスロット非選択状態 */
     INVEN_FORCE = 1111, /*!< inventory slot for selecting force (hard-coded). */
 };

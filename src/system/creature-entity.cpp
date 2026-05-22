@@ -37,6 +37,7 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/body-structure-policy.h"
+#include "system/monrace/extended-slot.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-profile.h"
@@ -560,6 +561,19 @@ int16_t CreatureEntity::acquire_item(const ItemEntity &item)
         *this->inventory[eq_slot] = item.clone();
         return eq_slot;
     }
+
+    // [Phase 2.5] 拡張スロットへの装備
+    if (eq_slot >= INVEN_EXTENDED_BASE && item.number == 1) {
+        const auto ext_idx = static_cast<size_t>(eq_slot - INVEN_EXTENDED_BASE);
+        if (ext_idx < this->extended_inventory.size()) {
+            if (!this->extended_inventory[ext_idx]) {
+                this->extended_inventory[ext_idx] = std::make_shared<ItemEntity>();
+            }
+            *this->extended_inventory[ext_idx] = item.clone();
+            return eq_slot;
+        }
+    }
+
     return this->store_item(item);
 }
 
@@ -614,6 +628,41 @@ bool CreatureEntity::can_equip_to(int slot) const
     const auto &monrace = this->get_monrace();
     const auto &policy = get_body_slot_policy(monrace.body_structure);
     return policy.is_allowed(slot);
+}
+
+size_t CreatureEntity::get_extended_slot_count() const
+{
+    if (this->is_player()) {
+        return 0;
+    }
+    const auto &monrace = this->get_monrace();
+    const auto &policy = get_body_slot_policy(monrace.body_structure);
+    return policy.get_extended_slots().size();
+}
+
+ExtendedSlotType CreatureEntity::get_extended_slot_type(size_t idx) const
+{
+    if (this->is_player()) {
+        return ExtendedSlotType::MAX;
+    }
+    const auto &monrace = this->get_monrace();
+    const auto &policy = get_body_slot_policy(monrace.body_structure);
+    const auto &slots = policy.get_extended_slots();
+    if (idx >= slots.size()) {
+        return ExtendedSlotType::MAX;
+    }
+    return slots[idx];
+}
+
+void CreatureEntity::init_extended_inventory()
+{
+    const auto slot_count = this->get_extended_slot_count();
+    this->extended_inventory.resize(slot_count);
+    for (auto &slot : this->extended_inventory) {
+        if (!slot) {
+            slot = std::make_shared<ItemEntity>();
+        }
+    }
 }
 
 void CreatureEntity::add_csp_with_frac(int delta, uint32_t delta_frac)
@@ -1022,12 +1071,20 @@ int CreatureEntity::get_ac() const
     // プレイヤーは calc_base_ac() / calc_to_ac() が update_creature() 経由で
     // 既に creature.ac と creature.to_a に含めているため再加算しない。
     if (this->has_monster_profile()) {
+        // 通常装備
         for (size_t i = INVEN_MAIN_HAND; i < this->inventory.size(); i++) {
             const auto &item = *this->inventory[i];
             if (!item.is_valid()) {
                 continue;
             }
             total_ac += item.ac + item.to_a;
+        }
+        // [Phase 2.6] 拡張装備スロット (尾の指輪・翼装飾など)
+        for (const auto &item_ptr : this->extended_inventory) {
+            if (!item_ptr || !item_ptr->is_valid()) {
+                continue;
+            }
+            total_ac += item_ptr->ac + item_ptr->to_a;
         }
     }
 
