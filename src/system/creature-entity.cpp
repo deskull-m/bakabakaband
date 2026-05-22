@@ -36,6 +36,7 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
+#include "system/monrace/body-structure-policy.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-profile.h"
@@ -596,6 +597,23 @@ short CreatureEntity::get_equip_cnt() const
         }
     }
     return cnt;
+}
+
+bool CreatureEntity::can_equip_to(int slot) const
+{
+    if (slot < INVEN_MAIN_HAND || slot >= INVEN_TOTAL) {
+        return false;
+    }
+
+    // プレイヤーは常に HUMANOID 想定で全スロット許可
+    if (this->is_player()) {
+        return true;
+    }
+
+    // モンスター: 種族の body_structure に対応するポリシーを参照
+    const auto &monrace = this->get_monrace();
+    const auto &policy = get_body_slot_policy(monrace.body_structure);
+    return policy.is_allowed(slot);
 }
 
 void CreatureEntity::add_csp_with_frac(int delta, uint32_t delta_frac)

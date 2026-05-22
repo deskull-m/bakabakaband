@@ -691,6 +691,15 @@ const std::unordered_map<std::string_view, MonsterSex> r_info_sex = {
     { "FEMALE", MonsterSex::FEMALE },
 };
 
+const std::unordered_map<std::string_view, BodyStructureType> r_info_body_structure = {
+    { "HUMANOID", BodyStructureType::HUMANOID },
+    { "BIPEDAL", BodyStructureType::BIPEDAL },
+    { "QUADRUPED", BodyStructureType::QUADRUPED },
+    { "SERPENTINE", BodyStructureType::SERPENTINE },
+    { "AMORPHOUS", BodyStructureType::AMORPHOUS },
+    { "INCORPOREAL", BodyStructureType::INCORPOREAL },
+};
+
 const std::unordered_map<std::string_view, MonsterSpecialType> r_info_special_flags = {
     { "DIMINISH_MAX_DAMAGE", MonsterSpecialType::DIMINISH_MAX_DAMAGE },
 };

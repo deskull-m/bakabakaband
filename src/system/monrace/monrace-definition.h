@@ -23,6 +23,7 @@
 #include "monster-race/race-wilderness-flags.h"
 #include "player-ability/player-ability-types.h"
 #include "system/angband.h"
+#include "system/monrace/body-structure-types.h"
 #include "util/dice.h"
 #include "util/flag-group.h"
 #include "view/display-symbol.h"
@@ -197,6 +198,10 @@ public:
     //! 値が無い (tl::nullopt) 場合はダイスロールの結果をそのまま使う。
     //! 値がある場合は get_stats() で振った結果に加算する。
     std::array<tl::optional<int>, A_MAX> stat_modifiers{};
+
+    //! 体構造。装備可能スロットを決定する。
+    //! 詳細は docs/monster-body-structure-equipment-slots.md 参照。
+    BodyStructureType body_structure{ BodyStructureType::HUMANOID };
 
     bool is_valid() const;
     bool is_male() const;

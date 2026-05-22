@@ -35,6 +35,12 @@ void display_equipment_section(CreatureEntity &creature)
     for (auto slot = static_cast<int>(INVEN_MAIN_HAND); slot < INVEN_TOTAL; ++slot, ++row) {
         const auto &item = *creature.inventory[slot];
         const auto label = format("%-12s :", mention_use(creature, slot));
+        // 体構造的に装備不可なスロットは灰色で「該当なし」表記
+        if (!creature.can_equip_to(slot)) {
+            c_put_str(TERM_L_DARK, label, row, EQUIPMENT_COL);
+            c_put_str(TERM_L_DARK, _("(該当なし)", "(no slot)"), row, EQUIPMENT_COL + 14);
+            continue;
+        }
         c_put_str(TERM_WHITE, label, row, EQUIPMENT_COL);
         if (!item.is_valid()) {
             c_put_str(TERM_L_DARK, _("(なし)", "(empty)"), row, EQUIPMENT_COL + 14);

@@ -1392,6 +1392,8 @@ hengband_SOURCES = \
 	system/floor/town-list.cpp system/floor/town-list.h \
 	system/floor/wilderness-grid.cpp system/floor/wilderness-grid.h \
 	\
+	system/monrace/body-structure-types.h \
+	system/monrace/body-structure-policy.cpp system/monrace/body-structure-policy.h \
 	system/monrace/monrace-allocation.cpp system/monrace/monrace-allocation.h \
 	system/monrace/monrace-definition.cpp system/monrace/monrace-definition.h \
 	system/monrace/monrace-list.cpp system/monrace/monrace-list.h \
