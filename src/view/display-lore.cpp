@@ -392,6 +392,32 @@ void display_monster_kind_tags(lore_type *lore_ptr)
         hook_c_roff(TERM_YELLOW, _("[天使]", "[angel]"));
     }
 
+    // [モンスター体構造] 体構造タグ (HUMANOID は記載省略)
+    switch (lore_ptr->r_ptr->body_structure) {
+    case BodyStructureType::HUMANOID:
+        break; // デフォルト、記載省略
+    case BodyStructureType::BIPEDAL:
+        hook_c_roff(TERM_L_BLUE, _("[二足型]", "[bipedal]"));
+        break;
+    case BodyStructureType::QUADRUPED:
+        hook_c_roff(TERM_L_BLUE, _("[四足型]", "[quadruped]"));
+        break;
+    case BodyStructureType::SERPENTINE:
+        hook_c_roff(TERM_L_BLUE, _("[蛇型]", "[serpentine]"));
+        break;
+    case BodyStructureType::AMORPHOUS:
+        hook_c_roff(TERM_L_BLUE, _("[不定形]", "[amorphous]"));
+        break;
+    case BodyStructureType::INCORPOREAL:
+        hook_c_roff(TERM_L_DARK, _("[非実体]", "[incorporeal]"));
+        break;
+    case BodyStructureType::DRACONIC:
+        hook_c_roff(TERM_ORANGE, _("[竜体]", "[draconic]"));
+        break;
+    case BodyStructureType::MAX:
+        break;
+    }
+
     hooked_roff("\n");
 }
 
