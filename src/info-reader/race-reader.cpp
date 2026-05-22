@@ -308,6 +308,34 @@ static errr set_mon_sex(const nlohmann::json &sex_data, MonraceDefinition &monra
 }
 
 /*!
+ * @brief JSON Object からモンスターの体構造をセットする
+ * @param body_data 体構造情報の格納された JSON Object (string)
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details
+ * "body_structure": "HUMANOID" 等の文字列で指定する。
+ * 未指定の場合はデフォルトの HUMANOID が維持される。
+ * 詳細は docs/monster-body-structure-equipment-slots.md 参照。
+ */
+static errr set_mon_body_structure(const nlohmann::json &body_data, MonraceDefinition &monrace)
+{
+    if (body_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!body_data.is_string()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    const auto key = body_data.get<std::string>();
+    const auto it = r_info_body_structure.find(key);
+    if (it == r_info_body_structure.end()) {
+        return PARSE_ERROR_INVALID_FLAG;
+    }
+    monrace.body_structure = it->second;
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief JSON Objectからモンスターの固定アーティファクトドロップ情報をセットする
  * @param artifact_data 固定アーティファクトドロップ情報の格納されたJSON Object
  * @param monrace 保管先のモンスター種族構造体
@@ -1287,6 +1315,11 @@ errr parse_monraces_info(nlohmann::json &mon_data, angband_header *)
     err = set_mon_stat_modifiers(mon_data["stat_modifiers"], monrace);
     if (err) {
         msg_format(_("モンスター能力値補正読込失敗。ID: '%d'。", "Failed to load monster stat modifiers. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_body_structure(mon_data["body_structure"], monrace);
+    if (err) {
+        msg_format(_("モンスター体構造読込失敗。ID: '%d'。", "Failed to load monster body structure. ID: '%d'."), error_idx);
         return err;
     }
     err = info_set_integer(mon_data["mob"], monrace.mob_num, false, Range(0, 9999999));
