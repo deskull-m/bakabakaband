@@ -15,6 +15,7 @@
 #include "system/angband.h"
 #include "system/creature-timed-effect-types.h"
 #include "system/enums/dungeon/dungeon-id.h"
+#include "system/item-entity.h"
 #include "system/monster-profile.h"
 #include "system/system-variables.h"
 #include "util/dice.h"
@@ -36,7 +37,6 @@ constexpr int MONSTER_MAXHP = 10000000; //!< モンスターの最大HP
 // Forward declarations
 class Direction;
 class FloorType;
-class ItemEntity;
 class MonraceDefinition;
 struct player_race_info;
 struct player_personality;
