@@ -11,19 +11,24 @@
 #include "system/monrace/body-structure-types.h"
 #include <bitset>
 
+/*!
+ * @brief 体構造ごとの装備スロット可否ポリシー
+ * @note std::bitset のメンバ関数は C++23 まで constexpr ではないため、
+ *       本クラスでは constexpr を使用しない (MSVC 互換性のため)。
+ */
 class BodySlotPolicy {
 public:
     //! 装備スロット数 (INVEN_MAIN_HAND..INVEN_TOTAL-1)
     static constexpr int SLOT_COUNT = INVEN_TOTAL - INVEN_MAIN_HAND;
     using SlotMask = std::bitset<SLOT_COUNT>;
 
-    explicit constexpr BodySlotPolicy(SlotMask mask = SlotMask{}.set())
+    explicit BodySlotPolicy(SlotMask mask = SlotMask{})
         : allowed_slots(mask)
     {
     }
 
     //! 指定スロット (INVEN_MAIN_HAND..INVEN_TOTAL-1) が許可されているか
-    constexpr bool is_allowed(int slot) const
+    bool is_allowed(int slot) const
     {
         if (slot < INVEN_MAIN_HAND || slot >= INVEN_TOTAL) {
             return false;

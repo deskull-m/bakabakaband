@@ -6,8 +6,10 @@ namespace {
 
 /*!
  * @brief 指定スロット群を持つ SlotMask を生成
+ * @note std::bitset::set() は C++23 まで constexpr ではないため、
+ *       MSVC 互換性のため通常関数とする。
  */
-constexpr BodySlotPolicy::SlotMask make_mask(std::initializer_list<inventory_slot_type> slots)
+BodySlotPolicy::SlotMask make_mask(std::initializer_list<inventory_slot_type> slots)
 {
     BodySlotPolicy::SlotMask mask;
     for (auto slot : slots) {
@@ -21,7 +23,7 @@ constexpr BodySlotPolicy::SlotMask make_mask(std::initializer_list<inventory_slo
 /*!
  * @brief 全スロット有効な SlotMask
  */
-constexpr BodySlotPolicy::SlotMask make_all_mask()
+BodySlotPolicy::SlotMask make_all_mask()
 {
     BodySlotPolicy::SlotMask mask;
     mask.set();
