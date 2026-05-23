@@ -1448,30 +1448,6 @@ public:
      */
     void init_extended_inventory();
 
-    /*!
-     * @brief 装備中のアイテム (通常 + 拡張) を順に処理する (Phase 2.6)
-     * @param f コールバック (ItemEntity &, int slot_id) → void
-     * @details slot_id は INVEN_MAIN_HAND..INVEN_TOTAL の範囲、
-     *          または INVEN_EXTENDED_BASE..INVEN_EXTENDED_BASE+N の範囲。
-     *          無効アイテムはスキップされる。
-     */
-    template <typename F>
-    void for_each_equipped_item(F &&f) const
-    {
-        for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; ++i) {
-            auto *item = this->inventory[i].get();
-            if (item && item->is_valid()) {
-                f(*item, i);
-            }
-        }
-        for (size_t i = 0; i < this->extended_inventory.size(); ++i) {
-            auto *item = this->extended_inventory[i].get();
-            if (item && item->is_valid()) {
-                f(*item, static_cast<int>(INVEN_EXTENDED_BASE + i));
-            }
-        }
-    }
-
     /*! @brief 年齢を設定する (提案 24) */
     virtual void set_age(int16_t value)
     {
