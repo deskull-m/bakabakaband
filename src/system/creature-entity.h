@@ -2837,12 +2837,20 @@ public:
     {
         return this->see_infra;
     }
+    virtual void set_infravision(ACTION_SKILL_POWER value)
+    {
+        this->see_infra = value;
+    }
     /*!
      * @brief 解除能力スキル
      */
     virtual ACTION_SKILL_POWER get_skill_disarm() const
     {
         return this->skill_dis;
+    }
+    virtual void set_skill_disarm(ACTION_SKILL_POWER value)
+    {
+        this->skill_dis = value;
     }
     /*!
      * @brief 魔道具使用スキル
@@ -2851,12 +2859,20 @@ public:
     {
         return this->skill_dev;
     }
+    virtual void set_skill_device(ACTION_SKILL_POWER value)
+    {
+        this->skill_dev = value;
+    }
     /*!
      * @brief 魔法防御スキル
      */
     virtual ACTION_SKILL_POWER get_skill_save() const
     {
         return this->skill_sav;
+    }
+    virtual void set_skill_save(ACTION_SKILL_POWER value)
+    {
+        this->skill_sav = value;
     }
     /*!
      * @brief 隠密スキル
@@ -2865,12 +2881,20 @@ public:
     {
         return this->skill_stl;
     }
+    virtual void set_skill_stealth(ACTION_SKILL_POWER value)
+    {
+        this->skill_stl = value;
+    }
     /*!
      * @brief 知覚スキル
      */
     virtual ACTION_SKILL_POWER get_skill_search() const
     {
         return this->skill_srh;
+    }
+    virtual void set_skill_search(ACTION_SKILL_POWER value)
+    {
+        this->skill_srh = value;
     }
     /*!
      * @brief 探索スキル
@@ -2879,12 +2903,20 @@ public:
     {
         return this->skill_fos;
     }
+    virtual void set_skill_perception(ACTION_SKILL_POWER value)
+    {
+        this->skill_fos = value;
+    }
     /*!
      * @brief 打撃命中スキル
      */
     virtual ACTION_SKILL_POWER get_skill_to_hit_melee() const
     {
         return this->skill_thn;
+    }
+    virtual void set_skill_to_hit_melee(ACTION_SKILL_POWER value)
+    {
+        this->skill_thn = value;
     }
     /*!
      * @brief 射撃命中スキル
@@ -2893,12 +2925,31 @@ public:
     {
         return this->skill_thb;
     }
+    virtual void set_skill_to_hit_bow(ACTION_SKILL_POWER value)
+    {
+        this->skill_thb = value;
+    }
+    /*!
+     * @brief 投射命中スキル
+     */
+    virtual ACTION_SKILL_POWER get_skill_to_hit_throw() const
+    {
+        return this->skill_tht;
+    }
+    virtual void set_skill_to_hit_throw(ACTION_SKILL_POWER value)
+    {
+        this->skill_tht = value;
+    }
     /*!
      * @brief 掘削スキル
      */
     virtual ACTION_SKILL_POWER get_skill_dig() const
     {
         return this->skill_dig;
+    }
+    virtual void set_skill_dig(ACTION_SKILL_POWER value)
+    {
+        this->skill_dig = value;
     }
 
     /*!
@@ -2988,7 +3039,10 @@ public:
     const player_personality *personality{}; /*!< 現在の性格情報 / Current personality info (accessed like reference) */
     const player_class_info *pclass_ref{}; /*!< 現在の職業情報 / Current class info (accessed like reference) */
 
-    // 行動技能値 / Action skills
+    // [提案 37] 行動技能値 / Action skills
+    //          private 化済。アクセスは get_X() / set_X() virtual 経由。
+    //          値は player-status.cpp の update_creature() で装備・能力値等から再計算。
+private:
     ACTION_SKILL_POWER see_infra{}; /*!< 赤外線視能力の強さ / Infravision range */
     ACTION_SKILL_POWER skill_dis{}; /*!< 行動技能値:解除能力 / Skill: Disarming */
     ACTION_SKILL_POWER skill_dev{}; /*!< 行動技能値:魔道具使用 / Skill: Magic Devices */
@@ -3001,6 +3055,7 @@ public:
     ACTION_SKILL_POWER skill_tht{}; /*!< 行動技能値:投射命中能力 / Skill: To hit (throwing) */
     ACTION_SKILL_POWER skill_dig{}; /*!< 行動技能値:掘削 / Skill: Digging */
 
+public:
     POSITION run_py{}; /*!< 走行中の目標Y座標 / Target Y position while running */
     POSITION run_px{}; /*!< 走行中の目標X座標 / Target X position while running */
 

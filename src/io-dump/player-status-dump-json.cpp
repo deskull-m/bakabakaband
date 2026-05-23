@@ -163,15 +163,15 @@ static void add_combat_to_json(nlohmann::json &j, CreatureEntity &creature)
  */
 static void add_skills_to_json(nlohmann::json &j, CreatureEntity &creature)
 {
-    j["skills"]["fighting"] = creature.skill_thn;
-    j["skills"]["shooting"] = creature.skill_thb;
-    j["skills"]["saving_throw"] = creature.skill_sav;
-    j["skills"]["stealth"] = creature.skill_stl;
-    j["skills"]["perception"] = creature.skill_fos;
-    j["skills"]["searching"] = creature.skill_srh;
-    j["skills"]["disarming"] = creature.skill_dis;
-    j["skills"]["magic_device"] = creature.skill_dev;
-    j["skills"]["infravision"] = creature.see_infra;
+    j["skills"]["fighting"] = creature.get_skill_to_hit_melee();
+    j["skills"]["shooting"] = creature.get_skill_to_hit_bow();
+    j["skills"]["saving_throw"] = creature.get_skill_save();
+    j["skills"]["stealth"] = creature.get_skill_stealth();
+    j["skills"]["perception"] = creature.get_skill_perception();
+    j["skills"]["searching"] = creature.get_skill_search();
+    j["skills"]["disarming"] = creature.get_skill_disarm();
+    j["skills"]["magic_device"] = creature.get_skill_device();
+    j["skills"]["infravision"] = creature.get_infravision();
     j["skills"]["speed"] = creature.speed - 110;
 }
 

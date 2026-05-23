@@ -328,16 +328,16 @@ static void update_bonuses(CreatureEntity &creature)
     }
 
     creature.set_speed(PlayerSpeed(creature).get_value());
-    creature.see_infra = PlayerInfravision(creature).get_value();
-    creature.skill_stl = PlayerStealth(creature).get_value();
-    creature.skill_dis = calc_disarming(creature);
-    creature.skill_dev = calc_device_ability(creature);
-    creature.skill_sav = calc_saving_throw(creature);
-    creature.skill_srh = calc_search(creature);
-    creature.skill_fos = calc_search_freq(creature);
-    creature.skill_thn = calc_to_hit_melee(creature);
-    creature.skill_thb = calc_to_hit_shoot(creature);
-    creature.skill_tht = calc_to_hit_throw(creature);
+    creature.set_infravision(PlayerInfravision(creature).get_value());
+    creature.set_skill_stealth(PlayerStealth(creature).get_value());
+    creature.set_skill_disarm(calc_disarming(creature));
+    creature.set_skill_device(calc_device_ability(creature));
+    creature.set_skill_save(calc_saving_throw(creature));
+    creature.set_skill_search(calc_search(creature));
+    creature.set_skill_perception(calc_search_freq(creature));
+    creature.set_skill_to_hit_melee(calc_to_hit_melee(creature));
+    creature.set_skill_to_hit_bow(calc_to_hit_shoot(creature));
+    creature.set_skill_to_hit_throw(calc_to_hit_throw(creature));
     creature.riding_ryoute = is_riding_two_hands(creature);
     creature.set_to_d(0, calc_to_damage(creature, INVEN_MAIN_HAND, true));
     creature.set_to_d(1, calc_to_damage(creature, INVEN_SUB_HAND, true));
@@ -351,7 +351,7 @@ static void update_bonuses(CreatureEntity &creature)
     creature.set_dis_to_h_b(calc_to_hit_bow(creature, false));
     creature.set_to_d_m(calc_to_damage_misc(creature));
     creature.set_to_h_m(calc_to_hit_misc(creature));
-    creature.skill_dig = calc_skill_dig(creature);
+    creature.set_skill_dig(calc_skill_dig(creature));
     creature.to_m_chance = calc_to_magic_chance(creature);
     creature.ac = calc_base_ac(creature);
     creature.set_to_a(calc_to_ac(creature, true));
