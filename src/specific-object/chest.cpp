@@ -237,7 +237,7 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
     if ((trap.has(ChestTrapType::RUNES_OF_EVIL)) && o_ptr->is_valid()) {
         msg_print(_("恐ろしい声が響いた:  「暗闇が汝をつつまん！」", "Hideous voices bid:  'Let the darkness have thee!'"));
         for (auto count = 4 + randint0(3); count > 0; count--) {
-            if (randint1(100 + o_ptr->pval * 2) <= this->creature_ptr->skill_sav) {
+            if (randint1(100 + o_ptr->pval * 2) <= this->creature_ptr->get_skill_save()) {
                 continue;
             }
 

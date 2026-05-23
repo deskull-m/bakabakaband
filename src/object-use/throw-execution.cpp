@@ -191,7 +191,7 @@ void ObjectThrowEntity::set_racial_chance()
 {
     auto &creature = *this->creature_ptr;
     auto compensation = this->obj_flags.has(TR_THROW) ? this->q_ptr->to_h : 0;
-    this->chance = creature.skill_tht + (creature.get_to_h_b() + compensation) * BTH_PLUS_ADJ;
+    this->chance = creature.get_skill_to_hit_throw() + (creature.get_to_h_b() + compensation) * BTH_PLUS_ADJ;
     if (this->shuriken != 0) {
         this->chance *= 2;
     }
