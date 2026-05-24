@@ -64,7 +64,7 @@ tl::optional<std::string> BaseitemMonraceService::check_specific_drop_gold_flags
 
     const auto &monraces = MonraceList::get_instance();
     for (const auto &[monrace_id, monrace] : monraces) {
-        const auto monrace_specific_gold_drop_flags = specific_gold_drop_flags & monrace.drop_flags;
+        const auto monrace_specific_gold_drop_flags = specific_gold_drop_flags & monrace->drop_flags;
 
         if (monrace_specific_gold_drop_flags.count() > 1) {
             constexpr auto fmt = _("財宝種別は同時に2つ以上指定できません。 ID: %d",

@@ -4,6 +4,7 @@
 #include "system/angband.h"
 #include "util/flag-group.h"
 #include "util/point-2d.h"
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -26,7 +27,7 @@ struct melee_spell_type {
 
     CreatureEntity *m_ptr;
     const CreatureEntity *t_ptr;
-    MonraceDefinition *r_ptr;
+    std::shared_ptr<MonraceDefinition> monrace;
     bool see_m;
     bool maneable;
     bool pet;

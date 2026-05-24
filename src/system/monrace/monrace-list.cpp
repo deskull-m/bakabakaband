@@ -101,7 +101,7 @@ bool MonraceList::is_chapel(MonraceId monrace_id)
 
 MonraceDefinition &MonraceList::emplace(MonraceId monrace_id)
 {
-    return this->monraces.emplace_hint(this->monraces.end(), monrace_id, MonraceDefinition{})->second;
+    return *this->monraces.emplace_hint(this->monraces.end(), monrace_id, std::make_shared<MonraceDefinition>())->second;
 }
 
 /*!
@@ -112,7 +112,7 @@ MonraceDefinition &MonraceList::emplace(MonraceId monrace_id)
  */
 MonraceDefinition &MonraceList::get_monrace(MonraceId monrace_id)
 {
-    return this->monraces.at(monrace_id);
+    return *this->monraces.at(monrace_id);
 }
 
 /*!
@@ -122,6 +122,16 @@ MonraceDefinition &MonraceList::get_monrace(MonraceId monrace_id)
  * @details モンスター実体からモンスター定義を得るためには使用しないこと
  */
 const MonraceDefinition &MonraceList::get_monrace(MonraceId monrace_id) const
+{
+    return *this->monraces.at(monrace_id);
+}
+
+std::shared_ptr<MonraceDefinition> MonraceList::get_monrace_shared(MonraceId monrace_id)
+{
+    return this->monraces.at(monrace_id);
+}
+
+std::shared_ptr<const MonraceDefinition> MonraceList::get_monrace_shared(MonraceId monrace_id) const
 {
     return this->monraces.at(monrace_id);
 }
@@ -149,15 +159,15 @@ std::vector<MonraceId> MonraceList::search(std::function<bool(const MonraceDefin
     std::vector<MonraceId> result_ids;
 
     for (const auto &[id, monrace] : this->monraces) {
-        if (!monrace.is_valid()) {
+        if (!monrace->is_valid()) {
             continue;
         }
 
-        if (is_known_only && (monrace.r_sights == 0)) {
+        if (is_known_only && (monrace->r_sights == 0)) {
             continue;
         }
 
-        if (filter(monrace)) {
+        if (filter(*monrace)) {
             result_ids.push_back(id);
         }
     }
@@ -351,8 +361,8 @@ bool MonraceList::order(MonraceId id1, MonraceId id2, bool is_detailed) const
     const auto &monrace1 = this->monraces.at(id1);
     const auto &monrace2 = this->monraces.at(id2);
     if (is_detailed) {
-        const auto pkills1 = monrace1.r_pkills;
-        const auto pkills2 = monrace2.r_pkills;
+        const auto pkills1 = monrace1->r_pkills;
+        const auto pkills2 = monrace2->r_pkills;
         if (pkills1 < pkills2) {
             return true;
         }
@@ -361,8 +371,8 @@ bool MonraceList::order(MonraceId id1, MonraceId id2, bool is_detailed) const
             return false;
         }
 
-        const auto tkills1 = monrace1.r_tkills;
-        const auto tkills2 = monrace2.r_tkills;
+        const auto tkills1 = monrace1->r_tkills;
+        const auto tkills2 = monrace2->r_tkills;
         if (tkills1 < tkills2) {
             return true;
         }
@@ -372,8 +382,8 @@ bool MonraceList::order(MonraceId id1, MonraceId id2, bool is_detailed) const
         }
     }
 
-    const auto level1 = monrace1.level;
-    const auto level2 = monrace2.level;
+    const auto level1 = monrace1->level;
+    const auto level2 = monrace2->level;
     if (level1 < level2) {
         return true;
     }
@@ -382,8 +392,8 @@ bool MonraceList::order(MonraceId id1, MonraceId id2, bool is_detailed) const
         return false;
     }
 
-    const auto exp1 = monrace1.mexp;
-    const auto exp2 = monrace2.mexp;
+    const auto exp1 = monrace1->mexp;
+    const auto exp2 = monrace2->mexp;
     if (exp1 < exp2) {
         return true;
     }
@@ -432,7 +442,7 @@ MonraceId MonraceList::pick_id_at_random() const
     static ProbabilityTable<MonraceId> table;
     if (table.empty()) {
         for (const auto &[monrace_id, monrace] : this->monraces) {
-            if (monrace.is_valid()) {
+            if (monrace->is_valid()) {
                 table.entry_item(monrace_id, 1);
             }
         }
@@ -443,23 +453,23 @@ MonraceId MonraceList::pick_id_at_random() const
 
 const MonraceDefinition &MonraceList::pick_monrace_at_random() const
 {
-    return this->monraces.at(this->pick_id_at_random());
+    return *this->monraces.at(this->pick_id_at_random());
 }
 
 int MonraceList::calc_defeat_count() const
 {
     auto total = 0;
     for (const auto &[_, monrace] : this->monraces) {
-        if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
-            if (monrace.is_dead_unique()) {
+        if (monrace->kind_flags.has(MonsterKindType::UNIQUE)) {
+            if (monrace->is_dead_unique()) {
                 total++;
             }
 
             continue;
         }
 
-        if (monrace.r_pkills > 0) {
-            total += monrace.r_pkills;
+        if (monrace->r_pkills > 0) {
+            total += monrace->r_pkills;
         }
     }
 
@@ -491,14 +501,14 @@ MonraceId MonraceList::select_figurine(int max_level) const
 void MonraceList::reset_current_numbers()
 {
     for (auto &[_, monrace] : this->monraces) {
-        monrace.reset_current_numbers();
+        monrace->reset_current_numbers();
     }
 }
 
 void MonraceList::reset_all_visuals()
 {
     for (auto &[_, monrace] : this->monraces) {
-        monrace.symbol_config = monrace.symbol_definition;
+        monrace->symbol_config = monrace->symbol_definition;
     }
 }
 

@@ -24,9 +24,9 @@ ProcessResult effect_monster_old_poly(EffectMonster *em_ptr)
     }
     em_ptr->do_polymorph = true;
 
-    bool has_resistance = em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE);
-    has_resistance |= em_ptr->r_ptr->misc_flags.has(MonsterMiscType::QUESTOR);
-    has_resistance |= (em_ptr->r_ptr->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
+    bool has_resistance = em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
+    has_resistance |= em_ptr->monrace->misc_flags.has(MonsterMiscType::QUESTOR);
+    has_resistance |= (em_ptr->monrace->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
 
     if (has_resistance) {
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
@@ -46,9 +46,9 @@ ProcessResult effect_monster_old_clone(CreatureEntity &creature, EffectMonster *
 
     auto has_resistance = (creature.get_floor()->inside_arena);
     has_resistance |= em_ptr->m_ptr->is_pet();
-    has_resistance |= em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE);
-    has_resistance |= em_ptr->r_ptr->misc_flags.has(MonsterMiscType::QUESTOR);
-    has_resistance |= em_ptr->r_ptr->population_flags.has_any_of({ MonsterPopulationType::NAZGUL, MonsterPopulationType::ONLY_ONE, MonsterPopulationType::BUNBUN_STRIKER });
+    has_resistance |= em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
+    has_resistance |= em_ptr->monrace->misc_flags.has(MonsterMiscType::QUESTOR);
+    has_resistance |= em_ptr->monrace->population_flags.has_any_of({ MonsterPopulationType::NAZGUL, MonsterPopulationType::ONLY_ONE, MonsterPopulationType::BUNBUN_STRIKER });
 
     if (has_resistance) {
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
@@ -101,21 +101,21 @@ static void effect_monster_old_heal_check_player(CreatureEntity &creature, Effec
     }
 
     chg_virtue(creature, Virtue::VITALITY, 1);
-    if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
+    if (em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE)) {
         chg_virtue(creature, Virtue::INDIVIDUALISM, 1);
     }
 
     if (em_ptr->m_ptr->is_friendly()) {
         chg_virtue(creature, Virtue::HONOUR, 1);
-    } else if (em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::EVIL)) {
-        if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::GOOD)) {
+    } else if (em_ptr->monrace->kind_flags.has_not(MonsterKindType::EVIL)) {
+        if (em_ptr->monrace->kind_flags.has(MonsterKindType::GOOD)) {
             chg_virtue(creature, Virtue::COMPASSION, 2);
         } else {
             chg_virtue(creature, Virtue::COMPASSION, 1);
         }
     }
 
-    if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::ANIMAL)) {
+    if (em_ptr->monrace->kind_flags.has(MonsterKindType::ANIMAL)) {
         chg_virtue(creature, Virtue::NATURE, 1);
     }
 }
@@ -192,7 +192,7 @@ ProcessResult effect_monster_old_speed(CreatureEntity &creature, EffectMonster *
     }
 
     if (em_ptr->is_player()) {
-        if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
+        if (em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE)) {
             chg_virtue(creature, Virtue::INDIVIDUALISM, 1);
         }
         if (em_ptr->m_ptr->is_friendly()) {
@@ -210,8 +210,8 @@ ProcessResult effect_monster_old_slow(CreatureEntity &creature, EffectMonster *e
         em_ptr->obvious = true;
     }
 
-    bool has_resistance = em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE);
-    has_resistance |= (em_ptr->r_ptr->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
+    bool has_resistance = em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
+    has_resistance |= (em_ptr->monrace->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
 
     /* Powerful monsters can resist */
     if (has_resistance) {
@@ -239,14 +239,14 @@ ProcessResult effect_monster_old_sleep(CreatureEntity &creature, EffectMonster *
         em_ptr->obvious = true;
     }
 
-    bool has_resistance = em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE);
-    has_resistance |= em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_SLEEP);
-    has_resistance |= (em_ptr->r_ptr->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
+    bool has_resistance = em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
+    has_resistance |= em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_SLEEP);
+    has_resistance |= (em_ptr->monrace->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
 
     if (has_resistance) {
-        if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_SLEEP)) {
+        if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_SLEEP)) {
             if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-                em_ptr->r_ptr->resistance_flags.set(MonsterResistanceType::NO_SLEEP);
+                em_ptr->monrace->resistance_flags.set(MonsterResistanceType::NO_SLEEP);
             }
         }
 
@@ -273,13 +273,13 @@ ProcessResult effect_monster_old_conf(CreatureEntity &creature, EffectMonster *e
 
     em_ptr->do_conf = Dice::roll(3, (em_ptr->dam / 2)) + 1;
 
-    bool has_resistance = em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE);
-    has_resistance |= em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_CONF);
-    has_resistance |= (em_ptr->r_ptr->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
+    bool has_resistance = em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
+    has_resistance |= em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_CONF);
+    has_resistance |= (em_ptr->monrace->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
     if (has_resistance) {
-        if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_CONF)) {
+        if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_CONF)) {
             if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-                em_ptr->r_ptr->resistance_flags.set(MonsterResistanceType::NO_CONF);
+                em_ptr->monrace->resistance_flags.set(MonsterResistanceType::NO_CONF);
             }
         }
 
@@ -299,10 +299,10 @@ ProcessResult effect_monster_stasis(EffectMonster *em_ptr, bool to_evil)
     }
 
     int stasis_damage = (em_ptr->dam - 10) < 1 ? 1 : (em_ptr->dam - 10);
-    bool has_resistance = em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE);
-    has_resistance |= em_ptr->r_ptr->level > randint1(stasis_damage) + 10;
+    bool has_resistance = em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
+    has_resistance |= em_ptr->monrace->level > randint1(stasis_damage) + 10;
     if (to_evil) {
-        has_resistance |= em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::EVIL);
+        has_resistance |= em_ptr->monrace->kind_flags.has_not(MonsterKindType::EVIL);
     }
 
     if (has_resistance) {
@@ -325,8 +325,8 @@ ProcessResult effect_monster_stun(EffectMonster *em_ptr)
 
     em_ptr->do_stun = Dice::roll((em_ptr->caster_lev / 20) + 3, (em_ptr->dam)) + 1;
 
-    bool has_resistance = em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE);
-    has_resistance |= (em_ptr->r_ptr->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
+    bool has_resistance = em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
+    has_resistance |= (em_ptr->monrace->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
     if (has_resistance) {
         em_ptr->do_stun = 0;
         em_ptr->note = _("には効果がなかった。", " is unaffected.");

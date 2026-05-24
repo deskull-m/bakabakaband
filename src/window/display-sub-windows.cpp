@@ -131,7 +131,7 @@ static void print_monster_line(TERM_LEN x, TERM_LEN y, const CreatureEntity &mon
 {
     term_erase(0, y);
     term_gotoxy(x, y);
-    const auto &monrace = monster.get_appearance_monrace();
+    const auto &monrace = monster.get_apparent_monrace();
     if (!monrace.is_valid()) {
         return;
     }
@@ -220,7 +220,7 @@ void print_monster_list(const FloorType &floor, const std::vector<MONSTER_IDX> &
 
 static void print_pet_list_oneline(CreatureEntity &creature, const CreatureEntity &monster, TERM_LEN x, TERM_LEN y, TERM_LEN width)
 {
-    const auto &monrace = monster.get_appearance_monrace();
+    const auto &monrace = monster.get_apparent_monrace();
     const auto name = monster_desc(creature, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE | MD_NO_OWNER);
     const auto &[bar_color, bar_len] = monster.get_hp_bar_data();
     const auto is_visible = monster.is_visible_on_map() && !creature.is_hallucinated();
@@ -568,7 +568,7 @@ static void display_floor_item_list(CreatureEntity &creature, const Pos2D &pos)
             line = format(_("(X:%03d Y:%03d) 何か奇妙な物の足元の発見済みアイテム一覧", "Found items at (%03d,%03d) under something strange"), pos.x, pos.y);
         } else {
             const auto &monster = floor_ptr->get_monster(g_ptr->m_idx);
-            const auto &monrace = monster.get_appearance_monrace();
+            const auto &monrace = monster.get_apparent_monrace();
             line = format(_("(X:%03d Y:%03d) %sの足元の発見済みアイテム一覧", "Found items at (%03d,%03d) under %s"), pos.x, pos.y, monrace.name.data());
         }
     } else {

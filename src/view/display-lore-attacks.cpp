@@ -168,12 +168,12 @@ void display_monster_melee_summary_line(lore_type *lore_ptr)
     hooked_roff(_("[打撃] ", "[Melee] "));
 
     for (int m = 0; m < max_attack_numbers; m++) {
-        const auto &blow = lore_ptr->r_ptr->blows[m];
+        const auto &blow = lore_ptr->monrace->blows[m];
         if (blow.method == RaceBlowMethodType::NONE) {
             continue;
         }
 
-        if (!lore_ptr->know_everything && (lore_ptr->r_ptr->r_blows[m] == 0)) {
+        if (!lore_ptr->know_everything && (lore_ptr->monrace->r_blows[m] == 0)) {
             continue;
         }
 
@@ -192,7 +192,7 @@ void display_monster_melee_summary_line(lore_type *lore_ptr)
         // 手段（pc）
         hook_c_roff(lore_ptr->pc, method_abbrev);
 
-        const bool blow_seen = lore_ptr->know_everything || (lore_ptr->r_ptr->r_blows[m] != 0);
+        const bool blow_seen = lore_ptr->know_everything || (lore_ptr->monrace->r_blows[m] != 0);
         const bool dmg_known = lore_ptr->know_everything || lore_ptr->is_blow_damage_known(m);
 
         // ダイスあり
@@ -316,7 +316,7 @@ static void display_monster_blow_en(lore_type *lore_ptr, int attack_numbers, con
 void display_monster_blow(lore_type *lore_ptr, int m, int attack_numbers)
 {
     auto display_monster_blows_pf = _(display_monster_blow_jp, display_monster_blow_en);
-    display_monster_blows_pf(lore_ptr, attack_numbers, lore_ptr->r_ptr->blows[m].damage_dice, m);
+    display_monster_blows_pf(lore_ptr, attack_numbers, lore_ptr->monrace->blows[m].damage_dice, m);
 }
 
 /*!
@@ -325,22 +325,20 @@ void display_monster_blow(lore_type *lore_ptr, int m, int attack_numbers)
  */
 void display_monster_blows(lore_type *lore_ptr)
 {
-    const int blow_count = static_cast<int>(lore_ptr->r_ptr->blows.size());
-    const int r_blow_count = static_cast<int>(lore_ptr->r_ptr->r_blows.size());
-    for (int m = 0; m < blow_count; m++) {
-        if (lore_ptr->r_ptr->blows[m].method == RaceBlowMethodType::NONE) {
+    const int max_attack_numbers = 4;
+    for (int m = 0; m < max_attack_numbers; m++) {
+        if (lore_ptr->monrace->blows[m].method == RaceBlowMethodType::NONE) {
             continue;
         }
 
-        if ((m < r_blow_count && lore_ptr->r_ptr->r_blows[m]) || lore_ptr->know_everything) {
+        if (lore_ptr->monrace->r_blows[m] || lore_ptr->know_everything) {
             lore_ptr->count++;
         }
     }
 
     int attack_numbers = 0;
-    for (int m = 0; m < blow_count; m++) {
-        const bool has_r_blow = m < r_blow_count && lore_ptr->r_ptr->r_blows[m] > 0;
-        if (lore_ptr->r_ptr->blows[m].method == RaceBlowMethodType::NONE || (!has_r_blow && !lore_ptr->know_everything)) {
+    for (int m = 0; m < max_attack_numbers; m++) {
+        if (lore_ptr->monrace->blows[m].method == RaceBlowMethodType::NONE || (((lore_ptr->monrace->r_blows[m] == 0) && !lore_ptr->know_everything))) {
             continue;
         }
 

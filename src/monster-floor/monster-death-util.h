@@ -2,6 +2,7 @@
 
 #include "util/point-2d.h"
 #include <cstdint>
+#include <memory>
 
 // @todo PlayerType に依存するオブジェクトメソッドを追加予定.
 class FloorType;
@@ -12,8 +13,8 @@ public:
     MonsterDeath(FloorType &floor, short m_idx, bool drop_item);
     short m_idx;
     CreatureEntity *m_ptr;
-    MonraceDefinition *r_ptr;
-    MonraceDefinition *ap_r_ptr;
+    std::shared_ptr<MonraceDefinition> monrace;
+    std::shared_ptr<MonraceDefinition> apparent_monrace;
     bool do_gold;
     bool do_item;
     bool cloned;

@@ -87,7 +87,7 @@ errr parse_vaults_info(std::string_view buf, angband_header *)
                 if (s_tokens.size() == 2 && s_tokens[0] == "MONSTER") {
                     const auto &monraces = MonraceList::get_instance();
                     for (const auto &[r_idx, r_ref] : monraces) {
-                        if (s_tokens[1] == r_ref.tag) {
+                        if (s_tokens[1] == r_ref->tag) {
                             v_ptr->place_monster_list[c] = r_idx;
                             break;
                         }

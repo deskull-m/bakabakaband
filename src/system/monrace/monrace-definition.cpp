@@ -233,6 +233,11 @@ const MonraceDefinition &MonraceDefinition::get_next() const
     return MonraceList::get_instance().get_monrace(this->next_r_idx);
 }
 
+std::shared_ptr<const MonraceDefinition> MonraceDefinition::get_next_shared() const
+{
+    return MonraceList::get_instance().get_monrace_shared(this->next_r_idx);
+}
+
 /*!
  * @brief モンスター種族が賞金首の対象かどうかを調べる。日替わり賞金首は対象外。
  * @param unachieved_only true の場合未達成の賞金首のみを対象とする。false の場合達成未達成に関わらずすべての賞金首を対象とする。

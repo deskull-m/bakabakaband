@@ -70,19 +70,19 @@ void player_wipe_without_name(CreatureEntity &creature)
     ArtifactList::get_instance().reset_generated_flags();
     BaseitemList::get_instance().reset_identification_flags();
     for (auto &[_, monrace] : MonraceList::get_instance()) {
-        if (!monrace.is_valid()) {
+        if (!monrace->is_valid()) {
             continue;
         }
 
         // 馬鹿馬鹿独自仕様 ... ユニークは常にモブ数1と生成最大数1
-        if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
-            monrace.mob_num = monrace.max_num = MAX_UNIQUE_NUM;
+        if (monrace->kind_flags.has(MonsterKindType::UNIQUE)) {
+            monrace->mob_num = monrace->max_num = MAX_UNIQUE_NUM;
         }
 
-        monrace.reset_current_numbers();
-        monrace.reset_max_number();
-        monrace.r_pkills = 0;
-        monrace.r_akills = 0;
+        monrace->reset_current_numbers();
+        monrace->reset_max_number();
+        monrace->r_pkills = 0;
+        monrace->r_akills = 0;
     }
 
     creature.set_food(PY_FOOD_FULL - 1);

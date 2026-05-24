@@ -345,7 +345,7 @@ void process_player(CreatureEntity &creature)
                     continue;
                 }
 
-                const auto &monrace = monster.get_appearance_monrace();
+                const auto &monrace = monster.get_apparent_monrace();
 
                 // モンスターのシンボル/カラーの更新
                 if (monster.is_visible_on_map() && monrace.visual_flags.has_any_of({ MonsterVisualType::MULTI_COLOR, MonsterVisualType::SHAPECHANGER })) {

@@ -128,8 +128,8 @@ void do_cmd_visuals(CreatureEntity &creature)
 
             auto_dump_printf(auto_dump_stream, _("\n# モンスターの[色/文字]の設定\n\n", "\n# Monster attr/char definitions\n\n"));
             for (const auto &[monrace_id, monrace] : MonraceList::get_instance()) {
-                auto_dump_printf(auto_dump_stream, "# %s\n", monrace.name.data());
-                const auto &symbol_config = monrace.symbol_config;
+                auto_dump_printf(auto_dump_stream, "# %s\n", monrace->name.data());
+                const auto &symbol_config = monrace->symbol_config;
                 auto_dump_printf(auto_dump_stream, "R:%d:0x%02X/0x%02X\n\n", enum2i(monrace_id), symbol_config.color, static_cast<uint8_t>(symbol_config.character));
             }
 
@@ -214,7 +214,7 @@ void do_cmd_visuals(CreatureEntity &creature)
             short num = 0;
             auto &monraces = MonraceList::get_instance();
             static auto choice_msg = _("モンスターの[色/文字]を変更します", "Change monster attr/chars");
-            static auto monrace_id = monraces.begin()->second.idx;
+            static auto monrace_id = monraces.begin()->second->idx;
             prt(format(_("コマンド: %s", "Command: %s"), choice_msg), 15, 0);
             while (true) {
                 auto &monrace = monraces.get_monrace(monrace_id);

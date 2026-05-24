@@ -77,17 +77,17 @@ bool research_mon(CreatureEntity &creature)
     std::vector<MonraceId> monrace_ids;
     auto &monraces = MonraceList::get_instance();
     for (const auto &[monrace_id, monrace] : monraces) {
-        if (!monrace.is_valid()) {
+        if (!monrace->is_valid()) {
             continue;
         }
 
         /* Require non-unique monsters if needed */
-        if (norm && monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
+        if (norm && monrace->kind_flags.has(MonsterKindType::UNIQUE)) {
             continue;
         }
 
         /* Require unique monsters if needed */
-        if (uniq && monrace.kind_flags.has_not(MonsterKindType::UNIQUE)) {
+        if (uniq && monrace->kind_flags.has_not(MonsterKindType::UNIQUE)) {
             continue;
         }
 
@@ -105,7 +105,7 @@ bool research_mon(CreatureEntity &creature)
                 }
             }
 
-            std::string temp2 = monrace.name.en_string();
+            std::string temp2 = monrace->name.en_string();
             for (auto &ch : temp2) {
                 if (isupper(ch)) {
                     ch = static_cast<char>(tolower(ch));
@@ -113,12 +113,12 @@ bool research_mon(CreatureEntity &creature)
             }
 
 #ifdef JP
-            if (str_find(temp2, monster_name) || str_find(monrace.name.string(), monster_name))
+            if (str_find(temp2, monster_name) || str_find(monrace->name.string(), monster_name))
 #else
             if (str_find(temp2, monster_name))
 #endif
                 monrace_ids.push_back(monrace_id);
-        } else if (all || (monrace.symbol_definition.character == sym)) {
+        } else if (all || (monrace->symbol_definition.character == sym)) {
             monrace_ids.push_back(monrace_id);
         }
     }

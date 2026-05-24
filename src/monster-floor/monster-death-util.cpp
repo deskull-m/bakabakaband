@@ -12,16 +12,16 @@ MonsterDeath::MonsterDeath(FloorType &floor, short m_idx, bool drop_item)
     : m_idx(m_idx)
     , m_ptr(&floor.get_monster(m_idx))
 {
-    this->r_ptr = &this->m_ptr->get_monrace();
-    this->ap_r_ptr = this->r_ptr;
-    this->do_gold = this->r_ptr->drop_flags.has_none_of({
+    this->monrace = this->m_ptr->get_monrace_shared();
+    this->apparent_monrace = this->monrace;
+    this->do_gold = this->monrace->drop_flags.has_none_of({
         MonsterDropType::ONLY_ITEM,
         MonsterDropType::DROP_GOOD,
         MonsterDropType::DROP_GREAT,
     });
-    this->do_item = this->r_ptr->drop_flags.has_not(MonsterDropType::ONLY_GOLD);
-    this->do_item |= this->r_ptr->drop_flags.has_any_of({ MonsterDropType::DROP_GOOD, MonsterDropType::DROP_GREAT });
-    this->cloned = this->m_ptr->is_cloned();
+    this->do_item = this->monrace->drop_flags.has_not(MonsterDropType::ONLY_GOLD);
+    this->do_item |= this->monrace->drop_flags.has_any_of({ MonsterDropType::DROP_GOOD, MonsterDropType::DROP_GREAT });
+    this->cloned = this->m_ptr->has_constant_flag(MonsterConstantFlagType::CLONED);
     this->is_chameleon = this->m_ptr->is_chameleon();
     this->drop_chosen_item = drop_item && !this->cloned && !this->is_chameleon && !floor.inside_arena && !AngbandSystem::get_instance().is_phase_out() && !this->m_ptr->is_pet();
 }

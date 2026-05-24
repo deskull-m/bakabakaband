@@ -299,23 +299,23 @@ static void dump_aux_monsters(FILE *fff)
     auto norm_total = 0;
     for (const auto &[monrace_id, monrace] : monraces) {
         /* Ignore unused index */
-        if (!monrace.is_valid()) {
+        if (!monrace->is_valid()) {
             continue;
         }
 
-        if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
-            if (monrace.is_dead_unique()) {
+        if (monrace->kind_flags.has(MonsterKindType::UNIQUE)) {
+            if (monrace->is_dead_unique()) {
                 norm_total++;
 
                 /* Add a unique monster to the list */
-                monrace_ids.push_back(monrace.idx);
+                monrace_ids.push_back(monrace->idx);
             }
 
             continue;
         }
 
-        if (monrace.r_pkills > 0) {
-            norm_total += monrace.r_pkills;
+        if (monrace->r_pkills > 0) {
+            norm_total += monrace->r_pkills;
         }
     }
 

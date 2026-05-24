@@ -46,20 +46,20 @@ void do_cmd_knowledge_alliance(CreatureEntity &creature, bool detail)
             }
 
             for (auto &[r_idx, r_ref] : MonraceList::get_instance()) {
-                if (r_ref.alliance_idx == a.second->id) {
-                    fprintf(fff, _("%s  %-40s レベル %3d 評価値 %9d", "%s  %-40s LEVEL %3d POW %9d"), r_ref.kind_flags.has(MonsterKindType::UNIQUE) ? "[U]" : "---", r_ref.name.data(), r_ref.level, monraces.get_monrace(r_idx).calc_power());
-                    if (r_ref.kind_flags.has_not(MonsterKindType::UNIQUE)) {
-                        if (r_ref.mob_num > 0) {
-                            fprintf(fff, "x %d\n", r_ref.mob_num);
+                if (r_ref->alliance_idx == a.second->id) {
+                    fprintf(fff, _("%s  %-40s レベル %3d 評価値 %9d", "%s  %-40s LEVEL %3d POW %9d"), r_ref->kind_flags.has(MonsterKindType::UNIQUE) ? "[U]" : "---", r_ref->name.data(), r_ref->level, monraces.get_monrace(r_idx).calc_power());
+                    if (r_ref->kind_flags.has_not(MonsterKindType::UNIQUE)) {
+                        if (r_ref->mob_num > 0) {
+                            fprintf(fff, "x %d\n", r_ref->mob_num);
                         } else {
-                            if (r_ref.max_num > 0) {
+                            if (r_ref->max_num > 0) {
                                 fprintf(fff, _(" 全滅\n", " Wiped\n"));
                             } else {
                                 fprintf(fff, _(" ----\n", " ----\n"));
                             }
                         }
                     } else {
-                        if (r_ref.mob_num > 0) {
+                        if (r_ref->mob_num > 0) {
                             fprintf(fff, _(" 生存\n", " Survived\n"));
                         } else {
                             fprintf(fff, _(" 死亡\n", " Dead\n"));

@@ -353,7 +353,7 @@ void set_teleport_types(lore_type *lore_ptr)
 void set_floor_types(CreatureEntity &creature, lore_type *lore_ptr)
 {
     if (lore_ptr->ability_flags.has(MonsterAbilityType::DARKNESS)) {
-        if (!CreatureClass(creature).equals(PlayerClassType::NINJA) || lore_ptr->r_ptr->kind_flags.has_not(MonsterKindType::UNDEAD) || lore_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::HURT_LITE) || (lore_ptr->r_ptr->brightness_flags.has_any_of(dark_mask))) {
+        if (!CreatureClass(creature).equals(PlayerClassType::NINJA) || lore_ptr->monrace->kind_flags.has_not(MonsterKindType::UNDEAD) || lore_ptr->monrace->resistance_flags.has(MonsterResistanceType::HURT_LITE) || (lore_ptr->monrace->brightness_flags.has_any_of(dark_mask))) {
             lore_ptr->lore_msgs.emplace_back(_("暗闇", "create darkness"), TERM_L_DARK);
         } else {
             lore_ptr->lore_msgs.emplace_back(_("閃光", "create light"), TERM_YELLOW);

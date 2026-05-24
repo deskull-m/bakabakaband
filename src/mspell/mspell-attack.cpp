@@ -57,7 +57,7 @@ static void check_mspell_stupid(CreatureEntity &creature, msa_type *msa_ptr)
     is_in_no_magic_dungeon &= floor.is_underground();
     is_in_no_magic_dungeon &= !floor.is_in_quest() || QuestType::is_fixed(floor.quest_number);
     msa_ptr->in_no_magic_dungeon = is_in_no_magic_dungeon;
-    if (!msa_ptr->in_no_magic_dungeon || (msa_ptr->r_ptr->behavior_flags.has(MonsterBehaviorType::STUPID))) {
+    if (!msa_ptr->in_no_magic_dungeon || (msa_ptr->monrace->behavior_flags.has(MonsterBehaviorType::STUPID))) {
         return;
     }
 
@@ -66,7 +66,7 @@ static void check_mspell_stupid(CreatureEntity &creature, msa_type *msa_ptr)
 
 static void check_mspell_smart(const FloorType &floor, msa_type *msa_ptr)
 {
-    if (msa_ptr->r_ptr->behavior_flags.has_not(MonsterBehaviorType::SMART)) {
+    if (msa_ptr->monrace->behavior_flags.has_not(MonsterBehaviorType::SMART)) {
         return;
     }
 
@@ -94,7 +94,7 @@ static void check_mspell_arena(const FloorType &floor, msa_type *msa_ptr)
 
 static bool check_mspell_non_stupid(CreatureEntity &creature, msa_type *msa_ptr)
 {
-    if (msa_ptr->r_ptr->behavior_flags.has(MonsterBehaviorType::STUPID)) {
+    if (msa_ptr->monrace->behavior_flags.has(MonsterBehaviorType::STUPID)) {
         return true;
     }
 
@@ -184,7 +184,7 @@ static bool check_mspell_continuation(CreatureEntity &creature, msa_type *msa_pt
 static bool check_mspell_unexploded(CreatureEntity &creature, msa_type *msa_ptr)
 {
     PERCENTAGE fail_rate = 25 - (msa_ptr->rlev + 3) / 4;
-    if (msa_ptr->r_ptr->behavior_flags.has(MonsterBehaviorType::STUPID)) {
+    if (msa_ptr->monrace->behavior_flags.has(MonsterBehaviorType::STUPID)) {
         fail_rate = 0;
     }
 
@@ -291,9 +291,9 @@ static void remember_mspell(msa_type *msa_ptr)
         return;
     }
 
-    msa_ptr->r_ptr->r_ability_flags.set(msa_ptr->thrown_spell);
-    if (msa_ptr->r_ptr->r_cast_spell < MAX_UCHAR) {
-        msa_ptr->r_ptr->r_cast_spell++;
+    msa_ptr->monrace->r_ability_flags.set(msa_ptr->thrown_spell);
+    if (msa_ptr->monrace->r_cast_spell < MAX_UCHAR) {
+        msa_ptr->monrace->r_cast_spell++;
     }
 }
 
@@ -327,7 +327,7 @@ bool make_attack_spell(CreatureEntity &creature, MONSTER_IDX m_idx)
     }
 
     msa_ptr->m_ptr->reset_target();
-    msa_ptr->rlev = ((msa_ptr->r_ptr->level >= 1) ? msa_ptr->r_ptr->level : 1);
+    msa_ptr->rlev = ((msa_ptr->monrace->level >= 1) ? msa_ptr->monrace->level : 1);
     set_no_magic_mask(msa_ptr);
     decide_lite_area(creature, msa_ptr);
     check_mspell_stupid(creature, msa_ptr);
@@ -354,8 +354,8 @@ bool make_attack_spell(CreatureEntity &creature, MONSTER_IDX m_idx)
     msa_ptr->dam = monspell_res.dam;
     check_mspell_imitation(creature, msa_ptr);
     remember_mspell(msa_ptr);
-    if (creature.is_dead() && (msa_ptr->r_ptr->r_deaths < MAX_SHORT) && !creature.get_floor()->inside_arena) {
-        msa_ptr->r_ptr->r_deaths++;
+    if (creature.is_dead() && (msa_ptr->monrace->r_deaths < MAX_SHORT) && !creature.get_floor()->inside_arena) {
+        msa_ptr->monrace->r_deaths++;
     }
 
     return true;

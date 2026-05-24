@@ -193,8 +193,8 @@ void target_sensing_monsters_prepare(CreatureEntity &creature, std::vector<MONST
     auto comp_importance = [&floor = *creature.get_floor()](MONSTER_IDX idx1, MONSTER_IDX idx2) {
         const auto &monster1 = floor.get_monster(idx1);
         const auto &monster2 = floor.get_monster(idx2);
-        const auto &monrace1 = monster1.get_appearance_monrace();
-        const auto &monrace2 = monster2.get_appearance_monrace();
+        const auto &monrace1 = monster1.get_apparent_monrace();
+        const auto &monrace2 = monster2.get_apparent_monrace();
 
         /* Unique monsters first */
         if (monrace1.kind_flags.has(MonsterKindType::UNIQUE) != monrace2.kind_flags.has(MonsterKindType::UNIQUE)) {
@@ -253,8 +253,8 @@ std::vector<MONSTER_IDX> target_pets_prepare(CreatureEntity &creature)
     auto comp_importance = [&floor](MONSTER_IDX idx1, MONSTER_IDX idx2) {
         const auto &monster1 = floor.get_monster(idx1);
         const auto &monster2 = floor.get_monster(idx2);
-        const auto &ap_monrace1 = monster1.get_appearance_monrace();
-        const auto &ap_monrace2 = monster2.get_appearance_monrace();
+        const auto &ap_monrace1 = monster1.get_apparent_monrace();
+        const auto &ap_monrace2 = monster2.get_apparent_monrace();
 
         if (monster1.is_riding() != monster2.is_riding()) {
             return monster1.is_riding();

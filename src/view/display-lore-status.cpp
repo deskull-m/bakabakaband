@@ -16,12 +16,12 @@ void display_monster_hp_ac(lore_type *lore_ptr)
         return;
     }
 
-    hooked_roff(format(_("%s^は AC%d の防御力と", "%s^ has an armor rating of %d"), Who::who(lore_ptr->msex).data(), lore_ptr->r_ptr->ac));
-    if (lore_ptr->misc_flags.has(MonsterMiscType::FORCE_MAXHP) || (lore_ptr->r_ptr->hit_dice.sides == 1)) {
-        auto hp = lore_ptr->r_ptr->hit_dice.maxroll() * (lore_ptr->nightmare ? 2 : 1);
+    hooked_roff(format(_("%s^は AC%d の防御力と", "%s^ has an armor rating of %d"), Who::who(lore_ptr->msex).data(), lore_ptr->monrace->ac));
+    if (lore_ptr->misc_flags.has(MonsterMiscType::FORCE_MAXHP) || (lore_ptr->monrace->hit_dice.sides == 1)) {
+        auto hp = lore_ptr->monrace->hit_dice.maxroll() * (lore_ptr->nightmare ? 2 : 1);
         hooked_roff(format(_(" %d の体力がある。", " and a life rating of %d.  "), std::min(MONSTER_MAXHP, hp)));
     } else {
-        auto hit_dice = lore_ptr->r_ptr->hit_dice;
+        auto hit_dice = lore_ptr->monrace->hit_dice;
         if (lore_ptr->nightmare) {
             hit_dice.num *= 2;
         }
@@ -39,18 +39,18 @@ void display_monster_hp_ac_summary(lore_type *lore_ptr)
     }
 
     std::string hp_text;
-    if (lore_ptr->misc_flags.has(MonsterMiscType::FORCE_MAXHP) || (lore_ptr->r_ptr->hit_dice.sides == 1)) {
-        auto hp = lore_ptr->r_ptr->hit_dice.maxroll() * (lore_ptr->nightmare ? 2 : 1);
+    if (lore_ptr->misc_flags.has(MonsterMiscType::FORCE_MAXHP) || (lore_ptr->monrace->hit_dice.sides == 1)) {
+        auto hp = lore_ptr->monrace->hit_dice.maxroll() * (lore_ptr->nightmare ? 2 : 1);
         hp_text = format("%d", std::min(MONSTER_MAXHP, hp));
     } else {
-        auto hit_dice = lore_ptr->r_ptr->hit_dice;
+        auto hit_dice = lore_ptr->monrace->hit_dice;
         if (lore_ptr->nightmare) {
             hit_dice.num *= 2;
         }
         hp_text = hit_dice.to_string().data();
     }
 
-    const auto ac = lore_ptr->r_ptr->ac;
+    const auto ac = lore_ptr->monrace->ac;
 
     hooked_roff(format(_("最大HP:%s AC:%d ", "MaxHP:%s AC:%d "), hp_text.data(), ac));
 }
@@ -73,11 +73,11 @@ void display_monster_concrete_abilities(lore_type *lore_ptr)
         lore_ptr->lore_msgs.emplace_back(_("ドアを打ち破る", "bash down doors"), TERM_WHITE);
     }
 
-    if (lore_ptr->r_ptr->feature_flags.has(MonsterFeatureType::CAN_FLY)) {
+    if (lore_ptr->monrace->feature_flags.has(MonsterFeatureType::CAN_FLY)) {
         lore_ptr->lore_msgs.emplace_back(_("空を飛ぶ", "fly"), TERM_WHITE);
     }
 
-    if (lore_ptr->r_ptr->feature_flags.has(MonsterFeatureType::CAN_SWIM)) {
+    if (lore_ptr->monrace->feature_flags.has(MonsterFeatureType::CAN_SWIM)) {
         lore_ptr->lore_msgs.emplace_back(_("水を渡る", "swim"), TERM_WHITE);
     }
 
@@ -141,7 +141,7 @@ void display_monster_abilities(lore_type *lore_ptr)
 
 void display_monster_constitutions(lore_type *lore_ptr)
 {
-    if (lore_ptr->r_ptr->feature_flags.has(MonsterFeatureType::AQUATIC)) {
+    if (lore_ptr->monrace->feature_flags.has(MonsterFeatureType::AQUATIC)) {
         hooked_roff(format(_("%s^は水中に棲んでいる。", "%s^ lives in water.  "), Who::who(lore_ptr->msex).data()));
     }
 
@@ -345,7 +345,7 @@ void display_monster_concrete_resistances(lore_type *lore_ptr)
         lore_ptr->lore_msgs.emplace_back(_("あらゆる攻撃", "all"), TERM_YELLOW);
     }
 
-    if (lore_ptr->resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT) && lore_ptr->r_ptr->kind_flags.has_not(MonsterKindType::UNIQUE)) {
+    if (lore_ptr->resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT) && lore_ptr->monrace->kind_flags.has_not(MonsterKindType::UNIQUE)) {
         lore_ptr->lore_msgs.emplace_back(_("テレポート", "teleportation"), TERM_ORANGE);
     }
 }
@@ -380,30 +380,30 @@ void display_monster_resistances(lore_type *lore_ptr)
 
 void display_monster_evolution_summary(lore_type *lore_ptr)
 {
-    if (!lore_ptr->r_ptr->r_can_evolve && !lore_ptr->know_everything) {
+    if (!lore_ptr->monrace->r_can_evolve && !lore_ptr->know_everything) {
         return;
     }
 
-    const auto &monrace_next = lore_ptr->r_ptr->get_next();
+    const auto &monrace_next = lore_ptr->monrace->get_next();
     if (monrace_next.is_valid()) {
         hooked_roff(format(_("進化:%s ", "evolve:%s "), monrace_next.name.data()));
-    } else if (lore_ptr->r_ptr->kind_flags.has_not(MonsterKindType::UNIQUE)) {
+    } else if (lore_ptr->monrace->kind_flags.has_not(MonsterKindType::UNIQUE)) {
         hooked_roff(_("進化:なし ", "evolve:none "));
     }
 }
 
 void display_monster_evolution(lore_type *lore_ptr)
 {
-    if (!lore_ptr->r_ptr->r_can_evolve && !lore_ptr->know_everything) {
+    if (!lore_ptr->monrace->r_can_evolve && !lore_ptr->know_everything) {
         return;
     }
 
-    const auto &monrace_next = lore_ptr->r_ptr->get_next();
+    const auto &monrace_next = lore_ptr->monrace->get_next();
     if (monrace_next.is_valid()) {
         hooked_roff(format(_("%s^は経験を積むと、", "%s^ will evolve into "), Who::who(lore_ptr->msex).data()));
         hook_c_roff(TERM_YELLOW, format("%s", monrace_next.name.data()));
         hooked_roff(_(format("に進化する。"), format(" when %s gets enough experience.  ", Who::who(lore_ptr->msex).data())));
-    } else if (lore_ptr->r_ptr->kind_flags.has_not(MonsterKindType::UNIQUE)) {
+    } else if (lore_ptr->monrace->kind_flags.has_not(MonsterKindType::UNIQUE)) {
         hooked_roff(format(_("%sは進化しない。", "%s won't evolve.  "), Who::who(lore_ptr->msex).data()));
     }
 }
@@ -426,11 +426,11 @@ void display_monster_concrete_immunities(lore_type *lore_ptr)
         lore_ptr->lore_msgs.emplace_back(_("眠らされない", "slept"), TERM_BLUE);
     }
 
-    if (lore_ptr->resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT) && lore_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
+    if (lore_ptr->resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT) && lore_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE)) {
         lore_ptr->lore_msgs.emplace_back(_("テレポートされない", "teleported"), TERM_ORANGE);
     }
 
-    if (lore_ptr->resistance_flags.has(MonsterResistanceType::NO_INSTANTLY_DEATH) || lore_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
+    if (lore_ptr->resistance_flags.has(MonsterResistanceType::NO_INSTANTLY_DEATH) || lore_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE)) {
         lore_ptr->lore_msgs.emplace_back(_("即死しない", "instantly killed"), TERM_L_DARK);
     }
 }
@@ -465,46 +465,46 @@ void display_monster_immunities(lore_type *lore_ptr)
 
 void display_monster_alert_summary(lore_type *lore_ptr)
 {
-    auto alert = ((int)lore_ptr->r_ptr->r_wake * (int)lore_ptr->r_ptr->r_wake) > lore_ptr->r_ptr->sleep;
-    alert |= lore_ptr->r_ptr->r_ignore == MAX_UCHAR;
-    alert |= (lore_ptr->r_ptr->sleep == 0) && (lore_ptr->r_ptr->r_tkills >= 10);
+    auto alert = ((int)lore_ptr->monrace->r_wake * (int)lore_ptr->monrace->r_wake) > lore_ptr->monrace->sleep;
+    alert |= lore_ptr->monrace->r_ignore == MAX_UCHAR;
+    alert |= (lore_ptr->monrace->sleep == 0) && (lore_ptr->monrace->r_tkills >= 10);
     alert |= lore_ptr->know_everything;
     if (!alert) {
         return;
     }
-    hooked_roff(format(_("警戒度:%d/255 感知範囲:%dft ", "alertness:%d notice:%dft"), 255 - lore_ptr->r_ptr->sleep, 10 * lore_ptr->r_ptr->aaf));
+    hooked_roff(format(_("警戒度:%d/255 感知範囲:%dft ", "alertness:%d notice:%dft"), 255 - lore_ptr->monrace->sleep, 10 * lore_ptr->monrace->aaf));
 }
 
 void display_monster_alert(lore_type *lore_ptr)
 {
-    auto alert = ((int)lore_ptr->r_ptr->r_wake * (int)lore_ptr->r_ptr->r_wake) > lore_ptr->r_ptr->sleep;
-    alert |= lore_ptr->r_ptr->r_ignore == MAX_UCHAR;
-    alert |= (lore_ptr->r_ptr->sleep == 0) && (lore_ptr->r_ptr->r_tkills >= 10);
+    auto alert = ((int)lore_ptr->monrace->r_wake * (int)lore_ptr->monrace->r_wake) > lore_ptr->monrace->sleep;
+    alert |= lore_ptr->monrace->r_ignore == MAX_UCHAR;
+    alert |= (lore_ptr->monrace->sleep == 0) && (lore_ptr->monrace->r_tkills >= 10);
     alert |= lore_ptr->know_everything;
     if (!alert) {
         return;
     }
 
     std::string action;
-    if (lore_ptr->r_ptr->sleep > 200) {
+    if (lore_ptr->monrace->sleep > 200) {
         action = _("を無視しがちであるが", "prefers to ignore");
-    } else if (lore_ptr->r_ptr->sleep > 95) {
+    } else if (lore_ptr->monrace->sleep > 95) {
         action = _("に対してほとんど注意を払わないが", "pays very little attention to");
-    } else if (lore_ptr->r_ptr->sleep > 75) {
+    } else if (lore_ptr->monrace->sleep > 75) {
         action = _("に対してあまり注意を払わないが", "pays little attention to");
-    } else if (lore_ptr->r_ptr->sleep > 45) {
+    } else if (lore_ptr->monrace->sleep > 45) {
         action = _("を見過ごしがちであるが", "tends to overlook");
-    } else if (lore_ptr->r_ptr->sleep > 25) {
+    } else if (lore_ptr->monrace->sleep > 25) {
         action = _("をほんの少しは見ており", "takes quite a while to see");
-    } else if (lore_ptr->r_ptr->sleep > 10) {
+    } else if (lore_ptr->monrace->sleep > 10) {
         action = _("をしばらくは見ており", "takes a while to see");
-    } else if (lore_ptr->r_ptr->sleep > 5) {
+    } else if (lore_ptr->monrace->sleep > 5) {
         action = _("を幾分注意深く見ており", "is fairly observant of");
-    } else if (lore_ptr->r_ptr->sleep > 3) {
+    } else if (lore_ptr->monrace->sleep > 3) {
         action = _("を注意深く見ており", "is observant of");
-    } else if (lore_ptr->r_ptr->sleep > 1) {
+    } else if (lore_ptr->monrace->sleep > 1) {
         action = _("をかなり注意深く見ており", "is very observant of");
-    } else if (lore_ptr->r_ptr->sleep > 0) {
+    } else if (lore_ptr->monrace->sleep > 0) {
         action = _("を警戒しており", "is vigilant for");
     } else {
         action = _("をかなり警戒しており", "is ever vigilant for");
@@ -512,8 +512,8 @@ void display_monster_alert(lore_type *lore_ptr)
 
     constexpr auto fmt = _("%s^は侵入者%s、 %d フィート先から侵入者に気付くことがある。", "%s^ %s intruders, which %s may notice from %d feet.  ");
     const auto who = Who::who(lore_ptr->msex);
-    hooked_roff(_(format(fmt, who.data(), action.data(), 10 * lore_ptr->r_ptr->aaf),
-        format(fmt, who.data(), action.data(), who.data(), 10 * lore_ptr->r_ptr->aaf)));
+    hooked_roff(_(format(fmt, who.data(), action.data(), 10 * lore_ptr->monrace->aaf),
+        format(fmt, who.data(), action.data(), who.data(), 10 * lore_ptr->monrace->aaf)));
 }
 
 static void push_tag(std::vector<std::string> &tags, const char *msg)
@@ -688,19 +688,19 @@ struct GroupState {
 static GroupState get_group_state(const lore_type *lore_ptr, const ResistGroupDef &d)
 {
     const bool fully_known = lore_ptr->know_everything || lore_ptr->is_details_known();
-    const auto &flags = fully_known ? lore_ptr->r_ptr->resistance_flags : lore_ptr->r_ptr->r_resistance_flags;
+    const auto &flags = fully_known ? lore_ptr->monrace->resistance_flags : lore_ptr->monrace->r_resistance_flags;
 
     if (d.immune) {
-        const auto no_teleport = d.immune.value() == MonsterResistanceType::RESIST_TELEPORT && lore_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE);
+        const auto no_teleport = d.immune.value() == MonsterResistanceType::RESIST_TELEPORT && lore_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
         const auto other_flag = d.immune.value() != MonsterResistanceType::RESIST_TELEPORT;
-        const auto no_inst_death = d.immune.value() == MonsterResistanceType::NO_INSTANTLY_DEATH && lore_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE);
+        const auto no_inst_death = d.immune.value() == MonsterResistanceType::NO_INSTANTLY_DEATH && lore_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
         if ((no_teleport || other_flag) && (flags.has(d.immune.value()) || no_inst_death)) {
             return { GroupStateKind::IMMUNE, _(d.jp_immune, d.en_immune), d.color_immune };
         }
     }
 
     if (d.resist) {
-        const auto res_teleport = d.resist.value() == MonsterResistanceType::RESIST_TELEPORT && lore_ptr->r_ptr->kind_flags.has_not(MonsterKindType::UNIQUE);
+        const auto res_teleport = d.resist.value() == MonsterResistanceType::RESIST_TELEPORT && lore_ptr->monrace->kind_flags.has_not(MonsterKindType::UNIQUE);
         const auto other_flag = d.resist.value() != MonsterResistanceType::RESIST_TELEPORT;
         if ((res_teleport || other_flag) && flags.has(d.resist.value())) {
             return { GroupStateKind::RESIST, _(d.jp_resist, d.en_resist), d.color_resist };
@@ -879,10 +879,10 @@ static const std::vector<ResistGroupDef> &resist_group_defs()
 
 void display_monster_resistance_table(lore_type *lore_ptr)
 {
-    const auto see_reflecting = lore_ptr->r_ptr->r_misc_flags.has(MonsterMiscType::REFLECTING);
+    const auto see_reflecting = lore_ptr->monrace->r_misc_flags.has(MonsterMiscType::REFLECTING);
     const bool fully_known = lore_ptr->know_everything || lore_ptr->is_details_known();
 
-    if (!fully_known && lore_ptr->r_ptr->r_resistance_flags.none() && !see_reflecting) {
+    if (!fully_known && lore_ptr->monrace->r_resistance_flags.none() && !see_reflecting) {
         return;
     }
 
@@ -892,7 +892,7 @@ void display_monster_resistance_table(lore_type *lore_ptr)
     hooked_roff(_("[耐性] ", "[Resists] "));
 
     if (fully_known) {
-        if (lore_ptr->r_ptr->misc_flags.has(MonsterMiscType::REFLECTING)) {
+        if (lore_ptr->monrace->misc_flags.has(MonsterMiscType::REFLECTING)) {
             hook_c_roff(TERM_L_WHITE, _("反射 ", "REFLECTING "));
         } else {
             hook_c_roff(RES_ABSENT_COLOR, "------ ");

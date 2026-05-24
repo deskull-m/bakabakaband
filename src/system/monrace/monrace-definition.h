@@ -225,6 +225,7 @@ public:
     tl::optional<bool> order_pet(const MonraceDefinition &other) const;
     std::string get_pronoun_of_summoned_kin() const;
     const MonraceDefinition &get_next() const;
+    std::shared_ptr<const MonraceDefinition> get_next_shared() const;
     bool is_bounty(bool unachieved_only) const;
     int calc_power() const;
     int calc_figurine_value() const;

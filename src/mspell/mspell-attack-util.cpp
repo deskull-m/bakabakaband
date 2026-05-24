@@ -11,9 +11,9 @@ msa_type::msa_type(CreatureEntity &creature, MONSTER_IDX m_idx)
     , do_spell(DO_SPELL_NONE)
     , thrown_spell(MonsterAbilityType::MAX)
 {
-    this->r_ptr = &this->m_ptr->get_monrace();
-    this->no_inate = !evaluate_percent(this->r_ptr->freq_spell * 2);
-    this->ability_flags = this->r_ptr->ability_flags;
+    this->monrace = this->m_ptr->get_monrace_shared();
+    this->no_inate = !evaluate_percent(this->monrace->freq_spell * 2);
+    this->ability_flags = this->monrace->ability_flags;
 }
 
 Pos2D msa_type::get_position() const

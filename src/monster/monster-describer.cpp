@@ -120,7 +120,7 @@ static tl::optional<std::string> get_monster_self_pronoun(const CreatureEntity &
 
 static std::string get_describing_monster_name(const CreatureEntity &monster, const bool is_hallucinated, const BIT_FLAGS mode)
 {
-    const auto &monrace = monster.get_appearance_monrace();
+    const auto &monrace = monster.get_apparent_monrace();
     if (!is_hallucinated || any_bits(mode, MD_IGNORE_HALLU)) {
         return any_bits(mode, MD_TRUE_NAME) ? monster.get_real_monrace().name.string() : monrace.name.string();
     }
@@ -159,7 +159,7 @@ static std::string replace_monster_name_undefined(std::string_view name)
 
 static tl::optional<std::string> get_fake_monster_name(const CreatureEntity &creature, const CreatureEntity &monster, const std::string &name, const BIT_FLAGS mode)
 {
-    const auto &monrace = monster.get_appearance_monrace();
+    const auto &monrace = monster.get_apparent_monrace();
     const auto is_hallucinated = creature.is_hallucinated();
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) || (is_hallucinated && none_bits(mode, MD_IGNORE_HALLU))) {
         return tl::nullopt;
@@ -213,7 +213,7 @@ static std::string add_cameleon_name(const CreatureEntity &monster, const BIT_FL
         return "";
     }
 
-    const auto &monrace = monster.get_appearance_monrace();
+    const auto &monrace = monster.get_apparent_monrace();
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
         return _("(カメレオンの王)", "(Chameleon Lord)");
     }

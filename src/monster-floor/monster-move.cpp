@@ -474,7 +474,7 @@ bool process_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_p
             break;
         }
 
-        const auto &apparent_monrace = monster.get_appearance_monrace();
+        const auto &apparent_monrace = monster.get_apparent_monrace();
         const auto p_pos = creature.get_position(); //!< @details 関数が長すぎてプレイヤーの座標が不変であることを保証できない.
         const auto m_pos = monster.get_position();
         const auto is_projectable = projectable(floor, p_pos, m_pos);
@@ -520,7 +520,7 @@ static bool can_speak(const MonraceDefinition &ap_r_ref, MonsterSpeakType mon_sp
 
 static tl::optional<MonsterMessageType> get_speak_type(const CreatureEntity &monster)
 {
-    const auto &ap_monrace = monster.get_appearance_monrace();
+    const auto &ap_monrace = monster.get_apparent_monrace();
     if (monster.is_fearful() && can_speak(ap_monrace, MonsterSpeakType::SPEAK_FEAR)) {
         return MonsterMessageType::SPEAK_FEAR;
     }
@@ -618,7 +618,7 @@ void process_speak(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION oy, POS
     constexpr auto chance_speak = 8;
     auto vociferous = monrace.r_misc_flags.has(MonsterMiscType::VOCIFEROUS) && (Grid::calc_distance(creature.get_position(), monster.get_position()) <= MAX_PLAYER_SIGHT * 2) && one_in_(chance_speak / 3 + 1);
     const auto p_pos = creature.get_position();
-    const auto can_speak = monster.get_appearance_monrace().speak_flags.any();
+    const auto can_speak = monster.get_apparent_monrace().speak_flags.any();
     if ((!vociferous) && (!can_speak || !aware || !floor.has_los_at({ oy, ox }) || !projectable(floor, pos, p_pos))) {
         return;
     }
