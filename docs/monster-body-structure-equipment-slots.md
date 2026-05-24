@@ -1,8 +1,50 @@
 # モンスター体構造別装備スロット設計
 
-**ステータス**: 設計提案 (未実装)
+**ステータス**: ✅ 実装完了 (Phase 1-2.7 全段階)
+**最終更新**: 2026-05-14
 **作成日**: 2026-05-14
 **関連提案**: 提案 12 (モンスター装備有効化) の延長
+
+---
+
+## 実装サマリ (2026-05-14 完了)
+
+| Phase | 内容 | 状況 |
+|---|---|:---:|
+| Step 1 | BodyStructureType enum + BodySlotPolicy + JSON 受入 | ✅ |
+| Step 2 | CreatureEntity::can_equip_to() + wield_slot ガード + c コマンド表示 | ✅ |
+| Step 3 | 全 2347 体への自動分類 (シンボルベース) | ✅ |
+| Phase 2 | 拡張スロット基盤 (ExtendedSlotType / extended_inventory / save/load) | ✅ |
+| Phase 2.5 | 拡張スロットへの自動装備 (INVEN_EXTENDED_BASE 経由) | ✅ |
+| Phase 2.6 | AC / 耐性集計の extended_inventory 反映 (FLAG_CAUSE_INVEN_EXTENDED) | ✅ |
+| Phase 2.7 | extended_equipment_slots の JSON 個別上書き | ✅ |
+| 表示 | r recall に体構造タグ表示、装備時メッセージ | ✅ |
+| 分類調整 | D → DRACONIC、n → HUMANOID リファインメント | ✅ |
+
+**現状分類分布**:
+- HUMANOID:    1326 (フル装備可能)
+- DRACONIC:      76 (フル装備 + TAIL_RING + WING_L + WING_R)
+- QUADRUPED:    366 (首/胴体/頭のみ)
+- INCORPOREAL:  350 (装備不可)
+- AMORPHOUS:    114 (リング 2 個のみ)
+- SERPENTINE:    63 (首/胴体 + TAIL_RING)
+- BIPEDAL:       52 (首/光源/胴体/頭/脚)
+
+**実装ファイル一覧**:
+- `src/system/monrace/body-structure-types.h` (新規)
+- `src/system/monrace/body-structure-policy.{h,cpp}` (新規)
+- `src/system/monrace/extended-slot.{h,cpp}` (新規)
+- `src/system/monrace/monrace-definition.h` (body_structure + extended_slots_override)
+- `src/system/creature-entity.{h,cpp}` (can_equip_to, get_extended_slot_*, init_extended_inventory)
+- `src/object/object-info.cpp` (wield_slot 拡張)
+- `src/info-reader/race-reader.cpp` + race-info-tokens-table (JSON パーサー)
+- `src/inventory/inventory-slot-types.h` (INVEN_EXTENDED_BASE)
+- `src/player/player-status-flags.{h,cpp}` (FLAG_CAUSE_INVEN_EXTENDED)
+- `src/save/monster-writer.cpp` + `src/load/old/monster-loader-savefile50.cpp` (save/load)
+- `src/view/display-player-inventory-page.{h,cpp}` (拡張部位セクション)
+- `src/view/display-lore.cpp` (体構造タグ)
+- `src/monster-floor/monster-object.cpp` (装備時メッセージ)
+- `lib/edit/MonraceDefinitions.jsonc` (全モンスターの body_structure 設定)
 
 ---
 
