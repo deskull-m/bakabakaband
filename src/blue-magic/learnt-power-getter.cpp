@@ -13,6 +13,7 @@
 #include "io/command-repeater.h"
 #include "io/input-key-acceptor.h"
 #include "io/input-key-requester.h"
+#include "io/screen-util.h"
 #include "main/sound-of-music.h"
 #include "mind/mind-blue-mage.h"
 #include "monster-race/race-ability-flags.h"
@@ -32,8 +33,19 @@
 #include "view/display-messages.h"
 #include <algorithm>
 #include <iterator>
+#include <range/v3/range/conversion.hpp>
+#include <range/v3/view.hpp>
+#include <span>
 #include <tl/optional.hpp>
 #include <vector>
+
+namespace {
+struct BlueMagicListPageContext {
+    int page;
+    int page_size;
+    int max_page;
+};
+}
 
 /*!
  * @brief コマンド反復チェック
@@ -175,61 +187,168 @@ static tl::optional<std::vector<MonsterAbilityType>> sweep_learnt_spells(const b
 }
 
 /*!
+ * @brief 青魔法一覧表示のページ情報を構築する
+ *
+ * @param page 表示したいページ番号(0始まり)
+ * @param list_size 一覧の総件数
+ * @return BlueMagicListPageContext 表示ページ番号・1ページ件数・総ページ数
+ */
+static BlueMagicListPageContext make_blue_magic_list_page_context(int page, int list_size)
+{
+    constexpr TERM_LEN y_base = 1;
+    constexpr int reserve_rows = 3;
+    const auto &[wid, hgt] = get_screen_size();
+    const auto page_size = std::max(1, hgt - (y_base + reserve_rows));
+    const auto max_page = std::max(1, (list_size + page_size - 1) / page_size);
+    auto current_page = std::max(0, page);
+    if (current_page >= max_page) {
+        current_page = max_page - 1;
+    }
+
+    return {
+        current_page,
+        page_size,
+        max_page,
+    };
+}
+
+/*!
  * @brief 入力されたキーに従いコマンドメニューで選択中の青魔法を切り替える
  *
  * @param key 入力されたキー
  * @param menu_line 選択中の青魔法の行
  * @param bluemage_data 青魔道士の固有データへの参照
  * @param blue_magics 青魔法のリスト(覚えていないものも含まれているが、カーソル移動時に選択をスキップする)
+ * @param page_size 一覧表示の1ページあたり件数
  * @return 選択確定キーが入力された場合は true、そうでなければ false
  */
-static bool switch_blue_magic_choice(const char key, int &menu_line, const bluemage_data_type &bluemage_data, const std::vector<MonsterAbilityType> blue_magics)
+static bool switch_blue_magic_choice(const char key, int &menu_line, const bluemage_data_type &bluemage_data, std::span<const MonsterAbilityType> blue_magics, int page_size)
 {
-    const auto &learnt_blue_magics = bluemage_data.learnt_blue_magics;
-    const int blue_magics_count = blue_magics.size();
+    const auto blue_magics_count = static_cast<int>(blue_magics.size());
+    if (blue_magics_count == 0) {
+        return false;
+    }
+
+    const auto is_learnt = [&](int index) { return bluemage_data.learnt_blue_magics.has(blue_magics[index]); };
+    const auto max_page = std::max(1, (blue_magics_count + page_size - 1) / page_size);
+    auto menu_pos = menu_line - 1;
+    if (menu_pos < 0 || menu_pos >= blue_magics_count || !is_learnt(menu_pos)) {
+        auto first_learnt = -1;
+        for (auto i = 0; i < blue_magics_count; i++) {
+            if (is_learnt(i)) {
+                first_learnt = i;
+                break;
+            }
+        }
+
+        if (first_learnt < 0) {
+            return false;
+        }
+
+        menu_pos = first_learnt;
+    }
+
+    const auto seek_learnt = [&](int from, int step) -> tl::optional<int> {
+        auto pos = from;
+        for (auto i = 0; i < blue_magics_count; i++) {
+            if (pos < 0) {
+                pos += blue_magics_count;
+            }
+
+            if (pos >= blue_magics_count) {
+                pos -= blue_magics_count;
+            }
+
+            if (is_learnt(pos)) {
+                return pos;
+            }
+
+            pos += step;
+        }
+
+        return tl::nullopt;
+    };
+
+    const auto pick_page_position = [&](int target_page, int row_in_page) -> tl::optional<int> {
+        const auto page_first = target_page * page_size;
+        const auto page_last = std::min(page_first + page_size, blue_magics_count) - 1;
+        auto candidate = std::min(page_first + row_in_page, page_last);
+
+        for (auto pos = candidate; pos <= page_last; ++pos) {
+            if (is_learnt(pos)) {
+                return pos;
+            }
+        }
+
+        for (auto pos = candidate - 1; pos >= page_first; --pos) {
+            if (is_learnt(pos)) {
+                return pos;
+            }
+        }
+
+        return tl::nullopt;
+    };
+
+    int delta = 0;
 
     switch (key) {
     case '8':
     case 'k':
     case 'K':
-        do {
-            menu_line += (blue_magics_count - 1);
-            if (menu_line > blue_magics_count) {
-                menu_line -= blue_magics_count;
-            }
-        } while (learnt_blue_magics.has_not(blue_magics[menu_line - 1]));
-        return false;
+        delta = -1;
+        break;
 
     case '2':
     case 'j':
     case 'J':
-        do {
-            menu_line++;
-            if (menu_line > blue_magics_count) {
-                menu_line -= blue_magics_count;
-            }
-        } while (learnt_blue_magics.has_not(blue_magics[menu_line - 1]));
-        return false;
+        delta = 1;
+        break;
 
     case '6':
     case 'l':
-    case 'L':
-        menu_line = blue_magics_count;
-        while (learnt_blue_magics.has_not(blue_magics[menu_line - 1])) {
-            menu_line--;
+    case 'L': {
+        if (max_page <= 1) {
+            return false;
         }
 
+        const auto current_page = menu_pos / page_size;
+        const auto next_page = current_page + 1;
+        if (next_page >= max_page) {
+            return false;
+        }
+
+        const auto row_in_page = menu_pos % page_size;
+        const auto next_pos = pick_page_position(next_page, row_in_page);
+        if (!next_pos) {
+            return false;
+        }
+
+        menu_line = *next_pos + 1;
         return false;
+    }
 
     case '4':
     case 'h':
-    case 'H':
-        menu_line = 1;
-        while (learnt_blue_magics.has_not(blue_magics[menu_line - 1])) {
-            menu_line++;
+    case 'H': {
+        if (max_page <= 1) {
+            return false;
         }
 
+        const auto current_page = menu_pos / page_size;
+        const auto prev_page = current_page - 1;
+        if (prev_page < 0) {
+            return false;
+        }
+
+        const auto row_in_page = menu_pos % page_size;
+        const auto prev_pos = pick_page_position(prev_page, row_in_page);
+        if (!prev_pos) {
+            return false;
+        }
+
+        menu_line = *prev_pos + 1;
         return false;
+    }
 
     case 'x':
     case 'X':
@@ -239,6 +358,12 @@ static bool switch_blue_magic_choice(const char key, int &menu_line, const bluem
     default:
         return false;
     }
+
+    if (const auto next_pos = seek_learnt(menu_pos + delta, delta)) {
+        menu_line = *next_pos + 1;
+    }
+
+    return false;
 }
 
 /*!
@@ -305,19 +430,32 @@ static void close_blue_magic_name(char *buf, size_t buf_size, int index, int men
 /*!
  * @brief 使用できる青魔法のリストを表示する
  *
- * @param menu_line 選択中の青魔法の行
  * @param bluemage_data 青魔道士の固有データへの参照
+ * @param menu_line 選択中の青魔法の行
  * @param blue_magics 青魔法のリスト(覚えていないものも含まれているが、覚えていないものは表示をスキップする)
+ * @param page_context 一覧表示のページ情報
  */
-static void describe_blue_magic_name(CreatureEntity &creature, int menu_line, const bluemage_data_type &bluemage_data, const std::vector<MonsterAbilityType> &blue_magics)
+static void describe_blue_magic_name(CreatureEntity &creature, const bluemage_data_type &bluemage_data, int menu_line, std::span<const MonsterAbilityType> blue_magics,
+    const BlueMagicListPageContext &page_context)
 {
     constexpr TERM_LEN y_base = 1;
     constexpr TERM_LEN x_base = 18;
-    prt("", y_base, x_base);
+    const auto &[wid, hgt] = get_screen_size();
+    for (TERM_LEN y = y_base; y < hgt; ++y) {
+        prt("", y, x_base);
+    }
+
     put_str(_("名前", "Name"), y_base, x_base + 5);
     put_str(_("MP 失率 効果", "SP Fail Info"), y_base, x_base + 33);
-    for (auto i = 0U; i < blue_magics.size(); ++i) {
-        prt("", y_base + i + 1, x_base);
+    if (page_context.max_page > 1) {
+        const auto page_text = fmt::format(_("頁 {}/{}", "Page {}/{}"), page_context.page + 1, page_context.max_page);
+        put_str(fmt::format("{:>10}", fmt::bytes(page_text)), y_base, x_base + 50);
+    }
+
+    const auto begin = page_context.page * page_context.page_size;
+    const auto end = std::min<int>(begin + page_context.page_size, blue_magics.size());
+    auto row = y_base + 1;
+    for (auto i = begin; i < end; ++i, ++row) {
         const auto &spell = blue_magics[i];
         if (bluemage_data.learnt_blue_magics.has_not(spell)) {
             continue;
@@ -330,10 +468,8 @@ static void describe_blue_magic_name(CreatureEntity &creature, int menu_line, co
         close_blue_magic_name(header, sizeof(header), i, menu_line);
         const auto info = learnt_info(creature, spell);
         const auto psi_desc = format("%s %-26s %3d %3d%%%s", header, mp.name, need_mana, chance, info.data());
-        prt(psi_desc, y_base + i + 1, x_base);
+        prt(psi_desc, row, x_base);
     }
-
-    prt("", y_base + blue_magics.size() + 1, x_base);
 }
 
 /*!
@@ -352,16 +488,17 @@ static bool confirm_cast_blue_magic(MonsterAbilityType spell)
  * @brief 唱える青魔法を記号により選択する
  *
  * @param bluemage_data 青魔道士の固有データへの参照
- * @param blue_magics 青魔法のリスト(覚えていないものも含まれているが、覚えていない物は候補に出ず選択できない)
+ * @param spells 青魔法のリスト(覚えていないものも含まれているが、覚えていない物は候補に出ず選択できない)
  * @return 選択した青魔法。選択をキャンセルした場合は tl::nullopt
  */
-static tl::optional<MonsterAbilityType> select_learnt_spells_by_symbol(CreatureEntity &creature, const bluemage_data_type &bluemage_data, std::vector<MonsterAbilityType> spells)
+static tl::optional<MonsterAbilityType> select_learnt_spells_by_symbol(CreatureEntity &creature, const bluemage_data_type &bluemage_data, std::span<const MonsterAbilityType> spells)
 {
-    constexpr auto fmt = _("(%c-%c, '*'で一覧, ESC) どの%sを唱えますか？", "(%c-%c, *=List, ESC=exit) Use which %s? ");
-    const auto prompt = format(fmt, I2A(0), I2A(spells.size() - 1), _("魔法", "magic"));
+    constexpr auto fmt = _("({}-{}, '*'で頁送り, ESC) どの{}を唱えますか？", "({}-{}, *=Next page, ESC=exit) Use which {}? ");
+    const auto prompt = fmt::format(fmt, I2A(0), I2A(spells.size() - 1), _("魔法", "magic"));
 
     bool first_show_list = always_show_list;
     auto show_list = false;
+    auto page = 0;
     tl::optional<MonsterAbilityType> selected_spell;
 
     while (!selected_spell.has_value()) {
@@ -375,17 +512,42 @@ static tl::optional<MonsterAbilityType> select_learnt_spells_by_symbol(CreatureE
             choice = *choice_opt;
         }
 
-        if (first_show_list || (choice == ' ') || (choice == '*') || (choice == '?')) {
-            // 選択する青魔法一覧の表示/非表示切り替え
+        if (first_show_list || (choice == '?')) {
             first_show_list = false;
             show_list = !show_list;
             if (show_list) {
+                page = 0;
+                const auto page_context = make_blue_magic_list_page_context(page, spells.size());
                 screen_save();
-                describe_blue_magic_name(creature, 0, bluemage_data, spells);
+                describe_blue_magic_name(creature, bluemage_data, 0, spells, page_context);
             } else {
                 screen_load();
             }
 
+            continue;
+        }
+
+        if ((choice == ' ') || (choice == '*')) {
+            first_show_list = false;
+            if (!show_list) {
+                show_list = true;
+                page = 0;
+                screen_save();
+                const auto page_context = make_blue_magic_list_page_context(page, spells.size());
+                describe_blue_magic_name(creature, bluemage_data, 0, spells, page_context);
+                continue;
+            }
+
+            const auto page_context = make_blue_magic_list_page_context(page, spells.size());
+            page = page_context.page + 1;
+            if (page >= page_context.max_page) {
+                page = 0;
+            }
+
+            screen_load();
+            screen_save();
+            const auto next_page_context = make_blue_magic_list_page_context(page, spells.size());
+            describe_blue_magic_name(creature, bluemage_data, 0, spells, next_page_context);
             continue;
         }
 
@@ -414,12 +576,12 @@ static tl::optional<MonsterAbilityType> select_learnt_spells_by_symbol(CreatureE
  * @brief 唱える青魔法をコマンドメニューにより選択する
  *
  * @param bluemage_data 青魔道士の固有データへの参照
- * @param blue_magics 青魔法のリスト(覚えていないものも含まれているが、覚えていない物は候補に出ず選択できない)
+ * @param spells 青魔法のリスト(覚えていないものも含まれているが、覚えていない物は候補に出ず選択できない)
  * @return 選択した青魔法。選択をキャンセルした場合は tl::nullopt
  */
-static tl::optional<MonsterAbilityType> select_learnt_spells_by_menu(CreatureEntity &creature, const bluemage_data_type &bluemage_data, std::vector<MonsterAbilityType> spells)
+static tl::optional<MonsterAbilityType> select_learnt_spells_by_menu(CreatureEntity &creature, const bluemage_data_type &bluemage_data, std::span<const MonsterAbilityType> spells)
 {
-    constexpr auto prompt = _("(ESC=中断) どの魔法を唱えますか？", "(ESC=exit) Use which magic? ");
+    constexpr auto prompt = _("(4/6で頁移動, ESC=中断) どの魔法を唱えますか？", "(4/6=Page, ESC=exit) Use which magic? ");
 
     auto it = std::find_if(
         spells.begin(), spells.end(), [&bluemage_data](const auto &spell) { return bluemage_data.learnt_blue_magics.has(spell); });
@@ -428,8 +590,11 @@ static tl::optional<MonsterAbilityType> select_learnt_spells_by_menu(CreatureEnt
 
     screen_save();
 
+    const auto page_size = make_blue_magic_list_page_context(0, spells.size()).page_size;
+
     while (!selected_spell.has_value()) {
-        describe_blue_magic_name(creature, menu_line, bluemage_data, spells);
+        const auto page_context = make_blue_magic_list_page_context((menu_line - 1) / page_size, spells.size());
+        describe_blue_magic_name(creature, bluemage_data, menu_line, spells, page_context);
 
         const auto choice = input_command(prompt);
         if (!choice) {
@@ -440,7 +605,7 @@ static tl::optional<MonsterAbilityType> select_learnt_spells_by_menu(CreatureEnt
             break;
         }
 
-        if (!switch_blue_magic_choice(*choice, menu_line, bluemage_data, spells)) {
+        if (!switch_blue_magic_choice(*choice, menu_line, bluemage_data, spells, page_context.page_size)) {
             continue;
         }
 
