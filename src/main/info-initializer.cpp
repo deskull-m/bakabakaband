@@ -45,6 +45,7 @@
 #include "util/angband-files.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 #include <fstream>
 #include <functional>
 #include <string>
@@ -93,23 +94,22 @@ static void init_info(std::string_view filename, angband_header &head, InfoType 
     const auto path = path_build(ANGBAND_DIR_EDIT, filename);
     auto *fp = angband_fopen(path, FileOpenMode::READ);
     if (!fp) {
-        quit_fmt(_("'%s'ファイルをオープンできません。", "Cannot open '%s' file."), filename);
+        quit(fmt::format(_("'{}'ファイルをオープンできません。", "Cannot open '{}' file."), filename));
     }
 
-    char buf[1024]{};
-    const auto &[error_code, error_line] = init_info_txt(fp, buf, &head, parser);
+    const auto &[error_code, error_line, line] = init_info_txt(fp, &head, parser);
     angband_fclose(fp);
     if (error_code != PARSE_ERROR_NONE) {
         const auto oops = (((error_code > 0) && (error_code < PARSE_ERROR_MAX)) ? err_str[error_code] : _("未知の", "unknown"));
 #ifdef JP
-        msg_format("'%s'ファイルの %d 行目にエラー。", filename, error_line);
+        msg_print("'{}'ファイルの {} 行目にエラー。", filename, error_line);
 #else
-        msg_format("Error %d at line %d of '%s'.", error_code, error_line, filename.data());
+        msg_print("Error {} at line {} of '{}'.", error_code, error_line, filename);
 #endif
-        msg_format(_("レコード %d は '%s' エラーがあります。", "Record %d contains a '%s' error."), error_idx, oops);
-        msg_format(_("構文 '%s'。", "Parsing '%s'."), buf);
+        msg_print(_("レコード {} は '{}' エラーがあります。", "Record {} contains a '{}' error."), error_idx, oops);
+        msg_print(_("構文 '{}'。", "Parsing '{}'."), line);
         msg_erase();
-        quit_fmt(_("'%s'ファイルにエラー", "Error in '%s' file."), filename.data());
+        quit(fmt::format(_("'{}'ファイルにエラー", "Error in '{}' file."), filename));
     }
 
     if constexpr (HasShrinkToFit<InfoType>) {
