@@ -55,8 +55,7 @@ void do_cmd_pref(CreatureEntity &creature)
         return;
     }
 
-    auto buf(input_str.value());
-    (void)interpret_pref_file(creature, buf.data());
+    (void)interpret_pref_file(creature, *input_str);
 }
 
 /*

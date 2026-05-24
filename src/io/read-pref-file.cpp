@@ -121,7 +121,7 @@ static errr process_pref_file_aux(CreatureEntity &creature, const std::filesyste
             continue;
         }
 
-        err = interpret_pref_file(creature, line_str->data());
+        err = interpret_pref_file(creature, *line_str);
         if (err != 0) {
             if (preftype != PREF_TYPE_AUTOPICK) {
                 break;
