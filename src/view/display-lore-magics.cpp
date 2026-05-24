@@ -93,8 +93,8 @@ void display_mosnter_magic_possibility(lore_type *lore_ptr)
         return;
     }
 
-    int m = lore_ptr->r_ptr->r_cast_spell;
-    int n = lore_ptr->r_ptr->freq_spell;
+    int m = lore_ptr->monrace->r_cast_spell;
+    int n = lore_ptr->monrace->freq_spell;
     if (m > 100 || lore_ptr->know_everything) {
         hooked_roff(format(_("(確率:1/%d)", "; 1 time in %d"), 100 / n));
     } else if (m) {
@@ -141,15 +141,15 @@ static FlagState get_ability_state(lore_type *lore_ptr, MonsterAbilityType flag)
 {
     const bool fully_known = lore_ptr->know_everything || lore_ptr->is_details_known();
     if (fully_known) {
-        return lore_ptr->r_ptr->ability_flags.has(flag) ? FlagState::HAVE : FlagState::ABSENT;
+        return lore_ptr->monrace->ability_flags.has(flag) ? FlagState::HAVE : FlagState::ABSENT;
     }
-    return lore_ptr->r_ptr->r_ability_flags.has(flag) ? FlagState::HAVE : FlagState::UNKNOWN;
+    return lore_ptr->monrace->r_ability_flags.has(flag) ? FlagState::HAVE : FlagState::UNKNOWN;
 }
 
 static std::string mind_tag(const lore_type *lore_ptr)
 {
     const bool fully_known = lore_ptr->know_everything || lore_ptr->is_details_known();
-    const auto &flags = fully_known ? lore_ptr->r_ptr->behavior_flags : lore_ptr->r_ptr->r_behavior_flags;
+    const auto &flags = fully_known ? lore_ptr->monrace->behavior_flags : lore_ptr->monrace->r_behavior_flags;
 
     const bool has_smart = flags.has(MonsterBehaviorType::SMART);
     const bool has_stupid = flags.has(MonsterBehaviorType::STUPID);
@@ -169,8 +169,8 @@ static std::string mind_tag(const lore_type *lore_ptr)
 
 static std::string rate_tag(const lore_type *lore_ptr)
 {
-    const int m = lore_ptr->r_ptr->r_cast_spell;
-    int n = lore_ptr->r_ptr->freq_spell;
+    const int m = lore_ptr->monrace->r_cast_spell;
+    int n = lore_ptr->monrace->freq_spell;
     if (n <= 0) {
         const bool fully_known = lore_ptr->know_everything || lore_ptr->is_details_known();
         return fully_known ? "---" : "???";
@@ -368,7 +368,7 @@ static const std::vector<AbilityCellDef> &support_magic_defs()
 void display_monster_magic_rate(lore_type *lore_ptr)
 {
     const bool fully_known = lore_ptr->know_everything || lore_ptr->is_details_known();
-    if (!fully_known && lore_ptr->r_ptr->r_ability_flags.none()) {
+    if (!fully_known && lore_ptr->monrace->r_ability_flags.none()) {
         return;
     }
 
@@ -380,7 +380,7 @@ void display_monster_magic_rate(lore_type *lore_ptr)
 void display_monster_magic_tables(CreatureEntity &creature, lore_type *lore_ptr)
 {
     const bool fully_known = lore_ptr->know_everything || lore_ptr->is_details_known();
-    if (!fully_known && lore_ptr->r_ptr->r_ability_flags.none()) {
+    if (!fully_known && lore_ptr->monrace->r_ability_flags.none()) {
         return;
     }
 

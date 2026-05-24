@@ -41,9 +41,9 @@ EffectMonster::EffectMonster(CreatureEntity &creature, MONSTER_IDX src_idx, POSI
 {
     auto &floor = *creature.get_floor();
     this->g_ptr = &floor.grid_array[this->y][this->x];
-    this->m_ptr = &floor.get_monster(this->g_ptr->m_idx);
-    this->m_caster_ptr = this->is_monster() ? &floor.get_monster(this->src_idx) : nullptr;
-    this->r_ptr = &this->m_ptr->get_monrace();
+    this->m_ptr = &floor.m_list[this->g_ptr->m_idx];
+    this->m_caster_ptr = this->is_monster() ? &floor.m_list[this->src_idx] : nullptr;
+    this->monrace = this->m_ptr->get_monrace_shared();
     this->seen = this->m_ptr->is_visible_on_map();
     this->seen_msg = is_seen(creature, *this->m_ptr);
     this->slept = this->m_ptr->is_asleep();

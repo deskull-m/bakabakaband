@@ -95,9 +95,9 @@ void MonraceAllocationTable::initialize()
     const auto &monraces = MonraceList::get_instance();
     this->entries.reserve(monraces.size());
 
-    for (const auto &[id, monrace] : monraces | ranges::views::filter([](const auto &x) { return x.second.is_valid(); })) {
-        const auto prob = static_cast<short>(100 / monrace.rarity);
-        this->entries.emplace_back(id, monrace.level, prob, prob);
+    for (const auto &[id, monrace] : monraces | ranges::views::filter([](const auto &x) { return x.second->is_valid(); })) {
+        const auto prob = static_cast<short>(100 / monrace->rarity);
+        this->entries.emplace_back(id, monrace->level, prob, prob);
     }
 
     ranges::stable_sort(this->entries, {}, &MonraceAllocationEntry::level);

@@ -4,6 +4,7 @@
 #include "system/angband.h"
 #include "util/flag-group.h"
 #include "util/point-2d.h"
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -37,7 +38,7 @@ struct msa_type {
     mspell_lite_type do_spell;
     MonsterAbilityType thrown_spell;
 
-    MonraceDefinition *r_ptr;
+    std::shared_ptr<MonraceDefinition> monrace;
     bool no_inate;
     EnumClassFlagGroup<MonsterAbilityType> ability_flags;
 

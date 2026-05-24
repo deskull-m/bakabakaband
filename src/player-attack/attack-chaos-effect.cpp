@@ -53,7 +53,7 @@ static void attack_confuse(CreatureEntity &creature, player_attack_type *pa_ptr,
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     }
 
-    auto &monrace = *pa_ptr->r_ptr;
+    auto &monrace = *pa_ptr->monrace;
     if (monrace.resistance_flags.has(MonsterResistanceType::NO_CONF)) {
         if (is_original_ap_and_seen(creature, *pa_ptr->m_ptr)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::NO_CONF);
@@ -78,7 +78,7 @@ static void attack_confuse(CreatureEntity &creature, player_attack_type *pa_ptr,
  */
 static void attack_stun(CreatureEntity &creature, player_attack_type *pa_ptr, bool can_resist = true)
 {
-    auto &monrace = *pa_ptr->r_ptr;
+    auto &monrace = *pa_ptr->monrace;
     if (monrace.resistance_flags.has(MonsterResistanceType::NO_STUN)) {
         if (is_original_ap_and_seen(creature, *pa_ptr->m_ptr)) {
             monrace.resistance_flags.set(MonsterResistanceType::NO_STUN);
@@ -102,8 +102,8 @@ static void attack_stun(CreatureEntity &creature, player_attack_type *pa_ptr, bo
  */
 static void attack_scare(CreatureEntity &creature, player_attack_type *pa_ptr, bool can_resist = true)
 {
-    auto &monrace = *pa_ptr->r_ptr;
-    if (monrace.resistance_flags.has(MonsterResistanceType::NO_FEAR) || pa_ptr->m_ptr->is_frenzied()) {
+    auto &monrace = *pa_ptr->monrace;
+    if (monrace.resistance_flags.has(MonsterResistanceType::NO_FEAR)) {
         if (is_original_ap_and_seen(creature, *pa_ptr->m_ptr)) {
             monrace.resistance_flags.set(MonsterResistanceType::NO_FEAR);
         }
@@ -125,7 +125,7 @@ static void attack_scare(CreatureEntity &creature, player_attack_type *pa_ptr, b
  */
 static void attack_dispel(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    if (pa_ptr->r_ptr->ability_flags.has_none_of(RF_ABILITY_ATTACK_MASK) && pa_ptr->r_ptr->ability_flags.has_none_of(RF_ABILITY_INDIRECT_MASK)) {
+    if (pa_ptr->monrace->ability_flags.has_none_of(RF_ABILITY_ATTACK_MASK) && pa_ptr->monrace->ability_flags.has_none_of(RF_ABILITY_INDIRECT_MASK)) {
         return;
     }
 
@@ -159,7 +159,7 @@ static void attack_probe(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
     msg_print(_("刃が敵を調査した...", "The blade probed your enemy..."));
     msg_erase();
-    msg_print(probed_monster_info(creature, *pa_ptr->m_ptr, *pa_ptr->r_ptr));
+    msg_print(probed_monster_info(creature, *pa_ptr->m_ptr, *pa_ptr->monrace));
     msg_erase();
     const auto mes = MonraceList::get_instance().probe_lore(pa_ptr->r_idx);
     if (mes) {
@@ -176,7 +176,7 @@ static void attack_probe(CreatureEntity &creature, player_attack_type *pa_ptr)
  */
 static bool judge_tereprt_resistance(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto &monrace = *pa_ptr->r_ptr;
+    auto &monrace = *pa_ptr->monrace;
     if (monrace.resistance_flags.has_not(MonsterResistanceType::RESIST_TELEPORT)) {
         return false;
     }
@@ -229,7 +229,7 @@ static void attack_teleport_away(CreatureEntity &creature, player_attack_type *p
  */
 static void attack_polymorph(CreatureEntity &creature, player_attack_type *pa_ptr, POSITION y, POSITION x)
 {
-    const auto &monrace = *pa_ptr->r_ptr;
+    const auto &monrace = *pa_ptr->monrace;
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE) || monrace.misc_flags.has(MonsterMiscType::QUESTOR) || monrace.resistance_flags.has_any_of(RFR_EFF_RESIST_CHAOS_MASK)) {
         return;
     }

@@ -16,6 +16,7 @@
 #include "system/angband.h"
 #include "term/term-color-types.h"
 #include "util/flag-group.h"
+#include <memory>
 #include <string>
 #include <string_view>
 #include <tl/optional.hpp>
@@ -68,7 +69,7 @@ struct lore_type {
     RaceBlowMethodType method;
 
     bool nightmare;
-    MonraceDefinition *r_ptr;
+    std::shared_ptr<MonraceDefinition> monrace;
     byte speed;
     ITEM_NUMBER drop_gold;
     ITEM_NUMBER drop_item;

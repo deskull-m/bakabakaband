@@ -27,14 +27,14 @@
  */
 static bool resisted_psi_because_empty_mind(CreatureEntity &creature, EffectMonster *em_ptr)
 {
-    if (em_ptr->r_ptr->misc_flags.has_not(MonsterMiscType::EMPTY_MIND)) {
+    if (em_ptr->monrace->misc_flags.has_not(MonsterMiscType::EMPTY_MIND)) {
         return false;
     }
 
     em_ptr->dam = 0;
     em_ptr->note = _("には完全な耐性がある！", " is immune.");
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_misc_flags.set(MonsterMiscType::EMPTY_MIND);
+        em_ptr->monrace->r_misc_flags.set(MonsterMiscType::EMPTY_MIND);
     }
 
     return true;
@@ -52,10 +52,10 @@ static bool resisted_psi_because_empty_mind(CreatureEntity &creature, EffectMons
  */
 static bool resisted_psi_because_weird_mind_or_powerful(EffectMonster *em_ptr)
 {
-    bool has_resistance = em_ptr->r_ptr->behavior_flags.has(MonsterBehaviorType::STUPID);
-    has_resistance |= em_ptr->r_ptr->misc_flags.has(MonsterMiscType::WEIRD_MIND);
-    has_resistance |= em_ptr->r_ptr->kind_flags.has(MonsterKindType::ANIMAL);
-    has_resistance |= (em_ptr->r_ptr->level > randint1(3 * em_ptr->dam));
+    bool has_resistance = em_ptr->monrace->behavior_flags.has(MonsterBehaviorType::STUPID);
+    has_resistance |= em_ptr->monrace->misc_flags.has(MonsterMiscType::WEIRD_MIND);
+    has_resistance |= em_ptr->monrace->kind_flags.has(MonsterKindType::ANIMAL);
+    has_resistance |= (em_ptr->monrace->level > randint1(3 * em_ptr->dam));
     if (!has_resistance) {
         return false;
     }
@@ -77,8 +77,8 @@ static bool resisted_psi_because_weird_mind_or_powerful(EffectMonster *em_ptr)
  */
 static bool reflects_psi_with_currupted_mind(CreatureEntity &creature, EffectMonster *em_ptr)
 {
-    bool is_corrupted = em_ptr->r_ptr->kind_flags.has_any_of(has_corrupted_mind);
-    is_corrupted &= (em_ptr->r_ptr->level > creature.get_level() / 2);
+    bool is_corrupted = em_ptr->monrace->kind_flags.has_any_of(has_corrupted_mind);
+    is_corrupted &= (em_ptr->monrace->level > creature.get_level() / 2);
     is_corrupted &= one_in_(2);
     if (!is_corrupted) {
         return false;
@@ -114,7 +114,7 @@ static void effect_monster_psi_reflect_extra_effect(CreatureEntity &creature, Ef
         (void)bss.mod_stun(randnum1<short>(em_ptr->dam));
         return;
     case 3:
-        if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_FEAR)) {
+        if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_FEAR)) {
             em_ptr->note = _("には効果がなかった。", " is unaffected.");
         } else {
             (void)bss.mod_fear(3 + randint1(em_ptr->dam));
@@ -150,7 +150,7 @@ static void effect_monster_psi_resist(CreatureEntity &creature, EffectMonster *e
     }
 
     /* プレイヤーの反射判定 */
-    if ((randint0(100 + em_ptr->r_ptr->level / 2) < creature.get_skill_save()) && !check_multishadow(creature)) {
+    if ((randint0(100 + em_ptr->monrace->level / 2) < creature.get_skill_save()) && !check_multishadow(creature)) {
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
         em_ptr->dam = 0;
         return;
@@ -243,7 +243,7 @@ static void effect_monster_psi_drain_resist(CreatureEntity &creature, EffectMons
     }
 
     /* プレイヤーの反射判定 */
-    if ((randint0(100 + em_ptr->r_ptr->level / 2) < creature.get_skill_save()) && !check_multishadow(creature)) {
+    if ((randint0(100 + em_ptr->monrace->level / 2) < creature.get_skill_save()) && !check_multishadow(creature)) {
         msg_print(_("あなたは効力を跳ね返した！", "You resist the effects!"));
         em_ptr->dam = 0;
         return;
@@ -333,7 +333,7 @@ ProcessResult effect_monster_telekinesis(EffectMonster *em_ptr)
     }
 
     em_ptr->do_stun = Dice::roll((em_ptr->caster_lev / 20) + 3, em_ptr->dam) + 1;
-    if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) || (em_ptr->r_ptr->level > 5 + randint1(em_ptr->dam))) {
+    if (em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE) || (em_ptr->monrace->level > 5 + randint1(em_ptr->dam))) {
         em_ptr->do_stun = 0;
         em_ptr->obvious = false;
     }

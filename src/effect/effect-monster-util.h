@@ -3,6 +3,7 @@
 #include "system/angband.h"
 #include "system/creature-entity.h"
 #include "util/point-2d.h"
+#include <memory>
 #include <string>
 
 enum class AttributeType;
@@ -41,7 +42,7 @@ public:
     Grid *g_ptr;
     CreatureEntity *m_ptr;
     CreatureEntity *m_caster_ptr;
-    MonraceDefinition *r_ptr;
+    std::shared_ptr<MonraceDefinition> monrace;
     bool seen;
     bool seen_msg;
     bool slept;

@@ -31,14 +31,14 @@ ProcessResult effect_monster_acid(CreatureEntity &creature, EffectMonster *em_pt
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::IMMUNE_ACID)) {
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::IMMUNE_ACID)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
     em_ptr->note = _("にはかなり耐性がある！", " resists a lot.");
     em_ptr->dam /= 9;
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::IMMUNE_ACID);
+        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::IMMUNE_ACID);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -50,14 +50,14 @@ ProcessResult effect_monster_elec(CreatureEntity &creature, EffectMonster *em_pt
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::IMMUNE_ELEC)) {
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::IMMUNE_ELEC)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
     em_ptr->note = _("にはかなり耐性がある！", " resists a lot.");
     em_ptr->dam /= 9;
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::IMMUNE_ELEC);
+        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::IMMUNE_ELEC);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -69,24 +69,24 @@ ProcessResult effect_monster_fire(CreatureEntity &creature, EffectMonster *em_pt
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::IMMUNE_FIRE)) {
+    if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::IMMUNE_FIRE)) {
         em_ptr->note = _("にはかなり耐性がある！", " resists a lot.");
         em_ptr->dam /= 9;
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::IMMUNE_FIRE);
+            em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::IMMUNE_FIRE);
         }
 
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::HURT_FIRE)) {
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::HURT_FIRE)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
     em_ptr->note = _("はひどい痛手をうけた。", " is hit hard.");
     em_ptr->dam *= 2;
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::HURT_FIRE);
+        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::HURT_FIRE);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -98,24 +98,24 @@ ProcessResult effect_monster_cold(CreatureEntity &creature, EffectMonster *em_pt
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::IMMUNE_COLD)) {
+    if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::IMMUNE_COLD)) {
         em_ptr->note = _("にはかなり耐性がある！", " resists a lot.");
         em_ptr->dam /= 9;
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::IMMUNE_COLD);
+            em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::IMMUNE_COLD);
         }
 
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::HURT_COLD)) {
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::HURT_COLD)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
     em_ptr->note = _("はひどい痛手をうけた。", " is hit hard.");
     em_ptr->dam *= 2;
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::HURT_COLD);
+        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::HURT_COLD);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -127,14 +127,14 @@ ProcessResult effect_monster_pois(CreatureEntity &creature, EffectMonster *em_pt
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::IMMUNE_POISON)) {
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::IMMUNE_POISON)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
     em_ptr->note = _("にはかなり耐性がある！", " resists a lot.");
     em_ptr->dam /= 9;
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::IMMUNE_POISON);
+        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::IMMUNE_POISON);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -146,12 +146,12 @@ ProcessResult effect_monster_nuke(CreatureEntity &creature, EffectMonster *em_pt
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::IMMUNE_POISON)) {
+    if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::IMMUNE_POISON)) {
         em_ptr->note = _("には耐性がある。", " resists.");
         em_ptr->dam *= 3;
         em_ptr->dam /= randint1(6) + 6;
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::IMMUNE_POISON);
+            em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::IMMUNE_POISON);
         }
 
         return ProcessResult::PROCESS_CONTINUE;
@@ -170,14 +170,14 @@ ProcessResult effect_monster_hell_fire(CreatureEntity &creature, EffectMonster *
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::GOOD)) {
+    if (em_ptr->monrace->kind_flags.has_not(MonsterKindType::GOOD)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
     em_ptr->note = _("はひどい痛手をうけた。", " is hit hard.");
     em_ptr->dam *= 2;
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::GOOD);
+        em_ptr->monrace->r_kind_flags.set(MonsterKindType::GOOD);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -189,20 +189,20 @@ ProcessResult effect_monster_holy_fire(CreatureEntity &creature, EffectMonster *
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::GOOD)) {
+    if (em_ptr->monrace->kind_flags.has(MonsterKindType::GOOD)) {
         em_ptr->note = _("には完全な耐性がある！", " is immune.");
         em_ptr->dam = 0;
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::GOOD);
+            em_ptr->monrace->r_kind_flags.set(MonsterKindType::GOOD);
         }
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::EVIL)) {
+    if (em_ptr->monrace->kind_flags.has(MonsterKindType::EVIL)) {
         em_ptr->dam *= 2;
         em_ptr->note = _("はひどい痛手をうけた。", " is hit hard.");
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::EVIL);
+            em_ptr->monrace->r_kind_flags.set(MonsterKindType::EVIL);
         }
         return ProcessResult::PROCESS_CONTINUE;
     }
@@ -220,7 +220,7 @@ ProcessResult effect_monster_plasma(CreatureEntity &creature, EffectMonster *em_
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::RESIST_PLASMA)) {
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_PLASMA)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
@@ -228,7 +228,7 @@ ProcessResult effect_monster_plasma(CreatureEntity &creature, EffectMonster *em_
     em_ptr->dam *= 3;
     em_ptr->dam /= randint1(6) + 6;
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_PLASMA);
+        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_PLASMA);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -236,15 +236,15 @@ ProcessResult effect_monster_plasma(CreatureEntity &creature, EffectMonster *em_
 
 static bool effect_monster_nether_resist(CreatureEntity &creature, EffectMonster *em_ptr)
 {
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::RESIST_NETHER)) {
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_NETHER)) {
         return false;
     }
 
-    if (em_ptr->m_ptr->has_undead_flag()) {
+    if (em_ptr->monrace->kind_flags.has(MonsterKindType::UNDEAD)) {
         em_ptr->note = _("には完全な耐性がある！", " is immune.");
         em_ptr->dam = 0;
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::UNDEAD);
+            em_ptr->monrace->r_kind_flags.set(MonsterKindType::UNDEAD);
         }
     } else {
         em_ptr->note = _("には耐性がある。", " resists.");
@@ -253,7 +253,7 @@ static bool effect_monster_nether_resist(CreatureEntity &creature, EffectMonster
     }
 
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_NETHER);
+        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_NETHER);
     }
 
     return true;
@@ -265,14 +265,14 @@ ProcessResult effect_monster_nether(CreatureEntity &creature, EffectMonster *em_
         em_ptr->obvious = true;
     }
 
-    if (effect_monster_nether_resist(creature, em_ptr) || (em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::EVIL))) {
+    if (effect_monster_nether_resist(creature, em_ptr) || (em_ptr->monrace->kind_flags.has_not(MonsterKindType::EVIL))) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
     em_ptr->note = _("はいくらか耐性を示した。", " resists somewhat.");
     em_ptr->dam /= 2;
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::EVIL);
+        em_ptr->monrace->r_kind_flags.set(MonsterKindType::EVIL);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -284,7 +284,7 @@ ProcessResult effect_monster_water(CreatureEntity &creature, EffectMonster *em_p
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::RESIST_WATER)) {
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_WATER)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
@@ -298,7 +298,7 @@ ProcessResult effect_monster_water(CreatureEntity &creature, EffectMonster *em_p
     }
 
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_WATER);
+        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_WATER);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -310,19 +310,19 @@ ProcessResult effect_monster_chaos(CreatureEntity &creature, EffectMonster *em_p
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::RESIST_CHAOS)) {
+    if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_CHAOS)) {
         em_ptr->note = _("には耐性がある。", " resists.");
         em_ptr->dam *= 3;
         em_ptr->dam /= randint1(6) + 6;
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_CHAOS);
+            em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_CHAOS);
         }
-    } else if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::DEMON) && one_in_(3)) {
+    } else if (em_ptr->monrace->kind_flags.has(MonsterKindType::DEMON) && one_in_(3)) {
         em_ptr->note = _("はいくらか耐性を示した。", " resists somewhat.");
         em_ptr->dam *= 3;
         em_ptr->dam /= randint1(6) + 6;
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::DEMON);
+            em_ptr->monrace->r_kind_flags.set(MonsterKindType::DEMON);
         }
     } else {
         em_ptr->do_polymorph = true;
@@ -338,7 +338,7 @@ ProcessResult effect_monster_shards(CreatureEntity &creature, EffectMonster *em_
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::RESIST_SHARDS)) {
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_SHARDS)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
@@ -346,7 +346,7 @@ ProcessResult effect_monster_shards(CreatureEntity &creature, EffectMonster *em_
     em_ptr->dam *= 3;
     em_ptr->dam /= randint1(6) + 6;
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_SHARDS);
+        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_SHARDS);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -358,14 +358,14 @@ ProcessResult effect_monster_rocket(CreatureEntity &creature, EffectMonster *em_
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::RESIST_SHARDS)) {
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_SHARDS)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
     em_ptr->note = _("はいくらか耐性を示した。", " resists somewhat.");
     em_ptr->dam /= 2;
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_SHARDS);
+        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_SHARDS);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -377,7 +377,7 @@ ProcessResult effect_monster_sound(CreatureEntity &creature, EffectMonster *em_p
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::RESIST_SOUND)) {
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_SOUND)) {
         em_ptr->do_stun = (10 + randint1(15) + em_ptr->r) / (em_ptr->r + 1);
         return ProcessResult::PROCESS_CONTINUE;
     }
@@ -386,7 +386,7 @@ ProcessResult effect_monster_sound(CreatureEntity &creature, EffectMonster *em_p
     em_ptr->dam *= 2;
     em_ptr->dam /= randint1(6) + 6;
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_SOUND);
+        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_SOUND);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -398,7 +398,7 @@ ProcessResult effect_monster_confusion(CreatureEntity &creature, EffectMonster *
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::NO_CONF)) {
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::NO_CONF)) {
         em_ptr->do_conf = (10 + randint1(15) + em_ptr->r) / (em_ptr->r + 1);
         return ProcessResult::PROCESS_CONTINUE;
     }
@@ -407,7 +407,7 @@ ProcessResult effect_monster_confusion(CreatureEntity &creature, EffectMonster *
     em_ptr->dam *= 3;
     em_ptr->dam /= randint1(6) + 6;
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->resistance_flags.set(MonsterResistanceType::NO_CONF);
+        em_ptr->monrace->resistance_flags.set(MonsterResistanceType::NO_CONF);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -419,7 +419,7 @@ ProcessResult effect_monster_disenchant(CreatureEntity &creature, EffectMonster 
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::RESIST_DISENCHANT)) {
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_DISENCHANT)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
@@ -427,7 +427,7 @@ ProcessResult effect_monster_disenchant(CreatureEntity &creature, EffectMonster 
     em_ptr->dam *= 3;
     em_ptr->dam /= randint1(6) + 6;
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_DISENCHANT);
+        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_DISENCHANT);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -439,7 +439,7 @@ ProcessResult effect_monster_nexus(CreatureEntity &creature, EffectMonster *em_p
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::RESIST_NEXUS)) {
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_NEXUS)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
@@ -447,7 +447,7 @@ ProcessResult effect_monster_nexus(CreatureEntity &creature, EffectMonster *em_p
     em_ptr->dam *= 3;
     em_ptr->dam /= randint1(6) + 6;
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_NEXUS);
+        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_NEXUS);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -459,7 +459,7 @@ ProcessResult effect_monster_force(CreatureEntity &creature, EffectMonster *em_p
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::RESIST_FORCE)) {
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_FORCE)) {
         em_ptr->do_stun = (randint1(15) + em_ptr->r) / (em_ptr->r + 1);
         return ProcessResult::PROCESS_CONTINUE;
     }
@@ -468,7 +468,7 @@ ProcessResult effect_monster_force(CreatureEntity &creature, EffectMonster *em_p
     em_ptr->dam *= 3;
     em_ptr->dam /= randint1(6) + 6;
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_FORCE);
+        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_FORCE);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -481,19 +481,19 @@ ProcessResult effect_monster_inertial(CreatureEntity &creature, EffectMonster *e
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::RESIST_INERTIA)) {
+    if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_INERTIA)) {
         em_ptr->note = _("には耐性がある。", " resists.");
         em_ptr->dam *= 3;
         em_ptr->dam /= randint1(6) + 6;
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_INERTIA);
+            em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_INERTIA);
         }
 
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    bool cancel_effect = em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE);
-    cancel_effect |= (em_ptr->r_ptr->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
+    bool cancel_effect = em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
+    cancel_effect |= (em_ptr->monrace->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
     if (cancel_effect) {
         em_ptr->obvious = false;
         return ProcessResult::PROCESS_CONTINUE;
@@ -512,7 +512,7 @@ ProcessResult effect_monster_time(CreatureEntity &creature, EffectMonster *em_pt
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::RESIST_TIME)) {
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_TIME)) {
         em_ptr->do_time = (em_ptr->dam + 1) / 2;
         return ProcessResult::PROCESS_CONTINUE;
     }
@@ -521,7 +521,7 @@ ProcessResult effect_monster_time(CreatureEntity &creature, EffectMonster *em_pt
     em_ptr->dam *= 3;
     em_ptr->dam /= randint1(6) + 6;
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_TIME);
+        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_TIME);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -529,27 +529,27 @@ ProcessResult effect_monster_time(CreatureEntity &creature, EffectMonster *em_pt
 
 static bool effect_monster_gravity_resist_teleport(CreatureEntity &creature, EffectMonster *em_ptr)
 {
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::RESIST_TELEPORT)) {
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_TELEPORT)) {
         em_ptr->obvious = true;
         return false;
     }
 
-    if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
+    if (em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE)) {
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
+            em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
         }
 
         em_ptr->note = _("には効果がなかった。", " is unaffected!");
         return true;
     }
 
-    if (em_ptr->r_ptr->level <= randint1(100)) {
+    if (em_ptr->monrace->level <= randint1(100)) {
         em_ptr->obvious = true;
         return false;
     }
 
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
+        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
     }
 
     em_ptr->note = _("には耐性がある！", " resists!");
@@ -558,8 +558,8 @@ static bool effect_monster_gravity_resist_teleport(CreatureEntity &creature, Eff
 
 static void effect_monster_gravity_slow(CreatureEntity &creature, EffectMonster *em_ptr)
 {
-    bool cancel_effect = em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE);
-    cancel_effect |= (em_ptr->r_ptr->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
+    bool cancel_effect = em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
+    cancel_effect |= (em_ptr->monrace->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
     if (cancel_effect) {
         em_ptr->obvious = false;
         return;
@@ -574,9 +574,9 @@ static void effect_monster_gravity_slow(CreatureEntity &creature, EffectMonster 
 static void effect_monster_gravity_stun(EffectMonster *em_ptr)
 {
     em_ptr->do_stun = Dice::roll((em_ptr->caster_lev / 20) + 3, (em_ptr->dam)) + 1;
-    bool has_resistance = em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE);
-    has_resistance |= (em_ptr->r_ptr->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
-    has_resistance |= em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::RESIST_GRAVITY);
+    bool has_resistance = em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
+    has_resistance |= (em_ptr->monrace->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
+    has_resistance |= em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_GRAVITY);
     if (has_resistance) {
         em_ptr->do_stun = 0;
         return;
@@ -595,13 +595,13 @@ ProcessResult effect_monster_gravity(CreatureEntity &creature, EffectMonster *em
         em_ptr->do_dist = 0;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::RESIST_GRAVITY)) {
+    if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_GRAVITY)) {
         em_ptr->note = _("には耐性がある！", " resists!");
         em_ptr->dam *= 3;
         em_ptr->dam /= randint1(6) + 6;
         em_ptr->do_dist = 0;
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_GRAVITY);
+            em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_GRAVITY);
         }
         return ProcessResult::PROCESS_CONTINUE;
     }
@@ -619,12 +619,12 @@ ProcessResult effect_monster_disintegration(CreatureEntity &creature, EffectMons
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::HURT_ROCK)) {
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::HURT_ROCK)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::HURT_ROCK);
+        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::HURT_ROCK);
     }
 
     em_ptr->note = _("の皮膚がただれた！", " loses some skin!");
@@ -639,21 +639,21 @@ ProcessResult effect_monster_icee_bolt(CreatureEntity &creature, EffectMonster *
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::RESIST_SOUND)) {
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_SOUND)) {
         em_ptr->do_stun = (randint1(15) + 1) / (em_ptr->r + 1);
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::IMMUNE_COLD)) {
+    if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::IMMUNE_COLD)) {
         em_ptr->note = _("にはかなり耐性がある！", " resists a lot.");
         em_ptr->dam /= 9;
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::IMMUNE_COLD);
+            em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::IMMUNE_COLD);
         }
-    } else if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::HURT_COLD)) {
+    } else if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::HURT_COLD)) {
         em_ptr->note = _("はひどい痛手をうけた。", " is hit hard.");
         em_ptr->dam *= 2;
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::HURT_COLD);
+            em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::HURT_COLD);
         }
     }
 
@@ -674,34 +674,34 @@ ProcessResult effect_monster_void(CreatureEntity &creature, EffectMonster *em_pt
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::QUANTUM)) {
+    if (em_ptr->monrace->kind_flags.has(MonsterKindType::QUANTUM)) {
         em_ptr->note = _("の存在確率が減少した。", "'s wave function is reduced.");
         em_ptr->note_dies = _("は観測されなくなった。", "'s wave function collapses.");
         em_ptr->dam *= 2;
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::QUANTUM);
+            em_ptr->monrace->r_kind_flags.set(MonsterKindType::QUANTUM);
         }
-    } else if (em_ptr->r_ptr->feature_flags.has(MonsterFeatureType::PASS_WALL)) {
+    } else if (em_ptr->monrace->feature_flags.has(MonsterFeatureType::PASS_WALL)) {
         em_ptr->note = _("の存在が薄れていく。", " is fading out.");
         em_ptr->note_dies = _("は消えてしまった。", " has disappeared.");
         em_ptr->dam *= 3;
         em_ptr->dam /= 2;
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->r_ptr->r_feature_flags.set(MonsterFeatureType::PASS_WALL);
+            em_ptr->monrace->r_feature_flags.set(MonsterFeatureType::PASS_WALL);
         }
-    } else if (em_ptr->r_ptr->resistance_flags.has_any_of({ MonsterResistanceType::RESIST_TELEPORT, MonsterResistanceType::RESIST_FORCE, MonsterResistanceType::RESIST_GRAVITY })) {
+    } else if (em_ptr->monrace->resistance_flags.has_any_of({ MonsterResistanceType::RESIST_TELEPORT, MonsterResistanceType::RESIST_FORCE, MonsterResistanceType::RESIST_GRAVITY })) {
         em_ptr->note = _("には耐性がある！", " resists!");
         em_ptr->dam *= 3;
         em_ptr->dam /= randint1(6) + 6;
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT)) {
-                em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
+            if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT)) {
+                em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
             }
-            if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::RESIST_FORCE)) {
-                em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_FORCE);
+            if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_FORCE)) {
+                em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_FORCE);
             }
-            if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::RESIST_GRAVITY)) {
-                em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_GRAVITY);
+            if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_GRAVITY)) {
+                em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_GRAVITY);
             }
         }
     } else {
@@ -728,23 +728,23 @@ ProcessResult effect_monster_abyss(CreatureEntity &creature, EffectMonster *em_p
 
     auto dark = { MonsterBrightnessType::SELF_DARK_1, MonsterBrightnessType::SELF_DARK_2, MonsterBrightnessType::HAS_DARK_1, MonsterBrightnessType::HAS_DARK_2 };
 
-    if (em_ptr->r_ptr->brightness_flags.has_any_of(dark)) {
+    if (em_ptr->monrace->brightness_flags.has_any_of(dark)) {
         em_ptr->note = _("には耐性がある！", " resists!");
         em_ptr->dam *= 3;
         em_ptr->dam /= (randint1(6) + 6);
-    } else if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::RESIST_DARK)) {
+    } else if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_DARK)) {
         em_ptr->note = _("には耐性がある！", " resists!");
         em_ptr->dam *= 3;
         em_ptr->dam /= (randint1(4) + 5);
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_DARK);
+            em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_DARK);
         }
-    } else if (em_ptr->r_ptr->feature_flags.has_not(MonsterFeatureType::CAN_FLY)) {
-        if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT)) {
+    } else if (em_ptr->monrace->feature_flags.has_not(MonsterFeatureType::CAN_FLY)) {
+        if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT)) {
             em_ptr->dam *= 5;
             em_ptr->dam /= 4;
             if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-                em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
+                em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
             }
         }
 
@@ -756,7 +756,7 @@ ProcessResult effect_monster_abyss(CreatureEntity &creature, EffectMonster *em_p
         }
     }
 
-    if (em_ptr->r_ptr->misc_flags.has(MonsterMiscType::ELDRITCH_HORROR) || em_ptr->r_ptr->misc_flags.has(MonsterMiscType::EMPTY_MIND)) {
+    if (em_ptr->monrace->misc_flags.has(MonsterMiscType::ELDRITCH_HORROR) || em_ptr->monrace->misc_flags.has(MonsterMiscType::EMPTY_MIND)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
@@ -785,31 +785,31 @@ ProcessResult effect_monster_dirt(CreatureEntity &creature, EffectMonster *em_pt
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->misc_flags.has(MonsterMiscType::SCATOLOGIST)) {
+    if (em_ptr->monrace->misc_flags.has(MonsterMiscType::SCATOLOGIST)) {
         em_ptr->note = _("には完全な耐性がある！", " resists completely.");
         em_ptr->dam = 0;
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->r_ptr->r_misc_flags.set(MonsterMiscType::SCATOLOGIST);
+            em_ptr->monrace->r_misc_flags.set(MonsterMiscType::SCATOLOGIST);
         }
         return ProcessResult::PROCESS_CONTINUE;
     }
 
     // 毒完全耐性があるモンスターは大幅に軽減
-    if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::IMMUNE_POISON)) {
+    if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::IMMUNE_POISON)) {
         em_ptr->note = _("にはかなり耐性がある！", " resists a lot.");
         em_ptr->dam /= 9;
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::IMMUNE_POISON);
+            em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::IMMUNE_POISON);
         }
         return ProcessResult::PROCESS_CONTINUE;
     }
 
     // 清浄なモンスター（天使、エレメンタルなど）は追加ダメージ
     bool is_vulnerable = false;
-    if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::ANGEL)) {
+    if (em_ptr->monrace->kind_flags.has(MonsterKindType::ANGEL)) {
         is_vulnerable = true;
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::ANGEL);
+            em_ptr->monrace->r_kind_flags.set(MonsterKindType::ANGEL);
         }
     }
 
@@ -820,7 +820,7 @@ ProcessResult effect_monster_dirt(CreatureEntity &creature, EffectMonster *em_pt
 
     // 一定確率で状態異常付与
     if (randint0(100) < 30) {
-        if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::NO_CONF)) {
+        if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::NO_CONF)) {
             em_ptr->do_conf = (10 + randint1(15));
             if (em_ptr->note.empty()) {
                 em_ptr->note = _("は混乱したようだ。", " looks confused.");
@@ -829,7 +829,7 @@ ProcessResult effect_monster_dirt(CreatureEntity &creature, EffectMonster *em_pt
     }
 
     if (randint0(100) < 20) {
-        if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::NO_STUN)) {
+        if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::NO_STUN)) {
             em_ptr->do_stun = (5 + randint1(10));
             if (em_ptr->note.empty()) {
                 em_ptr->note = _("はよろめいている。", " is stunned.");
@@ -847,34 +847,34 @@ ProcessResult effect_monster_spider_string(CreatureEntity &creature, EffectMonst
     }
 
     // 蜘蛛型モンスターは蜘蛛糸に完全耐性
-    if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::SPIDER)) {
+    if (em_ptr->monrace->kind_flags.has(MonsterKindType::SPIDER)) {
         em_ptr->note = _("には完全な耐性がある！", " resists completely.");
         em_ptr->dam = 0;
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::SPIDER);
+            em_ptr->monrace->r_kind_flags.set(MonsterKindType::SPIDER);
         }
         return ProcessResult::PROCESS_CONTINUE;
     }
 
     // 無機物系モンスターは糸が効かない
     bool is_vulnerable = true;
-    if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::ELEMENTAL) ||
-        em_ptr->r_ptr->kind_flags.has(MonsterKindType::NONLIVING)) {
+    if (em_ptr->monrace->kind_flags.has(MonsterKindType::ELEMENTAL) ||
+        em_ptr->monrace->kind_flags.has(MonsterKindType::NONLIVING)) {
         em_ptr->note = _("にはあまり効果がない。", " is not affected much.");
         em_ptr->dam /= 3;
         is_vulnerable = false;
     }
 
     // 動物系・人間系は特に蜘蛛糸に弱い
-    if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::ANIMAL) ||
-        em_ptr->r_ptr->kind_flags.has(MonsterKindType::HUMAN)) {
+    if (em_ptr->monrace->kind_flags.has(MonsterKindType::ANIMAL) ||
+        em_ptr->monrace->kind_flags.has(MonsterKindType::HUMAN)) {
         is_vulnerable = true;
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::ANIMAL)) {
-                em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::ANIMAL);
+            if (em_ptr->monrace->kind_flags.has(MonsterKindType::ANIMAL)) {
+                em_ptr->monrace->r_kind_flags.set(MonsterKindType::ANIMAL);
             }
-            if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::HUMAN)) {
-                em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::HUMAN);
+            if (em_ptr->monrace->kind_flags.has(MonsterKindType::HUMAN)) {
+                em_ptr->monrace->r_kind_flags.set(MonsterKindType::HUMAN);
             }
         }
     }
@@ -887,7 +887,7 @@ ProcessResult effect_monster_spider_string(CreatureEntity &creature, EffectMonst
     // 蜘蛛糸効果で行動阻害（スロウ効果）
     /* TODO
     if (randint0(100) < 50) {
-        if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::NO_SLOW)) {
+        if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::NO_SLOW)) {
             em_ptr->do_slow = (10 + randint1(20));
             if (em_ptr->note.empty()) {
                 em_ptr->note = _("の動きが鈍くなった。", " moves slower.");
@@ -898,7 +898,7 @@ ProcessResult effect_monster_spider_string(CreatureEntity &creature, EffectMonst
 
     // 高確率で混乱（糸に絡まってパニック）
     if (randint0(100) < 40) {
-        if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::NO_CONF)) {
+        if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::NO_CONF)) {
             em_ptr->do_conf = (5 + randint1(10));
             if (em_ptr->note.empty()) {
                 em_ptr->note = _("は混乱したようだ。", " looks confused.");
@@ -915,14 +915,14 @@ ProcessResult effect_monster_stungun(CreatureEntity &creature, EffectMonster *em
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::IMMUNE_ELEC)) {
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::IMMUNE_ELEC)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
     em_ptr->note = _("にはかなり耐性がある！", " resists a lot.");
     em_ptr->dam /= 9;
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::IMMUNE_ELEC);
+        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::IMMUNE_ELEC);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -930,7 +930,7 @@ ProcessResult effect_monster_stungun(CreatureEntity &creature, EffectMonster *em
 
 ProcessResult effect_monster_meteor(CreatureEntity &creature, EffectMonster *em_ptr)
 {
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::RESIST_METEOR)) {
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_METEOR)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
@@ -938,7 +938,7 @@ ProcessResult effect_monster_meteor(CreatureEntity &creature, EffectMonster *em_
     em_ptr->dam *= 3;
     em_ptr->dam /= randint1(6) + 6;
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_METEOR);
+        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_METEOR);
     }
 
     return ProcessResult::PROCESS_CONTINUE;

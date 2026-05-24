@@ -236,11 +236,11 @@ void decide_lite_area(CreatureEntity &creature, msa_type *msa_ptr)
 
     CreatureClass pc(creature);
     auto can_use_lite_area = pc.equals(PlayerClassType::NINJA);
-    can_use_lite_area &= !msa_ptr->m_ptr->has_undead_flag();
-    can_use_lite_area &= msa_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::HURT_LITE);
-    can_use_lite_area &= (msa_ptr->r_ptr->brightness_flags.has_none_of(dark_mask));
+    can_use_lite_area &= msa_ptr->monrace->kind_flags.has_not(MonsterKindType::UNDEAD);
+    can_use_lite_area &= msa_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::HURT_LITE);
+    can_use_lite_area &= (msa_ptr->monrace->brightness_flags.has_none_of(dark_mask));
 
-    if (msa_ptr->r_ptr->behavior_flags.has(MonsterBehaviorType::STUPID)) {
+    if (msa_ptr->monrace->behavior_flags.has(MonsterBehaviorType::STUPID)) {
         return;
     }
 

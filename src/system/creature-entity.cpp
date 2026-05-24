@@ -158,9 +158,29 @@ MonraceDefinition &CreatureEntity::get_monrace() const
     return MonraceList::get_instance().get_monrace(this->r_idx);
 }
 
-MonraceDefinition &CreatureEntity::get_appearance_monrace() const
+std::shared_ptr<MonraceDefinition> CreatureEntity::get_monrace_shared()
+{
+    return MonraceList::get_instance().get_monrace_shared(this->r_idx);
+}
+
+std::shared_ptr<const MonraceDefinition> CreatureEntity::get_monrace_shared() const
+{
+    return MonraceList::get_instance().get_monrace_shared(this->r_idx);
+}
+
+MonraceDefinition &CreatureEntity::get_apparent_monrace() const
 {
     return MonraceList::get_instance().get_monrace(this->ap_r_idx);
+}
+
+std::shared_ptr<MonraceDefinition> CreatureEntity::get_apparent_monrace_shared()
+{
+    return MonraceList::get_instance().get_monrace_shared(this->ap_r_idx);
+}
+
+std::shared_ptr<const MonraceDefinition> CreatureEntity::get_apparent_monrace_shared() const
+{
+    return MonraceList::get_instance().get_monrace_shared(this->ap_r_idx);
 }
 
 MonraceId CreatureEntity::get_real_monrace_id() const
@@ -221,19 +241,19 @@ const player_class_info *CreatureEntity::get_class_info() const
 
 bool CreatureEntity::has_living_flag(bool is_appearance) const
 {
-    const auto &monrace = is_appearance ? this->get_appearance_monrace() : this->get_monrace();
+    const auto &monrace = is_appearance ? this->get_apparent_monrace() : this->get_monrace();
     return monrace.has_living_flag();
 }
 
 bool CreatureEntity::has_demon_flag(bool is_appearance) const
 {
-    const auto &monrace = is_appearance ? this->get_appearance_monrace() : this->get_monrace();
+    const auto &monrace = is_appearance ? this->get_apparent_monrace() : this->get_monrace();
     return monrace.has_demon_flag();
 }
 
 bool CreatureEntity::has_undead_flag(bool is_appearance) const
 {
-    const auto &monrace = is_appearance ? this->get_appearance_monrace() : this->get_monrace();
+    const auto &monrace = is_appearance ? this->get_apparent_monrace() : this->get_monrace();
     return monrace.has_undead_flag();
 }
 
@@ -753,7 +773,7 @@ bool CreatureEntity::is_mimicry() const
         return true;
     }
 
-    const auto &monrace = this->get_appearance_monrace();
+    const auto &monrace = this->get_apparent_monrace();
     if (!monrace.symbol_char_is_any_of(R"(/|\()[]="$,.!?&`#%<>+~)")) {
         return false;
     }
@@ -1106,7 +1126,7 @@ std::string CreatureEntity::build_looking_description(bool needs_attitude) const
     const auto description = this->build_damage_description();
     const auto attitude = needs_attitude ? this->build_attitude_description() : "";
     const std::string clone(this->has_monster_profile() && this->is_cloned() ? ", clone" : "");
-    const auto &apparent_monrace = this->get_appearance_monrace();
+    const auto &apparent_monrace = this->get_apparent_monrace();
 
     const bool show_alliance = this->has_monster_profile() && !this->is_pet() && this->get_alliance_idx() != AllianceType::NONE;
     const std::string alliance_part = show_alliance ? format("(%s)", alliance_list.at(this->get_alliance_idx())->name.data()) : "";

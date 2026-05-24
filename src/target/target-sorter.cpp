@@ -50,8 +50,8 @@ bool TargetSorter::compare_importance(const FloorType &floor, const Pos2D &pos_a
     }
 
     if (can_see_grid1 && can_see_grid2) {
-        const auto &appearent_monrace1 = monster_a.get_appearance_monrace();
-        const auto &appearent_monrace2 = monster_b.get_appearance_monrace();
+        const auto &appearent_monrace1 = monster_a.get_apparent_monrace();
+        const auto &appearent_monrace2 = monster_b.get_apparent_monrace();
         if (appearent_monrace1.kind_flags.has(MonsterKindType::UNIQUE) && appearent_monrace2.kind_flags.has_not(MonsterKindType::UNIQUE)) {
             return true;
         }

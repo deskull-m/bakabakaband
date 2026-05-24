@@ -63,9 +63,9 @@ static auto get_mon_evol_roots()
     std::set<MonraceId> evol_children;
     const auto &monraces = MonraceList::get_instance();
     for (const auto &[monrace_id, monrace] : monraces) {
-        if (monrace.get_next().is_valid()) {
+        if (monrace->get_next().is_valid()) {
             evol_parents.emplace(monrace_id);
-            evol_children.emplace(monrace.next_r_idx);
+            evol_children.emplace(monrace->next_r_idx);
         }
     }
 
@@ -106,15 +106,20 @@ static SpoilerOutputResultType spoil_mon_evol()
     spoil_out("------------------------------------------\n\n");
     const auto &monraces = MonraceList::get_instance();
     for (auto monrace_id : get_mon_evol_roots()) {
-        const auto *monrace_ptr = &monraces.get_monrace(monrace_id);
+        auto monrace = monraces.get_monrace_shared(monrace_id);
         constexpr auto fmt_before = _("[%d]: %s (レベル%d, '%c')\n", "[%d]: %s (Level %d, '%c')\n");
-        fprintf(spoiler_file, fmt_before, enum2i(monrace_id), monrace_ptr->name.data(), monrace_ptr->level, monrace_ptr->symbol_definition.character);
-        for (auto n = 1; monrace_ptr->get_next().is_valid(); n++) {
-            fprintf(spoiler_file, "%*s-(%d)-> ", n * 2, "", monrace_ptr->next_exp);
-            monrace_ptr = &monrace_ptr->get_next();
-            fprintf(spoiler_file, "[%d]: ", enum2i(monrace_ptr->idx));
+        fprintf(spoiler_file, fmt_before, enum2i(monrace_id), monrace->name.data(), monrace->level, monrace->symbol_definition.character);
+        for (auto n = 1;; n++) {
+            const auto monrace_next = monrace->get_next_shared();
+            if (!monrace_next->is_valid()) {
+                break;
+            }
+
+            fprintf(spoiler_file, "%*s-(%d)-> ", n * 2, "", monrace->next_exp);
+            monrace = monrace_next;
+            fprintf(spoiler_file, "[%d]: ", enum2i(monrace->idx));
             constexpr auto fmt_after = _("%s (レベル%d, '%c')\n", "%s (Level %d, '%c')\n");
-            fprintf(spoiler_file, fmt_after, monrace_ptr->name.data(), monrace_ptr->level, monrace_ptr->symbol_definition.character);
+            fprintf(spoiler_file, fmt_after, monrace->name.data(), monrace->level, monrace->symbol_definition.character);
         }
 
         fputc('\n', spoiler_file);

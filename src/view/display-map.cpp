@@ -260,7 +260,7 @@ DisplaySymbolPair map_info(CreatureEntity &creature, const Pos2D &pos)
         return symbol_pair;
     }
 
-    const auto &monrace_ap = monster.get_appearance_monrace();
+    const auto &monrace_ap = monster.get_apparent_monrace();
     feat_priority = 30;
     if (is_hallucinated) {
         if (!monrace_ap.visual_flags.has_all_of({ MonsterVisualType::CLEAR, MonsterVisualType::CLEAR_COLOR })) {
