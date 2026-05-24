@@ -18,6 +18,7 @@
 #include "monster-floor/monster-death.h"
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/place-monster-types.h"
+#include "monster-race/race-kind-flags.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
 #include "object-enchant/item-apply-magic.h"
@@ -581,7 +582,26 @@ void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, Attrib
         return;
     }
 
+    on_dead_drop_kind_item(creature, md_ptr);
+    on_dead_drop_tval_item(creature, md_ptr);
+    on_dead_spawn_monsters(creature, md_ptr);
+
+    if (md_ptr->monrace->kind_flags.has(MonsterKindType::NINJA)) {
+        on_dead_ninja(creature, md_ptr);
+        return;
+    }
+
+    if (creature.is_sushi_eater()) {
+        drop_sushi(creature, md_ptr);
+    }
+
     switch (md_ptr->apparent_monrace->idx) {
+    case MonraceId::EARTH_DESTROYER:
+        on_dead_earth_destroyer(creature, md_ptr);
+        return;
+    case MonraceId::BOTTLE_GNOME:
+        on_dead_bottle_gnome(creature, md_ptr);
+        return;
     case MonraceId::BLOODLETTER:
         on_dead_bloodletter(creature, md_ptr);
         return;

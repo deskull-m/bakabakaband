@@ -261,7 +261,7 @@ static void decide_drop_quality(MonsterDeath *md_ptr)
     }
 }
 
-static int decide_drop_numbers(CreatureEntity &creature, MonsterDeath *md_ptr, const bool drop_item, const bool inside_arena)
+static int decide_drop_numbers(MonsterDeath *md_ptr, const bool drop_item, const bool inside_arena)
 {
     int drop_numbers = 0;
     if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_60) && evaluate_percent(60)) {
@@ -446,7 +446,7 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
     decide_drop_quality(&md);
     switch_special_death(creature, &md, attribute_flags);
     drop_artifacts(creature, &md);
-    const auto drop_numbers = decide_drop_numbers(creature, &md, drop_item, floor.inside_arena);
+    const auto drop_numbers = decide_drop_numbers(&md, drop_item, floor.inside_arena);
     floor.object_level = (floor.dun_level + md.monrace->level) / 2;
     drop_items_golds(creature, &md, drop_numbers);
     if ((md.monrace->misc_flags.has_not(MonsterMiscType::QUESTOR)) || AngbandSystem::get_instance().is_phase_out() || (md.m_ptr->get_r_idx() != MonraceId::SERPENT) || md.cloned) {
