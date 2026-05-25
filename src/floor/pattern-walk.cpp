@@ -21,10 +21,12 @@
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/dungeon/dungeon-id.h"
+#include "system/enums/terrain/pattern-tile-type.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/terrain/terrain-definition.h"
+#include "util/enum-converter.h"
 #include "view/display-messages.h"
 #include "world/world-movement-processor.h"
 #include "world/world.h"
@@ -114,8 +116,8 @@ bool pattern_effect(CreatureEntity &creature)
         wreck_the_pattern(creature);
     }
 
-    switch (grid.get_terrain().subtype) {
-    case PATTERN_TILE_END:
+    switch (grid.get_terrain().pattern_tile_type) {
+    case PatternTileType::END:
         (void)BadStatusSetter(creature).hallucination(0);
         (void)restore_all_status(creature);
         (void)restore_level(creature);
@@ -132,15 +134,15 @@ bool pattern_effect(CreatureEntity &creature)
          */
         break;
 
-    case PATTERN_TILE_OLD:
+    case PatternTileType::OLD:
         /* No effect */
         break;
 
-    case PATTERN_TILE_TELEPORT:
+    case PatternTileType::TELEPORT:
         pattern_teleport(creature);
         break;
 
-    case PATTERN_TILE_WRECKED:
+    case PatternTileType::WRECKED:
         if (!creature.is_invulnerable()) {
             take_hit(creature, DAMAGE_NOESCAPE, 200, _("壊れた「パターン」を歩いたダメージ", "walking the corrupted Pattern"));
         }
@@ -177,9 +179,9 @@ bool pattern_seq(CreatureEntity &creature, const Pos2D &pos)
         return true;
     }
 
-    int pattern_type_cur = is_pattern_tile_cur ? terrain_current.subtype : NOT_PATTERN_TILE;
-    int pattern_type_new = is_pattern_tile_new ? terrain_new.subtype : NOT_PATTERN_TILE;
-    if (pattern_type_new == PATTERN_TILE_START) {
+    auto pattern_type_cur = is_pattern_tile_cur ? terrain_current.pattern_tile_type : PatternTileType::NOT_PATTERN;
+    auto pattern_type_new = is_pattern_tile_new ? terrain_new.pattern_tile_type : PatternTileType::NOT_PATTERN;
+    if (pattern_type_new == PatternTileType::START) {
         const auto is_stunned = creature.is_stunned();
         const auto is_confused = creature.is_confused();
         const auto is_hallucinated = creature.is_hallucinated();
@@ -191,7 +193,7 @@ bool pattern_seq(CreatureEntity &creature, const Pos2D &pos)
             "If you start walking the Pattern, you must walk the whole way. Ok? "));
     }
 
-    if ((pattern_type_new == PATTERN_TILE_OLD) || (pattern_type_new == PATTERN_TILE_END) || (pattern_type_new == PATTERN_TILE_WRECKED)) {
+    if ((pattern_type_new == PatternTileType::OLD) || (pattern_type_new == PatternTileType::END) || (pattern_type_new == PatternTileType::WRECKED)) {
         if (is_pattern_tile_cur) {
             return true;
         }
@@ -200,11 +202,11 @@ bool pattern_seq(CreatureEntity &creature, const Pos2D &pos)
         return false;
     }
 
-    if ((pattern_type_new == PATTERN_TILE_TELEPORT) || (pattern_type_cur == PATTERN_TILE_TELEPORT)) {
+    if ((pattern_type_new == PatternTileType::TELEPORT) || (pattern_type_cur == PatternTileType::TELEPORT)) {
         return true;
     }
 
-    if (pattern_type_cur == PATTERN_TILE_START) {
+    if (pattern_type_cur == PatternTileType::START) {
         if (is_pattern_tile_new) {
             return true;
         }
@@ -213,7 +215,7 @@ bool pattern_seq(CreatureEntity &creature, const Pos2D &pos)
         return false;
     }
 
-    if ((pattern_type_cur == PATTERN_TILE_OLD) || (pattern_type_cur == PATTERN_TILE_END) || (pattern_type_cur == PATTERN_TILE_WRECKED)) {
+    if ((pattern_type_cur == PatternTileType::OLD) || (pattern_type_cur == PatternTileType::END) || (pattern_type_cur == PatternTileType::WRECKED)) {
         if (is_pattern_tile_new) {
             return true;
         }
@@ -227,23 +229,23 @@ bool pattern_seq(CreatureEntity &creature, const Pos2D &pos)
         return false;
     }
 
-    byte ok_move = PATTERN_TILE_START;
+    auto ok_move = PatternTileType::START;
     switch (pattern_type_cur) {
-    case PATTERN_TILE_1:
-        ok_move = PATTERN_TILE_2;
+    case PatternTileType::TILE_1:
+        ok_move = PatternTileType::TILE_2;
         break;
-    case PATTERN_TILE_2:
-        ok_move = PATTERN_TILE_3;
+    case PatternTileType::TILE_2:
+        ok_move = PatternTileType::TILE_3;
         break;
-    case PATTERN_TILE_3:
-        ok_move = PATTERN_TILE_4;
+    case PatternTileType::TILE_3:
+        ok_move = PatternTileType::TILE_4;
         break;
-    case PATTERN_TILE_4:
-        ok_move = PATTERN_TILE_1;
+    case PatternTileType::TILE_4:
+        ok_move = PatternTileType::TILE_1;
         break;
     default:
         if (AngbandWorld::get_instance().wizard) {
-            msg_format(_("おかしなパターン歩行、%d。", "Funny Pattern walking, %d."), pattern_type_cur);
+            msg_format(_("おかしなパターン歩行、%d。", "Funny Pattern walking, %d."), enum2i(pattern_type_cur));
         }
         return true;
     }

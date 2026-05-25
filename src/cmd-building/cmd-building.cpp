@@ -67,7 +67,7 @@
 #include "system/terrain/terrain-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
-#include "util/bit-flags-calculator.h"
+#include "util/enum-converter.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -375,7 +375,7 @@ void do_cmd_building(CreatureEntity &creature)
         return;
     }
 
-    int which = floor.get_grid(p_pos).get_terrain().subtype;
+    const auto which = enum2i(floor.get_grid(p_pos).get_terrain().building_type);
 
     auto &bldg = buildings[which];
     reinit_wilderness = false;

@@ -221,8 +221,7 @@ std::string get_store_sale_type_tag(StoreSaleType store_type)
         return "MELINLAITO";
     case StoreSaleType::HUNAHYANDA:
         return "HUNAHYANDA";
-    case StoreSaleType::MAX:
+    default:
         return "UNKNOWN";
     }
-    return "UNKNOWN";
 }

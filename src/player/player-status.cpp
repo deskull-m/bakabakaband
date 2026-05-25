@@ -94,6 +94,7 @@
 #include "sv-definition/sv-weapon-types.h"
 #include "system/creature-entity.h"
 #include "system/creature-timed-effect-types.h"
+#include "system/enums/terrain/pattern-tile-type.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -2743,7 +2744,7 @@ void wreck_the_pattern(CreatureEntity &creature)
     const auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     const auto &terrain = floor.get_grid(p_pos).get_terrain();
-    if (terrain.subtype == PATTERN_TILE_WRECKED) {
+    if (terrain.pattern_tile_type == PatternTileType::WRECKED) {
         return;
     }
 
@@ -2756,7 +2757,7 @@ void wreck_the_pattern(CreatureEntity &creature)
     auto to_ruin = randint1(45) + 35;
     while (to_ruin--) {
         const auto pos = scatter(floor, p_pos, 4, PROJECT_NONE);
-        if (floor.has_terrain_characteristics(pos, TerrainCharacteristics::PATTERN) && (floor.get_grid(pos).get_terrain().subtype != PATTERN_TILE_WRECKED)) {
+        if (floor.has_terrain_characteristics(pos, TerrainCharacteristics::PATTERN) && (floor.get_grid(pos).get_terrain().pattern_tile_type != PatternTileType::WRECKED)) {
             set_terrain_id_to_grid(creature, pos, TerrainTag::PATTERN_CORRUPTED);
         }
     }

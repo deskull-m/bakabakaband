@@ -11,18 +11,6 @@
 #define MPE_BREAK_TRAP 0x00000040
 #define MPE_DONT_SWAP_MON 0x00000080
 
-/* Types of pattern tiles */
-#define NOT_PATTERN_TILE -1
-#define PATTERN_TILE_START 0
-#define PATTERN_TILE_1 1
-#define PATTERN_TILE_2 2
-#define PATTERN_TILE_3 3
-#define PATTERN_TILE_4 4
-#define PATTERN_TILE_END 5
-#define PATTERN_TILE_OLD 6
-#define PATTERN_TILE_TELEPORT 7
-#define PATTERN_TILE_WRECKED 8
-
 class CreatureEntity;
 bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_FLAGS mpe_mode);
 bool trap_can_be_ignored(CreatureEntity &creature, FEAT_IDX feat);

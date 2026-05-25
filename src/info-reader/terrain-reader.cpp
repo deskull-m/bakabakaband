@@ -167,6 +167,7 @@ errr parse_terrains_json_info(nlohmann::json &element, angband_header *)
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
     }
 
+    std::optional<uint8_t> specific_type;
     for (const auto &f_obj : flags_obj) {
         if (!f_obj.is_string()) {
             return PARSE_ERROR_TOO_FEW_ARGUMENTS;
@@ -178,7 +179,9 @@ errr parse_terrains_json_info(nlohmann::json &element, angband_header *)
         }
 
         if (f.starts_with("SUBTYPE_")) {
-            info_set_value(terrain.subtype, std::string(f.substr(sizeof("SUBTYPE_") - 1)));
+            uint8_t parsed_specific_type{};
+            info_set_value(parsed_specific_type, f.substr(sizeof("SUBTYPE_") - 1));
+            specific_type = parsed_specific_type;
             continue;
         }
         if (f.starts_with("POWER_")) {
@@ -198,6 +201,9 @@ errr parse_terrains_json_info(nlohmann::json &element, angband_header *)
         if (!grab_one_feat_flag(terrain, f)) {
             return PARSE_ERROR_INVALID_FLAG;
         }
+    }
+    if (specific_type && !terrain.set_specific_type(*specific_type)) {
+        return PARSE_ERROR_INVALID_FLAG;
     }
 
     // bakabakaband 独自: 確率的ランダム地形変化 (R: ディレクティブ相当)

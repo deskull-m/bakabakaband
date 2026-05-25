@@ -319,7 +319,7 @@ bool trap_can_be_ignored(CreatureEntity &creature, FEAT_IDX feat)
         return true;
     }
 
-    switch (i2enum<TrapType>(terrain.subtype)) {
+    switch (terrain.trap_type) {
     case TrapType::TRAPDOOR:
     case TrapType::PIT:
     case TrapType::SPIKED_PIT:

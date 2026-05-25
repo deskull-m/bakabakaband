@@ -72,7 +72,7 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
             msg_print(_("ここには店がありません。", "You see no store here."));
             return;
         }
-        store_num = i2enum<StoreSaleType>(grid.get_terrain().subtype);
+        store_num = grid.get_terrain().store_sale_type;
     }
 
     // TODO:
