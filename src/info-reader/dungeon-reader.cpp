@@ -479,26 +479,347 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
 }
 
 /*!
- * @brief ダンジョン情報(JSON Object)のパース関数 (フェーズ A-2 Dungeon JSON 化)
- * @param dungeon_data JSON ダンジョンエントリ
- * @param head ヘッダ構造体
- * @return エラーコード
- * @details
- * 構造化 JSON (version 2) を読み、各フィールドから .txt 形式のトークン文字列を
- * 合成して既存の token-based parse_dungeons_info() に流す。これにより:
- *  - JSON は人間可読・schema 検証可能な構造化データとして保持
- *  - パーサ本体は token-based の既存実装をそのまま再利用
+ * @brief ダンジョン情報 JSON v2 直接フィル用ヘルパ群
  *
- * 後方互換: version 1 の `lines` 配列形式 (旧 wrapped-line) も受け付ける。
+ * 旧 v2 パスはトークン文字列を合成して legacy `parse_dungeons_info()` に流す
+ * 二段階方式だったが、JSON フィールドを直接 DungeonDefinition に書き込む形に
+ * リファクタした (提案 38)。これにより:
+ *  - 上流 (hengband) の direct-fill 方式と構造が一致し、ダンジョン定義系
+ *    マージ (#8381 / #8382 / #8385 / #8387 / #8390 等) の差分吸収が容易に
+ *  - トークン文字列合成コスト (string concat / split / re-parse) を削減
+ *  - JSON エラーの位置特定が直接的になる
+ *
+ * legacy token parser `parse_dungeons_info()` は v1 (lines 配列) 互換用に
+ * 引き続き残置。
  */
-static errr emit_token(const std::string &token, angband_header *head)
+
+/*!
+ * @brief JSON name オブジェクトから言語別文字列を取得
+ * @param name_obj name オブジェクト (ja / en キーを含む)
+ * @return JP ビルドでは ja を SJIS 変換した結果、それ以外は en (なければ空文字列)。
+ *         変換失敗時は tl::nullopt。
+ */
+static tl::optional<std::string> read_localized_name(const nlohmann::json &name_obj)
 {
-    if (token.empty()) {
-        return PARSE_ERROR_NONE;
+#ifdef JP
+    if (!name_obj.contains("ja")) {
+        return std::string{};
     }
-    return parse_dungeons_info(token, head);
+    const auto ja = name_obj["ja"].get<std::string>();
+    if (ja.empty()) {
+        return std::string{};
+    }
+    auto sys = utf8_to_sys(ja);
+    if (!sys) {
+        return tl::nullopt;
+    }
+    return std::move(*sys);
+#else
+    if (!name_obj.contains("en")) {
+        return std::string{};
+    }
+    return name_obj["en"].get<std::string>();
+#endif
 }
 
+/*!
+ * @brief JSON description フィールドから言語別 description テキストを連結追加
+ * @param dungeon 対象 DungeonDefinition
+ * @param desc_obj description オブジェクト (ja / en キーを含む)
+ * @return エラーコード
+ */
+static errr set_dungeon_description(DungeonDefinition &dungeon, const nlohmann::json &desc_obj)
+{
+#ifdef JP
+    if (!desc_obj.contains("ja")) {
+        return PARSE_ERROR_NONE;
+    }
+    const auto ja = desc_obj["ja"].get<std::string>();
+    if (ja.empty()) {
+        return PARSE_ERROR_NONE;
+    }
+    auto sys = utf8_to_sys(ja);
+    if (!sys) {
+        return PARSE_ERROR_INVALID_FLAG;
+    }
+    dungeon.text.append(*sys);
+#else
+    if (!desc_obj.contains("en")) {
+        return PARSE_ERROR_NONE;
+    }
+    const auto en = desc_obj["en"].get<std::string>();
+    if (en.empty()) {
+        return PARSE_ERROR_NONE;
+    }
+    append_english_text(dungeon.text, en);
+#endif
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief generation オブジェクトを DungeonDefinition の生成パラメータに直接フィル
+ */
+static errr set_dungeon_generation(DungeonDefinition &dungeon, const nlohmann::json &gen_obj)
+{
+    if (!gen_obj.is_object()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+    try {
+        dungeon.mindepth = static_cast<DEPTH>(gen_obj.value("min_depth", 0));
+        dungeon.maxdepth = static_cast<DEPTH>(gen_obj.value("max_depth", 0));
+        dungeon.min_plev = static_cast<PLAYER_LEVEL>(gen_obj.value("min_player_level", 0));
+        dungeon.mode = static_cast<DungeonMode>(gen_obj.value("flags_mode", 0));
+        dungeon.min_m_alloc_level = gen_obj.value("min_alloc", 0);
+        dungeon.max_m_alloc_chance = gen_obj.value("max_alloc_chance", 0);
+        dungeon.obj_good = gen_obj.value("obj_good", 0);
+        dungeon.obj_great = gen_obj.value("obj_great", 0);
+        const auto pit = gen_obj.value("pit", std::string("0x0000"));
+        const auto nest = gen_obj.value("nest", std::string("0x0000"));
+        dungeon.pit = static_cast<BIT_FLAGS16>(std::stoul(pit, nullptr, 16));
+        dungeon.nest = static_cast<BIT_FLAGS16>(std::stoul(nest, nullptr, 16));
+    } catch (const std::exception &) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief tiles 配列 (terrain + rate のペア) を ProbabilityTable に変換
+ */
+static tl::optional<ProbabilityTable<short>> build_probability_table_from_tiles(const nlohmann::json &tiles, std::string_view default_terrain)
+{
+    const auto &terrains = TerrainList::get_instance();
+    ProbabilityTable<short> prob_table;
+    for (size_t i = 0; i < TERRAIN_PROBABILITY_NUM; ++i) {
+        const auto terrain_tag = (i < tiles.size()) ? tiles[i].value("terrain", std::string(default_terrain)) : std::string(default_terrain);
+        const auto rate = (i < tiles.size()) ? static_cast<short>(tiles[i].value("rate", 0)) : static_cast<short>(0);
+        try {
+            const auto terrain_id = terrains.get_terrain_id(terrain_tag);
+            prob_table.entry_item(terrain_id, rate);
+        } catch (const std::exception &) {
+            return tl::nullopt;
+        }
+    }
+    return prob_table;
+}
+
+/*!
+ * @brief floor オブジェクトを DungeonDefinition の床関連フィールドに直接フィル
+ */
+static errr set_dungeon_floor(DungeonDefinition &dungeon, const nlohmann::json &floor_obj)
+{
+    if (!floor_obj.is_object()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+    if (!floor_obj.contains("tiles")) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+    auto prob_table = build_probability_table_from_tiles(floor_obj["tiles"], "FLOOR");
+    if (!prob_table) {
+        return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
+    }
+    dungeon.prob_table_floor = std::move(*prob_table);
+    dungeon.tunnel_percent = floor_obj.value("tunnel_rate", 0);
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief wall オブジェクトを DungeonDefinition の壁関連フィールドに直接フィル
+ */
+static errr set_dungeon_wall(DungeonDefinition &dungeon, const nlohmann::json &wall_obj)
+{
+    if (!wall_obj.is_object()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+    if (!wall_obj.contains("tiles")) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+    auto prob_table = build_probability_table_from_tiles(wall_obj["tiles"], "GRANITE");
+    if (!prob_table) {
+        return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
+    }
+    dungeon.prob_table_wall = std::move(*prob_table);
+
+    const auto &terrains = TerrainList::get_instance();
+    try {
+        dungeon.outer_wall = terrains.get_terrain_id(wall_obj.value("outer", std::string("GRANITE")));
+        dungeon.inner_wall = terrains.get_terrain_id(wall_obj.value("inner", std::string("GRANITE")));
+        dungeon.stream1 = terrains.get_terrain_id(wall_obj.value("stream1", std::string("MAGMA_VEIN")));
+        dungeon.stream2 = terrains.get_terrain_id(wall_obj.value("stream2", std::string("QUARTZ_VEIN")));
+    } catch (const std::exception &) {
+        return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
+    }
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief JSON flags 配列、および MONSTER_RATE / TRAP_RATE 等のスカラ
+ *        + FIXED_ROOM / ALLIANCE 等のサブ構造を DungeonDefinition に直接フィル
+ */
+static errr set_dungeon_feature_flags(DungeonDefinition &dungeon, const nlohmann::json &dungeon_data)
+{
+    if (dungeon_data.contains("flags")) {
+        for (const auto &flag : dungeon_data["flags"]) {
+            const auto f = flag.get<std::string>();
+            if (f.empty()) {
+                continue;
+            }
+            if (!grab_one_dungeon_flag(dungeon, f)) {
+                return PARSE_ERROR_INVALID_FLAG;
+            }
+        }
+    }
+    if (dungeon_data.contains("monster_rate")) {
+        dungeon.monster_rate = dungeon_data["monster_rate"].get<int>();
+    }
+    if (dungeon_data.contains("trap_rate")) {
+        dungeon.trap_rate = dungeon_data["trap_rate"].get<int>();
+    }
+    if (dungeon_data.contains("monster_div")) {
+        dungeon.special_div = static_cast<PROB>(dungeon_data["monster_div"].get<int>());
+    }
+    if (dungeon_data.contains("final_guardian")) {
+        dungeon.final_guardian = i2enum<MonraceId>(dungeon_data["final_guardian"].get<int>());
+    }
+    if (dungeon_data.contains("final_object")) {
+        dungeon.final_object = static_cast<short>(dungeon_data["final_object"].get<int>());
+    }
+    if (dungeon_data.contains("final_artifact")) {
+        dungeon.final_artifact = i2enum<FixedArtifactId>(dungeon_data["final_artifact"].get<int>());
+    }
+    if (dungeon_data.contains("alliance")) {
+        const auto alliance_tag = dungeon_data["alliance"].get<std::string>();
+        for (const auto &a : alliance_list) {
+            if (a.second->tag == alliance_tag) {
+                dungeon.alliance_idx = static_cast<AllianceType>(a.second->id);
+                break;
+            }
+        }
+    }
+    if (dungeon_data.contains("fixed_rooms")) {
+        for (const auto &fr : dungeon_data["fixed_rooms"]) {
+            const auto depth = fr.value("depth", 0);
+            const auto id = fr.value("id", 0);
+            const auto percentage = fr.value("percentage", 0);
+            dungeon.fixed_room_list.push_back(std::make_tuple(depth, id, percentage));
+        }
+    }
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief monster_flags 配列を直接フィル
+ *        フラグ文字列の他、`R_CHAR_X` (出現許可シンボル) / `X_FOO` (性別) を扱う
+ */
+static errr set_dungeon_monster_flags(DungeonDefinition &dungeon, const nlohmann::json &flags_array)
+{
+    for (const auto &flag_node : flags_array) {
+        const auto f = flag_node.get<std::string>();
+        if (f.empty()) {
+            continue;
+        }
+
+        const auto &m_tokens = str_split(f, '_');
+        if (m_tokens.size() >= 3 && m_tokens[0] == "R" && m_tokens[1] == "CHAR") {
+            dungeon.r_chars.insert(dungeon.r_chars.end(), m_tokens[2].begin(), m_tokens[2].end());
+            continue;
+        }
+
+        uint32_t sex;
+        if (info_grab_one_const(sex, r_info_sex, f)) {
+            dungeon.mon_sex = static_cast<MonsterSex>(sex);
+            continue;
+        }
+
+        if (!grab_one_basic_monster_flag(dungeon, f)) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+    }
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief monster_spells 配列を直接フィル
+ */
+static errr set_dungeon_monster_spells(DungeonDefinition &dungeon, const nlohmann::json &flags_array)
+{
+    for (const auto &flag_node : flags_array) {
+        const auto f = flag_node.get<std::string>();
+        if (f.empty()) {
+            continue;
+        }
+        const auto &s_tokens = str_split(f, '_');
+        if (s_tokens.size() == 3 && s_tokens[1] == "IN") {
+            if (s_tokens[0] != "1") {
+                return PARSE_ERROR_GENERIC;
+            }
+            continue; // MonsterRaceDefinitions.jsonc からのコピペ対策
+        }
+        if (!grab_one_spell_monster_flag(dungeon, f)) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+    }
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief specific_items 配列を direct-fill (階層別アイテム生成ルール)
+ */
+static errr set_dungeon_specific_items(DungeonDefinition &dungeon, const nlohmann::json &items_array)
+{
+    for (const auto &item : items_array) {
+        const auto floor_level = item.value("floor", 0);
+        FloorItemGenerationRule rule;
+        rule.probability = item.value("probability", 0);
+        rule.dice = Dice(item.value("dice_num", 0), item.value("dice_sides", 0));
+        rule.item_id = item.value("item_id", 0);
+        dungeon.specific_item_generation_map[floor_level] = rule;
+    }
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief specific_vaults 配列を direct-fill (階層別 Vault 指定)
+ */
+static errr set_dungeon_specific_vaults(DungeonDefinition &dungeon, const nlohmann::json &vaults_array)
+{
+    for (const auto &v : vaults_array) {
+        const auto floor_level = v.value("floor", 0);
+        const auto vault_id = v.value("vault_id", 0);
+        dungeon.specific_vault_map[floor_level] = i2enum<VaultTypeId>(vault_id);
+    }
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief room_rates 配列を direct-fill (部屋種別ごとの生成率)
+ */
+static errr set_dungeon_room_rates(DungeonDefinition &dungeon, const nlohmann::json &rates_array)
+{
+    for (const auto &r : rates_array) {
+        const auto type = r.value("type", 0);
+        const auto rate = r.value("rate", 0);
+        dungeon.room_rate[i2enum<RoomType>(type)] = rate;
+    }
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief position オブジェクトから wilderness 位置を初期化
+ */
+static void set_dungeon_position(DungeonDefinition &dungeon, const nlohmann::json &pos_obj)
+{
+    const auto y = pos_obj.value("y", 0);
+    const auto x = pos_obj.value("x", 0);
+    dungeon.initialize_position({ y, x });
+}
+
+/*!
+ * @brief ダンジョン情報(JSON Object)のパース関数
+ * @details 構造化 JSON (version 2) を直接 DungeonDefinition に書き込む方式
+ *          (旧 token-emit 方式は提案 38 で廃止)。version 1 (lines 配列) は
+ *          legacy `parse_dungeons_info()` トークンパーサを使う互換パスで継続。
+ */
 errr parse_dungeons_info_json(nlohmann::json &dungeon_data, angband_header *head)
 {
     // version 1 (wrapped-line) 互換パス
@@ -519,241 +840,106 @@ errr parse_dungeons_info_json(nlohmann::json &dungeon_data, angband_header *head
         return PARSE_ERROR_NONE;
     }
 
-    // version 2 (structured) パス
+    // version 2 (structured) パス - direct fill 方式
     if (!dungeon_data.contains("id")) {
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
     }
     const auto id = dungeon_data["id"].get<int>();
-
-    // N: id:name_ja (必須)
-    std::string name_ja;
-    if (dungeon_data.contains("name") && dungeon_data["name"].contains("ja")) {
-        name_ja = dungeon_data["name"]["ja"].get<std::string>();
+    if (id < error_idx) {
+        return PARSE_ERROR_NON_SEQUENTIAL_RECORDS;
     }
-#ifdef JP
-    if (!name_ja.empty()) {
-        auto name_ja_sys = utf8_to_sys(name_ja);
-        if (!name_ja_sys) {
+    error_idx = id;
+
+    DungeonDefinition dungeon;
+
+    // name (必須)
+    if (dungeon_data.contains("name")) {
+        auto name = read_localized_name(dungeon_data["name"]);
+        if (!name) {
             return PARSE_ERROR_INVALID_FLAG;
         }
-        name_ja = std::move(*name_ja_sys);
+        dungeon.name = std::move(*name);
     }
-#endif
-    if (auto err = emit_token("N:" + std::to_string(id) + ":" + name_ja, head); err != PARSE_ERROR_NONE) {
+
+    // tag
+    if (dungeon_data.contains("tag")) {
+        dungeon.tag = dungeon_data["tag"].get<std::string>();
+    }
+
+    // description
+    if (dungeon_data.contains("description")) {
+        if (auto err = set_dungeon_description(dungeon, dungeon_data["description"]); err != PARSE_ERROR_NONE) {
+            return err;
+        }
+    }
+
+    // position (wilderness)
+    if (dungeon_data.contains("position")) {
+        set_dungeon_position(dungeon, dungeon_data["position"]);
+    }
+
+    // generation
+    if (dungeon_data.contains("generation")) {
+        if (auto err = set_dungeon_generation(dungeon, dungeon_data["generation"]); err != PARSE_ERROR_NONE) {
+            return err;
+        }
+    }
+
+    // floor
+    if (dungeon_data.contains("floor")) {
+        if (auto err = set_dungeon_floor(dungeon, dungeon_data["floor"]); err != PARSE_ERROR_NONE) {
+            return err;
+        }
+    }
+
+    // wall
+    if (dungeon_data.contains("wall")) {
+        if (auto err = set_dungeon_wall(dungeon, dungeon_data["wall"]); err != PARSE_ERROR_NONE) {
+            return err;
+        }
+    }
+
+    // flags + 各種スカラ (monster_rate / trap_rate / monster_div / final_* / alliance / fixed_rooms)
+    if (auto err = set_dungeon_feature_flags(dungeon, dungeon_data); err != PARSE_ERROR_NONE) {
         return err;
     }
 
-    // E: name_en
-    if (dungeon_data.contains("name") && dungeon_data["name"].contains("en")) {
-        const auto en = dungeon_data["name"]["en"].get<std::string>();
-        if (!en.empty()) {
-            if (auto err = emit_token("E:" + en, head); err != PARSE_ERROR_NONE) {
-                return err;
-            }
-        }
-    }
-
-    // T: tag
-    if (dungeon_data.contains("tag")) {
-        const auto tag = dungeon_data["tag"].get<std::string>();
-        if (!tag.empty()) {
-            if (auto err = emit_token("T:" + tag, head); err != PARSE_ERROR_NONE) {
-                return err;
-            }
-        }
-    }
-
-    // D: text (ja and/or en)
-    if (dungeon_data.contains("description")) {
-        const auto &desc = dungeon_data["description"];
-        if (desc.contains("ja")) {
-            auto ja = desc["ja"].get<std::string>();
-            if (!ja.empty()) {
-#ifdef JP
-                auto ja_sys = utf8_to_sys(ja);
-                if (!ja_sys) {
-                    return PARSE_ERROR_INVALID_FLAG;
-                }
-                ja = std::move(*ja_sys);
-#endif
-                if (auto err = emit_token("D:" + ja, head); err != PARSE_ERROR_NONE) {
-                    return err;
-                }
-            }
-        }
-        if (desc.contains("en")) {
-            const auto en = desc["en"].get<std::string>();
-            if (!en.empty()) {
-                if (auto err = emit_token("D:$" + en, head); err != PARSE_ERROR_NONE) {
-                    return err;
-                }
-            }
-        }
-    }
-
-    // P: y:x
-    if (dungeon_data.contains("position")) {
-        const auto &pos = dungeon_data["position"];
-        const auto y = pos.value("y", 0);
-        const auto x = pos.value("x", 0);
-        if (auto err = emit_token("P:" + std::to_string(y) + ":" + std::to_string(x), head); err != PARSE_ERROR_NONE) {
-            return err;
-        }
-    }
-
-    // W: min_depth:max_depth:min_player_level:flags_mode:min_alloc:max_alloc_chance:obj_good:obj_great:pit:nest
-    if (dungeon_data.contains("generation")) {
-        const auto &g = dungeon_data["generation"];
-        std::string buf = "W:";
-        buf += std::to_string(g.value("min_depth", 0)) + ":";
-        buf += std::to_string(g.value("max_depth", 0)) + ":";
-        buf += std::to_string(g.value("min_player_level", 0)) + ":";
-        buf += std::to_string(g.value("flags_mode", 0)) + ":";
-        buf += std::to_string(g.value("min_alloc", 0)) + ":";
-        buf += std::to_string(g.value("max_alloc_chance", 0)) + ":";
-        buf += std::to_string(g.value("obj_good", 0)) + ":";
-        buf += std::to_string(g.value("obj_great", 0)) + ":";
-        buf += g.value("pit", std::string("0x0000")) + ":";
-        buf += g.value("nest", std::string("0x0000"));
-        if (auto err = emit_token(buf, head); err != PARSE_ERROR_NONE) {
-            return err;
-        }
-    }
-
-    // L: floor.tiles[3] + tunnel_rate
-    if (dungeon_data.contains("floor")) {
-        const auto &f = dungeon_data["floor"];
-        std::string buf = "L:";
-        const auto &tiles = f["tiles"];
-        for (size_t i = 0; i < 3; i++) {
-            buf += tiles[i].value("terrain", std::string("FLOOR")) + ":";
-            buf += std::to_string(tiles[i].value("rate", 0)) + ":";
-        }
-        buf += std::to_string(f.value("tunnel_rate", 0));
-        if (auto err = emit_token(buf, head); err != PARSE_ERROR_NONE) {
-            return err;
-        }
-    }
-
-    // A: wall.tiles[3] + outer + inner + stream1 + stream2
-    if (dungeon_data.contains("wall")) {
-        const auto &w = dungeon_data["wall"];
-        std::string buf = "A:";
-        const auto &tiles = w["tiles"];
-        for (size_t i = 0; i < 3; i++) {
-            buf += tiles[i].value("terrain", std::string("GRANITE")) + ":";
-            buf += std::to_string(tiles[i].value("rate", 0)) + ":";
-        }
-        buf += w.value("outer", std::string("GRANITE")) + ":";
-        buf += w.value("inner", std::string("GRANITE")) + ":";
-        buf += w.value("stream1", std::string("MAGMA_VEIN")) + ":";
-        buf += w.value("stream2", std::string("QUARTZ_VEIN"));
-        if (auto err = emit_token(buf, head); err != PARSE_ERROR_NONE) {
-            return err;
-        }
-    }
-
-    // F: 各フラグ + 専用変換 (MONSTER_RATE/TRAP_RATE/MONSTER_DIV/FINAL_*/ALLIANCE_*/FIXED_ROOM)
-    {
-        std::vector<std::string> f_tokens;
-        if (dungeon_data.contains("flags")) {
-            for (const auto &flag : dungeon_data["flags"]) {
-                f_tokens.push_back(flag.get<std::string>());
-            }
-        }
-        if (dungeon_data.contains("monster_rate")) {
-            f_tokens.push_back("MONSTER_RATE_" + std::to_string(dungeon_data["monster_rate"].get<int>()));
-        }
-        if (dungeon_data.contains("trap_rate")) {
-            f_tokens.push_back("TRAP_RATE_" + std::to_string(dungeon_data["trap_rate"].get<int>()));
-        }
-        if (dungeon_data.contains("monster_div")) {
-            f_tokens.push_back("MONSTER_DIV_" + std::to_string(dungeon_data["monster_div"].get<int>()));
-        }
-        if (dungeon_data.contains("final_guardian")) {
-            f_tokens.push_back("FINAL_GUARDIAN_" + std::to_string(dungeon_data["final_guardian"].get<int>()));
-        }
-        if (dungeon_data.contains("final_object")) {
-            f_tokens.push_back("FINAL_OBJECT_" + std::to_string(dungeon_data["final_object"].get<int>()));
-        }
-        if (dungeon_data.contains("final_artifact")) {
-            f_tokens.push_back("FINAL_ARTIFACT_" + std::to_string(dungeon_data["final_artifact"].get<int>()));
-        }
-        if (dungeon_data.contains("alliance")) {
-            f_tokens.push_back("ALLIANCE_" + dungeon_data["alliance"].get<std::string>());
-        }
-        if (dungeon_data.contains("fixed_rooms")) {
-            for (const auto &fr : dungeon_data["fixed_rooms"]) {
-                std::string flag = "FIXED_ROOM_" + std::to_string(fr.value("depth", 0)) + "_";
-                flag += std::to_string(fr.value("id", 0)) + "_";
-                flag += std::to_string(fr.value("percentage", 0));
-                f_tokens.push_back(flag);
-            }
-        }
-        // emit "F:" 1 行ごとに 1 フラグ (既存パーサが " | " 区切りも単独も両方扱える)
-        for (const auto &flag : f_tokens) {
-            if (auto err = emit_token("F:" + flag, head); err != PARSE_ERROR_NONE) {
-                return err;
-            }
-        }
-    }
-
-    // M: monster_flags
+    // monster_flags
     if (dungeon_data.contains("monster_flags")) {
-        for (const auto &flag : dungeon_data["monster_flags"]) {
-            if (auto err = emit_token("M:" + flag.get<std::string>(), head); err != PARSE_ERROR_NONE) {
-                return err;
-            }
+        if (auto err = set_dungeon_monster_flags(dungeon, dungeon_data["monster_flags"]); err != PARSE_ERROR_NONE) {
+            return err;
         }
     }
 
-    // S: monster_spells
+    // monster_spells
     if (dungeon_data.contains("monster_spells")) {
-        for (const auto &flag : dungeon_data["monster_spells"]) {
-            if (auto err = emit_token("S:" + flag.get<std::string>(), head); err != PARSE_ERROR_NONE) {
-                return err;
-            }
+        if (auto err = set_dungeon_monster_spells(dungeon, dungeon_data["monster_spells"]); err != PARSE_ERROR_NONE) {
+            return err;
         }
     }
 
-    // K: specific_items
+    // specific_items
     if (dungeon_data.contains("specific_items")) {
-        for (const auto &item : dungeon_data["specific_items"]) {
-            std::string buf = "K:";
-            buf += std::to_string(item.value("floor", 0)) + ":";
-            buf += std::to_string(item.value("probability", 0)) + ":";
-            buf += std::to_string(item.value("dice_num", 0)) + ":";
-            buf += std::to_string(item.value("dice_sides", 0)) + ":";
-            buf += std::to_string(item.value("item_id", 0));
-            if (auto err = emit_token(buf, head); err != PARSE_ERROR_NONE) {
-                return err;
-            }
+        if (auto err = set_dungeon_specific_items(dungeon, dungeon_data["specific_items"]); err != PARSE_ERROR_NONE) {
+            return err;
         }
     }
 
-    // Z: specific_vaults
+    // specific_vaults
     if (dungeon_data.contains("specific_vaults")) {
-        for (const auto &v : dungeon_data["specific_vaults"]) {
-            std::string buf = "Z:";
-            buf += std::to_string(v.value("floor", 0)) + ":";
-            buf += std::to_string(v.value("vault_id", 0));
-            if (auto err = emit_token(buf, head); err != PARSE_ERROR_NONE) {
-                return err;
-            }
+        if (auto err = set_dungeon_specific_vaults(dungeon, dungeon_data["specific_vaults"]); err != PARSE_ERROR_NONE) {
+            return err;
         }
     }
 
-    // R: room_rates
+    // room_rates
     if (dungeon_data.contains("room_rates")) {
-        for (const auto &r : dungeon_data["room_rates"]) {
-            std::string buf = "R:";
-            buf += std::to_string(r.value("type", 0)) + ":";
-            buf += std::to_string(r.value("rate", 0));
-            if (auto err = emit_token(buf, head); err != PARSE_ERROR_NONE) {
-                return err;
-            }
+        if (auto err = set_dungeon_room_rates(dungeon, dungeon_data["room_rates"]); err != PARSE_ERROR_NONE) {
+            return err;
         }
     }
 
+    auto &dungeons = DungeonList::get_instance();
+    dungeons.emplace(i2enum<DungeonId>(id), std::move(dungeon));
     return PARSE_ERROR_NONE;
 }
