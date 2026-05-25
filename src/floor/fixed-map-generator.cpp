@@ -206,7 +206,6 @@ static bool parse_qtw_QQ(QuestType *q_ptr, const std::vector<std::string> &token
     q_ptr->level = std::stoi(tokens[6]);
     q_ptr->r_idx = i2enum<MonraceId>(std::stoi(tokens[7]));
     const auto fa_id = i2enum<FixedArtifactId>(std::stoi(tokens[8]));
-    q_ptr->reward_fa_id = fa_id;
     q_ptr->dungeon = i2enum<DungeonId>(std::stoi(tokens[9]));
 
     if (num > 10) {
@@ -222,8 +221,7 @@ static bool parse_qtw_QQ(QuestType *q_ptr, const std::vector<std::string> &token
         return true;
     }
 
-    auto &artifact = q_ptr->get_reward();
-    artifact.gen_flags.set(ItemGenerationTraitType::QUESTITEM);
+    q_ptr->set_reward(fa_id);
     return true;
 }
 
@@ -260,8 +258,7 @@ static bool parse_qtw_QR(QuestType *q_ptr, const std::vector<std::string> &token
     }
 
     if (reward_idx != FixedArtifactId::NONE) {
-        q_ptr->reward_fa_id = reward_idx;
-        artifacts.get_artifact(reward_idx).gen_flags.set(ItemGenerationTraitType::QUESTITEM);
+        q_ptr->set_reward(reward_idx);
     } else {
         q_ptr->type = QuestKindType::KILL_ALL;
     }

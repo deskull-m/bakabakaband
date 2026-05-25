@@ -833,7 +833,7 @@ bool ItemEntity::is_target_of(QuestId quest_id) const
         return false;
     }
 
-    const auto &artifact = quest.get_reward();
+    const auto &artifact = quest.get_reward_artifact();
     if (artifact.gen_flags.has(ItemGenerationTraitType::INSTA_ART)) {
         return false;
     }

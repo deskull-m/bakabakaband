@@ -102,9 +102,8 @@ static void do_cmd_knowledge_quests_current(CreatureEntity &creature, FILE *fff)
                 case QuestKindType::FIND_ARTIFACT: {
                     std::string item_name("");
                     if (quest.has_reward()) {
-                        const auto &artifact = quest.get_reward();
-                        ItemEntity item(artifact.bi_key);
-                        item.fa_id = quest.reward_fa_id;
+                        ItemEntity item(quest.get_reward_bi_id());
+                        item.fa_id = quest.get_reward().value_or(FixedArtifactId::NONE);
                         item.ident = IDENT_STORE;
                         item_name = describe_flavor(creature, item, OD_NAME_ONLY);
                     }
