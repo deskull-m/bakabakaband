@@ -65,13 +65,72 @@ bool QuestType::is_fixed(QuestId quest_id)
 
 bool QuestType::has_reward() const
 {
-    return this->reward_fa_id != FixedArtifactId::NONE;
+    return this->reward_fa_id.has_value();
 }
 
-ArtifactType &QuestType::get_reward() const
+tl::optional<FixedArtifactId> QuestType::get_reward() const
+{
+    return this->reward_fa_id;
+}
+
+ArtifactType &QuestType::get_reward_artifact() const
 {
     auto &artifacts = ArtifactList::get_instance();
-    return artifacts.get_artifact(this->reward_fa_id);
+    return artifacts.get_artifact(this->reward_fa_id.value_or(FixedArtifactId::NONE));
+}
+
+short QuestType::get_reward_bi_id() const
+{
+    if (!this->has_reward()) {
+        return 0;
+    }
+
+    const auto &artifact = ArtifactList::get_instance().get_artifact(*this->reward_fa_id);
+    return BaseitemList::get_instance().lookup_baseitem_id(artifact.bi_key);
+}
+
+bool QuestType::is_reward_instant_artifact() const
+{
+    if (!this->has_reward()) {
+        return false;
+    }
+
+    return ArtifactList::get_instance().get_artifact(*this->reward_fa_id).gen_flags.has(ItemGenerationTraitType::INSTA_ART);
+}
+
+bool QuestType::is_reward_target(const BaseitemKey &key) const
+{
+    if (!this->has_reward()) {
+        return false;
+    }
+
+    return ArtifactList::get_instance().get_artifact(*this->reward_fa_id).bi_key == key;
+}
+
+void QuestType::set_reward(FixedArtifactId fa_id)
+{
+    if (fa_id == FixedArtifactId::NONE) {
+        this->reset_reward();
+        return;
+    }
+
+    // 馬鹿馬鹿固有: 上流の ArtifactRecords は未導入のため、
+    // 既存通り ArtifactType::gen_flags の QUESTITEM ビットでクエスト報酬状態を管理する。
+    auto &artifacts = ArtifactList::get_instance();
+    if (this->reward_fa_id && (*this->reward_fa_id != fa_id)) {
+        artifacts.get_artifact(*this->reward_fa_id).gen_flags.reset(ItemGenerationTraitType::QUESTITEM);
+    }
+
+    this->reward_fa_id = fa_id;
+    artifacts.get_artifact(fa_id).gen_flags.set(ItemGenerationTraitType::QUESTITEM);
+}
+
+void QuestType::reset_reward()
+{
+    if (this->reward_fa_id) {
+        ArtifactList::get_instance().get_artifact(*this->reward_fa_id).gen_flags.reset(ItemGenerationTraitType::QUESTITEM);
+        this->reward_fa_id.reset();
+    }
 }
 
 /*!
@@ -234,7 +293,7 @@ void check_find_art_quest_completion(CreatureEntity &creature, ItemEntity *o_ptr
     for (const auto &[quest_id, quest] : quests) {
         auto found_artifact = (quest.type == QuestKindType::FIND_ARTIFACT);
         found_artifact &= (quest.status == QuestStatusType::TAKEN);
-        found_artifact &= (o_ptr->is_specific_artifact(quest.reward_fa_id));
+        found_artifact &= quest.get_reward().map_or([o_ptr](FixedArtifactId fa_id) { return o_ptr->is_specific_artifact(fa_id); }, false);
         if (found_artifact) {
             complete_quest(creature, quest_id);
         }
@@ -304,7 +363,7 @@ void leave_quest_check(CreatureEntity &creature)
         quests.get_quest(QuestId::TOWER1).complev = creature.get_level();
         break;
     case QuestKindType::FIND_ARTIFACT:
-        quest.get_reward().gen_flags.reset(ItemGenerationTraitType::QUESTITEM);
+        quest.get_reward_artifact().gen_flags.reset(ItemGenerationTraitType::QUESTITEM);
         break;
     case QuestKindType::RANDOM:
         quest.get_bounty().misc_flags.reset(MonsterMiscType::QUESTOR);

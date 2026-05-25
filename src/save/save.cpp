@@ -13,6 +13,7 @@
 
 #include "save/save.h"
 #include "alliance/alliance.h"
+#include "artifact/fixed-art-types.h"
 #include "core/object-compressor.h"
 #include "dungeon/quest.h"
 #include "inventory/inventory-slot-types.h"
@@ -145,7 +146,7 @@ static bool wr_savefile_new(CreatureEntity &creature)
         wr_s16b((int16_t)quest.max_num);
         wr_s16b(enum2i(quest.type));
         wr_s16b(enum2i(quest.r_idx));
-        wr_s16b(enum2i(quest.reward_fa_id));
+        wr_s16b(enum2i(quest.get_reward().value_or(FixedArtifactId::NONE)));
         wr_byte((byte)quest.flags);
         wr_byte((byte)quest.dungeon);
     }

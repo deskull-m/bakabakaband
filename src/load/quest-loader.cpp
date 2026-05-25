@@ -52,9 +52,11 @@ static void load_quest_details(CreatureEntity &creature, QuestType *q_ptr, const
         auto &quests = QuestList::get_instance();
         determine_random_questor(creature, quests.get_quest(loading_quest_id));
     }
-    q_ptr->reward_fa_id = i2enum<FixedArtifactId>(rd_s16b());
-    if (q_ptr->has_reward()) {
-        q_ptr->get_reward().gen_flags.set(ItemGenerationTraitType::QUESTITEM);
+
+    q_ptr->reset_reward();
+    const auto reward_fa_id = i2enum<FixedArtifactId>(rd_s16b());
+    if (reward_fa_id != FixedArtifactId::NONE) {
+        q_ptr->set_reward(reward_fa_id);
     }
 
     q_ptr->flags = rd_byte();

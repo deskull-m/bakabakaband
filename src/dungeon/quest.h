@@ -7,6 +7,7 @@
 #include <map>
 #include <stdint.h>
 #include <string>
+#include <tl/optional.hpp>
 #include <vector>
 
 // clang-format off
@@ -104,6 +105,7 @@ enum class DungeonId;
 enum class FixedArtifactId : short;
 enum class MonraceId : int16_t;
 class ArtifactType;
+class BaseitemKey;
 class MonraceDefinition;
 class QuestType {
 public:
@@ -119,7 +121,6 @@ public:
     MONSTER_NUMBER cur_num = 0; /*!< 撃破したモンスターの数 / Number killed */
     MONSTER_NUMBER max_num = 0; /*!< 求められるモンスターの撃破数 / Number required */
 
-    FixedArtifactId reward_fa_id{}; /*!< クエスト対象のアイテムID / object index */
     MONSTER_NUMBER num_mon = 0; /*!< QuestKindTypeがKILL_NUMBER時の目標撃破数 number of monsters on level */
 
     BIT_FLAGS flags = 0; /*!< クエストに関するフラグビット / quest flags */
@@ -130,9 +131,18 @@ public:
 
     static bool is_fixed(QuestId quest_idx);
     bool has_reward() const;
-    ArtifactType &get_reward() const;
+    tl::optional<FixedArtifactId> get_reward() const;
+    ArtifactType &get_reward_artifact() const;
+    short get_reward_bi_id() const;
+    bool is_reward_instant_artifact() const;
+    bool is_reward_target(const BaseitemKey &key) const;
+    void set_reward(FixedArtifactId fa_id);
+    void reset_reward();
     MonraceDefinition &get_bounty();
     const MonraceDefinition &get_bounty() const;
+
+private:
+    tl::optional<FixedArtifactId> reward_fa_id{}; /*!< クエスト対象のアイテムID / object index */
 };
 
 class QuestList final : public util::AbstractMapWrapper<QuestId, QuestType> {

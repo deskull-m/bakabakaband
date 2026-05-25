@@ -196,8 +196,8 @@ parse_error_type parse_line_feature(const FloorType &floor, std::string_view buf
             }
         } else if (token.starts_with('!')) {
             if (floor.is_in_quest()) {
-                const auto &quests = QuestList::get_instance();
-                one_letter.artifact = quests.get_quest(floor.quest_number).reward_fa_id;
+                const auto &quest = QuestList::get_instance().get_quest(floor.quest_number);
+                one_letter.artifact = quest.get_reward().value_or(FixedArtifactId::NONE);
             }
         } else {
             one_letter.artifact = i2enum<FixedArtifactId>(std::stoi(token));
@@ -228,7 +228,7 @@ parse_error_type parse_line_feature(const FloorType &floor, std::string_view buf
                 const auto &quests = QuestList::get_instance();
                 const auto &quest = quests.get_quest(floor.quest_number);
                 if (quest.has_reward()) {
-                    const auto &artifact = quest.get_reward();
+                    const auto &artifact = quest.get_reward_artifact();
                     if (artifact.gen_flags.has_not(ItemGenerationTraitType::INSTA_ART)) {
                         one_letter.object = BaseitemList::get_instance().lookup_baseitem_id(artifact.bi_key);
                     }
