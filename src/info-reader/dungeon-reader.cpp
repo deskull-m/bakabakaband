@@ -1,4 +1,5 @@
 #include "info-reader/dungeon-reader.h"
+#include "artifact/fixed-art-types.h"
 #include "info-reader/dungeon-info-tokens-table.h"
 #include "info-reader/info-reader-util.h"
 #include "info-reader/parse-error-types.h"
@@ -6,16 +7,22 @@
 #include "io/tokenizer.h"
 #include "locale/japanese.h"
 #include "main/angband-headers.h"
+#include "system/artifact-type-definition.h"
+#include "system/baseitem/baseitem-definition.h"
+#include "system/baseitem/baseitem-list.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/enums/dungeon/dungeon-id.h"
+#include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "util/dice.h"
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <exception>
 #include <span>
 
 /*!
@@ -677,6 +684,55 @@ static errr set_dungeon_wall(DungeonDefinition &dungeon, const nlohmann::json &w
 }
 
 /*!
+ * @brief final_floor オブジェクトをパースし、ダンジョン最下層の固有設定を直接フィル
+ * @details `guardian` (MonraceId 整数) / `object` (BaseitemId 整数) / `artifact`
+ *          (FixedArtifactId 整数) を受け取り、それぞれの整合性も検証する。
+ */
+static errr set_dungeon_final_floor(DungeonDefinition &dungeon, const nlohmann::json &final_floor_obj)
+{
+    if (final_floor_obj.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!final_floor_obj.is_object()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    if (final_floor_obj.contains("guardian")) {
+        const auto value = final_floor_obj["guardian"].get<int>();
+        const auto monrace_id = i2enum<MonraceId>(value);
+        const auto &monraces = MonraceList::get_instance();
+        if (!MonraceList::is_valid(monrace_id) || !monraces.contains(monrace_id)) {
+            msg_format(_("不正な final_floor.guardian ID '%d'。", "Invalid final_floor.guardian ID '%d'."), value);
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+        dungeon.final_guardian = monrace_id;
+    }
+    if (final_floor_obj.contains("object")) {
+        const auto value = final_floor_obj["object"].get<int>();
+        const auto value_short = static_cast<short>(value);
+        try {
+            static_cast<void>(BaseitemList::get_instance().get_baseitem(value_short));
+        } catch (const std::exception &) {
+            msg_format(_("不正な final_floor.object ID '%d'。", "Invalid final_floor.object ID '%d'."), value);
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+        dungeon.final_object = value_short;
+    }
+    if (final_floor_obj.contains("artifact")) {
+        const auto value = final_floor_obj["artifact"].get<int>();
+        const auto artifact_id = i2enum<FixedArtifactId>(value);
+        const auto &artifacts = ArtifactList::get_instance();
+        if ((artifact_id != FixedArtifactId::NONE) && !artifacts.contains(artifact_id)) {
+            msg_format(_("不正な final_floor.artifact ID '%d'。", "Invalid final_floor.artifact ID '%d'."), value);
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+        dungeon.final_artifact = artifact_id;
+    }
+
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief JSON flags 配列、および MONSTER_RATE / TRAP_RATE 等のスカラ
  *        + FIXED_ROOM / ALLIANCE 等のサブ構造を DungeonDefinition に直接フィル
  */
@@ -701,15 +757,6 @@ static errr set_dungeon_feature_flags(DungeonDefinition &dungeon, const nlohmann
     }
     if (dungeon_data.contains("normal_monster_rate")) {
         dungeon.normal_monster_rate = static_cast<PROB>(dungeon_data["normal_monster_rate"].get<int>());
-    }
-    if (dungeon_data.contains("final_guardian")) {
-        dungeon.final_guardian = i2enum<MonraceId>(dungeon_data["final_guardian"].get<int>());
-    }
-    if (dungeon_data.contains("final_object")) {
-        dungeon.final_object = static_cast<short>(dungeon_data["final_object"].get<int>());
-    }
-    if (dungeon_data.contains("final_artifact")) {
-        dungeon.final_artifact = i2enum<FixedArtifactId>(dungeon_data["final_artifact"].get<int>());
     }
     if (dungeon_data.contains("alliance")) {
         const auto alliance_tag = dungeon_data["alliance"].get<std::string>();
@@ -940,9 +987,16 @@ errr parse_dungeons_info_json(nlohmann::json &dungeon_data, angband_header *head
         }
     }
 
-    // flags + 各種スカラ (monster_rate / trap_rate / monster_div / final_* / alliance / fixed_rooms)
+    // flags + 各種スカラ (monster_rate / trap_rate / alliance / fixed_rooms)
     if (auto err = set_dungeon_feature_flags(dungeon, dungeon_data); err != PARSE_ERROR_NONE) {
         return err;
+    }
+
+    // final_floor (最下層: ガーディアン / 報酬オブジェクト / 報酬アーティファクト)
+    if (dungeon_data.contains("final_floor")) {
+        if (auto err = set_dungeon_final_floor(dungeon, dungeon_data["final_floor"]); err != PARSE_ERROR_NONE) {
+            return err;
+        }
     }
 
     // monster_flags
