@@ -1214,7 +1214,12 @@
     <ClInclude Include="..\..\src\system\creature-entity.h" />
     <ClInclude Include="..\..\src\system\creature-party\creature-party-definition.h" />
     <ClInclude Include="..\..\src\system\creature-party\creature-party-list.h" />
+    <ClInclude Include="..\..\src\system\enums\store-sale-type.h" />
+    <ClInclude Include="..\..\src\system\enums\terrain\building-type.h" />
+    <ClInclude Include="..\..\src\system\enums\terrain\pattern-tile-type.h" />
     <ClInclude Include="..\..\src\system\enums\terrain\terrain-kind.h" />
+    <ClInclude Include="..\..\src\system\enums\terrain\terrain-conversion-type.h" />
+    <ClInclude Include="..\..\src\system\enums\terrain\trap.h" />
     <ClInclude Include="..\..\src\system\enums\terrain\wilderness-terrain.h" />
     <ClInclude Include="..\..\src\system\floor\wilderness-grid.h" />
     <ClInclude Include="..\..\src\system\services\dungeon-monrace-service.h" />

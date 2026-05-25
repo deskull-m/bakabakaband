@@ -36,6 +36,7 @@
 #include "system/dungeon/dungeon-list.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/enums/monrace/monrace-id.h"
+#include "system/enums/terrain/building-type.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/enums/terrain/wilderness-terrain.h"
 #include "system/floor/floor-info.h"
@@ -556,7 +557,7 @@ void wilderness_gen(CreatureEntity &creature)
                 continue;
             }
 
-            if ((terrain.subtype != 4) && !((creature.get_town_num() == 1) && (terrain.subtype == 0))) {
+            if ((terrain.building_type != BuildingType::BUILDING_04) && !((creature.get_town_num() == 1) && (terrain.building_type == BuildingType::BUILDING_00))) {
                 continue;
             }
 

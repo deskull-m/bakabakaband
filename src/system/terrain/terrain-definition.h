@@ -1,7 +1,12 @@
 #pragma once
 
 #include "system/angband.h"
+#include "system/enums/store-sale-type.h"
+#include "system/enums/terrain/building-type.h"
+#include "system/enums/terrain/pattern-tile-type.h"
 #include "system/enums/terrain/terrain-characteristics.h"
+#include "system/enums/terrain/terrain-conversion-type.h"
+#include "system/enums/terrain/trap.h"
 #include "util/flag-group.h"
 #include "view/display-symbol.h"
 #include <map>
@@ -60,7 +65,12 @@ public:
     EnumClassFlagGroup<TerrainCharacteristics> flags{}; /*!< 地形の基本特性ビット配列 / Flags */
     int16_t priority{}; /*!< 縮小表示で省略する際の表示優先度 / Map priority */
     TerrainState state[MAX_FEAT_STATES]{}; /*!< TerrainState テーブル */
-    FEAT_SUBTYPE subtype{}; /*!< 副特性値 */
+    TrapType trap_type = TrapType::NOT_TRAP; /*!< トラップ種別 */
+    PatternTileType pattern_tile_type = PatternTileType::NOT_PATTERN; /*!< パターン種別 */
+    StoreSaleType store_sale_type = StoreSaleType::NONE; /*!< 店舗種別 */
+    BuildingType building_type = BuildingType::NONE; /*!< 施設種別 */
+    TerrainConversionType conversion_type = TerrainConversionType::NONE; /*!< 変換地形種別 */
+    int stream_index = -1; /*!< 川地形種別 */
     FEAT_POWER power{}; /*!< 地形強度 */
     std::map<int, DisplaySymbol> symbol_definitions; //!< デフォルトの地形シンボル (色/文字).
     std::map<int, DisplaySymbol> symbol_configs; //!< 設定変更後の地形シンボル (色/文字).
@@ -78,6 +88,7 @@ public:
     bool is_open() const;
     bool is_closed_door() const;
     bool has(TerrainCharacteristics tc) const;
+    bool set_specific_type(uint8_t specific_type);
 
     void reset_lighting(bool is_config = true);
 

@@ -106,8 +106,8 @@ void build_stores(CreatureEntity &creature, const Pos2D &pos_ug, const std::vect
         const auto &terrains = TerrainList::get_instance();
         const auto end = terrains.end();
         const auto it = std::find_if(terrains.begin(), end,
-            [subtype = stores[i]](const TerrainType &terrain) {
-                return terrain.flags.has(TerrainCharacteristics::STORE) && (i2enum<StoreSaleType>(static_cast<int>(terrain.subtype)) == subtype);
+            [store_sale_type = stores[i]](const TerrainType &terrain) {
+                return terrain.flags.has(TerrainCharacteristics::STORE) && (terrain.store_sale_type == store_sale_type);
             });
         if (it == end) {
             continue;

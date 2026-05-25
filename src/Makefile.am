@@ -1384,7 +1384,12 @@ hengband_SOURCES = \
 	system/enums/terrain/terrain-characteristics.h \
 	system/enums/terrain/terrain-kind.h \
 	system/enums/terrain/terrain-tag.h \
+	system/enums/terrain/building-type.h \
+	system/enums/terrain/pattern-tile-type.h \
+	system/enums/terrain/terrain-conversion-type.h \
+	system/enums/terrain/trap.h \
 	system/enums/terrain/wilderness-terrain.h \
+	system/enums/store-sale-type.h \
 	\
 	system/floor/floor-info.cpp system/floor/floor-info.h \
 	system/floor/floor-list.cpp system/floor/floor-list.h \

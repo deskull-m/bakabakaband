@@ -4,6 +4,7 @@
 #include "grid/grid.h"
 #include "room/door-definition.h"
 #include "system/enums/monrace/monrace-id.h"
+#include "system/enums/terrain/terrain-conversion-type.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -11,16 +12,6 @@
 #include "system/terrain/terrain-list.h"
 #include "term/z-form.h"
 #include "term/z-rand.h"
-
-enum conversion_type {
-    CONVERT_TYPE_FLOOR = 0,
-    CONVERT_TYPE_WALL = 1,
-    CONVERT_TYPE_INNER = 2,
-    CONVERT_TYPE_OUTER = 3,
-    CONVERT_TYPE_SOLID = 4,
-    CONVERT_TYPE_STREAM1 = 5,
-    CONVERT_TYPE_STREAM2 = 6,
-};
 
 bool DungeonDefinition::has_river_flag() const
 {
@@ -67,21 +58,19 @@ short DungeonDefinition::convert_terrain_id(short terrain_id) const
         return terrain_id;
     }
 
-    switch (terrain.subtype) {
-    case CONVERT_TYPE_FLOOR:
+    switch (terrain.conversion_type) {
+    case TerrainConversionType::FLOOR:
         return this->select_floor_terrain_id();
-    case CONVERT_TYPE_WALL:
+    case TerrainConversionType::WALL:
         return this->select_wall_terrain_id();
-    case CONVERT_TYPE_INNER:
+    case TerrainConversionType::INNER:
         return this->inner_wall;
-    case CONVERT_TYPE_OUTER:
+    case TerrainConversionType::OUTER:
         return this->outer_wall;
-    case CONVERT_TYPE_SOLID:
+    case TerrainConversionType::SOLID:
         return this->outer_wall;
-    case CONVERT_TYPE_STREAM1:
-        return this->stream1;
-    case CONVERT_TYPE_STREAM2:
-        return this->stream2;
+    case TerrainConversionType::STREAM:
+        return (terrain.stream_index == 0) ? this->stream1 : this->stream2;
     default:
         return terrain_id;
     }

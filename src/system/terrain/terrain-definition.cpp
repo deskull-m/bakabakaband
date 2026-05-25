@@ -8,6 +8,7 @@
 #include "grid/lighting-colors-table.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/enums/terrain/terrain-tag.h"
+#include "util/enum-converter.h"
 #include "util/flag-group.h"
 #include <algorithm>
 #include <unordered_map>
@@ -20,6 +21,8 @@ const std::unordered_map<TerrainCharacteristics, EnumClassFlagGroup<TerrainActio
     { TerrainCharacteristics::STONE, { TerrainAction::DESTROY, TerrainAction::CRASH_GLASS } },
     { TerrainCharacteristics::CAN_DISINTEGRATE, { TerrainAction::DESTROY, TerrainAction::NO_DROP, TerrainAction::CRASH_GLASS } },
 };
+
+constexpr auto CONVERSION_STREAM_BEGIN = 5;
 }
 
 TerrainType::TerrainType()
@@ -68,6 +71,42 @@ bool TerrainType::is_closed_door() const
 bool TerrainType::has(TerrainCharacteristics tc) const
 {
     return this->flags.has(tc);
+}
+
+bool TerrainType::set_specific_type(uint8_t specific_type)
+{
+    if (this->flags.has(TerrainCharacteristics::TRAP)) {
+        this->trap_type = i2enum<TrapType>(specific_type);
+        return true;
+    }
+
+    if (this->flags.has(TerrainCharacteristics::PATTERN)) {
+        this->pattern_tile_type = i2enum<PatternTileType>(specific_type);
+        return true;
+    }
+
+    if (this->flags.has(TerrainCharacteristics::STORE)) {
+        this->store_sale_type = i2enum<StoreSaleType>(specific_type);
+        return true;
+    }
+
+    if (this->flags.has(TerrainCharacteristics::BLDG)) {
+        this->building_type = i2enum<BuildingType>(specific_type);
+        return true;
+    }
+
+    if (this->flags.has(TerrainCharacteristics::CONVERT)) {
+        if (specific_type >= CONVERSION_STREAM_BEGIN) {
+            this->conversion_type = TerrainConversionType::STREAM;
+            this->stream_index = specific_type - CONVERSION_STREAM_BEGIN;
+            return true;
+        }
+
+        this->conversion_type = i2enum<TerrainConversionType>(specific_type);
+        return true;
+    }
+
+    return false;
 }
 
 /*!
