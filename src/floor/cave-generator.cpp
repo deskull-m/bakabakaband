@@ -439,7 +439,7 @@ static void decide_dungeon_data_allocation(CreatureEntity &creature, DungeonData
         dd_ptr->alloc_object_num += randint1(50);
     }
 
-    dd_ptr->alloc_monster_num = dungeon.min_m_alloc_level * dungeon.monster_rate / 100;
+    dd_ptr->alloc_monster_num = dungeon.min_monster_count_on_floor * dungeon.monster_rate / 100;
     if (floor.height >= MAX_HGT && floor.width >= MAX_WID) {
         return;
     }

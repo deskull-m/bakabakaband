@@ -229,8 +229,8 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
         info_set_value(dungeon->maxdepth, tokens[2]);
         info_set_value(dungeon->min_plev, tokens[3]);
         info_set_value(dungeon->mode, tokens[4]);
-        info_set_value(dungeon->min_m_alloc_level, tokens[5]);
-        info_set_value(dungeon->max_m_alloc_chance, tokens[6]);
+        info_set_value(dungeon->min_monster_count_on_floor, tokens[5]);
+        info_set_value(dungeon->additional_monster_spawn_chance, tokens[6]);
         info_set_value(dungeon->obj_good, tokens[7]);
         info_set_value(dungeon->obj_great, tokens[8]);
         info_set_value(dungeon->pit, tokens[9], 16);
@@ -564,9 +564,37 @@ static errr set_dungeon_generation(DungeonDefinition &dungeon, const nlohmann::j
         dungeon.mindepth = static_cast<DEPTH>(gen_obj.value("min_depth", 0));
         dungeon.maxdepth = static_cast<DEPTH>(gen_obj.value("max_depth", 0));
         dungeon.min_plev = static_cast<PLAYER_LEVEL>(gen_obj.value("min_player_level", 0));
-        dungeon.mode = static_cast<DungeonMode>(gen_obj.value("flags_mode", 0));
-        dungeon.min_m_alloc_level = gen_obj.value("min_alloc", 0);
-        dungeon.max_m_alloc_chance = gen_obj.value("max_alloc_chance", 0);
+
+        // flags_mode: 文字列 ("NONE" / "AND" / "NAND" / "OR" / "NOR")。
+        // 後方互換: 整数 0-4 を受けたら従来通り cast (旧定義データのフォールバック)
+        if (gen_obj.contains("flags_mode")) {
+            const auto &mode_node = gen_obj["flags_mode"];
+            if (mode_node.is_string()) {
+                const auto mode_str = mode_node.get<std::string>();
+                const auto it = dungeon_modes.find(mode_str);
+                if (it == dungeon_modes.end()) {
+                    return PARSE_ERROR_INVALID_FLAG;
+                }
+                dungeon.mode = it->second;
+            } else {
+                dungeon.mode = static_cast<DungeonMode>(mode_node.get<int>());
+            }
+        }
+
+        dungeon.min_monster_count_on_floor = gen_obj.value("min_count", gen_obj.value("min_alloc", 0));
+
+        // extra_spawn_probability: 大きいほど追加生成されやすい (1 〜 1,000,000)
+        // 内部値 additional_monster_spawn_chance は 1,000,000 / extra_spawn_probability で
+        // 従来の「1/X 形式」と等価に保つ。
+        if (gen_obj.contains("extra_spawn_probability")) {
+            constexpr auto conversion_rate = 1000000;
+            const auto extra_spawn_probability = std::max(1, gen_obj["extra_spawn_probability"].get<int>());
+            dungeon.additional_monster_spawn_chance = conversion_rate / extra_spawn_probability;
+        } else if (gen_obj.contains("max_alloc_chance")) {
+            // 後方互換: 旧定義の値をそのまま使う
+            dungeon.additional_monster_spawn_chance = gen_obj.value("max_alloc_chance", 0);
+        }
+
         dungeon.obj_good = gen_obj.value("obj_good", 0);
         dungeon.obj_great = gen_obj.value("obj_great", 0);
         const auto pit = gen_obj.value("pit", std::string("0x0000"));
@@ -715,6 +743,7 @@ static errr set_dungeon_monster_flags(DungeonDefinition &dungeon, const nlohmann
             continue;
         }
 
+        // 後方互換: R_CHAR_xxx 記法 (新フォーマットは `symbols` 配列を使う)
         const auto &m_tokens = str_split(f, '_');
         if (m_tokens.size() >= 3 && m_tokens[0] == "R" && m_tokens[1] == "CHAR") {
             dungeon.r_chars.insert(dungeon.r_chars.end(), m_tokens[2].begin(), m_tokens[2].end());
@@ -730,6 +759,22 @@ static errr set_dungeon_monster_flags(DungeonDefinition &dungeon, const nlohmann
         if (!grab_one_basic_monster_flag(dungeon, f)) {
             return PARSE_ERROR_INVALID_FLAG;
         }
+    }
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief symbols 配列を直接フィル (出現許可モンスターシンボル)
+ *        従来の `R_CHAR_xxx` 記法に代わる、可読性の高いシンボル配列形式。
+ */
+static errr set_dungeon_monster_symbols(DungeonDefinition &dungeon, const nlohmann::json &symbols_array)
+{
+    for (const auto &symbol_node : symbols_array) {
+        const auto s = symbol_node.get<std::string>();
+        if (s.empty()) {
+            continue;
+        }
+        dungeon.r_chars.insert(dungeon.r_chars.end(), s.begin(), s.end());
     }
     return PARSE_ERROR_NONE;
 }
@@ -903,6 +948,13 @@ errr parse_dungeons_info_json(nlohmann::json &dungeon_data, angband_header *head
     // monster_flags
     if (dungeon_data.contains("monster_flags")) {
         if (auto err = set_dungeon_monster_flags(dungeon, dungeon_data["monster_flags"]); err != PARSE_ERROR_NONE) {
+            return err;
+        }
+    }
+
+    // monster_symbols (出現許可シンボル一文字配列)
+    if (dungeon_data.contains("monster_symbols")) {
+        if (auto err = set_dungeon_monster_symbols(dungeon, dungeon_data["monster_symbols"]); err != PARSE_ERROR_NONE) {
             return err;
         }
     }
