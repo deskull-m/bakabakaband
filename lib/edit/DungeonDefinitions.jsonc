@@ -232,8 +232,7 @@
           "rate": 100,
         },
       ],
-      "final_guardian": 237,
-      "final_object": 426,
+      "final_floor": { "guardian": 237, "object": 426 },
       "normal_monster_rate": 0,
     },
     {
@@ -303,8 +302,7 @@
       "flags": ["CAVE", "WATER_RIVER", "CAVERN", "LAKE_TREE", "DESTROY", "LARGEST"],
       "monster_flags": ["ORC", "ANIMAL"],
       "monster_symbols": ["k", "o", "O"],
-      "final_guardian": 373,
-      "final_object": 148,
+      "final_floor": { "guardian": 373, "object": 148 },
       "normal_monster_rate": 50,
     },
     {
@@ -372,8 +370,7 @@
       },
       "flags": ["MAZE", "SMALLEST", "FORGET", "VANISH_STAIRS"],
       "normal_monster_rate": 100,
-      "final_guardian": 1034,
-      "final_object": 354,
+      "final_floor": { "guardian": 1034, "object": 354 },
     },
     {
       "id": 5,
@@ -533,8 +530,7 @@
       ],
       "monster_flags": ["UNDEAD", "NONLIVING"],
       "normal_monster_rate": 6,
-      "final_guardian": 804,
-      "final_artifact": 89,
+      "final_floor": { "guardian": 804, "artifact": 89 },
     },
     {
       "id": 7,
@@ -603,8 +599,7 @@
       "flags": ["NO_DOORS", "WATER_RIVER", "NO_TUNNEL"],
       "monster_flags": ["ANIMAL", "ELF", "WILD_WOOD", "GOOD"],
       "normal_monster_rate": 23,
-      "final_guardian": 1946,
-      "final_object": 409,
+      "final_floor": { "guardian": 1946, "object": 409 },
     },
     {
       "id": 8,
@@ -673,8 +668,7 @@
       "flags": ["CAVE", "CAVERN", "LAKE_LAVA", "LAVA_RIVER", "DESTROY"],
       "monster_flags": ["IM_FIRE", "CAN_FLY", "WILD_VOLCANO"],
       "normal_monster_rate": 0,
-      "final_guardian": 972,
-      "final_object": 629,
+      "final_floor": { "guardian": 972, "object": 629 },
     },
     {
       "id": 9,
@@ -879,8 +873,7 @@
       "flags": ["LAKE_WATER", "WATER_RIVER", "DESTROY"],
       "monster_flags": ["CAN_SWIM", "CAN_FLY", "AQUATIC", "WILD_OCEAN"],
       "normal_monster_rate": 0,
-      "final_guardian": 854,
-      "final_artifact": 107,
+      "final_floor": { "guardian": 854, "artifact": 107 },
       "alliance": "NUMENOR",
     },
     {
@@ -964,7 +957,7 @@
         },
       ],
       "normal_monster_rate": 25,
-      "final_guardian": 882,
+      "final_floor": { "guardian": 882 },
       "trap_rate": 10000,
     },
     {
@@ -1042,8 +1035,7 @@
       ],
       "monster_flags": ["DEMON", "ELDRITCH_HORROR"],
       "normal_monster_rate": 25,
-      "final_guardian": 857,
-      "final_artifact": 129,
+      "final_floor": { "guardian": 857, "artifact": 129 },
     },
     {
       "id": 14,
@@ -1112,8 +1104,7 @@
       "flags": ["WATER_RIVER", "CAVE", "CAVERN", "NO_DOORS", "LARGEST"],
       "monster_flags": ["TROLL", "GIANT", "CAN_FLY", "ANIMAL", "WILD_MOUNTAIN"],
       "monster_symbols": ["O", "Y", "H"],
-      "final_guardian": 468,
-      "final_object": 239,
+      "final_floor": { "guardian": 468, "object": 239 },
       "normal_monster_rate": 25,
     },
     {
@@ -1430,8 +1421,7 @@
       ],
       "monster_flags": ["CHAMELEON"],
       "normal_monster_rate": 0,
-      "final_guardian": 1041,
-      "final_object": 617,
+      "final_floor": { "guardian": 1041, "object": 617 },
     },
     {
       "id": 19,
@@ -1515,7 +1505,7 @@
         "DARKNESS",
       ],
       "normal_monster_rate": 100,
-      "final_guardian": 803,
+      "final_floor": { "guardian": 803 },
     },
     {
       "id": 20,
@@ -1680,7 +1670,7 @@
         },
       ],
       "normal_monster_rate": 2,
-      "final_guardian": 1309,
+      "final_floor": { "guardian": 1309 },
     },
     {
       "id": 22,
@@ -1750,7 +1740,7 @@
       "monster_flags": ["FEMALE", "NASTY", "HOMO_SEXUAL"],
       "monster_symbols": ["p", "h", "H", "g"],
       "normal_monster_rate": 2,
-      "final_guardian": 1308,
+      "final_floor": { "guardian": 1308 },
     },
     {
       "id": 23,
@@ -2092,7 +2082,7 @@
         },
       ],
       "normal_monster_rate": 2,
-      "final_guardian": 1704,
+      "final_floor": { "guardian": 1704 },
     },
     {
       "id": 27,
@@ -2297,7 +2287,7 @@
       "flags": ["ARENA", "NO_CAVE", "CURTAIN", "GLASS_ROOM", "ALWAYS_LIGHT"],
       "monster_flags": ["HUMAN"],
       "normal_monster_rate": 25,
-      "final_guardian": 1607,
+      "final_floor": { "guardian": 1607 },
       "alliance": "GOLAN",
     },
     {
@@ -2367,7 +2357,7 @@
       "flags": ["MAZE", "SMALLEST"],
       "monster_flags": [],
       "monster_symbols": ["p", "h", "H", "g"],
-      "final_guardian": 935,
+      "final_floor": { "guardian": 935 },
     },
     {
       "id": 31,
@@ -2444,7 +2434,7 @@
         "ACID_RIVER",
       ],
       "normal_monster_rate": 25,
-      "final_guardian": 1480,
+      "final_floor": { "guardian": 1480 },
       "monster_rate": 12,
     },
     {
