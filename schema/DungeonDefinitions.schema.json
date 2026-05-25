@@ -124,9 +124,11 @@
                         "type": "integer",
                         "description": "F:TRAP_RATE_X 相当"
                     },
-                    "monster_div": {
+                    "normal_monster_rate": {
                         "type": "integer",
-                        "description": "F:MONSTER_DIV_X 相当 (制限モンスター比率)"
+                        "minimum": 0,
+                        "maximum": 100,
+                        "description": "通常モンスター生成率 (%) — ダンジョン制限モンスター以外の通常モンスターが出る確率"
                     },
                     "alliance": {
                         "type": "string",

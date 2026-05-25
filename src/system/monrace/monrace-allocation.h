@@ -25,7 +25,7 @@ public:
     bool is_collapse_exceeded() const;
     bool is_same_alliance(AllianceType alliance_id) const;
 
-    void update_prob2(int division);
+    void update_prob2(int normal_monster_rate);
 
 private:
     const MonraceDefinition &get_monrace() const;

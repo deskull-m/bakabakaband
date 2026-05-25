@@ -131,7 +131,7 @@ public:
     FixedArtifactId final_artifact{}; /* The artifact you'll find at the bottom */
     MonraceId final_guardian{}; /* The artifact's guardian. If an artifact is specified, then it's NEEDED */
 
-    PROB special_div{}; /* % of monsters affected by the flags/races allowed, to add some variety */
+    PROB normal_monster_rate{}; /* % of normal monsters not affected by dungeon monster flags/races, to add some variety */
     int tunnel_percent{};
     int obj_great{};
     int obj_good{};

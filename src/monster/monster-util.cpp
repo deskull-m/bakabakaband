@@ -109,7 +109,7 @@ static bool restrict_monster_to_dungeon(const DungeonDefinition &dungeon, int fl
         }
     }
 
-    if (dungeon.special_div >= 64) {
+    if (dungeon.normal_monster_rate >= 100) {
         return true;
     }
 
@@ -309,7 +309,7 @@ void get_mon_num_prep_enum(CreatureEntity &creature, MonraceHook hook1, MonraceH
         const auto in_random_quest = floor.is_in_quest() && !QuestType::is_fixed(floor.quest_number);
         const auto cond = !system.is_phase_out() && floor.is_underground() && !in_random_quest;
         if (cond && !restrict_monster_to_dungeon(dungeon, dungeon_level, monrace_id)) {
-            entry.update_prob2(dungeon.special_div);
+            entry.update_prob2(dungeon.normal_monster_rate);
         }
 
         mfdi.update(entry.prob2, entry.level);
@@ -430,7 +430,7 @@ void get_mon_num_prep_escort(CreatureEntity &creature, MonraceId escorted_monrac
         const auto in_random_quest = floor.is_in_quest() && !QuestType::is_fixed(floor.quest_number);
         const auto cond = !system.is_phase_out() && floor.is_underground() && !in_random_quest;
         if (cond && !restrict_monster_to_dungeon(dungeon, dungeon_level, monrace_id)) {
-            entry.update_prob2(dungeon.special_div);
+            entry.update_prob2(dungeon.normal_monster_rate);
         }
 
         mfdi.update(entry.prob2, entry.level);
@@ -535,7 +535,7 @@ void get_mon_num_prep_summon(CreatureEntity &creature, const SummonCondition &co
         const auto in_random_quest = floor.is_in_quest() && !QuestType::is_fixed(floor.quest_number);
         const auto cond = !system.is_phase_out() && floor.is_underground() && !in_random_quest;
         if (cond && !restrict_monster_to_dungeon(dungeon, dungeon_level, monrace_id, true)) {
-            entry.update_prob2(dungeon.special_div);
+            entry.update_prob2(dungeon.normal_monster_rate);
         }
 
         mfdi.update(entry.prob2, entry.level);
@@ -671,7 +671,7 @@ void get_mon_num_prep_chameleon(CreatureEntity &creature, const ChameleonTransfo
         const auto in_random_quest = floor.is_in_quest() && !QuestType::is_fixed(floor.quest_number);
         const auto cond = !system.is_phase_out() && floor.is_underground() && !in_random_quest;
         if (cond && !restrict_monster_to_dungeon(dungeon, dungeon_level, monrace_id, false, true)) {
-            entry.update_prob2(dungeon.special_div);
+            entry.update_prob2(dungeon.normal_monster_rate);
         }
 
         mfdi.update(entry.prob2, entry.level);

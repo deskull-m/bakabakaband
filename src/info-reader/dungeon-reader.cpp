@@ -318,10 +318,6 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
                     info_set_value(dungeon->final_guardian, f_tokens[2]);
                     continue;
                 }
-                if (f_tokens[0] == "MONSTER" && f_tokens[1] == "DIV") {
-                    info_set_value(dungeon->special_div, f_tokens[2]);
-                    continue;
-                }
                 if (f_tokens[0] == "MONSTER" && f_tokens[1] == "RATE") {
                     info_set_value(dungeon->monster_rate, f_tokens[2]);
                     continue;
@@ -675,8 +671,8 @@ static errr set_dungeon_feature_flags(DungeonDefinition &dungeon, const nlohmann
     if (dungeon_data.contains("trap_rate")) {
         dungeon.trap_rate = dungeon_data["trap_rate"].get<int>();
     }
-    if (dungeon_data.contains("monster_div")) {
-        dungeon.special_div = static_cast<PROB>(dungeon_data["monster_div"].get<int>());
+    if (dungeon_data.contains("normal_monster_rate")) {
+        dungeon.normal_monster_rate = static_cast<PROB>(dungeon_data["normal_monster_rate"].get<int>());
     }
     if (dungeon_data.contains("final_guardian")) {
         dungeon.final_guardian = i2enum<MonraceId>(dungeon_data["final_guardian"].get<int>());
