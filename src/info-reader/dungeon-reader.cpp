@@ -240,8 +240,24 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
         info_set_value(dungeon->additional_monster_spawn_chance, tokens[6]);
         info_set_value(dungeon->obj_good, tokens[7]);
         info_set_value(dungeon->obj_great, tokens[8]);
-        info_set_value(dungeon->pit, tokens[9], 16);
-        info_set_value(dungeon->nest, tokens[10], 16);
+        // 旧 v1 (lines 配列) は 16 進数ビットマスクのまま。EnumClassFlagGroup に
+        // 各 bit を展開する後方互換変換。
+        try {
+            const auto pit_raw = std::stoul(tokens[9], nullptr, 16);
+            for (size_t i = 0; i < dungeon_pit_kinds.size(); ++i) {
+                if (pit_raw & (1UL << i)) {
+                    dungeon->pit.set(i2enum<PitKind>(static_cast<int>(i)));
+                }
+            }
+            const auto nest_raw = std::stoul(tokens[10], nullptr, 16);
+            for (size_t i = 0; i < dungeon_nest_kinds.size(); ++i) {
+                if (nest_raw & (1UL << i)) {
+                    dungeon->nest.set(i2enum<NestKind>(static_cast<int>(i)));
+                }
+            }
+        } catch (const std::exception &) {
+            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        }
         return PARSE_ERROR_NONE;
     }
 
@@ -604,10 +620,54 @@ static errr set_dungeon_generation(DungeonDefinition &dungeon, const nlohmann::j
 
         dungeon.obj_good = gen_obj.value("obj_good", 0);
         dungeon.obj_great = gen_obj.value("obj_great", 0);
-        const auto pit = gen_obj.value("pit", std::string("0x0000"));
-        const auto nest = gen_obj.value("nest", std::string("0x0000"));
-        dungeon.pit = static_cast<BIT_FLAGS16>(std::stoul(pit, nullptr, 16));
-        dungeon.nest = static_cast<BIT_FLAGS16>(std::stoul(nest, nullptr, 16));
+
+        // pit: 配列 (PitKind name 文字列の列挙) または旧 16 進数文字列 (後方互換)
+        if (gen_obj.contains("pit")) {
+            const auto &pit_node = gen_obj["pit"];
+            if (pit_node.is_array()) {
+                for (const auto &p : pit_node) {
+                    const auto name = p.get<std::string>();
+                    if (name.empty()) {
+                        continue;
+                    }
+                    if (!EnumClassFlagGroup<PitKind>::grab_one_flag(dungeon.pit, dungeon_pit_kinds, name)) {
+                        msg_format(_("未知のダンジョン pit 種別 '%s'。", "Unknown dungeon pit kind '%s'."), name.data());
+                        return PARSE_ERROR_INVALID_FLAG;
+                    }
+                }
+            } else if (pit_node.is_string()) {
+                // 旧 0xXXXX 形式 (後方互換: ビットマスクから対応 enum をセット)
+                const auto raw = std::stoul(pit_node.get<std::string>(), nullptr, 16);
+                for (size_t i = 0; i < dungeon_pit_kinds.size(); ++i) {
+                    if (raw & (1UL << i)) {
+                        dungeon.pit.set(i2enum<PitKind>(static_cast<int>(i)));
+                    }
+                }
+            }
+        }
+        // nest: 同様
+        if (gen_obj.contains("nest")) {
+            const auto &nest_node = gen_obj["nest"];
+            if (nest_node.is_array()) {
+                for (const auto &n : nest_node) {
+                    const auto name = n.get<std::string>();
+                    if (name.empty()) {
+                        continue;
+                    }
+                    if (!EnumClassFlagGroup<NestKind>::grab_one_flag(dungeon.nest, dungeon_nest_kinds, name)) {
+                        msg_format(_("未知のダンジョン nest 種別 '%s'。", "Unknown dungeon nest kind '%s'."), name.data());
+                        return PARSE_ERROR_INVALID_FLAG;
+                    }
+                }
+            } else if (nest_node.is_string()) {
+                const auto raw = std::stoul(nest_node.get<std::string>(), nullptr, 16);
+                for (size_t i = 0; i < dungeon_nest_kinds.size(); ++i) {
+                    if (raw & (1UL << i)) {
+                        dungeon.nest.set(i2enum<NestKind>(static_cast<int>(i)));
+                    }
+                }
+            }
+        }
     } catch (const std::exception &) {
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
     }

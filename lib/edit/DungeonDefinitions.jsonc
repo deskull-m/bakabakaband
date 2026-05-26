@@ -25,8 +25,8 @@
         "extra_spawn_probability": 6250,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x0000",
-        "nest": "0x0000",
+        "pit": [],
+        "nest": [],
       },
       "floor": {
         "tiles": [
@@ -91,8 +91,30 @@
         "extra_spawn_probability": 6250,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0xffff",
-        "nest": "0xffff",
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DRAGON",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "KENNEL",
+          "ANIMAL",
+          "CHAPEL",
+          "UNDEAD",
+        ],
       },
       "floor": {
         "tiles": [
@@ -185,8 +207,8 @@
         "extra_spawn_probability": 4166,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x0000",
-        "nest": "0x0000",
+        "pit": [],
+        "nest": [],
       },
       "floor": {
         "tiles": [
@@ -259,8 +281,8 @@
         "extra_spawn_probability": 5000,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x0031",
-        "nest": "0x006d",
+        "pit": ["ORC", "SYMBOL_GOOD", "SYMBOL_EVIL"],
+        "nest": ["CLONE", "SYMBOL_GOOD", "SYMBOL_EVIL", "HORROR", "KENNEL"],
       },
       "floor": {
         "tiles": [
@@ -328,8 +350,8 @@
         "extra_spawn_probability": 6250,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x0000",
-        "nest": "0x0000",
+        "pit": [],
+        "nest": [],
       },
       "floor": {
         "tiles": [
@@ -396,8 +418,8 @@
         "extra_spawn_probability": 7142,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x00a6",
-        "nest": "0x00c1",
+        "pit": ["TROLL", "GIANT", "SYMBOL_EVIL", "DRAGON"],
+        "nest": ["CLONE", "KENNEL", "ANIMAL"],
       },
       "floor": {
         "tiles": [
@@ -478,8 +500,8 @@
         "extra_spawn_probability": 6250,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x0128",
-        "nest": "0x027b",
+        "pit": ["HORROR", "SYMBOL_EVIL", "DEMON"],
+        "nest": ["CLONE", "JELLY", "SYMBOL_EVIL", "MIMIC", "HORROR", "KENNEL", "UNDEAD"],
       },
       "floor": {
         "tiles": [
@@ -556,8 +578,8 @@
         "extra_spawn_probability": 6250,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x0001",
-        "nest": "0x0052",
+        "pit": ["ORC"],
+        "nest": ["JELLY", "MIMIC", "KENNEL"],
       },
       "floor": {
         "tiles": [
@@ -625,8 +647,17 @@
         "extra_spawn_probability": 6250,
         "obj_good": 80,
         "obj_great": 30,
-        "pit": "0x01bf",
-        "nest": "0x02fd",
+        "pit": ["ORC", "TROLL", "GIANT", "HORROR", "SYMBOL_GOOD", "SYMBOL_EVIL", "DRAGON", "DEMON"],
+        "nest": [
+          "CLONE",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "KENNEL",
+          "ANIMAL",
+          "UNDEAD",
+        ],
       },
       "floor": {
         "tiles": [
@@ -694,8 +725,8 @@
         "extra_spawn_probability": 6250,
         "obj_good": 90,
         "obj_great": 77,
-        "pit": "0x0188",
-        "nest": "0x0280",
+        "pit": ["HORROR", "DRAGON", "DEMON"],
+        "nest": ["ANIMAL", "UNDEAD"],
       },
       "floor": {
         "tiles": [
@@ -762,8 +793,8 @@
         "extra_spawn_probability": 6250,
         "obj_good": 85,
         "obj_great": 35,
-        "pit": "0x0040",
-        "nest": "0x0104",
+        "pit": ["CHAPEL"],
+        "nest": ["SYMBOL_GOOD", "CHAPEL"],
       },
       "floor": {
         "tiles": [
@@ -830,8 +861,8 @@
         "extra_spawn_probability": 6250,
         "obj_good": 80,
         "obj_great": 30,
-        "pit": "0x0000",
-        "nest": "0x0000",
+        "pit": [],
+        "nest": [],
       },
       "floor": {
         "tiles": [
@@ -900,8 +931,27 @@
         "extra_spawn_probability": 6250,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x037f",
-        "nest": "0x033f",
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "CHAPEL",
+          "UNDEAD",
+        ],
       },
       "floor": {
         "tiles": [
@@ -984,8 +1034,8 @@
         "extra_spawn_probability": 6250,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x01a8",
-        "nest": "0x023f",
+        "pit": ["HORROR", "SYMBOL_EVIL", "DRAGON", "DEMON"],
+        "nest": ["CLONE", "JELLY", "SYMBOL_GOOD", "SYMBOL_EVIL", "MIMIC", "HORROR", "UNDEAD"],
       },
       "floor": {
         "tiles": [
@@ -1061,8 +1111,8 @@
         "extra_spawn_probability": 6250,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x00b7",
-        "nest": "0x00df",
+        "pit": ["ORC", "TROLL", "GIANT", "SYMBOL_GOOD", "SYMBOL_EVIL", "DRAGON"],
+        "nest": ["CLONE", "JELLY", "SYMBOL_GOOD", "SYMBOL_EVIL", "MIMIC", "KENNEL", "ANIMAL"],
       },
       "floor": {
         "tiles": [
@@ -1131,8 +1181,8 @@
         "extra_spawn_probability": 12500,
         "obj_good": 80,
         "obj_great": 25,
-        "pit": "0x0000",
-        "nest": "0x0010",
+        "pit": [],
+        "nest": ["MIMIC"],
       },
       "floor": {
         "tiles": [
@@ -1210,8 +1260,18 @@
         "extra_spawn_probability": 6250,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x01ff",
-        "nest": "0x01ed",
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DRAGON",
+          "DEMON",
+        ],
+        "nest": ["CLONE", "SYMBOL_GOOD", "SYMBOL_EVIL", "HORROR", "KENNEL", "ANIMAL", "CHAPEL"],
       },
       "floor": {
         "tiles": [
@@ -1288,8 +1348,18 @@
         "extra_spawn_probability": 6250,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x01ff",
-        "nest": "0x01ed",
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DRAGON",
+          "DEMON",
+        ],
+        "nest": ["CLONE", "SYMBOL_GOOD", "SYMBOL_EVIL", "HORROR", "KENNEL", "ANIMAL", "CHAPEL"],
       },
       "floor": {
         "tiles": [
@@ -1367,8 +1437,8 @@
         "extra_spawn_probability": 6250,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x0000",
-        "nest": "0x0000",
+        "pit": [],
+        "nest": [],
       },
       "floor": {
         "tiles": [
@@ -1447,8 +1517,30 @@
         "extra_spawn_probability": 6250,
         "obj_good": 80,
         "obj_great": 30,
-        "pit": "0xffff",
-        "nest": "0xffff",
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DRAGON",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "KENNEL",
+          "ANIMAL",
+          "CHAPEL",
+          "UNDEAD",
+        ],
       },
       "floor": {
         "tiles": [
@@ -1531,8 +1623,8 @@
         "extra_spawn_probability": 6250,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x01f8",
-        "nest": "0x033d",
+        "pit": ["HORROR", "SYMBOL_GOOD", "SYMBOL_EVIL", "CHAPEL", "DRAGON", "DEMON"],
+        "nest": ["CLONE", "SYMBOL_GOOD", "SYMBOL_EVIL", "MIMIC", "HORROR", "CHAPEL", "UNDEAD"],
       },
       "floor": {
         "tiles": [
@@ -1610,8 +1702,27 @@
         "extra_spawn_probability": 6250,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x037f",
-        "nest": "0x033f",
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "CHAPEL",
+          "UNDEAD",
+        ],
       },
       "floor": {
         "tiles": [
@@ -1696,8 +1807,27 @@
         "extra_spawn_probability": 6250,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x037f",
-        "nest": "0x033f",
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "CHAPEL",
+          "UNDEAD",
+        ],
       },
       "floor": {
         "tiles": [
@@ -1766,8 +1896,30 @@
         "extra_spawn_probability": 6250,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0xffff",
-        "nest": "0xffff",
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DRAGON",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "KENNEL",
+          "ANIMAL",
+          "CHAPEL",
+          "UNDEAD",
+        ],
       },
       "floor": {
         "tiles": [
@@ -1833,8 +1985,27 @@
         "extra_spawn_probability": 6250,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x037f",
-        "nest": "0x033f",
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "CHAPEL",
+          "UNDEAD",
+        ],
       },
       "floor": {
         "tiles": [
@@ -1932,8 +2103,8 @@
         "extra_spawn_probability": 6250,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x0000",
-        "nest": "0x0000",
+        "pit": [],
+        "nest": [],
       },
       "floor": {
         "tiles": [
@@ -2014,8 +2185,30 @@
         "extra_spawn_probability": 6250,
         "obj_good": 80,
         "obj_great": 30,
-        "pit": "0xffff",
-        "nest": "0xffff",
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DRAGON",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "KENNEL",
+          "ANIMAL",
+          "CHAPEL",
+          "UNDEAD",
+        ],
       },
       "floor": {
         "tiles": [
@@ -2108,8 +2301,27 @@
         "extra_spawn_probability": 6250,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x037f",
-        "nest": "0x033f",
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "CHAPEL",
+          "UNDEAD",
+        ],
       },
       "floor": {
         "tiles": [
@@ -2176,8 +2388,27 @@
         "extra_spawn_probability": 6250,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x037f",
-        "nest": "0x033f",
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "CHAPEL",
+          "UNDEAD",
+        ],
       },
       "floor": {
         "tiles": [
@@ -2244,8 +2475,27 @@
         "extra_spawn_probability": 6250,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x037f",
-        "nest": "0x033f",
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "CHAPEL",
+          "UNDEAD",
+        ],
       },
       "floor": {
         "tiles": [
@@ -2314,8 +2564,27 @@
         "extra_spawn_probability": 6250,
         "obj_good": 75,
         "obj_great": 20,
-        "pit": "0x037f",
-        "nest": "0x033f",
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "CHAPEL",
+          "UNDEAD",
+        ],
       },
       "floor": {
         "tiles": [
@@ -2383,8 +2652,8 @@
         "extra_spawn_probability": 12500,
         "obj_good": 80,
         "obj_great": 25,
-        "pit": "0x0000",
-        "nest": "0x0010",
+        "pit": [],
+        "nest": ["MIMIC"],
       },
       "floor": {
         "tiles": [
@@ -2461,8 +2730,8 @@
         "extra_spawn_probability": 12500,
         "obj_good": 80,
         "obj_great": 25,
-        "pit": "0x0000",
-        "nest": "0x0000",
+        "pit": [],
+        "nest": [],
       },
       "floor": {
         "tiles": [
@@ -2530,8 +2799,8 @@
         "extra_spawn_probability": 6250,
         "obj_good": 90,
         "obj_great": 77,
-        "pit": "0x0188",
-        "nest": "0x0280",
+        "pit": ["HORROR", "DRAGON", "DEMON"],
+        "nest": ["ANIMAL", "UNDEAD"],
       },
       "floor": {
         "tiles": [

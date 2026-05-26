@@ -62,8 +62,16 @@
                             "extra_spawn_probability": { "type": "integer", "minimum": 1, "maximum": 1000000, "description": "モンスター追加生成率 (X / 1,000,000)。大きいほど追加生成されやすい" },
                             "obj_good": { "type": "integer" },
                             "obj_great": { "type": "integer" },
-                            "pit": { "type": "string", "pattern": "^0x[0-9a-fA-F]+$" },
-                            "nest": { "type": "string", "pattern": "^0x[0-9a-fA-F]+$" }
+                            "pit": {
+                                "type": "array",
+                                "description": "pit 種別フラグ名の配列 (ORC / TROLL / GIANT / HORROR / SYMBOL_GOOD / SYMBOL_EVIL / CHAPEL / DRAGON / DEMON / DARK_ELF)",
+                                "items": { "type": "string", "enum": ["ORC", "TROLL", "GIANT", "HORROR", "SYMBOL_GOOD", "SYMBOL_EVIL", "CHAPEL", "DRAGON", "DEMON", "DARK_ELF"] }
+                            },
+                            "nest": {
+                                "type": "array",
+                                "description": "nest 種別フラグ名の配列 (CLONE / JELLY / SYMBOL_GOOD / SYMBOL_EVIL / MIMIC / HORROR / KENNEL / ANIMAL / CHAPEL / UNDEAD)",
+                                "items": { "type": "string", "enum": ["CLONE", "JELLY", "SYMBOL_GOOD", "SYMBOL_EVIL", "MIMIC", "HORROR", "KENNEL", "ANIMAL", "CHAPEL", "UNDEAD"] }
+                            }
                         }
                     },
                     "floor": {
