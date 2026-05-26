@@ -307,8 +307,11 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
             const auto tags = std::span(tokens).subspan(terrain_probability_num * 2 + 1, 4);
             dungeon->outer_wall = terrains.get_terrain_id(tags[0]);
             dungeon->inner_wall = terrains.get_terrain_id(tags[1]);
-            dungeon->stream1 = terrains.get_terrain_id(tags[2]);
-            dungeon->stream2 = terrains.get_terrain_id(tags[3]);
+            // 旧 v1 A: 行は stream1 (magma×6@30) / stream2 (quartz×4@15) のハードコード値を
+            // streams ベクタ化する。順序は旧 cave-generator と同じ stream2 → stream1。
+            dungeon->streams.clear();
+            dungeon->streams.push_back({ terrains.get_terrain_id(tags[3]), 4, 15, 0 });
+            dungeon->streams.push_back({ terrains.get_terrain_id(tags[2]), 6, 30, 1 });
             return PARSE_ERROR_NONE;
         } catch (const std::exception &) {
             return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
@@ -735,10 +738,52 @@ static errr set_dungeon_wall(DungeonDefinition &dungeon, const nlohmann::json &w
     try {
         dungeon.outer_wall = terrains.get_terrain_id(wall_obj.value("outer", std::string("GRANITE")));
         dungeon.inner_wall = terrains.get_terrain_id(wall_obj.value("inner", std::string("GRANITE")));
-        dungeon.stream1 = terrains.get_terrain_id(wall_obj.value("stream1", std::string("MAGMA_VEIN")));
-        dungeon.stream2 = terrains.get_terrain_id(wall_obj.value("stream2", std::string("QUARTZ_VEIN")));
     } catch (const std::exception &) {
         return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
+    }
+
+    dungeon.streams.clear();
+    if (wall_obj.contains("streams") && wall_obj["streams"].is_array()) {
+        // 新形式: streams: [{ type, count, chance, priority }, ...]
+        for (const auto &s_obj : wall_obj["streams"]) {
+            if (!s_obj.is_object() || !s_obj.contains("type")) {
+                return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+            }
+            DungeonStreamDefinition stream;
+            try {
+                stream.terrain_id = terrains.get_terrain_id(s_obj["type"].get<std::string>());
+            } catch (const std::exception &) {
+                return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
+            }
+            stream.count = s_obj.value("count", 0);
+            stream.chance = s_obj.value("chance", 0);
+            stream.priority = s_obj.value("priority", 0);
+            if (stream.count <= 0 || stream.chance <= 0) {
+                return PARSE_ERROR_INVALID_FLAG;
+            }
+            dungeon.streams.push_back(stream);
+        }
+        dungeon.sort_streams_by_priority();
+    } else {
+        // 後方互換: stream1/stream2 単一指定。旧 cave-generator のハードコード値
+        // (stream1: magma×6@30, stream2: quartz×4@15) で構造体化する。
+        // priority は stream2 を先に処理する旧挙動と一致させるため 0/1 を割当。
+        if (wall_obj.contains("stream2")) {
+            try {
+                const auto id = terrains.get_terrain_id(wall_obj["stream2"].get<std::string>());
+                dungeon.streams.push_back({ id, 4, 15, 0 });
+            } catch (const std::exception &) {
+                return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
+            }
+        }
+        if (wall_obj.contains("stream1")) {
+            try {
+                const auto id = terrains.get_terrain_id(wall_obj["stream1"].get<std::string>());
+                dungeon.streams.push_back({ id, 6, 30, 1 });
+            } catch (const std::exception &) {
+                return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
+            }
+        }
     }
     return PARSE_ERROR_NONE;
 }

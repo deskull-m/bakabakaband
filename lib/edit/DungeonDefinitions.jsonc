@@ -62,8 +62,11 @@
         ],
         "outer": "FLOOR",
         "inner": "FLOOR",
-        "stream1": "FLOOR",
-        "stream2": "FLOOR",
+        "streams": [
+          { "type": "FLOOR", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "FLOOR", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "normal_monster_rate": 0,
     },
@@ -150,8 +153,11 @@
         ],
         "outer": "GRANITE",
         "inner": "GRANITE",
-        "stream1": "MAGMA_VEIN",
-        "stream2": "QUARTZ_VEIN",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": [
         "CAVERN",
@@ -244,8 +250,11 @@
         ],
         "outer": "GRANITE",
         "inner": "GRANITE",
-        "stream1": "MAGMA_VEIN",
-        "stream2": "QUARTZ_VEIN",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": ["NO_VAULT", "BEGINNER"],
       "room_rates": [
@@ -318,8 +327,11 @@
         ],
         "outer": "GRANITE",
         "inner": "GRANITE",
-        "stream1": "MAGMA_VEIN",
-        "stream2": "QUARTZ_VEIN",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": ["CAVE", "WATER_RIVER", "CAVERN", "LAKE_TREE", "DESTROY", "LARGEST"],
       "monster_flags": ["ORC", "ANIMAL"],
@@ -387,8 +399,11 @@
         ],
         "outer": "GRANITE",
         "inner": "GRANITE",
-        "stream1": "MAGMA_VEIN",
-        "stream2": "QUARTZ_VEIN",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": ["MAZE", "SMALLEST", "FORGET", "VANISH_STAIRS"],
       "normal_monster_rate": 100,
@@ -455,8 +470,11 @@
         ],
         "outer": "GRANITE",
         "inner": "GRANITE",
-        "stream1": "MAGMA_VEIN",
-        "stream2": "DARK_PIT",
+        "streams": [
+          { "type": "DARK_PIT", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": [
         "LARGEST",
@@ -537,8 +555,11 @@
         ],
         "outer": "GRANITE",
         "inner": "GRANITE",
-        "stream1": "SHALLOW_WATER",
-        "stream2": "DEEP_WATER",
+        "streams": [
+          { "type": "DEEP_WATER", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "SHALLOW_WATER", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": [
         "WATER_RIVER",
@@ -615,8 +636,11 @@
         ],
         "outer": "BRAKE",
         "inner": "TREE",
-        "stream1": "GRANITE",
-        "stream2": "BRAKE",
+        "streams": [
+          { "type": "BRAKE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "GRANITE", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": ["NO_DOORS", "WATER_RIVER", "NO_TUNNEL"],
       "monster_flags": ["ANIMAL", "ELF", "WILD_WOOD", "GOOD"],
@@ -693,8 +717,11 @@
         ],
         "outer": "GRANITE",
         "inner": "GRANITE",
-        "stream1": "DARK_PIT",
-        "stream2": "QUARTZ_VEIN",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "DARK_PIT", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": ["CAVE", "CAVERN", "LAKE_LAVA", "LAVA_RIVER", "DESTROY"],
       "monster_flags": ["IM_FIRE", "CAN_FLY", "WILD_VOLCANO"],
@@ -762,8 +789,11 @@
         ],
         "outer": "GRANITE",
         "inner": "DEEP_LAVA",
-        "stream1": "NONE",
-        "stream2": "NONE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": ["CAVERN", "LAKE_LAVA", "LAVA_RIVER", "WINNER", "LARGEST"],
       "monster_flags": ["IM_FIRE", "EVIL"],
@@ -830,8 +860,11 @@
         ],
         "outer": "PERMANENT",
         "inner": "GRANITE",
-        "stream1": "NONE",
-        "stream2": "NONE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": ["WATER_RIVER", "WINNER", "LARGEST", "GLASS_ROOM"],
       "monster_flags": ["GOOD"],
@@ -898,8 +931,11 @@
         ],
         "outer": "GRANITE",
         "inner": "DEEP_WATER",
-        "stream1": "NONE",
-        "stream2": "NONE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": ["LAKE_WATER", "WATER_RIVER", "DESTROY"],
       "monster_flags": ["CAN_SWIM", "CAN_FLY", "AQUATIC", "WILD_OCEAN"],
@@ -987,8 +1023,11 @@
         ],
         "outer": "GRANITE",
         "inner": "GRANITE",
-        "stream1": "NONE",
-        "stream2": "NONE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": ["ARENA", "NO_CAVE", "CURTAIN", "GLASS_ROOM", "ALWAY_ARENA"],
       "monster_flags": ["DEMON"],
@@ -1071,8 +1110,11 @@
         ],
         "outer": "GRANITE",
         "inner": "GRANITE",
-        "stream1": "SHALLOW_WATER",
-        "stream2": "DEEP_WATER",
+        "streams": [
+          { "type": "DEEP_WATER", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "SHALLOW_WATER", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": [
         "ARENA",
@@ -1148,8 +1190,11 @@
         ],
         "outer": "MOUNTAIN_WALL",
         "inner": "GRANITE",
-        "stream1": "NONE",
-        "stream2": "NONE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": ["WATER_RIVER", "CAVE", "CAVERN", "NO_DOORS", "LARGEST"],
       "monster_flags": ["TROLL", "GIANT", "CAN_FLY", "ANIMAL", "WILD_MOUNTAIN"],
@@ -1218,8 +1263,11 @@
         ],
         "outer": "GRANITE",
         "inner": "GRANITE",
-        "stream1": "MAGMA_VEIN",
-        "stream2": "QUARTZ_VEIN",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": [
         "WATER_RIVER",
@@ -1307,8 +1355,11 @@
         ],
         "outer": "GRANITE",
         "inner": "GRANITE",
-        "stream1": "MAGMA_VEIN",
-        "stream2": "QUARTZ_VEIN",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": [
         "CAVERN",
@@ -1395,8 +1446,11 @@
         ],
         "outer": "GRANITE",
         "inner": "GRANITE",
-        "stream1": "MAGMA_VEIN",
-        "stream2": "QUARTZ_VEIN",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": [
         "CAVERN",
@@ -1474,8 +1528,11 @@
         ],
         "outer": "GRANITE",
         "inner": "GRANITE",
-        "stream1": "MAGMA_VEIN",
-        "stream2": "QUARTZ_VEIN",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": [
         "CAVERN",
@@ -1576,8 +1633,11 @@
         ],
         "outer": "GRANITE",
         "inner": "GRANITE",
-        "stream1": "MAGMA_VEIN",
-        "stream2": "QUARTZ_VEIN",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": [
         "CAVERN",
@@ -1660,8 +1720,11 @@
         ],
         "outer": "GLASS_WALL",
         "inner": "GLASS_WALL",
-        "stream1": "NONE",
-        "stream2": "NONE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": ["ARENA", "NO_CAVE", "CURTAIN", "GLASS_DOOR", "GLASS_ROOM"],
       "monster_flags": [
@@ -1758,8 +1821,11 @@
         ],
         "outer": "GRANITE",
         "inner": "GRANITE",
-        "stream1": "NONE",
-        "stream2": "NONE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": ["ALWAY_ARENA", "NO_CAVE", "CURTAIN", "GLASS_ROOM"],
       "monster_flags": ["MALE", "NASTY", "HOMO_SEXUAL"],
@@ -1863,8 +1929,11 @@
         ],
         "outer": "GRANITE",
         "inner": "GRANITE",
-        "stream1": "NONE",
-        "stream2": "NONE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": ["ARENA", "NO_CAVE", "CURTAIN", "GLASS_ROOM"],
       "monster_flags": ["FEMALE", "NASTY", "HOMO_SEXUAL"],
@@ -1955,8 +2024,11 @@
         ],
         "outer": "VOID_ZONE",
         "inner": "VOID_ZONE",
-        "stream1": "VOID_ZONE",
-        "stream2": "VOID_ZONE",
+        "streams": [
+          { "type": "VOID_ZONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "VOID_ZONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": ["CAVERN", "DESTROY", "DIFFICULT_RECALL", "NO_ROOM", "VESTIGE"],
       "normal_monster_rate": 100,
@@ -2041,8 +2113,11 @@
         ],
         "outer": "GRANITE",
         "inner": "GRANITE",
-        "stream1": "NONE",
-        "stream2": "NONE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": ["ARENA", "NO_CAVE", "CURTAIN", "GLASS_ROOM"],
       "monster_flags": ["DEMON"],
@@ -2140,8 +2215,11 @@
         ],
         "outer": "VEGITABLE_FIELD",
         "inner": "VEGITABLE_FIELD",
-        "stream1": "VEGITABLE_FIELD",
-        "stream2": "VEGITABLE_FIELD",
+        "streams": [
+          { "type": "VEGITABLE_FIELD", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "VEGITABLE_FIELD", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": [
         "CAVERN",
@@ -2244,8 +2322,11 @@
         ],
         "outer": "ORGANIC_WALL",
         "inner": "ORGANIC_WALL",
-        "stream1": "ORGANIC_WALL",
-        "stream2": "ORGANIC_WALL",
+        "streams": [
+          { "type": "ORGANIC_WALL", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "ORGANIC_WALL", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": [
         "CAVERN",
@@ -2357,8 +2438,11 @@
         ],
         "outer": "DIRT",
         "inner": "DIRT",
-        "stream1": "NONE",
-        "stream2": "NONE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": ["NO_ROOM", "NO_DOORS", "WATER_RIVER", "ALWAY_MAX_SIZE", "ALWAYS_LIGHT"],
       "monster_flags": ["ANIMAL"],
@@ -2444,8 +2528,11 @@
         ],
         "outer": "SNOW_FIELD",
         "inner": "SNOW_FIELD",
-        "stream1": "NONE",
-        "stream2": "NONE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": ["NO_ROOM", "NO_DOORS", "WATER_RIVER", "ALWAY_MAX_SIZE", "ALWAYS_LIGHT"],
       "monster_flags": ["ANIMAL"],
@@ -2531,8 +2618,11 @@
         ],
         "outer": "CONCRETE",
         "inner": "CONCRETE",
-        "stream1": "NONE",
-        "stream2": "NONE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": ["ARENA", "NO_CAVE", "CURTAIN", "GLASS_ROOM", "ALWAYS_LIGHT"],
       "monster_flags": ["HUMAN"],
@@ -2620,8 +2710,11 @@
         ],
         "outer": "GRANITE",
         "inner": "GRANITE",
-        "stream1": "NONE",
-        "stream2": "NONE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": ["MAZE", "SMALLEST"],
       "monster_flags": [],
@@ -2689,8 +2782,11 @@
         ],
         "outer": "GRANITE",
         "inner": "GRANITE",
-        "stream1": "MAGMA_VEIN",
-        "stream2": "QUARTZ_VEIN",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": [
         "WATER_RIVER",
@@ -2767,8 +2863,11 @@
         ],
         "outer": "GRANITE",
         "inner": "GRANITE",
-        "stream1": "MAGMA_VEIN",
-        "stream2": "QUARTZ_VEIN",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": ["CAVE", "CAVERN", "SMALLEST"],
       "monster_flags": ["PUYO"],
@@ -2836,8 +2935,11 @@
         ],
         "outer": "GRANITE",
         "inner": "DEEP_POISONOUS_PUDDLE",
-        "stream1": "NONE",
-        "stream2": "NONE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
       },
       "flags": ["CAVERN", "LAKE_POISONOUS", "POISONOUS_RIVER", "ALWAYS_RIVER"],
       "monster_flags": ["IM_POIS", "EVIL"],
