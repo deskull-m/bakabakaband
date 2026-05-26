@@ -1,5 +1,6 @@
 #include "info-reader/dungeon-info-tokens-table.h"
 #include "dungeon/dungeon-flag-types.h"
+#include "room/pit-nest-util.h"
 #include "system/dungeon/dungeon-definition.h"
 
 /*!
@@ -60,4 +61,38 @@ const std::unordered_map<std::string_view, DungeonMode> dungeon_modes = {
     { "NAND", DungeonMode::NAND },
     { "OR", DungeonMode::OR },
     { "NOR", DungeonMode::NOR },
+};
+
+/*!
+ * pit種別トークンの定義 /
+ * Dungeon pit kinds
+ */
+const std::unordered_map<std::string_view, PitKind> dungeon_pit_kinds = {
+    { "ORC", PitKind::ORC },
+    { "TROLL", PitKind::TROLL },
+    { "GIANT", PitKind::GIANT },
+    { "HORROR", PitKind::HORROR },
+    { "SYMBOL_GOOD", PitKind::SYMBOL_GOOD },
+    { "SYMBOL_EVIL", PitKind::SYMBOL_EVIL },
+    { "CHAPEL", PitKind::CHAPEL },
+    { "DRAGON", PitKind::DRAGON },
+    { "DEMON", PitKind::DEMON },
+    { "DARK_ELF", PitKind::DARK_ELF },
+};
+
+/*!
+ * nest種別トークンの定義 /
+ * Dungeon nest kinds
+ */
+const std::unordered_map<std::string_view, NestKind> dungeon_nest_kinds = {
+    { "CLONE", NestKind::CLONE },
+    { "JELLY", NestKind::JELLY },
+    { "SYMBOL_GOOD", NestKind::SYMBOL_GOOD },
+    { "SYMBOL_EVIL", NestKind::SYMBOL_EVIL },
+    { "MIMIC", NestKind::MIMIC },
+    { "HORROR", NestKind::HORROR },
+    { "KENNEL", NestKind::KENNEL },
+    { "ANIMAL", NestKind::ANIMAL },
+    { "CHAPEL", NestKind::CHAPEL },
+    { "UNDEAD", NestKind::UNDEAD },
 };

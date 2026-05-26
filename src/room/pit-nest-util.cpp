@@ -55,7 +55,7 @@ tl::optional<NestKind> pick_nest_type(const FloorType &floor, const std::map<Nes
             continue;
         }
 
-        if (none_bits(floor.get_dungeon_definition().nest, (1UL << enum2i(nest_kind)))) {
+        if (floor.get_dungeon_definition().nest.has_not(nest_kind)) {
             continue;
         }
 
@@ -83,7 +83,7 @@ tl::optional<PitKind> pick_pit_type(const FloorType &floor, const std::map<PitKi
             continue;
         }
 
-        if (none_bits(floor.get_dungeon_definition().pit, (1UL << enum2i(pit_kind)))) {
+        if (floor.get_dungeon_definition().pit.has_not(pit_kind)) {
             continue;
         }
 
