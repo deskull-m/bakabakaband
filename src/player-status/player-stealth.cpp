@@ -93,7 +93,7 @@ int16_t PlayerStealth::class_bonus()
 int16_t PlayerStealth::mutation_bonus()
 {
     int16_t bonus = 0;
-    const auto &muta = this->creature.muta;
+    const auto &muta = this->creature.get_mutations();
     if (muta.has(PlayerMutationType::XTRA_NOIS)) {
         bonus -= 3;
     }

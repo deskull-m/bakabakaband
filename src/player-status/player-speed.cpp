@@ -242,7 +242,7 @@ int16_t PlayerSpeed::stance_bonus()
 int16_t PlayerSpeed::mutation_bonus()
 {
     int16_t bonus = 0;
-    const auto &muta = this->creature.muta;
+    const auto &muta = this->creature.get_mutations();
     if (muta.has(PlayerMutationType::XTRA_FAT)) {
         bonus -= 2;
     }

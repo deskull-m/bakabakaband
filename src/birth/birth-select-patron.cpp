@@ -91,7 +91,7 @@ static int interpret_patron_select_key_move(char key, int initial_patron)
 
 static bool select_patron(CreatureEntity &creature, int *k, concptr sym)
 {
-    int cs = creature.patron;
+    int cs = creature.get_patron();
     int os = MAX_PATRON;
     std::string cur = birth_patron_label(os, sym);
     while (true) {
@@ -167,7 +167,7 @@ bool get_player_patron(CreatureEntity &creature)
         return false;
     }
 
-    creature.patron = static_cast<int16_t>(k);
+    creature.set_patron(static_cast<int16_t>(k));
     display_player_name(creature);
     return true;
 }

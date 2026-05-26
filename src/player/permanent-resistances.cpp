@@ -22,7 +22,7 @@
  */
 static void add_mutation_flags(CreatureEntity &creature, TrFlags &flags)
 {
-    if (creature.muta.none()) {
+    if (creature.get_mutations().none()) {
         return;
     }
 

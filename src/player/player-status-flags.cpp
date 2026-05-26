@@ -1099,14 +1099,14 @@ BIT_FLAGS has_regenerate(CreatureEntity &creature)
 void update_curses(CreatureEntity &creature)
 {
     ItemEntity *o_ptr;
-    creature.cursed.clear();
-    creature.cursed_special.clear();
+    creature.clear_curses();
+    creature.clear_curses_special();
 
     if (creature.ppersonality == PERSONALITY_SEXY) {
-        creature.cursed.set(CurseTraitType::AGGRAVATE);
+        creature.add_curse(CurseTraitType::AGGRAVATE);
     }
     if (creature.ppersonality == PERSONALITY_MESUGAKI) {
-        creature.cursed.set(CurseTraitType::AGGRAVATE);
+        creature.add_curse(CurseTraitType::AGGRAVATE);
     }
 
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
@@ -1116,91 +1116,91 @@ void update_curses(CreatureEntity &creature)
         }
         const auto flags = o_ptr->get_flags();
         if (flags.has(TR_AGGRAVATE)) {
-            creature.cursed.set(CurseTraitType::AGGRAVATE);
+            creature.add_curse(CurseTraitType::AGGRAVATE);
         }
         if (flags.has(TR_NASTY_AGGRAVATE)) {
-            creature.cursed.set(CurseTraitType::NASTY_AGGRAVATE);
+            creature.add_curse(CurseTraitType::NASTY_AGGRAVATE);
         }
         if (flags.has(TR_DRAIN_EXP)) {
-            creature.cursed.set(CurseTraitType::DRAIN_EXP);
+            creature.add_curse(CurseTraitType::DRAIN_EXP);
         }
         if (flags.has(TR_TY_CURSE)) {
-            creature.cursed.set(CurseTraitType::TY_CURSE);
+            creature.add_curse(CurseTraitType::TY_CURSE);
         }
         if (flags.has(TR_ADD_L_CURSE)) {
-            creature.cursed.set(CurseTraitType::ADD_L_CURSE);
+            creature.add_curse(CurseTraitType::ADD_L_CURSE);
         }
         if (flags.has(TR_ADD_H_CURSE)) {
-            creature.cursed.set(CurseTraitType::ADD_H_CURSE);
+            creature.add_curse(CurseTraitType::ADD_H_CURSE);
         }
         if (flags.has(TR_DRAIN_HP)) {
-            creature.cursed.set(CurseTraitType::DRAIN_HP);
+            creature.add_curse(CurseTraitType::DRAIN_HP);
         }
         if (flags.has(TR_DRAIN_MANA)) {
-            creature.cursed.set(CurseTraitType::DRAIN_MANA);
+            creature.add_curse(CurseTraitType::DRAIN_MANA);
         }
         if (flags.has(TR_CALL_ANIMAL)) {
-            creature.cursed.set(CurseTraitType::CALL_ANIMAL);
+            creature.add_curse(CurseTraitType::CALL_ANIMAL);
         }
         if (flags.has(TR_CALL_DEMON)) {
-            creature.cursed.set(CurseTraitType::CALL_DEMON);
+            creature.add_curse(CurseTraitType::CALL_DEMON);
         }
         if (flags.has(TR_CALL_DRAGON)) {
-            creature.cursed.set(CurseTraitType::CALL_DRAGON);
+            creature.add_curse(CurseTraitType::CALL_DRAGON);
         }
         if (flags.has(TR_CALL_UNDEAD)) {
-            creature.cursed.set(CurseTraitType::CALL_UNDEAD);
+            creature.add_curse(CurseTraitType::CALL_UNDEAD);
         }
         if (flags.has(TR_COWARDICE)) {
-            creature.cursed.set(CurseTraitType::COWARDICE);
+            creature.add_curse(CurseTraitType::COWARDICE);
         }
         if (flags.has(TR_LOW_MELEE)) {
-            creature.cursed.set(CurseTraitType::LOW_MELEE);
+            creature.add_curse(CurseTraitType::LOW_MELEE);
         }
         if (flags.has(TR_LOW_AC)) {
-            creature.cursed.set(CurseTraitType::LOW_AC);
+            creature.add_curse(CurseTraitType::LOW_AC);
         }
         if (flags.has(TR_HARD_SPELL)) {
-            creature.cursed.set(CurseTraitType::HARD_SPELL);
+            creature.add_curse(CurseTraitType::HARD_SPELL);
         }
         if (flags.has(TR_FAST_DIGEST)) {
-            creature.cursed.set(CurseTraitType::FAST_DIGEST);
+            creature.add_curse(CurseTraitType::FAST_DIGEST);
         }
         if (flags.has(TR_SLOW_REGEN)) {
-            creature.cursed.set(CurseTraitType::SLOW_REGEN);
+            creature.add_curse(CurseTraitType::SLOW_REGEN);
         }
         if (flags.has(TR_BERS_RAGE)) {
-            creature.cursed.set(CurseTraitType::BERS_RAGE);
+            creature.add_curse(CurseTraitType::BERS_RAGE);
         }
         if (flags.has(TR_PERSISTENT_CURSE)) {
-            creature.cursed.set(CurseTraitType::PERSISTENT_CURSE);
+            creature.add_curse(CurseTraitType::PERSISTENT_CURSE);
         }
         if (flags.has(TR_VUL_CURSE)) {
-            creature.cursed.set(CurseTraitType::VUL_CURSE);
+            creature.add_curse(CurseTraitType::VUL_CURSE);
         }
 
         auto obj_curse_flags = o_ptr->curse_flags;
         obj_curse_flags.reset({ CurseTraitType::CURSED, CurseTraitType::HEAVY_CURSE, CurseTraitType::PERMA_CURSE });
-        creature.cursed.set(obj_curse_flags);
+        creature.add_curses(obj_curse_flags);
         if (o_ptr->is_specific_artifact(FixedArtifactId::CHAINSWORD)) {
-            creature.cursed_special.set(CurseSpecialTraitType::CHAINSWORD);
+            creature.add_curse_special(CurseSpecialTraitType::CHAINSWORD);
         }
 
         if (flags.has(TR_TELEPORT)) {
             if (o_ptr->is_cursed()) {
-                creature.cursed.set(CurseTraitType::TELEPORT);
+                creature.add_curse(CurseTraitType::TELEPORT);
             } else {
                 /* {.} will stop random teleportation. */
                 if (o_ptr->is_inscribed() && angband_strchr(o_ptr->inscription->data(), '.')) {
                 } else {
-                    creature.cursed_special.set(CurseSpecialTraitType::TELEPORT_SELF);
+                    creature.add_curse_special(CurseSpecialTraitType::TELEPORT_SELF);
                 }
             }
         }
     }
 
     if (creature.get_cursed_flags().has(CurseTraitType::TELEPORT)) {
-        creature.cursed_special.reset(CurseSpecialTraitType::TELEPORT_SELF);
+        creature.remove_curse_special(CurseSpecialTraitType::TELEPORT_SELF);
     }
 }
 

@@ -19,7 +19,7 @@ void dump_mutations(CreatureEntity &creature, FILE *out_file)
         return;
     }
 
-    if (creature.muta.any() || has_good_luck(creature) || has_pervert_attraction(creature)) {
+    if (creature.get_mutations().any() || has_good_luck(creature) || has_pervert_attraction(creature)) {
         if (creature.get_mutations().has(PlayerMutationType::SPIT_ACID)) {
             fprintf(out_file, _(" あなたは酸を吹きかけることができる。(ダメージ レベルX1)\n", " You can spit acid (dam lvl).\n"));
         }

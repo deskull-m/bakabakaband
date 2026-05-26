@@ -64,7 +64,7 @@ int16_t PlayerWisdom::mutation_bonus()
 {
     int16_t result = 0;
 
-    if (this->creature.muta.any()) {
+    if (this->creature.get_mutations().any()) {
         if (this->creature.get_mutations().has(PlayerMutationType::HYPER_INT)) {
             result += 4;
         }

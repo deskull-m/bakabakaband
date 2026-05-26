@@ -393,18 +393,22 @@ static void set_timed_effects(CreatureEntity &creature)
 
 static void set_mutations(CreatureEntity &creature)
 {
+    EnumClassFlagGroup<PlayerMutationType> muta_flags{};
+    EnumClassFlagGroup<PlayerMutationType> trait_flags{};
     if (loading_savefile_version_is_older_than(2)) {
         for (int i = 0; i < 3; i++) {
             auto tmp32u = rd_u32b();
-            migrate_bitflag_to_flaggroup(creature.muta, tmp32u, i * 32);
+            migrate_bitflag_to_flaggroup(muta_flags, tmp32u, i * 32);
         }
     } else {
-        rd_FlagGroup(creature.muta, rd_byte);
+        rd_FlagGroup(muta_flags, rd_byte);
 
         if (!loading_savefile_version_is_older_than(7)) {
-            rd_FlagGroup(creature.trait, rd_byte);
+            rd_FlagGroup(trait_flags, rd_byte);
         }
     }
+    creature.set_mutations(muta_flags);
+    creature.set_traits(trait_flags);
 }
 
 static void set_virtues(CreatureEntity &creature)
@@ -432,7 +436,7 @@ static void set_virtues(CreatureEntity &creature)
 static void rd_timed_effects(CreatureEntity &creature)
 {
     set_timed_effects(creature);
-    creature.patron = rd_s16b();
+    creature.set_patron(rd_s16b());
     set_mutations(creature);
     set_virtues(creature);
 }

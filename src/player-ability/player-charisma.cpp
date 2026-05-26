@@ -59,7 +59,7 @@ int16_t PlayerCharisma::mutation_bonus()
 {
     int16_t result = 0;
 
-    if (this->creature.muta.any()) {
+    if (this->creature.get_mutations().any()) {
         if (this->creature.get_mutations().has(PlayerMutationType::FLESH_ROT)) {
             result -= 1;
         }

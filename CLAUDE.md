@@ -321,6 +321,15 @@ API 経由に統一された。一部フィールド (r_idx / ap_r_idx / riding)
   `ac` は書込のみ `set_ac()` virtual に統一し、フィールドは public のまま
   残置 (io-dump で raw 値が JSON 出力されるため意味が異なる)。
   **合計 private 化フィールド数: 83 → 94**
+- **提案 44**: 突然変異/呪い系フラグ 5 個 (`muta` / `trait` /
+  `cursed` / `cursed_special` / `patron`) を private 化。23 個の virtual
+  API (`has_mutation` / `add_mutation` / `remove_mutation` /
+  `clear_mutations` / `set_mutations`、同様に trait / curse /
+  curse_special) を整備し、29 ファイルで約 97 サイト
+  (`muta` 52 + `trait` 2 + `cursed` 27 + `cursed_special` 4 +
+  `patron` 12) の read/write を migration。`get_X_flags()` 系の
+  const ref getter は savefile save 用に残置。**合計 private 化
+  フィールド数: 94 → 99**
 - **提案 1/2**: プレイヤー専用フィールドのモンスター運用化基盤完了。
   種族 (`prace`) / 職業 (`pclass`) / 魔法領域 (`realm1` / `realm2` /
   `element_realm`) / パトロン (`patron`) / 変身形態 (`mimic_form`)
@@ -675,6 +684,15 @@ bakabakaband 側と上流側でよくある構造的差異を以下のルール�
 | `creature.riding_ryoute` / `creature.monlite` 読取り | `creature.is_riding_ryoute()` / `creature.is_monlite()` (提案 39) |
 | `creature.is_icky_wield[hand]` / `is_icky_riding_wield[hand]` フィールド | **提案 39 でフィールド名を `icky_wield[hand]` / `icky_riding_wield[hand]` にリネーム。** メソッドからの読取りは `is_X(hand)` 経由のみ |
 | `creature.ac = X` / `m_ptr->ac = X` 書込 | `creature.set_ac(X)` (提案 39)。`ac` フィールドの直接読取りは public 残置 (io-dump 用) |
+| `creature.muta.has(X)` / `creature.trait.has(X)` 読取 | `creature.has_mutation(X)` / `creature.has_trait(X)` (提案 44) |
+| `creature.muta.set(X)` / `creature.muta.reset(X)` / `creature.muta.clear()` 書込 | `creature.add_mutation(X)` / `creature.remove_mutation(X)` / `creature.clear_mutations()` (提案 44)。trait 系も同様 (`add_trait` / `remove_trait` / `clear_traits`) |
+| `creature.muta = flags` / `creature.trait = flags` 一括代入 | `creature.set_mutations(flags)` / `creature.set_traits(flags)` (提案 44。savefile load 用) |
+| `creature.cursed.has(X)` / `creature.cursed_special.has(X)` 読取 | `creature.has_curse(X)` / `creature.has_curse_special(X)` (提案 44) |
+| `creature.cursed.set(CurseTraitType::X)` 単一フラグ | `creature.add_curse(CurseTraitType::X)` (提案 44) |
+| `creature.cursed.set(obj_curse_flags)` 一括 OR-in | `creature.add_curses(obj_curse_flags)` (提案 44。bulk OR-in 専用) |
+| `creature.cursed.reset(X)` / `creature.cursed.clear()` 書込 | `creature.remove_curse(X)` / `creature.clear_curses()` (提案 44)。cursed_special 系も同様 |
+| `creature.cursed = flags` 一括代入 | `creature.set_curses(flags)` (提案 44。savefile load 用) |
+| `creature.patron` 読取 / `creature.patron = X` 書込 | `creature.get_patron()` / `creature.set_patron(X)` (提案 44。Birther 等の他構造体の `patron` フィールドは別物で migration 対象外) |
 
 **GCC 固有の注意**:
 上流は MSVC 前提のことが多く、`<cstdint>` 等のインクルード漏れがあれば追加する。

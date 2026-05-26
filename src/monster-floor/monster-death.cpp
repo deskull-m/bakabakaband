@@ -348,7 +348,7 @@ static void on_defeat_last_boss(CreatureEntity &creature)
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TITLE);
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_FINAL_QUEST_CLEAR);
     exe_write_diary(*creature.get_floor(), DiaryKind::DESCRIPTION, 0, _("見事に馬鹿馬鹿蛮怒の勝利者となった！", "finally became *WINNER* of Bakabakaband!"));
-    patron_list[creature.patron].admire(creature);
+    patron_list[creature.get_patron()].admire(creature);
     msg_print(_("*** おめでとう ***", "*** CONGRATULATIONS ***"));
     msg_print(_("あなたはゲームをコンプリートしました。", "You have won the game!"));
     msg_print(_("準備が整ったら引退(自殺コマンド)しても結構です。", "You may retire (commit suicide) when you are ready."));

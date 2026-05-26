@@ -65,7 +65,7 @@ int16_t PlayerIntelligence::stance_bonus()
 int16_t PlayerIntelligence::mutation_bonus()
 {
     int16_t result = 0;
-    if (this->creature.muta.any()) {
+    if (this->creature.get_mutations().any()) {
         if (this->creature.get_mutations().has(PlayerMutationType::HYPER_INT)) {
             result += 4;
         }

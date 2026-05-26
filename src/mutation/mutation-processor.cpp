@@ -100,7 +100,7 @@ void process_world_aux_sudden_attack(CreatureEntity &creature)
  */
 void process_world_aux_mutation(CreatureEntity &creature)
 {
-    if (creature.muta.none() || AngbandSystem::get_instance().is_phase_out() || AngbandWorld::get_instance().is_wild_mode()) {
+    if (creature.get_mutations().none() || AngbandSystem::get_instance().is_phase_out() || AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
 

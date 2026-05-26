@@ -191,10 +191,10 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
 
             if (creature.get_mutations().has(PlayerMutationType::HYPER_INT)) {
                 msg_print(_("あなたの脳は生体コンピュータではなくなった。", "Your brain is no longer a living computer."));
-                creature.muta.reset(PlayerMutationType::HYPER_INT);
+                creature.remove_mutation(PlayerMutationType::HYPER_INT);
             }
 
-            creature.muta.set(PlayerMutationType::MORONIC);
+            creature.add_mutation(PlayerMutationType::MORONIC);
         }
 
         break;
@@ -204,10 +204,10 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
             msg_print(_("あなたはパラノイアになった！", "You become paranoid!"));
             if (creature.get_mutations().has(PlayerMutationType::FEARLESS)) {
                 msg_print(_("あなたはもう恐れ知らずではなくなった。", "You are no longer fearless."));
-                creature.muta.reset(PlayerMutationType::FEARLESS);
+                creature.remove_mutation(PlayerMutationType::FEARLESS);
             }
 
-            creature.muta.set(PlayerMutationType::COWARDICE);
+            creature.add_mutation(PlayerMutationType::COWARDICE);
         }
 
         break;
@@ -215,7 +215,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
     case 3: {
         if (creature.get_mutations().has_not(PlayerMutationType::HALLU) && !creature.has_resist_chaos()) {
             msg_print(_("幻覚をひき起こす精神錯乱に陥った！", "You are afflicted by a hallucinatory insanity!"));
-            creature.muta.set(PlayerMutationType::HALLU);
+            creature.add_mutation(PlayerMutationType::HALLU);
         }
 
         break;
@@ -223,7 +223,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
     case 4: {
         if (creature.get_mutations().has_not(PlayerMutationType::BERS_RAGE) && !creature.has_resist_conf()) {
             msg_print(_("激烈な感情の発作におそわれるようになった！", "You become subject to fits of berserk rage!"));
-            creature.muta.set(PlayerMutationType::BERS_RAGE);
+            creature.add_mutation(PlayerMutationType::BERS_RAGE);
         }
 
         break;

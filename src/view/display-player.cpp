@@ -341,7 +341,7 @@ static std::string decide_current_floor(CreatureEntity &creature)
  */
 tl::optional<int> display_player(CreatureEntity &creature, const int tmp_mode)
 {
-    auto has_any_mutation = (creature.muta.any() || has_good_luck(creature) || has_pervert_attraction(creature)) && display_mutations;
+    auto has_any_mutation = (creature.get_mutations().any() || has_good_luck(creature) || has_pervert_attraction(creature)) && display_mutations;
     // モンスター閲覧時もページ送りを許可。プレイヤー前提の値はサブ関数側で
     // 0/空フォールバックされる（ENTRY_RACE/CLASS が「なし」になるなど）。
     // ページ構成: 0=基本ステータス, 1=キャラクタ生い立ち, 2=能力詳細1,
