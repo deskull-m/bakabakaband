@@ -9,6 +9,72 @@ Phase 1-8 完了後に残存している統合作業項目を整理したもの�
 
 ---
 
+## 提案一覧 (索引)
+
+提案は番号順ではなく作業着手順 (≒提案追加順) で本書に並んでいるため、
+特定の提案を探す際は本表から該当節へジャンプすること。
+ステータスの ✅ は完了、🚧 は進行中/未着手を示す。
+
+| 番号 | 提案 | ステータス | 対象 |
+|---|---|---|---|
+| [1](#提案-1-プレイヤー専用フィールドのクリーチャー共通化--基盤完了) | プレイヤー専用フィールドのクリーチャー共通化 | ✅ 基盤完了 | prace / pclass / patron / mimic_form 等の get/set virtual |
+| [2](#提案-2-プレイヤー専用仮想メソッドのクリーチャー共通化--完了) | プレイヤー専用 virtual メソッドの共通化 | ✅ 完了 | has_X / get_X 系の virtual |
+| [3](#提案-3-残存する-playertypeget_instance-多用箇所の削減--完了) | `PlayerType::get_instance()` 多用箇所の削減 | ✅ 完了 | グローバルアクセスの削減 |
+| [4](#提案-4-未統合の状態チェック関数の仮想化--完了) | 未統合の状態チェック関数の仮想化 | ✅ 完了 | has_resist_X 等の自由関数 |
+| [5](#提案-5-timedeffects-オブジェクトとの二重管理解消--完了) | TimedEffects 二重管理解消 | ✅ 完了 | timed_effects_map 統一 |
+| [6](#提案-6-フィールド名の命名統一) | フィールド名の命名統一 | 🚧 | csp/msp → current_mp/max_mp 等 (大規模 diff、後回し) |
+| [7](#提案-7-モンスター可視判定-ml-の-virtual-アクセサ化--完了) | モンスター可視判定 (`ml`) の virtual 化 | ✅ 完了 | is_visible_on_map() |
+| [8](#提案-8-hpmp-自然回復計算の-virtual-hook-化--完了) | HP/MP 自然回復計算の virtual hook 化 | ✅ 完了 | get_base_natural_regen_amount() |
+| [9](#提案-9-monsterprofile-フィールド-virtual-アクセサ化--一部完了) | MonsterProfile read-side virtual | ✅ 一部完了 | get_alliance_idx / get_smart_flags 等 |
+| [9b](#提案-9b-monsterprofile-setter-の-virtual-集約--完了) | MonsterProfile setter virtual | ✅ 完了 | set_alliance_idx / set_sub_align 等 |
+| [10/36](#提案-1036-熟練度配列の-virtual-アクセサ--完了) | 熟練度配列の virtual アクセサ | ✅ 完了 | get_spell_exp / get_weapon_exp 等 |
+| [11](#提案-11-モンスターアイテム所持の-inventory-統一--完了-フェーズ-a) | モンスター inventory[] 統一 | ✅ 完了 | hold_o_idx_list 廃止 |
+| [12](#提案-12-モンスター装備の有効化--完了-フェーズ-b) | モンスター装備の有効化 | ✅ 完了 | AC/耐性/攻撃/二刀流 |
+| [13](#提案-13-モンスター-ai-のアイテム能動使用--完了-フェーズ-c) | モンスター AI アイテム能動使用 | ✅ 完了 | ポーション/巻物/杖/ロッド |
+| [14](#提案-14-ai-ターゲット選定ロジックの共通化--完了) | AI ターゲット選定の共通 API 化 | ✅ 完了 | find_nearest_creature / collect_creatures |
+| [15](#提案-15-mflag2-の-virtual-アクセサ集約--完了) | mflag2 read-side virtual | ✅ 完了 | is_kage / is_chameleon 等 |
+| [16](#提案-16-mflag-monstertemporaryflagtype-の-virtual-化--完了) | mflag (一時フラグ) virtual 化 | ✅ 完了 | is_in_view / has_prevent_magic 等 |
+| [17](#提案-17-モンスター-inventory-操作の-oo-統合--完了) | モンスター inventory 操作の OO 化 | ✅ 完了 | store_item / acquire_item / drop_all_inventory |
+| [18](#提案-18-mflag2-書込パターンの-virtual-集約--完了) | mflag2 write-side virtual | ✅ 完了 | set_constant_flag / reset_constant_flag |
+| [19](#提案-19-変身自壊カウンタの-virtual-化--完了) | 変身/自壊カウンタ virtual 化 | ✅ 完了 | transform_* / death_count |
+| [20](#提案-20-残り-mflagmflag2-一括操作の-virtual-化--完了) | mflag/mflag2 一括操作 virtual | ✅ 完了 | get_all_constant_flags / clear_* |
+| [21](#提案-21-monsterprofile-を-class-化して-private-化--完了) | MonsterProfile を class 化して private 化 | ✅ 完了 | 12 個 private、friend 制限 |
+| [22](#提案-22-モンスター-identity-setter-の-virtual-化--完了) | モンスター identity setter virtual | ✅ 完了 | set_r_idx / polymorph_to |
+| [23](#提案-23-ロードマップと-claudemd-の更新--完了) | ロードマップ更新 (継続) | ✅ 完了 | |
+| [24](#提案-24-creatureentity-直下生フィールドの-setter-整備--完了) | 生フィールド setter 整備 | ✅ 完了 | set_age / set_ht / set_wt 等 |
+| [25](#提案-25-inven_cnt--equip_cnt-の-inventory-からの自動計算化--完了) | inven_cnt / equip_cnt 自動計算化 | ✅ 完了 | フィールド廃止 |
+| [26](#提案-26-ambushfoodtown_numlevel-に-setter-virtual-追加--完了) | ambush/food/town_num/level setter virtual | ✅ 完了 | |
+| [27](#提案-27-max_plv--msp--経験値系の-setter-virtual--完了) | max_plv / msp / 経験値系 setter | ✅ 完了 | |
+| [27b](#提案-27b-au--csp-の-addsub-系-virtual-と-compound-assignment-移行--完了) | au / csp の add/sub virtual | ✅ 完了 | 110 箇所 compound assignment 移行 |
+| [28](#提案-28-r_idx--ap_r_idx--riding-に-getter-virtual-を追加--完了) | r_idx / ap_r_idx / riding getter (参照形式) | ✅ 完了 | 210 箇所移行 |
+| [28b](#提案-28b-ポインタ経由の-r_idx--ap_r_idx--riding-を-getter-へ移行--完了) | 同 (ポインタ経由) | ✅ 完了 | 80 箇所移行 |
+| [29](#提案-29-r_idx--ap_r_idx--riding-を-private-化--完了) | r_idx / ap_r_idx / riding private 化 | ✅ 完了 | **3 個** |
+| [30](#提案-30-戦闘ボーナスと-stat-配列に-setter-virtual-を追加--完了) | 戦闘ボーナス / stat 配列 setter virtual | ✅ 完了 | 55 箇所移行 |
+| [31](#提案-31-残り-plain-field-の-getter-virtual-整備と-read-側移行--完了) | plain field getter virtual と read 移行 | ✅ 完了 | 14 種 350 箇所 |
+| [31b](#提案-31b-stat_-と-to_hto_dto_a-の-getter-virtual-整備と-read-移行--完了) | stat_*[] と to_h/d/a の getter virtual | ✅ 完了 | 270 箇所 |
+| [31c](#提案-31c-level-read-site-を-get_level-経由に移行--完了) | level read site を get_level() に統一 | ✅ 完了 | 628 箇所 / 175 ファイル |
+| [32](#提案-32-安全な-7-フィールドを-private-化--完了-縮小スコープ) | 安全な 7 フィールド private 化 | ✅ 完了 | **+7 = 22 個** |
+| [32b](#提案-32b-残り-14-個の-plain-field-を-private-化--完了) | 残り 14 個の plain field private 化 | ✅ 完了 | **+14 = 37 個** (37 個達成) |
+| [33](#提案-33-esp--装備集計-bit_flags-の-private-化--完了) | ESP / 装備集計 BIT_FLAGS private 化 | ✅ 完了 | **+35 = 72 個** |
+| [34](#提案-34-表示用既知値-dis_to_hdaac-の-private-化--完了) | 表示用既知値 (dis_*) private 化 | ✅ 完了 | **+5 = 77 個** |
+| [35](#提案-35-is_player-分岐の縮減--完了-調査ベース縮小スコープ) | is_player() 分岐縮減 | ✅ 完了 (縮小) | 1 サイトのみ |
+| [39](#提案-39-装備派生キャッシュフィールドの-private-化--完了) | 装備派生キャッシュフィールド private 化 | ✅ 完了 | **+11 = 94 個** (num_blow/cumber/icky 等) |
+| [40](#提案-40-ペット関連フィールドの-private-化) | ペット関連フィールド private 化 | 🚧 | pet_extra_flags / pet_follow_distance 等 |
+| [41](#提案-41-呪文マスク-spell_learnedworkedforgotten-の集約--完了) | 呪文マスク集約 (spell_learned/worked/forgotten) | ✅ 完了 | **+6 = 83 個**、realm_idx ベース API |
+| [42](#提案-42-旧差分検出キャッシュ-old_-の-private-化) | 旧差分検出キャッシュ (`old_*`) private 化 | 🚧 | old_cumber_* / old_heavy_* 等 |
+| [43](#提案-43-行動状態フラグの-private-化) | 行動状態フラグ private 化 | 🚧 | resting / running / action 等 |
+| [44](#提案-44-突然変異呪い系フラグの-private-化--完了) | 突然変異/呪い系フラグ private 化 | ✅ 完了 | **+5 = 99 個** (muta / cursed / patron 等) |
+| [45](#提案-45-pet_t_m_idx--riding_t_m_idx-系を-target-pos2d-に統合) | pet_t_m_idx / riding_t_m_idx 統合 | 🚧 | Pos2D ベース |
+| [46](#提案-46-esp--装備集計の差分検出を-update_creature-内-raw-access-に閉じる) | ESP / 装備集計の差分検出を内部に閉じる | 🚧 | get_X_flags() 公開撤廃検討 |
+
+**累計 private 化フィールド数 (主要マイルストーン):**
+- 提案 29 (3 個) → 32 (10 個) → 32b (37 個) → 33 (72 個) → 34 (77 個) →
+  41 (83 個) → 39 (94 個) → **44 (99 個)**
+
+未完了の提案 6 / 40 / 42 / 43 / 45 / 46 を全完了で **130+ 個** に到達見込み。
+
+---
+
 ## 設計方針: プレイヤー固有フィールドをモンスターにも開放する
 
 本プロジェクトの統合方針として、現状プレイヤー固有となっている
