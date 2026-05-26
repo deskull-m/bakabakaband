@@ -100,7 +100,7 @@ static void ninja_critical(CreatureEntity &creature, player_attack_type *pa_ptr)
     const auto no_instantly_death = monrace.resistance_flags.has(MonsterResistanceType::NO_INSTANTLY_DEATH);
     bool is_weaken = pa_ptr->m_ptr->hp < maxhp / 2;
     bool is_unique = monrace.kind_flags.has(MonsterKindType::UNIQUE) || no_instantly_death;
-    bool is_critical = (is_weaken && one_in_((creature.num_blow[0] + creature.num_blow[1] + 1) * 10)) || ((one_in_(666) || ((pa_ptr->backstab || pa_ptr->surprise_attack) && one_in_(11))) && !is_unique);
+    bool is_critical = (is_weaken && one_in_((creature.get_num_blow(0) + creature.get_num_blow(1) + 1) * 10)) || ((one_in_(666) || ((pa_ptr->backstab || pa_ptr->surprise_attack) && one_in_(11))) && !is_unique);
     if (!is_critical) {
         return;
     }
@@ -150,7 +150,7 @@ void critical_attack(CreatureEntity &creature, player_attack_type *pa_ptr)
     }
 
     const auto has_weapon = has_melee_weapon(creature, enum2i(INVEN_MAIN_HAND) + pa_ptr->hand);
-    const auto is_ninja_hit = has_weapon && !creature.is_icky_wield[pa_ptr->hand] && ((creature.cur_lite <= 0) || one_in_(7));
+    const auto is_ninja_hit = has_weapon && !creature.is_icky_wield(pa_ptr->hand) && ((creature.get_cur_lite() <= 0) || one_in_(7));
     if (is_ninja_hit) {
         ninja_critical(creature, pa_ptr);
     }

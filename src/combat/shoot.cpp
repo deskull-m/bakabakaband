@@ -516,7 +516,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
     const auto item_name = describe_flavor(creature, *o_ptr, OD_OMIT_PREFIX);
 
     /* Use the proper number of shots */
-    auto thits = creature.num_fire;
+    auto thits = creature.get_num_fire();
 
     /* Use a base distance */
     auto tdis = 10;

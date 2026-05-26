@@ -223,7 +223,8 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
 
         creature.ride_monster(0);
         creature.pet_extra_flags &= ~(PF_TWO_HANDS);
-        creature.riding_ryoute = creature.old_riding_ryoute = false;
+        creature.old_riding_ryoute = false;
+        creature.set_riding_ryoute(false);
     } else {
         if (cmd_limit_confused(creature)) {
             return false;

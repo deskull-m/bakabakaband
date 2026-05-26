@@ -70,7 +70,7 @@ void torch_lost_fuel(ItemEntity *o_ptr)
  */
 void update_lite_radius(CreatureEntity &creature)
 {
-    creature.cur_lite = 0;
+    POSITION cur_lite = 0;
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
         const auto *o_ptr = creature.inventory[i].get();
         if (!o_ptr->is_valid()) {
@@ -86,38 +86,40 @@ void update_lite_radius(CreatureEntity &creature)
                 }
             }
         }
-        creature.cur_lite += o_ptr->get_lite_radius();
+        cur_lite += o_ptr->get_lite_radius();
     }
 
-    if (creature.cur_lite <= 0 && creature.has_lite_flag()) {
-        creature.cur_lite++;
+    if (cur_lite <= 0 && creature.has_lite_flag()) {
+        cur_lite++;
     }
 
-    if (creature.cur_lite > 14) {
-        creature.cur_lite = 14;
+    if (cur_lite > 14) {
+        cur_lite = 14;
     }
 
     if (creature.get_mimic_form() == MimicKindType::ANGEL) {
-        creature.cur_lite += 3;
+        cur_lite += 3;
     }
 
     if (creature.get_mimic_form() == MimicKindType::DEMIGOD) {
-        creature.cur_lite += 6;
+        cur_lite += 6;
     }
 
     if (creature.get_timed_effect(CreatureTimedEffect::TIM_EMISSION) > 0) {
-        creature.cur_lite += creature.get_level() / 5;
+        cur_lite += creature.get_level() / 5;
     }
 
-    if (creature.get_floor()->get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS) && creature.cur_lite > 1) {
-        creature.cur_lite = 1;
+    if (creature.get_floor()->get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS) && cur_lite > 1) {
+        cur_lite = 1;
     }
 
-    if (creature.cur_lite < 0) {
-        creature.cur_lite = 0;
+    if (cur_lite < 0) {
+        cur_lite = 0;
     }
 
-    if (creature.old_lite == creature.cur_lite) {
+    creature.set_cur_lite(cur_lite);
+
+    if (creature.old_lite == cur_lite) {
         return;
     }
 
@@ -127,8 +129,8 @@ void update_lite_radius(CreatureEntity &creature)
         StatusRecalculatingFlag::MONSTER_STATUSES,
     };
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
-    creature.old_lite = creature.cur_lite;
-    if (creature.cur_lite > 0) {
+    creature.old_lite = cur_lite;
+    if (cur_lite > 0) {
         set_superstealth(creature, false);
     }
 }
@@ -159,7 +161,7 @@ void update_lite_radius(CreatureEntity &creature)
  */
 void update_lite(CreatureEntity &creature)
 {
-    POSITION p = creature.cur_lite;
+    POSITION p = creature.get_cur_lite();
     auto &floor = *creature.get_floor();
     const auto points = floor.reset_lite();
     const auto p_pos = creature.get_position();

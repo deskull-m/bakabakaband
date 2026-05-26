@@ -162,9 +162,9 @@ static void calc_num_blow(CreatureEntity &creature, player_attack_type *pa_ptr)
     if ((pa_ptr->mode == HISSATSU_KYUSHO) || (pa_ptr->mode == HISSATSU_MINEUCHI) || (pa_ptr->mode == HISSATSU_3DAN) || (pa_ptr->mode == HISSATSU_IAI)) {
         pa_ptr->num_blow = 1;
     } else if (pa_ptr->mode == HISSATSU_COLD) {
-        pa_ptr->num_blow = creature.num_blow[pa_ptr->hand] + 2;
+        pa_ptr->num_blow = creature.get_num_blow(pa_ptr->hand) + 2;
     } else {
-        pa_ptr->num_blow = creature.num_blow[pa_ptr->hand];
+        pa_ptr->num_blow = creature.get_num_blow(pa_ptr->hand);
     }
 
     auto *o_ptr = creature.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
@@ -445,14 +445,14 @@ static bool check_fear_death(CreatureEntity &creature, player_attack_type *pa_pt
         if (can_attack_with_main_hand(creature) && can_attack_with_sub_hand(creature)) {
             ENERGY energy_use;
             if (pa_ptr->hand) {
-                energy_use = creature.energy_use * 3 / 5 + creature.energy_use * num * 2 / (creature.num_blow[pa_ptr->hand] * 5);
+                energy_use = creature.energy_use * 3 / 5 + creature.energy_use * num * 2 / (creature.get_num_blow(pa_ptr->hand) * 5);
             } else {
-                energy_use = creature.energy_use * num * 3 / (creature.num_blow[pa_ptr->hand] * 5);
+                energy_use = creature.energy_use * num * 3 / (creature.get_num_blow(pa_ptr->hand) * 5);
             }
 
             energy.set_player_turn_energy(energy_use);
         } else {
-            auto energy_use = (ENERGY)(creature.energy_use * num / creature.num_blow[pa_ptr->hand]);
+            auto energy_use = (ENERGY)(creature.energy_use * num / creature.get_num_blow(pa_ptr->hand));
             energy.set_player_turn_energy(energy_use);
         }
     }

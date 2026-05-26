@@ -294,7 +294,7 @@ void MindPowerGetter::calculate_mind_chance(bool has_weapon_main, bool has_weapo
         this->chance += 5 * (this->mana_cost - this->creature_ptr->get_csp());
     }
 
-    this->chance += this->creature_ptr->to_m_chance;
+    this->chance += this->creature_ptr->get_to_m_chance();
     PERCENTAGE minfail = adj_mag_fail[this->creature_ptr->get_stat_index(mp_ptr->spell_stat)];
     if (this->chance < minfail) {
         this->chance = minfail;
@@ -317,13 +317,13 @@ void MindPowerGetter::calculate_ki_chance(bool has_weapon_main, bool has_weapon_
         this->chance += 20;
     }
 
-    if (this->creature_ptr->is_icky_wield[0]) {
+    if (this->creature_ptr->is_icky_wield(0)) {
         this->chance += 20;
     } else if (has_weapon_main) {
         this->chance += 10;
     }
 
-    if (this->creature_ptr->is_icky_wield[1]) {
+    if (this->creature_ptr->is_icky_wield(1)) {
         chance += 20;
     } else if (has_weapon_sub) {
         this->chance += 10;
@@ -346,11 +346,11 @@ void MindPowerGetter::add_ki_chance()
         this->chance += 5;
     }
 
-    if (this->creature_ptr->is_icky_wield[0]) {
+    if (this->creature_ptr->is_icky_wield(0)) {
         this->chance += 5;
     }
 
-    if (this->creature_ptr->is_icky_wield[1]) {
+    if (this->creature_ptr->is_icky_wield(1)) {
         this->chance += 5;
     }
 }

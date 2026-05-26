@@ -516,7 +516,7 @@ void ObjectThrowEntity::calc_racial_power_damage()
     this->tdam = critical_shot(creature, this->q_ptr->weight, this->q_ptr->to_h, 0, this->tdam);
     this->tdam += (this->q_ptr->to_d > 0 ? 1 : -1) * this->q_ptr->to_d;
     if (this->boomerang) {
-        this->tdam *= (this->mult + creature.num_blow[this->i_idx - INVEN_MAIN_HAND]);
+        this->tdam *= (this->mult + creature.get_num_blow(this->i_idx - INVEN_MAIN_HAND));
         this->tdam += creature.get_to_d_m();
     } else if (this->obj_flags.has(TR_THROW)) {
         this->tdam *= (3 + this->mult);

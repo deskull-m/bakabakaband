@@ -312,6 +312,15 @@ API 経由に統一された。一部フィールド (r_idx / ap_r_idx / riding)
   三項演算子パターン 24 箇所を意図明示形 (`has_X_spell(realm, idx)`)
   に簡素化。savefile load/save の API も統一。**合計 private 化
   フィールド数: 77 → 83**
+- **提案 39**: 装備派生キャッシュフィールド 11 個 (num_blow[2] / num_fire /
+  to_m_chance / cur_lite / cumber_armor / cumber_glove / heavy_wield[2] /
+  icky_wield[2] / icky_riding_wield[2] / riding_ryoute / monlite) を private
+  化。get/set virtual 23 個を整備し、31 ファイルの read/write site を移行。
+  メソッド名衝突回避のため `is_icky_wield[2]` → `icky_wield[2]`,
+  `is_icky_riding_wield[2]` → `icky_riding_wield[2]` にフィールドをリネーム。
+  `ac` は書込のみ `set_ac()` virtual に統一し、フィールドは public のまま
+  残置 (io-dump で raw 値が JSON 出力されるため意味が異なる)。
+  **合計 private 化フィールド数: 83 → 94**
 - **提案 1/2**: プレイヤー専用フィールドのモンスター運用化基盤完了。
   種族 (`prace`) / 職業 (`pclass`) / 魔法領域 (`realm1` / `realm2` /
   `element_realm`) / パトロン (`patron`) / 変身形態 (`mimic_form`)
@@ -659,6 +668,13 @@ bakabakaband 側と上流側でよくある構造的差異を以下のルール�
 | `creature.max_plv = X` / `creature.msp = X` 書込 | `creature.set_max_plv(X)` / `creature.set_msp(X)` (提案 27) |
 | `creature.exp = X` / `creature.max_exp = X` / `creature.max_max_exp = X` 書込 | `creature.set_exp(X)` / `set_max_exp(X)` / `set_max_max_exp(X)` (提案 27) |
 | `creature.au [+\-/]= X` / `creature.csp [+\-]= X` の compound assignment | `creature.set_au(X)` / `add_au(X)` / `sub_au(X)` / `divide_au(X)`、`set_csp(X)` / `add_csp(X)` / `sub_csp(X)` (提案 27b)。約 110 箇所の `+=` / `-=` を移行済み |
+| `creature.num_blow[hand]` / `creature.num_fire` / `creature.to_m_chance` / `creature.cur_lite` 読取り | `creature.get_num_blow(hand)` / `get_num_fire()` / `get_to_m_chance()` / `get_cur_lite()` (提案 39) |
+| `creature.num_blow[hand] = X` / `num_fire = X` 等の書込 | `creature.set_num_blow(hand, X)` / `set_num_fire(X)` / `set_to_m_chance(X)` / `set_cur_lite(X)` (提案 39) |
+| `creature.cumber_armor` / `cumber_glove` 読取り | `creature.is_cumber_armor()` / `is_cumber_glove()` (提案 39) |
+| `creature.heavy_wield[hand]` / `is_icky_wield[hand]` / `is_icky_riding_wield[hand]` 読取り | `creature.is_heavy_wield(hand)` / `is_icky_wield(hand)` / `is_icky_riding_wield(hand)` (提案 39) |
+| `creature.riding_ryoute` / `creature.monlite` 読取り | `creature.is_riding_ryoute()` / `creature.is_monlite()` (提案 39) |
+| `creature.is_icky_wield[hand]` / `is_icky_riding_wield[hand]` フィールド | **提案 39 でフィールド名を `icky_wield[hand]` / `icky_riding_wield[hand]` にリネーム。** メソッドからの読取りは `is_X(hand)` 経由のみ |
+| `creature.ac = X` / `m_ptr->ac = X` 書込 | `creature.set_ac(X)` (提案 39)。`ac` フィールドの直接読取りは public 残置 (io-dump 用) |
 
 **GCC 固有の注意**:
 上流は MSVC 前提のことが多く、`<cstdint>` 等のインクルード漏れがあれば追加する。

@@ -152,8 +152,8 @@ static void add_combat_to_json(nlohmann::json &j, CreatureEntity &creature)
     j["combat"]["ranged_to_hit"] = creature.get_to_h_b();
 
     // 攻撃回数
-    j["combat"]["num_blow"] = creature.num_blow[0];
-    j["combat"]["num_fire"] = creature.num_fire;
+    j["combat"]["num_blow"] = creature.get_num_blow(0);
+    j["combat"]["num_fire"] = creature.get_num_fire();
 }
 
 /*!

@@ -21,25 +21,25 @@ concptr mention_use(CreatureEntity &creature, int i)
     switch (i) {
 #ifdef JP
     case INVEN_MAIN_HAND:
-        p = creature.heavy_wield[0]
+        p = creature.is_heavy_wield(0)
                 ? "運搬中"
                 : ((creature.has_two_handed_weapons() && can_attack_with_main_hand(creature)) ? " 両手" : (left_hander ? " 左手" : " 右手"));
         break;
 #else
     case INVEN_MAIN_HAND:
-        p = creature.heavy_wield[0] ? "Just lifting" : (can_attack_with_main_hand(creature) ? "Wielding" : "On arm");
+        p = creature.is_heavy_wield(0) ? "Just lifting" : (can_attack_with_main_hand(creature) ? "Wielding" : "On arm");
         break;
 #endif
 
 #ifdef JP
     case INVEN_SUB_HAND:
-        p = creature.heavy_wield[1]
+        p = creature.is_heavy_wield(1)
                 ? "運搬中"
                 : ((creature.has_two_handed_weapons() && can_attack_with_sub_hand(creature)) ? " 両手" : (left_hander ? " 右手" : " 左手"));
         break;
 #else
     case INVEN_SUB_HAND:
-        p = creature.heavy_wield[1] ? "Just lifting" : (can_attack_with_sub_hand(creature) ? "Wielding" : "On arm");
+        p = creature.is_heavy_wield(1) ? "Just lifting" : (can_attack_with_sub_hand(creature) ? "Wielding" : "On arm");
         break;
 #endif
 
@@ -98,27 +98,27 @@ concptr describe_use(CreatureEntity &creature, int i)
     switch (i) {
 #ifdef JP
     case INVEN_MAIN_HAND:
-        p = creature.heavy_wield[0]
+        p = creature.is_heavy_wield(0)
                 ? "運搬中の"
                 : ((creature.has_two_handed_weapons() && can_attack_with_main_hand(creature)) ? "両手に装備している"
                                                                                               : (left_hander ? "左手に装備している" : "右手に装備している"));
         break;
 #else
     case INVEN_MAIN_HAND:
-        p = creature.heavy_wield[0] ? "just lifting" : (can_attack_with_main_hand(creature) ? "attacking monsters with" : "wearing on your arm");
+        p = creature.is_heavy_wield(0) ? "just lifting" : (can_attack_with_main_hand(creature) ? "attacking monsters with" : "wearing on your arm");
         break;
 #endif
 
 #ifdef JP
     case INVEN_SUB_HAND:
-        p = creature.heavy_wield[1]
+        p = creature.is_heavy_wield(1)
                 ? "運搬中の"
                 : ((creature.has_two_handed_weapons() && can_attack_with_sub_hand(creature)) ? "両手に装備している"
                                                                                              : (left_hander ? "右手に装備している" : "左手に装備している"));
         break;
 #else
     case INVEN_SUB_HAND:
-        p = creature.heavy_wield[1] ? "just lifting" : (can_attack_with_sub_hand(creature) ? "attacking monsters with" : "wearing on your arm");
+        p = creature.is_heavy_wield(1) ? "just lifting" : (can_attack_with_sub_hand(creature) ? "attacking monsters with" : "wearing on your arm");
         break;
 #endif
 

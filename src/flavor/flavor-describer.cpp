@@ -226,11 +226,11 @@ static std::string describe_accuracy_and_damage_bonus(const ItemEntity &item, co
 static std::string describe_fire_energy(CreatureEntity &creature, const ItemEntity &ammo, const ItemEntity &bow, const describe_option_type &opt, int avgdam)
 {
     const auto energy_fire = bow.get_bow_energy();
-    if (creature.num_fire == 0) {
+    if (creature.get_num_fire() == 0) {
         return "0";
     }
 
-    const auto avgdam_per_turn = avgdam * creature.num_fire * 100 / energy_fire;
+    const auto avgdam_per_turn = avgdam * creature.get_num_fire() * 100 / energy_fire;
 
     std::stringstream ss;
     ss << avgdam_per_turn

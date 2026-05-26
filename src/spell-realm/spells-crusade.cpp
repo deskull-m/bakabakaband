@@ -135,13 +135,13 @@ void check_emission(CreatureEntity &creature)
 {
     if (creature.get_timed_effect(CreatureTimedEffect::TIM_EMISSION) > 0) {
         if (creature.get_level() > 29) {
-            map_area(creature, creature.cur_lite);
+            map_area(creature, creature.get_cur_lite());
         }
         if (creature.get_level() > 24) {
-            detect_traps(creature, creature.cur_lite, true);
+            detect_traps(creature, creature.get_cur_lite(), true);
         }
         if (creature.get_level() > 19) {
-            detect_monsters_evil(creature, creature.cur_lite);
+            detect_monsters_evil(creature, creature.get_cur_lite());
         }
     }
 }

@@ -62,7 +62,7 @@ static bool calc_fall_off_possibility(CreatureEntity &creature, const int dam, c
     auto cur = creature.get_skill_exp(PlayerSkillKindType::RIDING);
 
     int fall_off_level = monrace.level;
-    if (creature.riding_ryoute) {
+    if (creature.is_riding_ryoute()) {
         fall_off_level += 20;
     }
 
@@ -72,7 +72,7 @@ static bool calc_fall_off_possibility(CreatureEntity &creature, const int dam, c
         return true;
     }
 
-    if ((CreatureClass(creature).is_tamer() && !creature.riding_ryoute) || !one_in_(creature.get_level() * (creature.riding_ryoute ? 2 : 3) + 30)) {
+    if ((CreatureClass(creature).is_tamer() && !creature.is_riding_ryoute()) || !one_in_(creature.get_level() * (creature.is_riding_ryoute() ? 2 : 3) + 30)) {
         return false;
     }
 
@@ -146,7 +146,8 @@ bool process_fall_off_horse(CreatureEntity &creature, int dam, bool force)
 
     creature.ride_monster(0);
     creature.pet_extra_flags &= ~(PF_TWO_HANDS);
-    creature.riding_ryoute = creature.old_riding_ryoute = false;
+    creature.old_riding_ryoute = false;
+    creature.set_riding_ryoute(false);
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags_srf = {
