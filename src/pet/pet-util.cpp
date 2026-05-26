@@ -25,7 +25,7 @@ bool can_player_ride_pet(CreatureEntity &creature, const Grid &grid, bool now_ri
     auto &world = AngbandWorld::get_instance();
     const auto old_character_xtra = world.character_xtra;
     const auto old_riding = creature.get_riding();
-    const auto old_riding_two_hands = creature.riding_ryoute;
+    const auto old_riding_two_hands = creature.is_riding_ryoute();
     const auto old_old_riding_two_hands = creature.old_riding_ryoute;
     const auto old_pf_two_hands = any_bits(creature.pet_extra_flags, PF_TWO_HANDS);
     world.character_xtra = true;
@@ -35,7 +35,8 @@ bool can_player_ride_pet(CreatureEntity &creature, const Grid &grid, bool now_ri
     } else {
         creature.ride_monster(0);
         creature.pet_extra_flags &= ~(PF_TWO_HANDS);
-        creature.riding_ryoute = creature.old_riding_ryoute = false;
+        creature.old_riding_ryoute = false;
+        creature.set_riding_ryoute(false);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -50,7 +51,7 @@ bool can_player_ride_pet(CreatureEntity &creature, const Grid &grid, bool now_ri
         creature.pet_extra_flags &= ~(PF_TWO_HANDS);
     }
 
-    creature.riding_ryoute = old_riding_two_hands;
+    creature.set_riding_ryoute(old_riding_two_hands);
     creature.old_riding_ryoute = old_old_riding_two_hands;
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(creature);

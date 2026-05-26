@@ -419,7 +419,7 @@ bool process_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_p
 
         if (turn_flags_ptr->is_riding_mon) {
             const auto &monster_riding = floor.get_monster(creature.get_riding());
-            if (!creature.riding_ryoute && !monster_riding.is_fearful()) {
+            if (!creature.is_riding_ryoute() && !monster_riding.is_fearful()) {
                 turn_flags_ptr->do_move = false;
             }
         }

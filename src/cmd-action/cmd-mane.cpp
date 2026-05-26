@@ -278,7 +278,7 @@ static int get_mane_power(CreatureEntity &creature, int *sn, bool baigaesi)
                         chance = chance * (baigaesi ? mane.damage * 2 : mane.damage) / spell.manedam;
                     }
 
-                    chance += creature.to_m_chance;
+                    chance += creature.get_to_m_chance();
 
                     if (creature.is_wielding(FixedArtifactId::GOGO_PENDANT)) {
                         chance -= 10;
@@ -1228,7 +1228,7 @@ bool do_cmd_mane(CreatureEntity &creature, bool baigaesi)
         chance = chance * damage / spell.manedam;
     }
 
-    chance += creature.to_m_chance;
+    chance += creature.get_to_m_chance();
 
     /* Extract the minimum failure rate */
     minfail = adj_mag_fail[creature.get_stat_index(spell.use_stat)];

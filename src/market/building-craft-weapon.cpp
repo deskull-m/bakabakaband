@@ -67,7 +67,7 @@ static void show_weapon_dmg(int r, int c, int mindice, int maxdice, int blows, i
  */
 static void compare_weapon_aux(CreatureEntity &creature, ItemEntity *o_ptr, int col, int r)
 {
-    int blow = creature.num_blow[0];
+    int blow = creature.get_num_blow(0);
     bool force = false;
     bool dokubari = false;
 
@@ -264,7 +264,7 @@ static void list_weapon(CreatureEntity &creature, const ItemEntity &item, TERM_L
     const auto hit_reliability = creature.get_skill_to_hit_melee() + (creature.get_to_h(0) + item.to_h) * BTH_PLUS_ADJ;
     const auto item_name = describe_flavor(creature, item, OD_NAME_ONLY);
     c_put_str(TERM_YELLOW, item_name, row, col);
-    put_str(format(_("攻撃回数: %d", "Number of Blows: %d"), creature.num_blow[0]), row + 1, col);
+    put_str(format(_("攻撃回数: %d", "Number of Blows: %d"), creature.get_num_blow(0)), row + 1, col);
 
     put_str(_("命中率:  0  50 100 150 200 (敵のAC)", "To Hit:  0  50 100 150 200 (AC)"), row + 2, col);
     put_str(format("        %2d  %2d  %2d  %2d  %2d (%%)",
@@ -282,8 +282,8 @@ static void list_weapon(CreatureEntity &creature, const ItemEntity &item, TERM_L
         row + 6, col + 1);
 
     put_str(format(_("１ターンにつき %d-%d", "One Attack: %d-%d damage"),
-                (int)(creature.num_blow[0] * (eff_dd + item.to_d + creature.get_to_d(0))),
-                (int)(creature.num_blow[0] * (eff_ds * eff_dd + item.to_d + creature.get_to_d(0)))),
+                (int)(creature.get_num_blow(0) * (eff_dd + item.to_d + creature.get_to_d(0))),
+                (int)(creature.get_num_blow(0) * (eff_ds * eff_dd + item.to_d + creature.get_to_d(0)))),
         row + 7, col + 1);
 }
 

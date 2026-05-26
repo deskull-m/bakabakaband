@@ -65,7 +65,7 @@ MANA_POINT mod_need_mana(CreatureEntity &creature, MANA_POINT need_mana, SPELL_I
  */
 PERCENTAGE mod_spell_chance_1(CreatureEntity &creature, PERCENTAGE chance)
 {
-    chance += creature.to_m_chance;
+    chance += creature.get_to_m_chance();
 
     if (creature.has_hard_spell()) {
         chance += 20;
@@ -151,11 +151,11 @@ PERCENTAGE spell_chance(CreatureEntity &creature, SPELL_IDX spell_id, RealmType 
     }
 
     if ((pc.equals(PlayerClassType::PRIEST) || pc.equals(PlayerClassType::SORCERER))) {
-        if (creature.is_icky_wield[0]) {
+        if (creature.is_icky_wield(0)) {
             chance += 25;
         }
 
-        if (creature.is_icky_wield[1]) {
+        if (creature.is_icky_wield(1)) {
             chance += 25;
         }
     }

@@ -61,7 +61,7 @@ static void calc_shot_params(CreatureEntity &creature, ItemEntity *o_ptr, int *s
     }
 
     const auto energy_fire = o_ptr->get_bow_energy();
-    *shots = creature.num_fire * 100;
+    *shots = creature.get_num_fire() * 100;
     *shot_frac = ((*shots) * 100 / energy_fire) % 100;
     *shots = (*shots) / energy_fire;
     if (!o_ptr->is_specific_artifact(FixedArtifactId::CRIMSON)) {
@@ -362,8 +362,8 @@ static void display_first_page(CreatureEntity &creature, int xthb, int *damage, 
         muta_att++;
     }
 
-    int blows1 = can_attack_with_main_hand(creature) ? creature.num_blow[0] : 0;
-    int blows2 = can_attack_with_sub_hand(creature) ? creature.num_blow[1] : 0;
+    int blows1 = can_attack_with_main_hand(creature) ? creature.get_num_blow(0) : 0;
+    int blows2 = can_attack_with_sub_hand(creature) ? creature.get_num_blow(1) : 0;
     int xdis = creature.get_skill_disarm();
     int xdev = creature.get_skill_device();
     int xsav = creature.get_skill_save();

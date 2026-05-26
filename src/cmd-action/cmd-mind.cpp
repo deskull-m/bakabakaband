@@ -127,13 +127,13 @@ static void decide_mind_ki_chance(CreatureEntity &creature, cm_type *cm_ptr)
         cm_ptr->chance += 20;
     }
 
-    if (creature.is_icky_wield[0]) {
+    if (creature.is_icky_wield(0)) {
         cm_ptr->chance += 20;
     } else if (has_melee_weapon(creature, INVEN_MAIN_HAND)) {
         cm_ptr->chance += 10;
     }
 
-    if (creature.is_icky_wield[1]) {
+    if (creature.is_icky_wield(1)) {
         cm_ptr->chance += 20;
     } else if (has_melee_weapon(creature, INVEN_SUB_HAND)) {
         cm_ptr->chance += 10;
@@ -176,7 +176,7 @@ static void decide_mind_chance(CreatureEntity &creature, cm_type *cm_ptr)
     }
 
     cm_ptr->chance -= 3 * (cm_ptr->plev - cm_ptr->spell.min_lev);
-    cm_ptr->chance += creature.to_m_chance;
+    cm_ptr->chance += creature.get_to_m_chance();
     cm_ptr->chance -= 3 * (adj_mag_stat[creature.get_stat_index(mp_ptr->spell_stat)] - 1);
     if ((cm_ptr->mana_cost > creature.get_csp()) && (cm_ptr->use_mind != MindKindType::BERSERKER) && (cm_ptr->use_mind != MindKindType::NINJUTSU)) {
         cm_ptr->chance += 5 * (cm_ptr->mana_cost - creature.get_csp());
@@ -196,11 +196,11 @@ static void decide_mind_chance(CreatureEntity &creature, cm_type *cm_ptr)
         cm_ptr->chance += 5;
     }
 
-    if (creature.is_icky_wield[0]) {
+    if (creature.is_icky_wield(0)) {
         cm_ptr->chance += 5;
     }
 
-    if (creature.is_icky_wield[1]) {
+    if (creature.is_icky_wield(1)) {
         cm_ptr->chance += 5;
     }
 }

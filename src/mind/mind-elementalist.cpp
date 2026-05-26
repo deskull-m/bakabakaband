@@ -644,7 +644,7 @@ static PERCENTAGE decide_element_chance(CreatureEntity &creature, mind_type spel
     PERCENTAGE chance = spell.fail;
 
     chance -= 3 * (creature.get_level() - spell.min_lev);
-    chance += creature.to_m_chance;
+    chance += creature.get_to_m_chance();
     chance -= 3 * (adj_mag_stat[creature.get_stat_index(A_WIS)] - 1);
 
     PERCENTAGE minfail = adj_mag_fail[creature.get_stat_index(A_WIS)];
@@ -657,11 +657,11 @@ static PERCENTAGE decide_element_chance(CreatureEntity &creature, mind_type spel
         chance += 5;
     }
 
-    if (creature.is_icky_wield[0]) {
+    if (creature.is_icky_wield(0)) {
         chance += 5;
     }
 
-    if (creature.is_icky_wield[1]) {
+    if (creature.is_icky_wield(1)) {
         chance += 5;
     }
 

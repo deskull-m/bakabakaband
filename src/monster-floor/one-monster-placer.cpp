@@ -553,9 +553,9 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     m_ptr->set_individual_speed(floor.inside_arena);
 
     // Initialize AC from monster race
-    m_ptr->ac = new_monrace.ac;
+    m_ptr->set_ac(new_monrace.ac);
     if (m_ptr->is_illegal_modified()) {
-        m_ptr->ac += randint1(10) + 5; // +6～+15のACボーナス
+        m_ptr->set_ac(m_ptr->ac + randint1(10) + 5); // +6～+15のACボーナス
     }
 
     if (m_ptr->is_huge()) {

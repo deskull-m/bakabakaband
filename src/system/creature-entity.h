@@ -1833,6 +1833,102 @@ public:
         this->dis_ac = value;
     }
 
+    // [提案 39] 装備派生キャッシュフィールド (player-status.cpp の update_creature() から
+    // 装備状態に応じて再計算される) の getter / setter virtual。書込は主に update_creature()
+    // から、読取は戦闘/表示/AI 等から行われる。
+    virtual void set_ac(ARMOUR_CLASS value)
+    {
+        this->ac = value;
+    }
+    virtual int16_t get_num_blow(int hand) const
+    {
+        return this->num_blow[hand];
+    }
+    virtual void set_num_blow(int hand, int16_t value)
+    {
+        this->num_blow[hand] = value;
+    }
+    virtual int16_t get_num_fire() const
+    {
+        return this->num_fire;
+    }
+    virtual void set_num_fire(int16_t value)
+    {
+        this->num_fire = value;
+    }
+    virtual int16_t get_to_m_chance() const
+    {
+        return this->to_m_chance;
+    }
+    virtual void set_to_m_chance(int16_t value)
+    {
+        this->to_m_chance = value;
+    }
+    virtual POSITION get_cur_lite() const
+    {
+        return this->cur_lite;
+    }
+    virtual void set_cur_lite(POSITION value)
+    {
+        this->cur_lite = value;
+    }
+    virtual bool is_cumber_armor() const
+    {
+        return this->cumber_armor;
+    }
+    virtual void set_cumber_armor(bool value)
+    {
+        this->cumber_armor = value;
+    }
+    virtual bool is_cumber_glove() const
+    {
+        return this->cumber_glove;
+    }
+    virtual void set_cumber_glove(bool value)
+    {
+        this->cumber_glove = value;
+    }
+    virtual bool is_heavy_wield(int hand) const
+    {
+        return this->heavy_wield[hand];
+    }
+    virtual void set_heavy_wield(int hand, bool value)
+    {
+        this->heavy_wield[hand] = value;
+    }
+    virtual bool is_icky_wield(int hand) const
+    {
+        return this->icky_wield[hand];
+    }
+    virtual void set_icky_wield(int hand, bool value)
+    {
+        this->icky_wield[hand] = value;
+    }
+    virtual bool is_icky_riding_wield(int hand) const
+    {
+        return this->icky_riding_wield[hand];
+    }
+    virtual void set_icky_riding_wield(int hand, bool value)
+    {
+        this->icky_riding_wield[hand] = value;
+    }
+    virtual bool is_riding_ryoute() const
+    {
+        return this->riding_ryoute;
+    }
+    virtual void set_riding_ryoute(bool value)
+    {
+        this->riding_ryoute = value;
+    }
+    virtual bool is_monlite() const
+    {
+        return this->monlite;
+    }
+    virtual void set_monlite(bool value)
+    {
+        this->monlite = value;
+    }
+
     /*! @brief 能力値最大値 stat_max[idx] を取得する (提案 31b) */
     virtual short get_stat_max(int idx) const
     {
@@ -3320,18 +3416,25 @@ private:
     int16_t to_d[2]{}; /* Bonus to dam (wield) */
     int16_t to_d_m{}; /* Bonus to dam (misc) */
 
-public:
+    // [提案 39] private 化済。get_to_m_chance() / set_to_m_chance() / get_num_blow(hand)
+    // / set_num_blow(hand, value) / get_num_fire() / set_num_fire() 経由。
+private:
     int16_t to_m_chance{}; /* Minusses to cast chance */
 
     int16_t num_blow[2]{}; /* Number of blows */
     int16_t num_fire{}; /* Number of shots */
 
+public:
     // [提案 32b] private 化済。get_food() / set_food() 経由。
 private:
     int16_t food{}; /*!< ゲーム中の滋養度の型定義 / Current nutrition */
 
-public:
+    // [提案 39] cur_lite は private 化済。get_cur_lite() / set_cur_lite() 経由。
+    // old_lite は差分検出キャッシュ。
+private:
     POSITION cur_lite{}; /* Radius of lite (if any) */
+
+public:
     POSITION old_lite{}; /* Radius of lite (if any) */
 
     // [提案 33] private 化済。has_special_attack(flag) / add_special_attack(flag)
@@ -3520,13 +3623,22 @@ public:
     bool old_monlite{};
     int extra_blows[2]{};
 
+    // [提案 39] 装備派生キャッシュフラグは private 化済。
+    // is_cumber_armor() / set_cumber_armor() / is_cumber_glove() / set_cumber_glove() /
+    // is_heavy_wield(hand) / set_heavy_wield(hand, value) / is_icky_wield(hand) /
+    // set_icky_wield(hand, value) / is_icky_riding_wield(hand) /
+    // set_icky_riding_wield(hand, value) / is_riding_ryoute() / set_riding_ryoute() /
+    // is_monlite() / set_monlite() 経由。
+private:
     bool cumber_armor{}; /* Mana draining armor */
     bool cumber_glove{}; /* Mana draining gloves */
     bool heavy_wield[2]{}; /* Heavy weapon */
-    bool is_icky_wield[2]{}; /* クラスにふさわしくない装備をしている / Icky weapon */
-    bool is_icky_riding_wield[2]{}; /* 乗馬中に乗馬にふさわしくない装備をしている / Riding weapon */
+    bool icky_wield[2]{}; /* クラスにふさわしくない装備をしている / Icky weapon */
+    bool icky_riding_wield[2]{}; /* 乗馬中に乗馬にふさわしくない装備をしている / Riding weapon */
     bool riding_ryoute{}; /* Riding weapon */
     bool monlite{};
+
+public:
     BIT_FLAGS yoiyami{};
     BIT_FLAGS easy_2weapon{};
     BIT_FLAGS down_saving{};

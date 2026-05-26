@@ -1691,6 +1691,90 @@ is_player() ガードを持つ関数」を外部から `if (is_player()) X(...)`
 
 ---
 
+## 提案 39: 装備派生キャッシュフィールドの private 化 ✅ 完了
+
+### 背景
+
+`player-status.cpp` の `update_creature()` が装備状態から再計算する
+キャッシュフィールド群が `CreatureEntity` 直下に public で多数残存
+していた。書込元は基本的に `update_creature()` 1 箇所だが、読込は
+戦闘・表示・AI・ペット処理など多数の場所から発生し、外部による
+意図しない書込のリスクを抱えていた。
+
+### 完了内容
+
+#### API 整備 (23 個の virtual メソッド)
+
+`CreatureEntity` に getter / setter virtual を追加:
+
+| メソッド | 役割 |
+|---|---|
+| `set_ac(value)` | 基本 AC を設定 (get_ac() は既存) |
+| `get_num_blow(hand)` / `set_num_blow(hand, value)` | 近接攻撃回数 |
+| `get_num_fire()` / `set_num_fire(value)` | 遠隔攻撃回数 |
+| `get_to_m_chance()` / `set_to_m_chance(value)` | 詠唱成功率減算値 |
+| `get_cur_lite()` / `set_cur_lite(value)` | 光源半径 |
+| `is_cumber_armor()` / `set_cumber_armor(bool)` | 鎧によるマナ減耗 |
+| `is_cumber_glove()` / `set_cumber_glove(bool)` | 篭手によるマナ減耗 |
+| `is_heavy_wield(hand)` / `set_heavy_wield(hand, bool)` | 重武器装備 |
+| `is_icky_wield(hand)` / `set_icky_wield(hand, bool)` | 不適切武器装備 |
+| `is_icky_riding_wield(hand)` / `set_icky_riding_wield(hand, bool)` | 不適切騎乗武器 |
+| `is_riding_ryoute()` / `set_riding_ryoute(bool)` | 騎乗両手持ち |
+| `is_monlite()` / `set_monlite(bool)` | モンスター光源照射 |
+
+#### フィールドリネーム
+
+メソッド名衝突回避のためフィールドをリネーム:
+
+- `is_icky_wield[2]` → `icky_wield[2]`
+- `is_icky_riding_wield[2]` → `icky_riding_wield[2]`
+
+(`old_icky_wield[2]` / `old_riding_wield[2]` は public のまま残置。
+別提案で扱う)
+
+#### 移行
+
+31 ファイル全 read/write site を新 API 経由に統一:
+
+- `player/player-status.cpp`: 最大の集約箇所 (update_creature, 重武器/不適切
+  装備判定, mana cumber 検出)
+- `specific-object/torch.cpp::update_lite_radius()`: 多数の compound 演算
+  (`+=`, `++`) をローカル変数で集約し、最後に `set_cur_lite()` 1 回で書込
+- `pet/`, `mind/mind-ninja.cpp`, `monster-floor/monster-lite.cpp`,
+  `floor/floor-leaver.cpp`: chained assignment
+  (`creature.riding_ryoute = creature.old_riding_ryoute = false;`) を
+  2 文に分割 (old_ は public 直接書込、新は setter 経由)
+- `monster-floor/one-monster-placer.cpp`: モンスター AC 初期化 (place_monster)
+- その他戦闘・表示・AI 各所の読取り site
+
+#### Private 化
+
+11 フィールドを private 化:
+`to_m_chance`, `num_blow[2]`, `num_fire`, `cur_lite`, `cumber_armor`,
+`cumber_glove`, `heavy_wield[2]`, `icky_wield[2]`, `icky_riding_wield[2]`,
+`riding_ryoute`, `monlite`
+
+`ac` フィールドは書込のみ `set_ac()` 経由に統一し、フィールド自体は public
+のまま残置 (`io-dump/player-status-dump-json.cpp` で raw 値が JSON 出力
+されており、`get_ac()` は computed 値を返すため意味が異なる。完全 private
+化は別提案で扱う)。
+
+### 効果
+
+- **合計 private 化フィールド数: 83 → 94**
+- 装備派生キャッシュの書込元が `update_creature()` 系に集約され、外部からの
+  意図しない書込を型システムで防止
+- `is_icky_wield()` 等の意図明示形 getter で読取意図が明確に
+- 将来 monster 側で装備派生キャッシュを別計算する override 点を確保
+
+### 残作業
+
+- `ac` フィールドの完全 private 化 (io-dump の raw アクセス整理)
+- `old_*` 系フィールド (old_cumber_armor / old_heavy_wield 等) の private 化
+  (現状 player-status.cpp の diff 検出で直接アクセスされる)
+
+---
+
 ## 提案 41: 呪文マスク (spell_learned/worked/forgotten) の集約 ✅ 完了
 
 ### 背景

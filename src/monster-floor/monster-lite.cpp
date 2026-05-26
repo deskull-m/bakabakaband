@@ -297,23 +297,23 @@ void update_mon_lite(CreatureEntity &creature)
     points.insert(points.end(), points_mon_lite.begin(), points_mon_lite.end());
     floor.set_mon_lite(points, end_temp);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::DELAY_VISIBILITY);
-    creature.monlite = (floor.get_grid(p_pos).info & CAVE_MNLT) != 0;
+    creature.set_monlite((floor.get_grid(p_pos).info & CAVE_MNLT) != 0);
     const auto ninja_data = CreatureClass(creature).get_specific_data<ninja_data_type>();
     if (!ninja_data || !ninja_data->s_stealth) {
-        creature.old_monlite = creature.monlite;
+        creature.old_monlite = creature.is_monlite();
         return;
     }
 
-    if (creature.old_monlite == creature.monlite) {
-        creature.old_monlite = creature.monlite;
+    if (creature.old_monlite == creature.is_monlite()) {
+        creature.old_monlite = creature.is_monlite();
         return;
     }
 
-    if (creature.monlite) {
+    if (creature.is_monlite()) {
         msg_print(_("影の覆いが薄れた気がする。", "Your mantle of shadow becomes thin."));
     } else {
         msg_print(_("影の覆いが濃くなった！", "Your mantle of shadow is restored to its original darkness."));
     }
 
-    creature.old_monlite = creature.monlite;
+    creature.old_monlite = creature.is_monlite();
 }

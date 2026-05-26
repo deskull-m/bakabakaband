@@ -198,7 +198,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
             msg_format(_("%sが恐怖していて制御できない。", "%s^ is too scared to control."), steed_name.data());
             can_move = false;
             disturb(creature, false, true);
-        } else if (creature.riding_ryoute) {
+        } else if (creature.is_riding_ryoute()) {
             can_move = false;
             disturb(creature, false, true);
         } else if (terrain.flags.has(TerrainCharacteristics::CAN_FLY) && (riding_monrace.feature_flags.has(MonsterFeatureType::CAN_FLY))) {

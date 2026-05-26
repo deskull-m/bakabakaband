@@ -201,12 +201,12 @@ void process_surprise_attack(CreatureEntity &creature, player_attack_type *pa_pt
 {
 
     const auto &monrace = pa_ptr->m_ptr->get_monrace();
-    if (!has_melee_weapon(creature, enum2i(INVEN_MAIN_HAND) + pa_ptr->hand) || creature.is_icky_wield[pa_ptr->hand]) {
+    if (!has_melee_weapon(creature, enum2i(INVEN_MAIN_HAND) + pa_ptr->hand) || creature.is_icky_wield(pa_ptr->hand)) {
         return;
     }
 
     int tmp = creature.get_level() * 6 + (creature.get_skill_stealth() + 10) * 4;
-    if (creature.monlite && (pa_ptr->mode != HISSATSU_NYUSIN)) {
+    if (creature.is_monlite() && (pa_ptr->mode != HISSATSU_NYUSIN)) {
         tmp /= 3;
     }
     if (has_aggravate(creature)) {
@@ -311,10 +311,12 @@ bool set_superstealth(CreatureEntity &creature, bool set)
         if (!ninja_data->s_stealth) {
             if (creature.get_floor()->grid_array[creature.y][creature.x].info & CAVE_MNLT) {
                 msg_print(_("敵の目から薄い影の中に覆い隠された。", "You are mantled in weak shadow from ordinary eyes."));
-                creature.monlite = creature.old_monlite = true;
+                creature.old_monlite = true;
+                creature.set_monlite(true);
             } else {
                 msg_print(_("敵の目から影の中に覆い隠された！", "You are mantled in shadow from ordinary eyes!"));
-                creature.monlite = creature.old_monlite = false;
+                creature.old_monlite = false;
+                creature.set_monlite(false);
             }
 
             notice = true;

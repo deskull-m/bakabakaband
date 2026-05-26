@@ -51,7 +51,8 @@ static void check_riding_preservation(CreatureEntity &creature)
     if (monster.has_parent()) {
         creature.ride_monster(0);
         creature.pet_extra_flags &= ~(PF_TWO_HANDS);
-        creature.riding_ryoute = creature.old_riding_ryoute = false;
+        creature.old_riding_ryoute = false;
+        creature.set_riding_ryoute(false);
     } else {
         party_monsters[0] = monster;
         delete_monster_idx(creature, creature.get_riding());

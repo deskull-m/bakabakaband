@@ -110,7 +110,7 @@ TrFlags CreatureClass::tr_flags() const
                 flags.set(TR_SPEED);
             }
 
-            if (plev > 24 && !creature.is_icky_wield[0] && !creature.is_icky_wield[1]) {
+            if (plev > 24 && !creature.is_icky_wield(0) && !creature.is_icky_wield(1)) {
                 flags.set(TR_FREE_ACT);
             }
         }

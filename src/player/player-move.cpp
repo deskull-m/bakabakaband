@@ -194,7 +194,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
         if (CreatureClass(creature).equals(PlayerClassType::NINJA)) {
             if (grid_new.info & (CAVE_GLOW)) {
                 set_superstealth(creature, false);
-            } else if (creature.cur_lite <= 0) {
+            } else if (creature.get_cur_lite() <= 0) {
                 set_superstealth(creature, true);
             }
         }

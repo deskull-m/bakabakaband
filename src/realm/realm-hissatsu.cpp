@@ -487,7 +487,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
                     basedam /= 9;
                 }
                 damage += basedam;
-                damage *= creature.num_blow[i];
+                damage *= creature.get_num_blow(i);
                 total_damage += damage / 200;
                 if (i) {
                     total_damage = total_damage * 7 / 10;
@@ -720,7 +720,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
                 }
                 damage += basedam;
                 damage += creature.get_to_d(i) * 100;
-                damage *= creature.num_blow[i];
+                damage *= creature.get_num_blow(i);
                 total_damage += (damage / 100);
             }
 
