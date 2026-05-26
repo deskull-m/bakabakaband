@@ -226,8 +226,8 @@ static bool wr_savefile_new(CreatureEntity &creature)
         }
     }
 
-    wr_s16b(creature.pet_follow_distance);
-    wr_s16b(creature.pet_extra_flags);
+    wr_s16b(creature.get_pet_follow_distance());
+    wr_s16b(creature.get_pet_extra_flags());
     if (AngbandSystem::get_instance().is_awaiting_report_status() || !creature.is_dead()) {
         wr_string(screen_dump);
     } else {

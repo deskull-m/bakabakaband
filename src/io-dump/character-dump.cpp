@@ -92,22 +92,22 @@ static void dump_aux_pet(CreatureEntity &creature, FILE *fff)
     fmt::println(fff, _("\n\n  [ペットへの命令]", "\n\n  [Command for Pets]"));
 
     fmt::print(fff, _("\n ドアを開ける:                       {}", "\n Pets open doors:                    {}"),
-        (creature.pet_extra_flags & PF_OPEN_DOORS) ? "ON" : "OFF");
+        creature.has_pet_extra_flag(PF_OPEN_DOORS) ? "ON" : "OFF");
 
     fmt::print(fff, _("\n アイテムを拾う:                     {}", "\n Pets pick up items:                 {}"),
-        (creature.pet_extra_flags & PF_PICKUP_ITEMS) ? "ON" : "OFF");
+        creature.has_pet_extra_flag(PF_PICKUP_ITEMS) ? "ON" : "OFF");
 
     fmt::print(fff, _("\n テレポート系魔法を使う:             {}", "\n Allow teleport:                     {}"),
-        (creature.pet_extra_flags & PF_TELEPORT) ? "ON" : "OFF");
+        creature.has_pet_extra_flag(PF_TELEPORT) ? "ON" : "OFF");
 
     fmt::print(fff, _("\n 攻撃魔法を使う:                     {}", "\n Allow cast attack spell:            {}"),
-        (creature.pet_extra_flags & PF_ATTACK_SPELL) ? "ON" : "OFF");
+        creature.has_pet_extra_flag(PF_ATTACK_SPELL) ? "ON" : "OFF");
 
     fmt::print(fff, _("\n 召喚魔法を使う:                     {}", "\n Allow cast summon spell:            {}"),
-        (creature.pet_extra_flags & PF_SUMMON_SPELL) ? "ON" : "OFF");
+        creature.has_pet_extra_flag(PF_SUMMON_SPELL) ? "ON" : "OFF");
 
     fmt::print(fff, _("\n プレイヤーを巻き込む範囲魔法を使う: {}", "\n Allow involve creature in area spell: {}"),
-        (creature.pet_extra_flags & PF_BALL_SPELL) ? "ON" : "OFF");
+        creature.has_pet_extra_flag(PF_BALL_SPELL) ? "ON" : "OFF");
 
     fmt::print(fff, "\n");
 }

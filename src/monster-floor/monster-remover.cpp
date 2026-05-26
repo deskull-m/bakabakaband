@@ -61,11 +61,11 @@ void delete_monster_idx(CreatureEntity &creature, short m_idx)
         health_track(creature, 0);
     }
 
-    if (creature.pet_t_m_idx == m_idx) {
-        creature.pet_t_m_idx = 0;
+    if (creature.get_pet_t_m_idx() == m_idx) {
+        creature.set_pet_t_m_idx(0);
     }
-    if (creature.riding_t_m_idx == m_idx) {
-        creature.riding_t_m_idx = 0;
+    if (creature.get_riding_t_m_idx() == m_idx) {
+        creature.set_riding_t_m_idx(0);
     }
     if (monster.is_riding()) { // creature.get_riding() == m_idx のままの方がいい？
         creature.ride_monster(0);
@@ -117,8 +117,8 @@ void wipe_monsters_list(CreatureEntity &creature)
     floor.reset_mproc_max();
     floor.num_repro = 0;
     Target::clear_last_target();
-    creature.pet_t_m_idx = 0;
-    creature.riding_t_m_idx = 0;
+    creature.set_pet_t_m_idx(0);
+    creature.set_riding_t_m_idx(0);
     health_track(creature, 0);
 }
 

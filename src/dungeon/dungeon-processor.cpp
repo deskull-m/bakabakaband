@@ -113,8 +113,8 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
     command_dir = Direction::none();
 
     Target::clear_last_target();
-    creature.pet_t_m_idx = 0;
-    creature.riding_t_m_idx = 0;
+    creature.set_pet_t_m_idx(0);
+    creature.set_riding_t_m_idx(0);
     creature.set_ambush_flag(false);
     health_track(creature, 0);
 

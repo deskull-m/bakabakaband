@@ -1905,7 +1905,7 @@ static bool is_riding_two_hands(CreatureEntity &creature)
         return true;
     }
 
-    if (any_bits(creature.pet_extra_flags, PF_TWO_HANDS)) {
+    if (creature.has_pet_extra_flag(PF_TWO_HANDS)) {
         switch (creature.pclass) {
         case PlayerClassType::MONK:
         case PlayerClassType::FORCETRAINER:

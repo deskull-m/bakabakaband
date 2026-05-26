@@ -36,11 +36,12 @@ static bool decide_pet_approch_direction(CreatureEntity &creature, const Creatur
     const auto p_pos = creature.get_position();
     const auto cdis_from = Grid::calc_distance(p_pos, monster_from.get_position());
     const auto cdis_to = Grid::calc_distance(p_pos, monster_to.get_position());
-    if (creature.pet_follow_distance < 0) {
-        if (cdis_to <= (0 - creature.pet_follow_distance)) {
+    const auto pet_follow_distance = creature.get_pet_follow_distance();
+    if (pet_follow_distance < 0) {
+        if (cdis_to <= (0 - pet_follow_distance)) {
             return true;
         }
-    } else if ((cdis_from < cdis_to) && (cdis_to > creature.pet_follow_distance)) {
+    } else if ((cdis_from < cdis_to) && (cdis_to > pet_follow_distance)) {
         return true;
     }
 
@@ -116,12 +117,12 @@ static tl::optional<MonsterMovementDirectionList> get_enemy_dir(CreatureEntity &
     const auto &monster = floor.get_monster(m_idx);
 
     POSITION x = 0, y = 0;
-    if (creature.riding_t_m_idx && creature.is_located_at({ monster.y, monster.x })) {
-        y = floor.get_monster(creature.riding_t_m_idx).y;
-        x = floor.get_monster(creature.riding_t_m_idx).x;
-    } else if (monster.is_pet() && creature.pet_t_m_idx) {
-        y = floor.get_monster(creature.pet_t_m_idx).y;
-        x = floor.get_monster(creature.pet_t_m_idx).x;
+    if (creature.get_riding_t_m_idx() && creature.is_located_at({ monster.y, monster.x })) {
+        y = floor.get_monster(creature.get_riding_t_m_idx()).y;
+        x = floor.get_monster(creature.get_riding_t_m_idx()).x;
+    } else if (monster.is_pet() && creature.get_pet_t_m_idx()) {
+        y = floor.get_monster(creature.get_pet_t_m_idx()).y;
+        x = floor.get_monster(creature.get_pet_t_m_idx()).x;
     } else {
         int start;
         int plus = 1;
@@ -201,7 +202,7 @@ static tl::optional<MonsterMovementDirectionList> decide_pet_movement_direction(
     }
 
     const auto cdis = Grid::calc_distance(creature.get_position(), monster.get_position());
-    auto &pet_follow_distance = creature.pet_follow_distance;
+    const auto pet_follow_distance = creature.get_pet_follow_distance();
     const auto avoid = ((pet_follow_distance < 0) && (cdis <= (0 - pet_follow_distance)));
     const auto lonely = (!avoid && (cdis > pet_follow_distance));
     const auto distant = (cdis > PET_SEEK_DIST);
@@ -211,12 +212,12 @@ static tl::optional<MonsterMovementDirectionList> decide_pet_movement_direction(
 
     const auto distance_orig = pet_follow_distance;
     if (pet_follow_distance > PET_SEEK_DIST) {
-        pet_follow_distance = PET_SEEK_DIST;
+        creature.set_pet_follow_distance(PET_SEEK_DIST);
     }
 
     MonsterSweepGrid msd(&creature, m_idx);
     const auto mmdl = msd.get_movable_grid();
-    pet_follow_distance = distance_orig;
+    creature.set_pet_follow_distance(distance_orig);
     return mmdl;
 }
 

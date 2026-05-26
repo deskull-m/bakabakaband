@@ -234,8 +234,8 @@ static errr exe_reading_savefile(CreatureEntity &creature)
     }
 
     load_store(creature);
-    creature.pet_follow_distance = rd_s16b();
-    creature.pet_extra_flags = rd_u16b();
+    creature.set_pet_follow_distance(rd_s16b());
+    creature.set_pet_extra_flags(rd_u16b());
 
     auto restore_dungeon_result = restore_dungeon(creature);
     if (restore_dungeon_result != 0) {
