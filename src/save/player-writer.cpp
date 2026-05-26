@@ -245,9 +245,9 @@ void wr_player(CreatureEntity &creature)
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM));
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_IMM_DARK));
 
-    wr_s16b(creature.patron);
-    wr_FlagGroup(creature.muta, wr_byte);
-    wr_FlagGroup(creature.trait, wr_byte);
+    wr_s16b(creature.get_patron());
+    wr_FlagGroup(creature.get_mutations(), wr_byte);
+    wr_FlagGroup(creature.get_traits(), wr_byte);
 
     // Save virtues in legacy format (8 entries)
     // First, collect virtues into arrays

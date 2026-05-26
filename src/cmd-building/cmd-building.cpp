@@ -224,7 +224,7 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
         screen_load();
         return false;
     case BACT_LOSE_MUTATION: {
-        auto muta = creature.muta;
+        auto muta = creature.get_mutations();
         if (creature.ppersonality == PERSONALITY_LUCKY) {
             // ラッキーマンの白オーラは突然変異治療の対象外
             muta.reset(PlayerMutationType::GOOD_LUCK);

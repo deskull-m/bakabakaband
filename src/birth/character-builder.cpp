@@ -89,7 +89,7 @@ static void write_birth_diary(CreatureEntity &creature)
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_personality);
     if (CreatureClass(creature).equals(PlayerClassType::CHAOS_WARRIOR)) {
         const auto fmt_patron = _("%s守護神%sと契約を交わした。", "%smade a contract with patron %s.");
-        const auto mes_patron = format(fmt_patron, indent, patron_list[creature.patron].name.data());
+        const auto mes_patron = format(fmt_patron, indent, patron_list[creature.get_patron()].name.data());
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_patron);
     }
 }

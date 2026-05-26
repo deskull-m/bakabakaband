@@ -2919,6 +2919,95 @@ public:
     {
         return this->cursed_special;
     }
+
+    // [提案 44] 突然変異/特性/呪いフラグの write-side virtual API。
+    // 直接 `creature.muta.set(X)` / `creature.cursed.clear()` 等のフィールド
+    // アクセスを置き換える。一括代入 (`set_X()`) は savefile load 用。
+    virtual bool has_mutation(PlayerMutationType m) const
+    {
+        return this->muta.has(m);
+    }
+    virtual void add_mutation(PlayerMutationType m)
+    {
+        this->muta.set(m);
+    }
+    virtual void remove_mutation(PlayerMutationType m)
+    {
+        this->muta.reset(m);
+    }
+    virtual void clear_mutations()
+    {
+        this->muta.clear();
+    }
+    virtual void set_mutations(const EnumClassFlagGroup<PlayerMutationType> &flags)
+    {
+        this->muta = flags;
+    }
+    virtual bool has_trait(PlayerMutationType t) const
+    {
+        return this->trait.has(t);
+    }
+    virtual void add_trait(PlayerMutationType t)
+    {
+        this->trait.set(t);
+    }
+    virtual void remove_trait(PlayerMutationType t)
+    {
+        this->trait.reset(t);
+    }
+    virtual void clear_traits()
+    {
+        this->trait.clear();
+    }
+    virtual void set_traits(const EnumClassFlagGroup<PlayerMutationType> &flags)
+    {
+        this->trait = flags;
+    }
+    virtual bool has_curse(CurseTraitType c) const
+    {
+        return this->cursed.has(c);
+    }
+    virtual void add_curse(CurseTraitType c)
+    {
+        this->cursed.set(c);
+    }
+    virtual void add_curses(const EnumClassFlagGroup<CurseTraitType> &flags)
+    {
+        this->cursed.set(flags);
+    }
+    virtual void remove_curse(CurseTraitType c)
+    {
+        this->cursed.reset(c);
+    }
+    virtual void clear_curses()
+    {
+        this->cursed.clear();
+    }
+    virtual void set_curses(const EnumClassFlagGroup<CurseTraitType> &flags)
+    {
+        this->cursed = flags;
+    }
+    virtual bool has_curse_special(CurseSpecialTraitType c) const
+    {
+        return this->cursed_special.has(c);
+    }
+    virtual void add_curse_special(CurseSpecialTraitType c)
+    {
+        this->cursed_special.set(c);
+    }
+    virtual void remove_curse_special(CurseSpecialTraitType c)
+    {
+        this->cursed_special.reset(c);
+    }
+    virtual void clear_curses_special()
+    {
+        this->cursed_special.clear();
+    }
+    virtual void set_curses_special(const EnumClassFlagGroup<CurseSpecialTraitType> &flags)
+    {
+        this->cursed_special = flags;
+    }
+
     /*!
      * @brief 種族情報ポインタ
      * @details プレイヤー時は race_info[] の該当エントリへのポインタ、
@@ -3270,12 +3359,17 @@ public:
     ClassSpecificData class_specific_data;
 
     // 変異関連
+    // [提案 44] private 化済。has_mutation/add_mutation/remove_mutation/clear_mutations/set_mutations 経由。
+    // trait についても has_trait/add_trait/remove_trait/clear_traits/set_traits 経由。
+private:
     EnumClassFlagGroup<PlayerMutationType> muta{}; /*!< 突然変異 / mutations */
     EnumClassFlagGroup<PlayerMutationType> trait{}; /*!< 後天特性 / permanent trait */
 
     // パトロン関連（主にカオス戦士用、モンスターでは未使用）
+    // [提案 44] private 化済。get_patron()/set_patron() 経由。
     int16_t patron{}; /*!< カオスパトロンのID / Chaos patron ID */
 
+public:
     // エネルギー関連
     ACTION_ENERGY energy_need{}; /*!< 次の行動までに必要なエネルギー / Energy needed for next move */
 
@@ -3350,16 +3444,17 @@ public:
 
     // [提案 33] 装備由来 BIT_FLAGS 群。
     // 全て has_X() / set_X() 経由でアクセス。
-    // EnumClassFlagGroup の cursed / cursed_special は public 維持。
+    // [提案 44] cursed / cursed_special も private 化済。
+    // has_curse / add_curse / add_curses / remove_curse / clear_curses / set_curses 経由。
+    // cursed_special 側は has_curse_special / add_curse_special / remove_curse_special /
+    // clear_curses_special / set_curses_special 経由。
 private:
     BIT_FLAGS anti_magic{}; /* Anti-magic */
     BIT_FLAGS anti_tele{}; /* Prevent teleportation */
 
-public:
     EnumClassFlagGroup<CurseTraitType> cursed{}; /* Player is cursed */
     EnumClassFlagGroup<CurseSpecialTraitType> cursed_special{}; /* Player is special type cursed */
 
-private:
     BIT_FLAGS levitation{}; /* No damage falling */
     BIT_FLAGS lite{}; /* Permanent light */
     BIT_FLAGS free_act{}; /* Never paralyzed */

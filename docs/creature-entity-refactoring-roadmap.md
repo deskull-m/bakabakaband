@@ -1775,6 +1775,122 @@ is_player() ガードを持つ関数」を外部から `if (is_player()) X(...)`
 
 ---
 
+## 提案 40: ペット関連フィールドの private 化
+
+**対象**: `pet_extra_flags` / `pet_follow_distance` / `pet_t_m_idx` / `riding_t_m_idx` / `health_who` (5 フィールド)
+**規模**: access 約 30 サイト (`pet_extra_flags` だけで 12 ファイル)
+**価値**: ペット AI 拡張で将来モンスターも持つ余地
+
+---
+
+## 提案 42: 旧差分検出キャッシュ (`old_*`) の private 化
+
+**対象**: `old_race1/2` / `old_realm` / `old_food_aux` / `old_lite` / `old_monlite` /
+`old_heavy_*` / `old_icky_*` / `old_riding_*` / `old_spells` / `old_cumber_*` (10+ フィールド)
+**規模**: 主に `update_creature()` 内部のみで使用 — call site 集中
+**価値**: 「前回値スナップショット」の意味的グループ化
+
+---
+
+## 提案 43: 行動状態フラグの private 化
+
+**対象**: `resting` / `running` / `action` / `fishing_dir` / `sutemi` / `yoiyami` /
+`timewalk` / `teleport_town` / `is_fired` / `leaving` / `playing` / `now_damaged` /
+`monk_notify_aux` / `last_message` / `level_up_message` (15+ フィールド)
+**規模**: access 多数 (`running` で 8 ファイル、`resting` で 4 等)
+**価値**: モンスター AI と共通化余地大 (徘徊・休息など)
+
+---
+
+## 提案 44: 突然変異/呪い系フラグの private 化 ✅ 完了
+
+### 背景
+
+`muta` / `trait` (EnumClassFlagGroup<PlayerMutationType>) / `cursed`
+(EnumClassFlagGroup<CurseTraitType>) / `cursed_special`
+(EnumClassFlagGroup<CurseSpecialTraitType>) / `patron` (int16_t) の
+5 フィールドが CreatureEntity 直下に public で残存していた。
+
+`get_mutations()` / `get_traits()` / `get_cursed_flags()` /
+`get_cursed_special_flags()` の const ref getter は既存だが、書込
+パターン (`creature.muta.set(X)` / `creature.muta.reset(X)` /
+`creature.cursed.set(...)` / `creature.cursed.clear()` 等) は外部から
+直接フィールドにアクセスする形が残っていた。`patron` は
+`get_patron()` / `set_patron()` 既存だが直接 `creature.patron = X` の
+書込みも残存。
+
+### 完了内容
+
+#### API 整備
+
+`CreatureEntity` に flag 操作 virtual を追加:
+
+| メソッド | 役割 |
+|---|---|
+| `has_mutation(PlayerMutationType)` | 単一変異判定 |
+| `add_mutation(PlayerMutationType)` | 単一変異設定 |
+| `remove_mutation(PlayerMutationType)` | 単一変異クリア |
+| `clear_mutations()` | 全変異クリア |
+| `set_mutations(const EnumClassFlagGroup<>&)` | 一括代入 (savefile load) |
+| `has_trait` / `add_trait` / `remove_trait` / `clear_traits` / `set_traits` | trait 用同等 |
+| `has_curse(CurseTraitType)` | 単一呪い判定 |
+| `add_curse(CurseTraitType)` | 単一呪い設定 |
+| `add_curses(const EnumClassFlagGroup<>&)` | 装備呪いフラグ集計 (`obj_curse_flags` 等) の `set(flags)` 相当 |
+| `remove_curse(CurseTraitType)` | 単一呪いクリア |
+| `clear_curses()` | 全呪いクリア |
+| `set_curses(const EnumClassFlagGroup<>&)` | 一括代入 (savefile load) |
+| `has_curse_special` / `add_curse_special` / `remove_curse_special` / `clear_curses_special` / `set_curses_special` | cursed_special 用同等 |
+| `get_patron()` / `set_patron()` | 既存 (継続利用) |
+
+`get_mutations()` / `get_traits()` / `get_cursed_flags()` /
+`get_cursed_special_flags()` の const ref getter は引き続き残置
+(savefile save の `get_X_flags()` 経由読取り用)。
+
+#### 移行
+
+- `mutation/mutation-investor-remover.cpp`: 20+ サイトの
+  `creature.muta.reset(X)` / `creature.muta.set(X)` を
+  `remove_mutation(X)` / `add_mutation(X)` に migration
+- `mutation/mutation-processor.cpp` / `wizard/wizard-mutation.cpp` /
+  `object-use/quaff/quaff-effects.cpp`: 同様
+- `player/player-status-flags.cpp`: cursed/cursed_special 書込み (26 + 4 = 30 サイト)
+- `birth/` 系・`load/player-info-loader.cpp` / `birth-loader.cpp` /
+  `quick-start.cpp` / `birth-select-patron.cpp` / `birth-wizard.cpp`:
+  patron の `=` 代入を `set_patron()` 経由に migration
+- read 側 (`.muta.has(X)` 等) は `has_mutation(X)` に migration
+
+#### Private 化
+
+5 フィールド (`muta`, `trait`, `cursed`, `cursed_special`, `patron`) を
+完全 private 化。
+
+### 効果
+
+- **合計 private 化フィールド数: 94 → 99**
+- 変異・特性・呪いフラグの書込パターンが意図明示形 (`add_mutation()` /
+  `remove_curse()` 等) に統一
+- 将来モンスターに種族由来変異 (e.g. ドラゴンの吐息特性) を導入する際の
+  override 点を確保
+- `get_mutations()` const ref getter は savefile save 経路で読取り用に
+  残置 (`get_X_flags()` 系と同じ役割)
+
+---
+
+## 提案 45: pet_t_m_idx / riding_t_m_idx 系を `target` Pos2D に統合
+
+`riding` の getter/setter 化と同様、ターゲットモンスター idx を
+CreatureEntity 共通化。**規模**: 10-15 サイト
+
+---
+
+## 提案 46: ESP / 装備集計の差分検出を `update_creature()` 内 raw access に閉じる
+
+提案 33 で telepathy/esp_* は private 化済だが、`get_X_flags()` が
+差分検出キャッシュ用に依然外部公開。これを `update_creature()`
+内部完結に閉じる試み。
+
+---
+
 ## 提案 41: 呪文マスク (spell_learned/worked/forgotten) の集約 ✅ 完了
 
 ### 背景

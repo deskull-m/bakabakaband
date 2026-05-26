@@ -2916,7 +2916,7 @@ void check_experience(CreatureEntity &creature)
          * 呼ばれるので順番を最後にする。
          */
         if (level_reward) {
-            patron_list[creature.patron].gain_level_reward(creature, 0);
+            patron_list[creature.get_patron()].gain_level_reward(creature, 0);
             level_reward = false;
         }
 

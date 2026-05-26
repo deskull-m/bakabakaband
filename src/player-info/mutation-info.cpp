@@ -8,7 +8,7 @@
 /*!< @todo FEAELESS フラグも記述して問題ないと思われる */
 void set_mutation_info(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    if (creature.muta.none()) {
+    if (creature.get_mutations().none()) {
         return;
     }
 

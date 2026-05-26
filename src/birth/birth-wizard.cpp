@@ -239,11 +239,11 @@ static bool let_player_select_patron(CreatureEntity &creature)
 {
     // 混沌の戦士以外はパトロンを選択しない
     if (creature.pclass != PlayerClassType::CHAOS_WARRIOR) {
-        creature.patron = randnum0<short>(MAX_PATRON);
+        creature.set_patron(randnum0<short>(MAX_PATRON));
         return true;
     }
 
-    creature.patron = 0; // 初期値
+    creature.set_patron(0); // 初期値
     while (true) {
         if (!get_player_patron(creature)) {
             return false;

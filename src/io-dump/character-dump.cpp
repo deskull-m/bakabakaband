@@ -463,7 +463,7 @@ static void dump_aux_virtues(CreatureEntity &creature, FILE *fff)
  */
 static void dump_aux_mutations(CreatureEntity &creature, FILE *fff)
 {
-    if (creature.muta.any()) {
+    if (creature.get_mutations().any()) {
         fmt::println(fff, _("\n\n  [突然変異]\n", "\n\n  [Mutations]\n"));
         dump_mutations(creature, fff);
     }

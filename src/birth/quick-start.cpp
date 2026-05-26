@@ -114,7 +114,7 @@ void save_prev_data(CreatureEntity &creature, birther *birther_ptr)
         birther_ptr->player_hp[i] = creature.player_hp[i];
     }
 
-    birther_ptr->patron = creature.patron;
+    birther_ptr->patron = creature.get_patron();
     birther_ptr->virtues = creature.virtues;
 
     for (int i = 0; i < 4; i++) {
@@ -169,7 +169,7 @@ void load_prev_data(CreatureEntity &creature, bool swap)
 
     creature.maxhp = creature.player_hp[0];
     creature.hp = creature.player_hp[0];
-    creature.patron = previous_char.patron;
+    creature.set_patron(previous_char.patron);
     creature.virtues = previous_char.virtues;
 
     CreatureClass(creature).init_specific_data();

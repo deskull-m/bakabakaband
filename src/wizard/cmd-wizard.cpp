@@ -216,7 +216,7 @@ bool exe_cmd_debug(CreatureEntity &creature, char cmd)
         wiz_generate_room(creature, command_arg);
         return true;
     case 'r':
-        patron_list[creature.patron].gain_level_reward(creature, command_arg);
+        patron_list[creature.get_patron()].gain_level_reward(creature, command_arg);
         return true;
     case 'n':
         wiz_summon_specific_monster(creature, i2enum<MonraceId>(command_arg));

@@ -590,7 +590,7 @@ bool QuaffEffects::tsuyoshi()
  */
 bool QuaffEffects::polymorph()
 {
-    if (this->creature.muta.any() && one_in_(23)) {
+    if (this->creature.get_mutations().any() && one_in_(23)) {
         lose_all_mutations(this->creature);
         return false;
     }

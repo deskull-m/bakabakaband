@@ -166,8 +166,8 @@ static void display_mutations_for_selection(CreatureEntity &creature)
 
     for (const auto &[muta_type, name] : mutation_data) {
         const int id = static_cast<int>(muta_type);
-        const bool has_mutation = creature.muta.has(muta_type);
-        all_mutations.emplace_back(id, name, has_mutation);
+        const bool present = creature.has_mutation(muta_type);
+        all_mutations.emplace_back(id, name, present);
     }
 
     // Display all mutations in ultra-compact 4-column format
