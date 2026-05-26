@@ -115,8 +115,21 @@
                             },
                             "outer": { "type": "string" },
                             "inner": { "type": "string" },
-                            "stream1": { "type": "string" },
-                            "stream2": { "type": "string" }
+                            "streams": {
+                                "type": "array",
+                                "description": "壁内の鉱脈 stream の配列。priority 順にソートされる。",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "type": { "type": "string", "description": "stream の地形種別タグ" },
+                                        "count": { "type": "integer", "minimum": 1, "maximum": 255, "description": "stream の生成回数" },
+                                        "chance": { "type": "integer", "minimum": 1, "maximum": 65535, "description": "stream 1 個ごとの分岐確率" },
+                                        "priority": { "type": "integer", "minimum": 0, "maximum": 255, "description": "TerrainConversionType::STREAM の stream_index と対応する優先順位 (小さい順)" }
+                                    },
+                                    "required": ["type", "count", "chance", "priority"],
+                                    "additionalProperties": false
+                                }
+                            }
                         }
                     },
                     "flags": {

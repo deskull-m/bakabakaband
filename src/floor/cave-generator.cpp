@@ -364,19 +364,12 @@ static void make_aqua_streams(CreatureEntity &creature, DungeonData *dd_ptr, con
         return;
     }
 
-    if (dungeon.stream2 > 0) {
-        constexpr auto num_quartz = 4;
-        constexpr auto chance_quartz = 15;
-        for (auto i = 0; i < num_quartz; i++) {
-            build_streamer(creature, dungeon.stream2, chance_quartz);
+    for (const auto &stream : dungeon.streams) {
+        if (stream.terrain_id <= 0) {
+            continue;
         }
-    }
-
-    if (dungeon.stream1 > 0) {
-        constexpr auto num_magma = 6;
-        constexpr auto chance_magma = 30;
-        for (auto i = 0; i < num_magma; i++) {
-            build_streamer(creature, dungeon.stream1, chance_magma);
+        for (auto i = 0; i < stream.count; i++) {
+            build_streamer(creature, stream.terrain_id, stream.chance);
         }
     }
 }
