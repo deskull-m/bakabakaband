@@ -339,6 +339,14 @@ API 経由に統一された。一部フィールド (r_idx / ap_r_idx / riding)
   セマンティクスは個別 `has_X()` 2 連検査に分解。さらにデッド
   フィールド `health_who` (宣言以外で未使用) を削除。
   **合計 private 化フィールド数: 99 → 103**
+- **提案 42**: 旧差分検出キャッシュ `old_*` 系 12 個 (`old_lite` /
+  `old_race1/2` / `old_realm` / `old_spells` / `old_cumber_armor/glove` /
+  `old_heavy_wield[2]` / `old_heavy_shoot` / `old_icky_wield[2]` /
+  `old_riding_wield[2]` / `old_riding_ryoute` / `old_monlite`) を private
+  化。25 個の virtual API (`get_old_X()` / `set_old_X()`、bool 系は意図
+  明示のため `was_X()` / `set_was_X()` 命名) を整備し、11 ファイル
+  約 46 サイトを migration。さらにデッドフィールド `old_food_aux`
+  (宣言以外で未使用) を削除。**合計 private 化フィールド数: 103 → 115**
 - **提案 1/2**: プレイヤー専用フィールドのモンスター運用化基盤完了。
   種族 (`prace`) / 職業 (`pclass`) / 魔法領域 (`realm1` / `realm2` /
   `element_realm`) / パトロン (`patron`) / 変身形態 (`mimic_form`)
@@ -711,6 +719,13 @@ bakabakaband 側と上流側でよくある構造的差異を以下のルール�
 | `creature.pet_follow_distance` / `creature.pet_t_m_idx` / `creature.riding_t_m_idx` 読取 | `creature.get_pet_follow_distance()` / `get_pet_t_m_idx()` / `get_riding_t_m_idx()` (提案 40) |
 | 同上書込 | `creature.set_pet_follow_distance(X)` / `set_pet_t_m_idx(X)` / `set_riding_t_m_idx(X)` (提案 40) |
 | `creature.health_who` | **提案 40 でフィールド削除** (デッドフィールドだった) |
+| `creature.old_lite` / `old_race1/2` / `old_realm` / `old_spells` 読取 | `creature.get_old_lite()` / `get_old_race_flags1/2()` / `get_old_realm()` / `get_old_spells()` (提案 42) |
+| 同上書込 | `creature.set_old_lite(X)` / `set_old_race_flags1/2(X)` / `set_old_realm(X)` / `set_old_spells(X)` (提案 42) |
+| `creature.old_cumber_armor` / `old_cumber_glove` / `old_heavy_shoot` / `old_riding_ryoute` / `old_monlite` 読取 | `creature.was_cumber_armor()` / `was_cumber_glove()` / `was_heavy_shoot()` / `was_riding_ryoute()` / `was_monlite()` (提案 42) |
+| `creature.old_heavy_wield[hand]` / `old_icky_wield[hand]` / `old_riding_wield[hand]` 読取 | `creature.was_heavy_wield(hand)` / `was_icky_wield(hand)` / `was_icky_riding_wield(hand)` (提案 42) |
+| 同上書込 | `creature.set_was_heavy_wield(hand, X)` / `set_was_icky_wield(hand, X)` / `set_was_icky_riding_wield(hand, X)` (提案 42)、scalar bool は `set_was_X(value)` |
+| `creature.old_realm \|= 1U << X` / `old_race1 \|= ...` 単一ビット追加 | `creature.set_old_realm(creature.get_old_realm() \| (1U << X))` (提案 42。意味的な単純化のため raw 操作を保持) |
+| `creature.old_food_aux` | **提案 42 でフィールド削除** (デッドフィールドだった) |
 
 **GCC 固有の注意**:
 上流は MSVC 前提のことが多く、`<cstdint>` 等のインクルード漏れがあれば追加する。

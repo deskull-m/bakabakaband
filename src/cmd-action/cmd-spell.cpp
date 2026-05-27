@@ -685,7 +685,7 @@ static void change_realm2(CreatureEntity &creature, PlayerRealm &pr, RealmType n
     constexpr auto fmt_realm = _("魔法の領域を%sから%sに変更した。", "changed magic realm from %s to %s.");
     const auto mes = format(fmt_realm, pr.realm2().get_name().data(), PlayerRealm::get_name(next_realm).data());
     exe_write_diary(*creature.get_floor(), DiaryKind::DESCRIPTION, 0, mes);
-    creature.old_realm |= 1U << (enum2i(pr.realm2().to_enum()) - 1);
+    creature.set_old_realm(creature.get_old_realm() | (1U << (enum2i(pr.realm2().to_enum()) - 1)));
     pr.set(pr.realm1().to_enum(), next_realm);
 
     static constexpr auto flags = {

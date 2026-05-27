@@ -1459,6 +1459,114 @@ public:
         this->riding_t_m_idx = value;
     }
 
+    // [提案 42] 差分検出キャッシュ (old_*) の virtual API。
+    // update_creature() 系で 1 ターン前の値スナップショットを保持し、
+    // 状態変化検出 / メッセージ出力に使用される。
+    virtual POSITION get_old_lite() const
+    {
+        return this->old_lite;
+    }
+    virtual void set_old_lite(POSITION value)
+    {
+        this->old_lite = value;
+    }
+    virtual BIT_FLAGS get_old_race_flags1() const
+    {
+        return this->old_race1;
+    }
+    virtual void set_old_race_flags1(BIT_FLAGS value)
+    {
+        this->old_race1 = value;
+    }
+    virtual BIT_FLAGS get_old_race_flags2() const
+    {
+        return this->old_race2;
+    }
+    virtual void set_old_race_flags2(BIT_FLAGS value)
+    {
+        this->old_race2 = value;
+    }
+    virtual int16_t get_old_realm() const
+    {
+        return this->old_realm;
+    }
+    virtual void set_old_realm(int16_t value)
+    {
+        this->old_realm = value;
+    }
+    virtual int16_t get_old_spells() const
+    {
+        return this->old_spells;
+    }
+    virtual void set_old_spells(int16_t value)
+    {
+        this->old_spells = value;
+    }
+    virtual bool was_cumber_armor() const
+    {
+        return this->old_cumber_armor;
+    }
+    virtual void set_was_cumber_armor(bool value)
+    {
+        this->old_cumber_armor = value;
+    }
+    virtual bool was_cumber_glove() const
+    {
+        return this->old_cumber_glove;
+    }
+    virtual void set_was_cumber_glove(bool value)
+    {
+        this->old_cumber_glove = value;
+    }
+    virtual bool was_heavy_wield(int hand) const
+    {
+        return this->old_heavy_wield[hand];
+    }
+    virtual void set_was_heavy_wield(int hand, bool value)
+    {
+        this->old_heavy_wield[hand] = value;
+    }
+    virtual bool was_heavy_shoot() const
+    {
+        return this->old_heavy_shoot;
+    }
+    virtual void set_was_heavy_shoot(bool value)
+    {
+        this->old_heavy_shoot = value;
+    }
+    virtual bool was_icky_wield(int hand) const
+    {
+        return this->old_icky_wield[hand];
+    }
+    virtual void set_was_icky_wield(int hand, bool value)
+    {
+        this->old_icky_wield[hand] = value;
+    }
+    virtual bool was_icky_riding_wield(int hand) const
+    {
+        return this->old_riding_wield[hand];
+    }
+    virtual void set_was_icky_riding_wield(int hand, bool value)
+    {
+        this->old_riding_wield[hand] = value;
+    }
+    virtual bool was_riding_ryoute() const
+    {
+        return this->old_riding_ryoute;
+    }
+    virtual void set_was_riding_ryoute(bool value)
+    {
+        this->old_riding_ryoute = value;
+    }
+    virtual bool was_monlite() const
+    {
+        return this->old_monlite;
+    }
+    virtual void set_was_monlite(bool value)
+    {
+        this->old_monlite = value;
+    }
+
     /*!
      * @brief パック内の所持品数を inventory[] から計算する (提案 25)
      * @details inventory[0..INVEN_PACK) の有効アイテム数を返す。
@@ -3573,12 +3681,12 @@ private:
     int16_t food{}; /*!< ゲーム中の滋養度の型定義 / Current nutrition */
 
     // [提案 39] cur_lite は private 化済。get_cur_lite() / set_cur_lite() 経由。
-    // old_lite は差分検出キャッシュ。
+    // [提案 42] old_lite は private 化済。get_old_lite() / set_old_lite() 経由。
 private:
     POSITION cur_lite{}; /* Radius of lite (if any) */
+    POSITION old_lite{}; /* Radius of lite (if any) */
 
 public:
-    POSITION old_lite{}; /* Radius of lite (if any) */
     // [提案 33] private 化済。has_special_attack(flag) / add_special_attack(flag)
     // / remove_special_attack(flag) / set_special_attack_flags(BIT_FLAGS) /
     // get_special_attack_flags() 経由。
@@ -3722,10 +3830,14 @@ public:
     BIT_FLAGS8 knowledge{}; /* Knowledge about yourself */
     BIT_FLAGS visit{}; /* Visited towns */
 
+    // [提案 42] old_race1/2 / old_realm は private 化済。
+    // get_old_race_flags1/2() / set_old_race_flags1/2() / get_old_realm() / set_old_realm() 経由。
+private:
     BIT_FLAGS old_race1{}; /* Record of race changes */
     BIT_FLAGS old_race2{}; /* Record of race changes */
     int16_t old_realm{}; /* Record of realm changes */
 
+public:
     // [提案 40] ペット関連フィールドは private 化済。
     // get_pet_follow_distance() / set_pet_follow_distance() /
     // has_pet_extra_flag() / add_pet_extra_flag() / remove_pet_extra_flag() /
@@ -3755,9 +3867,13 @@ public:
     short tracking_bi_id{}; /* Object kind trackee */
 
     int16_t new_spells{}; /* Number of spells available */
-    int16_t old_spells{};
 
-    int16_t old_food_aux{}; /* Old value of food */
+    // [提案 42] 差分検出キャッシュ (old_*) は private 化済。
+    // get_old_spells() / set_old_spells() / was_cumber_armor() /
+    // set_was_cumber_armor() / was_heavy_wield(hand) / 等のアクセサ経由。
+    // old_food_aux は宣言以外で未使用のデッドフィールドだったため削除。
+private:
+    int16_t old_spells{};
 
     bool old_cumber_armor{};
     bool old_cumber_glove{};
@@ -3767,6 +3883,8 @@ public:
     bool old_riding_wield[2]{};
     bool old_riding_ryoute{};
     bool old_monlite{};
+
+public:
     int extra_blows[2]{};
 
     // [提案 39] 装備派生キャッシュフラグは private 化済。

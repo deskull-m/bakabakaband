@@ -128,9 +128,9 @@ void wr_player(CreatureEntity &creature)
     std::visit(PlayerClassSpecificDataWriter(), creature.class_specific_data);
 
     wr_byte(static_cast<uint8_t>(InnerGameData::get_instance().get_start_race()));
-    wr_s32b(creature.old_race1);
-    wr_s32b(creature.old_race2);
-    wr_s16b(creature.old_realm);
+    wr_s32b(creature.get_old_race_flags1());
+    wr_s32b(creature.get_old_race_flags2());
+    wr_s16b(creature.get_old_realm());
 
     const auto &world = AngbandWorld::get_instance();
     for (const auto &[monrace_id, is_achieved] : world.bounties) {

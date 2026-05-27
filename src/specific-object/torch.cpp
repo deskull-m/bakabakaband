@@ -119,7 +119,7 @@ void update_lite_radius(CreatureEntity &creature)
 
     creature.set_cur_lite(cur_lite);
 
-    if (creature.old_lite == cur_lite) {
+    if (creature.get_old_lite() == cur_lite) {
         return;
     }
 
@@ -129,7 +129,7 @@ void update_lite_radius(CreatureEntity &creature)
         StatusRecalculatingFlag::MONSTER_STATUSES,
     };
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
-    creature.old_lite = cur_lite;
+    creature.set_old_lite(cur_lite);
     if (cur_lite > 0) {
         set_superstealth(creature, false);
     }

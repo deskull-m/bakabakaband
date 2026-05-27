@@ -311,11 +311,11 @@ bool set_superstealth(CreatureEntity &creature, bool set)
         if (!ninja_data->s_stealth) {
             if (creature.get_floor()->grid_array[creature.y][creature.x].info & CAVE_MNLT) {
                 msg_print(_("敵の目から薄い影の中に覆い隠された。", "You are mantled in weak shadow from ordinary eyes."));
-                creature.old_monlite = true;
+                creature.set_was_monlite(true);
                 creature.set_monlite(true);
             } else {
                 msg_print(_("敵の目から影の中に覆い隠された！", "You are mantled in shadow from ordinary eyes!"));
-                creature.old_monlite = false;
+                creature.set_was_monlite(false);
                 creature.set_monlite(false);
             }
 

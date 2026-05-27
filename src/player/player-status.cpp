@@ -657,7 +657,7 @@ static void update_num_of_spells(CreatureEntity &creature)
         creature.new_spells = 0;
     }
 
-    if (creature.old_spells == creature.new_spells) {
+    if (creature.get_old_spells() == creature.new_spells) {
         return;
     }
 
@@ -673,7 +673,7 @@ static void update_num_of_spells(CreatureEntity &creature)
 #endif
     }
 
-    creature.old_spells = creature.new_spells;
+    creature.set_old_spells(creature.new_spells);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::STUDY);
     rfu.set_flag(SubWindowRedrawingFlag::ITEM_KNOWLEDGE);
@@ -919,17 +919,17 @@ static void update_max_mana(CreatureEntity &creature)
         return;
     }
 
-    if (creature.old_cumber_glove != creature.is_cumber_glove()) {
+    if (creature.was_cumber_glove() != creature.is_cumber_glove()) {
         if (creature.is_cumber_glove()) {
             msg_print(_("手が覆われて呪文が唱えにくい感じがする。", "Your covered hands feel unsuitable for spellcasting."));
         } else {
             msg_print(_("この手の状態なら、ぐっと呪文が唱えやすい感じだ。", "Your hands feel more suitable for spellcasting."));
         }
 
-        creature.old_cumber_glove = creature.is_cumber_glove();
+        creature.set_was_cumber_glove(creature.is_cumber_glove());
     }
 
-    if (creature.old_cumber_armor == creature.is_cumber_armor()) {
+    if (creature.was_cumber_armor() == creature.is_cumber_armor()) {
         return;
     }
 
@@ -939,7 +939,7 @@ static void update_max_mana(CreatureEntity &creature)
         msg_print(_("ぐっと楽に体を動かせるようになった。", "You feel able to move more freely."));
     }
 
-    creature.old_cumber_armor = creature.is_cumber_armor();
+    creature.set_was_cumber_armor(creature.is_cumber_armor());
 }
 
 /*!
@@ -1950,7 +1950,7 @@ static int16_t calc_riding_bow_penalty(CreatureEntity &creature)
 void put_equipment_warning(CreatureEntity &creature)
 {
     bool heavy_shoot = is_heavy_shoot(creature, creature.inventory[INVEN_BOW].get());
-    if (creature.old_heavy_shoot != heavy_shoot) {
+    if (creature.was_heavy_shoot() != heavy_shoot) {
         if (heavy_shoot) {
             msg_print(_("こんな重い弓を装備しているのは大変だ。", "You have trouble wielding such a heavy bow."));
         } else if (creature.inventory[INVEN_BOW]->is_valid()) {
@@ -1958,11 +1958,11 @@ void put_equipment_warning(CreatureEntity &creature)
         } else {
             msg_print(_("重い弓を装備からはずして体が楽になった。", "You feel relieved to put down your heavy bow."));
         }
-        creature.old_heavy_shoot = heavy_shoot;
+        creature.set_was_heavy_shoot(heavy_shoot);
     }
 
     for (int i = 0; i < 2; i++) {
-        if (creature.old_heavy_wield[i] != creature.is_heavy_wield(i)) {
+        if (creature.was_heavy_wield(i) != creature.is_heavy_wield(i)) {
             if (creature.is_heavy_wield(i)) {
                 msg_print(_("こんな重い武器を装備しているのは大変だ。", "You have trouble wielding such a heavy weapon."));
             } else if (has_melee_weapon(creature, INVEN_MAIN_HAND + i)) {
@@ -1973,10 +1973,10 @@ void put_equipment_warning(CreatureEntity &creature)
                 msg_print(_("重い武器を装備からはずして体が楽になった。", "You feel relieved to put down your heavy weapon."));
             }
 
-            creature.old_heavy_wield[i] = creature.is_heavy_wield(i);
+            creature.set_was_heavy_wield(i, creature.is_heavy_wield(i));
         }
 
-        if (creature.old_riding_wield[i] != creature.is_icky_riding_wield(i)) {
+        if (creature.was_icky_riding_wield(i) != creature.is_icky_riding_wield(i)) {
             if (creature.is_icky_riding_wield(i)) {
                 msg_print(_("この武器は乗馬中に使うにはむかないようだ。", "This weapon is not suitable for use while riding."));
             } else if (!creature.get_riding()) {
@@ -1985,10 +1985,10 @@ void put_equipment_warning(CreatureEntity &creature)
                 msg_print(_("これなら乗馬中にぴったりだ。", "This weapon is suitable for use while riding."));
             }
 
-            creature.old_riding_wield[i] = creature.is_icky_riding_wield(i);
+            creature.set_was_icky_riding_wield(i, creature.is_icky_riding_wield(i));
         }
 
-        if (creature.old_icky_wield[i] == creature.is_icky_wield(i)) {
+        if (creature.was_icky_wield(i) == creature.is_icky_wield(i)) {
             continue;
         }
 
@@ -2003,10 +2003,10 @@ void put_equipment_warning(CreatureEntity &creature)
             msg_print(_("装備をはずしたら随分と気が楽になった。", "You feel more comfortable after removing your weapon."));
         }
 
-        creature.old_icky_wield[i] = creature.is_icky_wield(i);
+        creature.set_was_icky_wield(i, creature.is_icky_wield(i));
     }
 
-    if (creature.get_riding() && (creature.old_riding_ryoute != creature.is_riding_ryoute())) {
+    if (creature.get_riding() && (creature.was_riding_ryoute() != creature.is_riding_ryoute())) {
         if (creature.is_riding_ryoute()) {
 #ifdef JP
             msg_format("%s馬を操れない。", (empty_hands(creature, false) == EMPTY_HAND_NONE) ? "両手がふさがっていて" : "");
@@ -2021,7 +2021,7 @@ void put_equipment_warning(CreatureEntity &creature)
 #endif
         }
 
-        creature.old_riding_ryoute = creature.is_riding_ryoute();
+        creature.set_was_riding_ryoute(creature.is_riding_ryoute());
     }
 
     CreatureClass pc(creature);
