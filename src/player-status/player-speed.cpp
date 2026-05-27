@@ -339,7 +339,7 @@ int16_t PlayerSpeed::inventory_weight_bonus()
 int16_t PlayerSpeed::action_bonus()
 {
     int16_t bonus = 0;
-    if (this->creature.action == ACTION_SEARCH) {
+    if (this->creature.get_action() == ACTION_SEARCH) {
         bonus -= 10;
     }
 

@@ -274,7 +274,7 @@ void calc_surprise_attack_damage(CreatureEntity &creature, player_attack_type *p
 bool hayagake(CreatureEntity &creature)
 {
     PlayerEnergy energy(creature);
-    if (creature.action == ACTION_HAYAGAKE) {
+    if (creature.get_action() == ACTION_HAYAGAKE) {
         set_action(creature, ACTION_NONE);
         energy.reset_player_turn();
         return true;

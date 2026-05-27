@@ -245,7 +245,7 @@ bool input_check_strict(CreatureEntity &creature, std::string_view prompt, EnumC
     msg_erase();
 
     prt(buf, 0, 0);
-    if (mode.has_not(UserCheck::NO_HISTORY) && creature.playing) {
+    if (mode.has_not(UserCheck::NO_HISTORY) && creature.is_playing()) {
         message_add(buf);
         rfu.set_flag(SubWindowRedrawingFlag::MESSAGE);
         window_stuff(creature);

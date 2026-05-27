@@ -200,7 +200,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
         }
 
         using Tc = TerrainCharacteristics;
-        if ((creature.action == ACTION_HAYAGAKE) && (terrain_new.flags.has_not(Tc::PROJECTION) || (!creature.has_levitation() && terrain_new.flags.has(Tc::DEEP)))) {
+        if ((creature.get_action() == ACTION_HAYAGAKE) && (terrain_new.flags.has_not(Tc::PROJECTION) || (!creature.has_levitation() && terrain_new.flags.has(Tc::DEEP)))) {
             msg_print(_("ここでは素早く動けない。", "You cannot run in here."));
             set_action(creature, ACTION_NONE);
         }
@@ -222,7 +222,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
     if (mpe_mode & MPE_ENERGY_USE) {
         if (music_singing(creature, MUSIC_WALL)) {
             (void)project(creature, 0, 0, creature.y, creature.x, (60 + creature.get_level()), AttributeType::DISINTEGRATE, PROJECT_KILL | PROJECT_ITEM);
-            if (!creature.is_located_at(pos) || creature.is_dead() || creature.leaving) {
+            if (!creature.is_located_at(pos) || creature.is_dead() || creature.is_leaving()) {
                 return false;
             }
         }
@@ -231,7 +231,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
             search(creature);
         }
 
-        if (creature.action == ACTION_SEARCH) {
+        if (creature.get_action() == ACTION_SEARCH) {
             search(creature);
         }
     }
@@ -241,7 +241,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
     }
 
     // 自動拾い/自動破壊により床上のアイテムリストが変化した可能性があるので表示を更新
-    if (!creature.running) {
+    if (!creature.get_running()) {
         static constexpr auto flags_swrf = {
             SubWindowRedrawingFlag::FLOOR_ITEMS,
             SubWindowRedrawingFlag::FOUND_ITEMS,
@@ -276,7 +276,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
         }
         creature.oldpx = 0;
         creature.oldpy = 0;
-        creature.leaving = true;
+        creature.set_leaving(true);
     } else if (terrain_new.flags.has(TerrainCharacteristics::HIT_TRAP) && !(mpe_mode & MPE_STAYING)) {
         disturb(creature, false, true);
         if (grid_new.mimic || terrain_new.flags.has(TerrainCharacteristics::SECRET)) {
@@ -285,7 +285,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
         }
 
         hit_trap(creature, any_bits(mpe_mode, MPE_BREAK_TRAP));
-        if (!creature.is_located_at(pos) || creature.is_dead() || creature.leaving) {
+        if (!creature.is_located_at(pos) || creature.is_dead() || creature.is_leaving()) {
             return false;
         }
     }
@@ -303,7 +303,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
         }
     }
 
-    return creature.is_located_at(pos) && !creature.is_dead() && !creature.leaving;
+    return creature.is_located_at(pos) && !creature.is_dead() && !creature.is_leaving();
 }
 
 /*!

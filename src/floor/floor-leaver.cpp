@@ -502,5 +502,5 @@ void jump_floor(CreatureEntity &creature, DungeonId dun_idx, DEPTH depth)
     PlayerEnergy(creature).reset_player_turn();
     creature.energy_need = 0;
     fcms->set(FloorChangeMode::FIRST_FLOOR);
-    creature.leaving = true;
+    creature.set_leaving(true);
 }

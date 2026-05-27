@@ -236,10 +236,10 @@ static void reset_world_info(CreatureEntity &creature)
 {
     auto &world = AngbandWorld::get_instance();
     world.creating_savefile = false;
-    creature.teleport_town = false;
-    creature.sutemi = false;
+    creature.set_teleport_town(false);
+    creature.set_sutemi(false);
     world.timewalk_m_idx = 0;
-    creature.now_damaged = false;
+    creature.set_now_damaged(false);
     now_message = 0;
     record_item_name.clear();
 }
@@ -335,7 +335,7 @@ static void init_riding_pet(CreatureEntity &creature, bool new_game)
 
 static void decide_arena_death(CreatureEntity &creature)
 {
-    if (!creature.playing || !creature.is_dead()) {
+    if (!creature.is_playing() || !creature.is_dead()) {
         return;
     }
 
@@ -370,9 +370,9 @@ static void decide_arena_death(CreatureEntity &creature)
     } else {
         entries.set_defeated_entry();
     }
-    creature.playing = false;
+    creature.set_playing(false);
     creature.is_dead_ = true;
-    creature.leaving = true;
+    creature.set_leaving(true);
 
     world.set_arena(true);
     reset_tim_flags(creature);
@@ -396,7 +396,7 @@ static void process_game_turn(CreatureEntity &creature)
         floor.forget_lite();
         floor.forget_view();
         floor.forget_mon_lite();
-        if (!creature.playing && !creature.is_dead()) {
+        if (!creature.is_playing() && !creature.is_dead()) {
             break;
         }
 
@@ -461,7 +461,7 @@ void play_game(CreatureEntity &creature, bool new_game, bool browsing_movie, std
     }
 
     generate_world(creature, new_game);
-    creature.playing = true;
+    creature.set_playing(true);
     reset_visuals(creature);
     load_all_pref_files(creature);
     if (new_game) {

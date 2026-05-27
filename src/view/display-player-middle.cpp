@@ -341,7 +341,7 @@ void display_player_middle(CreatureEntity &creature)
     display_player_one_line(ENTRY_BASE_AC, format("[%d,%+d]", creature.get_dis_ac(), creature.get_dis_to_a()), TERM_L_BLUE);
 
     int base_speed = creature.get_speed() - 110;
-    if (creature.action == ACTION_SEARCH) {
+    if (creature.get_action() == ACTION_SEARCH) {
         base_speed += 10;
     }
 

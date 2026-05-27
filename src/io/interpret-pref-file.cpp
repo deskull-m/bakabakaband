@@ -345,7 +345,7 @@ static void interpret_xy_token(CreatureEntity &creature, std::string_view buf)
 
         int os = option.flag_position;
         int ob = option.offset;
-        if ((creature.playing || world.character_xtra) && (GameOptionPage::BIRTH == option.page) && !world.wizard) {
+        if ((creature.is_playing() || world.character_xtra) && (GameOptionPage::BIRTH == option.page) && !world.wizard) {
             msg_print(_("初期オプションは変更できません! '{}'", "Birth options can not be changed! '{}'"), buf);
             msg_erase();
             return;

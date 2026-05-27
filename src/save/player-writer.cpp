@@ -297,7 +297,7 @@ void wr_player(CreatureEntity &creature)
     wr_byte(creature.knowledge);
     wr_bool(creature.autopick_autoregister);
     wr_byte(0);
-    wr_byte((byte)creature.action);
+    wr_byte((byte)creature.get_action());
     wr_byte(0);
     wr_bool(preserve_mode);
     wr_bool(system.is_awaiting_report_status());

@@ -30,7 +30,7 @@
  */
 void learn_spell(CreatureEntity &creature, MonsterAbilityType monspell)
 {
-    if (creature.action != ACTION_LEARN) {
+    if (creature.get_action() != ACTION_LEARN) {
         return;
     }
 

@@ -160,17 +160,17 @@ void print_state(CreatureEntity &creature)
         return;
     }
 
-    switch (creature.action) {
+    switch (creature.get_action()) {
     case ACTION_SEARCH: {
         text = _("探索", "Sear");
         break;
     }
     case ACTION_REST:
-        if (creature.resting > 0) {
-            text = format("%4d", creature.resting);
-        } else if (creature.resting == COMMAND_ARG_REST_FULL_HEALING) {
+        if (creature.get_resting() > 0) {
+            text = format("%4d", creature.get_resting());
+        } else if (creature.get_resting() == COMMAND_ARG_REST_FULL_HEALING) {
             text = "****";
-        } else if (creature.resting == COMMAND_ARG_REST_UNTIL_DONE) {
+        } else if (creature.get_resting() == COMMAND_ARG_REST_UNTIL_DONE) {
             text = "&&&&";
         } else {
             text = "    ";

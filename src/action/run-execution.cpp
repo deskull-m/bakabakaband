@@ -379,7 +379,8 @@ void run_step(CreatureEntity &creature, const Direction &dir)
         }
     }
 
-    if (--creature.running <= 0) {
+    creature.set_running(creature.get_running() - 1);
+    if (creature.get_running() <= 0) {
         return;
     }
 

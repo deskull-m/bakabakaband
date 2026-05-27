@@ -52,7 +52,7 @@ bool activate_escape(CreatureEntity &creature)
             do_cmd_save_game(creature, true);
         }
 
-        creature.leaving = true;
+        creature.set_leaving(true);
         return true;
     }
 }

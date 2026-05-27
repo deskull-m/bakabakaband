@@ -476,7 +476,7 @@ static void curse_megaton_coin(CreatureEntity &creature)
         FloorChangeMode::RANDOM_PLACE,
         FloorChangeMode::RANDOM_CONNECT });
 
-    creature.leaving = true;
+    creature.set_leaving(true);
 }
 
 static void occur_curse_effects(CreatureEntity &creature)

@@ -421,7 +421,7 @@ void exe_enter_quest(CreatureEntity &creature, QuestId quest_id)
         creature.get_floor()->dun_level = 1;
     }
     creature.get_floor()->quest_number = quest_id;
-    creature.leaving = true;
+    creature.set_leaving(true);
 }
 
 /*!

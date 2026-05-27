@@ -66,7 +66,7 @@ static bool check_battle_metal_babble(CreatureEntity &creature)
     reset_tim_flags(creature);
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::SAVE_FLOORS);
     creature.get_floor()->inside_arena = true;
-    creature.leaving = true;
+    creature.set_leaving(true);
     return true;
 }
 
@@ -104,7 +104,7 @@ static bool go_to_arena(CreatureEntity &creature)
     reset_tim_flags(creature);
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::SAVE_FLOORS);
     creature.get_floor()->inside_arena = true;
-    creature.leaving = true;
+    creature.set_leaving(true);
     return true;
 }
 

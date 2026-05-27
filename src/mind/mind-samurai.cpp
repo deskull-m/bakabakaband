@@ -404,7 +404,7 @@ bool choose_samurai_stance(CreatureEntity &creature)
             screen_load();
             return false;
         } else if ((choice == 'a') || (choice == 'A')) {
-            if (creature.action == ACTION_SAMURAI_STANCE) {
+            if (creature.get_action() == ACTION_SAMURAI_STANCE) {
                 set_action(creature, ACTION_NONE);
             } else {
                 msg_print(_("もともと構えていない。", "You are not in a special stance."));
@@ -468,7 +468,7 @@ int calc_attack_quality(CreatureEntity &creature, player_attack_type *pa_ptr)
         chance += 150;
     }
 
-    if (creature.sutemi) {
+    if (creature.is_sutemi()) {
         chance = std::max(chance * 3 / 2, chance + 60);
     }
 

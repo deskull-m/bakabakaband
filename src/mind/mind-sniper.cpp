@@ -607,7 +607,7 @@ static bool cast_sniper_spell(CreatureEntity &creature, int spell)
     command_cmd = 'f';
     do_cmd_fire(creature, snipe_type);
 
-    return creature.is_fired;
+    return creature.is_fired();
 }
 
 /*!

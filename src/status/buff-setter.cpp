@@ -77,7 +77,7 @@ void reset_tim_flags(CreatureEntity &creature)
     creature.set_timed_effect(CreatureTimedEffect::LIGHTSPEED, 0);
     creature.set_timed_effect(CreatureTimedEffect::ELE_ATTACK, 0);
     creature.set_timed_effect(CreatureTimedEffect::ELE_IMMUNE, 0);
-    creature.action = ACTION_NONE;
+    creature.set_action(ACTION_NONE);
 
     creature.set_timed_effect(CreatureTimedEffect::OPPOSE_ACID, 0);
     creature.set_timed_effect(CreatureTimedEffect::OPPOSE_ELEC, 0);
@@ -89,7 +89,7 @@ void reset_tim_flags(CreatureEntity &creature)
     creature.set_timed_effect(CreatureTimedEffect::ALTER_REALITY, 0);
 
     // 非 CreatureTimedEffect のリセット
-    creature.sutemi = false;
+    creature.set_sutemi(false);
     creature.counter = false;
     creature.set_special_attack_flags(0L);
     creature.set_special_defense_flags(0L);
@@ -98,7 +98,7 @@ void reset_tim_flags(CreatureEntity &creature)
         creature.set_energy_need(creature.get_energy_need() + ENERGY_NEED());
     }
 
-    creature.timewalk = false;
+    creature.set_timewalking(false);
 
     if (creature.get_riding()) {
         (void)set_monster_fast(*creature.get_floor(), creature.get_riding(), 0);

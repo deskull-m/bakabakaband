@@ -259,7 +259,7 @@ void self_knowledge(CreatureEntity &subject)
     set_curse_info(subject, self_ptr);
     set_body_improvement_info_1(subject, self_ptr);
     set_special_attack_info(subject, self_ptr);
-    switch (subject.action) {
+    switch (subject.get_action()) {
     case ACTION_SEARCH:
         self_ptr->info_list.emplace_back(_("あなたはひじょうに注意深く周囲を見渡している。", "You are looking around very carefully."));
         break;

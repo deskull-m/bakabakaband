@@ -6,6 +6,6 @@
 void set_zangband_action(CreatureEntity &creature)
 {
     if (rd_byte() != 0) {
-        creature.action = ACTION_LEARN;
+        creature.set_action(ACTION_LEARN);
     }
 }

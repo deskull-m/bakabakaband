@@ -393,7 +393,7 @@ void do_cmd_building(CreatureEntity &creature)
         } else {
             fcms->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::NO_RETURN });
             floor.inside_arena = false;
-            creature.leaving = true;
+            creature.set_leaving(true);
             command_new = SPECIAL_KEY_BUILDING;
             energy.reset_player_turn();
         }
@@ -406,7 +406,7 @@ void do_cmd_building(CreatureEntity &creature)
     auto &system = AngbandSystem::get_instance();
     if (system.is_phase_out()) {
         fcms->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::NO_RETURN });
-        creature.leaving = true;
+        creature.set_leaving(true);
         system.set_phase_out(false);
         command_new = SPECIAL_KEY_BUILDING;
         energy.reset_player_turn();
@@ -457,7 +457,7 @@ void do_cmd_building(CreatureEntity &creature)
     msg_erase();
 
     if (reinit_wilderness) {
-        creature.leaving = true;
+        creature.set_leaving(true);
     }
 
     world.character_icky_depth--;

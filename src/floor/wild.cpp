@@ -549,7 +549,7 @@ void wilderness_gen(CreatureEntity &creature)
         }
     }
 
-    if (creature.teleport_town) {
+    if (creature.is_teleport_town()) {
         for (const auto &pos : floor.get_area()) {
             auto &grid = floor.get_grid(pos);
             const auto &terrain = grid.get_terrain();
@@ -569,7 +569,7 @@ void wilderness_gen(CreatureEntity &creature)
             creature.oldpx = pos.x;
         }
 
-        creature.teleport_town = false;
+        creature.set_teleport_town(false);
     } else if (floor.is_leaving_dungeon()) {
         for (const auto &pos : floor.get_area()) {
             auto &grid = floor.get_grid(pos);
@@ -585,7 +585,7 @@ void wilderness_gen(CreatureEntity &creature)
             creature.oldpx = pos.x;
         }
 
-        creature.teleport_town = false;
+        creature.set_teleport_town(false);
     }
 
     if (!creature.try_set_position(creature.get_old_position())) {
@@ -840,7 +840,7 @@ bool change_wild_mode(CreatureEntity &creature, bool encount)
 {
 
     generate_encounter = encount;
-    if (creature.leaving) {
+    if (creature.is_leaving()) {
         return false;
     }
 
@@ -855,7 +855,7 @@ bool change_wild_mode(CreatureEntity &creature, bool encount)
         wilderness.set_player_position(creature.get_position());
         creature.energy_need = 0;
         world.set_wild_mode(false);
-        creature.leaving = true;
+        creature.set_leaving(true);
         return true;
     }
 
@@ -898,6 +898,6 @@ bool change_wild_mode(CreatureEntity &creature, bool encount)
 
     set_action(creature, ACTION_NONE);
     world.set_wild_mode(true);
-    creature.leaving = true;
+    creature.set_leaving(true);
     return true;
 }

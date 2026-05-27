@@ -201,12 +201,12 @@ bool time_walk(CreatureEntity &creature)
         return false;
     }
 
-    if (creature.timewalk) {
+    if (creature.is_timewalking()) {
         msg_print(_("既に時は止まっている。", "Time is already stopped."));
         return false;
     }
 
-    creature.timewalk = true;
+    creature.set_timewalking(true);
     msg_print(_("「時よ！」", "You yell 'Time!'"));
     //	msg_print(_("「『ザ・ワールド』！時は止まった！」", "You yell 'The World! Time has stopped!'"));
     msg_erase();
@@ -584,7 +584,7 @@ bool fishing(CreatureEntity &creature)
     }
 
     const auto pos = creature.get_neighbor(dir);
-    creature.fishing_dir = dir.dir();
+    creature.set_fishing_dir(dir.dir());
     const auto &floor = *creature.get_floor();
     if (!floor.has_terrain_characteristics(pos, TerrainCharacteristics::WATER)) {
         msg_print(_("そこは水辺ではない。", "You can't fish here."));

@@ -108,7 +108,7 @@ void player_wipe_without_name(CreatureEntity &creature)
     cheat_immortal = false;
 
     world.total_winner = false;
-    creature.timewalk = false;
+    creature.set_timewalking(false);
     auto &system = AngbandSystem::get_instance();
     system.set_panic_save(false);
 

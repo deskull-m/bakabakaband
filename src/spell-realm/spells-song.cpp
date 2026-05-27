@@ -60,7 +60,7 @@ void check_music(CreatureEntity &creature)
         set_singing_song_effect(creature, interupting_song_effect);
         set_interrupting_song_effect(creature, MUSIC_NONE);
         msg_print(_("歌を再開した。", "You resume singing."));
-        creature.action = ACTION_SING;
+        creature.set_action(ACTION_SING);
         static constexpr auto flags_srf = {
             StatusRecalculatingFlag::BONUS,
             StatusRecalculatingFlag::HP,
@@ -151,7 +151,7 @@ void stop_singing(CreatureEntity &creature)
         return;
     }
 
-    if (creature.action == ACTION_SING) {
+    if (creature.get_action() == ACTION_SING) {
         set_action(creature, ACTION_NONE);
     }
 

@@ -275,7 +275,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
             msg_format(_("%sを起こした。", "You have woken %s up."), m_name.data());
         }
 
-        if (creature.action == ACTION_MONK_STANCE) {
+        if (creature.get_action() == ACTION_MONK_STANCE) {
             set_action(creature, ACTION_NONE);
         }
 

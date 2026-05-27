@@ -333,7 +333,7 @@ void hit_trap(CreatureEntity &creature, bool break_trap)
 
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, _("落とし戸に落ちた", "fell through a trap door!"));
         FloorChangeModesStore::get_instace()->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::DOWN, FloorChangeMode::RANDOM_PLACE, FloorChangeMode::RANDOM_CONNECT });
-        creature.leaving = true;
+        creature.set_leaving(true);
         break;
     }
     case TrapType::PIT:

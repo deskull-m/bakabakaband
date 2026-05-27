@@ -851,7 +851,7 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
     }
 
     world.set_wild_mode(false);
-    creature.leaving = true;
+    creature.set_leaving(true);
     constexpr auto note = _("                            しかし、生き返った。", "                            but revived.");
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, note);
     leave_floor(creature);

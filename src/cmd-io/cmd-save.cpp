@@ -50,7 +50,7 @@ void do_cmd_save_game(CreatureEntity &creature, int is_autosave)
  */
 void do_cmd_save_and_exit(CreatureEntity &creature)
 {
-    creature.playing = false;
-    creature.leaving = true;
+    creature.set_playing(false);
+    creature.set_leaving(true);
     exe_write_diary(*creature.get_floor(), DiaryKind::GAMESTART, 0, _("----ゲーム中断----", "--- Saved and Exited Game ---"));
 }

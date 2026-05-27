@@ -56,7 +56,7 @@ void do_cmd_search(CreatureEntity &creature)
     PlayerEnergy(creature).set_player_turn_energy(100);
     search(creature);
 
-    if (creature.action == ACTION_SEARCH) {
+    if (creature.get_action() == ACTION_SEARCH) {
         search(creature);
     }
 }
@@ -187,9 +187,9 @@ void do_cmd_suicide(CreatureEntity &creature)
     }
 
     creature.last_message = "";
-    creature.playing = false;
+    creature.set_playing(false);
     creature.is_dead_ = true;
-    creature.leaving = true;
+    creature.set_leaving(true);
     if (world.total_winner) {
         accept_winner_message(creature);
         world.add_retired_class(creature.pclass);

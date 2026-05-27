@@ -95,7 +95,7 @@ void pattern_teleport(CreatureEntity &creature)
 
     check_random_quest_auto_failure(creature);
 
-    creature.leaving = true;
+    creature.set_leaving(true);
 }
 
 /*!

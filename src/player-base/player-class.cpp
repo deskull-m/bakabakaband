@@ -425,7 +425,7 @@ bool CreatureClass::lose_balance()
         MainWindowRedrawingFlag::TIMED_EFFECT,
     };
     rfu.set_flags(flags_mwrf);
-    creature.action = ACTION_NONE;
+    creature.set_action(ACTION_NONE);
     return true;
 }
 

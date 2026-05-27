@@ -283,7 +283,7 @@ static void update_bonuses(CreatureEntity &creature)
     creature.set_bless_blade(has_bless_blade(creature));
     creature.easy_2weapon = creature.has_easy2_weapon();
     creature.down_saving = creature.has_down_saving();
-    creature.yoiyami = creature.has_no_ac();
+    creature.set_yoiyami(creature.has_no_ac());
     creature.set_mighty_throw(has_mighty_throw(creature));
     creature.set_dec_mana(has_dec_mana(creature));
     creature.set_see_nocto(has_see_nocto(creature));
@@ -467,7 +467,7 @@ static void update_max_hitpoints(CreatureEntity &creature)
     }
 
 #ifdef JP
-    if (creature.level_up_message && (mhp > creature.maxhp)) {
+    if (creature.has_level_up_message() && (mhp > creature.maxhp)) {
         msg_format("最大ヒット・ポイントが %d 増加した！", (mhp - creature.maxhp));
     }
 #endif
@@ -901,7 +901,7 @@ static void update_max_mana(CreatureEntity &creature)
         }
 
 #ifdef JP
-        if (creature.level_up_message && (msp > creature.get_msp())) {
+        if (creature.has_level_up_message() && (msp > creature.get_msp())) {
             msg_format("最大マジック・ポイントが %d 増加した！", (msp - creature.get_msp()));
         }
 #endif
@@ -1624,7 +1624,7 @@ static int16_t calc_to_magic_chance(CreatureEntity &creature)
 static ARMOUR_CLASS calc_base_ac(CreatureEntity &creature)
 {
     ARMOUR_CLASS ac = 0;
-    if (creature.yoiyami) {
+    if (creature.get_yoiyami()) {
         return 0;
     }
 
@@ -1672,7 +1672,7 @@ static ARMOUR_CLASS calc_base_ac(CreatureEntity &creature)
 static ARMOUR_CLASS calc_to_ac(CreatureEntity &creature, bool is_real_value)
 {
     ARMOUR_CLASS ac = 0;
-    if (creature.yoiyami) {
+    if (creature.get_yoiyami()) {
         return 0;
     }
 
@@ -2025,7 +2025,7 @@ void put_equipment_warning(CreatureEntity &creature)
     }
 
     CreatureClass pc(creature);
-    if ((pc.is_martial_arts_pro() || pc.equals(PlayerClassType::NINJA)) && (heavy_armor(creature) != creature.monk_notify_aux)) {
+    if ((pc.is_martial_arts_pro() || pc.equals(PlayerClassType::NINJA)) && (heavy_armor(creature) != creature.get_monk_notify_aux())) {
         if (heavy_armor(creature)) {
             msg_print(_("装備が重くてバランスを取れない。", "The weight of your armor disrupts your balance."));
             if (AngbandWorld::get_instance().is_loading_now) {
@@ -2035,7 +2035,7 @@ void put_equipment_warning(CreatureEntity &creature)
             msg_print(_("バランスがとれるようになった。", "You regain your balance."));
         }
 
-        creature.monk_notify_aux = heavy_armor(creature);
+        creature.set_monk_notify_aux(heavy_armor(creature));
     }
 }
 
@@ -2862,10 +2862,10 @@ void check_experience(CreatureEntity &creature)
             SubWindowRedrawingFlag::INVENTORY,
         };
         rfu.set_flags(flags_swrf_levelup);
-        creature.level_up_message = true;
+        creature.set_level_up_message(true);
         handle_stuff(creature);
 
-        creature.level_up_message = false;
+        creature.set_level_up_message(false);
         if (level_inc_stat) {
             if (!(creature.get_max_plv() % 10)) {
                 int choice;

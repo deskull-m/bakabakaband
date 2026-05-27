@@ -61,7 +61,7 @@ bool choose_monk_stance(CreatureEntity &creature)
         }
 
         if ((choice == 'a') || (choice == 'A')) {
-            if (creature.action == ACTION_MONK_STANCE) {
+            if (creature.get_action() == ACTION_MONK_STANCE) {
                 set_action(creature, ACTION_NONE);
             } else {
                 msg_print(_("もともと構えていない。", "You are not in a special stance."));

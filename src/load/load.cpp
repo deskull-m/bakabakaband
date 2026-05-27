@@ -127,7 +127,7 @@ static void load_player_world(CreatureEntity &creature)
     rd_extra(creature);
 
     if (creature.energy_need < -999) {
-        creature.timewalk = true;
+        creature.set_timewalking(true);
     }
 
     load_note(_("特別情報をロードしました", "Loaded extra information"));

@@ -607,7 +607,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
 
     /* Take a (partial) turn */
     PlayerEnergy(creature).div_player_turn_energy(thits);
-    creature.is_fired = true;
+    creature.set_is_fired(true);
 
     creature.plus_incident_tree("SHOOT", 1);
 

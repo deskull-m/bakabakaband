@@ -78,7 +78,7 @@ static void process_fishing(CreatureEntity &creature)
         const auto r_idx = get_mon_num(creature, 0, level, PM_NONE);
         msg_erase();
         if (MonraceList::is_valid(r_idx) && one_in_(2)) {
-            const auto pos = creature.get_neighbor(creature.fishing_dir);
+            const auto pos = creature.get_neighbor(creature.get_fishing_dir());
             if (auto m_idx = place_specific_monster(creature, pos.y, pos.x, r_idx, PM_NO_KAGE)) {
                 const auto m_name = monster_desc(creature, floor.m_list[*m_idx], 0);
                 msg_print(_(format("%sが釣れた！", m_name.data()), "You have a good catch!"));
@@ -96,7 +96,7 @@ static void process_fishing(CreatureEntity &creature)
 
 bool continuous_action_running(CreatureEntity &creature)
 {
-    return creature.running || Travel::get_instance().is_ongoing() || command_rep || (creature.action == ACTION_REST) || (creature.action == ACTION_FISH);
+    return creature.get_running() || Travel::get_instance().is_ongoing() || command_rep || (creature.get_action() == ACTION_REST) || (creature.get_action() == ACTION_FISH);
 }
 
 /*!
@@ -154,19 +154,19 @@ void process_player(CreatureEntity &creature)
         stop_term_fresh();
     }
 
-    if (creature.resting < 0) {
-        if (creature.resting == COMMAND_ARG_REST_FULL_HEALING) {
+    if (creature.get_resting() < 0) {
+        if (creature.get_resting() == COMMAND_ARG_REST_FULL_HEALING) {
             if ((creature.hp == creature.maxhp) && (creature.get_csp() >= creature.get_msp())) {
                 set_action(creature, ACTION_NONE);
             }
-        } else if (creature.resting == COMMAND_ARG_REST_UNTIL_DONE) {
+        } else if (creature.get_resting() == COMMAND_ARG_REST_UNTIL_DONE) {
             if (creature.is_fully_healthy()) {
                 set_action(creature, ACTION_NONE);
             }
         }
     }
 
-    if (creature.action == ACTION_FISH) {
+    if (creature.get_action() == ACTION_FISH) {
         process_fishing(creature);
     }
 
@@ -232,7 +232,7 @@ void process_player(CreatureEntity &creature)
         rfu.set_flag(StatusRecalculatingFlag::BONUS);
     }
 
-    if (creature.action == ACTION_LEARN) {
+    if (creature.get_action() == ACTION_LEARN) {
         int32_t cost = 0L;
         uint32_t cost_frac = (creature.get_msp() + 30L) * 256L;
         s64b_lshift(&cost, &cost_frac, 16);
@@ -259,9 +259,9 @@ void process_player(CreatureEntity &creature)
     /*** Handle actual user input ***/
     while (creature.energy_need <= 0) {
         rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
-        creature.sutemi = false;
+        creature.set_sutemi(false);
         creature.counter = false;
-        creature.now_damaged = false;
+        creature.set_now_damaged(false);
 
         update_monsters(creature, false);
         handle_stuff(creature);
@@ -285,10 +285,10 @@ void process_player(CreatureEntity &creature)
             process_command(creature);
         } else if ((is_paralyzed || is_knocked_out) && !cheat_immortal) {
             energy.set_player_turn_energy(100);
-        } else if (creature.action == ACTION_REST) {
-            if (creature.resting > 0) {
-                creature.resting--;
-                if (!creature.resting) {
+        } else if (creature.get_action() == ACTION_REST) {
+            if (creature.get_resting() > 0) {
+                creature.set_resting(creature.get_resting() - 1);
+                if (!creature.get_resting()) {
                     set_action(creature, ACTION_NONE);
                 }
 
@@ -296,9 +296,9 @@ void process_player(CreatureEntity &creature)
             }
 
             energy.set_player_turn_energy(100);
-        } else if (creature.action == ACTION_FISH) {
+        } else if (creature.get_action() == ACTION_FISH) {
             energy.set_player_turn_energy(100);
-        } else if (creature.running) {
+        } else if (creature.get_running()) {
             run_step(creature, Direction::none());
         } else if (auto &travel = Travel::get_instance(); travel.is_ongoing()) {
             travel.step(creature);
@@ -329,7 +329,7 @@ void process_player(CreatureEntity &creature)
 
         pack_overflow(creature);
         if (creature.energy_use) {
-            if (creature.timewalk || creature.energy_use > 400) {
+            if (creature.is_timewalking() || creature.energy_use > 400) {
                 creature.energy_need += creature.energy_use * TURNS_PER_TICK / 10;
             } else {
                 creature.energy_need += (int16_t)((int32_t)creature.energy_use * ENERGY_NEED() / 100L);
@@ -392,13 +392,13 @@ void process_player(CreatureEntity &creature)
                 rfu.set_flag(MainWindowRedrawingFlag::IMITATION);
             }
 
-            if (creature.action == ACTION_LEARN) {
+            if (creature.get_action() == ACTION_LEARN) {
                 auto mane_data = CreatureClass(creature).get_specific_data<bluemage_data_type>();
                 mane_data->new_magic_learned = false;
                 rfu.set_flag(MainWindowRedrawingFlag::ACTION);
             }
 
-            if (creature.timewalk && (creature.energy_need > -1000)) {
+            if (creature.is_timewalking() && (creature.energy_need > -1000)) {
                 rfu.set_flag(MainWindowRedrawingFlag::MAP);
                 rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
                 static constexpr auto flags_swrf = {
@@ -408,15 +408,15 @@ void process_player(CreatureEntity &creature)
                 rfu.set_flags(flags_swrf);
                 msg_print(_("「時は動きだす…」", "You feel time flowing around you once more."));
                 msg_erase();
-                creature.timewalk = false;
+                creature.set_timewalking(false);
                 creature.energy_need = ENERGY_NEED();
 
                 handle_stuff(creature);
             }
         }
 
-        if (!creature.playing || creature.is_dead()) {
-            creature.timewalk = false;
+        if (!creature.is_playing() || creature.is_dead()) {
+            creature.set_timewalking(false);
             break;
         }
 
@@ -425,7 +425,7 @@ void process_player(CreatureEntity &creature)
             reset_concentration(creature, true);
         }
 
-        if (creature.leaving) {
+        if (creature.is_leaving()) {
             break;
         }
     }
@@ -438,7 +438,7 @@ void process_player(CreatureEntity &creature)
  */
 void process_upkeep_with_speed(CreatureEntity &creature)
 {
-    if (!load && creature.enchant_energy_need > 0 && !creature.leaving) {
+    if (!load && creature.enchant_energy_need > 0 && !creature.is_leaving()) {
         creature.enchant_energy_need -= speed_to_energy(static_cast<byte>(creature.get_speed()));
     }
 
