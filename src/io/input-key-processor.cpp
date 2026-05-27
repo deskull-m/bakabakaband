@@ -721,7 +721,7 @@ void process_command(CreatureEntity &creature)
     }
     }
 
-    if (!creature.energy_use && !now_message) {
+    if (!creature.get_energy_use() && !now_message) {
         now_message = old_now_message;
     }
 }

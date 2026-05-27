@@ -1739,6 +1739,80 @@ public:
         this->tracking_bi_id = value;
     }
 
+    // [提案 48] さらなる小規模フィールドの virtual API。
+    virtual ItemKindType get_tval_ammo() const
+    {
+        return this->tval_ammo;
+    }
+    virtual void set_tval_ammo(ItemKindType value)
+    {
+        this->tval_ammo = value;
+    }
+    virtual bool is_dtrap() const
+    {
+        return this->dtrap;
+    }
+    virtual void set_dtrap(bool value)
+    {
+        this->dtrap = value;
+    }
+    virtual bool is_autopick_autoregister() const
+    {
+        return this->autopick_autoregister;
+    }
+    virtual void set_autopick_autoregister(bool value)
+    {
+        this->autopick_autoregister = value;
+    }
+    virtual DungeonId get_recall_dungeon() const
+    {
+        return this->recall_dungeon;
+    }
+    virtual void set_recall_dungeon(DungeonId value)
+    {
+        this->recall_dungeon = value;
+    }
+    virtual ENERGY get_enchant_energy_need() const
+    {
+        return this->enchant_energy_need;
+    }
+    virtual void set_enchant_energy_need(ENERGY value)
+    {
+        this->enchant_energy_need = value;
+    }
+    virtual void add_enchant_energy_need(ENERGY delta)
+    {
+        this->enchant_energy_need += delta;
+    }
+    virtual void sub_enchant_energy_need(ENERGY delta)
+    {
+        this->enchant_energy_need -= delta;
+    }
+    virtual ENERGY get_energy_use() const
+    {
+        return this->energy_use;
+    }
+    virtual void set_energy_use(ENERGY value)
+    {
+        this->energy_use = value;
+    }
+    virtual void add_energy_use(ENERGY delta)
+    {
+        this->energy_use += delta;
+    }
+    virtual void sub_energy_use(ENERGY delta)
+    {
+        this->energy_use -= delta;
+    }
+    virtual void mul_energy_use(ENERGY factor)
+    {
+        this->energy_use *= factor;
+    }
+    virtual void div_energy_use(ENERGY divisor)
+    {
+        this->energy_use /= divisor;
+    }
+
     /*!
      * @brief パック内の所持品数を inventory[] から計算する (提案 25)
      * @details inventory[0..INVEN_PACK) の有効アイテム数を返す。
@@ -3922,11 +3996,15 @@ public:
 private:
     GAME_TURN resting{}; /* Current counter for resting, if any */
 
-public:
+private:
+    // [提案 48] private 化済。get_recall_dungeon() / set_recall_dungeon() 経由。
     DungeonId recall_dungeon{}; /* Dungeon set to be recalled */
 
+    // [提案 48] private 化済。get_enchant_energy_need() / set_enchant_energy_need() /
+    // add_enchant_energy_need() / sub_enchant_energy_need() 経由。
     ENERGY enchant_energy_need{}; /* Energy needed for next upkeep effect	 */
 
+public:
     /*
      * creature.special_attackによるプレイヤーの攻撃状態の定義 / Bit flags for the "creature.special_attack" variable. -LM-
      *
@@ -4043,12 +4121,18 @@ private:
     int16_t pet_follow_distance{}; /* Length of the imaginary "leash" for pets */
     BIT_FLAGS16 pet_extra_flags{}; /* Various flags for controling pets */
 
-public:
+private:
+    // [提案 48] private 化済。is_dtrap() / set_dtrap() 経由。
     bool dtrap{}; /* Whether you are on trap-safe grids */
+
+public:
     FLOOR_IDX floor_id{}; /* Current floor location */
 
+private:
+    // [提案 48] private 化済。is_autopick_autoregister() / set_autopick_autoregister() 経由。
     bool autopick_autoregister{}; /* auto register is in-use or not */
 
+public:
     /*** Temporary fields ***/
 
     bool select_ring_slot{};
@@ -4149,10 +4233,15 @@ public:
 
     bool no_flowed{};
 
+private:
+    // [提案 48] private 化済。get_tval_ammo() / set_tval_ammo() 経由。
     ItemKindType tval_ammo{}; /* Correct ammo tval */
 
+    // [提案 48] private 化済。get_energy_use() / set_energy_use() /
+    // add_energy_use() / sub_energy_use() / mul_energy_use() / div_energy_use() 経由。
     ENERGY energy_use{}; /*!< 直近のターンに消費したエネルギー / Energy use this turn */
 
+public:
     std::string base_name{}; /*!< Stripped version of "player_name" */
 
 protected:

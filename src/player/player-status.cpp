@@ -315,7 +315,7 @@ static void update_bonuses(CreatureEntity &creature)
     update_ability_scores(creature);
     o_ptr = creature.inventory[INVEN_BOW].get();
     if (o_ptr->is_valid()) {
-        creature.tval_ammo = o_ptr->get_arrow_kind();
+        creature.set_tval_ammo(o_ptr->get_arrow_kind());
         creature.set_num_fire(calc_num_fire(creature, o_ptr));
     }
 
@@ -1929,7 +1929,7 @@ static int16_t calc_riding_bow_penalty(CreatureEntity &creature)
     int16_t penalty = 0;
 
     if (CreatureClass(creature).is_tamer()) {
-        if (creature.tval_ammo != ItemKindType::ARROW) {
+        if (creature.get_tval_ammo() != ItemKindType::ARROW) {
             penalty = 5;
         }
     } else {
@@ -1940,7 +1940,7 @@ static int16_t calc_riding_bow_penalty(CreatureEntity &creature)
         }
     }
 
-    if (creature.tval_ammo == ItemKindType::BOLT) {
+    if (creature.get_tval_ammo() == ItemKindType::BOLT) {
         penalty *= 2;
     }
 
@@ -2477,7 +2477,7 @@ static int16_t calc_to_hit_bow(CreatureEntity &creature, bool is_real_value)
 
     if (o_ptr->is_valid()) {
         if (!is_heavy_shoot(creature, creature.inventory[INVEN_BOW].get())) {
-            if (CreatureClass(creature).equals(PlayerClassType::SNIPER) && (creature.tval_ammo == ItemKindType::BOLT)) {
+            if (CreatureClass(creature).equals(PlayerClassType::SNIPER) && (creature.get_tval_ammo() == ItemKindType::BOLT)) {
                 pow += (10 + (creature.get_level() / 5));
             }
         }

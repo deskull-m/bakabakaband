@@ -406,7 +406,7 @@ void do_cmd_walk(CreatureEntity &creature, bool pickup)
         }
 
         if (creature.get_action() == ACTION_HAYAGAKE) {
-            auto energy_use = (ENERGY)(creature.energy_use * (45 - (creature.get_level() / 2)) / 100);
+            auto energy_use = (ENERGY)(creature.get_energy_use() * (45 - (creature.get_level() / 2)) / 100);
             energy.set_player_turn_energy(energy_use);
         }
 

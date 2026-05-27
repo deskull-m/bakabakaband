@@ -67,11 +67,12 @@ Phase 1-8 完了後に残存している統合作業項目を整理したもの�
 | [45](#提案-45-pet_t_m_idx--riding_t_m_idx-系を-target-pos2d-に統合) | pet_t_m_idx / riding_t_m_idx 統合 | 🚧 | Pos2D ベース |
 | [46](#提案-46-esp--装備集計の差分検出を-update_creature-内-raw-access-に閉じる) | ESP / 装備集計の差分検出を内部に閉じる | 🚧 | get_X_flags() 公開撤廃検討 |
 | [47](#提案-47-その他小規模フィールドの-private-化--完了) | その他小規模フィールドまとめ | ✅ 完了 | **+6 = 135 個** (dealt_damage / run_py/px / vanish_stairs_flag / suppress_multi_reward / tracking_bi_id、tval_xtra 削除) |
+| [48](#提案-48-追加の小規模フィールドの-private-化--完了) | 追加の小規模フィールドまとめ | ✅ 完了 | **+6 = 141 個** (tval_ammo / dtrap / autopick_autoregister / recall_dungeon / enchant_energy_need / energy_use) |
 
 **累計 private 化フィールド数 (主要マイルストーン):**
 - 提案 29 (3 個) → 32 (10 個) → 32b (37 個) → 33 (72 個) → 34 (77 個) →
   41 (83 個) → 39 (94 個) → 44 (99 個) → 40 (103 個) → 42 (115 個) →
-  43 (129 個) → **47 (135 個)**
+  43 (129 個) → 47 (135 個) → **48 (141 個)**
 
 未完了の提案 6 / 40 / 42 / 43 / 45 / 46 を全完了で **130+ 個** に到達見込み。
 
@@ -2190,6 +2191,73 @@ CreatureEntity 直下に public で残存していた小規模 (アクセスサ�
 - 小規模フィールドのカプセル化により、CreatureEntity のフィールド
   アクセス契約が virtual API 経由でほぼ完全に統一
 - デッドフィールド削除によりオブジェクトサイズ若干削減
+
+---
+
+## 提案 48: 追加の小規模フィールドの private 化 ✅ 完了
+
+### 背景
+
+提案 47 で残った小規模フィールドのうち、コンパウンド代入 (`+=`, `-=`,
+`*=`, `/=`) を含む 2 個と、単純な scalar/bool/enum 系 4 個を一括 private
+化する 2 巡目。
+
+### 完了内容
+
+#### API 整備
+
+18 個の virtual を追加:
+
+| メソッド | 役割 |
+|---|---|
+| `get_tval_ammo() / set_tval_ammo()` | 弾種 ItemKindType |
+| `is_dtrap() / set_dtrap()` | トラップ安全地帯フラグ |
+| `is_autopick_autoregister() / set_autopick_autoregister()` | 自動登録モード |
+| `get_recall_dungeon() / set_recall_dungeon()` | 帰還ダンジョン DungeonId |
+| `get_enchant_energy_need() / set_enchant_energy_need() / add_enchant_energy_need(delta) / sub_enchant_energy_need(delta)` | 次のエンチャント効果までのエネルギー |
+| `get_energy_use() / set_energy_use() / add_energy_use(delta) / sub_energy_use(delta) / mul_energy_use(factor) / div_energy_use(divisor)` | 今ターンのエネルギー消費 |
+
+`energy_use` は `PlayerEnergy` クラスのラッパー (`+=`, `-=`, `*=`, `/=`)
+が既に存在するため、CreatureEntity 側にも対応する compound assignment
+virtual を追加し、PlayerEnergy はそれらを呼び出す形に切替え。
+
+#### 移行
+
+25 ファイル、約 61 サイトを migration:
+
+- `combat/shoot.cpp` / `player/player-status.cpp` 等の `tval_ammo`
+  読取 (4 + 4 + 1 + 1 = 10 サイト)
+- `floor/floor-changer.cpp` / `spell-kind/spells-detection.cpp` /
+  `action/run-execution.cpp` / `action/travel-execution.cpp` /
+  `player/player-move.cpp` の `dtrap` (8 サイト)
+- `load/world-loader.cpp` / `save/player-writer.cpp` /
+  `autopick/autopick-registry.cpp` / `autopick/pref-file-expressor.cpp` の
+  `autopick_autoregister` (8 サイト、savefile 経由も含む)
+- `floor/floor-leaver.cpp` / `wizard/wizard-special-process.cpp` /
+  `load/player-info-loader.cpp` / `load/world-loader.cpp` /
+  `save/player-writer.cpp` / `world/world-movement-processor.cpp` /
+  `io-dump/player-status-dump-json.cpp` / `spell-kind/spells-world.cpp` /
+  `birth/game-play-initializer.cpp` の `recall_dungeon` (13 サイト)
+- `core/player-processor.cpp` 等の `enchant_energy_need`
+  (5 サイトの compound assignment を含む 7 サイト)
+- `player-attack/player-attack.cpp` / `player-status/player-energy.cpp` /
+  `cmd-action/cmd-move.cpp` / `io/input-key-processor.cpp` /
+  `core/player-processor.cpp` の `energy_use` (15 サイト、
+  PlayerEnergy ラッパーの `=`/`+=`/`-=`/`*=`/`/=` を含む)
+
+#### Private 化
+
+6 フィールド (`tval_ammo` / `dtrap` / `autopick_autoregister` /
+`recall_dungeon` / `enchant_energy_need` / `energy_use`) を完全 private 化。
+
+### 効果
+
+- **合計 private 化フィールド数: 135 → 141**
+- ENERGY 系フィールド (`enchant_energy_need` / `energy_use`) の
+  compound assignment を意図明示形 (`add_X(delta)` / `sub_X(delta)` /
+  `mul_X(factor)` / `div_X(divisor)`) に統一
+- `PlayerEnergy` ラッパークラスの内部実装も virtual API 経由に
+  切替え、フィールド直接アクセスを完全排除
 
 ---
 

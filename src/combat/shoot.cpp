@@ -1058,7 +1058,7 @@ int critical_shot(CreatureEntity &creature, WEIGHT weight, int plus_ammo, int pl
     } else {
         const auto sval = *item.bi_key.sval();
         const auto weapon_exp = weapon_exps[sval];
-        if (creature.tval_ammo == ItemKindType::BOLT) {
+        if (creature.get_tval_ammo() == ItemKindType::BOLT) {
             power = (creature.get_skill_to_hit_bow() + (weapon_exp / xbow_magnification + bonus) * BTH_PLUS_ADJ);
         } else {
             power = creature.get_skill_to_hit_bow() + ((weapon_exp - median_skill_exp) / bow_magnification + bonus) * BTH_PLUS_ADJ;
@@ -1071,7 +1071,7 @@ int critical_shot(CreatureEntity &creature, WEIGHT weight, int plus_ammo, int pl
 
     /* Snipers can shot more critically with crossbows */
     power += ((power * sniper_concent) / 5);
-    if (pc.equals(PlayerClassType::SNIPER) && (creature.tval_ammo == ItemKindType::BOLT)) {
+    if (pc.equals(PlayerClassType::SNIPER) && (creature.get_tval_ammo() == ItemKindType::BOLT)) {
         power *= 2;
     }
 
@@ -1112,7 +1112,7 @@ int calc_crit_ratio_shot(CreatureEntity &creature, int plus_ammo, int plus_bow)
     auto i = creature.get_to_h_b() + plus_ammo;
     const auto tval = j_ptr->bi_key.tval();
     const auto sval = *j_ptr->bi_key.sval();
-    if (creature.tval_ammo == ItemKindType::BOLT) {
+    if (creature.get_tval_ammo() == ItemKindType::BOLT) {
         i = (creature.get_skill_to_hit_bow() + (creature.get_weapon_exp(tval, sval) / 400 + i) * BTH_PLUS_ADJ);
     } else {
         i = (creature.get_skill_to_hit_bow() + ((creature.get_weapon_exp(tval, sval) - (PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER) / 2)) / 200 + i) * BTH_PLUS_ADJ);
@@ -1124,7 +1124,7 @@ int calc_crit_ratio_shot(CreatureEntity &creature, int plus_ammo, int plus_bow)
 
     /* Snipers can shot more critically with crossbows */
     i += ((i * sniper_concent) / 5);
-    if (pc.equals(PlayerClassType::SNIPER) && (creature.tval_ammo == ItemKindType::BOLT)) {
+    if (pc.equals(PlayerClassType::SNIPER) && (creature.get_tval_ammo() == ItemKindType::BOLT)) {
         i *= 2;
     }
 

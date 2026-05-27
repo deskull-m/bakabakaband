@@ -137,8 +137,8 @@ Direction decide_travel_step_dir(CreatureEntity &creature, const Direction &prev
     auto &floor = *creature.get_floor();
     const auto &p_grid = floor.get_grid(p_pos);
     if (creature.is_player()) {
-        if ((disturb_trap_detect || alert_trap_detect) && creature.dtrap && none_bits(p_grid.info, CAVE_IN_DETECT)) {
-            creature.dtrap = false;
+        if ((disturb_trap_detect || alert_trap_detect) && creature.is_dtrap() && none_bits(p_grid.info, CAVE_IN_DETECT)) {
+            creature.set_dtrap(false);
             if (none_bits(p_grid.info, CAVE_UNSAFE)) {
                 if (alert_trap_detect) {
                     msg_print(_("* 注意:この先はトラップの感知範囲外です！ *", "*Leaving trap detect region!*"));

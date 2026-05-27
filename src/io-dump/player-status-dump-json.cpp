@@ -131,7 +131,7 @@ static void add_status_to_json(nlohmann::json &j, CreatureEntity &creature)
 
     // ダンジョン情報
     j["status"]["dungeon_level"] = creature.get_floor()->dun_level;
-    const auto &dungeon_record = DungeonRecords::get_instance().get_record(creature.recall_dungeon);
+    const auto &dungeon_record = DungeonRecords::get_instance().get_record(creature.get_recall_dungeon());
     j["status"]["max_dungeon_level"] = dungeon_record.get_max_level();
 
     // ターン数

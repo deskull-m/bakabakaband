@@ -189,7 +189,7 @@ void wr_player(CreatureEntity &creature)
     wr_s16b(0); /* old "food_digested" */
     wr_s16b(0); /* old "protection" */
     wr_s16b(creature.energy_need);
-    wr_s16b(creature.enchant_energy_need);
+    wr_s16b(creature.get_enchant_energy_need());
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::ACCELERATION));
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::DECELERATION));
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::FEAR));
@@ -206,7 +206,7 @@ void wr_player(CreatureEntity &creature)
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::BLESSED));
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_INVIS));
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::WORD_RECALL));
-    wr_s16b(static_cast<int16_t>(creature.recall_dungeon));
+    wr_s16b(static_cast<int16_t>(creature.get_recall_dungeon()));
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::ALTER_REALITY));
     wr_s16b(creature.get_infravision());
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_INFRA));
@@ -295,7 +295,7 @@ void wr_player(CreatureEntity &creature)
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::ELE_IMMUNE));
     wr_u32b(creature.get_special_defense_flags());
     wr_byte(creature.knowledge);
-    wr_bool(creature.autopick_autoregister);
+    wr_bool(creature.is_autopick_autoregister());
     wr_byte(0);
     wr_byte((byte)creature.get_action());
     wr_byte(0);

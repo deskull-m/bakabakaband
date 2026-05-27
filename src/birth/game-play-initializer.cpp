@@ -133,9 +133,9 @@ void player_wipe_without_name(CreatureEntity &creature)
     creature.virtues.clear();
 
     if (vanilla_town || ironman_downward) {
-        creature.recall_dungeon = DungeonId::ANGBAND;
+        creature.set_recall_dungeon(DungeonId::ANGBAND);
     } else {
-        creature.recall_dungeon = DungeonId::GALGALS;
+        creature.set_recall_dungeon(DungeonId::GALGALS);
     }
 
     creature.name = backup_name;

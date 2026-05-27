@@ -83,7 +83,7 @@ void execute_recall(CreatureEntity &creature)
     if (floor.is_underground() || floor.is_in_quest() || floor.is_entering_dungeon()) {
         msg_print(_("上に引っ張りあげられる感じがする！", "You feel yourself yanked upwards!"));
         if (floor.is_underground()) {
-            creature.recall_dungeon = floor.dungeon_id;
+            creature.set_recall_dungeon(floor.dungeon_id);
         }
         if (record_stair) {
             exe_write_diary(floor, DiaryKind::RECALL, floor.dun_level);
@@ -100,7 +100,7 @@ void execute_recall(CreatureEntity &creature)
     }
 
     msg_print(_("下に引きずり降ろされる感じがする！", "You feel yourself yanked downwards!"));
-    floor.set_dungeon_index(creature.recall_dungeon);
+    floor.set_dungeon_index(creature.get_recall_dungeon());
     if (record_stair) {
         exe_write_diary(floor, DiaryKind::RECALL, floor.dun_level);
     }
