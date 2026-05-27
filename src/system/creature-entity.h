@@ -1411,6 +1411,54 @@ public:
         this->riding = m_idx;
     }
 
+    // [提案 40] ペット関連フィールドの virtual API。
+    // pet_extra_flags は BIT_FLAGS16 のビットマスク (`PF_OPEN_DOORS` 等) で、
+    // 単一フラグ操作は add/remove/has、一括代入は set/get_X_flags 経由。
+    virtual bool has_pet_extra_flag(BIT_FLAGS16 flag) const
+    {
+        return (this->pet_extra_flags & flag) != 0;
+    }
+    virtual void add_pet_extra_flag(BIT_FLAGS16 flag)
+    {
+        this->pet_extra_flags |= flag;
+    }
+    virtual void remove_pet_extra_flag(BIT_FLAGS16 flag)
+    {
+        this->pet_extra_flags &= static_cast<BIT_FLAGS16>(~flag);
+    }
+    virtual BIT_FLAGS16 get_pet_extra_flags() const
+    {
+        return this->pet_extra_flags;
+    }
+    virtual void set_pet_extra_flags(BIT_FLAGS16 value)
+    {
+        this->pet_extra_flags = value;
+    }
+    virtual int16_t get_pet_follow_distance() const
+    {
+        return this->pet_follow_distance;
+    }
+    virtual void set_pet_follow_distance(int16_t value)
+    {
+        this->pet_follow_distance = value;
+    }
+    virtual MONSTER_IDX get_pet_t_m_idx() const
+    {
+        return this->pet_t_m_idx;
+    }
+    virtual void set_pet_t_m_idx(MONSTER_IDX value)
+    {
+        this->pet_t_m_idx = value;
+    }
+    virtual MONSTER_IDX get_riding_t_m_idx() const
+    {
+        return this->riding_t_m_idx;
+    }
+    virtual void set_riding_t_m_idx(MONSTER_IDX value)
+    {
+        this->riding_t_m_idx = value;
+    }
+
     /*!
      * @brief パック内の所持品数を inventory[] から計算する (提案 25)
      * @details inventory[0..INVEN_PACK) の有効アイテム数を返す。
@@ -3531,7 +3579,6 @@ private:
 
 public:
     POSITION old_lite{}; /* Radius of lite (if any) */
-
     // [提案 33] private 化済。has_special_attack(flag) / add_special_attack(flag)
     // / remove_special_attack(flag) / set_special_attack_flags(BIT_FLAGS) /
     // get_special_attack_flags() 経由。
@@ -3679,9 +3726,15 @@ public:
     BIT_FLAGS old_race2{}; /* Record of race changes */
     int16_t old_realm{}; /* Record of realm changes */
 
+    // [提案 40] ペット関連フィールドは private 化済。
+    // get_pet_follow_distance() / set_pet_follow_distance() /
+    // has_pet_extra_flag() / add_pet_extra_flag() / remove_pet_extra_flag() /
+    // get_pet_extra_flags() / set_pet_extra_flags() 経由。
+private:
     int16_t pet_follow_distance{}; /* Length of the imaginary "leash" for pets */
     BIT_FLAGS16 pet_extra_flags{}; /* Various flags for controling pets */
 
+public:
     bool dtrap{}; /* Whether you are on trap-safe grids */
     FLOOR_IDX floor_id{}; /* Current floor location */
 
@@ -3698,8 +3751,6 @@ public:
     bool monk_notify_aux{};
 
     bool teleport_town{};
-
-    IDX health_who{}; /* Health bar trackee */
 
     short tracking_bi_id{}; /* Object kind trackee */
 
@@ -3743,9 +3794,14 @@ public:
 
     DIRECTION fishing_dir{};
 
+    // [提案 40] ペット/騎乗ターゲット m_idx は private 化済。
+    // get_pet_t_m_idx() / set_pet_t_m_idx() / get_riding_t_m_idx() /
+    // set_riding_t_m_idx() 経由。
+private:
     MONSTER_IDX pet_t_m_idx{};
     MONSTER_IDX riding_t_m_idx{};
 
+public:
     /*** Extracted fields ***/
 
     bool suppress_multi_reward{}; /*!< 複数レベルアップ時のパトロンからの報酬多重受け取りを防止 */

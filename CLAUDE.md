@@ -330,6 +330,15 @@ API 経由に統一された。一部フィールド (r_idx / ap_r_idx / riding)
   `patron` 12) の read/write を migration。`get_X_flags()` 系の
   const ref getter は savefile save 用に残置。**合計 private 化
   フィールド数: 94 → 99**
+- **提案 40**: ペット関連フィールド 4 個 (`pet_extra_flags` /
+  `pet_follow_distance` / `pet_t_m_idx` / `riding_t_m_idx`) を private
+  化。11 個の virtual API (`has_pet_extra_flag` / `add_pet_extra_flag` /
+  `remove_pet_extra_flag` / `get_pet_extra_flags` /
+  `set_pet_extra_flags`、scalar 系の get/set) を整備し、19 ファイル
+  約 102 サイトを migration。`(flags & MASK) != MASK` の全ビットセット
+  セマンティクスは個別 `has_X()` 2 連検査に分解。さらにデッド
+  フィールド `health_who` (宣言以外で未使用) を削除。
+  **合計 private 化フィールド数: 99 → 103**
 - **提案 1/2**: プレイヤー専用フィールドのモンスター運用化基盤完了。
   種族 (`prace`) / 職業 (`pclass`) / 魔法領域 (`realm1` / `realm2` /
   `element_realm`) / パトロン (`patron`) / 変身形態 (`mimic_form`)
@@ -693,6 +702,15 @@ bakabakaband 側と上流側でよくある構造的差異を以下のルール�
 | `creature.cursed.reset(X)` / `creature.cursed.clear()` 書込 | `creature.remove_curse(X)` / `creature.clear_curses()` (提案 44)。cursed_special 系も同様 |
 | `creature.cursed = flags` 一括代入 | `creature.set_curses(flags)` (提案 44。savefile load 用) |
 | `creature.patron` 読取 / `creature.patron = X` 書込 | `creature.get_patron()` / `creature.set_patron(X)` (提案 44。Birther 等の他構造体の `patron` フィールドは別物で migration 対象外) |
+| `creature.pet_extra_flags & PF_X` / `any_bits(creature.pet_extra_flags, PF_X)` 読取 | `creature.has_pet_extra_flag(PF_X)` (提案 40) |
+| `creature.pet_extra_flags \|= PF_X` 書込 | `creature.add_pet_extra_flag(PF_X)` (提案 40) |
+| `creature.pet_extra_flags &= ~PF_X` 書込 | `creature.remove_pet_extra_flag(PF_X)` (提案 40) |
+| `creature.pet_extra_flags = value` 一括代入 | `creature.set_pet_extra_flags(value)` (提案 40。savefile load 用) |
+| `creature.pet_extra_flags` 全体読取 | `creature.get_pet_extra_flags()` (提案 40。savefile save 用) |
+| `(creature.pet_extra_flags & MASK) != MASK` (全ビットセット判定) | `!creature.has_pet_extra_flag(A) \|\| !creature.has_pet_extra_flag(B)` 等の個別判定に分解 (提案 40) |
+| `creature.pet_follow_distance` / `creature.pet_t_m_idx` / `creature.riding_t_m_idx` 読取 | `creature.get_pet_follow_distance()` / `get_pet_t_m_idx()` / `get_riding_t_m_idx()` (提案 40) |
+| 同上書込 | `creature.set_pet_follow_distance(X)` / `set_pet_t_m_idx(X)` / `set_riding_t_m_idx(X)` (提案 40) |
+| `creature.health_who` | **提案 40 でフィールド削除** (デッドフィールドだった) |
 
 **GCC 固有の注意**:
 上流は MSVC 前提のことが多く、`<cstdint>` 等のインクルード漏れがあれば追加する。

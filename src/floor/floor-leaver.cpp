@@ -50,7 +50,7 @@ static void check_riding_preservation(CreatureEntity &creature)
     const auto &monster = creature.get_floor()->m_list[creature.get_riding()];
     if (monster.has_parent()) {
         creature.ride_monster(0);
-        creature.pet_extra_flags &= ~(PF_TWO_HANDS);
+        creature.remove_pet_extra_flag(PF_TWO_HANDS);
         creature.old_riding_ryoute = false;
         creature.set_riding_ryoute(false);
     } else {

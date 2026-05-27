@@ -59,7 +59,7 @@ Phase 1-8 完了後に残存している統合作業項目を整理したもの�
 | [34](#提案-34-表示用既知値-dis_to_hdaac-の-private-化--完了) | 表示用既知値 (dis_*) private 化 | ✅ 完了 | **+5 = 77 個** |
 | [35](#提案-35-is_player-分岐の縮減--完了-調査ベース縮小スコープ) | is_player() 分岐縮減 | ✅ 完了 (縮小) | 1 サイトのみ |
 | [39](#提案-39-装備派生キャッシュフィールドの-private-化--完了) | 装備派生キャッシュフィールド private 化 | ✅ 完了 | **+11 = 94 個** (num_blow/cumber/icky 等) |
-| [40](#提案-40-ペット関連フィールドの-private-化) | ペット関連フィールド private 化 | 🚧 | pet_extra_flags / pet_follow_distance 等 |
+| [40](#提案-40-ペット関連フィールドの-private-化--完了) | ペット関連フィールド private 化 | ✅ 完了 | **+4 = 103 個** (pet_extra_flags / pet_follow_distance 等、health_who 削除) |
 | [41](#提案-41-呪文マスク-spell_learnedworkedforgotten-の集約--完了) | 呪文マスク集約 (spell_learned/worked/forgotten) | ✅ 完了 | **+6 = 83 個**、realm_idx ベース API |
 | [42](#提案-42-旧差分検出キャッシュ-old_-の-private-化) | 旧差分検出キャッシュ (`old_*`) private 化 | 🚧 | old_cumber_* / old_heavy_* 等 |
 | [43](#提案-43-行動状態フラグの-private-化) | 行動状態フラグ private 化 | 🚧 | resting / running / action 等 |
@@ -69,7 +69,7 @@ Phase 1-8 完了後に残存している統合作業項目を整理したもの�
 
 **累計 private 化フィールド数 (主要マイルストーン):**
 - 提案 29 (3 個) → 32 (10 個) → 32b (37 個) → 33 (72 個) → 34 (77 個) →
-  41 (83 個) → 39 (94 個) → **44 (99 個)**
+  41 (83 個) → 39 (94 個) → 44 (99 個) → **40 (103 個)**
 
 未完了の提案 6 / 40 / 42 / 43 / 45 / 46 を全完了で **130+ 個** に到達見込み。
 
@@ -1841,11 +1841,61 @@ is_player() ガードを持つ関数」を外部から `if (is_player()) X(...)`
 
 ---
 
-## 提案 40: ペット関連フィールドの private 化
+## 提案 40: ペット関連フィールドの private 化 ✅ 完了
 
-**対象**: `pet_extra_flags` / `pet_follow_distance` / `pet_t_m_idx` / `riding_t_m_idx` / `health_who` (5 フィールド)
-**規模**: access 約 30 サイト (`pet_extra_flags` だけで 12 ファイル)
-**価値**: ペット AI 拡張で将来モンスターも持つ余地
+### 背景
+
+`pet_extra_flags` (BIT_FLAGS16 ビットマスク、`PF_OPEN_DOORS` 等 7 フラグ) /
+`pet_follow_distance` / `pet_t_m_idx` / `riding_t_m_idx` (4 フィールド) が
+CreatureEntity 直下に public で残存していた。
+
+加えて調査の結果、`health_who` (IDX) は宣言以外で一切使用されていない
+**デッドフィールド**であることが判明した。
+
+### 完了内容
+
+#### API 整備
+
+`CreatureEntity` に 11 個の virtual を追加:
+
+| メソッド | 役割 |
+|---|---|
+| `has_pet_extra_flag(BIT_FLAGS16)` | `& flag`、`any_bits()` 相当 |
+| `add_pet_extra_flag(BIT_FLAGS16)` | `\|= flag` |
+| `remove_pet_extra_flag(BIT_FLAGS16)` | `&= ~flag` |
+| `get_pet_extra_flags()` | 全体読取り (savefile save 用) |
+| `set_pet_extra_flags(BIT_FLAGS16)` | 全体代入 (savefile load 用) |
+| `get_pet_follow_distance()` / `set_pet_follow_distance()` | scalar getter/setter |
+| `get_pet_t_m_idx()` / `set_pet_t_m_idx()` | 同 |
+| `get_riding_t_m_idx()` / `set_riding_t_m_idx()` | 同 |
+
+#### 移行
+
+19 ファイル、約 102 サイトを移行:
+
+- `cmd-action/cmd-pet.cpp`: 最大の集約箇所 (38+ サイト、ペット行動設定 UI)
+- `monster-floor/monster-direction.cpp`: 13 サイト (`pet_follow_distance`
+  の reference-mutate-restore パターンをローカル変数 + 明示的 setter
+  呼出に書換え)
+- `melee/melee-spell-flags-checker.cpp`: 9 サイト (うち
+  `(flags & MASK) != MASK` の「全 bit セット」セマンティクスは
+  `!has_X(A) \|\| !has_X(B)` の 2 個別チェックに分割)
+- savefile load/save、ペット制御コマンド、io-dump、フロア切替、
+  モンスター削除/圧縮 等
+
+#### Private 化と削除
+
+- 4 フィールド (`pet_extra_flags` / `pet_follow_distance` / `pet_t_m_idx` /
+  `riding_t_m_idx`) を完全 private 化
+- `health_who` を完全削除 (デッドフィールド)
+
+### 効果
+
+- **合計 private 化フィールド数: 99 → 103**
+- ペット制御フラグの操作意図 (有効化/無効化/問合せ) が明示化
+- 将来モンスター AI 側でもペット相当の「制御フラグ・追従距離・標的」
+  を持たせる設計余地を確保
+- 不要フィールド (`health_who`) の整理によりオブジェクトサイズ若干削減
 
 ---
 

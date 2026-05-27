@@ -115,8 +115,8 @@ void player_wipe_without_name(CreatureEntity &creature)
     world.noscore = 0;
     world.wizard = false;
     system.set_awaiting_report_score(false);
-    creature.pet_follow_distance = PET_FOLLOW_DIST;
-    creature.pet_extra_flags = (PF_TELEPORT | PF_ATTACK_SPELL | PF_SUMMON_SPELL);
+    creature.set_pet_follow_distance(PET_FOLLOW_DIST);
+    creature.set_pet_extra_flags(PF_TELEPORT | PF_ATTACK_SPELL | PF_SUMMON_SPELL);
     DungeonRecords::get_instance().reset_all();
     creature.visit = 1;
     world.set_wild_mode(false);

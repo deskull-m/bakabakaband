@@ -41,7 +41,7 @@ bool mon_will_run(CreatureEntity &creature, MONSTER_IDX m_idx)
 
     const auto cdis = Grid::calc_distance(creature.get_position(), monster.get_position());
     if (monster.is_pet()) {
-        return (creature.pet_follow_distance < 0) && (cdis <= (0 - creature.pet_follow_distance));
+        return (creature.get_pet_follow_distance() < 0) && (cdis <= (0 - creature.get_pet_follow_distance()));
     }
 
     if (cdis > MAX_PLAYER_SIGHT + 5) {

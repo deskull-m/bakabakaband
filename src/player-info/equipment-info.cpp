@@ -37,7 +37,7 @@ BIT_FLAGS16 empty_hands(CreatureEntity &creature, bool riding_control)
         status |= EMPTY_HAND_SUB;
     }
 
-    if (riding_control && (status != EMPTY_HAND_NONE) && creature.get_riding() && none_bits(creature.pet_extra_flags, PF_TWO_HANDS)) {
+    if (riding_control && (status != EMPTY_HAND_NONE) && creature.get_riding() && !creature.has_pet_extra_flag(PF_TWO_HANDS)) {
         if (any_bits(status, EMPTY_HAND_SUB)) {
             reset_bits(status, EMPTY_HAND_SUB);
         } else if (any_bits(status, EMPTY_HAND_MAIN)) {
@@ -50,7 +50,7 @@ BIT_FLAGS16 empty_hands(CreatureEntity &creature, bool riding_control)
 
 bool can_two_hands_wielding(CreatureEntity &creature)
 {
-    return !creature.get_riding() || any_bits(creature.pet_extra_flags, PF_TWO_HANDS);
+    return !creature.get_riding() || creature.has_pet_extra_flag(PF_TWO_HANDS);
 }
 
 /*!

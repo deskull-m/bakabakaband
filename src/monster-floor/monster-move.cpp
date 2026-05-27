@@ -117,7 +117,7 @@ static bool bash_normal_door(CreatureEntity &creature, turn_flags *turn_flags_pt
     using Tc = TerrainCharacteristics;
     auto can_bash = monrace.behavior_flags.has_not(MonsterBehaviorType::OPEN_DOOR);
     can_bash |= terrain.flags.has_not(Tc::OPEN);
-    can_bash |= monster.is_pet() && ((creature.pet_extra_flags & PF_OPEN_DOORS) == 0);
+    can_bash |= monster.is_pet() && !creature.has_pet_extra_flag(PF_OPEN_DOORS);
     if (can_bash) {
         return true;
     }
@@ -152,7 +152,7 @@ static void bash_glass_door(CreatureEntity &creature, turn_flags *turn_flags_ptr
     auto can_bash = may_bash;
     can_bash &= monrace.behavior_flags.has(MonsterBehaviorType::BASH_DOOR);
     can_bash &= terrain.flags.has(TerrainCharacteristics::BASH);
-    can_bash &= !monster.is_pet() || any_bits(creature.pet_extra_flags, PF_OPEN_DOORS);
+    can_bash &= !monster.is_pet() || creature.has_pet_extra_flag(PF_OPEN_DOORS);
     if (!can_bash) {
         return;
     }
@@ -489,7 +489,7 @@ bool process_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_p
 
         auto is_takable_or_killable = !grid.o_idx_list.empty();
         is_takable_or_killable &= monrace.behavior_flags.has_any_of({ MonsterBehaviorType::TAKE_ITEM, MonsterBehaviorType::KILL_ITEM });
-        auto is_pickup_items = (creature.pet_extra_flags & PF_PICKUP_ITEMS) != 0;
+        auto is_pickup_items = creature.has_pet_extra_flag(PF_PICKUP_ITEMS);
         is_pickup_items &= monrace.behavior_flags.has(MonsterBehaviorType::TAKE_ITEM);
         is_takable_or_killable &= !monster.is_pet() || is_pickup_items;
         if (!is_takable_or_killable) {

@@ -26,11 +26,11 @@
 
 static void decide_melee_spell_target(CreatureEntity &creature, melee_spell_type *ms_ptr)
 {
-    if ((creature.pet_t_m_idx == 0) || !ms_ptr->pet) {
+    if ((creature.get_pet_t_m_idx() == 0) || !ms_ptr->pet) {
         return;
     }
 
-    ms_ptr->target_idx = creature.pet_t_m_idx;
+    ms_ptr->target_idx = creature.get_pet_t_m_idx();
     const auto &floor = *creature.get_floor();
     ms_ptr->t_ptr = &floor.get_monster(ms_ptr->target_idx);
     if ((ms_ptr->m_idx == ms_ptr->target_idx) || !projectable(floor, ms_ptr->m_ptr->get_position(), ms_ptr->t_ptr->get_position())) {
@@ -54,7 +54,7 @@ static void decide_indirection_melee_spell(CreatureEntity &creature, melee_spell
 
     ms_ptr->t_ptr = &floor.get_monster(ms_ptr->target_idx);
     const auto &monster_to = *ms_ptr->t_ptr;
-    if ((ms_ptr->m_idx == ms_ptr->target_idx) || ((ms_ptr->target_idx != creature.pet_t_m_idx) && !monster_from.is_hostile_to_melee(monster_to))) {
+    if ((ms_ptr->m_idx == ms_ptr->target_idx) || ((ms_ptr->target_idx != creature.get_pet_t_m_idx()) && !monster_from.is_hostile_to_melee(monster_to))) {
         ms_ptr->target_idx = 0;
         return;
     }
@@ -251,7 +251,7 @@ static void check_melee_spell_special(CreatureEntity &creature, melee_spell_type
     }
 
     if (ms_ptr->m_ptr->get_r_idx() == MonraceId::ROLENTO) {
-        if ((creature.pet_extra_flags & (PF_ATTACK_SPELL | PF_SUMMON_SPELL)) != (PF_ATTACK_SPELL | PF_SUMMON_SPELL)) {
+        if (!creature.has_pet_extra_flag(PF_ATTACK_SPELL) || !creature.has_pet_extra_flag(PF_SUMMON_SPELL)) {
             ms_ptr->ability_flags.reset(MonsterAbilityType::SPECIAL);
         }
 
@@ -259,7 +259,7 @@ static void check_melee_spell_special(CreatureEntity &creature, melee_spell_type
     }
 
     if (ms_ptr->monrace->symbol_char_is_any_of("B")) {
-        if ((creature.pet_extra_flags & (PF_ATTACK_SPELL | PF_TELEPORT)) != (PF_ATTACK_SPELL | PF_TELEPORT)) {
+        if (!creature.has_pet_extra_flag(PF_ATTACK_SPELL) || !creature.has_pet_extra_flag(PF_TELEPORT)) {
             ms_ptr->ability_flags.reset(MonsterAbilityType::SPECIAL);
         }
 
@@ -285,19 +285,19 @@ static void check_pet(CreatureEntity &creature, melee_spell_type *ms_ptr)
     }
 
     ms_ptr->ability_flags.reset({ MonsterAbilityType::SHRIEK, MonsterAbilityType::DARKNESS, MonsterAbilityType::TRAPS });
-    if (!(creature.pet_extra_flags & PF_TELEPORT)) {
+    if (!creature.has_pet_extra_flag(PF_TELEPORT)) {
         ms_ptr->ability_flags.reset({ MonsterAbilityType::BLINK, MonsterAbilityType::TPORT, MonsterAbilityType::TELE_TO, MonsterAbilityType::TELE_AWAY, MonsterAbilityType::TELE_LEVEL });
     }
 
-    if (!(creature.pet_extra_flags & PF_ATTACK_SPELL)) {
+    if (!creature.has_pet_extra_flag(PF_ATTACK_SPELL)) {
         ms_ptr->ability_flags.reset(RF_ABILITY_ATTACK_MASK);
     }
 
-    if (!(creature.pet_extra_flags & PF_SUMMON_SPELL)) {
+    if (!creature.has_pet_extra_flag(PF_SUMMON_SPELL)) {
         ms_ptr->ability_flags.reset(RF_ABILITY_SUMMON_MASK);
     }
 
-    if (!(creature.pet_extra_flags & PF_BALL_SPELL) && !ms_ptr->m_ptr->is_riding()) {
+    if (!creature.has_pet_extra_flag(PF_BALL_SPELL) && !ms_ptr->m_ptr->is_riding()) {
         check_melee_spell_distance(creature, ms_ptr);
         check_melee_spell_rocket(creature, ms_ptr);
         check_melee_spell_beam(creature, ms_ptr);

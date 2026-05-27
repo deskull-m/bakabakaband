@@ -27,14 +27,14 @@ bool can_player_ride_pet(CreatureEntity &creature, const Grid &grid, bool now_ri
     const auto old_riding = creature.get_riding();
     const auto old_riding_two_hands = creature.is_riding_ryoute();
     const auto old_old_riding_two_hands = creature.old_riding_ryoute;
-    const auto old_pf_two_hands = any_bits(creature.pet_extra_flags, PF_TWO_HANDS);
+    const auto old_pf_two_hands = creature.has_pet_extra_flag(PF_TWO_HANDS);
     world.character_xtra = true;
 
     if (now_riding) {
         creature.ride_monster(grid.m_idx);
     } else {
         creature.ride_monster(0);
-        creature.pet_extra_flags &= ~(PF_TWO_HANDS);
+        creature.remove_pet_extra_flag(PF_TWO_HANDS);
         creature.old_riding_ryoute = false;
         creature.set_riding_ryoute(false);
     }
@@ -46,9 +46,9 @@ bool can_player_ride_pet(CreatureEntity &creature, const Grid &grid, bool now_ri
     bool p_can_enter = player_can_enter(creature, grid.feat, CEM_P_CAN_ENTER_PATTERN);
     creature.ride_monster(old_riding);
     if (old_pf_two_hands) {
-        creature.pet_extra_flags |= (PF_TWO_HANDS);
+        creature.add_pet_extra_flag(PF_TWO_HANDS);
     } else {
-        creature.pet_extra_flags &= ~(PF_TWO_HANDS);
+        creature.remove_pet_extra_flag(PF_TWO_HANDS);
     }
 
     creature.set_riding_ryoute(old_riding_two_hands);

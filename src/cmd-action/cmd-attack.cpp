@@ -450,7 +450,7 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
 
     creature.plus_incident_tree("ATTACK_ACT_COUNT", 1);
 
-    creature.riding_t_m_idx = grid.m_idx;
+    creature.set_riding_t_m_idx(grid.m_idx);
     bool fear = false;
     bool mdeath = false;
     if (can_attack_with_main_hand(creature)) {

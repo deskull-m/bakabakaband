@@ -222,7 +222,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
         }
 
         creature.ride_monster(0);
-        creature.pet_extra_flags &= ~(PF_TWO_HANDS);
+        creature.remove_pet_extra_flag(PF_TWO_HANDS);
         creature.old_riding_ryoute = false;
         creature.set_riding_ryoute(false);
     } else {
@@ -448,80 +448,80 @@ void do_cmd_pet(CreatureEntity &creature)
     powers[num++] = PET_DISMISS;
 
     const auto is_hallucinated = creature.is_hallucinated();
-    const auto taget_of_pet = creature.get_floor()->get_monster(creature.pet_t_m_idx).get_apparent_monrace().name.data();
+    const auto taget_of_pet = creature.get_floor()->get_monster(creature.get_pet_t_m_idx()).get_apparent_monrace().name.data();
     const auto target_of_pet_appearance = is_hallucinated ? _("何か奇妙な物", "something strange") : taget_of_pet;
     const auto mes = _("ペットのターゲットを指定 (現在：%s)", "specify a target of pet (now:%s)");
-    const auto target_name = creature.pet_t_m_idx > 0 ? target_of_pet_appearance : _("指定なし", "nothing");
+    const auto target_name = creature.get_pet_t_m_idx() > 0 ? target_of_pet_appearance : _("指定なし", "nothing");
     const auto target_ask = format(mes, target_name);
     power_desc[num] = target_ask;
     powers[num++] = PET_TARGET;
     power_desc[num] = _("近くにいろ", "stay close");
 
-    if (creature.pet_follow_distance == PET_CLOSE_DIST) {
+    if (creature.get_pet_follow_distance() == PET_CLOSE_DIST) {
         command_idx = num;
     }
     powers[num++] = PET_STAY_CLOSE;
     power_desc[num] = _("ついて来い", "follow me");
 
-    if (creature.pet_follow_distance == PET_FOLLOW_DIST) {
+    if (creature.get_pet_follow_distance() == PET_FOLLOW_DIST) {
         command_idx = num;
     }
     powers[num++] = PET_FOLLOW_ME;
     power_desc[num] = _("敵を見つけて倒せ", "seek and destroy");
 
-    if (creature.pet_follow_distance == PET_DESTROY_DIST) {
+    if (creature.get_pet_follow_distance() == PET_DESTROY_DIST) {
         command_idx = num;
     }
     powers[num++] = PET_SEEK_AND_DESTROY;
     power_desc[num] = _("少し離れていろ", "give me space");
 
-    if (creature.pet_follow_distance == PET_SPACE_DIST) {
+    if (creature.get_pet_follow_distance() == PET_SPACE_DIST) {
         command_idx = num;
     }
     powers[num++] = PET_ALLOW_SPACE;
     power_desc[num] = _("離れていろ", "stay away");
 
-    if (creature.pet_follow_distance == PET_AWAY_DIST) {
+    if (creature.get_pet_follow_distance() == PET_AWAY_DIST) {
         command_idx = num;
     }
     powers[num++] = PET_STAY_AWAY;
 
-    if (creature.pet_extra_flags & PF_OPEN_DOORS) {
+    if (creature.has_pet_extra_flag(PF_OPEN_DOORS)) {
         power_desc[num] = _("ドアを開ける (現在:ON)", "pets open doors (now On)");
     } else {
         power_desc[num] = _("ドアを開ける (現在:OFF)", "pets open doors (now Off)");
     }
     powers[num++] = PET_OPEN_DOORS;
 
-    if (creature.pet_extra_flags & PF_PICKUP_ITEMS) {
+    if (creature.has_pet_extra_flag(PF_PICKUP_ITEMS)) {
         power_desc[num] = _("アイテムを拾う (現在:ON)", "pets pick up items (now On)");
     } else {
         power_desc[num] = _("アイテムを拾う (現在:OFF)", "pets pick up items (now Off)");
     }
     powers[num++] = PET_TAKE_ITEMS;
 
-    if (creature.pet_extra_flags & PF_TELEPORT) {
+    if (creature.has_pet_extra_flag(PF_TELEPORT)) {
         power_desc[num] = _("テレポート系魔法を使う (現在:ON)", "allow teleport (now On)");
     } else {
         power_desc[num] = _("テレポート系魔法を使う (現在:OFF)", "allow teleport (now Off)");
     }
     powers[num++] = PET_TELEPORT;
 
-    if (creature.pet_extra_flags & PF_ATTACK_SPELL) {
+    if (creature.has_pet_extra_flag(PF_ATTACK_SPELL)) {
         power_desc[num] = _("攻撃魔法を使う (現在:ON)", "allow cast attack spell (now On)");
     } else {
         power_desc[num] = _("攻撃魔法を使う (現在:OFF)", "allow cast attack spell (now Off)");
     }
     powers[num++] = PET_ATTACK_SPELL;
 
-    if (creature.pet_extra_flags & PF_SUMMON_SPELL) {
+    if (creature.has_pet_extra_flag(PF_SUMMON_SPELL)) {
         power_desc[num] = _("召喚魔法を使う (現在:ON)", "allow cast summon spell (now On)");
     } else {
         power_desc[num] = _("召喚魔法を使う (現在:OFF)", "allow cast summon spell (now Off)");
     }
     powers[num++] = PET_SUMMON_SPELL;
 
-    if (creature.pet_extra_flags & PF_BALL_SPELL) {
+    if (creature.has_pet_extra_flag(PF_BALL_SPELL)) {
         power_desc[num] = _("プレイヤーを巻き込む範囲魔法を使う (現在:ON)", "allow involve creature in area spell (now On)");
     } else {
         power_desc[num] = _("プレイヤーを巻き込む範囲魔法を使う (現在:OFF)", "allow involve creature in area spell (now Off)");
@@ -547,7 +547,7 @@ void do_cmd_pet(CreatureEntity &creature)
 
     if (creature.get_riding()) {
         if (empty_main || empty_sub) {
-            if (creature.pet_extra_flags & PF_TWO_HANDS) {
+            if (creature.has_pet_extra_flag(PF_TWO_HANDS)) {
                 power_desc[num] = _("武器を片手で持つ", "use one hand to control the pet you are riding");
             } else {
                 power_desc[num] = _("武器を両手で持つ", "use both hands for a weapon");
@@ -560,7 +560,7 @@ void do_cmd_pet(CreatureEntity &creature)
             case PlayerClassType::FORCETRAINER:
             case PlayerClassType::BERSERKER: {
                 if (empty_hands(creature, false) == (EMPTY_HAND_MAIN | EMPTY_HAND_SUB)) {
-                    if (creature.pet_extra_flags & PF_TWO_HANDS) {
+                    if (creature.has_pet_extra_flag(PF_TWO_HANDS)) {
                         power_desc[num] = _("片手で格闘する", "use one hand to control the pet you are riding");
                     } else {
                         power_desc[num] = _("両手で格闘する", "use both hands for melee");
@@ -573,7 +573,7 @@ void do_cmd_pet(CreatureEntity &creature)
                 auto has_any_melee_weapon = has_melee_weapon(creature, INVEN_MAIN_HAND);
                 has_any_melee_weapon |= has_melee_weapon(creature, INVEN_SUB_HAND);
                 if ((empty_hands(creature, false) != EMPTY_HAND_NONE) && !has_any_melee_weapon) {
-                    if (creature.pet_extra_flags & PF_TWO_HANDS) {
+                    if (creature.has_pet_extra_flag(PF_TWO_HANDS)) {
                         power_desc[num] = _("格闘を行わない", "use one hand to control the pet you are riding");
                     } else {
                         power_desc[num] = _("格闘を行う", "use one hand for melee");
@@ -763,14 +763,14 @@ void do_cmd_pet(CreatureEntity &creature)
         project_length = -1;
         const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
-            creature.pet_t_m_idx = 0;
+            creature.set_pet_t_m_idx(0);
         } else {
             const auto &grid = creature.get_floor()->get_grid(*pos);
             if (grid.has_monster() && (creature.get_floor()->get_monster(grid.m_idx).is_visible_on_map())) {
-                creature.pet_t_m_idx = creature.get_floor()->get_grid(*pos).m_idx;
-                creature.pet_follow_distance = PET_DESTROY_DIST;
+                creature.set_pet_t_m_idx(creature.get_floor()->get_grid(*pos).m_idx);
+                creature.set_pet_follow_distance(PET_DESTROY_DIST);
             } else {
-                creature.pet_t_m_idx = 0;
+                creature.set_pet_t_m_idx(0);
             }
         }
         project_length = 0;
@@ -779,44 +779,44 @@ void do_cmd_pet(CreatureEntity &creature)
     }
     /* Call pets */
     case PET_STAY_CLOSE: {
-        creature.pet_follow_distance = PET_CLOSE_DIST;
-        creature.pet_t_m_idx = 0;
+        creature.set_pet_follow_distance(PET_CLOSE_DIST);
+        creature.set_pet_t_m_idx(0);
         break;
     }
     /* "Follow Me" */
     case PET_FOLLOW_ME: {
-        creature.pet_follow_distance = PET_FOLLOW_DIST;
-        creature.pet_t_m_idx = 0;
+        creature.set_pet_follow_distance(PET_FOLLOW_DIST);
+        creature.set_pet_t_m_idx(0);
         break;
     }
     /* "Seek and destoy" */
     case PET_SEEK_AND_DESTROY: {
-        creature.pet_follow_distance = PET_DESTROY_DIST;
+        creature.set_pet_follow_distance(PET_DESTROY_DIST);
         break;
     }
     /* "Give me space" */
     case PET_ALLOW_SPACE: {
-        creature.pet_follow_distance = PET_SPACE_DIST;
+        creature.set_pet_follow_distance(PET_SPACE_DIST);
         break;
     }
     /* "Stay away" */
     case PET_STAY_AWAY: {
-        creature.pet_follow_distance = PET_AWAY_DIST;
+        creature.set_pet_follow_distance(PET_AWAY_DIST);
         break;
     }
     /* flag - allow pets to open doors */
     case PET_OPEN_DOORS: {
-        if (creature.pet_extra_flags & PF_OPEN_DOORS) {
-            creature.pet_extra_flags &= ~(PF_OPEN_DOORS);
+        if (creature.has_pet_extra_flag(PF_OPEN_DOORS)) {
+            creature.remove_pet_extra_flag(PF_OPEN_DOORS);
         } else {
-            creature.pet_extra_flags |= (PF_OPEN_DOORS);
+            creature.add_pet_extra_flag(PF_OPEN_DOORS);
         }
         break;
     }
     /* flag - allow pets to pickup items */
     case PET_TAKE_ITEMS: {
-        if (creature.pet_extra_flags & PF_PICKUP_ITEMS) {
-            creature.pet_extra_flags &= ~(PF_PICKUP_ITEMS);
+        if (creature.has_pet_extra_flag(PF_PICKUP_ITEMS)) {
+            creature.remove_pet_extra_flag(PF_PICKUP_ITEMS);
             for (pet_ctr = creature.get_floor()->m_max - 1; pet_ctr >= 1; pet_ctr--) {
                 auto &monster = creature.get_floor()->get_monster(static_cast<MONSTER_IDX>(pet_ctr));
                 if (monster.is_pet()) {
@@ -824,44 +824,44 @@ void do_cmd_pet(CreatureEntity &creature)
                 }
             }
         } else {
-            creature.pet_extra_flags |= (PF_PICKUP_ITEMS);
+            creature.add_pet_extra_flag(PF_PICKUP_ITEMS);
         }
 
         break;
     }
     /* flag - allow pets to teleport */
     case PET_TELEPORT: {
-        if (creature.pet_extra_flags & PF_TELEPORT) {
-            creature.pet_extra_flags &= ~(PF_TELEPORT);
+        if (creature.has_pet_extra_flag(PF_TELEPORT)) {
+            creature.remove_pet_extra_flag(PF_TELEPORT);
         } else {
-            creature.pet_extra_flags |= (PF_TELEPORT);
+            creature.add_pet_extra_flag(PF_TELEPORT);
         }
         break;
     }
     /* flag - allow pets to cast attack spell */
     case PET_ATTACK_SPELL: {
-        if (creature.pet_extra_flags & PF_ATTACK_SPELL) {
-            creature.pet_extra_flags &= ~(PF_ATTACK_SPELL);
+        if (creature.has_pet_extra_flag(PF_ATTACK_SPELL)) {
+            creature.remove_pet_extra_flag(PF_ATTACK_SPELL);
         } else {
-            creature.pet_extra_flags |= (PF_ATTACK_SPELL);
+            creature.add_pet_extra_flag(PF_ATTACK_SPELL);
         }
         break;
     }
     /* flag - allow pets to cast attack spell */
     case PET_SUMMON_SPELL: {
-        if (creature.pet_extra_flags & PF_SUMMON_SPELL) {
-            creature.pet_extra_flags &= ~(PF_SUMMON_SPELL);
+        if (creature.has_pet_extra_flag(PF_SUMMON_SPELL)) {
+            creature.remove_pet_extra_flag(PF_SUMMON_SPELL);
         } else {
-            creature.pet_extra_flags |= (PF_SUMMON_SPELL);
+            creature.add_pet_extra_flag(PF_SUMMON_SPELL);
         }
         break;
     }
     /* flag - allow pets to cast attack spell */
     case PET_BALL_SPELL: {
-        if (creature.pet_extra_flags & PF_BALL_SPELL) {
-            creature.pet_extra_flags &= ~(PF_BALL_SPELL);
+        if (creature.has_pet_extra_flag(PF_BALL_SPELL)) {
+            creature.remove_pet_extra_flag(PF_BALL_SPELL);
         } else {
-            creature.pet_extra_flags |= (PF_BALL_SPELL);
+            creature.add_pet_extra_flag(PF_BALL_SPELL);
         }
         break;
     }
@@ -877,10 +877,10 @@ void do_cmd_pet(CreatureEntity &creature)
     }
 
     case PET_TWO_HANDS: {
-        if (creature.pet_extra_flags & PF_TWO_HANDS) {
-            creature.pet_extra_flags &= ~(PF_TWO_HANDS);
+        if (creature.has_pet_extra_flag(PF_TWO_HANDS)) {
+            creature.remove_pet_extra_flag(PF_TWO_HANDS);
         } else {
-            creature.pet_extra_flags |= (PF_TWO_HANDS);
+            creature.add_pet_extra_flag(PF_TWO_HANDS);
         }
 
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
