@@ -404,9 +404,9 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
  */
 void PlayerType::on_take_hit(int damage)
 {
-    this->dealt_damage += damage;
-    if (this->dealt_damage > 999999999) {
-        this->dealt_damage = 999999999;
+    this->add_dealt_damage(damage);
+    if (this->get_dealt_damage() > 999999999) {
+        this->set_dealt_damage(999999999);
     }
 }
 

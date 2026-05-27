@@ -96,8 +96,8 @@ static void run_init(CreatureEntity &creature, const Direction &dir)
     find_openarea = true;
     find_breakright = find_breakleft = false;
     const auto pos = creature.get_position();
-    creature.run_py = pos.y;
-    creature.run_px = pos.x;
+    creature.set_run_py(pos.y);
+    creature.set_run_px(pos.x);
     const auto pos_neighbor = creature.get_neighbor(dir);
     ignore_avoid_run = creature.get_floor()->has_terrain_characteristics(pos_neighbor, TerrainCharacteristics::AVOID_RUN);
     const auto dir_left45 = dir.rotated_45degree(1);
@@ -387,8 +387,8 @@ void run_step(CreatureEntity &creature, const Direction &dir)
     PlayerEnergy(creature).set_player_turn_energy(100);
     exe_movement(creature, find_current, false, false);
     if (creature.is_located_at_running_destination()) {
-        creature.run_py = 0;
-        creature.run_px = 0;
+        creature.set_run_py(0);
+        creature.set_run_px(0);
         disturb(creature, false, false);
     }
 }

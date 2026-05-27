@@ -301,9 +301,9 @@ static void rd_hp(CreatureEntity &creature)
 
     // セーブファイルバージョン35以降で与ダメージ蓄積を読み込み
     if (!loading_savefile_version_is_older_than(35)) {
-        creature.dealt_damage = rd_s32b();
+        creature.set_dealt_damage(rd_s32b());
     } else {
-        creature.dealt_damage = 0;
+        creature.set_dealt_damage(0);
     }
 }
 

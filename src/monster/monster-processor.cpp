@@ -867,7 +867,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
             monster.maxhp = 1;
         }
         monster.hp = monster.hp * monster.max_maxhp / old_maxhp;
-        monster.dealt_damage = 0;
+        monster.set_dealt_damage(0);
     }
 
     auto &monrace = monster.get_monrace();

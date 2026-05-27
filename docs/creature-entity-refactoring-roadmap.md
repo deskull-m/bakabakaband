@@ -66,11 +66,12 @@ Phase 1-8 完了後に残存している統合作業項目を整理したもの�
 | [44](#提案-44-突然変異呪い系フラグの-private-化--完了) | 突然変異/呪い系フラグ private 化 | ✅ 完了 | **+5 = 99 個** (muta / cursed / patron 等) |
 | [45](#提案-45-pet_t_m_idx--riding_t_m_idx-系を-target-pos2d-に統合) | pet_t_m_idx / riding_t_m_idx 統合 | 🚧 | Pos2D ベース |
 | [46](#提案-46-esp--装備集計の差分検出を-update_creature-内-raw-access-に閉じる) | ESP / 装備集計の差分検出を内部に閉じる | 🚧 | get_X_flags() 公開撤廃検討 |
+| [47](#提案-47-その他小規模フィールドの-private-化--完了) | その他小規模フィールドまとめ | ✅ 完了 | **+6 = 135 個** (dealt_damage / run_py/px / vanish_stairs_flag / suppress_multi_reward / tracking_bi_id、tval_xtra 削除) |
 
 **累計 private 化フィールド数 (主要マイルストーン):**
 - 提案 29 (3 個) → 32 (10 個) → 32b (37 個) → 33 (72 個) → 34 (77 個) →
   41 (83 個) → 39 (94 個) → 44 (99 個) → 40 (103 個) → 42 (115 個) →
-  **43 (129 個)**
+  43 (129 個) → **47 (135 個)**
 
 未完了の提案 6 / 40 / 42 / 43 / 45 / 46 を全完了で **130+ 個** に到達見込み。
 
@@ -2129,6 +2130,66 @@ CreatureEntity 共通化。**規模**: 10-15 サイト
 提案 33 で telepathy/esp_* は private 化済だが、`get_X_flags()` が
 差分検出キャッシュ用に依然外部公開。これを `update_creature()`
 内部完結に閉じる試み。
+
+---
+
+## 提案 47: その他小規模フィールドの private 化 ✅ 完了
+
+### 背景
+
+CreatureEntity 直下に public で残存していた小規模 (アクセスサイト 10
+以下) のフィールド群をまとめて private 化。単独で提案を立てるほど
+規模は大きくないが、フィールドカプセル化の徹底のため一括処理した。
+
+### 完了内容
+
+#### API 整備
+
+15 個の virtual を追加:
+
+| メソッド | 役割 |
+|---|---|
+| `get_dealt_damage() / set_dealt_damage() / add_dealt_damage()` | 累積与ダメージ (プレイヤー・モンスター共通) |
+| `get_run_py() / set_run_py()` | 走行目標 Y 座標 |
+| `get_run_px() / set_run_px()` | 走行目標 X 座標 |
+| `is_vanish_stairs_flag() / set_vanish_stairs_flag()` | 階段消去フラグ |
+| `is_suppress_multi_reward() / set_suppress_multi_reward()` | パトロン報酬多重防止 |
+| `get_tracking_bi_id() / set_tracking_bi_id()` | アイテム種類トラッキング ID |
+
+`dealt_damage` には compound assignment 用に `add_dealt_damage(delta)` も
+整備 (`this->dealt_damage += damage` パターン対応)。
+
+#### 移行
+
+10 ファイル、約 24 サイトを migration:
+
+- `player/player-damage.cpp`: `dealt_damage` の `+=` / 上限クリップ
+- `monster/monster-{damage,processor,status}.cpp` / `monster-floor/
+  one-monster-placer.cpp` / `core/game-play.cpp`: モンスター `dealt_damage`
+  の初期化・参照
+- `save/monster-writer.cpp` / `save/player-writer.cpp` /
+  `load/player-info-loader.cpp` / `load/old/monster-loader-savefile50.cpp`:
+  savefile 経路 (MonsterLoader50 / MonsterWriter は MonsterProfile の
+  friend のみで CreatureEntity の friend ではないため、virtual API 経由)
+- `action/run-execution.cpp`: `run_py` / `run_px` 設定・クリア
+- `floor/floor-changer.cpp` / `cmd-action/cmd-move.cpp`:
+  `vanish_stairs_flag`
+- `player/patron.cpp` / `core/magic-effects-timeout-reducer.cpp`:
+  `suppress_multi_reward`
+- `core/stuff-handler.cpp`: `tracking_bi_id`
+
+#### Private 化と削除
+
+- 6 フィールド (`dealt_damage` / `run_py` / `run_px` / `vanish_stairs_flag` /
+  `suppress_multi_reward` / `tracking_bi_id`) を完全 private 化
+- `tval_xtra` (Unused) を完全削除 (デッドフィールド)
+
+### 効果
+
+- **合計 private 化フィールド数: 129 → 135**
+- 小規模フィールドのカプセル化により、CreatureEntity のフィールド
+  アクセス契約が virtual API 経由でほぼ完全に統一
+- デッドフィールド削除によりオブジェクトサイズ若干削減
 
 ---
 

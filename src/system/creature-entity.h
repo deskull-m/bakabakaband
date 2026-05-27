@@ -1685,6 +1685,60 @@ public:
         this->fishing_dir = value;
     }
 
+    // [提案 47] その他の小規模フィールドの virtual API。
+    virtual int32_t get_dealt_damage() const
+    {
+        return this->dealt_damage;
+    }
+    virtual void set_dealt_damage(int32_t value)
+    {
+        this->dealt_damage = value;
+    }
+    virtual void add_dealt_damage(int32_t delta)
+    {
+        this->dealt_damage += delta;
+    }
+    virtual POSITION get_run_py() const
+    {
+        return this->run_py;
+    }
+    virtual void set_run_py(POSITION value)
+    {
+        this->run_py = value;
+    }
+    virtual POSITION get_run_px() const
+    {
+        return this->run_px;
+    }
+    virtual void set_run_px(POSITION value)
+    {
+        this->run_px = value;
+    }
+    virtual bool is_vanish_stairs_flag() const
+    {
+        return this->vanish_stairs_flag;
+    }
+    virtual void set_vanish_stairs_flag(bool value)
+    {
+        this->vanish_stairs_flag = value;
+    }
+    virtual bool is_suppress_multi_reward() const
+    {
+        return this->suppress_multi_reward;
+    }
+    virtual void set_suppress_multi_reward(bool value)
+    {
+        this->suppress_multi_reward = value;
+    }
+    virtual short get_tracking_bi_id() const
+    {
+        return this->tracking_bi_id;
+    }
+    virtual void set_tracking_bi_id(short value)
+    {
+        this->tracking_bi_id = value;
+    }
+
     /*!
      * @brief パック内の所持品数を inventory[] から計算する (提案 25)
      * @details inventory[0..INVEN_PACK) の有効アイテム数を返す。
@@ -3499,9 +3553,12 @@ private:
     MonraceId ap_r_idx{}; /*!< モンスターの外見種族ID（あやしい影、たぬき、ジュラル星人誤認などにより変化する）Monster race appearance index */
 
 public:
+    // [提案 47] dealt_damage は private 化済。get_dealt_damage() / set_dealt_damage() / add_dealt_damage() 経由。
+private:
     // 与ダメージ蓄積（プレイヤー・モンスター共通）
     int32_t dealt_damage{}; /*!< これまでに蓄積して与えてきたダメージ / Sum of damages dealt by player or to monster */
 
+public:
     // 種族・職業・性格情報（参照風アクセス用）
     const player_race_info *race{}; /*!< 現在の種族情報 / Current race info */
     const player_personality *personality{}; /*!< 現在の性格情報 / Current personality info (accessed like reference) */
@@ -3523,10 +3580,12 @@ private:
     ACTION_SKILL_POWER skill_tht{}; /*!< 行動技能値:投射命中能力 / Skill: To hit (throwing) */
     ACTION_SKILL_POWER skill_dig{}; /*!< 行動技能値:掘削 / Skill: Digging */
 
-public:
+    // [提案 47] run_py / run_px は private 化済。get_run_py() / set_run_py() / get_run_px() / set_run_px() 経由。
+private:
     POSITION run_py{}; /*!< 走行中の目標Y座標 / Target Y position while running */
     POSITION run_px{}; /*!< 走行中の目標X座標 / Target X position while running */
 
+public:
     Pos2D target{}; /*!< 攻撃目標座標 (0,0 は未設定) / Attack target position ({0,0} means none) */
 
     tl::optional<MonsterProfile> monster_profile{}; /*!< モンスター固有データ (モンスターの場合のみ有効) */
@@ -4002,17 +4061,17 @@ private:
     bool playing{}; /* True if player is playing */
     bool leaving{}; /* True if player is leaving */
 
-public:
+    // [提案 47] vanish_stairs_flag は private 化済。is_vanish_stairs_flag() / set_vanish_stairs_flag() 経由。
     bool vanish_stairs_flag{}; /* True if stairs should vanish after floor change */
 
-private:
     bool monk_notify_aux{};
 
     bool teleport_town{};
 
-public:
+    // [提案 47] tracking_bi_id は private 化済。get_tracking_bi_id() / set_tracking_bi_id() 経由。
     short tracking_bi_id{}; /* Object kind trackee */
 
+public:
     int16_t new_spells{}; /* Number of spells available */
 
     // [提案 42] 差分検出キャッシュ (old_*) は private 化済。
@@ -4080,13 +4139,16 @@ private:
 public:
     /*** Extracted fields ***/
 
+    // [提案 47] suppress_multi_reward は private 化済。is_suppress_multi_reward() / set_suppress_multi_reward() 経由。
+    // tval_xtra は宣言以外で未使用のデッドフィールドだったため削除。
+private:
     bool suppress_multi_reward{}; /*!< 複数レベルアップ時のパトロンからの報酬多重受け取りを防止 */
 
+public:
     Dice damage_dice_bonus[2]{}; /* Extra damage dice num/sides */
 
     bool no_flowed{};
 
-    byte tval_xtra{}; /* (Unused)Correct xtra tval */
     ItemKindType tval_ammo{}; /* Correct ammo tval */
 
     ENERGY energy_use{}; /*!< 直近のターンに消費したエネルギー / Energy use this turn */

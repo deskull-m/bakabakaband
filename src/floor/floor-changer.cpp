@@ -450,8 +450,8 @@ void change_floor(CreatureEntity &creature)
     fcms->clear();
 
     // 移動後のフロアで階段を消去する処理
-    if (creature.vanish_stairs_flag) {
-        creature.vanish_stairs_flag = false;
+    if (creature.is_vanish_stairs_flag()) {
+        creature.set_vanish_stairs_flag(false);
         const auto &dungeon = floor.get_dungeon_definition();
         if (dungeon.flags.has(DungeonFeatureType::VANISH_STAIRS) && floor.is_underground()) {
             const auto p_pos = creature.get_position();
