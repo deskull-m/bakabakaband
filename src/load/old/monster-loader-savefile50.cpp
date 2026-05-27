@@ -43,7 +43,7 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
         monster.max_maxhp = rd_s32b();
     }
 
-    monster.dealt_damage = rd_s32b();
+    monster.set_dealt_damage(rd_s32b());
 
     monster.set_ap_r_idx(any_bits(flags, SaveDataMonsterFlagType::AP_R_IDX) ? i2enum<MonraceId>(rd_s16b()) : monster.get_r_idx());
     monster.set_sub_align(any_bits(flags, SaveDataMonsterFlagType::SUB_ALIGN) ? rd_byte() : 0);

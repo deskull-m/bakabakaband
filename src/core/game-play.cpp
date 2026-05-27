@@ -329,7 +329,7 @@ static void init_riding_pet(CreatureEntity &creature, bool new_game)
     monster.maxhp = monrace.hit_dice.floored_expected_value();
     monster.max_maxhp = monster.maxhp;
     monster.hp = monrace.hit_dice.floored_expected_value();
-    monster.dealt_damage = 0;
+    monster.set_dealt_damage(0);
     monster.energy_need = ENERGY_NEED() + ENERGY_NEED();
 }
 

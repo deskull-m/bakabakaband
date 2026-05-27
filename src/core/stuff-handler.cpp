@@ -41,7 +41,7 @@ void monster_race_track(CreatureEntity &creature, MonraceId r_idx)
  */
 void object_kind_track(CreatureEntity &creature, short bi_id)
 {
-    creature.tracking_bi_id = bi_id;
+    creature.set_tracking_bi_id(bi_id);
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::ITEM_KNOWLEDGE);
 }
 

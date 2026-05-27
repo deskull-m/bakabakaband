@@ -400,7 +400,7 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
     monster.hp = old_hp * monster.maxhp / old_maxhp;
 
     /* dealt damage is 0 at initial*/
-    monster.dealt_damage = 0;
+    monster.set_dealt_damage(0);
 
     /* Extract the monster base speed */
     monster.set_individual_speed(floor.inside_arena);

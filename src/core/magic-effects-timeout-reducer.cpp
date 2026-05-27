@@ -42,8 +42,8 @@ void reduce_magic_effects_timeout(CreatureEntity &creature)
         (void)set_tim_invis(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_INVIS) - 1, true);
     }
 
-    if (creature.suppress_multi_reward) {
-        creature.suppress_multi_reward = false;
+    if (creature.is_suppress_multi_reward()) {
+        creature.set_suppress_multi_reward(false);
     }
 
     if (creature.get_timed_effect(CreatureTimedEffect::TIM_ESP)) {

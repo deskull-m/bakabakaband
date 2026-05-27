@@ -109,7 +109,7 @@ bool MonsterDamageProcessor::mon_take_hit(std::string_view note)
     monster.apply_raw_damage(this->dam);
 
     if (AngbandWorld::get_instance().wizard) {
-        msg_format(_("合計%d/%dのダメージを与えた。", "You do %d (out of %d) damage."), monster.dealt_damage, monster.maxhp);
+        msg_format(_("合計%d/%dのダメージを与えた。", "You do %d (out of %d) damage."), monster.get_dealt_damage(), monster.maxhp);
     }
 
     if (this->process_dead_exp_virtue(note, exp_mon)) {
@@ -459,8 +459,8 @@ void MonsterDamageProcessor::get_exp_from_mon(const CreatureEntity &target, int 
     }
 
     /* Special penalty for rest_and_shoot exp scum */
-    if ((target.dealt_damage > target.max_maxhp) && (target.hp >= 0)) {
-        int over_damage = target.dealt_damage / target.max_maxhp;
+    if ((target.get_dealt_damage() > target.max_maxhp) && (target.hp >= 0)) {
+        int over_damage = target.get_dealt_damage() / target.max_maxhp;
         if (over_damage > 32) {
             over_damage = 32;
         }

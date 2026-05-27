@@ -542,7 +542,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         m_ptr->hp = m_ptr->maxhp;
     }
 
-    m_ptr->dealt_damage = 0;
+    m_ptr->set_dealt_damage(0);
     if (monrace.suicide_dice_num && monrace.suicide_dice_side) {
         m_ptr->set_death_count(Dice::roll(monrace.suicide_dice_num, monrace.suicide_dice_side));
     }

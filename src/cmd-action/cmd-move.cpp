@@ -188,7 +188,7 @@ void do_cmd_go_up(CreatureEntity &creature)
         const auto p_pos = creature.get_position();
         const auto floor_terrain_id = dungeon.select_floor_terrain_id();
         set_terrain_id_to_grid(creature, p_pos, floor_terrain_id);
-        creature.vanish_stairs_flag = true; // 移動後のフロアでも階段を消す
+        creature.set_vanish_stairs_flag(true); // 移動後のフロアでも階段を消す
     }
 
     if (up_num == floor.dun_level) {
@@ -343,7 +343,7 @@ void do_cmd_go_down(CreatureEntity &creature)
         const auto p_pos = creature.get_position();
         const auto floor_terrain_id = dungeon.select_floor_terrain_id();
         set_terrain_id_to_grid(creature, p_pos, floor_terrain_id);
-        creature.vanish_stairs_flag = true; // 移動後のフロアでも階段を消す
+        creature.set_vanish_stairs_flag(true); // 移動後のフロアでも階段を消す
     }
 
     if (is_fall_trap) {

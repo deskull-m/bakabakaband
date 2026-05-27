@@ -161,10 +161,10 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
     int count = 0;
 
     if (!chosen_reward) {
-        if (creature.suppress_multi_reward) {
+        if (creature.is_suppress_multi_reward()) {
             return;
         } else {
-            creature.suppress_multi_reward = true;
+            creature.set_suppress_multi_reward(true);
         }
     }
 

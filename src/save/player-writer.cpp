@@ -162,7 +162,7 @@ void wr_player(CreatureEntity &creature)
     wr_s32b(creature.maxhp);
     wr_s32b(creature.hp);
     wr_u32b(creature.hp_frac);
-    wr_s32b(creature.dealt_damage); // セーブファイルバージョン35以降で与ダメージ蓄積を保存
+    wr_s32b(creature.get_dealt_damage()); // セーブファイルバージョン35以降で与ダメージ蓄積を保存
     wr_s32b(creature.get_msp());
     wr_s32b(creature.get_csp());
     wr_u32b(creature.csp_frac);

@@ -29,7 +29,7 @@ void MonsterWriter::write_to_savedata() const
     wr_s32b(this->monster.hp);
     wr_s32b(this->monster.maxhp);
     wr_s32b(this->monster.max_maxhp);
-    wr_u32b(this->monster.dealt_damage);
+    wr_u32b(this->monster.get_dealt_damage());
 
     if (any_bits(flags, SaveDataMonsterFlagType::AP_R_IDX)) {
         wr_s16b(enum2i(this->monster.get_ap_r_idx()));
