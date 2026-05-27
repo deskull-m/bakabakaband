@@ -63,9 +63,9 @@ void change_race(CreatureEntity &creature, PlayerRaceType new_race, concptr effe
 
     chg_virtue(creature, Virtue::CHANCE, 2);
     if (enum2i(creature.prace) < 32) {
-        creature.old_race1 |= 1UL << enum2i(creature.prace);
+        creature.set_old_race_flags1(creature.get_old_race_flags1() | (1UL << enum2i(creature.prace)));
     } else {
-        creature.old_race2 |= 1UL << (enum2i(creature.prace) - 32);
+        creature.set_old_race_flags2(creature.get_old_race_flags2() | (1UL << (enum2i(creature.prace) - 32)));
     }
 
     creature.prace = new_race;

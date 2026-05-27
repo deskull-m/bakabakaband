@@ -61,7 +61,7 @@ Phase 1-8 完了後に残存している統合作業項目を整理したもの�
 | [39](#提案-39-装備派生キャッシュフィールドの-private-化--完了) | 装備派生キャッシュフィールド private 化 | ✅ 完了 | **+11 = 94 個** (num_blow/cumber/icky 等) |
 | [40](#提案-40-ペット関連フィールドの-private-化--完了) | ペット関連フィールド private 化 | ✅ 完了 | **+4 = 103 個** (pet_extra_flags / pet_follow_distance 等、health_who 削除) |
 | [41](#提案-41-呪文マスク-spell_learnedworkedforgotten-の集約--完了) | 呪文マスク集約 (spell_learned/worked/forgotten) | ✅ 完了 | **+6 = 83 個**、realm_idx ベース API |
-| [42](#提案-42-旧差分検出キャッシュ-old_-の-private-化) | 旧差分検出キャッシュ (`old_*`) private 化 | 🚧 | old_cumber_* / old_heavy_* 等 |
+| [42](#提案-42-旧差分検出キャッシュ-old_-の-private-化--完了) | 旧差分検出キャッシュ (`old_*`) private 化 | ✅ 完了 | **+12 = 115 個** (old_race1/2 / old_realm / old_cumber_* / old_heavy_* 等、old_food_aux 削除) |
 | [43](#提案-43-行動状態フラグの-private-化) | 行動状態フラグ private 化 | 🚧 | resting / running / action 等 |
 | [44](#提案-44-突然変異呪い系フラグの-private-化--完了) | 突然変異/呪い系フラグ private 化 | ✅ 完了 | **+5 = 99 個** (muta / cursed / patron 等) |
 | [45](#提案-45-pet_t_m_idx--riding_t_m_idx-系を-target-pos2d-に統合) | pet_t_m_idx / riding_t_m_idx 統合 | 🚧 | Pos2D ベース |
@@ -69,7 +69,7 @@ Phase 1-8 完了後に残存している統合作業項目を整理したもの�
 
 **累計 private 化フィールド数 (主要マイルストーン):**
 - 提案 29 (3 個) → 32 (10 個) → 32b (37 個) → 33 (72 個) → 34 (77 個) →
-  41 (83 個) → 39 (94 個) → 44 (99 個) → **40 (103 個)**
+  41 (83 個) → 39 (94 個) → 44 (99 個) → 40 (103 個) → **42 (115 個)**
 
 未完了の提案 6 / 40 / 42 / 43 / 45 / 46 を全完了で **130+ 個** に到達見込み。
 
@@ -1899,12 +1899,75 @@ CreatureEntity 直下に public で残存していた。
 
 ---
 
-## 提案 42: 旧差分検出キャッシュ (`old_*`) の private 化
+## 提案 42: 旧差分検出キャッシュ (`old_*`) の private 化 ✅ 完了
 
-**対象**: `old_race1/2` / `old_realm` / `old_food_aux` / `old_lite` / `old_monlite` /
-`old_heavy_*` / `old_icky_*` / `old_riding_*` / `old_spells` / `old_cumber_*` (10+ フィールド)
-**規模**: 主に `update_creature()` 内部のみで使用 — call site 集中
-**価値**: 「前回値スナップショット」の意味的グループ化
+### 背景
+
+CreatureEntity 直下に「前回値スナップショット」を保持する `old_*`
+フィールド 13 個 (内 1 個は実質デッド) が public で残存していた。
+これらは主に `update_creature()` / `put_equipment_warning()` /
+`monster-lite.cpp` 等で状態変化検出 (cumber/heavy_wield/icky_wield/
+riding 等のメッセージ出力タイミング判定) に使われ、savefile 経由でも
+一部 (old_race1/2 / old_realm) が永続化される。
+
+### 完了内容
+
+#### API 整備
+
+`CreatureEntity` に 25 個の virtual を追加:
+
+| メソッド | 役割 |
+|---|---|
+| `get_old_lite() / set_old_lite()` | 光源半径前回値 |
+| `get_old_race_flags1/2() / set_old_race_flags1/2()` | 種族変身履歴ビットマスク |
+| `get_old_realm() / set_old_realm()` | 魔法領域変更履歴 |
+| `get_old_spells() / set_old_spells()` | 学習可能呪文数前回値 |
+| `was_cumber_armor() / set_was_cumber_armor()` | 装備過重 (鎧) 前回値 |
+| `was_cumber_glove() / set_was_cumber_glove()` | 装備過重 (篭手) 前回値 |
+| `was_heavy_wield(hand) / set_was_heavy_wield(hand, value)` | 重武器装備前回値 |
+| `was_heavy_shoot() / set_was_heavy_shoot()` | 重弓装備前回値 |
+| `was_icky_wield(hand) / set_was_icky_wield(hand, value)` | 不適切武器装備前回値 |
+| `was_icky_riding_wield(hand) / set_was_icky_riding_wield(hand, value)` | 不適切騎乗武器前回値 |
+| `was_riding_ryoute() / set_was_riding_ryoute()` | 騎乗両手持ち前回値 |
+| `was_monlite() / set_was_monlite()` | モンスター光源照射前回値 |
+
+bool 系は意図明示のため `was_X()` 命名 (現在値は `is_X()`、前回値は
+`was_X()` で対称形)。
+
+#### 移行
+
+11 ファイル約 46 サイトを移行:
+
+- `player/player-status.cpp`: 最大の集約箇所 (cumber/heavy_wield/
+  icky_wield/icky_riding_wield/riding_ryoute/heavy_shoot/spells の
+  diff 検出)
+- `specific-object/torch.cpp`: old_lite
+- `monster-floor/monster-lite.cpp` / `mind/mind-ninja.cpp`: old_monlite
+- `pet/pet-util.cpp` / `pet/pet-fall-off.cpp` / `cmd-action/cmd-pet.cpp` /
+  `floor/floor-leaver.cpp`: old_riding_ryoute (騎乗解除時のリセット)
+- `load/player-info-loader.cpp` / `save/player-writer.cpp`: savefile
+  load/save (old_race1/2 / old_realm)
+- `io-dump/character-dump.cpp`: 種族・領域履歴ダンプ
+- `cmd-action/cmd-spell.cpp` / `status/shape-changer.cpp`:
+  履歴ビット追加 (`|= 1UL << X` 形式を `set(get() | ...)` に書換え)
+- `birth/birth-stat.cpp`: 履歴リセット (種族再生成時)
+
+#### Private 化と削除
+
+- 12 フィールド (`old_lite` / `old_race1` / `old_race2` / `old_realm` /
+  `old_spells` / `old_cumber_armor` / `old_cumber_glove` / `old_heavy_wield[2]` /
+  `old_heavy_shoot` / `old_icky_wield[2]` / `old_riding_wield[2]` /
+  `old_riding_ryoute` / `old_monlite`) を完全 private 化
+- `old_food_aux` を完全削除 (デッドフィールド、宣言以外で未使用)
+
+### 効果
+
+- **合計 private 化フィールド数: 103 → 115**
+- 差分検出キャッシュの読書きが意図明示形 (`was_X()` / `set_was_X()`) に
+  統一され、現在値と前回値の混同を防止
+- 将来モンスターでも独自の状態変化検出 (例: ペットモンスターの装備
+  変更通知) を行う場合の override 点を確保
+- デッドフィールド削除によりオブジェクトサイズ若干削減
 
 ---
 

@@ -152,9 +152,9 @@ void get_extra(CreatureEntity &creature, bool roll_hitdie)
 
     /* Reset record of race/realm changes */
     InnerGameData::get_instance().set_start_race(creature.prace);
-    creature.old_race1 = 0L;
-    creature.old_race2 = 0L;
-    creature.old_realm = 0;
+    creature.set_old_race_flags1(0L);
+    creature.set_old_race_flags2(0L);
+    creature.set_old_realm(0);
 
     CreatureClass pc(creature);
     auto is_sorcerer = pc.equals(PlayerClassType::SORCERER);

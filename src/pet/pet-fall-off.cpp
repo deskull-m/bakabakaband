@@ -146,7 +146,7 @@ bool process_fall_off_horse(CreatureEntity &creature, int dam, bool force)
 
     creature.ride_monster(0);
     creature.remove_pet_extra_flag(PF_TWO_HANDS);
-    creature.old_riding_ryoute = false;
+    creature.set_was_riding_ryoute(false);
     creature.set_riding_ryoute(false);
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();

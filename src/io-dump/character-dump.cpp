@@ -370,7 +370,7 @@ static void dump_aux_monsters(FILE *fff)
  */
 static void dump_aux_race_history(CreatureEntity &creature, FILE *fff)
 {
-    if (!creature.old_race1 && !creature.old_race2) {
+    if (!creature.get_old_race_flags1() && !creature.get_old_race_flags2()) {
         return;
     }
 
@@ -381,11 +381,11 @@ static void dump_aux_race_history(CreatureEntity &creature, FILE *fff)
             continue;
         }
         if (i < 32) {
-            if (!(creature.old_race1 & 1UL << i)) {
+            if (!(creature.get_old_race_flags1() & 1UL << i)) {
                 continue;
             }
         } else {
-            if (!(creature.old_race2 & 1UL << (i - 32))) {
+            if (!(creature.get_old_race_flags2() & 1UL << (i - 32))) {
                 continue;
             }
         }
@@ -403,13 +403,13 @@ static void dump_aux_race_history(CreatureEntity &creature, FILE *fff)
  */
 static void dump_aux_realm_history(CreatureEntity &creature, FILE *fff)
 {
-    if (creature.old_realm == 0) {
+    if (creature.get_old_realm() == 0) {
         return;
     }
 
     fmt::print(fff, "\n");
     for (auto realm : MAGIC_REALM_RANGE) {
-        if (!(creature.old_realm & (1UL << (enum2i(realm) - 1)))) {
+        if (!(creature.get_old_realm() & (1UL << (enum2i(realm) - 1)))) {
             continue;
         }
         fmt::print(fff, _("\n あなたはかつて{}魔法を使えた。", "\n You were able to use {} magic before."), PlayerRealm::get_name(realm));

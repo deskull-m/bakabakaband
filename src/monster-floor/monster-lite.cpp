@@ -300,12 +300,12 @@ void update_mon_lite(CreatureEntity &creature)
     creature.set_monlite((floor.get_grid(p_pos).info & CAVE_MNLT) != 0);
     const auto ninja_data = CreatureClass(creature).get_specific_data<ninja_data_type>();
     if (!ninja_data || !ninja_data->s_stealth) {
-        creature.old_monlite = creature.is_monlite();
+        creature.set_was_monlite(creature.is_monlite());
         return;
     }
 
-    if (creature.old_monlite == creature.is_monlite()) {
-        creature.old_monlite = creature.is_monlite();
+    if (creature.was_monlite() == creature.is_monlite()) {
+        creature.set_was_monlite(creature.is_monlite());
         return;
     }
 
@@ -315,5 +315,5 @@ void update_mon_lite(CreatureEntity &creature)
         msg_print(_("影の覆いが濃くなった！", "Your mantle of shadow is restored to its original darkness."));
     }
 
-    creature.old_monlite = creature.is_monlite();
+    creature.set_was_monlite(creature.is_monlite());
 }

@@ -165,9 +165,9 @@ void rd_skills(CreatureEntity &creature)
 static void set_race(CreatureEntity &creature)
 {
     InnerGameData::get_instance().set_start_race(i2enum<PlayerRaceType>(rd_byte()));
-    creature.old_race1 = rd_u32b();
-    creature.old_race2 = rd_u32b();
-    creature.old_realm = rd_s16b();
+    creature.set_old_race_flags1(rd_u32b());
+    creature.set_old_race_flags2(rd_u32b());
+    creature.set_old_realm(rd_s16b());
 }
 
 void rd_bounty_uniques()
