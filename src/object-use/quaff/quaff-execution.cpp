@@ -108,7 +108,7 @@ bool ObjectQuaffEntity::can_influence()
 
 bool ObjectQuaffEntity::can_quaff()
 {
-    if (this->creature.timewalk) {
+    if (this->creature.is_timewalking()) {
         if (flush_failure) {
             flush();
         }

@@ -62,14 +62,15 @@ Phase 1-8 完了後に残存している統合作業項目を整理したもの�
 | [40](#提案-40-ペット関連フィールドの-private-化--完了) | ペット関連フィールド private 化 | ✅ 完了 | **+4 = 103 個** (pet_extra_flags / pet_follow_distance 等、health_who 削除) |
 | [41](#提案-41-呪文マスク-spell_learnedworkedforgotten-の集約--完了) | 呪文マスク集約 (spell_learned/worked/forgotten) | ✅ 完了 | **+6 = 83 個**、realm_idx ベース API |
 | [42](#提案-42-旧差分検出キャッシュ-old_-の-private-化--完了) | 旧差分検出キャッシュ (`old_*`) private 化 | ✅ 完了 | **+12 = 115 個** (old_race1/2 / old_realm / old_cumber_* / old_heavy_* 等、old_food_aux 削除) |
-| [43](#提案-43-行動状態フラグの-private-化) | 行動状態フラグ private 化 | 🚧 | resting / running / action 等 |
+| [43](#提案-43-行動状態フラグの-private-化--完了) | 行動状態フラグ private 化 | ✅ 完了 | **+14 = 129 個** (action / running / resting / leaving / playing 等) |
 | [44](#提案-44-突然変異呪い系フラグの-private-化--完了) | 突然変異/呪い系フラグ private 化 | ✅ 完了 | **+5 = 99 個** (muta / cursed / patron 等) |
 | [45](#提案-45-pet_t_m_idx--riding_t_m_idx-系を-target-pos2d-に統合) | pet_t_m_idx / riding_t_m_idx 統合 | 🚧 | Pos2D ベース |
 | [46](#提案-46-esp--装備集計の差分検出を-update_creature-内-raw-access-に閉じる) | ESP / 装備集計の差分検出を内部に閉じる | 🚧 | get_X_flags() 公開撤廃検討 |
 
 **累計 private 化フィールド数 (主要マイルストーン):**
 - 提案 29 (3 個) → 32 (10 個) → 32b (37 個) → 33 (72 個) → 34 (77 個) →
-  41 (83 個) → 39 (94 個) → 44 (99 個) → 40 (103 個) → **42 (115 個)**
+  41 (83 個) → 39 (94 個) → 44 (99 個) → 40 (103 個) → 42 (115 個) →
+  **43 (129 個)**
 
 未完了の提案 6 / 40 / 42 / 43 / 45 / 46 を全完了で **130+ 個** に到達見込み。
 
@@ -1971,13 +1972,74 @@ bool 系は意図明示のため `was_X()` 命名 (現在値は `is_X()`、前�
 
 ---
 
-## 提案 43: 行動状態フラグの private 化
+## 提案 43: 行動状態フラグの private 化 ✅ 完了
 
-**対象**: `resting` / `running` / `action` / `fishing_dir` / `sutemi` / `yoiyami` /
-`timewalk` / `teleport_town` / `is_fired` / `leaving` / `playing` / `now_damaged` /
-`monk_notify_aux` / `last_message` / `level_up_message` (15+ フィールド)
-**規模**: access 多数 (`running` で 8 ファイル、`resting` で 4 等)
-**価値**: モンスター AI と共通化余地大 (徘徊・休息など)
+### 背景
+
+CreatureEntity 直下に「現在の行動状態」を示すスカラー / bool フラグが
+public で 14 個残存していた。プレイヤーの行動制御に使われるが、
+モンスター AI 共通化の余地がある (`resting` / `running` 相当の徘徊・
+休息ロジックなど)。
+
+### 完了内容
+
+#### API 整備
+
+`CreatureEntity` に 28 個の virtual を追加:
+
+| メソッド | 役割 |
+|---|---|
+| `get_action() / set_action()` | 常時行動 ID (ACTION_LEARN 等) |
+| `get_running() / set_running()` | 走行カウンタ |
+| `get_resting() / set_resting()` | 休息カウンタ (GAME_TURN) |
+| `is_fired() / set_is_fired()` | 発射済みフラグ (bool 値) |
+| `has_level_up_message() / set_level_up_message()` | レベルアップメッセージ表示要求 |
+| `is_timewalking() / set_timewalking()` | 時間停止中 |
+| `is_now_damaged() / set_now_damaged()` | 直近ダメージ受領 |
+| `is_playing() / set_playing()` | プレイ中フラグ |
+| `is_leaving() / set_leaving()` | フロア離脱中 |
+| `get_monk_notify_aux() / set_monk_notify_aux()` | 修行僧の重装備通知済フラグ |
+| `is_teleport_town() / set_teleport_town()` | 街へのテレポート要求 |
+| `get_yoiyami() / set_yoiyami()` | 宵闇 (BIT_FLAGS) |
+| `is_sutemi() / set_sutemi()` | 捨て身フラグ |
+| `get_fishing_dir() / set_fishing_dir()` | 釣り方向 |
+
+#### フィールドリネーム
+
+メソッド名衝突回避のためフィールドをリネーム:
+- `bool is_fired` → `bool fired` (メソッド `is_fired()` と衝突回避)
+
+#### 移行
+
+73 ファイル、約 180 サイトを migration:
+
+- `.action` 名前空間衝突への注意深い扱い:
+  `terrain.state[i].action` (TerrainCharacteristics) /
+  `autopick_list[idx].action` (autopick entries) /
+  `cmd.action(creature)` (text command 関数ポインタ) /
+  `dungeon.action` (DungeonDefinition 引数名) は全て CreatureEntity
+  ではないので migration 対象外として残置
+- `running` / `leaving` についても同様に CreatureEntity field のみ migration
+- `++` / `--` compound assignment は `set_X(get_X() + 1)` 形式に展開
+- `this->X` (CreatureEntity 派生メソッド内、`hp-mp-regenerator.cpp` /
+  `player-damage.cpp`) も `this->get_X()` / `this->set_X()` に migration
+
+#### Private 化
+
+14 フィールド (`action` / `running` / `resting` / `fired` /
+`level_up_message` / `timewalk` / `now_damaged` / `playing` / `leaving` /
+`monk_notify_aux` / `teleport_town` / `yoiyami` / `sutemi` / `fishing_dir`)
+を完全 private 化。
+
+### 効果
+
+- **合計 private 化フィールド数: 115 → 129**
+- 行動状態の更新が意図明示形 (`set_action(ACTION_LEARN)` /
+  `is_leaving()` 等) に統一され、外部からの意図しない書込みを型システムで防止
+- 将来モンスター AI で `resting` / `running` 相当の徘徊・休息ロジックを
+  共通化する設計余地を確保
+- `is_fired` のフィールド名衝突を回避することで、is_X() 系メソッドの
+  自然な命名規則を全フィールドに適用可能に
 
 ---
 

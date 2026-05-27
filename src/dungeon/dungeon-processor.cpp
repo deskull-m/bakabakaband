@@ -105,7 +105,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
     auto &world = AngbandWorld::get_instance();
     floor.base_level = floor.dun_level;
     world.is_loading_now = false;
-    creature.leaving = false;
+    creature.set_leaving(false);
 
     command_cmd = 0;
     command_rep = 0;
@@ -178,7 +178,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
         set_singing_song_effect(creature, MUSIC_DETECT);
     }
 
-    if (!creature.playing || creature.is_dead()) {
+    if (!creature.is_playing() || creature.is_dead()) {
         return;
     }
 
@@ -236,7 +236,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
             term_fresh_force();
         }
 
-        if (!creature.playing || creature.is_dead()) {
+        if (!creature.is_playing() || creature.is_dead()) {
             break;
         }
 
@@ -248,7 +248,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
             term_fresh_force();
         }
 
-        if (!creature.playing || creature.is_dead()) {
+        if (!creature.is_playing() || creature.is_dead()) {
             break;
         }
 
@@ -260,7 +260,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
             term_fresh_force();
         }
 
-        if (!creature.playing || creature.is_dead() || wc_ptr->is_blown_away()) {
+        if (!creature.is_playing() || creature.is_dead() || wc_ptr->is_blown_away()) {
             break;
         }
 
@@ -276,7 +276,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
 
         prevent_turn_overflow(creature);
 
-        if (creature.leaving) {
+        if (creature.is_leaving()) {
             break;
         }
 
@@ -289,7 +289,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
         monrace_questor.misc_flags.reset(MonsterMiscType::QUESTOR);
     }
 
-    if (creature.playing && !creature.is_dead()) {
+    if (creature.is_playing() && !creature.is_dead()) {
         /*
          * Maintain Unique monsters and artifact, save current
          * floor, then prepare next floor

@@ -126,20 +126,20 @@ bool BadStatusSetter::set_confusion(const TIME_EFFECT tmp_v)
     if (v > 0) {
         if (!is_confused) {
             msg_print(_("あなたは混乱した！", "You are confused!"));
-            if (this->creature.action == ACTION_LEARN) {
+            if (this->creature.get_action() == ACTION_LEARN) {
                 msg_print(_("学習が続けられない！", "You cannot continue learning!"));
                 auto bluemage_data = CreatureClass(this->creature).get_specific_data<bluemage_data_type>();
                 bluemage_data->new_magic_learned = false;
                 rfu.set_flag(MainWindowRedrawingFlag::ACTION);
-                this->creature.action = ACTION_NONE;
+                this->creature.set_action(ACTION_NONE);
             }
-            if (this->creature.action == ACTION_MONK_STANCE) {
+            if (this->creature.get_action() == ACTION_MONK_STANCE) {
                 msg_print(_("構えがとけた。", "You lose your stance."));
                 CreatureClass(this->creature).set_monk_stance(MonkStanceType::NONE);
                 rfu.set_flag(StatusRecalculatingFlag::BONUS);
                 rfu.set_flag(MainWindowRedrawingFlag::ACTION);
-                this->creature.action = ACTION_NONE;
-            } else if (this->creature.action == ACTION_SAMURAI_STANCE) {
+                this->creature.set_action(ACTION_NONE);
+            } else if (this->creature.get_action() == ACTION_SAMURAI_STANCE) {
                 msg_print(_("型が崩れた。", "You lose your stance."));
                 CreatureClass(this->creature).lose_balance();
             }

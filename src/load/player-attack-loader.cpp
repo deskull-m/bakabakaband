@@ -17,12 +17,12 @@ void rd_special_attack(CreatureEntity &creature)
 void rd_special_action(CreatureEntity &creature)
 {
     if (!CreatureClass(creature).monk_stance_is(MonkStanceType::NONE)) {
-        creature.action = ACTION_MONK_STANCE;
+        creature.set_action(ACTION_MONK_STANCE);
         return;
     }
 
     if (!CreatureClass(creature).samurai_stance_is(SamuraiStanceType::NONE)) {
-        creature.action = ACTION_SAMURAI_STANCE;
+        creature.set_action(ACTION_SAMURAI_STANCE);
     }
 }
 
@@ -35,6 +35,6 @@ void rd_special_defense(CreatureEntity &creature)
 void rd_action(CreatureEntity &creature)
 {
     strip_bytes(1);
-    creature.action = rd_byte();
+    creature.set_action(rd_byte());
     set_zangband_action(creature);
 }

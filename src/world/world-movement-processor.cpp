@@ -94,7 +94,7 @@ void execute_recall(CreatureEntity &creature)
         leave_quest_check(creature);
         leave_tower_check(creature);
         floor.quest_number = QuestId::NONE;
-        creature.leaving = true;
+        creature.set_leaving(true);
         sound(SoundKind::TPLEVEL);
         return;
     }
@@ -134,7 +134,7 @@ void execute_recall(CreatureEntity &creature)
      * and create a first saved floor
      */
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::FIRST_FLOOR);
-    creature.leaving = true;
+    creature.set_leaving(true);
 
     check_random_quest_auto_failure(creature);
     sound(SoundKind::TPLEVEL);
@@ -174,7 +174,7 @@ void execute_floor_reset(CreatureEntity &creature)
         }
 
         FloorChangeModesStore::get_instace()->set(FloorChangeMode::FIRST_FLOOR);
-        creature.leaving = true;
+        creature.set_leaving(true);
     } else {
         msg_print(_("世界が少しの間変化したようだ。", "The world seems to change for a moment!"));
     }

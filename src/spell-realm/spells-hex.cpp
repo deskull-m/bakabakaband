@@ -55,7 +55,7 @@ void SpellHex::stop_all_spells()
     }
 
     this->spell_hex_data->casting_spells.clear();
-    if (this->creature.action == ACTION_SPELL) {
+    if (this->creature.get_action() == ACTION_SPELL) {
         set_action(this->creature, ACTION_NONE);
     }
 
@@ -231,7 +231,7 @@ bool SpellHex::process_mana_cost(const bool need_restart)
     }
 
     msg_print(_("詠唱を再開した。", "You restart casting."));
-    this->creature.action = ACTION_SPELL;
+    this->creature.set_action(ACTION_SPELL);
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
         StatusRecalculatingFlag::HP,

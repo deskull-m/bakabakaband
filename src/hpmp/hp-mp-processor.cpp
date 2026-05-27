@@ -405,7 +405,7 @@ void process_player_hp_mp(CreatureEntity &creature)
     regen_amount = compute_regen_amount(creature);
 
     upkeep_factor = calculate_upkeep(creature);
-    if ((creature.action == ACTION_LEARN) || (creature.action == ACTION_HAYAGAKE) || pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
+    if ((creature.get_action() == ACTION_LEARN) || (creature.get_action() == ACTION_HAYAGAKE) || pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         upkeep_factor += 100;
     }
 

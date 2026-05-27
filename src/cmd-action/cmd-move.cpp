@@ -126,7 +126,7 @@ void do_cmd_go_up(CreatureEntity &creature)
             creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, 0);
         }
 
-        creature.leaving = true;
+        creature.set_leaving(true);
         creature.oldpx = 0;
         creature.oldpy = 0;
         PlayerEnergy(creature).set_player_turn_energy(100);
@@ -208,7 +208,7 @@ void do_cmd_go_up(CreatureEntity &creature)
 
     sound(SoundKind::STAIRWAY);
 
-    creature.leaving = true;
+    creature.set_leaving(true);
 }
 
 /*!
@@ -272,7 +272,7 @@ void do_cmd_go_down(CreatureEntity &creature)
             creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, 0);
         }
 
-        creature.leaving = true;
+        creature.set_leaving(true);
         creature.oldpx = 0;
         creature.oldpy = 0;
         PlayerEnergy(creature).set_player_turn_energy(100);
@@ -366,7 +366,7 @@ void do_cmd_go_down(CreatureEntity &creature)
         sound(SoundKind::STAIRWAY);
     }
 
-    creature.leaving = true;
+    creature.set_leaving(true);
     if (is_fall_trap) {
         fcms->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::DOWN, FloorChangeMode::RANDOM_PLACE, FloorChangeMode::RANDOM_CONNECT });
         return;
@@ -405,7 +405,7 @@ void do_cmd_walk(CreatureEntity &creature, bool pickup)
             energy.mul_player_turn_energy((MAX_HGT + MAX_WID) / 2);
         }
 
-        if (creature.action == ACTION_HAYAGAKE) {
+        if (creature.get_action() == ACTION_HAYAGAKE) {
             auto energy_use = (ENERGY)(creature.energy_use * (45 - (creature.get_level() / 2)) / 100);
             energy.set_player_turn_energy(energy_use);
         }
@@ -453,7 +453,7 @@ void do_cmd_run(CreatureEntity &creature)
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     if (const auto dir = get_rep_dir(creature)) {
-        creature.running = (command_arg ? command_arg : 1000);
+        creature.set_running(command_arg ? command_arg : 1000);
         run_step(creature, dir);
     }
 }
@@ -550,8 +550,8 @@ void do_cmd_rest(CreatureEntity &creature)
     }
 
     creature.plus_incident_tree("REST", 1);
-    creature.resting = command_arg;
-    creature.action = ACTION_REST;
+    creature.set_resting(command_arg);
+    creature.set_action(ACTION_REST);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     rfu.set_flag(MainWindowRedrawingFlag::ACTION);
@@ -620,7 +620,7 @@ void do_cmd_go_portal(CreatureEntity &creature)
     }
 
     // 階層移動処理
-    creature.leaving = true;
+    creature.set_leaving(true);
     floor.set_dungeon_index(target_dungeon);
 
     const auto &target_dungeon_info = dungeons.get_dungeon(target_dungeon);

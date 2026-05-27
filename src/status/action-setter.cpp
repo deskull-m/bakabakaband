@@ -33,7 +33,7 @@
  */
 void set_action(CreatureEntity &creature, uint8_t typ)
 {
-    auto prev_typ = creature.action;
+    auto prev_typ = creature.get_action();
     if (typ == prev_typ) {
         return;
     }
@@ -45,7 +45,7 @@ void set_action(CreatureEntity &creature, uint8_t typ)
         rfu.set_flag(MainWindowRedrawingFlag::SPEED);
         break;
     case ACTION_REST:
-        creature.resting = 0;
+        creature.set_resting(0);
         break;
     case ACTION_LEARN: {
         msg_print(_("学習をやめた。", "You stop learning."));
@@ -75,7 +75,7 @@ void set_action(CreatureEntity &creature, uint8_t typ)
         break;
     }
 
-    creature.action = typ;
+    creature.set_action(typ);
 
     /* If we are requested other action, stop singing */
     if (prev_typ == ACTION_SING) {
@@ -89,7 +89,7 @@ void set_action(CreatureEntity &creature, uint8_t typ)
         }
     }
 
-    switch (creature.action) {
+    switch (creature.get_action()) {
     case ACTION_SEARCH:
         msg_print(_("注意深く歩き始めた。", "You begin to walk carefully."));
         rfu.set_flag(MainWindowRedrawingFlag::SPEED);

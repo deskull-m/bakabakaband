@@ -384,7 +384,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
                 msg_print(_("その方向にはモンスターはいません。", "There is no monster."));
                 return tl::nullopt;
             }
-            creature.sutemi = true;
+            creature.set_sutemi(true);
         }
         break;
 

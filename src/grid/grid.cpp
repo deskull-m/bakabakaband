@@ -686,7 +686,7 @@ void update_flow(CreatureEntity &creature)
 
     /* The last way-point is on the map */
     const Pos2D flow(flow_y, flow_x);
-    if (creature.running && floor.contains(flow, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
+    if (creature.get_running() && floor.contains(flow, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         /* The way point is in sight - do not update.  (Speedup) */
         if (floor.get_grid(flow).info & CAVE_VIEW) {
             return;

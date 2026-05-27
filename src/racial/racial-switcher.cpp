@@ -252,7 +252,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
         return true;
     case PlayerClassType::BLUE_MAGE:
-        set_action(creature, creature.action == ACTION_LEARN ? ACTION_NONE : ACTION_LEARN);
+        set_action(creature, creature.get_action() == ACTION_LEARN ? ACTION_NONE : ACTION_LEARN);
         PlayerEnergy(creature).reset_player_turn();
         return true;
     case PlayerClassType::CAVALRY:

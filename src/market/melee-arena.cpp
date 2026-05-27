@@ -109,7 +109,7 @@ bool melee_arena_comm(CreatureEntity &creature)
 
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::SAVE_FLOORS);
     AngbandSystem::get_instance().set_phase_out(true);
-    creature.leaving = true;
+    creature.set_leaving(true);
     screen_load();
     return true;
 }

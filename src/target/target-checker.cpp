@@ -54,7 +54,7 @@ void verify_panel(CreatureEntity &creature)
 
     int prow_min;
     int pcol_min;
-    if (center_player && (center_running || !creature.running)) {
+    if (center_player && (center_running || !creature.get_running())) {
         prow_min = y - hgt / 2;
         if (prow_min < 0) {
             prow_min = 0;

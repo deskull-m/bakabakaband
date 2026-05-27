@@ -349,7 +349,7 @@ tl::optional<uint8_t> get_monochrome_display_color(CreatureEntity &creature)
     if (AngbandWorld::get_instance().timewalk_m_idx) {
         return TERM_DARK;
     }
-    if (creature.is_invulnerable() || creature.timewalk) {
+    if (creature.is_invulnerable() || creature.is_timewalking()) {
         return TERM_WHITE;
     }
     if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {

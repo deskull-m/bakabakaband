@@ -347,6 +347,15 @@ API 経由に統一された。一部フィールド (r_idx / ap_r_idx / riding)
   明示のため `was_X()` / `set_was_X()` 命名) を整備し、11 ファイル
   約 46 サイトを migration。さらにデッドフィールド `old_food_aux`
   (宣言以外で未使用) を削除。**合計 private 化フィールド数: 103 → 115**
+- **提案 43**: 行動状態フラグ 14 個 (`action` / `running` / `resting` /
+  `fired` (旧 `is_fired`) / `level_up_message` / `timewalk` / `now_damaged` /
+  `playing` / `leaving` / `monk_notify_aux` / `teleport_town` / `yoiyami` /
+  `sutemi` / `fishing_dir`) を private 化。28 個の virtual API (scalar 系は
+  `get_X()` / `set_X()`、bool 系は意図明示のため `is_X()` / `has_X()` /
+  `set_X()` 命名) を整備し、73 ファイル約 180 サイトを migration。
+  メソッド名衝突回避のため `is_fired` フィールドを `fired` にリネーム。
+  `.action` / `.running` / `.leaving` の他構造体での同名フィールドは慎重に
+  除外。**合計 private 化フィールド数: 115 → 129**
 - **提案 1/2**: プレイヤー専用フィールドのモンスター運用化基盤完了。
   種族 (`prace`) / 職業 (`pclass`) / 魔法領域 (`realm1` / `realm2` /
   `element_realm`) / パトロン (`patron`) / 変身形態 (`mimic_form`)
@@ -726,6 +735,13 @@ bakabakaband 側と上流側でよくある構造的差異を以下のルール�
 | 同上書込 | `creature.set_was_heavy_wield(hand, X)` / `set_was_icky_wield(hand, X)` / `set_was_icky_riding_wield(hand, X)` (提案 42)、scalar bool は `set_was_X(value)` |
 | `creature.old_realm \|= 1U << X` / `old_race1 \|= ...` 単一ビット追加 | `creature.set_old_realm(creature.get_old_realm() \| (1U << X))` (提案 42。意味的な単純化のため raw 操作を保持) |
 | `creature.old_food_aux` | **提案 42 でフィールド削除** (デッドフィールドだった) |
+| `creature.action` 読取 / `creature.action = X` 書込 | `creature.get_action()` / `creature.set_action(X)` (提案 43)。`.action` を持つ他構造体 (TerrainCharacteristics / autopick / cmd / DungeonDefinition 等) は別物で migration 対象外 |
+| `creature.running` / `creature.resting` 読取 / 書込 | `creature.get_running()` / `set_running(X)` / `get_resting()` / `set_resting(X)` (提案 43)。`++` / `--` は `set_X(get_X() ± 1)` 形式に展開 |
+| `creature.is_fired` 読取 / 書込 | `creature.is_fired()` / `creature.set_is_fired(X)` (提案 43。**フィールド名を `is_fired` → `fired` にリネーム**) |
+| `creature.timewalk` / `creature.now_damaged` / `creature.playing` / `creature.leaving` / `creature.teleport_town` / `creature.sutemi` 読取 | `creature.is_timewalking()` / `is_now_damaged()` / `is_playing()` / `is_leaving()` / `is_teleport_town()` / `is_sutemi()` (提案 43) |
+| 同上書込 | `creature.set_timewalking(X)` / `set_now_damaged(X)` / `set_playing(X)` / `set_leaving(X)` / `set_teleport_town(X)` / `set_sutemi(X)` (提案 43) |
+| `creature.level_up_message` 読取 / 書込 | `creature.has_level_up_message()` / `set_level_up_message(X)` (提案 43) |
+| `creature.monk_notify_aux` / `creature.fishing_dir` / `creature.yoiyami` 読取 / 書込 | `creature.get_monk_notify_aux()` / `get_fishing_dir()` / `get_yoiyami()` / `set_X(value)` (提案 43)。yoiyami の `\|=` は `set_yoiyami(get_yoiyami() \| X)` |
 
 **GCC 固有の注意**:
 上流は MSVC 前提のことが多く、`<cstdint>` 等のインクルード漏れがあれば追加する。

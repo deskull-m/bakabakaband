@@ -29,12 +29,12 @@ void disturb(CreatureEntity &creature, bool stop_search, bool stop_travel)
         rfu.set_flag(MainWindowRedrawingFlag::ACTION);
     }
 
-    if ((creature.action == ACTION_REST) || (creature.action == ACTION_FISH) || (stop_search && (creature.action == ACTION_SEARCH))) {
+    if ((creature.get_action() == ACTION_REST) || (creature.get_action() == ACTION_FISH) || (stop_search && (creature.get_action() == ACTION_SEARCH))) {
         set_action(creature, ACTION_NONE);
     }
 
-    if (creature.running) {
-        creature.running = 0;
+    if (creature.get_running()) {
+        creature.set_running(0);
         if (center_player && !center_running) {
             verify_panel(creature);
         }

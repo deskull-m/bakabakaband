@@ -169,7 +169,7 @@ static bool check_mspell_continuation(CreatureEntity &creature, msa_type *msa_pt
     }
 
     set_mspell_list(msa_ptr);
-    if (msa_ptr->mspells.empty() || !creature.playing || creature.is_dead() || creature.leaving) {
+    if (msa_ptr->mspells.empty() || !creature.is_playing() || creature.is_dead() || creature.is_leaving()) {
         return false;
     }
 

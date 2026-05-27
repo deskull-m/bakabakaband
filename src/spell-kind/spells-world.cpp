@@ -156,7 +156,7 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
             fcms->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::UP, FloorChangeMode::RANDOM_PLACE, FloorChangeMode::RANDOM_CONNECT });
             leave_quest_check(creature);
             floor.quest_number = QuestId::NONE;
-            creature.leaving = true;
+            creature.set_leaving(true);
         }
     } else if (go_up) {
 #ifdef JP
@@ -179,7 +179,7 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
             }
 
             fcms->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::UP, FloorChangeMode::RANDOM_PLACE, FloorChangeMode::RANDOM_CONNECT });
-            creature.leaving = true;
+            creature.set_leaving(true);
         }
     } else {
 #ifdef JP
@@ -201,7 +201,7 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
             }
 
             fcms->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::DOWN, FloorChangeMode::RANDOM_PLACE, FloorChangeMode::RANDOM_CONNECT });
-            creature.leaving = true;
+            creature.set_leaving(true);
         }
     }
 
@@ -329,8 +329,8 @@ bool tele_town(CreatureEntity &creature)
         }
     }
 
-    creature.leaving = true;
-    creature.teleport_town = true;
+    creature.set_leaving(true);
+    creature.set_teleport_town(true);
     screen_load();
     return true;
 }

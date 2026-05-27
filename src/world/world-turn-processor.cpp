@@ -167,12 +167,12 @@ void WorldTurnProcessor::process_downward()
     FloorChangeModesStore::get_instace()->set({ FloorChangeMode::FIRST_FLOOR, FloorChangeMode::RANDOM_PLACE });
     floor.inside_arena = false;
     AngbandWorld::get_instance().set_wild_mode(false);
-    this->creature.leaving = true;
+    this->creature.set_leaving(true);
 }
 
 void WorldTurnProcessor::process_monster_arena()
 {
-    if (!AngbandSystem::get_instance().is_phase_out() || this->creature.leaving) {
+    if (!AngbandSystem::get_instance().is_phase_out() || this->creature.is_leaving()) {
         return;
     }
 
@@ -296,7 +296,7 @@ void WorldTurnProcessor::process_world_monsters()
         regenerate_captured_monsters(this->creature);
     }
 
-    if (this->creature.leaving) {
+    if (this->creature.is_leaving()) {
         return;
     }
 

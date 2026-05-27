@@ -82,11 +82,11 @@ static void handle_signal_simple(int sig)
         floor.forget_lite();
         floor.forget_view();
         floor.forget_mon_lite();
-        creature.playing = false;
+        creature.set_playing(false);
         if (!cheat_immortal) {
             creature.is_dead_ = true;
         }
-        creature.leaving = true;
+        creature.set_leaving(true);
         close_game(creature);
         quit(_("強制終了", "interrupt"));
     } else if (signal_count >= 4) {

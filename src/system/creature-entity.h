@@ -1567,6 +1567,124 @@ public:
         this->old_monlite = value;
     }
 
+    // [提案 43] 行動・状態フラグ群の virtual API。
+    // action / running / resting / is_fired / level_up_message /
+    // timewalk / now_damaged / playing / leaving / monk_notify_aux /
+    // teleport_town / yoiyami / sutemi / fishing_dir を private 化し
+    // get/set virtual 経由でアクセス。
+    virtual byte get_action() const
+    {
+        return this->action;
+    }
+    virtual void set_action(byte value)
+    {
+        this->action = value;
+    }
+    virtual int16_t get_running() const
+    {
+        return this->running;
+    }
+    virtual void set_running(int16_t value)
+    {
+        this->running = value;
+    }
+    virtual GAME_TURN get_resting() const
+    {
+        return this->resting;
+    }
+    virtual void set_resting(GAME_TURN value)
+    {
+        this->resting = value;
+    }
+    virtual bool is_fired() const
+    {
+        return this->fired;
+    }
+    virtual void set_is_fired(bool value)
+    {
+        this->fired = value;
+    }
+    virtual bool has_level_up_message() const
+    {
+        return this->level_up_message;
+    }
+    virtual void set_level_up_message(bool value)
+    {
+        this->level_up_message = value;
+    }
+    virtual bool is_timewalking() const
+    {
+        return this->timewalk;
+    }
+    virtual void set_timewalking(bool value)
+    {
+        this->timewalk = value;
+    }
+    virtual bool is_now_damaged() const
+    {
+        return this->now_damaged;
+    }
+    virtual void set_now_damaged(bool value)
+    {
+        this->now_damaged = value;
+    }
+    virtual bool is_playing() const
+    {
+        return this->playing;
+    }
+    virtual void set_playing(bool value)
+    {
+        this->playing = value;
+    }
+    virtual bool is_leaving() const
+    {
+        return this->leaving;
+    }
+    virtual void set_leaving(bool value)
+    {
+        this->leaving = value;
+    }
+    virtual bool get_monk_notify_aux() const
+    {
+        return this->monk_notify_aux;
+    }
+    virtual void set_monk_notify_aux(bool value)
+    {
+        this->monk_notify_aux = value;
+    }
+    virtual bool is_teleport_town() const
+    {
+        return this->teleport_town;
+    }
+    virtual void set_teleport_town(bool value)
+    {
+        this->teleport_town = value;
+    }
+    virtual BIT_FLAGS get_yoiyami() const
+    {
+        return this->yoiyami;
+    }
+    virtual void set_yoiyami(BIT_FLAGS value)
+    {
+        this->yoiyami = value;
+    }
+    virtual bool is_sutemi() const
+    {
+        return this->sutemi;
+    }
+    virtual void set_sutemi(bool value)
+    {
+        this->sutemi = value;
+    }
+    virtual DIRECTION get_fishing_dir() const
+    {
+        return this->fishing_dir;
+    }
+    virtual void set_fishing_dir(DIRECTION value)
+    {
+        this->fishing_dir = value;
+    }
+
     /*!
      * @brief パック内の所持品数を inventory[] から計算する (提案 25)
      * @details inventory[0..INVEN_PACK) の有効アイテム数を返す。
@@ -3542,9 +3660,13 @@ public:
     int alignment{}; /*!< 善悪の属性 / Good/evil/neutral */
 
     // 行動状態関連
+    // [提案 43] action / running は private 化済。
+    // get_action() / set_action() / get_running() / set_running() 経由。
+private:
     byte action{}; /*!< クリーチャーが現在取っている常時行動のID / Currently action */
     int16_t running{}; /*!< 現在の走行カウンタ / Current counter for running, if any */
 
+public:
     // 所持金関連
     // [提案 32b] private 化済。get_au() / set_au() / add_au() / sub_au() / divide_au() 経由。
 private:
@@ -3595,9 +3717,15 @@ private:
 public:
     // 装備・能力関連フラグ / Equipment and ability flags
     bool hack_mutation{};
-    bool is_fired{};
+
+    // [提案 43] is_fired (フィールド名 fired にリネーム) / level_up_message は
+    // private 化済。is_fired() / set_is_fired() / has_level_up_message() /
+    // set_level_up_message() 経由。
+private:
+    bool fired{};
     bool level_up_message{};
 
+public:
     // [提案 33] 装備由来 BIT_FLAGS 群。
     // 全て has_X() / set_X() 経由でアクセス。
     // [提案 44] cursed / cursed_special も private 化済。
@@ -3724,12 +3852,18 @@ public:
 
     uint32_t count{};
 
+    // [提案 43] timewalk / resting は private 化済。
+    // is_timewalking() / set_timewalking() / get_resting() / set_resting() 経由。
+private:
     bool timewalk{};
 
+public:
 #define COMMAND_ARG_REST_UNTIL_DONE -2 /*!<休憩コマンド引数 … 必要な分だけ回復 */
 #define COMMAND_ARG_REST_FULL_HEALING -1 /*!<休憩コマンド引数 … HPとMPが全回復するまで */
+private:
     GAME_TURN resting{}; /* Current counter for resting, if any */
 
+public:
     DungeonId recall_dungeon{}; /* Dungeon set to be recalled */
 
     ENERGY enchant_energy_need{}; /* Energy needed for next upkeep effect	 */
@@ -3823,8 +3957,12 @@ public:
     char history[4][60]{}; /* Textual "history" for the Player */
 
     bool is_dead_{}; /* Player is dead */
+
+    // [提案 43] now_damaged は private 化済。is_now_damaged() / set_now_damaged() 経由。
+private:
     bool now_damaged{};
 
+public:
 #define KNOW_STAT 0x01
 #define KNOW_HPRATE 0x02
     BIT_FLAGS8 knowledge{}; /* Knowledge about yourself */
@@ -3856,14 +3994,23 @@ public:
 
     bool select_ring_slot{};
 
+    // [提案 43] playing / leaving / monk_notify_aux / teleport_town は private 化済。
+    // is_playing() / set_playing() / is_leaving() / set_leaving() /
+    // get_monk_notify_aux() / set_monk_notify_aux() /
+    // is_teleport_town() / set_teleport_town() 経由。
+private:
     bool playing{}; /* True if player is playing */
     bool leaving{}; /* True if player is leaving */
+
+public:
     bool vanish_stairs_flag{}; /* True if stairs should vanish after floor change */
 
+private:
     bool monk_notify_aux{};
 
     bool teleport_town{};
 
+public:
     short tracking_bi_id{}; /* Object kind trackee */
 
     int16_t new_spells{}; /* Number of spells available */
@@ -3903,15 +4050,26 @@ private:
     bool monlite{};
 
 public:
+    // [提案 43] yoiyami / sutemi / fishing_dir は private 化済。
+    // get_yoiyami() / set_yoiyami() / is_sutemi() / set_sutemi() /
+    // get_fishing_dir() / set_fishing_dir() 経由。
+private:
     BIT_FLAGS yoiyami{};
+
+public:
     BIT_FLAGS easy_2weapon{};
     BIT_FLAGS down_saving{};
 
+private:
     bool sutemi{};
+
+public:
     bool counter{};
 
+private:
     DIRECTION fishing_dir{};
 
+public:
     // [提案 40] ペット/騎乗ターゲット m_idx は private 化済。
     // get_pet_t_m_idx() / set_pet_t_m_idx() / get_riding_t_m_idx() /
     // set_riding_t_m_idx() 経由。

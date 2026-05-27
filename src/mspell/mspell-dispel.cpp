@@ -100,7 +100,7 @@ static void dispel_player(CreatureEntity &creature)
             msg_print(_("呪文が途切れた。", "Your casting is interrupted."));
         }
 
-        creature.action = ACTION_NONE;
+        creature.set_action(ACTION_NONE);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         static constexpr auto flags_srf = {
             StatusRecalculatingFlag::BONUS,

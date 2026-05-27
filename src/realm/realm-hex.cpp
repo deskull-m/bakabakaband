@@ -739,7 +739,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
     if (cast && should_continue) {
         SpellHex spell_hex(creature);
         spell_hex.set_casting_flag(spell);
-        if (creature.action != ACTION_SPELL) {
+        if (creature.get_action() != ACTION_SPELL) {
             set_action(creature, ACTION_SPELL);
         }
     }

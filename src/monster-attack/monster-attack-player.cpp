@@ -266,7 +266,7 @@ bool MonsterAttackPlayer::check_monster_continuous_attack()
     }
 
     const auto is_neighbor = Grid::calc_distance(creature.get_position(), this->m_ptr->get_position()) <= 1;
-    return creature.playing && !creature.is_dead() && is_neighbor && !creature.leaving;
+    return creature.is_playing() && !creature.is_dead() && is_neighbor && !creature.is_leaving();
 }
 
 /*!

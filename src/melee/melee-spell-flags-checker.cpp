@@ -358,7 +358,7 @@ static bool set_melee_spell_set(CreatureEntity &creature, melee_spell_type *ms_p
 
     EnumClassFlagGroup<MonsterAbilityType>::get_flags(ms_ptr->ability_flags, std::back_inserter(ms_ptr->spells));
 
-    return !ms_ptr->spells.empty() && creature.playing && !creature.is_dead() && !creature.leaving;
+    return !ms_ptr->spells.empty() && creature.is_playing() && !creature.is_dead() && !creature.is_leaving();
 }
 
 bool check_melee_spell_set(CreatureEntity &creature, melee_spell_type *ms_ptr)

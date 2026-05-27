@@ -304,7 +304,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
         return 0;
     }
 
-    if (creature.sutemi) {
+    if (creature.is_sutemi()) {
         damage *= 2;
     }
 
@@ -315,7 +315,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
     if (damage_type != DAMAGE_USELIFE) {
         disturb(creature, true, true);
         if (auto_more) {
-            creature.now_damaged = true;
+            creature.set_now_damaged(true);
         }
     }
 
@@ -383,7 +383,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
         }
 
         if (auto_more) {
-            creature.now_damaged = true;
+            creature.set_now_damaged(true);
         }
 
         msg_print(_("*** 警告:低ヒット・ポイント！ ***", "*** LOW HITPOINT WARNING! ***"));
@@ -391,7 +391,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
         flush();
     }
 
-    if (world.is_wild_mode() && !creature.leaving && (creature.hp < std::max(hp_warning_threshold, creature.maxhp / 5))) {
+    if (world.is_wild_mode() && !creature.is_leaving() && (creature.hp < std::max(hp_warning_threshold, creature.maxhp / 5))) {
         change_wild_mode(creature, false);
     }
 
@@ -477,7 +477,7 @@ void PlayerType::on_death(std::string_view cause)
     sound(SoundKind::DEATH);
     chg_virtue(*this, Virtue::SACRIFICE, 10);
     handle_stuff(*this);
-    this->leaving = true;
+    this->set_leaving(true);
     this->is_dead_ = true;
 
     const auto &floor = *this->get_floor();

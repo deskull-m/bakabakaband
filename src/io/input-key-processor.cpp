@@ -303,7 +303,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case 'S': {
-        if (creature.action == ACTION_SEARCH) {
+        if (creature.get_action() == ACTION_SEARCH) {
             set_action(creature, ACTION_NONE);
         } else {
             set_action(creature, ACTION_SEARCH);

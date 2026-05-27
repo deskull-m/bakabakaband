@@ -1594,7 +1594,7 @@ void sweep_monster_process(CreatureEntity &creature)
     for (const auto m_idx : valid_m_idx_list) {
         auto &monster = floor.get_monster(m_idx);
 
-        if (creature.leaving) {
+        if (creature.is_leaving()) {
             return;
         }
 
@@ -1675,7 +1675,7 @@ void sweep_monster_process(CreatureEntity &creature)
             monster.set_constant_flag(MonsterConstantFlagType::NOFLOW);
         }
 
-        if (!creature.playing || creature.is_dead() || creature.leaving) {
+        if (!creature.is_playing() || creature.is_dead() || creature.is_leaving()) {
             return;
         }
     }

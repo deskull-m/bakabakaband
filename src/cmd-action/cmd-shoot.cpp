@@ -31,7 +31,7 @@ void do_cmd_fire(CreatureEntity &creature, SPELL_IDX snipe_type)
         return;
     }
 
-    creature.is_fired = false;
+    creature.set_is_fired(false);
     auto *bow_ptr = creature.inventory[INVEN_BOW].get();
     const auto tval = bow_ptr->bi_key.tval();
     if (tval == ItemKindType::NONE) {
@@ -63,7 +63,7 @@ void do_cmd_fire(CreatureEntity &creature, SPELL_IDX snipe_type)
     }
 
     exe_fire(creature, ammo_idx, bow_ptr, snipe_type);
-    if (!creature.is_fired || !CreatureClass(creature).equals(PlayerClassType::SNIPER)) {
+    if (!creature.is_fired() || !CreatureClass(creature).equals(PlayerClassType::SNIPER)) {
         return;
     }
 

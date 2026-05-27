@@ -55,7 +55,7 @@ int compute_regen_amount(CreatureEntity &creature)
 
     regen_amount = creature.apply_state_regen_modifier(regen_amount);
 
-    if ((creature.action == ACTION_SEARCH) || (creature.action == ACTION_REST)) {
+    if ((creature.get_action() == ACTION_SEARCH) || (creature.get_action() == ACTION_REST)) {
         regen_amount = regen_amount * 2;
     }
 
@@ -78,7 +78,7 @@ bool PlayerType::should_skip_natural_regen() const
     if (pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         return true;
     }
-    return this->action == ACTION_HAYAGAKE;
+    return this->get_action() == ACTION_HAYAGAKE;
 }
 
 int PlayerType::get_base_natural_regen_amount() const
@@ -121,7 +121,7 @@ void regenhp(CreatureEntity &creature, int percent)
     if (CreatureClass(creature).samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         return;
     }
-    if (creature.action == ACTION_HAYAGAKE) {
+    if (creature.get_action() == ACTION_HAYAGAKE) {
         return;
     }
 

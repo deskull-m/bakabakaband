@@ -100,7 +100,7 @@ bool cmd_limit_blind(CreatureEntity &creature)
 
 bool cmd_limit_time_walk(CreatureEntity &creature)
 {
-    if (creature.timewalk) {
+    if (creature.is_timewalking()) {
         if (flush_failure) {
             flush();
         }
