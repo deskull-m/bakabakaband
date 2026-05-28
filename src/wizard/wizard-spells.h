@@ -2,11 +2,16 @@
 
 #include "effect/attribute-types.h"
 #include "system/angband.h"
+#include <tl/optional.hpp>
+#include <vector>
 
 enum class MonraceId : int16_t;
 
 class CreatureEntity;
 class FloorType;
+
+std::vector<MonraceId> wiz_collect_monster_candidates(char symbol);
+tl::optional<MonraceId> wiz_select_summon_monrace_id();
 typedef union spell_functions {
     struct debug_spell_type1 {
         bool (*spell_function)(CreatureEntity &, FloorType *);

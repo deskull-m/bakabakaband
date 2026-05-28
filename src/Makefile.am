@@ -137,6 +137,7 @@ hengband_SOURCES = \
 	\
 	birth/birth-explanations-table.cpp birth/birth-explanations-table.h \
 	birth/character-builder.cpp birth/character-builder.h \
+	birth/monster-birth.cpp birth/monster-birth.h \
 	birth/history.cpp birth/history.h \
 	birth/birth-util.cpp birth/birth-util.h \
 	birth/birth-select-realm.cpp birth/birth-select-realm.h \

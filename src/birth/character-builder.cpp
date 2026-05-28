@@ -15,11 +15,13 @@
 #include "birth/birth-explanations-table.h"
 #include "birth/birth-wizard.h"
 #include "birth/game-play-initializer.h"
+#include "birth/monster-birth.h"
 #include "birth/quick-start.h"
 #include "core/window-redrawer.h"
 #include "dungeon/quest.h"
 #include "game-option/option-flags.h"
 #include "info-reader/fixed-map-parser.h"
+#include "io/input-key-acceptor.h"
 #include "io/write-diary.h"
 #include "main/music-definitions-table.h"
 #include "main/sound-of-music.h"
@@ -46,6 +48,7 @@
 #include "system/gamevalue.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
+#include "term/screen-processor.h"
 #include "term/z-form.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
@@ -95,6 +98,45 @@ static void write_birth_diary(CreatureEntity &creature)
 }
 
 /*!
+ * @brief ゲーム開始方式の選択肢
+ */
+enum class BirthMode {
+    NORMAL, //!< 通常のキャラクター作成
+    AS_MONSTER, //!< モンスターとしてゲーム開始
+};
+
+/*!
+ * @brief ゲーム開始方式をプレイヤーに問い合わせる
+ * @return 選択された開始方式
+ */
+static BirthMode ask_birth_mode()
+{
+    term_clear();
+    put_str(_("ゲーム開始方式を選んでください。",
+                "Choose how to start the game."),
+        11, 2);
+    put_str(_("a) 通常のキャラクター作成 (推奨)",
+                "a) Normal character creation (recommended)"),
+        13, 4);
+    put_str(_("b) モンスターとしてゲーム開始 (実験的)",
+                "b) Start as a monster (experimental)"),
+        14, 4);
+    while (true) {
+        put_str(_("どちらを選びますか？ [a/b]", "Which? [a/b]"), 16, 10);
+        const auto c = inkey();
+        if (c == 'Q') {
+            quit("");
+        }
+        if (c == 'a' || c == 'A') {
+            return BirthMode::NORMAL;
+        }
+        if (c == 'b' || c == 'B') {
+            return BirthMode::AS_MONSTER;
+        }
+    }
+}
+
+/*!
  * @brief プレイヤー作成処理のメインルーチン/ Create a new character.
  * @details
  * Note that we may be called with "junk" leftover in the various
@@ -112,12 +154,22 @@ void player_birth(CreatureEntity &creature, std::optional<QuestId> initial_quest
     player_wipe_without_name(creature);
     if (!ask_quick_start(creature)) {
         play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_NEW_GAME);
-        while (true) {
-            if (player_birth_wizard(creature)) {
-                break;
+        const auto mode = ask_birth_mode();
+        if (mode == BirthMode::AS_MONSTER) {
+            while (true) {
+                if (player_birth_as_monster(creature)) {
+                    break;
+                }
+                player_wipe_without_name(creature);
             }
+        } else {
+            while (true) {
+                if (player_birth_wizard(creature)) {
+                    break;
+                }
 
-            player_wipe_without_name(creature);
+                player_wipe_without_name(creature);
+            }
         }
     }
 
