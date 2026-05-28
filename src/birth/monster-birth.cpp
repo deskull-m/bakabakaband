@@ -19,6 +19,7 @@
 #include "player/player-personality.h"
 #include "player/player-realm.h"
 #include "player/player-sex.h"
+#include "player/player-status-table.h"
 #include "player/player-status.h"
 #include "player/process-name.h"
 #include "player/race-info-table.h"
@@ -103,6 +104,33 @@ void apply_monrace_to_player(CreatureEntity &creature, MonraceId monrace_id)
     // 速度: モンスターの基本速度を採用 (110 = 通常)
     creature.set_speed(monrace.speed);
 }
+
+/*!
+ * @brief 開始時のプレイヤーレベルと経験値を設定する
+ * @details NPC 生成時の慣例に倣い、モンスター種族の natural depth
+ *          (monrace.level) を「生成階層」とみなして 2 で割った値を
+ *          初期プレイヤーレベルとする。経験値はそのレベル到達に必要な値に
+ *          揃える。get_extra() で expfact が設定された後に呼ぶこと。
+ */
+void apply_initial_level(CreatureEntity &creature, MonraceId monrace_id)
+{
+    const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
+    const auto initial_plv = static_cast<PLAYER_LEVEL>(std::clamp(monrace.level / 2, 1, PY_MAX_LEVEL));
+
+    if (initial_plv >= 2) {
+        const auto required_exp = static_cast<EXP>(player_exp[initial_plv - 2] * creature.expfact / 100L);
+        creature.set_exp(required_exp);
+        creature.set_max_exp(required_exp);
+        creature.set_max_max_exp(required_exp);
+    } else {
+        creature.set_exp(0);
+        creature.set_max_exp(0);
+        creature.set_max_max_exp(0);
+    }
+
+    creature.set_level(initial_plv);
+    creature.set_max_plv(initial_plv);
+}
 }
 
 bool player_birth_as_monster(CreatureEntity &creature)
@@ -125,6 +153,10 @@ bool player_birth_as_monster(CreatureEntity &creature)
     get_extra(creature, true);
     get_max_stats(creature);
     initialize_virtues(creature);
+
+    // 初期レベルを「生成階層 / 2」相当に揃える (get_extra で expfact が
+    // セットされた後に呼ぶ必要があるためここで実施)
+    apply_initial_level(creature, *monrace_id);
 
     // プレイヤー名入力 (モンスター種族名がデフォルト)
     get_name(creature);
