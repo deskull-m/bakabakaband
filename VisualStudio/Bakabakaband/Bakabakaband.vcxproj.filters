@@ -554,6 +554,9 @@
     <ClCompile Include="..\..\src\birth\character-builder.cpp">
       <Filter>birth</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\birth\monster-birth.cpp">
+      <Filter>birth</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\io\files-util.cpp">
       <Filter>io</Filter>
     </ClCompile>
@@ -3368,6 +3371,9 @@
       <Filter>birth</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\birth\character-builder.h">
+      <Filter>birth</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\birth\monster-birth.h">
       <Filter>birth</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\birth\history.h">

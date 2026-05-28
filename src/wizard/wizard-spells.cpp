@@ -63,6 +63,7 @@ const std::vector<debug_spell_command> debug_spell_commands_list = {
     { 4, "ty curse", { .spell4 = { activate_ty_curse } } },
     { 6, "pattern teleport", { .spell6 = { pattern_teleport } } },
 };
+} // namespace
 
 std::vector<MonraceId> wiz_collect_monster_candidates(char symbol)
 {
@@ -108,6 +109,7 @@ tl::optional<MonraceId> wiz_select_summon_monrace_id()
     return (choice != monrace_ids.end()) ? tl::make_optional(*choice) : tl::nullopt;
 }
 
+namespace {
 void wiz_select_chameleon_polymorph(CreatureEntity &monster)
 {
     msg_print("Please select a monster to polymorph into.");
