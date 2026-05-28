@@ -639,12 +639,12 @@ bool CreatureEntity::can_equip_to(int slot) const
         return false;
     }
 
-    // プレイヤーは常に HUMANOID 想定で全スロット許可
-    if (this->is_player()) {
+    // プレイヤーで monster へ polymorph していない通常状態: HUMANOID 想定で全スロット許可
+    if (this->is_player() && this->get_r_idx() == MonraceId::PLAYER) {
         return true;
     }
 
-    // モンスター: 種族の body_structure に対応するポリシーを参照
+    // モンスター、または monster 化したプレイヤー: 種族の body_structure に対応するポリシーを参照
     const auto &monrace = this->get_monrace();
     const auto &policy = get_body_slot_policy(monrace.body_structure);
     return policy.is_allowed(slot);
@@ -652,7 +652,7 @@ bool CreatureEntity::can_equip_to(int slot) const
 
 size_t CreatureEntity::get_extended_slot_count() const
 {
-    if (this->is_player()) {
+    if (this->is_player() && this->get_r_idx() == MonraceId::PLAYER) {
         return 0;
     }
     const auto &monrace = this->get_monrace();
@@ -666,7 +666,7 @@ size_t CreatureEntity::get_extended_slot_count() const
 
 ExtendedSlotType CreatureEntity::get_extended_slot_type(size_t idx) const
 {
-    if (this->is_player()) {
+    if (this->is_player() && this->get_r_idx() == MonraceId::PLAYER) {
         return ExtendedSlotType::MAX;
     }
     const auto &monrace = this->get_monrace();
