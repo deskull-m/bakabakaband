@@ -64,7 +64,7 @@ void setup_default_player_attributes(CreatureEntity &creature)
 
     // 基本能力値 (10 + race/class/personality modifiers)
     for (int i = 0; i < A_MAX; i++) {
-        const auto base = 10 + creature.get_race_info()->r_adj[i] + (*creature.get_class_info()).c_adj[i] + (*creature.get_personality_info()).a_adj[i];
+        const auto base = static_cast<short>(10 + creature.get_race_info()->r_adj[i] + (*creature.get_class_info()).c_adj[i] + (*creature.get_personality_info()).a_adj[i]);
         creature.set_stat_max(i, base);
         creature.set_stat_cur(i, base);
     }
@@ -91,7 +91,7 @@ void apply_monrace_to_player(CreatureEntity &creature, MonraceId monrace_id)
     for (int i = 0; i < A_MAX; i++) {
         if (monrace.stat_modifiers[i].has_value()) {
             const auto current = creature.get_stat_max(i);
-            const auto adjusted = std::clamp(current + *monrace.stat_modifiers[i], 3, 40);
+            const auto adjusted = static_cast<short>(std::clamp(current + *monrace.stat_modifiers[i], 3, 40));
             creature.set_stat_max(i, adjusted);
             creature.set_stat_cur(i, adjusted);
         }
