@@ -90,7 +90,7 @@ bool detect_traps(CreatureEntity &creature, POSITION range, bool known)
     }
 
     if (known || detect) {
-        creature.dtrap = true;
+        creature.set_dtrap(true);
     }
 
     if (music_singing(creature, MUSIC_DETECT) && get_singing_count(creature) > 0) {

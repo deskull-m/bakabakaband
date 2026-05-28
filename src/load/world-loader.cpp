@@ -55,7 +55,7 @@ void rd_dungeons(CreatureEntity &creature)
  */
 void rd_alter_reality(CreatureEntity &creature)
 {
-    creature.recall_dungeon = i2enum<DungeonId>(rd_s16b());
+    creature.set_recall_dungeon(i2enum<DungeonId>(rd_s16b()));
     creature.set_timed_effect(CreatureTimedEffect::ALTER_REALITY, rd_s16b());
 }
 
@@ -76,7 +76,7 @@ void set_gambling_monsters()
  */
 void rd_autopick(CreatureEntity &creature)
 {
-    creature.autopick_autoregister = rd_bool();
+    creature.set_autopick_autoregister(rd_bool());
 }
 
 static void rd_world_info(CreatureEntity &creature)

@@ -423,7 +423,7 @@ void change_floor(CreatureEntity &creature)
 
     auto &world = AngbandWorld::get_instance();
     world.character_dungeon = false;
-    creature.dtrap = false;
+    creature.set_dtrap(false);
     panel_row_min = 0;
     panel_row_max = 0;
     panel_col_min = 0;

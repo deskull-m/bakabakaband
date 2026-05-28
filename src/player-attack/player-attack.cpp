@@ -440,19 +440,19 @@ static bool check_fear_death(CreatureEntity &creature, player_attack_type *pa_pt
     }
 
     *(pa_ptr->mdeath) = true;
-    if (CreatureClass(creature).equals(PlayerClassType::BERSERKER) && creature.energy_use) {
+    if (CreatureClass(creature).equals(PlayerClassType::BERSERKER) && creature.get_energy_use()) {
         PlayerEnergy energy(creature);
         if (can_attack_with_main_hand(creature) && can_attack_with_sub_hand(creature)) {
             ENERGY energy_use;
             if (pa_ptr->hand) {
-                energy_use = creature.energy_use * 3 / 5 + creature.energy_use * num * 2 / (creature.get_num_blow(pa_ptr->hand) * 5);
+                energy_use = creature.get_energy_use() * 3 / 5 + creature.get_energy_use() * num * 2 / (creature.get_num_blow(pa_ptr->hand) * 5);
             } else {
-                energy_use = creature.energy_use * num * 3 / (creature.get_num_blow(pa_ptr->hand) * 5);
+                energy_use = creature.get_energy_use() * num * 3 / (creature.get_num_blow(pa_ptr->hand) * 5);
             }
 
             energy.set_player_turn_energy(energy_use);
         } else {
-            auto energy_use = (ENERGY)(creature.energy_use * num / creature.get_num_blow(pa_ptr->hand));
+            auto energy_use = (ENERGY)(creature.get_energy_use() * num / creature.get_num_blow(pa_ptr->hand));
             energy.set_player_turn_energy(energy_use);
         }
     }

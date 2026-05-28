@@ -363,6 +363,13 @@ API 経由に統一された。一部フィールド (r_idx / ap_r_idx / riding)
   を整備し、10 ファイル約 24 サイトを migration。さらにデッドフィールド
   `tval_xtra` (Unused、宣言以外で未使用) を削除。**合計 private 化
   フィールド数: 129 → 135**
+- **提案 48**: 追加の小規模フィールド 6 個 (`tval_ammo` / `dtrap` /
+  `autopick_autoregister` / `recall_dungeon` / `enchant_energy_need` /
+  `energy_use`) を private 化。18 個の virtual API を整備し (ENERGY 系
+  は compound assignment 用に `add_X/sub_X/mul_X/div_X` も整備)、25
+  ファイル約 61 サイトを migration。`PlayerEnergy` ラッパークラスの
+  内部実装も virtual API 経由に切替え、フィールド直接アクセスを完全
+  排除。**合計 private 化フィールド数: 135 → 141**
 - **提案 1/2**: プレイヤー専用フィールドのモンスター運用化基盤完了。
   種族 (`prace`) / 職業 (`pclass`) / 魔法領域 (`realm1` / `realm2` /
   `element_realm`) / パトロン (`patron`) / 変身形態 (`mimic_form`)

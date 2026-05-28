@@ -290,8 +290,8 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
         }
     }
 
-    if (!(mpe_mode & MPE_STAYING) && (disturb_trap_detect || alert_trap_detect) && creature.dtrap && !(grid_new.info & CAVE_IN_DETECT)) {
-        creature.dtrap = false;
+    if (!(mpe_mode & MPE_STAYING) && (disturb_trap_detect || alert_trap_detect) && creature.is_dtrap() && !(grid_new.info & CAVE_IN_DETECT)) {
+        creature.set_dtrap(false);
         if (!(grid_new.info & CAVE_UNSAFE)) {
             if (alert_trap_detect) {
                 msg_print(_("* 注意:この先はトラップの感知範囲外です！ *", "*Leaving trap detect region!*"));

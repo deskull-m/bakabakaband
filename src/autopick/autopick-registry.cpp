@@ -133,7 +133,7 @@ bool autopick_autoregister(CreatureEntity &creature, const ItemEntity *o_ptr)
         return false;
     }
 
-    if (!creature.autopick_autoregister) {
+    if (!creature.is_autopick_autoregister()) {
         if (!clear_auto_register(creature.base_name)) {
             return false;
         }
@@ -146,12 +146,12 @@ bool autopick_autoregister(CreatureEntity &creature, const ItemEntity *o_ptr)
         while (true) {
             const auto buf = angband_fgets(pref_fff, MAX_LINELEN);
             if (!buf) {
-                creature.autopick_autoregister = false;
+                creature.set_autopick_autoregister(false);
                 break;
             }
 
             if (streq(*buf, autoregister_header)) {
-                creature.autopick_autoregister = true;
+                creature.set_autopick_autoregister(true);
                 break;
             }
         }
@@ -162,7 +162,7 @@ bool autopick_autoregister(CreatureEntity &creature, const ItemEntity *o_ptr)
          * File could not be opened for reading.  Assume header not
          * present.
          */
-        creature.autopick_autoregister = false;
+        creature.set_autopick_autoregister(false);
     }
 
     /* ファイルが存在しなかった場合はプレイヤー個別の新規ファイルを作成する */
@@ -175,14 +175,14 @@ bool autopick_autoregister(CreatureEntity &creature, const ItemEntity *o_ptr)
         return false;
     }
 
-    if (!creature.autopick_autoregister) {
+    if (!creature.is_autopick_autoregister()) {
         fprintf(pref_fff, "%s\n", autoregister_header);
 
         fprintf(pref_fff, "%s\n", _("# *警告!!* 以降の行は自動登録されたものです。", "# *Warning!* The lines below will be deleted later."));
         fprintf(pref_fff, "%s\n",
             _("# 後で自動的に削除されますので、必要な行は上の方へ移動しておいてください。",
                 "# Keep it by cut & paste if you need these lines for future characters."));
-        creature.autopick_autoregister = true;
+        creature.set_autopick_autoregister(true);
     }
 
     autopick_entry_from_object(creature, entry, o_ptr);

@@ -836,7 +836,7 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
     leaving_quest = QuestId::NONE;
     floor.quest_number = QuestId::NONE;
     if (floor.is_underground()) {
-        creature.recall_dungeon = floor.dungeon_id;
+        creature.set_recall_dungeon(floor.dungeon_id);
     }
 
     floor.reset_dungeon_index();

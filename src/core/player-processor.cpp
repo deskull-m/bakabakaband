@@ -328,11 +328,11 @@ void process_player(CreatureEntity &creature)
         }
 
         pack_overflow(creature);
-        if (creature.energy_use) {
-            if (creature.is_timewalking() || creature.energy_use > 400) {
-                creature.energy_need += creature.energy_use * TURNS_PER_TICK / 10;
+        if (creature.get_energy_use()) {
+            if (creature.is_timewalking() || creature.get_energy_use() > 400) {
+                creature.energy_need += creature.get_energy_use() * TURNS_PER_TICK / 10;
             } else {
-                creature.energy_need += (int16_t)((int32_t)creature.energy_use * ENERGY_NEED() / 100L);
+                creature.energy_need += (int16_t)((int32_t)creature.get_energy_use() * ENERGY_NEED() / 100L);
             }
 
             if (creature.is_hallucinated()) {
@@ -421,7 +421,7 @@ void process_player(CreatureEntity &creature)
         }
 
         auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
-        if (creature.energy_use && sniper_data && sniper_data->reset_concent) {
+        if (creature.get_energy_use() && sniper_data && sniper_data->reset_concent) {
             reset_concentration(creature, true);
         }
 
@@ -438,15 +438,15 @@ void process_player(CreatureEntity &creature)
  */
 void process_upkeep_with_speed(CreatureEntity &creature)
 {
-    if (!load && creature.enchant_energy_need > 0 && !creature.is_leaving()) {
-        creature.enchant_energy_need -= speed_to_energy(static_cast<byte>(creature.get_speed()));
+    if (!load && creature.get_enchant_energy_need() > 0 && !creature.is_leaving()) {
+        creature.sub_enchant_energy_need(speed_to_energy(static_cast<byte>(creature.get_speed())));
     }
 
-    if (creature.enchant_energy_need > 0) {
+    if (creature.get_enchant_energy_need() > 0) {
         return;
     }
 
-    while (creature.enchant_energy_need <= 0) {
+    while (creature.get_enchant_energy_need() <= 0) {
         if (!load) {
             check_music(creature);
         }
@@ -468,6 +468,6 @@ void process_upkeep_with_speed(CreatureEntity &creature)
             spell_hex.continue_revenge();
         }
 
-        creature.enchant_energy_need += ENERGY_NEED();
+        creature.add_enchant_energy_need(ENERGY_NEED());
     }
 }

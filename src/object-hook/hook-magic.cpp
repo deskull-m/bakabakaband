@@ -40,7 +40,7 @@ bool object_is_activatable(const ItemEntity *o_ptr)
 bool item_tester_hook_use(CreatureEntity &creature, const ItemEntity *o_ptr)
 {
     const auto tval = o_ptr->bi_key.tval();
-    if (tval == creature.tval_ammo) {
+    if (tval == creature.get_tval_ammo()) {
         return true;
     }
 

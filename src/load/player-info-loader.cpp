@@ -335,7 +335,7 @@ static void rd_bad_status(CreatureEntity &creature)
 static void rd_energy(CreatureEntity &creature)
 {
     creature.energy_need = rd_s16b();
-    creature.enchant_energy_need = rd_s16b();
+    creature.set_enchant_energy_need(rd_s16b());
 }
 
 /*!
@@ -477,7 +477,7 @@ static void rd_player_status(CreatureEntity &creature)
     creature.set_timed_effect(CreatureTimedEffect::BLESSED, rd_s16b());
     creature.set_timed_effect(CreatureTimedEffect::TIM_INVIS, rd_s16b());
     creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, rd_s16b());
-    creature.recall_dungeon = i2enum<DungeonId>(rd_s16b());
+    creature.set_recall_dungeon(i2enum<DungeonId>(rd_s16b()));
     creature.set_timed_effect(CreatureTimedEffect::ALTER_REALITY, rd_s16b());
     creature.set_infravision(rd_s16b());
     creature.set_timed_effect(CreatureTimedEffect::TIM_INFRA, rd_s16b());

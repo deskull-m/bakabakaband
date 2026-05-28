@@ -112,7 +112,7 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
 #endif
         if (m_idx <= 0) {
             if (!floor.is_underground()) {
-                floor.set_dungeon_index(ironman_downward ? DungeonId::ANGBAND : creature.recall_dungeon);
+                floor.set_dungeon_index(ironman_downward ? DungeonId::ANGBAND : creature.get_recall_dungeon());
                 creature.oldpy = creature.y;
                 creature.oldpx = creature.x;
             }
@@ -468,7 +468,7 @@ bool recall_player(CreatureEntity &creature, TIME_EFFECT turns)
             return false;
         }
 
-        creature.recall_dungeon = *select_dungeon;
+        creature.set_recall_dungeon(*select_dungeon);
     }
 
     creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, turns);
@@ -504,10 +504,10 @@ bool free_level_recall(CreatureEntity &creature)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, 1);
-    creature.recall_dungeon = *select_dungeon;
+    creature.set_recall_dungeon(*select_dungeon);
     const auto dun_level = (amt > dungeon.maxdepth) ? dungeon.maxdepth : (amt < dungeon.mindepth) ? dungeon.mindepth
                                                                                                   : amt;
-    auto &dungeon_record = DungeonRecords::get_instance().get_record(creature.recall_dungeon);
+    auto &dungeon_record = DungeonRecords::get_instance().get_record(creature.get_recall_dungeon());
     dungeon_record.set_max_level(dun_level);
     if (record_maxdepth) {
         exe_write_diary(*creature.get_floor(), DiaryKind::TRUMP, enum2i(*select_dungeon), _("トランプタワーで", "at Trump Tower"));
