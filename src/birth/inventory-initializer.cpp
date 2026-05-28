@@ -56,6 +56,28 @@ void wield_all(CreatureEntity &creature)
             continue;
         }
 
+        // [Phase 2.5] 拡張装備スロット (尾の指輪・翼装飾 等) へ振り分けられた場合は
+        // extended_inventory を使う。通常 inventory[] (size = INVEN_TOTAL) を超える
+        // インデックスでアクセスすると vector subscript out of range で落ちる。
+        if (slot >= INVEN_EXTENDED_BASE) {
+            const auto ext_idx = static_cast<size_t>(slot - INVEN_EXTENDED_BASE);
+            if (ext_idx >= creature.extended_inventory.size()) {
+                continue;
+            }
+            if (!creature.extended_inventory[ext_idx]) {
+                creature.extended_inventory[ext_idx] = std::make_shared<ItemEntity>();
+            }
+            auto &ext_slot_item = *creature.extended_inventory[ext_idx];
+            if (ext_slot_item.is_valid()) {
+                continue;
+            }
+            ext_slot_item = item.clone();
+            ext_slot_item.number = 1;
+            inven_item_increase(creature, i_idx, -1);
+            inven_item_optimize(creature, i_idx);
+            continue;
+        }
+
         auto &wield_slot_item = *creature.inventory[slot];
         if (wield_slot_item.is_valid()) {
             continue;
