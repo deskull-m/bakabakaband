@@ -62,13 +62,6 @@ void setup_default_player_attributes(CreatureEntity &creature)
 
     PlayerRealm pr(creature);
     pr.reset();
-
-    // 基本能力値 (10 + race/class/personality modifiers)
-    for (int i = 0; i < A_MAX; i++) {
-        const auto base = static_cast<short>(10 + creature.get_race_info()->r_adj[i] + (*creature.get_class_info()).c_adj[i] + (*creature.get_personality_info()).a_adj[i]);
-        creature.set_stat_max(i, base);
-        creature.set_stat_cur(i, base);
-    }
 }
 
 /*!
@@ -88,14 +81,23 @@ void apply_monrace_to_player(CreatureEntity &creature, MonraceId monrace_id)
     // r_idx / ap_r_idx を当該モンスターに揃える
     creature.polymorph_to(monrace_id);
 
-    // 能力値補正 (stat_modifiers) を適用 (monster の種族補正)
-    for (int i = 0; i < A_MAX; i++) {
-        if (monrace.stat_modifiers[i].has_value()) {
-            const auto current = creature.get_stat_max(i);
-            const auto adjusted = static_cast<short>(std::clamp(current + *monrace.stat_modifiers[i], 3, 40));
-            creature.set_stat_max(i, adjusted);
-            creature.set_stat_cur(i, adjusted);
+    // 能力値補正 (stat_modifiers) を適用 (one-monster-placer.cpp の処理と揃える)
+    // 補正値は内部 10 単位 (表示 1.0 = 10) で格納されており、tl::nullopt の能力値は補正しない。
+    constexpr short stat_min = 30;
+    constexpr short stat_max = 400;
+    for (auto i = 0; i < A_MAX; ++i) {
+        const auto &mod = monrace.stat_modifiers[i];
+        if (!mod.has_value()) {
+            continue;
         }
+        auto adjusted = static_cast<int>(creature.get_stat_max(i)) + *mod;
+        adjusted = std::clamp(adjusted, static_cast<int>(stat_min), static_cast<int>(stat_max));
+        creature.set_stat_max(i, static_cast<short>(adjusted));
+        creature.set_stat_cur(i, static_cast<short>(adjusted));
+        if (creature.get_stat_max_max(i) < creature.get_stat_max(i)) {
+            creature.set_stat_max_max(i, creature.get_stat_max(i));
+        }
+        creature.set_stat_use(i, creature.get_stat_max(i));
     }
 
     // HP ダイスをモンスター種族のものに揃える (player_hp[] は get_extra で再計算)
@@ -145,6 +147,9 @@ bool player_birth_as_monster(CreatureEntity &creature)
 
     // 土台となるプレイヤー属性を埋める (race/class/sex/personality 等)
     setup_default_player_attributes(creature);
+
+    // プレイヤー作成と同じローラーで基礎能力値を振る
+    get_stats(creature);
 
     // モンスター固有のパラメータを反映 (HP / AC / 速度 / 能力値補正)
     apply_monrace_to_player(creature, *monrace_id);
