@@ -105,6 +105,11 @@ void apply_monrace_to_player(CreatureEntity &creature, MonraceId monrace_id)
 
     // 速度: モンスターの基本速度を採用 (110 = 通常)
     creature.set_speed(monrace.speed);
+
+    // 体構造由来の拡張装備スロット (尾の指輪・翼装飾 等) を確保する。
+    // 装備可能スロットの判定 (can_equip_to) は r_idx の monrace 側
+    // body_structure を参照するように調整済み。
+    creature.init_extended_inventory();
 }
 
 /*!
