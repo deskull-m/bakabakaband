@@ -867,6 +867,7 @@ hengband_SOURCES = \
 	mind/mind-archer.cpp mind/mind-archer.h \
 	mind/mind-berserker.cpp mind/mind-berserker.h \
 	mind/mind-blue-mage.cpp mind/mind-blue-mage.h \
+	mind/monster-ability-caster.cpp mind/monster-ability-caster.h \
 	mind/mind-cavalry.cpp mind/mind-cavalry.h \
 	mind/mind-chaos-warrior.cpp mind/mind-chaos-warrior.h \
 	mind/mind-elementalist.cpp mind/mind-elementalist.h \

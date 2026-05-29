@@ -686,9 +686,33 @@ static void update_num_of_spells(CreatureEntity &creature)
  * @details
  * This function induces status messages.
  */
+/*!
+ * @brief 職業に依らない基礎 MP を算出する
+ * @details 〈烙印者〉(プレイヤー) / モンスターは職業を問わず常に 0 以外の MP を持つ。
+ *          モンスター固有能力 (種族のブレス・魔法等) の行使に使用するため、
+ *          無魔法職 (戦士等) でもレベルと INT に応じた MP を保証する。
+ */
+static int calc_innate_baseline_mana(CreatureEntity &creature)
+{
+    const auto stat_index = creature.get_stat_index(A_INT);
+    const int msp = adj_mag_mana[stat_index] * (creature.get_level() + 3) / 4;
+    const int floor_value = std::max(static_cast<int>(creature.get_level()), 1);
+    return std::max(msp, floor_value);
+}
+
 static void update_max_mana(CreatureEntity &creature)
 {
+    const auto baseline_msp = calc_innate_baseline_mana(creature);
     if ((mp_ptr->spell_book == ItemKindType::NONE) && mp_ptr->spell_first == SPELL_FIRST_NO_SPELL) {
+        // 無魔法職でも常に基礎 MP を持たせる (種族固有能力の行使等に使用)。
+        if (creature.get_msp() != baseline_msp) {
+            if (creature.get_csp() > baseline_msp) {
+                creature.set_csp(baseline_msp);
+                creature.csp_frac = 0;
+            }
+            creature.set_msp(baseline_msp);
+            RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
+        }
         return;
     }
 
@@ -702,7 +726,7 @@ static void update_max_mana(CreatureEntity &creature)
         levels = creature.get_level();
     } else {
         if (mp_ptr->spell_first > creature.get_level()) {
-            creature.set_msp(0);
+            creature.set_msp(baseline_msp);
             RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
             return;
         }
@@ -890,8 +914,8 @@ static void update_max_mana(CreatureEntity &creature)
         }
     }
 
-    if (msp < 0) {
-        msp = 0;
+    if (msp < baseline_msp) {
+        msp = baseline_msp;
     }
 
     if (creature.get_msp() != msp) {

@@ -334,4 +334,9 @@ void wr_player(CreatureEntity &creature)
     wr_u32b(world.play_time.elapsed_sec());
     wr_s32b(creature.visit);
     wr_u32b(creature.count);
+
+    // [モンスタープレイヤー] プレイヤーがモンスター化している場合の種族 ID を保存する。
+    // 通常プレイヤーは PLAYER (= 0)。セーブファイルバージョン 48 以降。
+    wr_s16b(enum2i(creature.get_r_idx()));
+    wr_s16b(enum2i(creature.get_ap_r_idx()));
 }

@@ -10,6 +10,8 @@
 #include "load/load-util.h"
 #include "load/world-loader.h"
 #include "system/creature-entity.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "util/enum-converter.h"
 #include "world/world.h"
 
 /*!
@@ -27,4 +29,13 @@ void rd_extra(CreatureEntity &creature)
 
     creature.visit = rd_u32b();
     creature.count = rd_u32b();
+
+    // [モンスタープレイヤー] プレイヤーがモンスター化している場合の種族 ID を復元する。
+    // セーブファイルバージョン 48 以降で保存される。旧データは PLAYER のまま。
+    if (!loading_savefile_version_is_older_than(48)) {
+        const auto r_idx = i2enum<MonraceId>(rd_s16b());
+        const auto ap_r_idx = i2enum<MonraceId>(rd_s16b());
+        creature.set_r_idx(r_idx);
+        creature.set_ap_r_idx(ap_r_idx);
+    }
 }
