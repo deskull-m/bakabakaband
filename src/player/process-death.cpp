@@ -38,6 +38,7 @@
 #include "view/display-player.h"
 #include "world/world-collapsion.h"
 #include "world/world.h"
+#include <algorithm>
 #include <fmt/format.h>
 
 constexpr auto GRAVE_LINE_WIDTH = 31;
@@ -220,7 +221,9 @@ void print_tomb(CreatureEntity &creature)
 
     term_clear();
     read_dead_file(wc_ptr->is_blown_away());
-    std::string p = AngbandWorld::get_instance().total_winner ? _("偉大なる者", "Magnificent") : player_titles.at(creature.pclass)[(creature.get_level() - 1) / 5];
+    const auto &death_titles = player_titles.at(creature.pclass);
+    const auto death_title_index = std::min(static_cast<size_t>((creature.get_level() - 1) / 5), death_titles.size() - 1);
+    std::string p = AngbandWorld::get_instance().total_winner ? _("偉大なる者", "Magnificent") : death_titles[death_title_index];
 
     show_tomb_line(creature.name, GRAVE_PLAYER_NAME_ROW);
 
