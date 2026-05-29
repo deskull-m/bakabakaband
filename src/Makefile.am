@@ -941,6 +941,7 @@ hengband_SOURCES = \
 	monster-floor/monster-lite.cpp monster-floor/monster-lite.h \
 	monster-floor/monster-lite-util.cpp monster-floor/monster-lite-util.h \
 	monster-floor/one-monster-placer.cpp monster-floor/one-monster-placer.h \
+	monster-floor/monster-drop-generator.cpp monster-floor/monster-drop-generator.h \
 	monster-floor/place-monster-types.h \
 	monster-floor/quantum-effect.cpp monster-floor/quantum-effect.h \
 	monster-floor/special-death-switcher.cpp monster-floor/special-death-switcher.h \

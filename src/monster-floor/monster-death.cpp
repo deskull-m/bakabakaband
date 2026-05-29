@@ -245,97 +245,6 @@ static void drop_artifacts(CreatureEntity &creature, MonsterDeath *md_ptr)
     msg_format(_("あなたは%sを制覇した！", "You have conquered %s!"), dungeon.name.data());
 }
 
-static void decide_drop_quality(MonsterDeath *md_ptr)
-{
-    md_ptr->mo_mode = 0L;
-    if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_GOOD)) {
-        md_ptr->mo_mode |= AM_GOOD;
-    }
-
-    if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_GREAT)) {
-        md_ptr->mo_mode |= (AM_GOOD | AM_GREAT);
-    }
-
-    if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_NASTY)) {
-        md_ptr->mo_mode |= AM_NASTY;
-    }
-}
-
-static int decide_drop_numbers(MonsterDeath *md_ptr, const bool drop_item, const bool inside_arena)
-{
-    int drop_numbers = 0;
-    if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_60) && evaluate_percent(60)) {
-        drop_numbers++;
-    }
-
-    if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_90) && evaluate_percent(90)) {
-        drop_numbers++;
-    }
-
-    if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_1D2)) {
-        drop_numbers += Dice::roll(1, 2);
-    }
-
-    if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_2D2)) {
-        drop_numbers += Dice::roll(2, 2);
-    }
-
-    if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_3D2)) {
-        drop_numbers += Dice::roll(3, 2);
-    }
-
-    if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_4D2)) {
-        drop_numbers += Dice::roll(4, 2);
-    }
-
-    if (md_ptr->cloned && md_ptr->monrace->kind_flags.has_not(MonsterKindType::UNIQUE)) {
-        drop_numbers = 0;
-    }
-
-    if (md_ptr->m_ptr->is_pet() || AngbandSystem::get_instance().is_phase_out() || inside_arena) {
-        drop_numbers = 0;
-    }
-
-    if (!drop_item && !md_ptr->monrace->symbol_char_is_any_of("$")) {
-        drop_numbers = 0;
-    }
-
-    if (md_ptr->monrace->misc_flags.has(MonsterMiscType::MULTIPLY) && (md_ptr->monrace->r_akills > 1024)) {
-        drop_numbers = 0;
-    }
-
-    return drop_numbers;
-}
-
-static void drop_items_golds(CreatureEntity &creature, MonsterDeath *md_ptr, int drop_numbers)
-{
-    auto dump_item = 0;
-    auto dump_gold = 0;
-    auto &floor = *creature.get_floor();
-    const auto &monraces = MonraceList::get_instance();
-    for (auto i = 0; i < drop_numbers; i++) {
-        if (md_ptr->do_gold && (!md_ptr->do_item || one_in_(2))) {
-            const auto &monrace = monraces.get_monrace(md_ptr->m_ptr->get_r_idx());
-            const auto bi_key = BaseitemMonraceService::lookup_fixed_gold_drop(monrace.drop_flags);
-            auto item = floor.make_gold(bi_key);
-            (void)drop_near(creature, item, md_ptr->get_position());
-            dump_gold++;
-        } else {
-            if (auto item = make_object(creature, md_ptr->mo_mode)) {
-                (void)drop_near(creature, *item, md_ptr->get_position());
-                dump_item++;
-            }
-        }
-    }
-
-    floor.object_level = floor.base_level;
-    auto visible = md_ptr->m_ptr->is_visible_on_map() && !creature.is_hallucinated();
-    visible |= (md_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE));
-    if (visible && (dump_item || dump_gold)) {
-        md_ptr->m_ptr->make_lore_treasure(dump_item, dump_gold);
-    }
-}
-
 /*!
  * @brief 最終ボス(混沌のサーペント)を倒したときの処理
  * @param creature クリーチャーへの参照
@@ -442,13 +351,16 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
     }
 
     drop_corpse(creature, &md);
-    md.m_ptr->drop_all_inventory(creature);
-    decide_drop_quality(&md);
+    // [ドロップ品移行] 一般ドロップ品はモンスター生成時に所持品として前生成済み。
+    // 死亡時は drop_all_inventory() でまとめて床へ放出する。ただし drop_item が
+    // false のケース (量子消失・モンスター同士の戦闘・一部効果死) では従来同様に
+    // ドロップを抑制する (モンスターピット等での床溢れ防止)。
+    if (drop_item) {
+        md.m_ptr->drop_all_inventory(creature);
+    }
+
     switch_special_death(creature, &md, attribute_flags);
     drop_artifacts(creature, &md);
-    const auto drop_numbers = decide_drop_numbers(&md, drop_item, floor.inside_arena);
-    floor.object_level = (floor.dun_level + md.monrace->level) / 2;
-    drop_items_golds(creature, &md, drop_numbers);
     if ((md.monrace->misc_flags.has_not(MonsterMiscType::QUESTOR)) || AngbandSystem::get_instance().is_phase_out() || (md.m_ptr->get_r_idx() != MonraceId::SERPENT) || md.cloned) {
         return;
     }

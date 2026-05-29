@@ -18,6 +18,7 @@
 #include "grid/grid.h"
 #include "monster-attack/monster-attack-player.h"
 #include "monster-attack/monster-attack-table.h"
+#include "monster-floor/monster-drop-generator.h"
 #include "monster-floor/monster-move.h"
 #include "monster-floor/place-monster-types.h"
 #include "monster-race/monster-kind-mask.h"
@@ -597,6 +598,10 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     update_monster(const_cast<CreatureEntity &>(player), g_ptr->m_idx, true);
     m_ptr->get_real_monrace().increment_current_numbers();
+
+    // [ドロップ品移行] 一般ドロップ品を生成時に所持品として前生成する。
+    // 死亡時は drop_all_inventory() でまとめて床へ放出される。
+    generate_monster_drop_items(const_cast<CreatureEntity &>(player), *m_ptr);
 
     if (any_bits(mode, PM_AMBUSH)) {
         auto m_name = monster_desc(player, *m_ptr, 0);
