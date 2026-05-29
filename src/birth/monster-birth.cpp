@@ -11,6 +11,7 @@
 #include "core/asking-player.h"
 #include "io/input-key-acceptor.h"
 #include "mind/mind-elementalist.h"
+#include "player-ability/player-ability-types.h"
 #include "player-base/player-class.h"
 #include "player-info/class-info.h"
 #include "player-info/race-info.h"
@@ -83,8 +84,8 @@ void apply_monrace_to_player(CreatureEntity &creature, MonraceId monrace_id)
 
     // 能力値補正 (stat_modifiers) を適用 (one-monster-placer.cpp の処理と揃える)
     // 補正値は内部 10 単位 (表示 1.0 = 10) で格納されており、tl::nullopt の能力値は補正しない。
-    constexpr short stat_min = 30;
-    constexpr short stat_max = 400;
+    constexpr short stat_min = STAT_MIN_VALUE;
+    constexpr short stat_max = STAT_MAX_VALUE;
     for (auto i = 0; i < A_MAX; ++i) {
         const auto &mod = monrace.stat_modifiers[i];
         if (!mod.has_value()) {

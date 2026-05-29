@@ -1,6 +1,7 @@
 #include "player-status/player-basic-statistics.h"
 #include "core/window-redrawer.h"
 #include "mutation/mutation-flag-types.h"
+#include "player-ability/player-ability-types.h"
 #include "player-base/player-race.h"
 #include "player-info/class-info.h"
 #include "player-info/mimic-info-table.h"
@@ -156,15 +157,23 @@ void PlayerBasicStatistics::update_index_status()
 {
     int status = (int)this->ability_type;
     int index;
-    // 新形式: 30-400 -> 0-37のインデックスに変換
-    // 30-180: 0-15 (旧3-18相当)
-    // 190-400: 16-37 (旧18/10-18/220相当)
-    if (this->creature.get_stat_use(status) <= 180) {
-        index = (this->creature.get_stat_use(status) - 30) / 10;
-    } else if (this->creature.get_stat_use(status) <= 400) {
-        index = 15 + (this->creature.get_stat_use(status) - 180) / 10;
+    // 新形式: 内部 30-2000 -> 0-197 のインデックスに変換
+    // 30-180:    0-15  (旧 3-18 相当)
+    // 190-2000:  16-197 (18.0 超〜200.0 相当)
+    const auto stat_use = this->creature.get_stat_use(status);
+    if (stat_use <= 180) {
+        index = (stat_use - 30) / 10;
+    } else if (stat_use <= STAT_MAX_VALUE) {
+        index = 15 + (stat_use - 180) / 10;
     } else {
-        index = 37;
+        index = static_cast<int>(STAT_TABLE_SIZE) - 1;
+    }
+
+    if (index < 0) {
+        index = 0;
+    }
+    if (index >= static_cast<int>(STAT_TABLE_SIZE)) {
+        index = static_cast<int>(STAT_TABLE_SIZE) - 1;
     }
 
     if (this->creature.get_stat_index(status) == index) {

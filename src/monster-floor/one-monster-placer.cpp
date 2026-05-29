@@ -32,6 +32,7 @@
 #include "monster/monster-update.h"
 #include "monster/monster-util.h"
 #include "object/warning.h"
+#include "player-ability/player-ability-types.h"
 #include "player/player-sex.h"
 #include "player/player-status.h"
 #include "system/creature-entity.h"
@@ -288,8 +289,8 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     const auto &new_monrace = m_ptr->get_monrace();
     // 種族側で能力値補正が指定されていれば、ロール結果に加算する。
     // 補正値は内部 10 単位 (表示 1.0 = 10) で格納されており、tl::nullopt の能力値は補正しない。
-    constexpr short stat_min = 30;
-    constexpr short stat_max = 400;
+    constexpr short stat_min = STAT_MIN_VALUE;
+    constexpr short stat_max = STAT_MAX_VALUE;
     for (auto stat = 0; stat < A_MAX; ++stat) {
         const auto &mod = new_monrace.stat_modifiers[stat];
         if (!mod.has_value()) {
