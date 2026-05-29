@@ -72,6 +72,7 @@
 #include "mind/mind-magic-eater.h"
 #include "mind/mind-sniper.h"
 #include "mind/mind-weaponsmith.h"
+#include "mind/monster-ability-caster.h"
 #include "mind/snipe-types.h"
 #include "player-base/player-class.h"
 #include "player-info/class-info.h"
@@ -413,6 +414,13 @@ void process_command(CreatureEntity &creature)
     }
     case 'm': {
         if (is_wild_mode) {
+            break;
+        }
+
+        // モンスター化したプレイヤーは職業に依らず種族固有能力を行使できる。
+        // 通常の職業別呪文判定より優先する。
+        if (can_use_monster_ability(creature)) {
+            do_cmd_use_monster_ability(creature);
             break;
         }
 

@@ -591,6 +591,7 @@
     <ClCompile Include="..\..\src\mind\mind-archer.cpp" />
     <ClCompile Include="..\..\src\mind\mind-berserker.cpp" />
     <ClCompile Include="..\..\src\mind\mind-blue-mage.cpp" />
+    <ClCompile Include="..\..\src\mind\monster-ability-caster.cpp" />
     <ClCompile Include="..\..\src\mind\mind-chaos-warrior.cpp" />
     <ClCompile Include="..\..\src\mind\mind-elementalist.cpp" />
     <ClCompile Include="..\..\src\mind\mind-explanations-table.cpp" />
@@ -1497,6 +1498,7 @@
     <ClInclude Include="..\..\src\mind\mind-archer.h" />
     <ClInclude Include="..\..\src\mind\mind-berserker.h" />
     <ClInclude Include="..\..\src\mind\mind-blue-mage.h" />
+    <ClInclude Include="..\..\src\mind\monster-ability-caster.h" />
     <ClInclude Include="..\..\src\mind\mind-chaos-warrior.h" />
     <ClInclude Include="..\..\src\mind\mind-elementalist.h" />
     <ClInclude Include="..\..\src\mind\mind-explanations-table.h" />

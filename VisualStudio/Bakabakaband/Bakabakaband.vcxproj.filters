@@ -1619,6 +1619,9 @@
     <ClCompile Include="..\..\src\mind\mind-blue-mage.cpp">
       <Filter>mind</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\mind\monster-ability-caster.cpp">
+      <Filter>mind</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\blue-magic\blue-magic-checker.cpp">
       <Filter>blue-magic</Filter>
     </ClCompile>
@@ -4193,6 +4196,9 @@
       <Filter>spell-realm</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\mind\mind-blue-mage.h">
+      <Filter>mind</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mind\monster-ability-caster.h">
       <Filter>mind</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\mspell\monster-power-table.h">
