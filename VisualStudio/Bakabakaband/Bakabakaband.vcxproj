@@ -798,6 +798,7 @@
     <ClCompile Include="..\..\src\main\sound-of-music.cpp" />
     <ClCompile Include="..\..\src\monster-floor\monster-summon.cpp" />
     <ClCompile Include="..\..\src\monster-floor\one-monster-placer.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\monster-drop-generator.cpp" />
     <ClCompile Include="..\..\src\monster\monster-compaction.cpp" />
     <ClCompile Include="..\..\src\monster-floor\monster-death.cpp" />
     <ClCompile Include="..\..\src\lore\monster-lore.cpp" />
@@ -1727,6 +1728,7 @@
     <ClInclude Include="..\..\src\mind\snipe-types.h" />
     <ClInclude Include="..\..\src\monster-floor\monster-summon.h" />
     <ClInclude Include="..\..\src\monster-floor\one-monster-placer.h" />
+    <ClInclude Include="..\..\src\monster-floor\monster-drop-generator.h" />
     <ClInclude Include="..\..\src\monster\monster-compaction.h" />
     <ClInclude Include="..\..\src\monster-floor\monster-death.h" />
     <ClInclude Include="..\..\src\lore\monster-lore.h" />
