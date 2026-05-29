@@ -23,8 +23,9 @@ constexpr std::string_view VARIANT_NAME("Bakabaka");
  * @details
  * 47: XOR 鎖チェックサム修復 (hengband#1372 相当)。本バージョン以降は
  * verify_checksum() / verify_encoded_checksum() の失敗をエラーとして扱う。
+ * 48: モンスタープレイヤーの種族 ID (r_idx / ap_r_idx) を保存。
  */
-constexpr uint32_t SAVEFILE_VERSION = 47;
+constexpr uint32_t SAVEFILE_VERSION = 48;
 
 /*!
  * @brief バージョンが開発版が安定版かを返す(廃止予定)
