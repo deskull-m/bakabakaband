@@ -32,7 +32,12 @@ void load_quick_start(void)
         previous_char.stat_max_max[i] = rd_s16b();
     }
 
-    for (int i = 0; i < PY_MAX_LEVEL; i++) {
+    // [セーブ ver49] 最大プレイヤーレベル拡張 (50→60) に伴い、クイックスタートの
+    // player_hp 配列は件数を保持せず PY_MAX_LEVEL 件保存される。旧セーブ (<49) は
+    // 50 件で保存されているため、その件数だけ読み込む (残りは 0 のまま)。
+    constexpr int OLD_PY_MAX_LEVEL = 50;
+    const int hp_count = loading_savefile_version_is_older_than(49) ? OLD_PY_MAX_LEVEL : PY_MAX_LEVEL;
+    for (int i = 0; i < hp_count; i++) {
         previous_char.player_hp[i] = rd_s16b();
     }
 

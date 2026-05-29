@@ -20,6 +20,7 @@
 #include "window/main-window-stat-poster.h"
 #include "window/main-window-util.h"
 #include "world/world.h"
+#include <algorithm>
 #include <fmt/format.h>
 
 /*!
@@ -48,7 +49,9 @@ void print_title(CreatureEntity &creature)
             p = _("***勝利者***", "***WINNER***");
         }
     } else {
-        p = player_titles.at(creature.get_pclass()).at((creature.get_level() - 1) / 5);
+        const auto &titles = player_titles.at(creature.get_pclass());
+        const auto title_index = std::min(static_cast<size_t>((creature.get_level() - 1) / 5), titles.size() - 1);
+        p = titles.at(title_index);
     }
 
     print_field(p, ROW_TITLE, COL_TITLE);

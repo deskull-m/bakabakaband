@@ -24,8 +24,11 @@ constexpr std::string_view VARIANT_NAME("Bakabaka");
  * 47: XOR 鎖チェックサム修復 (hengband#1372 相当)。本バージョン以降は
  * verify_checksum() / verify_encoded_checksum() の失敗をエラーとして扱う。
  * 48: モンスタープレイヤーの種族 ID (r_idx / ap_r_idx) を保存。
+ * 49: 最大プレイヤーレベルを 50 → 60 に拡張。クイックスタート情報の
+ *     player_hp 配列が PY_MAX_LEVEL (件数非保持) で保存されるため、
+ *     旧バージョン (<49) は 50 件として読む差分処理が必要。
  */
-constexpr uint32_t SAVEFILE_VERSION = 48;
+constexpr uint32_t SAVEFILE_VERSION = 49;
 
 /*!
  * @brief バージョンが開発版が安定版かを返す(廃止予定)
