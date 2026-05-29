@@ -18,9 +18,9 @@
 #include "util/string-processor.h"
 #include "window/main-window-row-column.h"
 #include "window/main-window-stat-poster.h"
-#include <algorithm>
 #include "window/main-window-util.h"
 #include "world/world.h"
+#include <algorithm>
 #include <fmt/format.h>
 
 /*!
