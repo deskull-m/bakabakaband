@@ -1,6 +1,7 @@
 #include "birth/birth-stat.h"
 #include "birth/auto-roller.h"
 #include "combat/martial-arts-style.h"
+#include "player-ability/player-ability-types.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
 #include "player-info/class-info.h"
@@ -44,10 +45,10 @@ int adjust_stat(int value, int amount)
 {
     value += amount * 10;
 
-    if (value < 30) {
-        value = 30;
-    } else if (value > 400) {
-        value = 400;
+    if (value < STAT_MIN_VALUE) {
+        value = STAT_MIN_VALUE;
+    } else if (value > STAT_MAX_VALUE) {
+        value = STAT_MAX_VALUE;
     }
 
     return value;

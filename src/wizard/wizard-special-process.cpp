@@ -37,6 +37,7 @@
 #include "object-enchant/item-apply-magic.h"
 #include "object-enchant/item-magic-applier.h"
 #include "perception/object-perception.h"
+#include "player-ability/player-ability-types.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
 #include "player-info/class-info.h"
@@ -281,6 +282,8 @@ void wiz_create_named_art(CreatureEntity &creature)
 static void wiz_change_status_max(CreatureEntity &creature)
 {
     for (auto i = 0; i < A_MAX; ++i) {
+        // 限界値 (stat_max_max) も能力値上限 (表示 200.0) まで突破させる
+        creature.set_stat_max_max(i, STAT_MAX_VALUE);
         creature.set_stat_cur(i, creature.get_stat_max_max(i));
         creature.set_stat_max(i, creature.get_stat_max_max(i));
     }

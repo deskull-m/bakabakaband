@@ -43,6 +43,7 @@
 #include "object/object-mark-types.h"
 #include "perception/object-perception.h"
 #include "pet/pet-util.h"
+#include "player-ability/player-ability-types.h"
 #include "player-ability/player-charisma.h"
 #include "player-ability/player-constitution.h"
 #include "player-ability/player-dexterity.h"
@@ -2970,17 +2971,14 @@ void check_experience(CreatureEntity &creature)
  */
 std::string cnv_stat(int val)
 {
-    // 30～400 -> 3.0～40.0に変換
-    int integer_part = val / 10;
-    int decimal_part = val % 10;
-
-    if (val >= 400) {
-        return " 40.0";
-    } else if (integer_part >= 10) {
-        return format(" %2d.%d", integer_part, decimal_part);
-    } else {
-        return format("  %d.%d", integer_part, decimal_part);
+    // 内部値 30～2000 -> 表示 3.0～200.0 に変換
+    if (val > STAT_MAX_VALUE) {
+        val = STAT_MAX_VALUE;
     }
+
+    const int integer_part = val / 10;
+    const int decimal_part = val % 10;
+    return format("%3d.%d", integer_part, decimal_part);
 }
 
 /*!
@@ -2999,10 +2997,10 @@ int16_t modify_stat_value(int value, int amount)
 {
     value += amount * 10;
 
-    if (value < 30) {
-        value = 30;
-    } else if (value > 400) {
-        value = 400;
+    if (value < STAT_MIN_VALUE) {
+        value = STAT_MIN_VALUE;
+    } else if (value > STAT_MAX_VALUE) {
+        value = STAT_MAX_VALUE;
     }
 
     return (int16_t)value;
