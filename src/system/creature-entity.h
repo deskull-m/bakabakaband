@@ -2695,6 +2695,19 @@ public:
      */
     virtual void initialize_equivalent_player_classes();
 
+    /*!
+     * @brief 性格をランダムに設定する (いかさまは除外)
+     * @details 性別制限のある性格は psex に合致する場合のみ選ばれる。
+     *          ppersonality と personality ポインタの双方を更新する。
+     */
+    void assign_random_personality();
+
+    /*!
+     * @brief 職業が魔法領域を持つ場合に第一領域を全領域から完全ランダムに設定する
+     * @details 領域選択不可の職業 (戦士・忍者等) では何もしない。
+     */
+    void assign_random_realm();
+
     byte get_temporary_speed() const;
 
     /*!
