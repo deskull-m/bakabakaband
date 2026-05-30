@@ -7,6 +7,8 @@
 #include "artifact/random-art-generator.h"
 #include "autopick/autopick.h"
 #include "avatar/avatar.h"
+#include "birth/birth-explanations-table.h"
+#include "birth/birth-select-personality.h"
 #include "birth/birth-stat.h"
 #include "birth/game-play-initializer.h"
 #include "birth/history-editor.h"
@@ -42,6 +44,8 @@
 #include "util/dice.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
+#include "view/display-player-misc-info.h"
+#include "view/display-util.h"
 #include "wizard/wizard-spells.h"
 #include "world/world.h"
 
@@ -58,7 +62,9 @@ void setup_default_player_attributes(CreatureEntity &creature)
     creature.psex = SEX_MALE;
     creature.prace = PlayerRaceType::HUMAN;
     creature.pclass = PlayerClassType::WARRIOR;
-    creature.ppersonality = PERSONALITY_LUCKY;
+    // 性格は後続の select_player_personality() でプレイヤーが選択する。
+    // ここではポインタ初期化のための既定値を入れておく。
+    creature.ppersonality = PERSONALITY_ORDINARY;
     creature.set_patron(0);
     creature.element_realm = ElementRealmType::NONE;
 
@@ -71,6 +77,35 @@ void setup_default_player_attributes(CreatureEntity &creature)
 
     PlayerRealm pr(creature);
     pr.reset();
+}
+
+/*!
+ * @brief モンスター開始時の性格選択を行う
+ * @details 通常のキャラクター作成 (birth-wizard.cpp の let_player_select_personality)
+ *          と同様に、性格選択メニューと説明文付きの確認を繰り返す。
+ *          'S' で前段階へ戻る選択をした場合は false を返す。
+ * @param creature クリーチャーへの参照
+ * @return 性格を確定したら true、戻る選択をしたら false
+ */
+bool select_player_personality(CreatureEntity &creature)
+{
+    creature.ppersonality = PERSONALITY_ORDINARY;
+    while (true) {
+        if (!get_player_personality(creature)) {
+            return false;
+        }
+
+        clear_from(10);
+        display_wrap_around(personality_explanations[creature.ppersonality], 74, 12, 3);
+
+        if (input_check_strict(creature, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
+            break;
+        }
+
+        display_player_name(creature, true);
+    }
+
+    return true;
 }
 
 /*!
@@ -234,6 +269,13 @@ bool player_birth_as_monster(CreatureEntity &creature)
 
     // 土台となるプレイヤー属性を埋める (race/class/sex/personality 等)
     setup_default_player_attributes(creature);
+
+    // 性格を通常キャラ作成と同様にプレイヤーが選択する
+    // (能力値・ボーナスに影響するため get_stats() より前に確定させる)
+    term_clear();
+    if (!select_player_personality(creature)) {
+        return false;
+    }
 
     // プレイヤー作成と同じローラーで基礎能力値を振る
     get_stats(creature);
