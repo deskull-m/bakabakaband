@@ -41,8 +41,12 @@ int lore_do_probe(CreatureEntity &creature, MonraceId r_idx)
     }
     monrace.r_wake = monrace.r_ignore = MAX_UCHAR;
 
-    for (auto i = 0; i < 4; i++) {
+    // blows / r_blows は可変長 vector のため、実サイズで走査する。
+    for (size_t i = 0; i < monrace.blows.size(); i++) {
         if (monrace.blows[i].effect != RaceBlowEffectType::NONE || monrace.blows[i].method != RaceBlowMethodType::NONE) {
+            if (i >= monrace.r_blows.size()) {
+                monrace.r_blows.resize(i + 1, 0);
+            }
             if (monrace.r_blows[i] != MAX_UCHAR) {
                 n++;
             }
