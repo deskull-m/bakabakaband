@@ -34,6 +34,7 @@
 #include "player/player-status.h"
 #include "player/process-name.h"
 #include "player/race-info-table.h"
+#include "realm/realm-types.h"
 #include "spell/spells-status.h"
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -43,8 +44,10 @@
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
+#include "term/z-rand.h"
 #include "util/dice.h"
 #include "util/enum-converter.h"
+#include "util/enum-range.h"
 #include "view/display-messages.h"
 #include "view/display-player-misc-info.h"
 #include "view/display-util.h"
@@ -79,6 +82,111 @@ void setup_default_player_attributes(CreatureEntity &creature)
 
     PlayerRealm pr(creature);
     pr.reset();
+}
+
+/*!
+ * @brief モンスター種族の kind_flags から対応するプレイヤー職業を求める
+ * @details CreatureEntity::initialize_equivalent_player_classes() と同じ
+ *          対応表・優先順位を用いる。複数該当する場合は最初に一致したものを
+ *          採用し、該当フラグがなければ tl::nullopt を返す。
+ * @param monrace モンスター種族定義
+ * @return 対応する職業。なければ tl::nullopt
+ */
+tl::optional<PlayerClassType> determine_player_class_from_monrace(const MonraceDefinition &monrace)
+{
+    const auto &kind_flags = monrace.kind_flags;
+    if (kind_flags.has(MonsterKindType::WARRIOR)) {
+        return PlayerClassType::WARRIOR;
+    }
+    if (kind_flags.has(MonsterKindType::MAGE)) {
+        return PlayerClassType::MAGE;
+    }
+    if (kind_flags.has(MonsterKindType::PRIEST)) {
+        return PlayerClassType::PRIEST;
+    }
+    if (kind_flags.has(MonsterKindType::ROGUE)) {
+        return PlayerClassType::ROGUE;
+    }
+    if (kind_flags.has(MonsterKindType::RANGER)) {
+        return PlayerClassType::RANGER;
+    }
+    if (kind_flags.has(MonsterKindType::PALADIN)) {
+        return PlayerClassType::PALADIN;
+    }
+    if (kind_flags.has(MonsterKindType::SAMURAI)) {
+        return PlayerClassType::SAMURAI;
+    }
+    if (kind_flags.has(MonsterKindType::NINJA)) {
+        return PlayerClassType::NINJA;
+    }
+    if (kind_flags.has(MonsterKindType::MINDCRAFTER)) {
+        return PlayerClassType::MINDCRAFTER;
+    }
+    if (kind_flags.has(MonsterKindType::ARCHER)) {
+        return PlayerClassType::ARCHER;
+    }
+    if (kind_flags.has(MonsterKindType::BARD)) {
+        return PlayerClassType::BARD;
+    }
+    if (kind_flags.has(MonsterKindType::SMITH)) {
+        return PlayerClassType::SMITH;
+    }
+    if (kind_flags.has(MonsterKindType::KARATEKA)) {
+        return PlayerClassType::MONK;
+    }
+
+    return tl::nullopt;
+}
+
+/*!
+ * @brief 職業に応じた魔法領域を自動的に決定する
+ * @details 通常のキャラ作成 (get_player_realms) ではプレイヤーが選択するが、
+ *          モンスター運用時は選択可能な第一領域があればランダムに 1 つ
+ *          割り当てる。選択可能領域を持たない職業 (戦士・忍者等) は領域なし。
+ *          第二領域は付与しない (第一領域のみでも妥当なプレイ状態となる)。
+ * @param creature クリーチャーへの参照
+ */
+void assign_auto_realm(CreatureEntity &creature)
+{
+    PlayerRealm pr(creature);
+    pr.reset();
+
+    const auto choices = PlayerRealm::get_realm1_choices(creature.pclass);
+    std::vector<RealmType> candidates;
+    for (auto realm : EnumRange(RealmType::LIFE, RealmType::MAX)) {
+        if (choices.has(realm)) {
+            candidates.push_back(realm);
+        }
+    }
+
+    if (!candidates.empty()) {
+        pr.set(candidates[randint0(static_cast<int>(candidates.size()))]);
+    }
+}
+
+/*!
+ * @brief モンスター種族に対応する職業があればプレイヤーに反映する
+ * @details kind_flags から職業を判定し、該当する場合は pclass / cp_ptr /
+ *          mp_ptr 等を更新したうえで魔法領域を自動決定する。該当しない場合は
+ *          setup_default_player_attributes() で設定された既定 (戦士) のまま。
+ *          領域は HP/MP 計算 (get_extra) に影響するため、それより前に呼ぶこと。
+ * @param creature クリーチャーへの参照
+ * @param monrace_id 開始モンスターの種族ID
+ */
+void apply_monrace_class(CreatureEntity &creature, MonraceId monrace_id)
+{
+    const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
+    const auto pclass = determine_player_class_from_monrace(monrace);
+    if (!pclass) {
+        return;
+    }
+
+    creature.pclass = *pclass;
+    cp_ptr = &class_info.at(creature.pclass);
+    creature.pclass_ref = &class_info.at(creature.pclass);
+    mp_ptr = &class_magics_info[enum2i(creature.pclass)];
+
+    assign_auto_realm(creature);
 }
 
 /*!
@@ -303,6 +411,10 @@ bool player_birth_as_monster(CreatureEntity &creature)
     // 性別をモンスター種族定義 (MALE/FEMALE) から決定する
     // (性格の性別制限に影響するため性格選択より前に確定させる)
     apply_monrace_sex(creature, *monrace_id);
+
+    // モンスター種族に対応する職業があれば反映し、魔法領域を自動決定する
+    // (HP/MP 計算に影響するため get_extra() より前に確定させる)
+    apply_monrace_class(creature, *monrace_id);
 
     // 性格を通常キャラ作成と同様にプレイヤーが選択する
     // (能力値・ボーナスに影響するため get_stats() より前に確定させる)
