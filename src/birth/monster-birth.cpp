@@ -16,6 +16,8 @@
 #include "core/asking-player.h"
 #include "io/input-key-acceptor.h"
 #include "mind/mind-elementalist.h"
+#include "monster-race/race-kind-flags.h"
+#include "monster-race/race-sex-const.h"
 #include "object-enchant/item-apply-magic.h"
 #include "object-enchant/item-magic-applier.h"
 #include "perception/object-perception.h"
@@ -77,6 +79,34 @@ void setup_default_player_attributes(CreatureEntity &creature)
 
     PlayerRealm pr(creature);
     pr.reset();
+}
+
+/*!
+ * @brief モンスター種族定義の性別をプレイヤーの性別に反映する
+ * @details one-monster-placer.cpp のモンスター生成時と同じ判定を用いる。
+ *          データソースは kind_flags の MALE/FEMALE と MonraceDefinition::sex
+ *          の 2 系統で、両方真→両性、片方→該当、なし→無性とする。
+ *          性別は性格選択 (sex 制限) や各種ボーナスに影響するため、
+ *          性格選択より前に確定させること。
+ * @param creature クリーチャーへの参照
+ * @param monrace_id 開始モンスターの種族ID
+ */
+void apply_monrace_sex(CreatureEntity &creature, MonraceId monrace_id)
+{
+    const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
+    const auto has_male = monrace.kind_flags.has(MonsterKindType::MALE) || (monrace.sex == MonsterSex::MALE);
+    const auto has_female = monrace.kind_flags.has(MonsterKindType::FEMALE) || (monrace.sex == MonsterSex::FEMALE);
+    if (has_male && has_female) {
+        creature.psex = SEX_BISEXUAL;
+    } else if (has_male) {
+        creature.psex = SEX_MALE;
+    } else if (has_female) {
+        creature.psex = SEX_FEMALE;
+    } else {
+        creature.psex = SEX_ASEXUAL;
+    }
+
+    sp_ptr = &sex_info[creature.psex];
 }
 
 /*!
@@ -269,6 +299,10 @@ bool player_birth_as_monster(CreatureEntity &creature)
 
     // 土台となるプレイヤー属性を埋める (race/class/sex/personality 等)
     setup_default_player_attributes(creature);
+
+    // 性別をモンスター種族定義 (MALE/FEMALE) から決定する
+    // (性格の性別制限に影響するため性格選択より前に確定させる)
+    apply_monrace_sex(creature, *monrace_id);
 
     // 性格を通常キャラ作成と同様にプレイヤーが選択する
     // (能力値・ボーナスに影響するため get_stats() より前に確定させる)
