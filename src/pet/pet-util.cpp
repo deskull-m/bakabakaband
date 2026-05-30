@@ -106,7 +106,13 @@ PERCENTAGE calculate_upkeep(CreatureEntity &creature)
         return 0;
     }
 
-    int upkeep_factor = (total_friend_levels - (creature.get_level() * 80 / ((*creature.get_class_info()).pet_upkeep_div)));
+    // pet_upkeep_div は職業を持たないクリーチャー (対応職業のないモンスター等)
+    // では 0 になりうるため、ゼロ除算を避けてレベル分の軽減項を省く。
+    const int pet_upkeep_div = (*creature.get_class_info()).pet_upkeep_div;
+    int upkeep_factor = total_friend_levels;
+    if (pet_upkeep_div != 0) {
+        upkeep_factor -= creature.get_level() * 80 / pet_upkeep_div;
+    }
     if (upkeep_factor < 0) {
         upkeep_factor = 0;
     }
