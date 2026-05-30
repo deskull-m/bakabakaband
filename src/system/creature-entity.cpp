@@ -28,6 +28,7 @@
 #include "player-info/sniper-data-type.h"
 #include "player-info/spell-hex-data-type.h"
 #include "player/player-personality.h"
+#include "player/player-realm.h"
 #include "player/player-status-flags.h"
 #include "player/race-info-table.h"
 #include "realm/realm-song-numbers.h"
@@ -1037,6 +1038,40 @@ void CreatureEntity::initialize_equivalent_player_classes()
         this->pclass_ref = nullptr;
         this->pclass = PlayerClassType::WARRIOR;
     }
+}
+
+void CreatureEntity::assign_random_personality()
+{
+    const auto psex_value = static_cast<int>(this->get_psex());
+    int k;
+    do {
+        k = randint0(MAX_PERSONALITIES);
+    } while ((k == PERSONALITY_MUNCHKIN) || ((personality_info[k].sex != 0) && (personality_info[k].sex != (psex_value + 1))));
+
+    this->ppersonality = static_cast<player_personality_type>(k);
+    this->personality = &personality_info[this->ppersonality];
+}
+
+void CreatureEntity::assign_random_realm()
+{
+    // 領域を選択可能な職業のみ対象とする (戦士・忍者等は領域なし)
+    const auto choices = PlayerRealm::get_realm1_choices(this->pclass);
+    if (choices.count() == 0) {
+        return;
+    }
+
+    // 職業の選択肢に縛られず全領域 (魔法 + 技術) から完全ランダムに 1 つ選ぶ
+    std::vector<RealmType> all_realms;
+    for (auto realm : MAGIC_REALM_RANGE) {
+        all_realms.push_back(realm);
+    }
+    for (auto realm : TECHNIC_REALM_RANGE) {
+        all_realms.push_back(realm);
+    }
+
+    PlayerRealm pr(*this);
+    pr.reset();
+    pr.set(all_realms[randint0(static_cast<int>(all_realms.size()))]);
 }
 
 // [提案 14] AI ターゲット選定の共通化実装

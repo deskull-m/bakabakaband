@@ -453,6 +453,11 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     m_ptr->initialize_equivalent_player_races();
     m_ptr->initialize_equivalent_player_classes();
 
+    // 非プレイヤーにも性格・魔法領域を設定する
+    // (性格はいかさま以外ランダム、領域は領域持ち職業のみ全領域から完全ランダム)
+    m_ptr->assign_random_personality();
+    m_ptr->assign_random_realm();
+
     // 種族が指定されている場合、身長・体重を設定
     get_height_weight(*m_ptr);
 
