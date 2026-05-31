@@ -202,7 +202,7 @@ tl::optional<PlayerRaceType> determine_player_race_from_monrace(const MonraceDef
 {
     const auto &kind_flags = monrace.kind_flags;
     // 無難な種族を優先する順序 (人間 → 一般的なファンタジー種族 → 大型 →
-    // 特殊種族 → 食性等に制約のある天使/悪魔/不死)
+    // 特殊種族 → 食性等に制約のあるゴーレム/悪魔/天使/不死系)
     if (kind_flags.has(MonsterKindType::HUMAN)) {
         return PlayerRaceType::HUMAN;
     }
@@ -213,31 +213,73 @@ tl::optional<PlayerRaceType> determine_player_race_from_monrace(const MonraceDef
         return PlayerRaceType::DWARF;
     }
     if (kind_flags.has(MonsterKindType::ELF)) {
-        return PlayerRaceType::HIGH_ELF;
+        return PlayerRaceType::HALF_ELF;
     }
     if (kind_flags.has(MonsterKindType::ORC)) {
         return PlayerRaceType::HALF_ORC;
     }
+    if (kind_flags.has(MonsterKindType::AMBERITE)) {
+        return PlayerRaceType::AMBERITE;
+    }
+    if (kind_flags.has(MonsterKindType::NIBELUNG)) {
+        return PlayerRaceType::NIBELUNG;
+    }
+    if (kind_flags.has(MonsterKindType::KOBOLD)) {
+        return PlayerRaceType::KOBOLD;
+    }
+    if (kind_flags.has(MonsterKindType::YEEK)) {
+        return PlayerRaceType::YEEK;
+    }
     if (kind_flags.has(MonsterKindType::TROLL)) {
         return PlayerRaceType::HALF_TROLL;
+    }
+    if (kind_flags.has(MonsterKindType::OGRE)) {
+        return PlayerRaceType::HALF_OGRE;
     }
     if (kind_flags.has(MonsterKindType::GIANT)) {
         return PlayerRaceType::HALF_GIANT;
     }
-    if (kind_flags.has(MonsterKindType::AMBERITE)) {
-        return PlayerRaceType::AMBERITE;
+    if (kind_flags.has(MonsterKindType::BEAST)) {
+        return PlayerRaceType::BEASTMAN;
+    }
+    if (kind_flags.has(MonsterKindType::MERFOLK)) {
+        return PlayerRaceType::MERFOLK;
     }
     if (kind_flags.has(MonsterKindType::DRAGON)) {
         return PlayerRaceType::DRACONIAN;
     }
-    if (kind_flags.has(MonsterKindType::ANGEL)) {
-        return PlayerRaceType::ANGEL;
+    if (kind_flags.has(MonsterKindType::FAIRY)) {
+        return PlayerRaceType::SPRITE;
+    }
+    if (kind_flags.has(MonsterKindType::TREEFOLK)) {
+        return PlayerRaceType::ENT;
+    }
+    if (kind_flags.has(MonsterKindType::MINDFLAYER)) {
+        return PlayerRaceType::MIND_FLAYER;
+    }
+    if (kind_flags.has(MonsterKindType::GOLEM)) {
+        return PlayerRaceType::GOLEM;
+    }
+    if (kind_flags.has(MonsterKindType::ROBOT)) {
+        return PlayerRaceType::ANDROID;
     }
     if (kind_flags.has(MonsterKindType::DEMON)) {
         return PlayerRaceType::IMP;
     }
-    if (kind_flags.has(MonsterKindType::UNDEAD)) {
+    if (kind_flags.has(MonsterKindType::ANGEL)) {
+        return PlayerRaceType::ARCHON;
+    }
+    if (kind_flags.has(MonsterKindType::VAMPIRE)) {
+        return PlayerRaceType::VAMPIRE;
+    }
+    if (kind_flags.has(MonsterKindType::ZOMBIE)) {
+        return PlayerRaceType::ZOMBIE;
+    }
+    if (kind_flags.has(MonsterKindType::SKELETON)) {
         return PlayerRaceType::SKELETON;
+    }
+    if (kind_flags.has(MonsterKindType::UNDEAD)) {
+        return PlayerRaceType::SPECTRE;
     }
 
     return tl::nullopt;
