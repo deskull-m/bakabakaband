@@ -691,6 +691,25 @@ const std::unordered_map<std::string_view, MonsterSex> r_info_sex = {
     { "FEMALE", MonsterSex::FEMALE },
 };
 
+const std::unordered_map<std::string_view, player_personality_type> r_info_personality = {
+    { "ORDINARY", PERSONALITY_ORDINARY },
+    { "MIGHTY", PERSONALITY_MIGHTY },
+    { "SHREWD", PERSONALITY_SHREWD },
+    { "PIOUS", PERSONALITY_PIOUS },
+    { "NIMBLE", PERSONALITY_NIMBLE },
+    { "FEARLESS", PERSONALITY_FEARLESS },
+    { "COMBAT", PERSONALITY_COMBAT },
+    { "LAZY", PERSONALITY_LAZY },
+    { "SEXY", PERSONALITY_SEXY },
+    { "LUCKY", PERSONALITY_LUCKY },
+    { "PATIENT", PERSONALITY_PATIENT },
+    { "MUNCHKIN", PERSONALITY_MUNCHKIN },
+    { "CHARGEMAN", PERSONALITY_CHARGEMAN },
+    { "TOUGH", PERSONALITY_TOUGH },
+    { "SUSHI_EATER", PERSONALITY_SUSHI_EATER },
+    { "MESUGAKI", PERSONALITY_MESUGAKI },
+};
+
 const std::unordered_map<std::string_view, BodyStructureType> r_info_body_structure = {
     { "HUMANOID", BodyStructureType::HUMANOID },
     { "BIPEDAL", BodyStructureType::BIPEDAL },

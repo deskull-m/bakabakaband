@@ -308,6 +308,31 @@ static errr set_mon_sex(const nlohmann::json &sex_data, MonraceDefinition &monra
 }
 
 /*!
+ * @brief JSON Objectからモンスターの性格をセットする
+ * @param personality_data 性格情報の格納されたJSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details 未指定 (null) の場合は PERSONALITY_NONE のまま (生成時ランダム)。
+ *          指定された場合はその性格が常に適用される。
+ */
+static errr set_mon_personality(const nlohmann::json &personality_data, MonraceDefinition &monrace)
+{
+    if (personality_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!personality_data.is_string()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    uint32_t personality;
+    if (!info_grab_one_const(personality, r_info_personality, personality_data.get<std::string>())) {
+        return PARSE_ERROR_INVALID_FLAG;
+    }
+    monrace.personality = static_cast<player_personality_type>(personality);
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief JSON Object からモンスターの体構造をセットする
  * @param body_data 体構造情報の格納された JSON Object (string)
  * @param monrace 保管先のモンスター種族構造体
@@ -1333,6 +1358,12 @@ errr parse_monraces_info(nlohmann::json &mon_data, angband_header *)
     err = set_mon_sex(mon_data["sex"], monrace);
     if (err) {
         msg_format(_("モンスター性別読込失敗。ID: '%d'。", "Failed to load monster sex. ID: '%d'."), error_idx);
+        return err;
+    }
+
+    err = set_mon_personality(mon_data["personality"], monrace);
+    if (err) {
+        msg_format(_("モンスター性格読込失敗。ID: '%d'。", "Failed to load monster personality. ID: '%d'."), error_idx);
         return err;
     }
     err = info_set_integer(mon_data["odds_correction_ratio"], monrace.arena_ratio, false, Range(1, 9999));

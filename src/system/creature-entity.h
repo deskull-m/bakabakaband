@@ -2696,9 +2696,17 @@ public:
     virtual void initialize_equivalent_player_classes();
 
     /*!
+     * @brief 性格を指定値に設定する
+     * @details ppersonality と personality ポインタの双方を更新する。
+     * @param value 設定する性格
+     */
+    void set_personality(player_personality_type value);
+
+    /*!
      * @brief 性格をランダムに設定する (いかさまは除外)
      * @details 性別制限のある性格は psex に合致する場合のみ選ばれる。
      *          ppersonality と personality ポインタの双方を更新する。
+     *          モンスター種族に性格が固定指定されている場合は常にそれを使う。
      */
     void assign_random_personality();
 
