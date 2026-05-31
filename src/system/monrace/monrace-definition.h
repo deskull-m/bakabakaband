@@ -22,6 +22,7 @@
 #include "monster-race/race-visual-flags.h"
 #include "monster-race/race-wilderness-flags.h"
 #include "player-ability/player-ability-types.h"
+#include "player/player-personality-types.h"
 #include "system/angband.h"
 #include "system/monrace/body-structure-types.h"
 #include "system/monrace/extended-slot.h"
@@ -123,6 +124,7 @@ public:
     EXP mexp{}; //!< 殺害時基本経験値 / Exp value for kill
     RARITY freq_spell{}; //!< 魔法＆特殊能力仕様頻度(1/n) /  Spell frequency
     MonsterSex sex{}; //!< 性別 / Sex
+    player_personality_type personality = PERSONALITY_NONE; //!< 性格固定指定 (PERSONALITY_NONE で未指定=生成時ランダム) / Fixed personality (PERSONALITY_NONE means unspecified)
     EnumClassFlagGroup<MonsterFeedType> meat_feed_flags;
     EnumClassFlagGroup<MonsterAbilityType> ability_flags; //!< 能力フラグ(魔法/ブレス) / Ability Flags
     EnumClassFlagGroup<MonsterAuraType> aura_flags; //!< オーラフラグ / Aura Flags

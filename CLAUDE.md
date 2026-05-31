@@ -461,6 +461,30 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
 `get_psex()` / `get_ppersonality()` は `CreatureEntity` の virtual アクセサ
 (将来モンスター固有のオーバーライド余地)。
 
+### モンスターの性格指定 (`personality`)
+
+`MonraceDefinition` に `player_personality_type personality`
+(`src/system/monrace/monrace-definition.h`) を持ち、JSON
+`lib/edit/MonraceDefinitions.jsonc` で個別モンスターの性格を固定指定できる。
+
+```jsonc
+"personality": "LUCKY"
+```
+
+指定可能なトークンは `r_info_personality`
+(`src/info-reader/race-info-tokens-table.cpp`) を参照:
+`ORDINARY` / `MIGHTY` / `SHREWD` / `PIOUS` / `NIMBLE` / `FEARLESS` /
+`COMBAT` / `LAZY` / `SEXY` / `LUCKY` / `PATIENT` / `MUNCHKIN` /
+`CHARGEMAN` / `TOUGH` / `SUSHI_EATER` / `MESUGAKI`。
+
+- 未指定 (キー省略 = `PERSONALITY_NONE`) の場合は従来通り。モンスター生成時は
+  `CreatureEntity::assign_random_personality()` でランダム (いかさま除外)、
+  プレイヤー運用開始時は対話選択。
+- 指定がある場合は**常にその性格が適用**される。モンスター生成
+  (`assign_random_personality()` 内の固定指定チェック) でも、プレイヤー運用
+  開始 (`apply_monrace_personality()` で対話選択をスキップ) でも同一。
+- 性格適用は `CreatureEntity::set_personality(player_personality_type)` に集約。
+
 ---
 
 ## 開発フロー

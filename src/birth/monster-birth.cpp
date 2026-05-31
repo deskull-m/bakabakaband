@@ -308,6 +308,26 @@ void apply_monrace_race(CreatureEntity &creature, MonraceId monrace_id)
 }
 
 /*!
+ * @brief モンスター種族に性格が固定指定されていればプレイヤーに反映する
+ * @details JSON の "personality" で指定された性格があれば常にそれを適用し、
+ *          プレイヤーによる対話的な性格選択を省略する。未指定の場合は
+ *          何もせず false を返し、呼び出し側で通常の選択処理に委ねる。
+ * @param creature クリーチャーへの参照
+ * @param monrace_id 開始モンスターの種族ID
+ * @return 固定指定を適用したら true、未指定なら false
+ */
+bool apply_monrace_personality(CreatureEntity &creature, MonraceId monrace_id)
+{
+    const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
+    if (monrace.personality == PERSONALITY_NONE) {
+        return false;
+    }
+
+    creature.set_personality(monrace.personality);
+    return true;
+}
+
+/*!
  * @brief モンスター種族定義の性別をプレイヤーの性別に反映する
  * @details one-monster-placer.cpp のモンスター生成時と同じ判定を用いる。
  *          データソースは kind_flags の MALE/FEMALE と MonraceDefinition::sex
@@ -538,11 +558,14 @@ bool player_birth_as_monster(CreatureEntity &creature)
     // (HP/MP 計算に影響するため get_extra() より前に確定させる)
     apply_monrace_class(creature, *monrace_id);
 
-    // 性格を通常キャラ作成と同様にプレイヤーが選択する
+    // 性格: モンスター種族に固定指定があれば常にそれを使い、
+    // なければ通常キャラ作成と同様にプレイヤーが選択する
     // (能力値・ボーナスに影響するため get_stats() より前に確定させる)
-    term_clear();
-    if (!select_player_personality(creature)) {
-        return false;
+    if (!apply_monrace_personality(creature, *monrace_id)) {
+        term_clear();
+        if (!select_player_personality(creature)) {
+            return false;
+        }
     }
 
     // プレイヤー作成と同じローラーで基礎能力値を振る
