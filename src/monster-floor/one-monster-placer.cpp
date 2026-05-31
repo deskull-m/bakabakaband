@@ -34,6 +34,7 @@
 #include "monster/monster-util.h"
 #include "object/warning.h"
 #include "player-ability/player-ability-types.h"
+#include "player/digestion-processor.h"
 #include "player/player-sex.h"
 #include "player/player-status.h"
 #include "system/creature-entity.h"
@@ -463,6 +464,9 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     // 所持金を初期化（能力値に基づいて計算）
     get_money_for_creature(*m_ptr);
+
+    // 満腹度を常に満腹状態 (食べ過ぎにはならない最大値) にする
+    m_ptr->set_food(PY_FOOD_MAX - 1);
 
     m_ptr->set_visible_on_map(false);
     if (any_bits(mode, PM_FORCE_PET)) {
