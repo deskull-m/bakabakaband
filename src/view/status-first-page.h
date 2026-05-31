@@ -56,6 +56,7 @@
 #define ENTRY_APPARENT_RACE 49
 #define ENTRY_HP_REGEN 50
 #define ENTRY_MP_REGEN 51
+#define ENTRY_ALLIANCE 52
 
 class CreatureEntity;
 void display_player_various(CreatureEntity &creature);

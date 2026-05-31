@@ -7,6 +7,7 @@
  */
 
 #include "view/display-player.h"
+#include "alliance/alliance.h"
 #include "dungeon/quest.h"
 #include "floor/floor-util.h"
 #include "game-option/text-display-options.h"
@@ -361,6 +362,14 @@ tl::optional<int> display_player(CreatureEntity &creature, const int tmp_mode)
         display_player_one_line(ENTRY_PATRON, patron_list[creature.get_patron()].name, TERM_L_BLUE);
     } else {
         display_player_one_line(ENTRY_PATRON, _("なし", "None"), TERM_SLATE);
+    }
+
+    // 所属アライアンスを表示する (プレイヤー・モンスター共通)
+    const auto alliance_idx = creature.get_alliance_idx();
+    if (alliance_idx != AllianceType::NONE) {
+        display_player_one_line(ENTRY_ALLIANCE, alliance_list.at(alliance_idx)->name, TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_ALLIANCE, _("無所属", "None"), TERM_SLATE);
     }
 
     // 実際の種族と見かけの種族を表示
