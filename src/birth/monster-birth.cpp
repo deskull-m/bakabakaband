@@ -190,6 +190,124 @@ void apply_monrace_class(CreatureEntity &creature, MonraceId monrace_id)
 }
 
 /*!
+ * @brief モンスター種族の kind_flags から対応するプレイヤー種族を求める
+ * @details CreatureEntity::initialize_equivalent_player_races() と同じ対応表を
+ *          用いるが、複数該当する場合は「無難な (癖の少ない) 種族」を優先する
+ *          順序で判定する。特殊な食性・制約を持つ天使/悪魔/不死系は後回しとし、
+ *          該当フラグがなければ tl::nullopt を返す。
+ * @param monrace モンスター種族定義
+ * @return 対応する種族。なければ tl::nullopt
+ */
+tl::optional<PlayerRaceType> determine_player_race_from_monrace(const MonraceDefinition &monrace)
+{
+    const auto &kind_flags = monrace.kind_flags;
+    // 無難な種族を優先する順序 (人間 → 一般的なファンタジー種族 → 大型 →
+    // 特殊種族 → 食性等に制約のあるゴーレム/悪魔/天使/不死系)
+    if (kind_flags.has(MonsterKindType::HUMAN)) {
+        return PlayerRaceType::HUMAN;
+    }
+    if (kind_flags.has(MonsterKindType::HOBBIT)) {
+        return PlayerRaceType::HOBBIT;
+    }
+    if (kind_flags.has(MonsterKindType::DWARF)) {
+        return PlayerRaceType::DWARF;
+    }
+    if (kind_flags.has(MonsterKindType::ELF)) {
+        return PlayerRaceType::HALF_ELF;
+    }
+    if (kind_flags.has(MonsterKindType::ORC)) {
+        return PlayerRaceType::HALF_ORC;
+    }
+    if (kind_flags.has(MonsterKindType::AMBERITE)) {
+        return PlayerRaceType::AMBERITE;
+    }
+    if (kind_flags.has(MonsterKindType::NIBELUNG)) {
+        return PlayerRaceType::NIBELUNG;
+    }
+    if (kind_flags.has(MonsterKindType::KOBOLD)) {
+        return PlayerRaceType::KOBOLD;
+    }
+    if (kind_flags.has(MonsterKindType::YEEK)) {
+        return PlayerRaceType::YEEK;
+    }
+    if (kind_flags.has(MonsterKindType::TROLL)) {
+        return PlayerRaceType::HALF_TROLL;
+    }
+    if (kind_flags.has(MonsterKindType::OGRE)) {
+        return PlayerRaceType::HALF_OGRE;
+    }
+    if (kind_flags.has(MonsterKindType::GIANT)) {
+        return PlayerRaceType::HALF_GIANT;
+    }
+    if (kind_flags.has(MonsterKindType::BEAST)) {
+        return PlayerRaceType::BEASTMAN;
+    }
+    if (kind_flags.has(MonsterKindType::MERFOLK)) {
+        return PlayerRaceType::MERFOLK;
+    }
+    if (kind_flags.has(MonsterKindType::DRAGON)) {
+        return PlayerRaceType::DRACONIAN;
+    }
+    if (kind_flags.has(MonsterKindType::FAIRY)) {
+        return PlayerRaceType::SPRITE;
+    }
+    if (kind_flags.has(MonsterKindType::TREEFOLK)) {
+        return PlayerRaceType::ENT;
+    }
+    if (kind_flags.has(MonsterKindType::MINDFLAYER)) {
+        return PlayerRaceType::MIND_FLAYER;
+    }
+    if (kind_flags.has(MonsterKindType::GOLEM)) {
+        return PlayerRaceType::GOLEM;
+    }
+    if (kind_flags.has(MonsterKindType::ROBOT)) {
+        return PlayerRaceType::ANDROID;
+    }
+    if (kind_flags.has(MonsterKindType::DEMON)) {
+        return PlayerRaceType::IMP;
+    }
+    if (kind_flags.has(MonsterKindType::ANGEL)) {
+        return PlayerRaceType::ARCHON;
+    }
+    if (kind_flags.has(MonsterKindType::VAMPIRE)) {
+        return PlayerRaceType::VAMPIRE;
+    }
+    if (kind_flags.has(MonsterKindType::ZOMBIE)) {
+        return PlayerRaceType::ZOMBIE;
+    }
+    if (kind_flags.has(MonsterKindType::SKELETON)) {
+        return PlayerRaceType::SKELETON;
+    }
+    if (kind_flags.has(MonsterKindType::UNDEAD)) {
+        return PlayerRaceType::SPECTRE;
+    }
+
+    return tl::nullopt;
+}
+
+/*!
+ * @brief モンスター種族に対応するプレイヤー種族があれば反映する
+ * @details kind_flags から種族を判定し、該当する場合は prace / race を更新する。
+ *          複数該当時は無難な種族を優先する。該当しない場合は
+ *          setup_default_player_attributes() で設定された既定 (人間) のまま。
+ *          種族は能力値・HP 等の算出 (get_stats / get_extra) に影響するため、
+ *          それらより前に呼ぶこと。
+ * @param creature クリーチャーへの参照
+ * @param monrace_id 開始モンスターの種族ID
+ */
+void apply_monrace_race(CreatureEntity &creature, MonraceId monrace_id)
+{
+    const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
+    const auto prace = determine_player_race_from_monrace(monrace);
+    if (!prace) {
+        return;
+    }
+
+    creature.prace = *prace;
+    creature.race = &race_info[enum2i(creature.prace)];
+}
+
+/*!
  * @brief モンスター種族定義の性別をプレイヤーの性別に反映する
  * @details one-monster-placer.cpp のモンスター生成時と同じ判定を用いる。
  *          データソースは kind_flags の MALE/FEMALE と MonraceDefinition::sex
@@ -411,6 +529,10 @@ bool player_birth_as_monster(CreatureEntity &creature)
     // 性別をモンスター種族定義 (MALE/FEMALE) から決定する
     // (性格の性別制限に影響するため性格選択より前に確定させる)
     apply_monrace_sex(creature, *monrace_id);
+
+    // モンスター種族に対応するプレイヤー種族があれば反映する
+    // (複数該当時は無難な種族を優先。能力値計算に影響するため先に確定させる)
+    apply_monrace_race(creature, *monrace_id);
 
     // モンスター種族に対応する職業があれば反映し、魔法領域を自動決定する
     // (HP/MP 計算に影響するため get_extra() より前に確定させる)
