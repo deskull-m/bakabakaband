@@ -50,6 +50,7 @@ private:
     bool process_monster_attack_hit();
     bool effect_protecion_from_evil();
     void describe_silly_attacks();
+    void describe_weapon_attack();
     void select_cut_stun();
     void calc_player_cut();
     void process_player_stun();
