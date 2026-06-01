@@ -971,6 +971,9 @@ void CreatureEntity::initialize_equivalent_player_races()
     if (monrace.kind_flags.has(MonsterKindType::MERFOLK)) {
         mp.equivalent_player_races.push_back(PlayerRaceType::MERFOLK);
     }
+    if (monrace.kind_flags.has(MonsterKindType::CAT)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::CAT);
+    }
 
     if (!mp.equivalent_player_races.empty()) {
         this->race = &race_info[enum2i(mp.equivalent_player_races[0])];

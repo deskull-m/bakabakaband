@@ -282,6 +282,9 @@ tl::optional<PlayerRaceType> determine_player_race_from_monrace(const MonraceDef
     if (kind_flags.has(MonsterKindType::UNDEAD)) {
         return PlayerRaceType::SPECTRE;
     }
+    if (kind_flags.has(MonsterKindType::CAT)) {
+        return PlayerRaceType::CAT;
+    }
 
     return tl::nullopt;
 }

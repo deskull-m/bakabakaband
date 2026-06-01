@@ -116,6 +116,9 @@ const std::vector<std::string_view> race_explanations = {
 
     _("マーフォークは人型生物と水棲生物の合いの子たちの総称です。彼らは知的であり、陸上よりも水中での営みに適応している点で共通しています。彼らの真価は水中でこそ発揮されますが、彼らの文明は大抵陸上に長く滞在する何らかの術も有しています。それを失わない限り、陸上でも不自由はないでしょう。また、彼らは致命的な水難にも抗える能力を生まれつき持っています。",
         "Merfolk is a general term for children of humanoids and aquatic creatures. They have in common that they are intelligent and adapted to working underwater rather than on land. Their true value comes in water, but their civilizations also have some form of staying longer on land. As long as you do not lose it, there will be no inconvenience on land. They also have the ability to withstand disaster by water."),
+
+    _("猫は素早く敏捷で、優れた狩猟本能と夜目を持つ獣です。腕力や知性には乏しいものの、生まれつきの俊敏さと隠密性に長けています。プレイヤーが作成時に選ぶことはできず、もっぱら猫系のモンスターとして存在します。",
+        "Cats are swift and agile beasts with keen hunting instincts and excellent night vision. Though weak in strength and intellect, they possess innate quickness and stealth. They cannot be chosen at character creation and exist mainly as feline monsters."),
 };
 
 /*! 職業の解説メッセージテーブル */

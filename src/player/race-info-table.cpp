@@ -723,6 +723,23 @@ const player_race_info race_info[MAX_RACES] =
 			{ TR_RES_WATER },
 		},
     },
+	{
+		{ "猫", "Cat" }, "f",
+		{ -3,  -2,  -2,  3,  -1,  0},
+		8,  2,  4,  5, 10,  14, -2,  0,
+		7,  110,
+		2, 2,
+		20,  4, 8, 15,
+		18,  4, 6, 10,
+		3,
+		0x00000000,
+		PlayerRaceLifeType::LIVING,
+		PlayerRaceFoodType::CORPSE,
+		false,
+        {
+			{ TR_SPEED },
+		},
+    },
 };
 
 // clang-format on
