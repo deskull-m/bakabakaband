@@ -12,8 +12,11 @@
 #include "combat/aura-counterattack.h"
 #include "combat/combat-options-type.h"
 #include "combat/hallucination-attacks-table.h"
+#include "combat/slaying.h"
 #include "core/disturbance.h"
 #include "dungeon/dungeon-flag-types.h"
+#include "flavor/flavor-describer.h"
+#include "flavor/object-flavor-types.h"
 #include "inventory/inventory-slot-types.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
@@ -288,6 +291,7 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
     this->do_stun = 0;
     describe_monster_attack_method(this);
     this->describe_silly_attacks();
+    this->describe_weapon_attack();
     this->obvious = true;
     this->damage = this->damage_dice.roll();
     if (this->explode) {
@@ -297,9 +301,11 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
     // [フェーズ B-2b / 二刀流対応] 装備武器によるダメージボーナス
     // weapon_slot_for_blow は process_monster_blows() で設定され、
     // 物理打撃 (HIT/PUNCH/SLASH/STING) かつ武器装備時のみ有効
+    // スレイ・ブランド等はプレイヤーと共通の calc_attack_damage_with_slay() を再利用する。
     if (!this->explode && this->weapon_slot_for_blow >= 0) {
-        const auto &weapon = *this->m_ptr->inventory[this->weapon_slot_for_blow];
-        this->damage += weapon.damage_dice.roll() + weapon.to_d;
+        auto &weapon = *this->m_ptr->inventory[this->weapon_slot_for_blow];
+        const auto base_dam = weapon.damage_dice.roll();
+        this->damage += calc_attack_damage_with_slay(*this->m_ptr, &weapon, base_dam, creature, HISSATSU_NONE, false) + weapon.to_d;
     }
 
     switch_monster_blow_to_player(creature, this);
@@ -368,6 +374,25 @@ void MonsterAttackPlayer::describe_silly_attacks()
 #else
     msg_format("%s^ %s%s", this->m_name, this->act, this->do_silly_attack ? " you." : "");
 #endif
+}
+
+/*!
+ * @brief 武器を装備したモンスターの打撃に「〜で攻撃された」という追加メッセージを表示する
+ * @details weapon_slot_for_blow が有効 (物理打撃かつ武器装備時) の場合のみ表示する。
+ */
+void MonsterAttackPlayer::describe_weapon_attack()
+{
+    if (this->weapon_slot_for_blow < 0) {
+        return;
+    }
+
+    const auto &weapon = *this->m_ptr->inventory[this->weapon_slot_for_blow];
+    if (!weapon.is_valid()) {
+        return;
+    }
+
+    const auto weapon_name = describe_flavor(*this->creature_ptr, weapon, OD_NAME_ONLY | OD_OMIT_PREFIX | OD_NO_PLURAL);
+    msg_format(_("%s^は%sで攻撃してきた。", "%s^ attacks you with %s."), this->m_name, weapon_name.data());
 }
 
 /*!
