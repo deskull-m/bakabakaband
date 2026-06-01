@@ -6,12 +6,17 @@
 
 #include "melee/monster-attack-monster.h"
 #include "combat/attack-accuracy.h"
+#include "combat/combat-options-type.h"
 #include "combat/hallucination-attacks-table.h"
+#include "combat/slaying.h"
 #include "core/disturbance.h"
 #include "dungeon/dungeon-flag-types.h"
 #include "effect/attribute-types.h"
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
+#include "flavor/flavor-describer.h"
+#include "flavor/object-flavor-types.h"
+#include "inventory/inventory-slot-types.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
 #include "melee/melee-postprocess.h"
@@ -30,6 +35,7 @@
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
+#include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
@@ -214,6 +220,30 @@ static void describe_silly_melee(mam_type *mam_ptr)
 #endif
 }
 
+/*!
+ * @brief 武器を装備したモンスターの打撃に「〜で攻撃した」という追加メッセージを表示する
+ * @details weapon_slot_for_blow が有効 (物理打撃かつ武器装備時) かつ視認可能な場合のみ表示する。
+ */
+static void describe_weapon_melee(mam_type *mam_ptr)
+{
+    if ((mam_ptr->weapon_slot_for_blow < 0) || !mam_ptr->see_either) {
+        return;
+    }
+
+    const auto &weapon = *mam_ptr->m_ptr->inventory[mam_ptr->weapon_slot_for_blow];
+    if (!weapon.is_valid()) {
+        return;
+    }
+
+    const auto weapon_name = describe_flavor(*mam_ptr->m_ptr, weapon, OD_NAME_ONLY | OD_OMIT_PREFIX | OD_NO_PLURAL);
+    msg_format(_("%s^は%sで%sを攻撃した。", "%s^ attacks %s with %s."),
+#ifdef JP
+        mam_ptr->m_name, weapon_name.data(), mam_ptr->t_name);
+#else
+        mam_ptr->m_name, mam_ptr->t_name, weapon_name.data());
+#endif
+}
+
 static void process_monster_attack_effect(CreatureEntity &creature, mam_type *mam_ptr)
 {
     if (mam_ptr->pt == AttributeType::NONE) {
@@ -247,8 +277,18 @@ static void process_melee(CreatureEntity &creature, mam_type *mam_ptr)
     redraw_health_bar(mam_ptr);
     describe_melee_method(mam_ptr);
     describe_silly_melee(mam_ptr);
+    describe_weapon_melee(mam_ptr);
     mam_ptr->obvious = true;
     mam_ptr->damage = mam_ptr->damage_dice.roll();
+
+    // 武器を装備している場合、プレイヤーと共通の calc_attack_damage_with_slay() で
+    // スレイ・ブランド効果を反映したダメージを加算する。
+    if (!mam_ptr->explode && (mam_ptr->weapon_slot_for_blow >= 0)) {
+        auto &weapon = *mam_ptr->m_ptr->inventory[mam_ptr->weapon_slot_for_blow];
+        const auto base_dam = weapon.damage_dice.roll();
+        mam_ptr->damage += calc_attack_damage_with_slay(*mam_ptr->m_ptr, &weapon, base_dam, *mam_ptr->t_ptr, HISSATSU_NONE, false) + weapon.to_d;
+    }
+
     mam_ptr->attribute = BlowEffectType::NONE;
     mam_ptr->pt = AttributeType::MONSTER_MELEE;
     decide_monster_attack_effect(creature, mam_ptr);
@@ -307,6 +347,30 @@ static void repeat_melee(CreatureEntity &creature, mam_type *mam_ptr)
         mam_ptr->effect = monrace.blows[ap_cnt].effect;
         mam_ptr->method = monrace.blows[ap_cnt].method;
         mam_ptr->damage_dice = monrace.blows[ap_cnt].damage_dice;
+
+        // 物理打撃 (HIT/PUNCH/SLASH/STING) かつ武器装備時は当該打撃で使う武器スロットを決める。
+        // 二刀流なら blow index で交互、片手のみならそちら、武器なしなら -1。
+        // (monster-attack-player.cpp の処理と揃える)
+        mam_ptr->weapon_slot_for_blow = -1;
+        switch (mam_ptr->method) {
+        case RaceBlowMethodType::HIT:
+        case RaceBlowMethodType::PUNCH:
+        case RaceBlowMethodType::SLASH:
+        case RaceBlowMethodType::STING: {
+            const bool main_valid = monster.inventory[INVEN_MAIN_HAND]->is_valid() && monster.inventory[INVEN_MAIN_HAND]->is_melee_weapon();
+            const bool sub_valid = monster.inventory[INVEN_SUB_HAND]->is_valid() && monster.inventory[INVEN_SUB_HAND]->is_melee_weapon();
+            if (main_valid && sub_valid) {
+                mam_ptr->weapon_slot_for_blow = (ap_cnt % 2 == 0) ? INVEN_MAIN_HAND : INVEN_SUB_HAND;
+            } else if (main_valid) {
+                mam_ptr->weapon_slot_for_blow = INVEN_MAIN_HAND;
+            } else if (sub_valid) {
+                mam_ptr->weapon_slot_for_blow = INVEN_SUB_HAND;
+            }
+            break;
+        }
+        default:
+            break;
+        }
 
         if (!monster.is_valid()) {
             break;
