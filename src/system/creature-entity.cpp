@@ -1040,16 +1040,30 @@ void CreatureEntity::initialize_equivalent_player_classes()
     }
 }
 
+void CreatureEntity::set_personality(player_personality_type value)
+{
+    this->ppersonality = value;
+    this->personality = &personality_info[value];
+}
+
 void CreatureEntity::assign_random_personality()
 {
+    // モンスター種族に性格が固定指定されている場合は常にそれを使う
+    if (this->has_monster_profile()) {
+        const auto fixed = this->get_monrace().personality;
+        if (fixed != PERSONALITY_NONE) {
+            this->set_personality(fixed);
+            return;
+        }
+    }
+
     const auto psex_value = static_cast<int>(this->get_psex());
     int k;
     do {
         k = randint0(MAX_PERSONALITIES);
     } while ((k == PERSONALITY_MUNCHKIN) || ((personality_info[k].sex != 0) && (personality_info[k].sex != (psex_value + 1))));
 
-    this->ppersonality = static_cast<player_personality_type>(k);
-    this->personality = &personality_info[this->ppersonality];
+    this->set_personality(static_cast<player_personality_type>(k));
 }
 
 void CreatureEntity::assign_random_realm()
