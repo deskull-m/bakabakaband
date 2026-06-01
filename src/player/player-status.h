@@ -18,6 +18,7 @@ int calc_inventory_weight(CreatureEntity &creature);
 
 short calc_num_fire(CreatureEntity &creature, const ItemEntity *o_ptr);
 int calc_weight_limit(CreatureEntity &creature);
+int calc_creature_mana(CreatureEntity &creature);
 void update_creature(CreatureEntity &creature);
 bool player_has_no_spellbooks(CreatureEntity &creature);
 
