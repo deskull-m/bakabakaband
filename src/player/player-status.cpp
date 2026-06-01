@@ -692,13 +692,19 @@ static void update_num_of_spells(CreatureEntity &creature)
  * @details 〈烙印者〉(プレイヤー) / モンスターは職業を問わず常に 0 以外の MP を持つ。
  *          モンスター固有能力 (種族のブレス・魔法等) の行使に使用するため、
  *          無魔法職 (戦士等) でもレベルと INT に応じた MP を保証する。
+ *          プレイヤー・モンスター共通で使用できる (グローバル mp_ptr 非依存)。
  */
-static int calc_innate_baseline_mana(CreatureEntity &creature)
+int calc_creature_mana(CreatureEntity &creature)
 {
     const auto stat_index = creature.get_stat_index(A_INT);
     const int msp = adj_mag_mana[stat_index] * (creature.get_level() + 3) / 4;
     const int floor_value = std::max(static_cast<int>(creature.get_level()), 1);
     return std::max(msp, floor_value);
+}
+
+static int calc_innate_baseline_mana(CreatureEntity &creature)
+{
+    return calc_creature_mana(creature);
 }
 
 static void update_max_mana(CreatureEntity &creature)
