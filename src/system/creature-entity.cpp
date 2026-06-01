@@ -986,6 +986,30 @@ void CreatureEntity::initialize_equivalent_player_races()
     if (monrace.kind_flags.has(MonsterKindType::RAT)) {
         mp.equivalent_player_races.push_back(PlayerRaceType::RAT);
     }
+    if (monrace.kind_flags.has(MonsterKindType::BEAR)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::BEAR);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::SNAKE)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::SNAKE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::FISH)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::FISH);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::INSECT)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::INSECT);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::SPIDER)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::SPIDER);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::FROG)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::FROG);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::BAT)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::BAT);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::TURTLE)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::TURTLE);
+    }
 
     if (!mp.equivalent_player_races.empty()) {
         this->race = &race_info[enum2i(mp.equivalent_player_races[0])];

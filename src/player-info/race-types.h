@@ -49,6 +49,14 @@ enum class PlayerRaceType : int {
     HORSE = 40, //!< 馬。NPC専用
     BIRD = 41, //!< 鳥。NPC専用
     RAT = 42, //!< 鼠。NPC専用
+    BEAR = 43, //!< 熊。NPC専用
+    SNAKE = 44, //!< 蛇。NPC専用
+    FISH = 45, //!< 魚。NPC専用
+    INSECT = 46, //!< 昆虫。NPC専用
+    SPIDER = 47, //!< 蜘蛛。NPC専用
+    FROG = 48, //!< 蛙。NPC専用
+    BAT = 49, //!< 蝙蝠。NPC専用
+    TURTLE = 50, //!< 亀。NPC専用
     MAX,
     NONE = -1,
 };
