@@ -17,6 +17,7 @@
 #include "io/input-key-acceptor.h"
 #include "mind/mind-elementalist.h"
 #include "monster-race/race-kind-flags.h"
+#include "monster-race/race-misc-flags.h"
 #include "monster-race/race-sex-const.h"
 #include "object-enchant/item-apply-magic.h"
 #include "object-enchant/item-magic-applier.h"
@@ -309,9 +310,11 @@ void apply_monrace_race(CreatureEntity &creature, MonraceId monrace_id)
 
 /*!
  * @brief モンスター種族に性格が固定指定されていればプレイヤーに反映する
- * @details JSON の "personality" で指定された性格があれば常にそれを適用し、
- *          プレイヤーによる対話的な性格選択を省略する。未指定の場合は
- *          何もせず false を返し、呼び出し側で通常の選択処理に委ねる。
+ * @details EMPTY_MIND (無心) のモンスターは常に性格「なし」(PERSONALITY_EMPTY) を
+ *          適用する。それ以外は JSON の "personality" で指定された性格があれば
+ *          常にそれを適用し、プレイヤーによる対話的な性格選択を省略する。
+ *          いずれにも該当しない場合は何もせず false を返し、呼び出し側で通常の
+ *          選択処理に委ねる。
  * @param creature クリーチャーへの参照
  * @param monrace_id 開始モンスターの種族ID
  * @return 固定指定を適用したら true、未指定なら false
@@ -319,6 +322,11 @@ void apply_monrace_race(CreatureEntity &creature, MonraceId monrace_id)
 bool apply_monrace_personality(CreatureEntity &creature, MonraceId monrace_id)
 {
     const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
+    if (monrace.misc_flags.has(MonsterMiscType::EMPTY_MIND)) {
+        creature.set_personality(PERSONALITY_EMPTY);
+        return true;
+    }
+
     if (monrace.personality == PERSONALITY_NONE) {
         return false;
     }
