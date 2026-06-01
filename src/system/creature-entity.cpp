@@ -974,6 +974,18 @@ void CreatureEntity::initialize_equivalent_player_races()
     if (monrace.kind_flags.has(MonsterKindType::CAT)) {
         mp.equivalent_player_races.push_back(PlayerRaceType::CAT);
     }
+    if (monrace.kind_flags.has(MonsterKindType::DOG)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::DOG);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::HORSE)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::HORSE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::BIRD)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::BIRD);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::RAT)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::RAT);
+    }
 
     if (!mp.equivalent_player_races.empty()) {
         this->race = &race_info[enum2i(mp.equivalent_player_races[0])];

@@ -45,6 +45,10 @@ enum class PlayerRaceType : int {
     ANDROID = 36,
     MERFOLK = 37,
     CAT = 38, //!< 猫。NPC専用 (プレイヤー作成時は選択不能)
+    DOG = 39, //!< 犬。NPC専用
+    HORSE = 40, //!< 馬。NPC専用
+    BIRD = 41, //!< 鳥。NPC専用
+    RAT = 42, //!< 鼠。NPC専用
     MAX,
     NONE = -1,
 };
