@@ -15,7 +15,7 @@ static std::string birth_personality_label(int cs, concptr sym)
     const char p2 = ')';
     std::stringstream ss;
 
-    if (cs < 0 || cs >= MAX_PERSONALITIES) {
+    if (cs < 0 || cs >= MAX_SELECTABLE_PERSONALITIES) {
         ss << '*' << p2 << _("ランダム", "Random");
     } else {
         ss << sym[cs] << p2 << personality_info[cs].title;
@@ -25,7 +25,7 @@ static std::string birth_personality_label(int cs, concptr sym)
 
 static void enumerate_personality_list(CreatureEntity &creature, char *sym)
 {
-    for (int n = 0; n < MAX_PERSONALITIES; n++) {
+    for (int n = 0; n < MAX_SELECTABLE_PERSONALITIES; n++) {
         if (personality_info[n].sex && (personality_info[n].sex != (creature.psex + 1))) {
             continue;
         }
@@ -49,7 +49,7 @@ static std::string display_personality_stat(int cs, int *os, const std::string &
     c_put_str(TERM_WHITE, cur, 12 + (*os / 4), 2 + 18 * (*os % 4));
     put_str("                                   ", 3, 40);
     auto result = birth_personality_label(cs, sym);
-    if (cs == MAX_PERSONALITIES) {
+    if (cs == MAX_SELECTABLE_PERSONALITIES) {
         put_str("                                   ", 4, 40);
         put_str("                                   ", 5, 40);
         put_str("                                   ", 6, 40);
@@ -90,7 +90,7 @@ static int interpret_personality_select_key_move(CreatureEntity &creature, char 
             pp_idx -= 4;
         }
 
-        if ((pp_idx >= MAX_PERSONALITIES) || !check_selected_sex(pp_idx, creature.psex)) {
+        if ((pp_idx >= MAX_SELECTABLE_PERSONALITIES) || !check_selected_sex(pp_idx, creature.psex)) {
             return pp_idx;
         }
 
@@ -106,7 +106,7 @@ static int interpret_personality_select_key_move(CreatureEntity &creature, char 
             (pp_idx)--;
         }
 
-        if ((pp_idx >= MAX_PERSONALITIES) || !check_selected_sex(pp_idx, creature.psex)) {
+        if ((pp_idx >= MAX_SELECTABLE_PERSONALITIES) || !check_selected_sex(pp_idx, creature.psex)) {
             return pp_idx;
         }
 
@@ -118,15 +118,15 @@ static int interpret_personality_select_key_move(CreatureEntity &creature, char 
 
         return pp_idx;
     case '6':
-        if (pp_idx < MAX_PERSONALITIES) {
+        if (pp_idx < MAX_SELECTABLE_PERSONALITIES) {
             (pp_idx)++;
         }
 
-        if ((pp_idx >= MAX_PERSONALITIES) || !check_selected_sex(pp_idx, creature.psex)) {
+        if ((pp_idx >= MAX_SELECTABLE_PERSONALITIES) || !check_selected_sex(pp_idx, creature.psex)) {
             return pp_idx;
         }
 
-        if ((pp_idx + 1) <= MAX_PERSONALITIES) {
+        if ((pp_idx + 1) <= MAX_SELECTABLE_PERSONALITIES) {
             (pp_idx)++;
         } else {
             (pp_idx)--;
@@ -134,15 +134,15 @@ static int interpret_personality_select_key_move(CreatureEntity &creature, char 
 
         return pp_idx;
     case '2':
-        if ((pp_idx + 4) <= MAX_PERSONALITIES) {
+        if ((pp_idx + 4) <= MAX_SELECTABLE_PERSONALITIES) {
             pp_idx += 4;
         }
 
-        if ((pp_idx >= MAX_PERSONALITIES) || !check_selected_sex(pp_idx, creature.psex)) {
+        if ((pp_idx >= MAX_SELECTABLE_PERSONALITIES) || !check_selected_sex(pp_idx, creature.psex)) {
             return pp_idx;
         }
 
-        if ((pp_idx + 4) <= MAX_PERSONALITIES) {
+        if ((pp_idx + 4) <= MAX_SELECTABLE_PERSONALITIES) {
             pp_idx += 4;
         } else {
             pp_idx -= 4;
@@ -157,7 +157,7 @@ static int interpret_personality_select_key_move(CreatureEntity &creature, char 
 static bool select_personality(CreatureEntity &creature, int *k, concptr sym)
 {
     int cs = creature.ppersonality;
-    int os = MAX_PERSONALITIES;
+    int os = MAX_SELECTABLE_PERSONALITIES;
     std::string cur = birth_personality_label(os, sym);
     while (true) {
         cur = display_personality_stat(cs, &os, cur, sym);
@@ -165,7 +165,7 @@ static bool select_personality(CreatureEntity &creature, int *k, concptr sym)
             break;
         }
 
-        const auto buf = format(_("性格を選んで下さい (%c-%c) ('='初期オプション設定): ", "Choose a personality (%c-%c) ('=' for options): "), sym[0], sym[MAX_PERSONALITIES - 1]);
+        const auto buf = format(_("性格を選んで下さい (%c-%c) ('='初期オプション設定): ", "Choose a personality (%c-%c) ('=' for options): "), sym[0], sym[MAX_SELECTABLE_PERSONALITIES - 1]);
         put_str(buf, 10, 10);
         char c = inkey();
         if (c == 'Q') {
@@ -177,9 +177,9 @@ static bool select_personality(CreatureEntity &creature, int *k, concptr sym)
         }
 
         if (c == ' ' || c == '\r' || c == '\n') {
-            if (cs == MAX_PERSONALITIES) {
+            if (cs == MAX_SELECTABLE_PERSONALITIES) {
                 do {
-                    *k = randint0(MAX_PERSONALITIES);
+                    *k = randint0(MAX_SELECTABLE_PERSONALITIES);
                 } while (personality_info[*k].sex && (personality_info[*k].sex != (creature.psex + 1)));
 
                 cs = *k;
@@ -194,7 +194,7 @@ static bool select_personality(CreatureEntity &creature, int *k, concptr sym)
         if (c == '*') {
             player_personality ppersonality{};
             do {
-                *k = randint0(MAX_PERSONALITIES);
+                *k = randint0(MAX_SELECTABLE_PERSONALITIES);
                 if (*k < 0) {
                     continue; // 静的解析対応.
                 }
@@ -207,7 +207,7 @@ static bool select_personality(CreatureEntity &creature, int *k, concptr sym)
         }
 
         *k = (islower(c) ? A2I(c) : -1);
-        if ((*k >= 0) && (*k < MAX_PERSONALITIES)) {
+        if ((*k >= 0) && (*k < MAX_SELECTABLE_PERSONALITIES)) {
             if ((personality_info[*k].sex == 0) || (personality_info[*k].sex == (creature.psex + 1))) {
                 cs = *k;
                 continue;
@@ -215,7 +215,7 @@ static bool select_personality(CreatureEntity &creature, int *k, concptr sym)
         }
 
         *k = (isupper(c) ? (26 + c - 'A') : -1);
-        if ((*k >= 26) && (*k < MAX_PERSONALITIES)) {
+        if ((*k >= 26) && (*k < MAX_SELECTABLE_PERSONALITIES)) {
             if ((personality_info[*k].sex == 0) || (personality_info[*k].sex == (creature.psex + 1))) {
                 cs = *k;
                 continue;
@@ -241,7 +241,7 @@ bool get_player_personality(CreatureEntity &creature)
         23, 5);
     put_str("                                   ", 6, 40);
 
-    char sym[MAX_PERSONALITIES];
+    char sym[MAX_SELECTABLE_PERSONALITIES];
     enumerate_personality_list(creature, sym);
     int k = -1;
     if (!select_personality(creature, &k, sym)) {

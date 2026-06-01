@@ -1048,6 +1048,12 @@ void CreatureEntity::set_personality(player_personality_type value)
 
 void CreatureEntity::assign_random_personality()
 {
+    // EMPTY_MIND (無心) のモンスターは常に性格「なし」(PERSONALITY_EMPTY) を充てる
+    if (this->has_monster_profile() && this->get_monrace().misc_flags.has(MonsterMiscType::EMPTY_MIND)) {
+        this->set_personality(PERSONALITY_EMPTY);
+        return;
+    }
+
     // モンスター種族に性格が固定指定されている場合は常にそれを使う
     if (this->has_monster_profile()) {
         const auto fixed = this->get_monrace().personality;
@@ -1060,7 +1066,7 @@ void CreatureEntity::assign_random_personality()
     const auto psex_value = static_cast<int>(this->get_psex());
     int k;
     do {
-        k = randint0(MAX_PERSONALITIES);
+        k = randint0(MAX_SELECTABLE_PERSONALITIES);
     } while ((k == PERSONALITY_MUNCHKIN) || ((personality_info[k].sex != 0) && (personality_info[k].sex != (psex_value + 1))));
 
     this->set_personality(static_cast<player_personality_type>(k));
