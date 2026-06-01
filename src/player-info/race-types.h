@@ -44,6 +44,7 @@ enum class PlayerRaceType : int {
     KUTAR = 35,
     ANDROID = 36,
     MERFOLK = 37,
+    CAT = 38, //!< 猫。NPC専用 (プレイヤー作成時は選択不能)
     MAX,
     NONE = -1,
 };
