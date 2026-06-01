@@ -285,6 +285,18 @@ tl::optional<PlayerRaceType> determine_player_race_from_monrace(const MonraceDef
     if (kind_flags.has(MonsterKindType::CAT)) {
         return PlayerRaceType::CAT;
     }
+    if (kind_flags.has(MonsterKindType::DOG)) {
+        return PlayerRaceType::DOG;
+    }
+    if (kind_flags.has(MonsterKindType::HORSE)) {
+        return PlayerRaceType::HORSE;
+    }
+    if (kind_flags.has(MonsterKindType::BIRD)) {
+        return PlayerRaceType::BIRD;
+    }
+    if (kind_flags.has(MonsterKindType::RAT)) {
+        return PlayerRaceType::RAT;
+    }
 
     return tl::nullopt;
 }
