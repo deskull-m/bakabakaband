@@ -459,6 +459,96 @@ tl::optional<PlayerRaceType> determine_player_race_from_monrace(const MonraceDef
     if (kind_flags.has(MonsterKindType::YAZYU)) {
         return PlayerRaceType::YAZYU;
     }
+    if (kind_flags.has(MonsterKindType::QUANTUM)) {
+        return PlayerRaceType::QUANTUM;
+    }
+    if (kind_flags.has(MonsterKindType::ELDRAZI)) {
+        return PlayerRaceType::ELDRAZI;
+    }
+    if (kind_flags.has(MonsterKindType::SKAVEN)) {
+        return PlayerRaceType::SKAVEN;
+    }
+    if (kind_flags.has(MonsterKindType::ALIEN)) {
+        return PlayerRaceType::ALIEN;
+    }
+    if (kind_flags.has(MonsterKindType::PHYREXIAN)) {
+        return PlayerRaceType::PHYREXIAN;
+    }
+    if (kind_flags.has(MonsterKindType::GREAT_OLD_ONE)) {
+        return PlayerRaceType::GREAT_OLD_ONE;
+    }
+    if (kind_flags.has(MonsterKindType::AVATAR)) {
+        return PlayerRaceType::AVATAR;
+    }
+    if (kind_flags.has(MonsterKindType::PLANESWALKER)) {
+        return PlayerRaceType::PLANESWALKER;
+    }
+    if (kind_flags.has(MonsterKindType::VIRUS)) {
+        return PlayerRaceType::VIRUS;
+    }
+    if (kind_flags.has(MonsterKindType::CHOASIAN)) {
+        return PlayerRaceType::CHOASIAN;
+    }
+    if (kind_flags.has(MonsterKindType::FACE)) {
+        return PlayerRaceType::FACE;
+    }
+    if (kind_flags.has(MonsterKindType::HAND)) {
+        return PlayerRaceType::HAND;
+    }
+    if (kind_flags.has(MonsterKindType::WALL)) {
+        return PlayerRaceType::WALL;
+    }
+    if (kind_flags.has(MonsterKindType::SHIP)) {
+        return PlayerRaceType::SHIP;
+    }
+    if (kind_flags.has(MonsterKindType::WHEEL)) {
+        return PlayerRaceType::WHEEL;
+    }
+    if (kind_flags.has(MonsterKindType::EXPLOSIVE)) {
+        return PlayerRaceType::EXPLOSIVE;
+    }
+    if (kind_flags.has(MonsterKindType::ALARM)) {
+        return PlayerRaceType::ALARM;
+    }
+    if (kind_flags.has(MonsterKindType::PAPER)) {
+        return PlayerRaceType::PAPER;
+    }
+    if (kind_flags.has(MonsterKindType::WOODEN)) {
+        return PlayerRaceType::WOODEN;
+    }
+    if (kind_flags.has(MonsterKindType::IRON)) {
+        return PlayerRaceType::IRON;
+    }
+    if (kind_flags.has(MonsterKindType::COPPER)) {
+        return PlayerRaceType::COPPER;
+    }
+    if (kind_flags.has(MonsterKindType::STONE)) {
+        return PlayerRaceType::STONE;
+    }
+    if (kind_flags.has(MonsterKindType::SILVER)) {
+        return PlayerRaceType::SILVER;
+    }
+    if (kind_flags.has(MonsterKindType::GOLD)) {
+        return PlayerRaceType::GOLD;
+    }
+    if (kind_flags.has(MonsterKindType::MITHRIL)) {
+        return PlayerRaceType::MITHRIL;
+    }
+    if (kind_flags.has(MonsterKindType::ADAMANTITE)) {
+        return PlayerRaceType::ADAMANTITE;
+    }
+    if (kind_flags.has(MonsterKindType::FECES)) {
+        return PlayerRaceType::FECES;
+    }
+    if (kind_flags.has(MonsterKindType::FLESH)) {
+        return PlayerRaceType::FLESH;
+    }
+    if (kind_flags.has(MonsterKindType::DARKSTEEL)) {
+        return PlayerRaceType::DARKSTEEL;
+    }
+    if (kind_flags.has(MonsterKindType::WARPSTONE)) {
+        return PlayerRaceType::WARPSTONE;
+    }
 
     return tl::nullopt;
 }
