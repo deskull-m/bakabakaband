@@ -119,6 +119,18 @@ const std::vector<std::string_view> race_explanations = {
 
     _("猫は素早く敏捷で、優れた狩猟本能と夜目を持つ獣です。腕力や知性には乏しいものの、生まれつきの俊敏さと隠密性に長けています。プレイヤーが作成時に選ぶことはできず、もっぱら猫系のモンスターとして存在します。",
         "Cats are swift and agile beasts with keen hunting instincts and excellent night vision. Though weak in strength and intellect, they possess innate quickness and stealth. They cannot be chosen at character creation and exist mainly as feline monsters."),
+
+    _("犬は忠実で頑健な獣です。鋭い嗅覚と勇敢さを持ち、恐怖に抗う強い精神を備えています。プレイヤーが作成時に選ぶことはできず、もっぱら犬系のモンスターとして存在します。",
+        "Dogs are loyal and hardy beasts. With a keen sense of smell and great courage, they possess a strong spirit that resists fear. They cannot be chosen at character creation and exist mainly as canine monsters."),
+
+    _("馬は力強く頑健な獣です。優れた体力と腕力を持ち、長く走り続けることができます。プレイヤーが作成時に選ぶことはできず、もっぱら馬系のモンスターとして存在します。",
+        "Horses are powerful and robust beasts. With great stamina and strength, they can run for long distances. They cannot be chosen at character creation and exist mainly as equine monsters."),
+
+    _("鳥は軽やかで素早い獣です。空を舞う能力と鋭い目を持ち、地に縛られません。プレイヤーが作成時に選ぶことはできず、もっぱら鳥系のモンスターとして存在します。",
+        "Birds are light and swift beasts. With the ability to soar through the sky and sharp eyes, they are not bound to the ground. They cannot be chosen at character creation and exist mainly as avian monsters."),
+
+    _("鼠は小さく素早い獣です。器用さと探索能力に優れ、毒への耐性を生まれつき持っています。プレイヤーが作成時に選ぶことはできず、もっぱら鼠系のモンスターとして存在します。",
+        "Rats are small and swift beasts. Excellent at dexterity and searching, they are naturally resistant to poison. They cannot be chosen at character creation and exist mainly as rodent monsters."),
 };
 
 /*! 職業の解説メッセージテーブル */
