@@ -133,6 +133,11 @@ enum class PlayerRaceType : int {
     FLESH = 124, //!< 肉人。NPC専用
     DARKSTEEL = 125, //!< 漆黒鋼人。NPC専用
     WARPSTONE = 126, //!< 歪魂石人。NPC専用
+    ORC = 127, //!< オーク。純血種族
+    TROLL = 128, //!< トロル。純血種族
+    OGRE = 129, //!< オーガ。純血種族
+    GIANT = 130, //!< 巨人。純血種族
+    TITAN = 131, //!< タイタン。NPC専用 (純血)
     MAX,
     NONE = -1,
 };

@@ -307,6 +307,16 @@ const std::vector<std::string_view> race_explanations = {
         "Darksteel beings are made of black steel. They resist darkness and are extremely sturdy. They cannot be chosen at character creation and exist mainly as such monsters."),
     _("歪魂石人は混沌の歪魂石で出来た存在です。魔的な力と耐性を帯びています。プレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
         "Warpstone beings are made of chaotic warpstone. They are imbued with magical power and resistances. They cannot be chosen at character creation and exist mainly as such monsters."),
+    _("オークは地下に住む好戦的な亜人種です。純血のオークはハーフオークよりさらに頑強で力強く、暗闇に対する耐性と衰えぬ腕力を持ちますが、知性と魅力に乏しく魔法は不得手です。",
+        "Orcs are warlike humanoids dwelling underground. Pure-blooded orcs are even hardier and stronger than half-orcs, resisting darkness and never losing their strength, but they are dull-witted, unappealing, and poor at magic."),
+    _("トロルは巨大で凶暴な怪物です。純血のトロルは絶大な腕力と頑健さ、そして驚異的な再生能力を持ちますが、極めて愚かで不器用です。隠密や知覚は悪く、その姿は醜悪です。",
+        "Trolls are huge, ferocious monsters. Pure-blooded trolls possess immense strength, toughness, and astonishing regeneration, but they are extremely stupid and clumsy. Their stealth and perception are poor and their appearance is hideous."),
+    _("オーガは邪悪で力強い巨人族です。純血のオーガはハーフオーガよりさらに大きく頑強で、暗闇への耐性と衰えぬ腕力を備えます。優れた戦士となれますが、技巧や魔法には不向きです。",
+        "Ogres are evil and powerful giant-kin. Pure-blooded ogres are even larger and hardier than half-ogres, resisting darkness and never losing their strength. They make fine warriors but are ill-suited to finesse or magic."),
+    _("巨人は山のような体躯を持つ強大な種族です。純血の巨人は圧倒的な腕力と耐久力を誇り、その厚い皮膚は破片に対する耐性を持ちます。腕力が下がることはありませんが、その巨体ゆえに器用さや隠密は苦手です。",
+        "Giants are mighty beings with mountainous frames. Pure-blooded giants boast overwhelming strength and endurance, and their thick skin resists shards. Their strength can never be lowered, but their bulk makes dexterity and stealth difficult."),
+    _("タイタンは神々にも比肩する太古の巨神族です。絶大な能力をことごとく兼ね備え、カオスへの耐性と看破の目を持ちます。あまりに強大なためプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "Titans are ancient, god-like colossi that rival the gods themselves. They possess immense abilities across the board, resisting chaos and seeing the invisible. Being too powerful, they cannot be chosen at character creation and exist mainly as such monsters."),
 };
 
 /*! 職業の解説メッセージテーブル */
