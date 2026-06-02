@@ -2724,7 +2724,7 @@ public:
     /*!
      * @brief 材質一覧を一括設定する (savefile ロード用)
      */
-    virtual void set_materials(const std::vector<CreatureMaterialType> &materials);
+    virtual void set_materials(const std::vector<CreatureMaterialType> &new_materials);
 
     /*!
      * @brief 全材質の能力値修正の合計を取得する (内部 10 単位)
