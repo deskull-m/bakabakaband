@@ -13,6 +13,7 @@
 #include "monster-race/race-special-flags.h"
 #include "monster-race/race-visual-flags.h"
 #include "monster-race/race-wilderness-flags.h"
+#include "system/material-type-definition.h"
 
 /*!
  * モンスター特性トークンの定義9 /
@@ -708,6 +709,22 @@ const std::unordered_map<std::string_view, player_personality_type> r_info_perso
     { "TOUGH", PERSONALITY_TOUGH },
     { "SUSHI_EATER", PERSONALITY_SUSHI_EATER },
     { "MESUGAKI", PERSONALITY_MESUGAKI },
+};
+
+const std::unordered_map<std::string_view, CreatureMaterialType> r_info_materials = {
+    { "FLESH", CreatureMaterialType::FLESH },
+    { "WOODEN", CreatureMaterialType::WOODEN },
+    { "PAPER", CreatureMaterialType::PAPER },
+    { "STONE", CreatureMaterialType::STONE },
+    { "IRON", CreatureMaterialType::IRON },
+    { "COPPER", CreatureMaterialType::COPPER },
+    { "SILVER", CreatureMaterialType::SILVER },
+    { "GOLD", CreatureMaterialType::GOLD },
+    { "MITHRIL", CreatureMaterialType::MITHRIL },
+    { "ADAMANTITE", CreatureMaterialType::ADAMANTITE },
+    { "DARKSTEEL", CreatureMaterialType::DARKSTEEL },
+    { "WARPSTONE", CreatureMaterialType::WARPSTONE },
+    { "FECES", CreatureMaterialType::FECES },
 };
 
 const std::unordered_map<std::string_view, BodyStructureType> r_info_body_structure = {

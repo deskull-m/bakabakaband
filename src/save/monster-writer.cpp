@@ -160,6 +160,10 @@ uint32_t MonsterWriter::write_monster_flags() const
         set_bits(flags, SaveDataMonsterFlagType::EXTENDED_INVENTORY);
     }
 
+    if (!this->monster.get_materials().empty()) {
+        set_bits(flags, SaveDataMonsterFlagType::MATERIALS);
+    }
+
     wr_u32b(flags);
     return flags;
 }
@@ -275,5 +279,14 @@ void MonsterWriter::write_monster_info(uint32_t flags) const
             wr_item(*item);
         }
         wr_u16b(0xFFFF); // 終端マーカー
+    }
+
+    // 材質 (副種族) の保存。個数 u16b に続けて各材質 ID を s16b で書き出す。
+    if (any_bits(flags, SaveDataMonsterFlagType::MATERIALS)) {
+        const auto &materials = this->monster.get_materials();
+        wr_u16b(static_cast<uint16_t>(materials.size()));
+        for (const auto material : materials) {
+            wr_s16b(static_cast<int16_t>(enum2i(material)));
+        }
     }
 }
