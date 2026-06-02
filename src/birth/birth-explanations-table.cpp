@@ -131,6 +131,30 @@ const std::vector<std::string_view> race_explanations = {
 
     _("鼠は小さく素早い獣です。器用さと探索能力に優れ、毒への耐性を生まれつき持っています。プレイヤーが作成時に選ぶことはできず、もっぱら鼠系のモンスターとして存在します。",
         "Rats are small and swift beasts. Excellent at dexterity and searching, they are naturally resistant to poison. They cannot be chosen at character creation and exist mainly as rodent monsters."),
+
+    _("熊は強大で頑健な獣です。圧倒的な腕力と体力を持ち、傷の癒えも早いです。プレイヤーが作成時に選ぶことはできず、もっぱら熊系のモンスターとして存在します。",
+        "Bears are mighty and robust beasts. With overwhelming strength and stamina, they recover from wounds quickly. They cannot be chosen at character creation and exist mainly as ursine monsters."),
+
+    _("蛇は柔軟で隠密性に長けた獣です。毒への耐性を生まれつき持っています。プレイヤーが作成時に選ぶことはできず、もっぱら蛇系のモンスターとして存在します。",
+        "Snakes are flexible and stealthy beasts. They are naturally resistant to poison. They cannot be chosen at character creation and exist mainly as serpentine monsters."),
+
+    _("魚は水中を泳ぐ獣です。水難に抗う能力を生まれつき持っていますが、地上での営みは不得手です。プレイヤーが作成時に選ぶことはできず、もっぱら魚系のモンスターとして存在します。",
+        "Fish are aquatic beasts. They are naturally able to withstand drowning, but are ill-suited to life on land. They cannot be chosen at character creation and exist mainly as fish monsters."),
+
+    _("昆虫は小さく素早い獣です。生まれつきの俊敏さを持ちますが、肉体は脆弱です。プレイヤーが作成時に選ぶことはできず、もっぱら昆虫系のモンスターとして存在します。",
+        "Insects are small and swift beasts. They possess innate quickness but have frail bodies. They cannot be chosen at character creation and exist mainly as insectoid monsters."),
+
+    _("蜘蛛は隠密に長け、毒を操る獣です。毒への耐性を生まれつき持っています。プレイヤーが作成時に選ぶことはできず、もっぱら蜘蛛系のモンスターとして存在します。",
+        "Spiders are stealthy beasts that wield venom. They are naturally resistant to poison. They cannot be chosen at character creation and exist mainly as arachnid monsters."),
+
+    _("蛙は跳躍に長けた水陸両生の獣です。水難に抗う能力を持っています。プレイヤーが作成時に選ぶことはできず、もっぱら蛙系のモンスターとして存在します。",
+        "Frogs are amphibious beasts skilled at leaping. They can withstand water hazards. They cannot be chosen at character creation and exist mainly as amphibian monsters."),
+
+    _("蝙蝠は空を舞う夜行性の獣です。極めて素早く、優れた夜目を持ちますが、肉体は脆弱です。プレイヤーが作成時に選ぶことはできず、もっぱら蝙蝠系のモンスターとして存在します。",
+        "Bats are nocturnal beasts that fly through the air. Extremely swift with excellent night vision, but with frail bodies. They cannot be chosen at character creation and exist mainly as bat monsters."),
+
+    _("亀は頑丈な甲羅を持つ鈍重な獣です。並外れた耐久力を誇りますが、動きは遅いです。プレイヤーが作成時に選ぶことはできず、もっぱら亀系のモンスターとして存在します。",
+        "Turtles are slow beasts with sturdy shells. They boast extraordinary endurance but move slowly. They cannot be chosen at character creation and exist mainly as turtle monsters."),
 };
 
 /*! 職業の解説メッセージテーブル */

@@ -297,6 +297,30 @@ tl::optional<PlayerRaceType> determine_player_race_from_monrace(const MonraceDef
     if (kind_flags.has(MonsterKindType::RAT)) {
         return PlayerRaceType::RAT;
     }
+    if (kind_flags.has(MonsterKindType::BEAR)) {
+        return PlayerRaceType::BEAR;
+    }
+    if (kind_flags.has(MonsterKindType::SNAKE)) {
+        return PlayerRaceType::SNAKE;
+    }
+    if (kind_flags.has(MonsterKindType::FISH)) {
+        return PlayerRaceType::FISH;
+    }
+    if (kind_flags.has(MonsterKindType::INSECT)) {
+        return PlayerRaceType::INSECT;
+    }
+    if (kind_flags.has(MonsterKindType::SPIDER)) {
+        return PlayerRaceType::SPIDER;
+    }
+    if (kind_flags.has(MonsterKindType::FROG)) {
+        return PlayerRaceType::FROG;
+    }
+    if (kind_flags.has(MonsterKindType::BAT)) {
+        return PlayerRaceType::BAT;
+    }
+    if (kind_flags.has(MonsterKindType::TURTLE)) {
+        return PlayerRaceType::TURTLE;
+    }
 
     return tl::nullopt;
 }
