@@ -13146,6 +13146,9 @@
         "ja": "それは生命を吹き込まれた堂々たる巨像で、硬い土でできている。",
         "en": "It is a massive animated statue made out of hardened clay.",
       },
+      "materials": [
+        "STONE",
+      ],
       "flags": [
         "EMPTY_MIND",
         "COLD_BLOOD",

@@ -454,6 +454,10 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     m_ptr->initialize_equivalent_player_races();
     m_ptr->initialize_equivalent_player_classes();
 
+    // 材質 (副種族) を初期化し、その能力値修正を能力値へ適用する。
+    m_ptr->initialize_materials();
+    m_ptr->apply_material_stat_modifiers();
+
     // 非プレイヤーにも性格・魔法領域を設定する
     // (性格はいかさま以外ランダム、領域は領域持ち職業のみ全領域から完全ランダム)
     m_ptr->assign_random_personality();

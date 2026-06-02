@@ -45,6 +45,7 @@ enum class MonsterVisualType;
 enum class MonsterWildernessType;
 enum class RaceBlowEffectType;
 enum class RaceBlowMethodType;
+enum class CreatureMaterialType : int;
 
 extern const std::unordered_map<std::string_view, MonsterFeedType> r_info_meat_feed;
 extern const std::unordered_map<std::string_view, RaceBlowMethodType> r_info_blow_method;
@@ -69,3 +70,4 @@ extern const std::unordered_map<std::string_view, player_personality_type> r_inf
 extern const std::unordered_map<std::string_view, MonsterMiscType> r_info_misc_flags;
 extern const std::unordered_map<std::string_view, BodyStructureType> r_info_body_structure;
 extern const std::unordered_map<std::string_view, ExtendedSlotType> r_info_extended_slot;
+extern const std::unordered_map<std::string_view, CreatureMaterialType> r_info_materials;

@@ -24,6 +24,7 @@
 #include "player-ability/player-ability-types.h"
 #include "player/player-personality-types.h"
 #include "system/angband.h"
+#include "system/material-type-definition.h"
 #include "system/monrace/body-structure-types.h"
 #include "system/monrace/extended-slot.h"
 #include "util/dice.h"
@@ -201,6 +202,10 @@ public:
     //! 値が無い (tl::nullopt) 場合はダイスロールの結果をそのまま使う。
     //! 値がある場合は get_stats() で振った結果に加算する。
     std::array<tl::optional<int>, A_MAX> stat_modifiers{};
+
+    //! 材質 (副種族)。生成時にモンスター (CreatureEntity) へ複製される。
+    //! 各材質は能力値修正と AC 修正を持ち、複数同時指定できる。
+    std::vector<CreatureMaterialType> materials{};
 
     //! 体構造。装備可能スロットを決定する。
     //! 詳細は docs/monster-body-structure-equipment-slots.md 参照。
