@@ -135,6 +135,42 @@ tl::optional<PlayerClassType> determine_player_class_from_monrace(const MonraceD
     if (kind_flags.has(MonsterKindType::KARATEKA)) {
         return PlayerClassType::MONK;
     }
+    if (kind_flags.has(MonsterKindType::SOLDIER)) {
+        return PlayerClassType::SOLDIER;
+    }
+    if (kind_flags.has(MonsterKindType::PEASANT)) {
+        return PlayerClassType::PEASANT;
+    }
+    if (kind_flags.has(MonsterKindType::NOBLE)) {
+        return PlayerClassType::NOBLE;
+    }
+    if (kind_flags.has(MonsterKindType::CITIZEN)) {
+        return PlayerClassType::CITIZEN;
+    }
+    if (kind_flags.has(MonsterKindType::RABBLE)) {
+        return PlayerClassType::RABBLE;
+    }
+    if (kind_flags.has(MonsterKindType::YAKUZA)) {
+        return PlayerClassType::YAKUZA;
+    }
+    if (kind_flags.has(MonsterKindType::SUMOU_WRESTLER)) {
+        return PlayerClassType::SUMOU_WRESTLER;
+    }
+    if (kind_flags.has(MonsterKindType::GUNNER)) {
+        return PlayerClassType::GUNNER;
+    }
+    if (kind_flags.has(MonsterKindType::BERSERK)) {
+        return PlayerClassType::BERSERK;
+    }
+    if (kind_flags.has(MonsterKindType::TANK)) {
+        return PlayerClassType::TANK;
+    }
+    if (kind_flags.has(MonsterKindType::MAGICAL_GIRL)) {
+        return PlayerClassType::MAGICAL_GIRL;
+    }
+    if (kind_flags.has(MonsterKindType::GRANDMA)) {
+        return PlayerClassType::GRANDMA;
+    }
 
     return tl::nullopt;
 }

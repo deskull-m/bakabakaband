@@ -67,6 +67,8 @@ struct player_class_info {
     int num;
     int wgt;
     int mul;
+
+    bool playable = true; /* プレイヤー作成時に選択可能か / Can be selected at character creation */
 };
 
 enum class PlayerClassType : short;

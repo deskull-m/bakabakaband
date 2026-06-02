@@ -1297,6 +1297,42 @@ void CreatureEntity::initialize_equivalent_player_classes()
     if (monrace.kind_flags.has(MonsterKindType::KARATEKA)) {
         mp.equivalent_player_classes.push_back(PlayerClassType::MONK);
     }
+    if (monrace.kind_flags.has(MonsterKindType::SOLDIER)) {
+        mp.equivalent_player_classes.push_back(PlayerClassType::SOLDIER);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::PEASANT)) {
+        mp.equivalent_player_classes.push_back(PlayerClassType::PEASANT);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::NOBLE)) {
+        mp.equivalent_player_classes.push_back(PlayerClassType::NOBLE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::CITIZEN)) {
+        mp.equivalent_player_classes.push_back(PlayerClassType::CITIZEN);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::RABBLE)) {
+        mp.equivalent_player_classes.push_back(PlayerClassType::RABBLE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::YAKUZA)) {
+        mp.equivalent_player_classes.push_back(PlayerClassType::YAKUZA);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::SUMOU_WRESTLER)) {
+        mp.equivalent_player_classes.push_back(PlayerClassType::SUMOU_WRESTLER);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::GUNNER)) {
+        mp.equivalent_player_classes.push_back(PlayerClassType::GUNNER);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::BERSERK)) {
+        mp.equivalent_player_classes.push_back(PlayerClassType::BERSERK);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::TANK)) {
+        mp.equivalent_player_classes.push_back(PlayerClassType::TANK);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::MAGICAL_GIRL)) {
+        mp.equivalent_player_classes.push_back(PlayerClassType::MAGICAL_GIRL);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::GRANDMA)) {
+        mp.equivalent_player_classes.push_back(PlayerClassType::GRANDMA);
+    }
 
     if (!mp.equivalent_player_classes.empty()) {
         this->pclass_ref = &class_info.at(mp.equivalent_player_classes[0]);
