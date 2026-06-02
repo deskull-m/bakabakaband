@@ -81,6 +81,28 @@ enum class PlayerRaceType : int {
     CANCER = 72, //!< 蟹。NPC専用
     WORM = 73, //!< ワーム。NPC専用
     KRAKEN = 74, //!< クラーケン。NPC専用
+    DEEPONE = 75, //!< 深きもの。NPC専用
+    LEECH = 76, //!< ヒル。NPC専用
+    JELLYFISH = 77, //!< クラゲ。NPC専用
+    MINOTAUR = 78, //!< ミノタウロス。NPC専用
+    SPHINX = 79, //!< スフィンクス。NPC専用
+    BEHOLDER = 80, //!< ビホルダー。NPC専用
+    EYE = 81, //!< 目。NPC専用
+    VORTEX = 82, //!< ボルテックス。NPC専用
+    OOZE = 83, //!< ウーズ。NPC専用
+    GHOST = 84, //!< 幽霊。NPC専用
+    LICH = 85, //!< リッチ。NPC専用
+    PLANT = 86, //!< 植物。NPC専用
+    FUNGUS = 87, //!< 菌類。NPC専用
+    ELEMENTAL = 88, //!< エレメンタル。NPC専用
+    HORROR = 89, //!< ホラー。NPC専用
+    NIGHTSHADE = 90, //!< ナイトシェード。NPC専用
+    QUYLTHLUG = 91, //!< クイルスルグ。NPC専用
+    IXITXACHITL = 92, //!< イクシツザチトル。NPC専用
+    MIMIC = 93, //!< ミミック。NPC専用
+    MONKEY_SPACE = 94, //!< 猿空間。NPC専用
+    PUYO = 95, //!< プヨ。NPC専用
+    YAZYU = 96, //!< 野獣。NPC専用
     MAX,
     NONE = -1,
 };

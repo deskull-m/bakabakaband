@@ -393,6 +393,72 @@ tl::optional<PlayerRaceType> determine_player_race_from_monrace(const MonraceDef
     if (kind_flags.has(MonsterKindType::KRAKEN)) {
         return PlayerRaceType::KRAKEN;
     }
+    if (kind_flags.has(MonsterKindType::DEEPONE)) {
+        return PlayerRaceType::DEEPONE;
+    }
+    if (kind_flags.has(MonsterKindType::LEECH)) {
+        return PlayerRaceType::LEECH;
+    }
+    if (kind_flags.has(MonsterKindType::JELLYFISH)) {
+        return PlayerRaceType::JELLYFISH;
+    }
+    if (kind_flags.has(MonsterKindType::MINOTAUR)) {
+        return PlayerRaceType::MINOTAUR;
+    }
+    if (kind_flags.has(MonsterKindType::SPHINX)) {
+        return PlayerRaceType::SPHINX;
+    }
+    if (kind_flags.has(MonsterKindType::BEHOLDER)) {
+        return PlayerRaceType::BEHOLDER;
+    }
+    if (kind_flags.has(MonsterKindType::EYE)) {
+        return PlayerRaceType::EYE;
+    }
+    if (kind_flags.has(MonsterKindType::VORTEX)) {
+        return PlayerRaceType::VORTEX;
+    }
+    if (kind_flags.has(MonsterKindType::OOZE)) {
+        return PlayerRaceType::OOZE;
+    }
+    if (kind_flags.has(MonsterKindType::GHOST)) {
+        return PlayerRaceType::GHOST;
+    }
+    if (kind_flags.has(MonsterKindType::LICH)) {
+        return PlayerRaceType::LICH;
+    }
+    if (kind_flags.has(MonsterKindType::PLANT)) {
+        return PlayerRaceType::PLANT;
+    }
+    if (kind_flags.has(MonsterKindType::FUNGUS)) {
+        return PlayerRaceType::FUNGUS;
+    }
+    if (kind_flags.has(MonsterKindType::ELEMENTAL)) {
+        return PlayerRaceType::ELEMENTAL;
+    }
+    if (kind_flags.has(MonsterKindType::HORROR)) {
+        return PlayerRaceType::HORROR;
+    }
+    if (kind_flags.has(MonsterKindType::NIGHTSHADE)) {
+        return PlayerRaceType::NIGHTSHADE;
+    }
+    if (kind_flags.has(MonsterKindType::QUYLTHLUG)) {
+        return PlayerRaceType::QUYLTHLUG;
+    }
+    if (kind_flags.has(MonsterKindType::IXITXACHITL)) {
+        return PlayerRaceType::IXITXACHITL;
+    }
+    if (kind_flags.has(MonsterKindType::MIMIC)) {
+        return PlayerRaceType::MIMIC;
+    }
+    if (kind_flags.has(MonsterKindType::MONKEY_SPACE)) {
+        return PlayerRaceType::MONKEY_SPACE;
+    }
+    if (kind_flags.has(MonsterKindType::PUYO)) {
+        return PlayerRaceType::PUYO;
+    }
+    if (kind_flags.has(MonsterKindType::YAZYU)) {
+        return PlayerRaceType::YAZYU;
+    }
 
     return tl::nullopt;
 }

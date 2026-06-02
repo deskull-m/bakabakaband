@@ -1082,6 +1082,72 @@ void CreatureEntity::initialize_equivalent_player_races()
     if (monrace.kind_flags.has(MonsterKindType::KRAKEN)) {
         mp.equivalent_player_races.push_back(PlayerRaceType::KRAKEN);
     }
+    if (monrace.kind_flags.has(MonsterKindType::DEEPONE)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::DEEPONE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::LEECH)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::LEECH);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::JELLYFISH)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::JELLYFISH);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::MINOTAUR)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::MINOTAUR);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::SPHINX)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::SPHINX);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::BEHOLDER)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::BEHOLDER);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::EYE)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::EYE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::VORTEX)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::VORTEX);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::OOZE)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::OOZE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::GHOST)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::GHOST);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::LICH)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::LICH);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::PLANT)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::PLANT);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::FUNGUS)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::FUNGUS);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::ELEMENTAL)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::ELEMENTAL);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::HORROR)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::HORROR);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::NIGHTSHADE)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::NIGHTSHADE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::QUYLTHLUG)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::QUYLTHLUG);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::IXITXACHITL)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::IXITXACHITL);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::MIMIC)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::MIMIC);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::MONKEY_SPACE)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::MONKEY_SPACE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::PUYO)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::PUYO);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::YAZYU)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::YAZYU);
+    }
 
     if (!mp.equivalent_player_races.empty()) {
         this->race = &race_info[enum2i(mp.equivalent_player_races[0])];
