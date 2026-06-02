@@ -11,6 +11,7 @@
 #include "util/string-processor.h"
 #include "world/world.h"
 #include <sstream>
+#include <vector>
 
 static std::string birth_class_label(CreatureEntity &creature, int cs, concptr sym)
 {
@@ -33,9 +34,35 @@ static std::string birth_class_label(CreatureEntity &creature, int cs, concptr s
     return ss.str();
 }
 
+//!< 当該職業がプレイヤー作成時に選択可能か
+static bool is_class_playable(int n)
+{
+    if (n < 0 || n >= PLAYER_CLASS_TYPE_MAX) {
+        return false;
+    }
+    return class_info.at(i2enum<PlayerClassType>(n)).playable;
+}
+
+//!< 選択可能な職業からランダムに 1 つ選ぶ
+static int get_random_playable_class()
+{
+    std::vector<int> playable_classes;
+    for (auto i = 0; i < PLAYER_CLASS_TYPE_MAX; i++) {
+        if (is_class_playable(i)) {
+            playable_classes.push_back(i);
+        }
+    }
+
+    return playable_classes[randint0(playable_classes.size())];
+}
+
 static void enumerate_class_list(CreatureEntity &creature, char *sym)
 {
     for (auto n = 0; n < PLAYER_CLASS_TYPE_MAX; n++) {
+        if (!is_class_playable(n)) {
+            continue;
+        }
+
         cp_ptr = &class_info.at(i2enum<PlayerClassType>(n));
         creature.pclass_ref = &class_info.at(i2enum<PlayerClassType>(n));
         mp_ptr = &class_magics_info[n];
@@ -155,12 +182,15 @@ static bool select_class(CreatureEntity &creature, concptr sym, int *k)
 
         if (c == ' ' || c == '\r' || c == '\n') {
             if (int_cs == enum2i(PlayerClassType::MAX)) {
-                *k = randint0(PLAYER_CLASS_TYPE_MAX);
+                *k = get_random_playable_class();
                 cs = i2enum<PlayerClassType>(*k);
                 continue;
-            } else {
+            } else if (is_class_playable(int_cs)) {
                 *k = int_cs;
                 break;
+            } else {
+                *k = -1;
+                continue;
             }
         }
 
@@ -170,19 +200,19 @@ static bool select_class(CreatureEntity &creature, concptr sym, int *k)
         }
 
         if (c == '*') {
-            *k = randint0(PLAYER_CLASS_TYPE_MAX);
+            *k = get_random_playable_class();
             cs = i2enum<PlayerClassType>(*k);
             continue;
         }
 
         *k = (islower(c) ? A2I(c) : -1);
-        if ((*k >= 0) && (*k < PLAYER_CLASS_TYPE_MAX)) {
+        if ((*k >= 0) && (*k < PLAYER_CLASS_TYPE_MAX) && is_class_playable(*k)) {
             cs = i2enum<PlayerClassType>(*k);
             continue;
         }
 
         *k = (isupper(c) ? (26 + c - 'A') : -1);
-        if ((*k >= 26) && (*k < PLAYER_CLASS_TYPE_MAX)) {
+        if ((*k >= 26) && (*k < PLAYER_CLASS_TYPE_MAX) && is_class_playable(*k)) {
             cs = i2enum<PlayerClassType>(*k);
             continue;
         } else {

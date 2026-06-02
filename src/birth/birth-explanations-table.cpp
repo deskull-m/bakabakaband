@@ -396,7 +396,31 @@ const std::vector<std::string_view> class_explanations = {
         "Snipers are good at shooting, and they can kill targets by a few shots. After they concentrate deeply, they can demonstrate their shooting talents. You can see the incredible firepower of their shots."),
 
     _("元素使いはエレメンタルの力を駆使して戦う魔法使いです。扱える属性は限られますが、その力を十二分に引き出すことができます。魔法に必要な能力は賢さです。",
-        "An Elementalist is a spell caster that specializes in tapping elemental forces.  They have a limited, but powerful, repertoire of spells.  Wisdom determines an Elementalist's spell casting ability.")
+        "An Elementalist is a spell caster that specializes in tapping elemental forces.  They have a limited, but powerful, repertoire of spells.  Wisdom determines an Elementalist's spell casting ability."),
+    _("兵士は軍隊に属する戦闘の専門家です。武器と防具の扱いに長け、規律ある戦いを得意とします。",
+        "Soldiers are combat professionals serving in armies. They are skilled with weapons and armor and excel at disciplined fighting."),
+    _("農民は大地を耕す素朴な民です。戦いには不慣れですが、頑健な体と粘り強さを持っています。",
+        "Peasants are simple folk who till the land. They are unaccustomed to battle but possess hardy bodies and tenacity."),
+    _("貴族は高貴な血筋に生まれた支配者層です。優れた知性と魅力を持ち、人を率いる才に長けています。",
+        "Nobles are born into high lineage as a ruling class. With keen intellect and charisma, they excel at leading others."),
+    _("市民は街に暮らす一般の人々です。特筆すべき戦闘技術は持ちませんが、世慣れた賢さがあります。",
+        "Citizens are ordinary people living in towns. They lack notable combat skills but possess worldly wisdom."),
+    _("賤民は社会の底辺に生きる者たちです。荒くれた生き様で、戦いには場慣れしています。",
+        "Rabble live at the bottom of society. With their rough way of life, they are battle-hardened."),
+    _("やくざは裏社会に生きる無法者です。喧嘩慣れしており、度胸と腕っぷしで道を切り開きます。",
+        "Yakuza are outlaws who live in the underworld. Accustomed to brawling, they carve their way with guts and brawn."),
+    _("力士は土俵で鍛え上げた巨漢の戦士です。並外れた体格と押しの強さで相手を圧倒します。",
+        "Sumo wrestlers are giant fighters tempered in the ring. They overwhelm foes with extraordinary build and pushing power."),
+    _("ガンナーは銃火器を操る射撃の名手です。距離をとって正確に敵を撃ち抜くことを得意とします。",
+        "Gunners are marksmen who wield firearms. They excel at picking off enemies accurately from a distance."),
+    _("狂戦士は怒りに身を任せて戦う戦士です。圧倒的な攻撃力を誇りますが、技巧や魔法とは無縁です。",
+        "Berserkers fight by giving themselves over to rage. They boast overwhelming offense but are strangers to finesse and magic."),
+    _("戦車は鋼鉄の装甲に身を包んだ重戦力です。並外れた防御力と頑健さを誇りますが、極めて鈍重です。",
+        "Tanks are heavy units clad in steel armor. They boast extraordinary defense and durability but are extremely slow."),
+    _("魔法少女は希望を胸に変身して戦う乙女です。優れた魔力と魅力を持ちますが、肉体は華奢です。",
+        "Magical girls are maidens who transform and fight with hope in their hearts. They have great magic and charm but frail bodies."),
+    _("ババアは長い年月を生き抜いた老女です。衰えぬ生命力と豊富な人生経験、そして強かさを備えています。",
+        "Grandmas are old women who have survived long years. They have undiminished vitality, rich life experience, and toughness.")
 };
 
 /*! 性格の解説メッセージテーブル */
