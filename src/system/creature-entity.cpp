@@ -1148,6 +1148,96 @@ void CreatureEntity::initialize_equivalent_player_races()
     if (monrace.kind_flags.has(MonsterKindType::YAZYU)) {
         mp.equivalent_player_races.push_back(PlayerRaceType::YAZYU);
     }
+    if (monrace.kind_flags.has(MonsterKindType::QUANTUM)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::QUANTUM);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::ELDRAZI)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::ELDRAZI);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::SKAVEN)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::SKAVEN);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::ALIEN)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::ALIEN);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::PHYREXIAN)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::PHYREXIAN);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::GREAT_OLD_ONE)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::GREAT_OLD_ONE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::AVATAR)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::AVATAR);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::PLANESWALKER)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::PLANESWALKER);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::VIRUS)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::VIRUS);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::CHOASIAN)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::CHOASIAN);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::FACE)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::FACE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::HAND)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::HAND);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::WALL)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::WALL);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::SHIP)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::SHIP);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::WHEEL)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::WHEEL);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::EXPLOSIVE)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::EXPLOSIVE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::ALARM)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::ALARM);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::PAPER)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::PAPER);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::WOODEN)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::WOODEN);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::IRON)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::IRON);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::COPPER)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::COPPER);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::STONE)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::STONE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::SILVER)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::SILVER);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::GOLD)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::GOLD);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::MITHRIL)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::MITHRIL);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::ADAMANTITE)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::ADAMANTITE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::FECES)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::FECES);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::FLESH)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::FLESH);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::DARKSTEEL)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::DARKSTEEL);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::WARPSTONE)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::WARPSTONE);
+    }
 
     if (!mp.equivalent_player_races.empty()) {
         this->race = &race_info[enum2i(mp.equivalent_player_races[0])];
