@@ -103,6 +103,36 @@ enum class PlayerRaceType : int {
     MONKEY_SPACE = 94, //!< 猿空間。NPC専用
     PUYO = 95, //!< プヨ。NPC専用
     YAZYU = 96, //!< 野獣。NPC専用
+    QUANTUM = 97, //!< 量子生物。NPC専用
+    ELDRAZI = 98, //!< エルドラージ。NPC専用
+    SKAVEN = 99, //!< スケイヴン。NPC専用
+    ALIEN = 100, //!< 異星人。NPC専用
+    PHYREXIAN = 101, //!< ファイレクシア人。NPC専用
+    GREAT_OLD_ONE = 102, //!< 旧支配者。NPC専用
+    AVATAR = 103, //!< アヴァター。NPC専用
+    PLANESWALKER = 104, //!< プレインズウォーカー。NPC専用
+    VIRUS = 105, //!< ウイルス。NPC専用
+    CHOASIAN = 106, //!< 混沌の王族。NPC専用
+    FACE = 107, //!< 顔面。NPC専用
+    HAND = 108, //!< 手。NPC専用
+    WALL = 109, //!< 壁。NPC専用
+    SHIP = 110, //!< 船舶。NPC専用
+    WHEEL = 111, //!< 車輪。NPC専用
+    EXPLOSIVE = 112, //!< 爆発物。NPC専用
+    ALARM = 113, //!< 警報機。NPC専用
+    PAPER = 114, //!< 紙。NPC専用
+    WOODEN = 115, //!< 木人。NPC専用
+    IRON = 116, //!< 鉄人。NPC専用
+    COPPER = 117, //!< 銅人。NPC専用
+    STONE = 118, //!< 石人。NPC専用
+    SILVER = 119, //!< 銀人。NPC専用
+    GOLD = 120, //!< 金人。NPC専用
+    MITHRIL = 121, //!< ミスリル人。NPC専用
+    ADAMANTITE = 122, //!< アダマンタイト人。NPC専用
+    FECES = 123, //!< 糞人。NPC専用
+    FLESH = 124, //!< 肉人。NPC専用
+    DARKSTEEL = 125, //!< 漆黒鋼人。NPC専用
+    WARPSTONE = 126, //!< 歪魂石人。NPC専用
     MAX,
     NONE = -1,
 };
