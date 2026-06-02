@@ -253,7 +253,7 @@ tl::optional<PlayerRaceType> determine_player_race_from_monrace(const MonraceDef
         return PlayerRaceType::HALF_ELF;
     }
     if (kind_flags.has(MonsterKindType::ORC)) {
-        return PlayerRaceType::HALF_ORC;
+        return PlayerRaceType::ORC;
     }
     if (kind_flags.has(MonsterKindType::AMBERITE)) {
         return PlayerRaceType::AMBERITE;
@@ -268,13 +268,13 @@ tl::optional<PlayerRaceType> determine_player_race_from_monrace(const MonraceDef
         return PlayerRaceType::YEEK;
     }
     if (kind_flags.has(MonsterKindType::TROLL)) {
-        return PlayerRaceType::HALF_TROLL;
+        return PlayerRaceType::TROLL;
     }
     if (kind_flags.has(MonsterKindType::OGRE)) {
-        return PlayerRaceType::HALF_OGRE;
+        return PlayerRaceType::OGRE;
     }
     if (kind_flags.has(MonsterKindType::GIANT)) {
-        return PlayerRaceType::HALF_GIANT;
+        return PlayerRaceType::GIANT;
     }
     if (kind_flags.has(MonsterKindType::BEAST)) {
         return PlayerRaceType::BEASTMAN;

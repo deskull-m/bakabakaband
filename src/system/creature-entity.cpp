@@ -904,16 +904,16 @@ void CreatureEntity::initialize_equivalent_player_races()
         mp.equivalent_player_races.push_back(PlayerRaceType::GNOME);
     }
     if (monrace.kind_flags.has(MonsterKindType::ORC)) {
-        mp.equivalent_player_races.push_back(PlayerRaceType::HALF_ORC);
+        mp.equivalent_player_races.push_back(PlayerRaceType::ORC);
     }
     if (monrace.kind_flags.has(MonsterKindType::TROLL)) {
-        mp.equivalent_player_races.push_back(PlayerRaceType::HALF_TROLL);
+        mp.equivalent_player_races.push_back(PlayerRaceType::TROLL);
     }
     if (monrace.kind_flags.has(MonsterKindType::GIANT)) {
-        mp.equivalent_player_races.push_back(PlayerRaceType::HALF_GIANT);
+        mp.equivalent_player_races.push_back(PlayerRaceType::GIANT);
     }
     if (monrace.kind_flags.has(MonsterKindType::OGRE)) {
-        mp.equivalent_player_races.push_back(PlayerRaceType::HALF_OGRE);
+        mp.equivalent_player_races.push_back(PlayerRaceType::OGRE);
     }
     if (monrace.kind_flags.has(MonsterKindType::AMBERITE)) {
         mp.equivalent_player_races.push_back(PlayerRaceType::AMBERITE);
