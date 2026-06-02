@@ -155,6 +155,77 @@ const std::vector<std::string_view> race_explanations = {
 
     _("亀は頑丈な甲羅を持つ鈍重な獣です。並外れた耐久力を誇りますが、動きは遅いです。プレイヤーが作成時に選ぶことはできず、もっぱら亀系のモンスターとして存在します。",
         "Turtles are slow beasts with sturdy shells. They boast extraordinary endurance but move slowly. They cannot be chosen at character creation and exist mainly as turtle monsters."),
+    _("TR_FREE_ACTプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "類人猿は知能と腕力を併せ持つ獣です。木登りや道具の扱いに長けています。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_RES_WATERプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "水棲哺乳類は知的で頑健な水中の獣です。水難に強く、長く泳ぎ続けられます。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_REGENプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "恐竜は太古の巨大な獣です。圧倒的な腕力と体力を誇りますが知能は低いです。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_REGENプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "牛は力強く頑健な獣です。優れた体力を持ちますが動きは緩慢です。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_RES_WATERプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "サメは水中の獰猛な捕食者です。鋭い牙を持ち水難に強いですが地上は不得手です。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_RES_POISプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "ヒドラは多頭の巨大な獣です。並外れた体力と毒への耐性を持ちます。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_RES_ACIDプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "ナメクジは鈍重で粘液質の獣です。動きは遅いですが酸への耐性を持ちます。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_RES_WATERプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "タコは器用で知的な水中の獣です。多くの腕を器用に操り水難に強いです。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_RES_WATERプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "イカは素早く器用な水中の獣です。水難に強いですが地上では弱いです。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_LEVITATIONプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "ハーピーは翼を持つ半人半鳥の獣です。空を舞い素早く動きます。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_SPEEDプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "鹿は優美で素早い獣です。鋭い感覚と俊敏さを持ちます。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_SUST_STRプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "象は巨大で力強い獣です。比類なき腕力と体力を持ちますが鈍重です。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_RES_FIREプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "トカゲは素早い爬虫類の獣です。火への耐性を持ちます。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_RES_WATERプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "カバは巨大で頑健な半水生の獣です。力強く水難にも強いです。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_RES_FEARプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "猪は猛々しく頑健な獣です。突進する勇猛さを持ちます。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_SPEEDプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "兎は小さく非常に素早い獣です。俊敏ですが肉体は脆弱です。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_RES_POISプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "蠍は毒針を持つ隠密な獣です。毒への耐性を持ちます。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_RES_CONFプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "狸は化けるのが得意な獣です。賢く、人を欺く術に長けています。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_SPEEDプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "栗鼠は小さく敏捷な獣です。木登りに長け非常に素早いです。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_REGENプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "人狼は人と狼の力を併せ持つ獣です。力強く、傷の癒えも早いです。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_RES_POISプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "ナーガは半人半蛇の知的な獣です。力強さと毒への耐性を持ちます。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_RES_WATERプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "蟹は硬い甲殻を持つ水辺の獣です。頑丈で水難に強いです。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_REGENプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "ワームは単純で頑健な獣です。知能は低いですが傷の癒えが早いです。 They cannot be chosen at character creation and exist mainly as such monsters."),
+
+    _("TR_RES_WATERプレイヤーが作成時に選ぶことはできず、もっぱら同系のモンスターとして存在します。",
+        "クラーケンは巨大な海の怪物です。圧倒的な力と水難への耐性を持ちます。 They cannot be chosen at character creation and exist mainly as such monsters."),
 };
 
 /*! 職業の解説メッセージテーブル */

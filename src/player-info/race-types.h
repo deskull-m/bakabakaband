@@ -57,6 +57,30 @@ enum class PlayerRaceType : int {
     FROG = 48, //!< 蛙。NPC専用
     BAT = 49, //!< 蝙蝠。NPC専用
     TURTLE = 50, //!< 亀。NPC専用
+    APE = 51, //!< 類人猿。NPC専用
+    AQUATIC_MAMMAL = 52, //!< 水棲哺乳類。NPC専用
+    DINOSAUR = 53, //!< 恐竜。NPC専用
+    BOVINE = 54, //!< 牛。NPC専用
+    SHARK = 55, //!< サメ。NPC専用
+    HYDRA = 56, //!< ヒドラ。NPC専用
+    SLUG = 57, //!< ナメクジ。NPC専用
+    OCTOPUS = 58, //!< タコ。NPC専用
+    SQUID = 59, //!< イカ。NPC専用
+    HARPY = 60, //!< ハーピー。NPC専用
+    DEER = 61, //!< 鹿。NPC専用
+    ELEPHANT = 62, //!< 象。NPC専用
+    LIZARD = 63, //!< トカゲ。NPC専用
+    HIPPO = 64, //!< カバ。NPC専用
+    BOAR = 65, //!< 猪。NPC専用
+    RABBIT = 66, //!< 兎。NPC専用
+    SCORPION = 67, //!< 蠍。NPC専用
+    TANUKI = 68, //!< 狸。NPC専用
+    SQUIRREL = 69, //!< 栗鼠。NPC専用
+    WEREWOLF = 70, //!< 人狼。NPC専用
+    NAGA = 71, //!< ナーガ。NPC専用
+    CANCER = 72, //!< 蟹。NPC専用
+    WORM = 73, //!< ワーム。NPC専用
+    KRAKEN = 74, //!< クラーケン。NPC専用
     MAX,
     NONE = -1,
 };

@@ -321,6 +321,78 @@ tl::optional<PlayerRaceType> determine_player_race_from_monrace(const MonraceDef
     if (kind_flags.has(MonsterKindType::TURTLE)) {
         return PlayerRaceType::TURTLE;
     }
+    if (kind_flags.has(MonsterKindType::APE)) {
+        return PlayerRaceType::APE;
+    }
+    if (kind_flags.has(MonsterKindType::AQUATIC_MAMMAL)) {
+        return PlayerRaceType::AQUATIC_MAMMAL;
+    }
+    if (kind_flags.has(MonsterKindType::DINOSAUR)) {
+        return PlayerRaceType::DINOSAUR;
+    }
+    if (kind_flags.has(MonsterKindType::BOVINE)) {
+        return PlayerRaceType::BOVINE;
+    }
+    if (kind_flags.has(MonsterKindType::SHARK)) {
+        return PlayerRaceType::SHARK;
+    }
+    if (kind_flags.has(MonsterKindType::HYDRA)) {
+        return PlayerRaceType::HYDRA;
+    }
+    if (kind_flags.has(MonsterKindType::SLUG)) {
+        return PlayerRaceType::SLUG;
+    }
+    if (kind_flags.has(MonsterKindType::OCTOPUS)) {
+        return PlayerRaceType::OCTOPUS;
+    }
+    if (kind_flags.has(MonsterKindType::SQUID)) {
+        return PlayerRaceType::SQUID;
+    }
+    if (kind_flags.has(MonsterKindType::HARPY)) {
+        return PlayerRaceType::HARPY;
+    }
+    if (kind_flags.has(MonsterKindType::DEER)) {
+        return PlayerRaceType::DEER;
+    }
+    if (kind_flags.has(MonsterKindType::ELEPHANT)) {
+        return PlayerRaceType::ELEPHANT;
+    }
+    if (kind_flags.has(MonsterKindType::LIZARD)) {
+        return PlayerRaceType::LIZARD;
+    }
+    if (kind_flags.has(MonsterKindType::HIPPO)) {
+        return PlayerRaceType::HIPPO;
+    }
+    if (kind_flags.has(MonsterKindType::BOAR)) {
+        return PlayerRaceType::BOAR;
+    }
+    if (kind_flags.has(MonsterKindType::RABBIT)) {
+        return PlayerRaceType::RABBIT;
+    }
+    if (kind_flags.has(MonsterKindType::SCORPION)) {
+        return PlayerRaceType::SCORPION;
+    }
+    if (kind_flags.has(MonsterKindType::TANUKI)) {
+        return PlayerRaceType::TANUKI;
+    }
+    if (kind_flags.has(MonsterKindType::SQUIRREL)) {
+        return PlayerRaceType::SQUIRREL;
+    }
+    if (kind_flags.has(MonsterKindType::WEREWOLF)) {
+        return PlayerRaceType::WEREWOLF;
+    }
+    if (kind_flags.has(MonsterKindType::NAGA)) {
+        return PlayerRaceType::NAGA;
+    }
+    if (kind_flags.has(MonsterKindType::CANCER)) {
+        return PlayerRaceType::CANCER;
+    }
+    if (kind_flags.has(MonsterKindType::WORM)) {
+        return PlayerRaceType::WORM;
+    }
+    if (kind_flags.has(MonsterKindType::KRAKEN)) {
+        return PlayerRaceType::KRAKEN;
+    }
 
     return tl::nullopt;
 }
