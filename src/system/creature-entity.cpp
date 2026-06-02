@@ -1010,6 +1010,78 @@ void CreatureEntity::initialize_equivalent_player_races()
     if (monrace.kind_flags.has(MonsterKindType::TURTLE)) {
         mp.equivalent_player_races.push_back(PlayerRaceType::TURTLE);
     }
+    if (monrace.kind_flags.has(MonsterKindType::APE)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::APE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::AQUATIC_MAMMAL)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::AQUATIC_MAMMAL);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::DINOSAUR)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::DINOSAUR);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::BOVINE)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::BOVINE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::SHARK)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::SHARK);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::HYDRA)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::HYDRA);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::SLUG)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::SLUG);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::OCTOPUS)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::OCTOPUS);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::SQUID)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::SQUID);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::HARPY)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::HARPY);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::DEER)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::DEER);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::ELEPHANT)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::ELEPHANT);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::LIZARD)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::LIZARD);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::HIPPO)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::HIPPO);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::BOAR)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::BOAR);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::RABBIT)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::RABBIT);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::SCORPION)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::SCORPION);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::TANUKI)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::TANUKI);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::SQUIRREL)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::SQUIRREL);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::WEREWOLF)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::WEREWOLF);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::NAGA)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::NAGA);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::CANCER)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::CANCER);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::WORM)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::WORM);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::KRAKEN)) {
+        mp.equivalent_player_races.push_back(PlayerRaceType::KRAKEN);
+    }
 
     if (!mp.equivalent_player_races.empty()) {
         this->race = &race_info[enum2i(mp.equivalent_player_races[0])];
