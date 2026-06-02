@@ -903,9 +903,9 @@ void CreatureEntity::clear_materials()
     this->materials.clear();
 }
 
-void CreatureEntity::set_materials(const std::vector<CreatureMaterialType> &materials)
+void CreatureEntity::set_materials(const std::vector<CreatureMaterialType> &new_materials)
 {
-    this->materials = materials;
+    this->materials = new_materials;
 }
 
 int CreatureEntity::get_material_stat_modifier(int stat) const
