@@ -485,6 +485,39 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   開始 (`apply_monrace_personality()` で対話選択をスキップ) でも同一。
 - 性格適用は `CreatureEntity::set_personality(player_personality_type)` に集約。
 
+### セーブ/ロードの統合 (CreatureEntity 共通シリアライズ) — フェーズ 1
+
+旧 PlayerType / 旧 MonsterEntity に分かれていたセーブ/ロード処理を、
+`CreatureEntity` 基底フィールド単位で 1 箇所に統合していく方針。
+**セーブデータバージョンは 50** に更新済み。
+
+- 共通基底シリアライザ:
+  - 書込: `wr_creature_common(const CreatureEntity &)` (`src/save/creature-common-writer.{h,cpp}`)
+  - 読込: `rd_creature_common(CreatureEntity &)` (`src/load/creature-common-loader.{h,cpp}`)
+  - 対象フィールド: `name` / 座標 (`y`,`x`) / `hp`/`maxhp`/`max_maxhp` /
+    `dealt_damage` / `speed` / `energy_need` / `ac` / `exp` / `au` /
+    `ht`/`wt` / `target` / 共通時限効果 7 種 (SLEEP_OR_PARALYSIS /
+    ACCELERATION / DECELERATION / STUN / CONFUSION / FEAR /
+    INVULNERABILITY) / `materials` (材質)。プレイヤー様式の明示フォーマット。
+- **モンスター経路は統合済み**: `MonsterWriter::write_to_savedata()` は
+  `wr_creature_common()` + モンスター固有フィールド (r_idx / ap_r_idx /
+  alliance / sub_align / smart / mflag2 / parent / transform / prace /
+  pclass / インベントリ) を書く。旧ビットマスク方式
+  (`SaveDataMonsterFlagType` / `write_monster_flags` / `write_monster_info`)
+  は廃止。
+- **後方互換**: v49 以前のセーブは `MonsterLoader50::rd_monster_legacy()`
+  (旧コードそのまま) で読む。v50 以降は `rd_monster_v50()`
+  (`rd_creature_common()` + 固有フィールド)。`rd_monster()` が
+  `loading_savefile_version_is_older_than(50)` で分岐。
+- 書込/読込は完全対称が前提。共通ブロックのフィールド追加・順序変更時は
+  writer/loader 双方を同時更新し、必要ならバージョンを再度更新すること。
+  `prace`/`pclass` は `NONE` (-1) を取り得るため符号付き `s16b` で保存する
+  (byte 保存は -1 が 255 になり復元不能なので不可)。
+- **残タスク (後続フェーズ)**: プレイヤー経路 (`wr_player` / `rd_player_info`)
+  を `wr_creature_common()` / `rd_creature_common()` に移行し、共通基底を
+  完全に 1 経路へ統合する。さらに stat 配列・MP (`csp`/`msp`)・各種 frac・
+  全時限効果 map の共通化を進める。
+
 ---
 
 ## 開発フロー
