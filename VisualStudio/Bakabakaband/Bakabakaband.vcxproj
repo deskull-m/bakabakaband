@@ -395,6 +395,7 @@
     <ClCompile Include="..\..\src\external-lib\fmt\format.cc" />
     <ClCompile Include="..\..\src\io\macro-configurations-store.cpp" />
     <ClCompile Include="..\..\src\load\alliance-loader.cpp" />
+    <ClCompile Include="..\..\src\load\creature-common-loader.cpp" />
     <ClCompile Include="..\..\src\monster-floor\monster-movement-direction-list.cpp" />
     <ClCompile Include="..\..\src\monster-floor\party-generator.cpp" />
     <ClCompile Include="..\..\src\monster-race\monster-era-type-name.cpp" />
@@ -700,6 +701,7 @@
     <ClCompile Include="..\..\src\room\rooms-maze-vault.cpp" />
     <ClCompile Include="..\..\src\room\space-finder.cpp" />
     <ClCompile Include="..\..\src\room\treasure-deployment.cpp" />
+    <ClCompile Include="..\..\src\save\creature-common-writer.cpp" />
     <ClCompile Include="..\..\src\save\floor-writer.cpp" />
     <ClCompile Include="..\..\src\save\info-writer.cpp" />
     <ClCompile Include="..\..\src\save\item-writer.cpp" />
@@ -1208,6 +1210,7 @@
     <ClInclude Include="..\..\src\external-lib\include-json.h" />
     <ClInclude Include="..\..\src\io\macro-configurations-store.h" />
     <ClInclude Include="..\..\src\load\alliance-loader.h" />
+    <ClInclude Include="..\..\src\load\creature-common-loader.h" />
     <ClInclude Include="..\..\src\monster-floor\monster-movement-direction-list.h" />
     <ClInclude Include="..\..\src\monster-floor\party-generator.h" />
     <ClInclude Include="..\..\src\monster-race\monster-era-type-name.h" />
@@ -1622,6 +1625,7 @@
     <ClInclude Include="..\..\src\room\rooms-maze-vault.h" />
     <ClInclude Include="..\..\src\room\space-finder.h" />
     <ClInclude Include="..\..\src\room\treasure-deployment.h" />
+    <ClInclude Include="..\..\src\save\creature-common-writer.h" />
     <ClInclude Include="..\..\src\save\floor-writer.h" />
     <ClInclude Include="..\..\src\save\info-writer.h" />
     <ClInclude Include="..\..\src\save\item-writer.h" />

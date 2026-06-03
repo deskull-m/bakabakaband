@@ -1,4 +1,5 @@
 #include "load/old/monster-loader-savefile50.h"
+#include "load/creature-common-loader.h"
 #include "load/item/item-loader-base.h"
 #include "load/item/item-loader-factory.h"
 #include "load/load-util.h"
@@ -16,9 +17,24 @@
 #include "util/enum-converter.h"
 
 /*!
- * @brief モンスターを読み込む(v3.0.0 Savefile ver50まで)
+ * @brief モンスターを読み込む
+ * @details セーブデータバージョン 50 以降はプレイヤー・モンスター共通の
+ * 統合フォーマット (rd_creature_common + モンスター固有) で読み込み、
+ * 49 以前は従来のビットマスク方式 (rd_monster_legacy) で読み込む。
  */
 void MonsterLoader50::rd_monster(CreatureEntity &monster)
+{
+    if (loading_savefile_version_is_older_than(50)) {
+        this->rd_monster_legacy(monster);
+    } else {
+        this->rd_monster_v50(monster);
+    }
+}
+
+/*!
+ * @brief モンスターを読み込む(旧フォーマット: Savefile ver49まで)
+ */
+void MonsterLoader50::rd_monster_legacy(CreatureEntity &monster)
 {
     auto flags = rd_u32b();
     monster.set_r_idx(i2enum<MonraceId>(rd_s16b()));
@@ -251,5 +267,95 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
         monster.set_materials(materials);
     } else {
         monster.clear_materials();
+    }
+}
+
+/*!
+ * @brief モンスターを読み込む(統合フォーマット: Savefile ver50以降)
+ * @details MonsterWriter::write_to_savedata() と完全対称。共通基底フィールドは
+ * rd_creature_common() に委譲し、モンスター固有フィールドのみここで読む。
+ */
+void MonsterLoader50::rd_monster_v50(CreatureEntity &monster)
+{
+    // --- 共通基底 (CreatureEntity) フィールド ---
+    rd_creature_common(monster);
+
+    // --- モンスター固有フィールド ---
+    monster.set_r_idx(i2enum<MonraceId>(rd_s16b()));
+    monster.set_ap_r_idx(i2enum<MonraceId>(rd_s16b()));
+    monster.set_alliance_idx(i2enum<AllianceType>(rd_s32b()));
+    monster.set_sub_align(rd_byte());
+
+    // 一時フラグ (mflag) は保存しないためクリアする
+    monster.clear_temporary_flags();
+
+    monster.clear_smart_flags();
+    rd_FlagGroup(monster.get_monster_profile().smart, rd_byte);
+
+    monster.clear_constant_flags();
+    rd_FlagGroup(monster.get_monster_profile().mflag2, rd_byte);
+
+    monster.set_parent_m_idx(rd_s16b());
+
+    monster.set_transform_r_idx(i2enum<MonraceId>(rd_s16b()));
+    monster.set_transform_hp_threshold(rd_byte());
+    monster.set_has_transformed(rd_byte() != 0);
+
+    // 種族 (prace は NONE (-1) を取り得るため符号付き s16b で読む)
+    monster.prace = i2enum<PlayerRaceType>(rd_s16b());
+    if (monster.prace != PlayerRaceType::NONE && enum2i(monster.prace) < MAX_RACES) {
+        monster.race = &race_info[enum2i(monster.prace)];
+    } else {
+        monster.race = nullptr;
+    }
+
+    // 職業
+    monster.pclass = i2enum<PlayerClassType>(rd_s16b());
+    if (monster.pclass != PlayerClassType::NONE) {
+        monster.pclass_ref = &class_info.at(monster.pclass);
+    } else {
+        monster.pclass_ref = nullptr;
+    }
+
+    // 通常インベントリ (u16b スロット番号 + アイテム、0xFFFF 終端)
+    {
+        auto item_loader = ItemLoaderFactory::create_loader();
+        while (true) {
+            const auto n = rd_u16b();
+            if (n == 0xFFFF) {
+                break;
+            }
+            if (n >= monster.inventory.size()) {
+                // 範囲外: ダミー読込でストリームを進める
+                auto dummy = std::make_shared<ItemEntity>();
+                item_loader->rd_item(dummy.get());
+                continue;
+            }
+            if (!monster.inventory[n]) {
+                monster.inventory[n] = std::make_shared<ItemEntity>();
+            }
+            item_loader->rd_item(monster.inventory[n].get());
+        }
+    }
+
+    // 拡張装備スロット (同形式)
+    monster.init_extended_inventory();
+    {
+        auto item_loader = ItemLoaderFactory::create_loader();
+        while (true) {
+            const auto n = rd_u16b();
+            if (n == 0xFFFF) {
+                break;
+            }
+            if (n >= monster.extended_inventory.size()) {
+                auto dummy = std::make_shared<ItemEntity>();
+                item_loader->rd_item(dummy.get());
+                continue;
+            }
+            if (!monster.extended_inventory[n]) {
+                monster.extended_inventory[n] = std::make_shared<ItemEntity>();
+            }
+            item_loader->rd_item(monster.extended_inventory[n].get());
+        }
     }
 }
