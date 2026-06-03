@@ -15,6 +15,7 @@
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <algorithm>
 #include <string>
 
 /*!
@@ -329,6 +330,39 @@ static errr set_mon_personality(const nlohmann::json &personality_data, MonraceD
         return PARSE_ERROR_INVALID_FLAG;
     }
     monrace.personality = static_cast<player_personality_type>(personality);
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief JSON Objectからモンスターの材質 (副種族) をセットする
+ * @param materials_data 材質情報の格納されたJSON Array (文字列の配列)
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details "materials": [ "IRON", "GOLD" ] のように材質トークンの配列で指定する。
+ *          未指定 (null) の場合は材質なし。複数指定でき、能力値修正と AC 修正が累積する。
+ */
+static errr set_mon_materials(const nlohmann::json &materials_data, MonraceDefinition &monrace)
+{
+    if (materials_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!materials_data.is_array()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    for (const auto &element : materials_data) {
+        if (!element.is_string()) {
+            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        }
+        uint32_t material;
+        if (!info_grab_one_const(material, r_info_materials, element.get<std::string>())) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+        const auto material_type = static_cast<CreatureMaterialType>(material);
+        if (std::find(monrace.materials.begin(), monrace.materials.end(), material_type) == monrace.materials.end()) {
+            monrace.materials.push_back(material_type);
+        }
+    }
     return PARSE_ERROR_NONE;
 }
 
@@ -1379,6 +1413,11 @@ errr parse_monraces_info(nlohmann::json &mon_data, angband_header *)
     err = set_mon_stat_modifiers(mon_data["stat_modifiers"], monrace);
     if (err) {
         msg_format(_("モンスター能力値補正読込失敗。ID: '%d'。", "Failed to load monster stat modifiers. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_materials(mon_data["materials"], monrace);
+    if (err) {
+        msg_format(_("モンスター材質読込失敗。ID: '%d'。", "Failed to load monster materials. ID: '%d'."), error_idx);
         return err;
     }
     err = set_mon_body_structure(mon_data["body_structure"], monrace);

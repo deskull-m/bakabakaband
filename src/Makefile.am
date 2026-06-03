@@ -1360,6 +1360,7 @@ hengband_SOURCES = \
 	system/h-system.h system/h-type.h \
 	system/inner-game-data.cpp system/inner-game-data.h \
 	system/item-entity.cpp system/item-entity.h \
+	system/material-type-definition.h \
 	system/player-type-definition.cpp system/player-type-definition.h \
 	system/redrawing-flags-updater.cpp system/redrawing-flags-updater.h \
 	system/spell-info-list.cpp system/spell-info-list.h \

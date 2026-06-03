@@ -546,45 +546,9 @@ tl::optional<PlayerRaceType> determine_player_race_from_monrace(const MonraceDef
     if (kind_flags.has(MonsterKindType::ALARM)) {
         return PlayerRaceType::ALARM;
     }
-    if (kind_flags.has(MonsterKindType::PAPER)) {
-        return PlayerRaceType::PAPER;
-    }
-    if (kind_flags.has(MonsterKindType::WOODEN)) {
-        return PlayerRaceType::WOODEN;
-    }
-    if (kind_flags.has(MonsterKindType::IRON)) {
-        return PlayerRaceType::IRON;
-    }
-    if (kind_flags.has(MonsterKindType::COPPER)) {
-        return PlayerRaceType::COPPER;
-    }
-    if (kind_flags.has(MonsterKindType::STONE)) {
-        return PlayerRaceType::STONE;
-    }
-    if (kind_flags.has(MonsterKindType::SILVER)) {
-        return PlayerRaceType::SILVER;
-    }
-    if (kind_flags.has(MonsterKindType::GOLD)) {
-        return PlayerRaceType::GOLD;
-    }
-    if (kind_flags.has(MonsterKindType::MITHRIL)) {
-        return PlayerRaceType::MITHRIL;
-    }
-    if (kind_flags.has(MonsterKindType::ADAMANTITE)) {
-        return PlayerRaceType::ADAMANTITE;
-    }
-    if (kind_flags.has(MonsterKindType::FECES)) {
-        return PlayerRaceType::FECES;
-    }
-    if (kind_flags.has(MonsterKindType::FLESH)) {
-        return PlayerRaceType::FLESH;
-    }
-    if (kind_flags.has(MonsterKindType::DARKSTEEL)) {
-        return PlayerRaceType::DARKSTEEL;
-    }
-    if (kind_flags.has(MonsterKindType::WARPSTONE)) {
-        return PlayerRaceType::WARPSTONE;
-    }
+
+    // 材質系 kind_flags (WOODEN / IRON / GOLD 等) は種族ではなく材質 (副種族) に移行済み。
+    // 材質は CreatureEntity::initialize_materials() で割り当てる。ここでは種族を決めない。
 
     return tl::nullopt;
 }

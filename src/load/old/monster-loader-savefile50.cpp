@@ -239,4 +239,17 @@ void MonsterLoader50::rd_monster(CreatureEntity &monster)
             }
         }
     }
+
+    // 材質 (副種族) の読込。MATERIALS フラグが立っていなければ材質なし。
+    if (any_bits(flags, SaveDataMonsterFlagType::MATERIALS)) {
+        const auto count = rd_u16b();
+        std::vector<CreatureMaterialType> materials;
+        materials.reserve(count);
+        for (auto i = 0; i < count; i++) {
+            materials.push_back(i2enum<CreatureMaterialType>(rd_s16b()));
+        }
+        monster.set_materials(materials);
+    } else {
+        monster.clear_materials();
+    }
 }

@@ -16,6 +16,7 @@
 #include "system/creature-timed-effect-types.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/item-entity.h"
+#include "system/material-type-definition.h"
 #include "system/monster-profile.h"
 #include "system/system-variables.h"
 #include "util/dice.h"
@@ -2696,6 +2697,60 @@ public:
     virtual void initialize_equivalent_player_classes();
 
     /*!
+     * @brief 材質 (副種族) 一覧を取得する
+     */
+    virtual const std::vector<CreatureMaterialType> &get_materials() const;
+
+    /*!
+     * @brief 指定した材質を保持しているか
+     */
+    virtual bool has_material(CreatureMaterialType material) const;
+
+    /*!
+     * @brief 材質を追加する (既に保持していれば何もしない)
+     */
+    virtual void add_material(CreatureMaterialType material);
+
+    /*!
+     * @brief 材質を取り除く
+     */
+    virtual void remove_material(CreatureMaterialType material);
+
+    /*!
+     * @brief 材質を全て取り除く
+     */
+    virtual void clear_materials();
+
+    /*!
+     * @brief 材質一覧を一括設定する (savefile ロード用)
+     */
+    virtual void set_materials(const std::vector<CreatureMaterialType> &new_materials);
+
+    /*!
+     * @brief 全材質の能力値修正の合計を取得する (内部 10 単位)
+     * @param stat 能力値インデックス (A_STR 等)
+     */
+    virtual int get_material_stat_modifier(int stat) const;
+
+    /*!
+     * @brief 全材質の AC 修正の合計を取得する
+     */
+    virtual int get_material_ac_modifier() const;
+
+    /*!
+     * @brief モンスター種族定義の材質指定および材質系 kind_flags に基づいて材質を初期化する
+     * @details モンスター以外では何もしない。
+     */
+    virtual void initialize_materials();
+
+    /*!
+     * @brief 保持する材質の能力値修正を能力値に適用する
+     * @details stat_max / stat_cur / stat_use を材質修正分だけ加算し [30, 2000] にクランプする。
+     *          モンスター生成時に stat_modifiers 適用後へ続けて呼ぶことを想定。
+     */
+    virtual void apply_material_stat_modifiers();
+
+    /*!
      * @brief 性格を指定値に設定する
      * @details ppersonality と personality ポインタの双方を更新する。
      * @param value 設定する性格
@@ -3685,6 +3740,12 @@ public:
 
     tl::optional<MonsterProfile> monster_profile{}; /*!< モンスター固有データ (モンスターの場合のみ有効) */
 
+private:
+    //! 材質 (副種族)。複数同時に保持でき、能力値修正・AC 修正が累積する。
+    //! アクセスは get_materials() / add_material() 等の virtual API 経由。
+    std::vector<CreatureMaterialType> materials{};
+
+public:
     // [提案 32] private 化済。get_ambush_flag() / set_ambush_flag() 経由。
 private:
     bool ambush_flag{}; /*!< 待ち伏せフラグ / Ambush flag */

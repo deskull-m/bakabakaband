@@ -54,6 +54,7 @@
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include "world/world.h"
+#include <algorithm>
 #include <range/v3/algorithm.hpp>
 
 /*!
@@ -875,6 +876,112 @@ tl::optional<bool> CreatureEntity::order_pet_hp(const CreatureEntity &other) con
     return tl::nullopt;
 }
 
+const std::vector<CreatureMaterialType> &CreatureEntity::get_materials() const
+{
+    return this->materials;
+}
+
+bool CreatureEntity::has_material(CreatureMaterialType material) const
+{
+    return std::find(this->materials.begin(), this->materials.end(), material) != this->materials.end();
+}
+
+void CreatureEntity::add_material(CreatureMaterialType material)
+{
+    if (!this->has_material(material)) {
+        this->materials.push_back(material);
+    }
+}
+
+void CreatureEntity::remove_material(CreatureMaterialType material)
+{
+    this->materials.erase(std::remove(this->materials.begin(), this->materials.end(), material), this->materials.end());
+}
+
+void CreatureEntity::clear_materials()
+{
+    this->materials.clear();
+}
+
+void CreatureEntity::set_materials(const std::vector<CreatureMaterialType> &new_materials)
+{
+    this->materials = new_materials;
+}
+
+int CreatureEntity::get_material_stat_modifier(int stat) const
+{
+    auto total = 0;
+    for (const auto material : this->materials) {
+        // 材質定義は表示単位 (1 = +1.0) で保持しているため内部 10 単位へ変換する。
+        total += get_material_definition(material).stat_modifiers[stat] * 10;
+    }
+    return total;
+}
+
+int CreatureEntity::get_material_ac_modifier() const
+{
+    auto total = 0;
+    for (const auto material : this->materials) {
+        total += get_material_definition(material).ac_modifier;
+    }
+    return total;
+}
+
+void CreatureEntity::apply_material_stat_modifiers()
+{
+    for (auto stat = 0; stat < A_MAX; ++stat) {
+        const auto mod = this->get_material_stat_modifier(stat);
+        if (mod == 0) {
+            continue;
+        }
+        auto adjusted = static_cast<int>(this->get_stat_max(stat)) + mod;
+        adjusted = std::clamp(adjusted, STAT_MIN_VALUE, STAT_MAX_VALUE);
+        this->set_stat_max(stat, static_cast<short>(adjusted));
+        this->set_stat_cur(stat, static_cast<short>(adjusted));
+        if (this->get_stat_max_max(stat) < this->get_stat_max(stat)) {
+            this->set_stat_max_max(stat, this->get_stat_max(stat));
+        }
+        this->set_stat_use(stat, this->get_stat_max(stat));
+    }
+}
+
+void CreatureEntity::initialize_materials()
+{
+    if (!this->has_monster_profile()) {
+        return;
+    }
+
+    this->materials.clear();
+    const auto &monrace = this->get_monrace();
+
+    // JSONc "materials" 指定を反映する。
+    for (const auto material : monrace.materials) {
+        this->add_material(material);
+    }
+
+    // 旧・材質種族 (IRON / GOLD 等) を表していた kind_flags を材質へ移植する。
+    static const std::array<std::pair<MonsterKindType, CreatureMaterialType>, 13> flag_materials = { {
+        { MonsterKindType::FLESH, CreatureMaterialType::FLESH },
+        { MonsterKindType::WOODEN, CreatureMaterialType::WOODEN },
+        { MonsterKindType::PAPER, CreatureMaterialType::PAPER },
+        { MonsterKindType::STONE, CreatureMaterialType::STONE },
+        { MonsterKindType::IRON, CreatureMaterialType::IRON },
+        { MonsterKindType::COPPER, CreatureMaterialType::COPPER },
+        { MonsterKindType::SILVER, CreatureMaterialType::SILVER },
+        { MonsterKindType::GOLD, CreatureMaterialType::GOLD },
+        { MonsterKindType::MITHRIL, CreatureMaterialType::MITHRIL },
+        { MonsterKindType::ADAMANTITE, CreatureMaterialType::ADAMANTITE },
+        { MonsterKindType::DARKSTEEL, CreatureMaterialType::DARKSTEEL },
+        { MonsterKindType::WARPSTONE, CreatureMaterialType::WARPSTONE },
+        { MonsterKindType::FECES, CreatureMaterialType::FECES },
+    } };
+    for (const auto &[kind_flag, material] : flag_materials) {
+        if (monrace.kind_flags.has(kind_flag)) {
+            this->add_material(material);
+        }
+    }
+}
+
 void CreatureEntity::initialize_equivalent_player_races()
 {
     if (!this->has_monster_profile()) {
@@ -1199,45 +1306,9 @@ void CreatureEntity::initialize_equivalent_player_races()
     if (monrace.kind_flags.has(MonsterKindType::ALARM)) {
         mp.equivalent_player_races.push_back(PlayerRaceType::ALARM);
     }
-    if (monrace.kind_flags.has(MonsterKindType::PAPER)) {
-        mp.equivalent_player_races.push_back(PlayerRaceType::PAPER);
-    }
-    if (monrace.kind_flags.has(MonsterKindType::WOODEN)) {
-        mp.equivalent_player_races.push_back(PlayerRaceType::WOODEN);
-    }
-    if (monrace.kind_flags.has(MonsterKindType::IRON)) {
-        mp.equivalent_player_races.push_back(PlayerRaceType::IRON);
-    }
-    if (monrace.kind_flags.has(MonsterKindType::COPPER)) {
-        mp.equivalent_player_races.push_back(PlayerRaceType::COPPER);
-    }
-    if (monrace.kind_flags.has(MonsterKindType::STONE)) {
-        mp.equivalent_player_races.push_back(PlayerRaceType::STONE);
-    }
-    if (monrace.kind_flags.has(MonsterKindType::SILVER)) {
-        mp.equivalent_player_races.push_back(PlayerRaceType::SILVER);
-    }
-    if (monrace.kind_flags.has(MonsterKindType::GOLD)) {
-        mp.equivalent_player_races.push_back(PlayerRaceType::GOLD);
-    }
-    if (monrace.kind_flags.has(MonsterKindType::MITHRIL)) {
-        mp.equivalent_player_races.push_back(PlayerRaceType::MITHRIL);
-    }
-    if (monrace.kind_flags.has(MonsterKindType::ADAMANTITE)) {
-        mp.equivalent_player_races.push_back(PlayerRaceType::ADAMANTITE);
-    }
-    if (monrace.kind_flags.has(MonsterKindType::FECES)) {
-        mp.equivalent_player_races.push_back(PlayerRaceType::FECES);
-    }
-    if (monrace.kind_flags.has(MonsterKindType::FLESH)) {
-        mp.equivalent_player_races.push_back(PlayerRaceType::FLESH);
-    }
-    if (monrace.kind_flags.has(MonsterKindType::DARKSTEEL)) {
-        mp.equivalent_player_races.push_back(PlayerRaceType::DARKSTEEL);
-    }
-    if (monrace.kind_flags.has(MonsterKindType::WARPSTONE)) {
-        mp.equivalent_player_races.push_back(PlayerRaceType::WARPSTONE);
-    }
+
+    // 材質系 kind_flags (WOODEN / IRON / GOLD 等) は種族ではなく材質 (副種族) として
+    // initialize_materials() で扱う。ここでは equivalent_player_races に追加しない。
 
     if (!mp.equivalent_player_races.empty()) {
         this->race = &race_info[enum2i(mp.equivalent_player_races[0])];
@@ -1454,6 +1525,9 @@ int CreatureEntity::get_ac() const
     }
 
     int total_ac = this->ac + this->to_a;
+
+    // 材質 (副種族) による AC 修正を加算する。
+    total_ac += this->get_material_ac_modifier();
 
     // [フェーズ B-2] モンスターは装備品の AC ボーナスをここで集計する。
     // プレイヤーは calc_base_ac() / calc_to_ac() が update_creature() 経由で
