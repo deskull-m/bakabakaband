@@ -485,11 +485,11 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   開始 (`apply_monrace_personality()` で対話選択をスキップ) でも同一。
 - 性格適用は `CreatureEntity::set_personality(player_personality_type)` に集約。
 
-### セーブ/ロードの統合 (CreatureEntity 共通シリアライズ) — フェーズ 1
+### セーブ/ロードの統合 (CreatureEntity 共通シリアライズ) — フェーズ 1・2
 
 旧 PlayerType / 旧 MonsterEntity に分かれていたセーブ/ロード処理を、
 `CreatureEntity` 基底フィールド単位で 1 箇所に統合していく方針。
-**セーブデータバージョンは 50** に更新済み。
+**セーブデータバージョンは 51** に更新済み (フェーズ1 で 50、フェーズ2 で 51)。
 
 - 共通基底シリアライザ:
   - 書込: `wr_creature_common(const CreatureEntity &)` (`src/save/creature-common-writer.{h,cpp}`)
@@ -505,18 +505,30 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   pclass / インベントリ) を書く。旧ビットマスク方式
   (`SaveDataMonsterFlagType` / `write_monster_flags` / `write_monster_info`)
   は廃止。
-- **後方互換**: v49 以前のセーブは `MonsterLoader50::rd_monster_legacy()`
-  (旧コードそのまま) で読む。v50 以降は `rd_monster_v50()`
-  (`rd_creature_common()` + 固有フィールド)。`rd_monster()` が
-  `loading_savefile_version_is_older_than(50)` で分岐。
+- **プレイヤー経路も統合済み (フェーズ2)**: `wr_player()` は先頭で
+  `wr_creature_common()` を呼び、共通基底フィールドを集約する。以降の
+  プレイヤー固有フィールドは共通フィールドを除いて従来の相対順序を保つ。
+  ロード側 (`player-info-loader.cpp`) は v51 以降で `rd_base_info()` 先頭の
+  `rd_creature_common()` で共通基底を読み、各共通フィールドの旧読込箇所
+  (name / ht / wt / au / exp / maxhp / hp / dealt_damage / energy_need /
+  CONFUSION / ACCELERATION / DECELERATION / FEAR / STUN / INVULNERABILITY の
+  15 箇所) を `loading_savefile_version_is_older_than(51)` でガードして
+  v50 以前のみ読む。プレイヤー固有フィールドの相対順序は不変。
+- **モンスターフォーマットは v50 と v51 で同一** (`wr_creature_common` 不変)。
+  そのため `rd_monster()` の分岐は `older_than(50)` のままでよく、v50/v51
+  どちらも `rd_monster_v50()` で読む。
+- **後方互換**: v49 以前のモンスターは `rd_monster_legacy()`、v50/v51 は
+  `rd_monster_v50()`。プレイヤーは v50 以前が旧個別読込、v51 以降が
+  `rd_creature_common()` + ガード済み個別読込。
 - 書込/読込は完全対称が前提。共通ブロックのフィールド追加・順序変更時は
-  writer/loader 双方を同時更新し、必要ならバージョンを再度更新すること。
-  `prace`/`pclass` は `NONE` (-1) を取り得るため符号付き `s16b` で保存する
-  (byte 保存は -1 が 255 になり復元不能なので不可)。
-- **残タスク (後続フェーズ)**: プレイヤー経路 (`wr_player` / `rd_player_info`)
-  を `wr_creature_common()` / `rd_creature_common()` に移行し、共通基底を
-  完全に 1 経路へ統合する。さらに stat 配列・MP (`csp`/`msp`)・各種 frac・
-  全時限効果 map の共通化を進める。
+  writer/loader 双方 (および利用する全経路) を同時更新し、必要なら
+  バージョンを再度更新すること。`prace`/`pclass` は `NONE` (-1) を取り得る
+  ため符号付き `s16b` で保存する (byte 保存は -1 が 255 になり復元不能)。
+  共通ブロックの拡張 (`wr_creature_common` へのフィールド追加) はモンスター
+  フォーマットも変えるため、その際は monster reader のバージョン分岐も追加する。
+- **残タスク (後続フェーズ)**: 共通基底のさらなる拡張 (stat 配列・MP
+  (`csp`/`msp`)・各種 frac・全時限効果 map の共通化)。これらは現状まだ
+  プレイヤー固有 / モンスター固有として個別に保存している。
 
 ---
 
