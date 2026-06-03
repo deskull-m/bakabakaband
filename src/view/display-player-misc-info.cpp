@@ -18,7 +18,11 @@
 void display_player_name(CreatureEntity &creature, bool name_only)
 {
     std::stringstream ss;
-    if (!name_only && creature.personality != nullptr) {
+    // 性格が「なし」(未設定の NONE / 無心 EMPTY、いずれも表示名「なし」) の場合は
+    // 二つ名 (「○○の」) を一切付けない。
+    const auto ppersonality = creature.get_ppersonality();
+    const auto has_personality_title = (creature.personality != nullptr) && (ppersonality != PERSONALITY_NONE) && (ppersonality != PERSONALITY_EMPTY);
+    if (!name_only && has_personality_title) {
         ss << (*creature.get_personality_info()).title << _((*creature.get_personality_info()).no == 1 ? "の" : "", " ");
     }
     // 無名モンスター（または匿名プレイヤー）の場合は「名無し」表記へフォールバック
