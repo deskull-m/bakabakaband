@@ -767,6 +767,7 @@ hengband_SOURCES = \
 	load/birth-loader.cpp load/birth-loader.h \
 	load/dummy-loader.cpp load/dummy-loader.h \
 	load/dungeon-loader.cpp load/dungeon-loader.h \
+	load/creature-common-loader.cpp load/creature-common-loader.h \
 	load/extra-loader.cpp load/extra-loader.h \
 	load/floor-loader.cpp load/floor-loader.h \
 	load/info-loader.cpp load/info-loader.h \
@@ -1232,6 +1233,7 @@ hengband_SOURCES = \
 	room/vault-flag-types.h \
 	\
 	save/alliance-writer.cpp save/alliance-writer.h \
+	save/creature-common-writer.cpp save/creature-common-writer.h \
 	save/floor-writer.cpp save/floor-writer.h \
 	save/info-writer.cpp save/info-writer.h \
 	save/item-writer.cpp save/item-writer.h \
