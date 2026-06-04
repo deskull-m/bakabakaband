@@ -34,13 +34,21 @@ void rd_creature_common(CreatureEntity &creature)
     creature.target.y = rd_s16b();
     creature.target.x = rd_s16b();
 
-    creature.set_timed_effect(CreatureTimedEffect::SLEEP_OR_PARALYSIS, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::ACCELERATION, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::DECELERATION, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::STUN, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::CONFUSION, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::FEAR, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::INVULNERABILITY, rd_s16b());
+    if (loading_savefile_version_is_older_than(53)) {
+        // v52 以前: 共通時限効果 7 種のみ個別保存。残りはプレイヤー固有経路が読む。
+        creature.set_timed_effect(CreatureTimedEffect::SLEEP_OR_PARALYSIS, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::ACCELERATION, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::DECELERATION, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::STUN, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::CONFUSION, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::FEAR, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::INVULNERABILITY, rd_s16b());
+    } else {
+        // v53 以降: 全時限効果を列挙順にダンプ (wr_creature_common と対称)。
+        for (auto i = 0; i < enum2i(CreatureTimedEffect::MAX); i++) {
+            creature.set_timed_effect(i2enum<CreatureTimedEffect>(i), rd_s16b());
+        }
+    }
 
     const auto material_count = rd_u16b();
     std::vector<CreatureMaterialType> materials;

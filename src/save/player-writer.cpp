@@ -165,66 +165,17 @@ void wr_player(CreatureEntity &creature)
     wr_s16b(creature.get_prestige());
 
     wr_s16b(0); /* old "rest" */
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::BLINDNESS));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::PARALYSIS));
-    // CONFUSION は wr_creature_common() で保存済み
+    // 全時限効果 (BLINDNESS / PARALYSIS / CUT / POISON / HALLUCINATION /
+    // PROTECTION / ULTIMATE_RESISTANCE / HERO / ... / TIM_IMM_DARK 等すべて) は
+    // wr_creature_common() の全時限効果ダンプ (v53) に集約済み。ここでは
+    // 時限効果以外の (時限効果と交互配置されていた) フィールドのみ書き出す。
     wr_s16b(creature.get_food());
     wr_s16b(0); /* old "food_digested" */
     wr_s16b(0); /* old "protection" */
-    // energy_need は wr_creature_common() で保存済み
     wr_s16b(creature.get_enchant_energy_need());
-    // ACCELERATION / DECELERATION / FEAR は wr_creature_common() で保存済み
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::CUT));
-    // STUN は wr_creature_common() で保存済み
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::POISON));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::HALLUCINATION));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::PROTECTION));
-    // INVULNERABILITY は wr_creature_common() で保存済み
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::HERO));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::BERSERK));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::SHIELD));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::BLESSED));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_INVIS));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::WORD_RECALL));
     wr_s16b(static_cast<int16_t>(creature.get_recall_dungeon()));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::ALTER_REALITY));
     wr_s16b(creature.get_infravision());
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_INFRA));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ACID));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ELEC));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::OPPOSE_POIS));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TSUYOSHI));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_ESP));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::RESIST_MAGIC));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_REGEN));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_PASS_WALL));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_STEALTH));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_LEVITATION));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_SH_TOUKI));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TSUBURERU));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::MAGICDEF));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_RES_NETHER));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_RES_LITE));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_RES_DARK));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_RES_FEAR));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_RES_TIME));
     wr_byte((byte)creature.get_mimic_form());
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_MIMIC));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_SH_FIRE));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_SH_HOLY));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_EYEEYE));
-
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_REFLECT));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::MULTISHADOW));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::DUSTROBE));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_EMISSION));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::TIM_IMM_DARK));
 
     wr_s16b(creature.get_patron());
     wr_FlagGroup(creature.get_mutations(), wr_byte);
@@ -271,9 +222,8 @@ void wr_player(CreatureEntity &creature)
         wr_s32b(it.second);
     }
 
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::ELE_ATTACK));
+    // ELE_ATTACK / ELE_IMMUNE は wr_creature_common() の全時限効果ダンプに集約済み
     wr_u32b(creature.get_special_attack_flags());
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::ELE_IMMUNE));
     wr_u32b(creature.get_special_defense_flags());
     wr_byte(creature.knowledge);
     wr_bool(creature.is_autopick_autoregister());

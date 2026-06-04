@@ -36,14 +36,12 @@ void wr_creature_common(const CreatureEntity &creature)
     wr_s16b(static_cast<int16_t>(creature.target.y));
     wr_s16b(static_cast<int16_t>(creature.target.x));
 
-    // プレイヤー・モンスター共通の時限効果
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::SLEEP_OR_PARALYSIS));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::ACCELERATION));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::DECELERATION));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::STUN));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::CONFUSION));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::FEAR));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY));
+    // プレイヤー・モンスター共通の全時限効果を列挙順にダンプする (v53)。
+    // これにより約 56 種の時限効果を 1 箇所で保存し、個別保存に伴う
+    // 順序不整合 (旧フォーマットに存在) を解消する。
+    for (auto i = 0; i < enum2i(CreatureTimedEffect::MAX); i++) {
+        wr_s16b(creature.get_timed_effect(i2enum<CreatureTimedEffect>(i)));
+    }
 
     // 材質 (副種族)
     const auto &materials = creature.get_materials();
