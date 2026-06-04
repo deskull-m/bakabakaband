@@ -101,7 +101,10 @@ void rd_base_info(CreatureEntity &creature)
     creature.expfact = rd_u16b();
 
     creature.death_count = rd_s32b();
-    creature.set_age(rd_s16b());
+    // age は v52 以降 rd_creature_common() で読込済み
+    if (loading_savefile_version_is_older_than(52)) {
+        creature.set_age(rd_s16b());
+    }
     // ht / wt は v51 以降 rd_creature_common() で読込済み
     if (loading_savefile_version_is_older_than(51)) {
         creature.set_ht(rd_s16b());
@@ -131,16 +134,18 @@ void rd_base_info(CreatureEntity &creature)
 
 void rd_experience(CreatureEntity &creature)
 {
-    creature.set_max_exp(rd_s32b());
-    creature.set_max_max_exp(rd_s32b());
-
-    // exp は v51 以降 rd_creature_common() で読込済み
-    if (loading_savefile_version_is_older_than(51)) {
-        creature.set_exp(rd_s32b());
+    // max_exp / max_max_exp / exp_frac / level は v52 以降 rd_creature_common() で
+    // 読込済み。exp は v51 以降 rd_creature_common() で読込済み。
+    if (loading_savefile_version_is_older_than(52)) {
+        creature.set_max_exp(rd_s32b());
+        creature.set_max_max_exp(rd_s32b());
+        if (loading_savefile_version_is_older_than(51)) {
+            creature.set_exp(rd_s32b());
+        }
+        creature.exp_frac = rd_u32b();
+        creature.set_level(rd_s16b());
     }
-    creature.exp_frac = rd_u32b();
 
-    creature.set_level(rd_s16b());
     for (int i = 0; i < 64; i++) {
         creature.set_spell_exp(i, rd_s16b());
     }
@@ -229,6 +234,11 @@ static void rd_base_status(CreatureEntity &creature)
         }
     };
 
+    // 能力値配列は v52 以降 rd_creature_common() で読込済み
+    if (!loading_savefile_version_is_older_than(52)) {
+        return;
+    }
+
     bool is_old_format = loading_savefile_version_is_older_than(36);
 
     for (int i = 0; i < A_MAX; i++) {
@@ -316,7 +326,10 @@ static void rd_hp(CreatureEntity &creature)
         creature.maxhp = rd_s32b();
         creature.hp = rd_s32b();
     }
-    creature.hp_frac = rd_u32b();
+    // hp_frac は v52 以降 rd_creature_common() で読込済み
+    if (loading_savefile_version_is_older_than(52)) {
+        creature.hp_frac = rd_u32b();
+    }
 
     // dealt_damage は v51 以降 rd_creature_common() で読込済み。
     // v35〜v50 は s32b で保存、v34 以前は未保存 (0)。
@@ -335,9 +348,12 @@ static void rd_hp(CreatureEntity &creature)
  */
 static void rd_mana(CreatureEntity &creature)
 {
-    creature.set_msp(rd_s32b());
-    creature.set_csp(rd_s32b());
-    creature.csp_frac = rd_u32b();
+    // msp / csp / csp_frac は v52 以降 rd_creature_common() で読込済み
+    if (loading_savefile_version_is_older_than(52)) {
+        creature.set_msp(rd_s32b());
+        creature.set_csp(rd_s32b());
+        creature.csp_frac = rd_u32b();
+    }
 }
 
 /*!

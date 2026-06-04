@@ -70,8 +70,7 @@ void wr_player(CreatureEntity &creature)
     wr_u16b(creature.expfact);
 
     wr_s32b(creature.death_count);
-    wr_s16b(creature.get_age());
-    // ht / wt は wr_creature_common() で保存済み
+    // age / ht / wt は wr_creature_common() で保存済み
 
     // 死亡履歴のセーブ
     wr_u32b(static_cast<uint32_t>(creature.death_history.size()));
@@ -85,28 +84,13 @@ void wr_player(CreatureEntity &creature)
         wr_s16b(enum2i(record.killer_monrace_id));
     }
 
-    for (int i = 0; i < A_MAX; ++i) {
-        wr_s16b(creature.get_stat_max(i));
-    }
-
-    for (int i = 0; i < A_MAX; ++i) {
-        wr_s16b(creature.get_stat_max_max(i));
-    }
-
-    for (int i = 0; i < A_MAX; ++i) {
-        wr_s16b(creature.get_stat_cur(i));
-    }
+    // stat_max / stat_max_max / stat_cur は wr_creature_common() で保存済み (v52 拡張)
 
     for (int i = 0; i < 12; ++i) {
         wr_s16b(0);
     }
 
-    // au は wr_creature_common() で保存済み
-    wr_u32b(creature.get_max_exp());
-    wr_u32b(creature.get_max_max_exp());
-    // exp は wr_creature_common() で保存済み
-    wr_u32b(creature.exp_frac);
-    wr_s16b(creature.get_level());
+    // au / exp / max_exp / max_max_exp / exp_frac / level は wr_creature_common() で保存済み
 
     for (int i = 0; i < 64; i++) {
         wr_s16b(creature.get_spell_exp(i));
@@ -163,11 +147,8 @@ void wr_player(CreatureEntity &creature)
     wr_s16b((int16_t)creature.oldpy);
 
     wr_s16b(0);
-    // maxhp / hp / dealt_damage は wr_creature_common() で保存済み
-    wr_u32b(creature.hp_frac);
-    wr_s32b(creature.get_msp());
-    wr_s32b(creature.get_csp());
-    wr_u32b(creature.csp_frac);
+    // maxhp / hp / dealt_damage / hp_frac / msp / csp / csp_frac は
+    // wr_creature_common() で保存済み (hp_frac/msp/csp/csp_frac は v52 拡張)
     wr_s16b(creature.get_max_plv());
 
     const auto &dungeon_records = DungeonRecords::get_instance();

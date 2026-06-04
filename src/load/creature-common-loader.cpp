@@ -49,4 +49,28 @@ void rd_creature_common(CreatureEntity &creature)
         materials.push_back(i2enum<CreatureMaterialType>(rd_s16b()));
     }
     creature.set_materials(materials);
+
+    // --- セーブデータバージョン 52 拡張 ---
+    // v51 以前のセーブには存在しないため読み飛ばす (各経路はこの分岐で自動対応)。
+    if (loading_savefile_version_is_older_than(52)) {
+        return;
+    }
+    creature.set_level(rd_s16b());
+    creature.set_age(rd_s16b());
+    creature.hp_frac = rd_u32b();
+    creature.set_msp(rd_s32b());
+    creature.set_csp(rd_s32b());
+    creature.csp_frac = rd_u32b();
+    creature.set_max_exp(rd_u32b());
+    creature.set_max_max_exp(rd_u32b());
+    creature.exp_frac = rd_u32b();
+    for (auto i = 0; i < A_MAX; i++) {
+        creature.set_stat_max(i, rd_s16b());
+    }
+    for (auto i = 0; i < A_MAX; i++) {
+        creature.set_stat_max_max(i, rd_s16b());
+    }
+    for (auto i = 0; i < A_MAX; i++) {
+        creature.set_stat_cur(i, rd_s16b());
+    }
 }

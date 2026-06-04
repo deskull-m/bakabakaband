@@ -51,4 +51,25 @@ void wr_creature_common(const CreatureEntity &creature)
     for (const auto material : materials) {
         wr_s16b(static_cast<int16_t>(enum2i(material)));
     }
+
+    // --- セーブデータバージョン 52 拡張: CreatureEntity 数値基底の追加分 ---
+    // (level / age / 各種 frac / MP / 経験値補助 / 能力値配列)
+    wr_s16b(static_cast<int16_t>(creature.get_level()));
+    wr_s16b(creature.get_age());
+    wr_u32b(creature.hp_frac);
+    wr_s32b(creature.get_msp());
+    wr_s32b(creature.get_csp());
+    wr_u32b(creature.csp_frac);
+    wr_u32b(creature.get_max_exp());
+    wr_u32b(creature.get_max_max_exp());
+    wr_u32b(creature.exp_frac);
+    for (auto i = 0; i < A_MAX; i++) {
+        wr_s16b(creature.get_stat_max(i));
+    }
+    for (auto i = 0; i < A_MAX; i++) {
+        wr_s16b(creature.get_stat_max_max(i));
+    }
+    for (auto i = 0; i < A_MAX; i++) {
+        wr_s16b(creature.get_stat_cur(i));
+    }
 }
