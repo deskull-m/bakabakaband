@@ -3,6 +3,7 @@
 #include "combat/martial-arts-style.h"
 #include "load/angband-version-comparer.h"
 #include "load/birth-loader.h"
+#include "load/creature-common-loader.h"
 #include "load/dummy-loader.h"
 #include "load/load-util.h"
 #include "load/load-zangband.h"
@@ -63,9 +64,18 @@ static void rd_realms(CreatureEntity &creature)
  */
 void rd_base_info(CreatureEntity &creature)
 {
-    creature.name = rd_string();
-    if (creature.name.length() > 40) {
-        creature.name.resize(40);
+    // セーブデータバージョン 51 以降: CreatureEntity 共通基底フィールドを
+    // 先頭でまとめて読み込む (wr_player 先頭の wr_creature_common() と対称)。
+    if (!loading_savefile_version_is_older_than(51)) {
+        rd_creature_common(creature);
+        if (creature.name.length() > 40) {
+            creature.name.resize(40);
+        }
+    } else {
+        creature.name = rd_string();
+        if (creature.name.length() > 40) {
+            creature.name.resize(40);
+        }
     }
     creature.died_from = rd_string();
     creature.last_message = rd_string();
@@ -92,8 +102,11 @@ void rd_base_info(CreatureEntity &creature)
 
     creature.death_count = rd_s32b();
     creature.set_age(rd_s16b());
-    creature.set_ht(rd_s16b());
-    creature.set_wt(rd_s16b());
+    // ht / wt は v51 以降 rd_creature_common() で読込済み
+    if (loading_savefile_version_is_older_than(51)) {
+        creature.set_ht(rd_s16b());
+        creature.set_wt(rd_s16b());
+    }
 
     // 死亡履歴のロード（バージョン44以降）
     if (loading_savefile_version_is_older_than(44)) {
@@ -121,7 +134,10 @@ void rd_experience(CreatureEntity &creature)
     creature.set_max_exp(rd_s32b());
     creature.set_max_max_exp(rd_s32b());
 
-    creature.set_exp(rd_s32b());
+    // exp は v51 以降 rd_creature_common() で読込済み
+    if (loading_savefile_version_is_older_than(51)) {
+        creature.set_exp(rd_s32b());
+    }
     creature.exp_frac = rd_u32b();
 
     creature.set_level(rd_s16b());
@@ -295,15 +311,21 @@ static void rd_arena(CreatureEntity &creature)
  */
 static void rd_hp(CreatureEntity &creature)
 {
-    creature.maxhp = rd_s32b();
-    creature.hp = rd_s32b();
+    // maxhp / hp は v51 以降 rd_creature_common() で読込済み
+    if (loading_savefile_version_is_older_than(51)) {
+        creature.maxhp = rd_s32b();
+        creature.hp = rd_s32b();
+    }
     creature.hp_frac = rd_u32b();
 
-    // セーブファイルバージョン35以降で与ダメージ蓄積を読み込み
-    if (!loading_savefile_version_is_older_than(35)) {
-        creature.set_dealt_damage(rd_s32b());
-    } else {
-        creature.set_dealt_damage(0);
+    // dealt_damage は v51 以降 rd_creature_common() で読込済み。
+    // v35〜v50 は s32b で保存、v34 以前は未保存 (0)。
+    if (loading_savefile_version_is_older_than(51)) {
+        if (!loading_savefile_version_is_older_than(35)) {
+            creature.set_dealt_damage(rd_s32b());
+        } else {
+            creature.set_dealt_damage(0);
+        }
     }
 }
 
@@ -327,14 +349,20 @@ static void rd_bad_status(CreatureEntity &creature)
     strip_bytes(2); /* Old "rest" */
     creature.set_timed_effect(CreatureTimedEffect::BLINDNESS, rd_s16b());
     creature.set_timed_effect(CreatureTimedEffect::PARALYSIS, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::CONFUSION, rd_s16b());
+    // CONFUSION は v51 以降 rd_creature_common() で読込済み
+    if (loading_savefile_version_is_older_than(51)) {
+        creature.set_timed_effect(CreatureTimedEffect::CONFUSION, rd_s16b());
+    }
     creature.set_food(rd_s16b());
     strip_bytes(4); /* Old "food_digested" / "protection" */
 }
 
 static void rd_energy(CreatureEntity &creature)
 {
-    creature.energy_need = rd_s16b();
+    // energy_need は v51 以降 rd_creature_common() で読込済み
+    if (loading_savefile_version_is_older_than(51)) {
+        creature.energy_need = rd_s16b();
+    }
     creature.set_enchant_energy_need(rd_s16b());
 }
 
@@ -345,15 +373,24 @@ static void rd_energy(CreatureEntity &creature)
  */
 static void rd_status(CreatureEntity &creature)
 {
-    creature.set_timed_effect(CreatureTimedEffect::ACCELERATION, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::DECELERATION, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::FEAR, rd_s16b());
+    // ACCELERATION / DECELERATION / FEAR / STUN / INVULNERABILITY は
+    // v51 以降 rd_creature_common() で読込済み。残りはプレイヤー固有として読む。
+    const auto is_pre_v51 = loading_savefile_version_is_older_than(51);
+    if (is_pre_v51) {
+        creature.set_timed_effect(CreatureTimedEffect::ACCELERATION, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::DECELERATION, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::FEAR, rd_s16b());
+    }
     creature.set_timed_effect(CreatureTimedEffect::CUT, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::STUN, rd_s16b());
+    if (is_pre_v51) {
+        creature.set_timed_effect(CreatureTimedEffect::STUN, rd_s16b());
+    }
     creature.set_timed_effect(CreatureTimedEffect::POISON, rd_s16b());
     creature.set_timed_effect(CreatureTimedEffect::HALLUCINATION, rd_s16b());
     creature.set_timed_effect(CreatureTimedEffect::PROTECTION, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::INVULNERABILITY, rd_s16b());
+    if (is_pre_v51) {
+        creature.set_timed_effect(CreatureTimedEffect::INVULNERABILITY, rd_s16b());
+    }
     creature.set_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE, rd_s16b());
 }
 
@@ -445,7 +482,10 @@ static void rd_player_status(CreatureEntity &creature)
 {
     rd_base_status(creature);
     strip_bytes(24);
-    creature.set_au(rd_s32b());
+    // au は v51 以降 rd_creature_common() で読込済み
+    if (loading_savefile_version_is_older_than(51)) {
+        creature.set_au(rd_s32b());
+    }
     rd_experience(creature);
     rd_skills(creature);
     set_race(creature);
