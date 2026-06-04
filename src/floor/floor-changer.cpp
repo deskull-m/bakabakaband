@@ -27,7 +27,6 @@
 #include "monster/monster-flag-types.h"
 #include "monster/monster-info.h"
 #include "monster/monster-list.h"
-#include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
 #include "monster/monster-update.h"
 #include "player-base/player-class.h"
@@ -253,15 +252,10 @@ static void reset_unique_by_floor_change(CreatureEntity &creature)
             continue;
         }
 
-        if (!monster.is_pet()) {
-            monster.hp = monster.maxhp = monster.max_maxhp;
-            (void)set_monster_fast(floor, i, 0);
-            (void)set_monster_slow(floor, i, 0);
-            (void)set_monster_stunned(floor, i, 0);
-            (void)set_monster_confused(floor, i, 0);
-            (void)set_monster_monfear(floor, i, 0);
-            (void)set_monster_invulner(floor, i, 0, false);
-        }
+        // 保存フロア復元時はモンスターの HP・状態異常を保存値のまま維持する。
+        // (以前は非ペットを全回復・状態クリアしていたが、CreatureEntity 統合で
+        //  HP / 時限効果が完全に保存・復元されるようになったため撤廃。これにより
+        //  別フロアへ移動して戻ってもモンスターの状態が完全に保たれる。)
 
         const auto &monrace = monster.get_real_monrace();
         if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && monrace.population_flags.has_not(MonsterPopulationType::NAZGUL)) {
