@@ -8,6 +8,7 @@
 #include "player-base/player-class.h"
 #include "player/player-realm.h"
 #include "player/player-skill.h"
+#include "save/creature-common-writer.h"
 #include "save/info-writer.h"
 #include "save/player-class-specific-data-writer.h"
 #include "save/save-util.h"
@@ -45,7 +46,11 @@ void wr_player(CreatureEntity &creature)
 {
     auto &system = AngbandSystem::get_instance();
 
-    wr_string(creature.name.data());
+    // セーブデータバージョン 51 以降: CreatureEntity 共通基底フィールドを
+    // wr_creature_common() に集約する。以降のプレイヤー固有フィールドは
+    // 共通フィールドを除いて従来の相対順序を保つ。
+    wr_creature_common(creature);
+
     wr_string(creature.died_from);
     wr_string(creature.last_message);
 
@@ -66,8 +71,7 @@ void wr_player(CreatureEntity &creature)
 
     wr_s32b(creature.death_count);
     wr_s16b(creature.get_age());
-    wr_s16b(creature.get_ht());
-    wr_s16b(creature.get_wt());
+    // ht / wt は wr_creature_common() で保存済み
 
     // 死亡履歴のセーブ
     wr_u32b(static_cast<uint32_t>(creature.death_history.size()));
@@ -97,10 +101,10 @@ void wr_player(CreatureEntity &creature)
         wr_s16b(0);
     }
 
-    wr_u32b(creature.get_au());
+    // au は wr_creature_common() で保存済み
     wr_u32b(creature.get_max_exp());
     wr_u32b(creature.get_max_max_exp());
-    wr_u32b(creature.get_exp());
+    // exp は wr_creature_common() で保存済み
     wr_u32b(creature.exp_frac);
     wr_s16b(creature.get_level());
 
@@ -159,10 +163,8 @@ void wr_player(CreatureEntity &creature)
     wr_s16b((int16_t)creature.oldpy);
 
     wr_s16b(0);
-    wr_s32b(creature.maxhp);
-    wr_s32b(creature.hp);
+    // maxhp / hp / dealt_damage は wr_creature_common() で保存済み
     wr_u32b(creature.hp_frac);
-    wr_s32b(creature.get_dealt_damage()); // セーブファイルバージョン35以降で与ダメージ蓄積を保存
     wr_s32b(creature.get_msp());
     wr_s32b(creature.get_csp());
     wr_u32b(creature.csp_frac);
@@ -184,21 +186,19 @@ void wr_player(CreatureEntity &creature)
     wr_s16b(0); /* old "rest" */
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::BLINDNESS));
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::PARALYSIS));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::CONFUSION));
+    // CONFUSION は wr_creature_common() で保存済み
     wr_s16b(creature.get_food());
     wr_s16b(0); /* old "food_digested" */
     wr_s16b(0); /* old "protection" */
-    wr_s16b(creature.energy_need);
+    // energy_need は wr_creature_common() で保存済み
     wr_s16b(creature.get_enchant_energy_need());
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::ACCELERATION));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::DECELERATION));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::FEAR));
+    // ACCELERATION / DECELERATION / FEAR は wr_creature_common() で保存済み
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::CUT));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::STUN));
+    // STUN は wr_creature_common() で保存済み
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::POISON));
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::HALLUCINATION));
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::PROTECTION));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY));
+    // INVULNERABILITY は wr_creature_common() で保存済み
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE));
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::HERO));
     wr_s16b(creature.get_timed_effect(CreatureTimedEffect::BERSERK));
