@@ -81,4 +81,12 @@ void rd_creature_common(CreatureEntity &creature)
     for (auto i = 0; i < A_MAX; i++) {
         creature.set_stat_cur(i, rd_s16b());
     }
+
+    // 派生値 stat_use はセーブしない (プレイヤーは calc_bonuses() で再計算する)。
+    // モンスターは calc_bonuses() を呼ばないため、生成時の get_stats() と同様に
+    // stat_max と同値へ復元する。これによりロード後にモンスターの能力値が 0 へ
+    // 落ちる問題を解消する (プレイヤーはこの後の calc_bonuses() で上書きされる)。
+    for (auto i = 0; i < A_MAX; i++) {
+        creature.set_stat_use(i, creature.get_stat_max(i));
+    }
 }
