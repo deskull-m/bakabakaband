@@ -485,12 +485,26 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   開始 (`apply_monrace_personality()` で対話選択をスキップ) でも同一。
 - 性格適用は `CreatureEntity::set_personality(player_personality_type)` に集約。
 
-### セーブ/ロードの統合 (CreatureEntity 共通シリアライズ) — フェーズ 1・2・3
+### セーブ/ロードの統合 (CreatureEntity 共通シリアライズ) — フェーズ 1〜4
 
 旧 PlayerType / 旧 MonsterEntity に分かれていたセーブ/ロード処理を、
 `CreatureEntity` 基底フィールド単位で 1 箇所に統合していく方針。
-**セーブデータバージョンは 52** に更新済み (フェーズ1 で 50、フェーズ2 で 51、
-フェーズ3 で 52)。
+**セーブデータバージョンは 53** に更新済み (フェーズ1=50 / 2=51 / 3=52 / 4=53)。
+
+- **フェーズ4 で全時限効果 (`timed_effects_map`) を共通化済み**:
+  `wr_creature_common()` は `CreatureTimedEffect` を列挙順に全 (約 56) ダンプし、
+  `rd_creature_common()` は v53 以降この全ダンプを読む (v52 以前は共通 7 種のみ)。
+  これにより旧フォーマットに存在した時限効果の順序不整合
+  (writer/reader で TIM_RES_* 等の順序が食い違い、バイト数だけ整合して値が
+  ずれていたバグ) を v53 で解消。プレイヤー固有経路 (`wr_player` /
+  `rd_bad_status` / `rd_status` / `set_timed_effects` / `rd_player_status` の
+  インライン / `rd_special_attack` / `rd_special_defense`) の約 49 個の個別
+  時限効果書込/読込を削除・`older_than(53)` ガード化し、時限効果と交互配置
+  されていた非時限フィールド (food / recall_dungeon / infravision / mimic_form
+  / special_attack / special_defense 等) のみ残置。
+  **注意: `CreatureTimedEffect` enum に値を追加するとダンプ件数が変わるため、
+  必ずセーブデータバージョンを更新すること** (列挙順依存のため中間挿入は避け、
+  末尾 `MAX` 直前への追加が無難)。
 
 - 共通基底シリアライザ:
   - 書込: `wr_creature_common(const CreatureEntity &)` (`src/save/creature-common-writer.{h,cpp}`)
@@ -539,9 +553,11 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   共通ブロック拡張時は `wr_creature_common()` に末尾追加し、
   `rd_creature_common()` に対応するバージョンガード付き読込を追加するだけで
   全経路 (プレイヤー・モンスター) に反映される。
-- **残タスク (後続フェーズ)**: 全時限効果 map (`timed_effects_map`) の共通化。
-  現状プレイヤーは約 55 種の時限効果を `wr_player()` 内で個別保存しており、
-  これらを `wr_creature_common()` の汎用 map ダンプに集約するのが次の目標。
+- **残タスク (後続フェーズ)**: 共通化の対象はほぼ完了。残るプレイヤー固有
+  シリアライズ (スキル経験値・職業固有データ・徳・インシデント・領域・
+  突然変異/特性のフラグ群等) は本質的にプレイヤー専用であり、共通基底には
+  含めない方針。今後モンスターにも持たせたいフィールドが出てきた場合に
+  個別に `wr_creature_common()` へ移行する。
 
 ---
 
