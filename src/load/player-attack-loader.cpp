@@ -10,7 +10,10 @@
 
 void rd_special_attack(CreatureEntity &creature)
 {
-    creature.set_timed_effect(CreatureTimedEffect::ELE_ATTACK, rd_s16b());
+    // ELE_ATTACK は v53 以降 rd_creature_common() の全時限ダンプで読込済み
+    if (loading_savefile_version_is_older_than(53)) {
+        creature.set_timed_effect(CreatureTimedEffect::ELE_ATTACK, rd_s16b());
+    }
     creature.set_special_attack_flags(rd_u32b());
 }
 
@@ -28,7 +31,10 @@ void rd_special_action(CreatureEntity &creature)
 
 void rd_special_defense(CreatureEntity &creature)
 {
-    creature.set_timed_effect(CreatureTimedEffect::ELE_IMMUNE, rd_s16b());
+    // ELE_IMMUNE は v53 以降 rd_creature_common() の全時限ダンプで読込済み
+    if (loading_savefile_version_is_older_than(53)) {
+        creature.set_timed_effect(CreatureTimedEffect::ELE_IMMUNE, rd_s16b());
+    }
     creature.set_special_defense_flags(rd_u32b());
 }
 

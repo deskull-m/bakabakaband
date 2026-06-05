@@ -28,7 +28,7 @@ constexpr std::string_view VARIANT_NAME("Bakabaka");
  *     player_hp 配列が PY_MAX_LEVEL (件数非保持) で保存されるため、
  *     旧バージョン (<49) は 50 件として読む差分処理が必要。
  */
-constexpr uint32_t SAVEFILE_VERSION = 51;
+constexpr uint32_t SAVEFILE_VERSION = 53;
 
 /*!
  * @brief バージョンが開発版が安定版かを返す(廃止予定)

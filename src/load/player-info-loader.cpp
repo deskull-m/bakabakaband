@@ -101,7 +101,10 @@ void rd_base_info(CreatureEntity &creature)
     creature.expfact = rd_u16b();
 
     creature.death_count = rd_s32b();
-    creature.set_age(rd_s16b());
+    // age は v52 以降 rd_creature_common() で読込済み
+    if (loading_savefile_version_is_older_than(52)) {
+        creature.set_age(rd_s16b());
+    }
     // ht / wt は v51 以降 rd_creature_common() で読込済み
     if (loading_savefile_version_is_older_than(51)) {
         creature.set_ht(rd_s16b());
@@ -131,16 +134,18 @@ void rd_base_info(CreatureEntity &creature)
 
 void rd_experience(CreatureEntity &creature)
 {
-    creature.set_max_exp(rd_s32b());
-    creature.set_max_max_exp(rd_s32b());
-
-    // exp は v51 以降 rd_creature_common() で読込済み
-    if (loading_savefile_version_is_older_than(51)) {
-        creature.set_exp(rd_s32b());
+    // max_exp / max_max_exp / exp_frac / level は v52 以降 rd_creature_common() で
+    // 読込済み。exp は v51 以降 rd_creature_common() で読込済み。
+    if (loading_savefile_version_is_older_than(52)) {
+        creature.set_max_exp(rd_s32b());
+        creature.set_max_max_exp(rd_s32b());
+        if (loading_savefile_version_is_older_than(51)) {
+            creature.set_exp(rd_s32b());
+        }
+        creature.exp_frac = rd_u32b();
+        creature.set_level(rd_s16b());
     }
-    creature.exp_frac = rd_u32b();
 
-    creature.set_level(rd_s16b());
     for (int i = 0; i < 64; i++) {
         creature.set_spell_exp(i, rd_s16b());
     }
@@ -229,6 +234,11 @@ static void rd_base_status(CreatureEntity &creature)
         }
     };
 
+    // 能力値配列は v52 以降 rd_creature_common() で読込済み
+    if (!loading_savefile_version_is_older_than(52)) {
+        return;
+    }
+
     bool is_old_format = loading_savefile_version_is_older_than(36);
 
     for (int i = 0; i < A_MAX; i++) {
@@ -316,7 +326,10 @@ static void rd_hp(CreatureEntity &creature)
         creature.maxhp = rd_s32b();
         creature.hp = rd_s32b();
     }
-    creature.hp_frac = rd_u32b();
+    // hp_frac は v52 以降 rd_creature_common() で読込済み
+    if (loading_savefile_version_is_older_than(52)) {
+        creature.hp_frac = rd_u32b();
+    }
 
     // dealt_damage は v51 以降 rd_creature_common() で読込済み。
     // v35〜v50 は s32b で保存、v34 以前は未保存 (0)。
@@ -335,9 +348,12 @@ static void rd_hp(CreatureEntity &creature)
  */
 static void rd_mana(CreatureEntity &creature)
 {
-    creature.set_msp(rd_s32b());
-    creature.set_csp(rd_s32b());
-    creature.csp_frac = rd_u32b();
+    // msp / csp / csp_frac は v52 以降 rd_creature_common() で読込済み
+    if (loading_savefile_version_is_older_than(52)) {
+        creature.set_msp(rd_s32b());
+        creature.set_csp(rd_s32b());
+        creature.csp_frac = rd_u32b();
+    }
 }
 
 /*!
@@ -347,11 +363,15 @@ static void rd_mana(CreatureEntity &creature)
 static void rd_bad_status(CreatureEntity &creature)
 {
     strip_bytes(2); /* Old "rest" */
-    creature.set_timed_effect(CreatureTimedEffect::BLINDNESS, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::PARALYSIS, rd_s16b());
-    // CONFUSION は v51 以降 rd_creature_common() で読込済み
-    if (loading_savefile_version_is_older_than(51)) {
-        creature.set_timed_effect(CreatureTimedEffect::CONFUSION, rd_s16b());
+    // BLINDNESS / PARALYSIS / CONFUSION は v53 以降 rd_creature_common() の
+    // 全時限効果ダンプで読込済み。
+    if (loading_savefile_version_is_older_than(53)) {
+        creature.set_timed_effect(CreatureTimedEffect::BLINDNESS, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::PARALYSIS, rd_s16b());
+        // CONFUSION は v51 以降 rd_creature_common() で読込済み
+        if (loading_savefile_version_is_older_than(51)) {
+            creature.set_timed_effect(CreatureTimedEffect::CONFUSION, rd_s16b());
+        }
     }
     creature.set_food(rd_s16b());
     strip_bytes(4); /* Old "food_digested" / "protection" */
@@ -373,6 +393,10 @@ static void rd_energy(CreatureEntity &creature)
  */
 static void rd_status(CreatureEntity &creature)
 {
+    // v53 以降は全時限効果を rd_creature_common() の全時限ダンプで読込済み。
+    if (!loading_savefile_version_is_older_than(53)) {
+        return;
+    }
     // ACCELERATION / DECELERATION / FEAR / STUN / INVULNERABILITY は
     // v51 以降 rd_creature_common() で読込済み。残りはプレイヤー固有として読む。
     const auto is_pre_v51 = loading_savefile_version_is_older_than(51);
@@ -396,35 +420,42 @@ static void rd_status(CreatureEntity &creature)
 
 static void set_timed_effects(CreatureEntity &creature)
 {
-    creature.set_timed_effect(CreatureTimedEffect::TIM_ESP, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::WRAITH_FORM, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::RESIST_MAGIC, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::TIM_REGEN, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::TIM_PASS_WALL, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::TIM_STEALTH, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::TIM_LEVITATION, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::TIM_SH_TOUKI, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::LIGHTSPEED, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::TSUBURERU, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::MAGICDEF, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::TIM_RES_NETHER, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::TIM_RES_TIME, rd_s16b());
+    // v53 以降は全時限効果を rd_creature_common() で読込済み。ここでは時限効果と
+    // 交互配置されていた mimic_form (時限効果でない) のみを読む。
+    const auto is_pre_v53 = loading_savefile_version_is_older_than(53);
+    if (is_pre_v53) {
+        creature.set_timed_effect(CreatureTimedEffect::TIM_ESP, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::WRAITH_FORM, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::RESIST_MAGIC, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::TIM_REGEN, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::TIM_PASS_WALL, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::TIM_STEALTH, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::TIM_LEVITATION, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::TIM_SH_TOUKI, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::LIGHTSPEED, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::TSUBURERU, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::MAGICDEF, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::TIM_RES_NETHER, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::TIM_RES_TIME, rd_s16b());
+    }
     creature.set_mimic_form(i2enum<MimicKindType>(rd_byte()));
-    creature.set_timed_effect(CreatureTimedEffect::TIM_MIMIC, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::TIM_SH_FIRE, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::TIM_SH_HOLY, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::TIM_EYEEYE, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::TIM_REFLECT, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::MULTISHADOW, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::DUSTROBE, rd_s16b());
+    if (is_pre_v53) {
+        creature.set_timed_effect(CreatureTimedEffect::TIM_MIMIC, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::TIM_SH_FIRE, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::TIM_SH_HOLY, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::TIM_EYEEYE, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::TIM_REFLECT, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::MULTISHADOW, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::DUSTROBE, rd_s16b());
 
-    if (!loading_savefile_version_is_older_than(37)) {
-        creature.set_timed_effect(CreatureTimedEffect::TIM_RES_LITE, rd_s16b());
-        creature.set_timed_effect(CreatureTimedEffect::TIM_RES_DARK, rd_s16b());
-        creature.set_timed_effect(CreatureTimedEffect::TIM_RES_FEAR, rd_s16b());
-        creature.set_timed_effect(CreatureTimedEffect::TIM_EMISSION, rd_s16b());
-        creature.set_timed_effect(CreatureTimedEffect::TIM_EXORCISM, rd_s16b());
-        creature.set_timed_effect(CreatureTimedEffect::TIM_IMM_DARK, rd_s16b());
+        if (!loading_savefile_version_is_older_than(37)) {
+            creature.set_timed_effect(CreatureTimedEffect::TIM_RES_LITE, rd_s16b());
+            creature.set_timed_effect(CreatureTimedEffect::TIM_RES_DARK, rd_s16b());
+            creature.set_timed_effect(CreatureTimedEffect::TIM_RES_FEAR, rd_s16b());
+            creature.set_timed_effect(CreatureTimedEffect::TIM_EMISSION, rd_s16b());
+            creature.set_timed_effect(CreatureTimedEffect::TIM_EXORCISM, rd_s16b());
+            creature.set_timed_effect(CreatureTimedEffect::TIM_IMM_DARK, rd_s16b());
+        }
     }
 }
 
@@ -511,22 +542,32 @@ static void rd_player_status(CreatureEntity &creature)
     rd_bad_status(creature);
     rd_energy(creature);
     rd_status(creature);
-    creature.set_timed_effect(CreatureTimedEffect::HERO, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::BERSERK, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::SHIELD, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::BLESSED, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::TIM_INVIS, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, rd_s16b());
+    // HERO / BERSERK / ... / TSUYOSHI 等の時限効果は v53 以降
+    // rd_creature_common() の全時限ダンプで読込済み。間に挟まる
+    // recall_dungeon / infravision (時限効果でない) のみ常に読む。
+    const auto is_pre_v53 = loading_savefile_version_is_older_than(53);
+    if (is_pre_v53) {
+        creature.set_timed_effect(CreatureTimedEffect::HERO, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::BERSERK, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::SHIELD, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::BLESSED, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::TIM_INVIS, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, rd_s16b());
+    }
     creature.set_recall_dungeon(i2enum<DungeonId>(rd_s16b()));
-    creature.set_timed_effect(CreatureTimedEffect::ALTER_REALITY, rd_s16b());
+    if (is_pre_v53) {
+        creature.set_timed_effect(CreatureTimedEffect::ALTER_REALITY, rd_s16b());
+    }
     creature.set_infravision(rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::TIM_INFRA, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_FIRE, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_COLD, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_ACID, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_ELEC, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_POIS, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::TSUYOSHI, rd_s16b());
+    if (is_pre_v53) {
+        creature.set_timed_effect(CreatureTimedEffect::TIM_INFRA, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::OPPOSE_FIRE, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::OPPOSE_COLD, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::OPPOSE_ACID, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::OPPOSE_ELEC, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::OPPOSE_POIS, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::TSUYOSHI, rd_s16b());
+    }
     rd_timed_effects(creature);
     creature.mutant_regenerate_mod = calc_mutant_regenerate_mod(creature);
 

@@ -36,19 +36,38 @@ void wr_creature_common(const CreatureEntity &creature)
     wr_s16b(static_cast<int16_t>(creature.target.y));
     wr_s16b(static_cast<int16_t>(creature.target.x));
 
-    // プレイヤー・モンスター共通の時限効果
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::SLEEP_OR_PARALYSIS));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::ACCELERATION));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::DECELERATION));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::STUN));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::CONFUSION));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::FEAR));
-    wr_s16b(creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY));
+    // プレイヤー・モンスター共通の全時限効果を列挙順にダンプする (v53)。
+    // これにより約 56 種の時限効果を 1 箇所で保存し、個別保存に伴う
+    // 順序不整合 (旧フォーマットに存在) を解消する。
+    for (auto i = 0; i < enum2i(CreatureTimedEffect::MAX); i++) {
+        wr_s16b(creature.get_timed_effect(i2enum<CreatureTimedEffect>(i)));
+    }
 
     // 材質 (副種族)
     const auto &materials = creature.get_materials();
     wr_u16b(static_cast<uint16_t>(materials.size()));
     for (const auto material : materials) {
         wr_s16b(static_cast<int16_t>(enum2i(material)));
+    }
+
+    // --- セーブデータバージョン 52 拡張: CreatureEntity 数値基底の追加分 ---
+    // (level / age / 各種 frac / MP / 経験値補助 / 能力値配列)
+    wr_s16b(static_cast<int16_t>(creature.get_level()));
+    wr_s16b(creature.get_age());
+    wr_u32b(creature.hp_frac);
+    wr_s32b(creature.get_msp());
+    wr_s32b(creature.get_csp());
+    wr_u32b(creature.csp_frac);
+    wr_u32b(creature.get_max_exp());
+    wr_u32b(creature.get_max_max_exp());
+    wr_u32b(creature.exp_frac);
+    for (auto i = 0; i < A_MAX; i++) {
+        wr_s16b(creature.get_stat_max(i));
+    }
+    for (auto i = 0; i < A_MAX; i++) {
+        wr_s16b(creature.get_stat_max_max(i));
+    }
+    for (auto i = 0; i < A_MAX; i++) {
+        wr_s16b(creature.get_stat_cur(i));
     }
 }

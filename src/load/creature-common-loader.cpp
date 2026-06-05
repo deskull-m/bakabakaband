@@ -34,13 +34,21 @@ void rd_creature_common(CreatureEntity &creature)
     creature.target.y = rd_s16b();
     creature.target.x = rd_s16b();
 
-    creature.set_timed_effect(CreatureTimedEffect::SLEEP_OR_PARALYSIS, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::ACCELERATION, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::DECELERATION, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::STUN, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::CONFUSION, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::FEAR, rd_s16b());
-    creature.set_timed_effect(CreatureTimedEffect::INVULNERABILITY, rd_s16b());
+    if (loading_savefile_version_is_older_than(53)) {
+        // v52 以前: 共通時限効果 7 種のみ個別保存。残りはプレイヤー固有経路が読む。
+        creature.set_timed_effect(CreatureTimedEffect::SLEEP_OR_PARALYSIS, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::ACCELERATION, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::DECELERATION, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::STUN, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::CONFUSION, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::FEAR, rd_s16b());
+        creature.set_timed_effect(CreatureTimedEffect::INVULNERABILITY, rd_s16b());
+    } else {
+        // v53 以降: 全時限効果を列挙順にダンプ (wr_creature_common と対称)。
+        for (auto i = 0; i < enum2i(CreatureTimedEffect::MAX); i++) {
+            creature.set_timed_effect(i2enum<CreatureTimedEffect>(i), rd_s16b());
+        }
+    }
 
     const auto material_count = rd_u16b();
     std::vector<CreatureMaterialType> materials;
@@ -49,4 +57,36 @@ void rd_creature_common(CreatureEntity &creature)
         materials.push_back(i2enum<CreatureMaterialType>(rd_s16b()));
     }
     creature.set_materials(materials);
+
+    // --- セーブデータバージョン 52 拡張 ---
+    // v51 以前のセーブには存在しないため読み飛ばす (各経路はこの分岐で自動対応)。
+    if (loading_savefile_version_is_older_than(52)) {
+        return;
+    }
+    creature.set_level(rd_s16b());
+    creature.set_age(rd_s16b());
+    creature.hp_frac = rd_u32b();
+    creature.set_msp(rd_s32b());
+    creature.set_csp(rd_s32b());
+    creature.csp_frac = rd_u32b();
+    creature.set_max_exp(rd_u32b());
+    creature.set_max_max_exp(rd_u32b());
+    creature.exp_frac = rd_u32b();
+    for (auto i = 0; i < A_MAX; i++) {
+        creature.set_stat_max(i, rd_s16b());
+    }
+    for (auto i = 0; i < A_MAX; i++) {
+        creature.set_stat_max_max(i, rd_s16b());
+    }
+    for (auto i = 0; i < A_MAX; i++) {
+        creature.set_stat_cur(i, rd_s16b());
+    }
+
+    // 派生値 stat_use はセーブしない (プレイヤーは calc_bonuses() で再計算する)。
+    // モンスターは calc_bonuses() を呼ばないため、生成時の get_stats() と同様に
+    // stat_max と同値へ復元する。これによりロード後にモンスターの能力値が 0 へ
+    // 落ちる問題を解消する (プレイヤーはこの後の calc_bonuses() で上書きされる)。
+    for (auto i = 0; i < A_MAX; i++) {
+        creature.set_stat_use(i, creature.get_stat_max(i));
+    }
 }
