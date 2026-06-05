@@ -485,20 +485,28 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   開始 (`apply_monrace_personality()` で対話選択をスキップ) でも同一。
 - 性格適用は `CreatureEntity::set_personality(player_personality_type)` に集約。
 
-### セーブ/ロードの統合 (CreatureEntity 共通シリアライズ) — フェーズ 1・2
+### セーブ/ロードの統合 (CreatureEntity 共通シリアライズ) — フェーズ 1・2・3
 
 旧 PlayerType / 旧 MonsterEntity に分かれていたセーブ/ロード処理を、
 `CreatureEntity` 基底フィールド単位で 1 箇所に統合していく方針。
-**セーブデータバージョンは 51** に更新済み (フェーズ1 で 50、フェーズ2 で 51)。
+**セーブデータバージョンは 52** に更新済み (フェーズ1 で 50、フェーズ2 で 51、
+フェーズ3 で 52)。
 
 - 共通基底シリアライザ:
   - 書込: `wr_creature_common(const CreatureEntity &)` (`src/save/creature-common-writer.{h,cpp}`)
   - 読込: `rd_creature_common(CreatureEntity &)` (`src/load/creature-common-loader.{h,cpp}`)
-  - 対象フィールド: `name` / 座標 (`y`,`x`) / `hp`/`maxhp`/`max_maxhp` /
+  - 対象フィールド (v50/v51 基本): `name` / 座標 (`y`,`x`) / `hp`/`maxhp`/`max_maxhp` /
     `dealt_damage` / `speed` / `energy_need` / `ac` / `exp` / `au` /
     `ht`/`wt` / `target` / 共通時限効果 7 種 (SLEEP_OR_PARALYSIS /
     ACCELERATION / DECELERATION / STUN / CONFUSION / FEAR /
     INVULNERABILITY) / `materials` (材質)。プレイヤー様式の明示フォーマット。
+  - 対象フィールド (v52 拡張): `level` / `age` / `hp_frac` / `msp` / `csp` /
+    `csp_frac` / `max_exp` / `max_max_exp` / `exp_frac` / 能力値配列
+    (`stat_max`/`stat_max_max`/`stat_cur` 各 6)。
+  - **`rd_creature_common()` は内部でバージョン分岐する**: v52 拡張分は
+    `loading_savefile_version_is_older_than(52)` で囲み、v51 以前のセーブでは
+    読み飛ばす。これにより**呼び出し側 (モンスター reader 等) は変更不要**で
+    v50/v51/v52 を自動的に正しく読める (拡張時はこの 1 箇所だけ直せばよい)。
 - **モンスター経路は統合済み**: `MonsterWriter::write_to_savedata()` は
   `wr_creature_common()` + モンスター固有フィールド (r_idx / ap_r_idx /
   alliance / sub_align / smart / mflag2 / parent / transform / prace /
@@ -514,21 +522,26 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   CONFUSION / ACCELERATION / DECELERATION / FEAR / STUN / INVULNERABILITY の
   15 箇所) を `loading_savefile_version_is_older_than(51)` でガードして
   v50 以前のみ読む。プレイヤー固有フィールドの相対順序は不変。
-- **モンスターフォーマットは v50 と v51 で同一** (`wr_creature_common` 不変)。
-  そのため `rd_monster()` の分岐は `older_than(50)` のままでよく、v50/v51
-  どちらも `rd_monster_v50()` で読む。
-- **後方互換**: v49 以前のモンスターは `rd_monster_legacy()`、v50/v51 は
+  ロード側の v52 拡張フィールドの旧個別読込箇所 (age / stats / max_exp /
+  max_max_exp / exp_frac / level / hp_frac / msp / csp / csp_frac) は
+  `loading_savefile_version_is_older_than(52)` でガードして v51 以前のみ読む。
+- **モンスターフォーマットは v50/v51/v52 を `rd_monster_v50()` 1 本で読む**。
+  共通ブロックの拡張は `rd_creature_common()` 内部のバージョン分岐で吸収される
+  ため、`rd_monster()` の分岐は `older_than(50)` のままでよい。モンスターも
+  v52 から能力値配列・MP 等を保存・復元するようになった (従来は未保存)。
+- **後方互換**: v49 以前のモンスターは `rd_monster_legacy()`、v50 以降は
   `rd_monster_v50()`。プレイヤーは v50 以前が旧個別読込、v51 以降が
   `rd_creature_common()` + ガード済み個別読込。
 - 書込/読込は完全対称が前提。共通ブロックのフィールド追加・順序変更時は
   writer/loader 双方 (および利用する全経路) を同時更新し、必要なら
   バージョンを再度更新すること。`prace`/`pclass` は `NONE` (-1) を取り得る
   ため符号付き `s16b` で保存する (byte 保存は -1 が 255 になり復元不能)。
-  共通ブロックの拡張 (`wr_creature_common` へのフィールド追加) はモンスター
-  フォーマットも変えるため、その際は monster reader のバージョン分岐も追加する。
-- **残タスク (後続フェーズ)**: 共通基底のさらなる拡張 (stat 配列・MP
-  (`csp`/`msp`)・各種 frac・全時限効果 map の共通化)。これらは現状まだ
-  プレイヤー固有 / モンスター固有として個別に保存している。
+  共通ブロック拡張時は `wr_creature_common()` に末尾追加し、
+  `rd_creature_common()` に対応するバージョンガード付き読込を追加するだけで
+  全経路 (プレイヤー・モンスター) に反映される。
+- **残タスク (後続フェーズ)**: 全時限効果 map (`timed_effects_map`) の共通化。
+  現状プレイヤーは約 55 種の時限効果を `wr_player()` 内で個別保存しており、
+  これらを `wr_creature_common()` の汎用 map ダンプに集約するのが次の目標。
 
 ---
 
