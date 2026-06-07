@@ -1,3 +1,7 @@
 [submodule "VisualStudio/Bakabakaband/libcurl"]
 	path = VisualStudio/Bakabakaband/libcurl
 	url = https://github.com/hengband/libcurl.git
+[submodule "godot-cpp"]
+	path = godot-cpp
+	url = https://github.com/godotengine/godot-cpp.git
+	branch = 4.3

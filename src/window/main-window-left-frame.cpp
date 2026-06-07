@@ -197,6 +197,10 @@ void print_gold(CreatureEntity &creature)
  */
 void print_depth(CreatureEntity &creature)
 {
+#ifdef GODOT_RICH_UI
+    (void)creature;
+    return; // Godot StatusPanel に表示するため terminal 描画をスキップ
+#else
     std::string depths;
     TERM_COLOR attr = TERM_WHITE;
     const auto &[wid, hgt] = term_get_size();
@@ -251,6 +255,7 @@ void print_depth(CreatureEntity &creature)
     }
 
     c_prt(attr, depths.c_str(), row_depth, col_depth);
+#endif // GODOT_RICH_UI
 }
 
 /*!

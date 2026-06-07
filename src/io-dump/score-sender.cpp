@@ -4,6 +4,10 @@
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
 
+#include <string>
+
+#ifdef WORLD_SCORE
+
 // libcurl static library definition for Windows
 #ifdef WINDOWS
 #ifndef CURL_STATICLIB
@@ -12,9 +16,6 @@
 #endif
 
 #include <curl/curl.h>
-#include <string>
-
-#ifdef WORLD_SCORE
 
 // デフォルトのスコアサーバーURL
 static std::string score_server_url = "http://localhost:3000/submit";
