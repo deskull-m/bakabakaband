@@ -14,6 +14,7 @@
 #include "save-file-scanner.h"
 
 #include "game-option/special-options.h"
+#include "locale/japanese.h"
 #include "system/system-variables.h"
 
 #include "term/gameterm.h"
@@ -125,6 +126,20 @@ void HengbandGame::_ready()
     set_term_data_array(term_data_.data(), HENGBAND_TERM_COUNT);
 }
 
+/// ゲーム内部のシステム文字コード (JP ビルドでは SJIS(CP932)/EUC-JP) の
+/// std::string を Godot 用 UTF-8 String に変換する。
+/// 端末描画 (term_text_godot) と同じく sys_to_utf8 を経由しないと、
+/// SJIS バイト列を UTF-8 として誤解釈してステータス表示が文字化けする。
+static godot::String sys_string_to_godot(const std::string &s)
+{
+#ifdef JP
+    const auto utf8 = sys_to_utf8(s);
+    return godot::String::utf8(utf8 ? utf8->c_str() : s.c_str());
+#else
+    return godot::String::utf8(s.c_str());
+#endif
+}
+
 /// GodotPlayerStatusSnapshot の各フィールドを Dictionary に変換するヘルパー
 static godot::Dictionary snapshot_to_dict(const GodotPlayerStatusSnapshot &s)
 {
@@ -140,9 +155,9 @@ static godot::Dictionary snapshot_to_dict(const GodotPlayerStatusSnapshot &s)
     d["max_exp"] = static_cast<int64_t>(s.max_exp);
     d["speed"] = s.speed;
     d["ac"] = s.display_ac;
-    d["name"] = godot::String::utf8(s.name.c_str());
-    d["race"] = godot::String::utf8(s.race_name.c_str());
-    d["class"] = godot::String::utf8(s.class_name.c_str());
+    d["name"] = sys_string_to_godot(s.name);
+    d["race"] = sys_string_to_godot(s.race_name);
+    d["class"] = sys_string_to_godot(s.class_name);
     // 能力値 (0=STR, 1=INT, 2=WIS, 3=DEX, 4=CON, 5=CHR)
     static const char *const STAT_KEYS[6] = { "str", "int", "wis", "dex", "con", "chr" };
     for (int i = 0; i < 6; ++i) {
