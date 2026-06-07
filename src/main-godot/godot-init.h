@@ -30,4 +30,8 @@ void init_godot_game_paths(const std::filesystem::path &exe_path);
 void run_game_thread(const std::filesystem::path &lib_path,
     const std::filesystem::path &save_path = {});
 
+/// Windows(Godot) ビルド向け: C++ 例外スロー時にバックトレースを stderr へ
+/// 出力する Vectored Exception Handler を登録する (診断用、他環境では no-op)。
+void install_cpp_exception_tracer();
+
 } // namespace hengband_godot
