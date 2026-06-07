@@ -261,11 +261,25 @@ errr term_pict_godot(TERM_LEN x, TERM_LEN y, int n,
         return term_wipe_godot(x, y, n);
     }
 
+    // エンジンの bigtile spacing (panel_col_of は use_bigtile で列を2倍にする) と
+    // 描画側の倍幅・継続セル抑止を必ず一致させるため、pict のたびにレイヤーの
+    // bigtile 状態をエンジンの use_bigtile (ゲームスレッドのグローバル) に同期する。
+    // set_bigtile_enabled は Godot メインスレッドから設定するため、ゲームスレッドが
+    // 実際にマップを描画する時点の use_bigtile と食い違い、「半分」や二重描画の崩れが
+    // 生じていた。ここで同期すれば spacing と描画が常に整合する。
+    if (tiles->is_bigtile() != use_bigtile) {
+        tiles->set_bigtile(use_bigtile);
+    }
+
     // タイルを描画する位置のテキスト層セルを空白にする。
     // GodotTerminal は空白セルを描画スキップするため、タイル層が透けて見える。
+    // bigtile 時は 1 タイルが 2 列を占有し、右半分セル (z-term が AF_BIGTILE2
+    // としてスキップする継続セル) も併せてクリアしないと、前フレームの文字が
+    // 残ってタイルに重なる。
     auto *term = get_terminal(game_term);
     if (term) {
-        term->wipe_cells(x, y, n);
+        const int wipe_n = use_bigtile ? n * 2 : n;
+        term->wipe_cells(x, y, wipe_n);
     }
 
     tiles->draw_tiles(x, y, n,

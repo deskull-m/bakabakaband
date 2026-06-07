@@ -28,6 +28,7 @@ using namespace hengband_godot;
 static bool is_fullwidth(char32_t cp)
 {
     return (cp >= 0x1100 && cp <= 0x115F) // Hangul Jamo
+           || (cp == 0x25A0) // ■ (bigtile JP で 0x7F 壁パターンが変換される全角豆腐)
            || (cp >= 0x2E80 && cp <= 0x303E) // CJK Radicals / Kangxi
            || (cp >= 0x3041 && cp <= 0x33BF) // Hiragana/Katakana/CJK Symbols
            || (cp >= 0x3400 && cp <= 0x4DBF) // CJK Extension A
@@ -164,8 +165,10 @@ void GodotTerminal::draw_cell(int x, int y, const CellData &cell)
     draw_rect(cell_rect, Color(0, 0, 0));
 
     // ASCII 127 (DEL) = Windows 版の wall.bmp パターンブラシ相当
-    // 壁・暗闇タイルの描画に使用される
-    if (cell.ch == 0x7F) {
+    // 壁・暗闇タイルの描画に使用される。
+    // bigtile + JP では term_queue_bigchar が 0x7F を全角 ■ (U+25A0) に変換
+    // するため、■ も壁パターンとして (cell_rect は既に倍幅) 描画する。
+    if (cell.ch == 0x7F || cell.ch == 0x25A0) {
         if (wall_texture_.is_valid()) {
             draw_texture_rect(wall_texture_, cell_rect, true, fg);
         }

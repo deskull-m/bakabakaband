@@ -105,6 +105,12 @@ public:
     /// 2倍幅タイルモードを設定する（use_bigtile に対応）
     void set_bigtile(bool enabled);
 
+    /// 2倍幅タイルモードか否か
+    bool is_bigtile() const
+    {
+        return bigtile_;
+    }
+
     bool is_tileset_loaded() const
     {
         return texture_.is_valid();

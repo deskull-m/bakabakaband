@@ -195,8 +195,6 @@ func _apply_tiles(game: Node) -> void:
 func _sync_tile_ui() -> void:
 	var tile_option: OptionButton = $ConfigLayer/ConfigPanel/PanelVBox/TileRow/TileOption
 	tile_option.select(GameState.tile_mode)
-	var bigtile_check: CheckBox = $ConfigLayer/ConfigPanel/PanelVBox/BigtileRow/BigtileCheck
-	bigtile_check.disabled = (GameState.tile_mode == 0)
 
 ## コンフィグ UI の初期化とシグナル接続
 func _setup_config_ui() -> void:
@@ -217,7 +215,6 @@ func _setup_config_ui() -> void:
 
 	var bigtile_check: CheckBox = $ConfigLayer/ConfigPanel/PanelVBox/BigtileRow/BigtileCheck
 	bigtile_check.button_pressed = GameState.use_bigtile
-	bigtile_check.disabled = (GameState.tile_mode == 0)
 
 	# 現在のフォント名にマッチするプリセットを選択（なければ "カスタム"）
 	var idx := FONT_PRESETS.find(GameState.font_name)
@@ -276,8 +273,6 @@ func _on_font_size_changed(_value: float) -> void:
 ## タイル選択ドロップダウンが変化したときにリアルタイム適用
 func _on_tile_option_selected(idx: int) -> void:
 	GameState.tile_mode = idx
-	var bigtile_check: CheckBox = $ConfigLayer/ConfigPanel/PanelVBox/BigtileRow/BigtileCheck
-	bigtile_check.disabled = (idx == 0)
 	_apply_tiles($HengbandGame)
 	if $HengbandGame.is_game_started():
 		$HengbandGame/InputHandler.inject_key(0x12)  # Ctrl+R: 画面再描画

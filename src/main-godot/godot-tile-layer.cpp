@@ -192,6 +192,19 @@ void GodotTileLayer::draw_tiles(int x, int y, int n,
             cell.bg_row = tap[i] & 0x7F;
             cell.bg_col = static_cast<uint8_t>(tcp[i]) & 0x7F;
             cell.valid = true;
+
+            // bigtile 時はこのタイルを 2 列幅で描画するため、右隣の継続セルに
+            // 残った古いタイルを無効化して二重描画を防ぐ。z-term は右半分セル
+            // (AF_BIGTILE2) を pict_hook に送らずスキップするため、ここで明示的に
+            // クリアしないと前フレームのタイルが残って崩れる。
+            // (同じ呼出内で右隣が実タイルになる非 bigtile バッチでは、次の反復で
+            //  上書きされるため安全)
+            if (bigtile_) {
+                const int cont = col + 1;
+                if (cont < cols_) {
+                    grid_[cell_idx(cont, y)].valid = false;
+                }
+            }
         }
     }
     call_deferred("queue_redraw");
