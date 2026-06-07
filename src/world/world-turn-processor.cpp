@@ -113,6 +113,12 @@ void WorldTurnProcessor::process_world()
  */
 void WorldTurnProcessor::print_time()
 {
+#ifdef GODOT_RICH_UI
+    // 時刻は Godot StatusPanel に表示するため terminal 描画をスキップ。
+    // hour / min の更新はゲームロジックに必要なため続行する。
+    auto day = 0;
+    std::tie(day, this->hour, this->min) = AngbandWorld::get_instance().extract_date_time(InnerGameData::get_instance().get_start_race());
+#else
     const auto &[wid, hgt] = term_get_size();
     const auto row = hgt + ROW_DAY;
 
@@ -126,6 +132,7 @@ void WorldTurnProcessor::print_time()
     }
 
     c_put_str(TERM_WHITE, format("%2d:%02d", this->hour, this->min), row, COL_DAY + 7);
+#endif // GODOT_RICH_UI
 }
 
 /*!

@@ -247,6 +247,10 @@ void print_state(CreatureEntity &creature)
  */
 void print_speed(CreatureEntity &creature)
 {
+#ifdef GODOT_RICH_UI
+    (void)creature;
+    return; // Godot StatusPanel に表示するため terminal 描画をスキップ
+#else
     const auto &[wid, hgt] = term_get_size();
     auto col_speed = wid + COL_SPEED;
     auto row_speed = hgt + ROW_SPEED;
@@ -299,6 +303,7 @@ void print_speed(CreatureEntity &creature)
     }
 
     c_put_str(attr, format("%-9s", buf), row_speed, col_speed);
+#endif // GODOT_RICH_UI
 }
 
 /*!
@@ -307,6 +312,10 @@ void print_speed(CreatureEntity &creature)
  */
 void print_study(CreatureEntity &creature)
 {
+#ifdef GODOT_RICH_UI
+    (void)creature;
+    return; // Godot StatusPanel に表示するため terminal 描画をスキップ
+#else
     const auto &[wid, hgt] = term_get_size();
     const auto col_study = wid + COL_STUDY;
     const auto row_study = hgt + ROW_STUDY;
@@ -315,6 +324,7 @@ void print_study(CreatureEntity &creature)
     } else {
         put_str("    ", row_study, col_study);
     }
+#endif // GODOT_RICH_UI
 }
 
 /*!
@@ -323,6 +333,10 @@ void print_study(CreatureEntity &creature)
  */
 void print_imitation(CreatureEntity &creature)
 {
+#ifdef GODOT_RICH_UI
+    (void)creature;
+    return; // Godot StatusPanel に表示するため terminal 描画をスキップ
+#else
     const auto &[wid, hgt] = term_get_size();
     const auto col_study = wid + COL_STUDY;
     const auto row_study = hgt + ROW_STUDY;
@@ -340,6 +354,7 @@ void print_imitation(CreatureEntity &creature)
 
     TERM_COLOR attr = mane_data->new_mane ? TERM_L_RED : TERM_WHITE;
     c_put_str(attr, _("まね", "Imit"), row_study, col_study);
+#endif // GODOT_RICH_UI
 }
 
 /*!
@@ -436,6 +451,10 @@ static void add_hex_status_flags(CreatureEntity &creature, BIT_FLAGS *bar_flags)
  */
 void print_status(CreatureEntity &creature)
 {
+#ifdef GODOT_RICH_UI
+    (void)creature;
+    return; // 状態バーは将来 Godot StatusPanel に移行予定
+#else
     const auto &[wid, hgt] = term_get_size();
     const auto row_statbar = hgt + ROW_STATBAR;
     const auto max_col_statbar = wid + MAX_COL_STATBAR;
@@ -733,6 +752,7 @@ void print_status(CreatureEntity &creature)
             break;
         }
     }
+#endif // GODOT_RICH_UI
 }
 
 /*!

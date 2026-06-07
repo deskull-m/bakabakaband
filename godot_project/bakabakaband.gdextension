@@ -1,0 +1,10 @@
+[configuration]
+entry_symbol = "hengband_gdextension_init"
+compatibility_minimum = "4.3"
+reloadable = false
+
+[libraries]
+windows.debug.x86_64 = "res://../bin/bakabakaband.windows.template_debug.x86_64.dll"
+windows.release.x86_64 = "res://../bin/bakabakaband.windows.template_release.x86_64.dll"
+linux.debug.x86_64 = "res://../bin/bakabakaband.linux.template_debug.x86_64.so"
+linux.release.x86_64 = "res://../bin/bakabakaband.linux.template_release.x86_64.so"
