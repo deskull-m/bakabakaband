@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 class BaseitemKey;
 class CreatureEntity;
