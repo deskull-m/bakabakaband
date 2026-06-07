@@ -1718,7 +1718,16 @@ PLAYER_LEVEL CreatureEntity::get_level() const
     if (this->level > 0) {
         return this->level;
     }
-    return static_cast<PLAYER_LEVEL>(this->get_monrace().level / 2);
+
+    // monrace 由来のレベル算出はモンスター専用。プレイヤーは有効な monrace を
+    // 持たないため、ここで get_monrace() を呼ぶと monraces.at() が無効キーで
+    // std::out_of_range を投げる (例: キャラクター作成前の画面更新で
+    // GODOT_RICH_UI の player_status_push が level==0 のまま get_level() を呼ぶ)。
+    if (this->has_monster_profile()) {
+        return static_cast<PLAYER_LEVEL>(this->get_monrace().level / 2);
+    }
+
+    return this->level;
 }
 
 /*!
