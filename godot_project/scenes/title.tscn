@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://hengband_title"]
+[gd_scene load_steps=2 format=3 uid="uid://bakabakaband_title"]
 
 [ext_resource type="Script" path="res://scripts/title.gd" id="1_title"]
 

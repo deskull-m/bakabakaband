@@ -43,9 +43,9 @@ func _ready() -> void:
 	$SaveSelectPanel/PanelVBox/SaveList.item_activated.connect(_on_save_item_activated)
 
 func _load_title_image() -> void:
-	var img_path := ProjectSettings.globalize_path("res://../image/hengband_title.png")
+	var img_path := ProjectSettings.globalize_path("res://../image/BakabakabandTitle.png")
 	if not FileAccess.file_exists(img_path):
-		push_warning("hengband_title.png not found: " + img_path)
+		push_warning("BakabakabandTitle.png not found: " + img_path)
 		return
 	var img := Image.load_from_file(img_path)
 	if img == null:
