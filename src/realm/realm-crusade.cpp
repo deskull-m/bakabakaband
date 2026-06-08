@@ -391,6 +391,9 @@ tl::optional<std::string> do_crusade_spell(CreatureEntity &creature, SPELL_IDX s
         if (cast) {
             const POSITION rad = 7;
             const auto dir = get_aim_dir(creature);
+            if (!dir) {
+                return tl::nullopt;
+            }
             fire_ball(creature, AttributeType::DISINTEGRATE, dir, dam, rad);
         }
     } break;
