@@ -48,6 +48,19 @@ bool TerrainType::is_permanent_wall() const
     return this->flags.has_all_of({ TerrainCharacteristics::WALL, TerrainCharacteristics::PERMANENT });
 }
 
+bool TerrainType::can_damage_player() const
+{
+    return this->flags.has_any_of({
+               TerrainCharacteristics::LAVA,
+               TerrainCharacteristics::VOID,
+               TerrainCharacteristics::COLD_PUDDLE,
+               TerrainCharacteristics::ELEC_PUDDLE,
+               TerrainCharacteristics::ACID_PUDDLE,
+               TerrainCharacteristics::POISON_PUDDLE,
+           }) ||
+           this->flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP });
+}
+
 /*!
  * @brief ドアやカーテンが開いているかを調べる
  * @return 閉じる機能の有無
