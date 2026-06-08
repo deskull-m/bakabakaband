@@ -73,6 +73,54 @@ static bool see_wall(CreatureEntity &creature, const Direction &dir, const Pos2D
 }
 
 /*!
+ * @brief ダメージ地形をダッシュ中に無視 (素通り) してよいか判定する
+ * @param creature クリーチャーへの参照
+ * @param terrain 判定対象の地形
+ * @return 無視してよければ true (走行を止めない)
+ */
+static bool can_ignore_damaging_terrain(CreatureEntity &creature, const TerrainType &terrain)
+{
+    if (creature.is_invulnerable()) {
+        return true;
+    }
+
+    const auto &flags = terrain.flags;
+    if (flags.has(TerrainCharacteristics::LAVA) && !creature.has_immune_fire()) {
+        return false;
+    }
+
+    // 虚空 (VOID) は無敵以外では無視不可 (bakabakaband 独自地形)
+    if (flags.has(TerrainCharacteristics::VOID)) {
+        return false;
+    }
+
+    if (flags.has(TerrainCharacteristics::COLD_PUDDLE) && !creature.has_immune_cold()) {
+        return false;
+    }
+
+    if (flags.has(TerrainCharacteristics::ELEC_PUDDLE) && !creature.has_immune_elec()) {
+        return false;
+    }
+
+    if (flags.has(TerrainCharacteristics::ACID_PUDDLE) && !creature.has_immune_acid()) {
+        return false;
+    }
+
+    if (flags.has(TerrainCharacteristics::POISON_PUDDLE)) {
+        return false;
+    }
+
+    if (flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP })) {
+        const auto can_ignore_water = creature.has_levitation() || creature.has_can_swim() || creature.has_resist_water() || (calc_inventory_weight(creature) <= calc_weight_limit(creature));
+        if (!can_ignore_water) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/*!
  * @brief ダッシュ処理の導入 /
  * Initialize the running algorithm for a new direction.
  * @param creature	クリーチャーへの参照
@@ -228,17 +276,14 @@ static bool run_test(CreatureEntity &creature)
         auto inv = true;
         if (grid.is_mark()) {
             const auto &terrain = grid.get_terrain(TerrainKind::MIMIC);
-            auto notice = terrain.flags.has(TerrainCharacteristics::NOTICE);
+            const auto is_damaging = terrain.can_damage_player();
+            auto notice = terrain.flags.has(TerrainCharacteristics::NOTICE) || is_damaging;
             if (notice && terrain.flags.has(TerrainCharacteristics::MOVE)) {
                 if (find_ignore_doors && terrain.flags.has_all_of({ TerrainCharacteristics::DOOR, TerrainCharacteristics::CLOSE })) {
                     notice = false;
                 } else if (find_ignore_stairs && terrain.flags.has(TerrainCharacteristics::STAIRS)) {
                     notice = false;
-                } else if (terrain.flags.has(TerrainCharacteristics::LAVA) && (creature.has_immune_fire() || creature.is_invulnerable())) {
-                    notice = false;
-                } else if (terrain.flags.has(TerrainCharacteristics::VOID) && creature.is_invulnerable()) {
-                    notice = false;
-                } else if (terrain.flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP }) && (creature.has_levitation() || creature.has_can_swim() || (calc_inventory_weight(creature) <= calc_weight_limit(creature)))) {
+                } else if (is_damaging && can_ignore_damaging_terrain(creature, terrain)) {
                     notice = false;
                 }
             }

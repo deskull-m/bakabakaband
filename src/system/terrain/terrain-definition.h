@@ -85,6 +85,7 @@ public:
     static bool has(TerrainCharacteristics tc, TerrainAction ta);
 
     bool is_permanent_wall() const;
+    bool can_damage_player() const;
     bool is_open() const;
     bool is_closed_door() const;
     bool has(TerrainCharacteristics tc) const;
