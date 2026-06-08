@@ -151,7 +151,7 @@ static void drain_result(CreatureEntity &creature, player_attack_type *pa_ptr, b
     }
 
     if (*drain_msg) {
-        if (has_melee_weapon(creature, pa_ptr->hand)) {
+        if (has_melee_weapon(creature, enum2i(INVEN_MAIN_HAND) + pa_ptr->hand)) {
             msg_format(_("刃が%sから生命力を吸い取った！", "Your weapon drains life from %s!"), pa_ptr->m_name);
         } else {
             msg_format(_("手が%sから生命力を吸い取った！", "Your hands drain life from %s!"), pa_ptr->m_name);
