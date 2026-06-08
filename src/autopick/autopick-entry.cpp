@@ -310,12 +310,14 @@ bool autopick_new_entry(autopick_type *entry, std::string_view line_input, bool 
 
     if (sv.starts_with(':')) {
         sv.remove_prefix(1);
+        sv = ltrim_sv(sv);
         return true;
     }
 
 #ifdef JP
     if (sv.starts_with(kanji_colon)) {
         sv.remove_prefix(kanji_colon.length());
+        sv = ltrim_sv(sv);
         return true;
     }
 #endif
