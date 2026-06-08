@@ -1588,6 +1588,7 @@ stdafx.h.gch: stdafx.h stdafx.cpp Makefile
 	fi
 
 $(hengband_SOURCES:.cpp=.$(OBJEXT)): stdafx.h.gch
+$(hengband_SOURCES:.cc=.$(OBJEXT)): stdafx.h.gch
 endif
 
 install-exec-hook:
