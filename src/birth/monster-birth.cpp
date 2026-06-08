@@ -16,6 +16,7 @@
 #include "core/asking-player.h"
 #include "io/input-key-acceptor.h"
 #include "mind/mind-elementalist.h"
+#include "monster-floor/monster-drop-generator.h"
 #include "monster-race/race-kind-flags.h"
 #include "monster-race/race-misc-flags.h"
 #include "monster-race/race-sex-const.h"
@@ -734,78 +735,6 @@ void apply_initial_level(CreatureEntity &creature, MonraceId monrace_id)
     creature.set_max_plv(initial_plv);
 }
 
-/*!
- * @brief モンスター種族の固定ドロップ指定 (drop_kind) を初期所持品として付与する
- * @details JSON の "drop_kind" で指定された固定ドロップは、モンスターとして
- *          ゲームを開始した場合に確率を無視して 100% 所持した状態で始める。
- *          グレード別の魔法付与は死亡時ドロップ (on_dead_drop_kind_item) と
- *          揃え、生成基準階はモンスター種族レベルを用いる。
- *          付与後は wield_all() で装備可能なものを自動装備する。
- * @param creature クリーチャーへの参照
- * @param monrace_id 開始モンスターの種族ID
- */
-void grant_fixed_drop_items(CreatureEntity &creature, MonraceId monrace_id)
-{
-    const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
-    if (monrace.drop_kinds.empty()) {
-        return;
-    }
-
-    // 生成基準階はモンスター種族レベル (最低 1)。上限は ItemMagicApplier 内部で
-    // MAX_DEPTH 未満にクランプされるためここでは下限のみ担保する。
-    const auto magic_level = static_cast<DEPTH>(std::max<int>(monrace.level, 1));
-    auto granted_any = false;
-    for (const auto &kind : monrace.drop_kinds) {
-        // num/deno は出現確率の指定だが、プレイヤー運用時は無視して必ず付与する。
-        const short kind_idx = std::get<2>(kind);
-        const int grade = std::get<3>(kind);
-        const int dn = std::get<4>(kind);
-        const int ds = std::get<5>(kind);
-        const int drop_nums = Dice::roll(dn, ds);
-
-        for (int i = 0; i < drop_nums; i++) {
-            ItemEntity item;
-            item.generate(kind_idx);
-            switch (grade) {
-            case -2:
-                ItemMagicApplier(creature, &item, magic_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT | AM_CURSED).execute();
-                break;
-            case -1:
-                ItemMagicApplier(creature, &item, magic_level, AM_NO_FIXED_ART | AM_GOOD | AM_CURSED).execute();
-                break;
-            case 0:
-                ItemMagicApplier(creature, &item, magic_level, AM_NO_FIXED_ART).execute();
-                break;
-            case 1:
-                ItemMagicApplier(creature, &item, magic_level, AM_NO_FIXED_ART | AM_GOOD).execute();
-                break;
-            case 2:
-                ItemMagicApplier(creature, &item, magic_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT).execute();
-                break;
-            case 3:
-                ItemMagicApplier(creature, &item, magic_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
-                if (!item.is_fixed_artifact()) {
-                    become_random_artifact(creature, &item, false);
-                }
-                break;
-            default:
-                break;
-            }
-
-            object_aware(creature, item);
-            item.mark_as_known();
-            const auto slot = creature.store_item(item);
-            if (slot >= 0) {
-                autopick_alter_item(creature, slot, false);
-                granted_any = true;
-            }
-        }
-    }
-
-    if (granted_any) {
-        wield_all(creature);
-    }
-}
 }
 
 bool player_birth_as_monster(CreatureEntity &creature)
@@ -858,8 +787,13 @@ bool player_birth_as_monster(CreatureEntity &creature)
     // セットされた後に呼ぶ必要があるためここで実施)
     apply_initial_level(creature, *monrace_id);
 
-    // モンスター種族に固定ドロップ指定 (drop_kind) があれば 100% 所持して開始する
-    grant_fixed_drop_items(creature, *monrace_id);
+    // 初期アイテム所持を「敵として生成される時」と同様にする。
+    // place_monster_one() と同じく、所持金 (get_money_for_creature) と
+    // 一般ドロップ品 (generate_monster_drop_items: drop_flags ベース) を付与する。
+    // drop_kinds (固定ドロップ) は敵でも死亡時のみのドロップであり生成時には
+    // 所持しないため、ここでは付与しない。
+    get_money_for_creature(creature);
+    generate_monster_drop_items(creature, creature);
 
     // プレイヤー名入力 (モンスター種族名がデフォルト)
     get_name(creature);
