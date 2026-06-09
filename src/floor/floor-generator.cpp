@@ -345,7 +345,7 @@ static tl::optional<std::string> level_gen(CreatureEntity &creature, tl::optiona
     if (dungeon.flags.has(DungeonFeatureType::ALWAY_MAX_SIZE)) {
         level_height = MAX_HGT / SCREEN_HGT;
         level_width = MAX_WID / SCREEN_WID;
-    } else if (always_small_floor || ironman_smallest_floor || (allow_smallest_floor && one_in_(chance_small_floor)) || dungeon.flags.has(DungeonFeatureType::SMALLEST)) {
+    } else if (always_small_floor || ironman_smallest_floor || (allow_smallest_floor && !always_large_floor && one_in_(chance_small_floor)) || dungeon.flags.has(DungeonFeatureType::SMALLEST)) {
         level_height = MIN_HGT_MULTIPLE;
         level_width = MIN_WID_MULTIPLE;
         // 鉄人「常に最小フロア」+ 鉄人「常に普通でない部屋」+ NO_VAULT 無し の組み合わせで
@@ -355,6 +355,11 @@ static tl::optional<std::string> level_gen(CreatureEntity &creature, tl::optiona
             level_height = MIN_HGT_MULTIPLE * 2;
             level_width = MIN_WID_MULTIPLE;
         }
+    } else if (always_large_floor) {
+        // 常に大きめのフロアを生成する (上流 #5423 相当)。
+        // always_small_floor 等の「小さめ」系が優先されるよう、それらより後に判定する。
+        level_height = MAX_HGT / SCREEN_HGT;
+        level_width = MAX_WID / SCREEN_WID;
     } else if (dungeon.flags.has(DungeonFeatureType::BEGINNER)) {
         level_height = MIN_HGT_MULTIPLE * 2;
         level_width = MIN_WID_MULTIPLE * 2;
@@ -370,12 +375,13 @@ static tl::optional<std::string> level_gen(CreatureEntity &creature, tl::optiona
             level_width = randint1(MAX_WID / SCREEN_WID / 3);
         }
         bool is_first_level_area = true;
-        bool is_max_area = (level_height == MAX_HGT / SCREEN_HGT) && (level_width == MAX_WID / SCREEN_WID);
+        // allow_largest_floor が ON の場合は最大面積フロアを除外しない (上流 #5423 相当)。
+        bool is_max_area = !allow_largest_floor && (level_height == MAX_HGT / SCREEN_HGT) && (level_width == MAX_WID / SCREEN_WID);
         while (is_first_level_area || is_max_area) {
             level_height = randint1(MAX_HGT / SCREEN_HGT);
             level_width = randint1(MAX_WID / SCREEN_WID);
             is_first_level_area = false;
-            is_max_area = (level_height == MAX_HGT / SCREEN_HGT) && (level_width == MAX_WID / SCREEN_WID);
+            is_max_area = !allow_largest_floor && (level_height == MAX_HGT / SCREEN_HGT) && (level_width == MAX_WID / SCREEN_WID);
         }
     }
     floor.height = level_height * SCREEN_HGT;

@@ -77,12 +77,12 @@ enum class GameOptionType : int {
     BOUND_WALLS_PERM = 65,
     MONSTER_TOMBSTONES = 66, /*!< bakabakaband 独自: モンスターが死ぬ度に墓石を立てる(ジョーク) */
     ALWAYS_SMALL_FLOOR = 67, /*!< 上流 #5360 で ALWAYS_SMALL_FLOOR に改名予定 */
-    // 68
+    ALWAYS_LARGE_FLOOR = 68, /*!< 常に大きいフロアを生成する (上流 #5423 相当。上流の 68 と一致) */
     TARGET_PET = 69,
     AUTO_MORE = 70,
     COMMAND_MENU = 71,
     DISPLAY_PATH = 72,
-    // 73
+    ALLOW_LARGEST_FLOOR = 73, /*!< 最大フロアの生成を可能にする (上流 #5423 相当。上流は 66 だが bakabakaband は MONSTER_TOMBSTONES と衝突するため 73 を使用) */
     ABBREV_EXTRA = 74,
     ABBREV_ALL = 75,
     EXP_NEED = 76,

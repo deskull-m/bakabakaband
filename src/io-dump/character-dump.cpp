@@ -205,6 +205,14 @@ static void dump_aux_options(FILE *fff)
         fmt::print(fff, _("\n 小さいダンジョン:   OFF", "\n Small Levels:       OFF"));
     }
 
+    if (always_large_floor) {
+        fmt::print(fff, _("\n 大きいダンジョン:   ON", "\n Large Levels:       ON"));
+    } else if (allow_largest_floor) {
+        fmt::print(fff, _("\n 大きいダンジョン:   ENABLED", "\n Large Levels:       ENABLED"));
+    } else {
+        fmt::print(fff, _("\n 大きいダンジョン:   OFF", "\n Large Levels:       OFF"));
+    }
+
     if (vanilla_town) {
         fmt::print(fff, _("\n 元祖の町のみ:       ON", "\n Vanilla Town:       ON"));
     } else if (lite_town) {

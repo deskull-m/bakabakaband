@@ -193,7 +193,12 @@ const std::vector<GameOption> option_info = validate_option_info({
     { &allow_smallest_floor, true, GameOptionType::ALLOW_SMALLEST_FLOOR, "allow_smallest_floor", _("非常に小さいフロアの生成を可能にする", "Allow unusually small dungeon levels"), GameOptionPage::GAMEPLAY },
 
     { &always_small_floor, false, GameOptionType::ALWAYS_SMALL_FLOOR, "always_small_floor",
-        _("常に非常に小さいフロアを生成する", "Always create unusually small dungeon levels"), GameOptionPage::GAMEPLAY },
+        _("常に小さめのフロアを生成する", "Always create unusually small dungeon levels"), GameOptionPage::GAMEPLAY },
+
+    { &allow_largest_floor, false, GameOptionType::ALLOW_LARGEST_FLOOR, "allow_largest_floor", _("非常に大きいフロアの生成を可能にする", "Allow unusually large dungeon levels"), GameOptionPage::GAMEPLAY },
+
+    { &always_large_floor, false, GameOptionType::ALWAYS_LARGE_FLOOR, "always_large_floor",
+        _("常に大きめのフロアを生成する", "Always create unusually large dungeon levels"), GameOptionPage::GAMEPLAY },
 
     { &allow_arena_floor, true, GameOptionType::ALLOW_ARENA_FLOOR, "allow_arena_floor", _("空っぽの「アリーナ」レベルの生成を可能にする", "Allow empty 'arena' levels"), GameOptionPage::GAMEPLAY },
 
