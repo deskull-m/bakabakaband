@@ -410,6 +410,22 @@ Always create unusually small dungeon levels    [always_small_floor]
     usual. See the 'Allow unusually small dungeon levels' option
     above. In the 'Yeek cave', this option is always enabled.
 
+***** <allow_largest_floor>
+Allow unusually large dungeon levels    [allow_largest_floor]
+    This option allows the largest possible levels, which are normally
+    excluded from generation, to appear (rarely). Exploring such vast
+    levels takes time, but offers more monsters and items. If 'Always
+    create unusually small dungeon levels' is enabled, the largest
+    levels are not generated.
+
+***** <always_large_floor>
+Always create unusually large dungeon levels    [always_large_floor]
+    If this option is enabled, then every normal dungeon level will be
+    the largest possible size. Small-floor options (such as 'Always
+    create unusually small dungeon levels') take precedence if also
+    enabled. Dungeon-specific small/large flags and beginner dungeon
+    sizes still take precedence over gameplay options.
+
 ***** <allow_arena_floor>
 Allow empty 'arena' levels    [allow_arena_floor]
     Normal dungeon levels consist mostly of rock. If this option is in
