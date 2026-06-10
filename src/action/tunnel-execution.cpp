@@ -63,7 +63,7 @@ bool exe_tunnel(CreatureEntity &creature, POSITION y, POSITION x)
 
     PlayerEnergy(creature).set_player_turn_energy(100);
     const auto &terrain = grid.get_terrain();
-    const auto power = terrain.power;
+    const int power = terrain.tunnel_power;
     const auto &terrain_mimic = grid.get_terrain(TerrainKind::MIMIC);
     const auto &name = terrain_mimic.name;
     if (command_rep == 0) {

@@ -122,13 +122,13 @@ static bool bash_normal_door(CreatureEntity &creature, turn_flags *turn_flags_pt
         return true;
     }
 
-    if (terrain.power == 0) {
+    if (terrain.door_power == 0) {
         turn_flags_ptr->did_open_door = true;
         turn_flags_ptr->do_turn = true;
         return false;
     }
 
-    if (randint0(monster.hp / 10) > terrain.power) {
+    if (randint0(monster.hp / 10) > terrain.door_power) {
         cave_alter_feat(creature, pos.y, pos.x, Tc::DISARM);
         turn_flags_ptr->do_turn = true;
         return false;
@@ -157,7 +157,7 @@ static void bash_glass_door(CreatureEntity &creature, turn_flags *turn_flags_ptr
         return;
     }
 
-    if (!check_hp_for_terrain_destruction(terrain, monster) || (randint0(monster.hp / 10) <= terrain.power)) {
+    if (!check_hp_for_terrain_destruction(terrain, monster) || (randint0(monster.hp / 10) <= terrain.door_power)) {
         return;
     }
 

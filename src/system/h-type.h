@@ -151,7 +151,6 @@ typedef int TERM_LEN; /*!< コンソール表示座標の型定義 */
 typedef byte TERM_COLOR; /*!< テキスト表示色の型定義 */
 typedef int32_t SPELL_IDX; /*!< 各魔法領域/職業能力ごとの呪文ID型定義 */
 typedef int16_t PROB; /*!< 確率の重みの型定義 */
-typedef byte FEAT_POWER; /*!< 地形強度の型定義 */
 
 typedef int QUANTITY; /*!< インターフェース上の指定個数 */
 

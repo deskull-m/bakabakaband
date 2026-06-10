@@ -190,7 +190,7 @@ bool affect_feature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, P
             cave_alter_feat(creature, y, x, TerrainCharacteristics::DISARM);
         }
 
-        if (floor.has_closed_door_at(pos) && terrain.power && terrain.flags.has(TerrainCharacteristics::OPEN)) {
+        if (floor.has_closed_door_at(pos) && terrain.door_power && terrain.flags.has(TerrainCharacteristics::OPEN)) {
             FEAT_IDX old_feat = grid.feat;
             cave_alter_feat(creature, y, x, TerrainCharacteristics::DISARM);
             if (known && (old_feat != grid.feat)) {
