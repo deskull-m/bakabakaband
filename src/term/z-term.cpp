@@ -1768,14 +1768,13 @@ DisplaySymbol term_what(int x, int y, const DisplaySymbol &ds)
 /*
  * Flush and forget the input
  */
-errr term_flush(void)
+void term_flush()
 {
     /* Flush all events */
     term_xtra(TERM_XTRA_FLUSH, 0);
 
     /* Forget all keypresses */
     game_term->key_head = game_term->key_tail = 0;
-    return 0;
 }
 
 /*
@@ -1804,58 +1803,39 @@ errr term_key_push(int k)
 }
 
 /*
- * Check for a pending keypress on the key queue.
- *
- * Store the keypress, if any, in "ch", and return "0".
- * Otherwise store "zero" in "ch", and return "1".
- *
- * Wait for a keypress if "wait" is true.
- *
- * Remove the keypress if "take" is true.
+ * @brief Check for a pending keypress on the key queue.
+ * @param wait Wait for a keypress.
+ * @param take Remove the keypress.
+ * @return Keypress or zero.
  */
-errr term_inkey(char *ch, bool wait, bool take)
+char term_inkey(bool wait, bool take)
 {
-    /* Assume no key */
-    (*ch) = '\0';
-
     /* get bored */
     if (!game_term->never_bored) {
         /* Process random events */
         term_xtra(TERM_XTRA_BORED, 0);
     }
 
-    /* Wait */
     if (wait) {
-        /* Process pending events while necessary */
         while (game_term->key_head == game_term->key_tail) {
-            /* Process events (wait for one) */
             term_xtra(TERM_XTRA_EVENT, true);
         }
-    }
-
-    /* Do not Wait */
-    else {
-        /* Process pending events if necessary */
-        if (game_term->key_head == game_term->key_tail) {
-            /* Process events (do not wait) */
-            term_xtra(TERM_XTRA_EVENT, false);
-        }
+    } else if (game_term->key_head == game_term->key_tail) {
+        term_xtra(TERM_XTRA_EVENT, false);
     }
 
     /* No keys are ready */
     if (game_term->key_head == game_term->key_tail) {
-        return 1;
+        return '\0';
     }
 
-    /* Extract the next keypress */
-    (*ch) = game_term->key_queue[game_term->key_tail];
-
     /* If requested, advance the queue, wrap around if necessary */
+    const auto res = game_term->key_queue[game_term->key_tail];
     if (take && (++game_term->key_tail == game_term->key_size)) {
         game_term->key_tail = 0;
     }
 
-    return 0;
+    return res;
 }
 
 /*** Extra routines ***/
@@ -1865,12 +1845,9 @@ errr term_inkey(char *ch, bool wait, bool take)
  *
  * Every "term_save()" should match exactly one "term_load()"
  */
-errr term_save(void)
+void term_save()
 {
-    /* Push stack */
     game_term->mem_stack.push(game_term->scr->clone());
-
-    return 0;
 }
 
 /*
@@ -1878,16 +1855,15 @@ errr term_save(void)
  *
  * Every "term_save()" should match exactly one "term_load()"
  */
-errr term_load(bool load_all)
+void term_load(bool should_load_all)
 {
-    TERM_LEN w = game_term->wid;
-    TERM_LEN h = game_term->hgt;
-
+    const auto w = game_term->wid;
+    const auto h = game_term->hgt;
     if (game_term->mem_stack.empty()) {
-        return 0;
+        return;
     }
 
-    if (load_all) {
+    if (should_load_all) {
         // 残り1つを残して読み捨てる
         while (game_term->mem_stack.size() > 1) {
             game_term->mem_stack.pop();
@@ -1902,7 +1878,7 @@ errr term_load(bool load_all)
     game_term->mem_stack.pop();
 
     /* Assume change */
-    for (TERM_LEN y = 0; y < h; y++) {
+    for (auto y = 0; y < h; y++) {
         /* Assume change */
         game_term->x1[y] = 0;
         game_term->x2[y] = w - 1;
@@ -1911,57 +1887,26 @@ errr term_load(bool load_all)
     /* Assume change */
     game_term->y1 = 0;
     game_term->y2 = h - 1;
-    return 0;
-}
-
-/*
- * Exchange the "requested" screen with the "tmp" screen
- */
-errr term_exchange(void)
-{
-    TERM_LEN w = game_term->wid;
-    TERM_LEN h = game_term->hgt;
-
-    /* Create */
-    if (!game_term->tmp) {
-        /* Allocate window */
-        game_term->tmp = term_win::create(w, h);
-    }
-
-    /* Swap */
-    game_term->scr.swap(game_term->tmp);
-
-    /* Assume change */
-    for (TERM_LEN y = 0; y < h; y++) {
-        /* Assume change */
-        game_term->x1[y] = 0;
-        game_term->x2[y] = w - 1;
-    }
-
-    /* Assume change */
-    game_term->y1 = 0;
-    game_term->y2 = h - 1;
-    return 0;
 }
 
 /*
  * React to a new physical window size.
  */
-errr term_resize(TERM_LEN w, TERM_LEN h)
+void term_resize(int w, int h)
 {
     /* Resizing is forbidden */
     if (game_term->fixed_shape) {
-        return -1;
+        return;
     }
 
     /* Ignore illegal changes */
     if ((w < 1) || (h < 1)) {
-        return -1;
+        return;
     }
 
     /* Ignore non-changes */
     if ((game_term->wid == w) && (game_term->hgt == h) && (arg_bigtile == use_bigtile)) {
-        return 1;
+        return;
     }
 
     use_bigtile = arg_bigtile;
@@ -1985,7 +1930,7 @@ errr term_resize(TERM_LEN w, TERM_LEN h)
     game_term->total_erase = true;
 
     /* Assume change */
-    for (int i = 0; i < h; i++) {
+    for (auto i = 0; i < h; i++) {
         /* Assume change */
         game_term->x1[i] = 0;
         game_term->x2[i] = w - 1;
@@ -1999,8 +1944,6 @@ errr term_resize(TERM_LEN w, TERM_LEN h)
     if (game_term->resize_hook) {
         game_term->resize_hook();
     }
-
-    return 0;
 }
 
 /*
@@ -2012,11 +1955,11 @@ errr term_resize(TERM_LEN w, TERM_LEN h)
  * To "create" a valid "term", one should do "term_init(t)", then
  * set the various flags and hooks, and then do "term_activate(t)".
  */
-errr term_activate(term_type *t)
+void term_activate(term_type *t)
 {
     /* already done */
     if (game_term == t) {
-        return 1;
+        return;
     }
 
     /* Deactivate the old Term */
@@ -2045,8 +1988,6 @@ errr term_activate(term_type *t)
     if (game_term) {
         term_xtra(TERM_XTRA_LEVEL, 1);
     }
-
-    return 0;
 }
 
 /*
@@ -2055,7 +1996,7 @@ errr term_activate(term_type *t)
  * By default, the cursor starts out "invisible"
  * By default, we "erase" using "black spaces"
  */
-errr term_init(term_type *t, TERM_LEN w, TERM_LEN h, int k)
+void term_init(term_type *t, int w, int h, int k)
 {
     /* Wipe it */
     *t = term_type{};
@@ -2107,7 +2048,6 @@ errr term_init(term_type *t, TERM_LEN w, TERM_LEN h, int k)
     t->wipe_hook = term_wipe_hack;
     t->text_hook = term_text_hack;
     t->pict_hook = term_pict_hack;
-    return 0;
 }
 
 #ifdef JP
