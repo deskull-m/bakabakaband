@@ -7,6 +7,7 @@
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/enums/terrain/terrain-conversion-type.h"
 #include "system/enums/terrain/trap.h"
+#include "util/dice.h"
 #include "util/flag-group.h"
 #include "view/display-symbol.h"
 #include <map>
@@ -81,6 +82,8 @@ public:
     int random_change_prob = 0; /*!< ランダム変化確率の逆数 (0=変化しない, 100なら1/100の確率) */
     std::string random_change_tag{}; /*!< ランダム変化先地形タグ */
     FEAT_IDX random_change = 0; /*!< ランダム変化先地形ID */
+
+    Dice gold_drop{}; /*!< 財宝地形 (HAS_GOLD) を掘った際に生成する財宝数 (上流 #5393 相当) */
 
     static bool has(TerrainCharacteristics tc, TerrainAction ta);
 
