@@ -104,7 +104,7 @@ void do_cmd_knowledge_artifacts(CreatureEntity &creature)
         constexpr auto template_basename = _("     %s\n", "     The %s\n");
         ItemEntity item(artifact.bi_key);
         item.fa_id = fa_id;
-        item.ident |= IDENT_STORE;
+        item.ident.set(IdentificationFlag::STORE);
         const auto item_name = describe_flavor(creature, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
         fprintf(fff, template_basename, item_name.data());
     }
@@ -223,7 +223,7 @@ static void desc_obj_fake(CreatureEntity &creature, short bi_id)
     o_ptr->wipe();
     o_ptr->generate(bi_id);
 
-    o_ptr->ident |= IDENT_KNOWN;
+    o_ptr->ident.set(IdentificationFlag::KNOWN);
     handle_stuff(creature);
 
     if (screen_object(creature, *o_ptr, SCROBJ_FAKE_OBJECT | SCROBJ_FORCE_DETAIL)) {

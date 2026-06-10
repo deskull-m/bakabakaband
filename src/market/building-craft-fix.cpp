@@ -290,7 +290,7 @@ static PRICE repair_broken_weapon_aux(CreatureEntity &creature, PRICE bcost)
     }
 
     display_repair_success_message(creature, *item_broken, cost);
-    item_broken->ident &= ~(IDENT_BROKEN);
+    item_broken->ident.reset(IdentificationFlag::BROKEN);
     item_broken->discount = 99;
 
     calc_android_exp(creature);

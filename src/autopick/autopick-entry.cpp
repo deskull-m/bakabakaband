@@ -351,7 +351,7 @@ void autopick_entry_from_object(CreatureEntity &creature, autopick_type *entry, 
         entry->add(FLG_UNAWARE);
         should_add_hat_mark = true;
     } else if (!o_ptr->is_known()) {
-        if (!(o_ptr->ident & IDENT_SENSE)) {
+        if (!(o_ptr->ident.has(IdentificationFlag::SENSE))) {
             entry->add(FLG_UNIDENTIFIED);
             should_add_hat_mark = true;
         } else {

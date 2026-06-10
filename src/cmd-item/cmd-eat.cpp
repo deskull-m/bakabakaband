@@ -493,7 +493,7 @@ static bool exe_eat_charge_of_magic_device(CreatureEntity &creature, ItemEntity 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (o_ptr->pval == 0) {
         msg_format(_("この%sにはもう魔力が残っていない。", "The %s has no charges left."), staff);
-        o_ptr->ident |= IDENT_EMPTY;
+        o_ptr->ident.set(IdentificationFlag::EMPTY);
         rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
         return true;
     }

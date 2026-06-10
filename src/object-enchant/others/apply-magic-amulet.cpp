@@ -79,7 +79,7 @@ void AmuletEnchanter::sval_enchant()
     case SV_AMULET_CHARISMA:
         this->o_ptr->pval = 1 + (PARAMETER_VALUE)m_bonus(5, this->level);
         if (this->power < 0) {
-            set_bits(this->o_ptr->ident, IDENT_BROKEN);
+            this->o_ptr->ident.set(IdentificationFlag::BROKEN);
             this->o_ptr->curse_flags.set(CurseTraitType::CURSED);
             this->o_ptr->pval = 0 - this->o_ptr->pval;
         }
@@ -92,7 +92,7 @@ void AmuletEnchanter::sval_enchant()
         }
 
         if (this->power < 0) {
-            set_bits(this->o_ptr->ident, IDENT_BROKEN);
+            this->o_ptr->ident.set(IdentificationFlag::BROKEN);
             this->o_ptr->curse_flags.set(CurseTraitType::CURSED);
             this->o_ptr->pval = 0 - this->o_ptr->pval;
         }
@@ -122,7 +122,7 @@ void AmuletEnchanter::sval_enchant()
             break;
         }
 
-        set_bits(this->o_ptr->ident, IDENT_BROKEN);
+        this->o_ptr->ident.set(IdentificationFlag::BROKEN);
         this->o_ptr->curse_flags.set(CurseTraitType::CURSED);
         this->o_ptr->pval = 0 - (this->o_ptr->pval);
         break;
@@ -132,7 +132,7 @@ void AmuletEnchanter::sval_enchant()
         add_esp_weak(this->o_ptr, false);
         break;
     case SV_AMULET_DOOM:
-        set_bits(this->o_ptr->ident, IDENT_BROKEN);
+        this->o_ptr->ident.set(IdentificationFlag::BROKEN);
         this->o_ptr->curse_flags.set(CurseTraitType::CURSED);
         this->o_ptr->pval = 0 - (randint1(5) + (PARAMETER_VALUE)m_bonus(5, this->level));
         this->o_ptr->to_a = 0 - (randint1(5) + (ARMOUR_CLASS)m_bonus(5, this->level));
@@ -147,7 +147,7 @@ void AmuletEnchanter::sval_enchant()
             break;
         }
 
-        set_bits(this->o_ptr->ident, IDENT_BROKEN);
+        this->o_ptr->ident.set(IdentificationFlag::BROKEN);
         this->o_ptr->curse_flags.set(CurseTraitType::CURSED);
         this->o_ptr->pval = 0 - this->o_ptr->pval;
         break;
@@ -383,6 +383,6 @@ void AmuletEnchanter::give_cursed()
         }
     }
 
-    set_bits(this->o_ptr->ident, IDENT_BROKEN);
+    this->o_ptr->ident.set(IdentificationFlag::BROKEN);
     this->o_ptr->curse_flags.set({ CurseTraitType::CURSED, CurseTraitType::HEAVY_CURSE });
 }

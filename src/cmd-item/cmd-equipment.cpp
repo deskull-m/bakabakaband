@@ -250,7 +250,7 @@ void do_cmd_wield(CreatureEntity &creature)
     }
 
     auto should_equip_cursed = item_chosen->is_cursed() && item_chosen->is_known();
-    should_equip_cursed |= any_bits(item_chosen->ident, IDENT_SENSE) && (FEEL_BROKEN <= item_chosen->feeling) && (item_chosen->feeling <= FEEL_CURSED);
+    should_equip_cursed |= item_chosen->ident.has(IdentificationFlag::SENSE) && (FEEL_BROKEN <= item_chosen->feeling) && (item_chosen->feeling <= FEEL_CURSED);
     should_equip_cursed &= confirm_wear;
     if (should_equip_cursed) {
         const auto item_name = describe_flavor(creature, *item_chosen, (OD_OMIT_PREFIX | OD_NAME_ONLY));
@@ -346,7 +346,7 @@ void do_cmd_wield(CreatureEntity &creature)
     if (wield_slot_item.is_cursed()) {
         msg_print(_("うわ！ すさまじく冷たい！", "Oops! It feels deathly cold!"));
         chg_virtue(creature, Virtue::HARMONY, -1);
-        wield_slot_item.ident |= (IDENT_SENSE);
+        wield_slot_item.ident.set(IdentificationFlag::SENSE);
     }
 
     do_curse_on_equip(slot, wield_slot_item, creature);
@@ -400,7 +400,7 @@ void do_cmd_takeoff(CreatureEntity &creature)
 
         if ((item->curse_flags.has(CurseTraitType::HEAVY_CURSE) && one_in_(7)) || one_in_(4)) {
             msg_print(_("呪われた装備を力づくで剥がした！", "You tore off a piece of cursed equipment by sheer strength!"));
-            item->ident |= (IDENT_SENSE);
+            item->ident.set(IdentificationFlag::SENSE);
             item->curse_flags.clear();
             item->feeling = FEEL_NONE;
             rfu.set_flag(StatusRecalculatingFlag::BONUS);

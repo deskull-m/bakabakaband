@@ -188,7 +188,7 @@ static void fixed_artifact_random_abilities(CreatureEntity &creature, const Arti
 static void invest_curse_to_fixed_artifact(const ArtifactType &artifact, ItemEntity *o_ptr)
 {
     if (!artifact.cost) {
-        set_bits(o_ptr->ident, IDENT_BROKEN);
+        o_ptr->ident.set(IdentificationFlag::BROKEN);
     }
 
     if (artifact.gen_flags.has(ItemGenerationTraitType::CURSED)) {

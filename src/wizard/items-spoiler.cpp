@@ -104,7 +104,7 @@ static ItemEntity prepare_item_for_obj_desc(short bi_id)
 {
     ItemEntity item;
     item.generate(bi_id);
-    item.ident |= IDENT_KNOWN;
+    item.ident.set(IdentificationFlag::KNOWN);
     switch (item.bi_key.tval()) {
     case ItemKindType::FIGURINE:
     case ItemKindType::STATUE:

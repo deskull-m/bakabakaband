@@ -80,7 +80,7 @@ bool eat_magic(CreatureEntity &creature, int power)
             }
 
             if (!item->pval) {
-                item->ident |= IDENT_EMPTY;
+                item->ident.set(IdentificationFlag::EMPTY);
             }
         }
     }

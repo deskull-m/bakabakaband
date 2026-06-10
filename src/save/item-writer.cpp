@@ -59,7 +59,7 @@ static BIT_FLAGS write_item_flags(const ItemEntity &item)
         set_bits(flags, SaveDataItemFlagType::DS);
     }
 
-    if (item.ident) {
+    if (item.ident.any()) {
         set_bits(flags, SaveDataItemFlagType::IDENT);
     }
 
@@ -171,7 +171,14 @@ static void write_item_info(const ItemEntity &item, const BIT_FLAGS flags)
     }
 
     if (any_bits(flags, SaveDataItemFlagType::IDENT)) {
-        wr_byte(item.ident);
+        // 旧 byte ident とビット互換のバイトに変換して保存する (セーブ形式不変)
+        uint8_t ident_byte = 0;
+        for (auto i = 0; i < enum2i(IdentificationFlag::MAX); i++) {
+            if (item.ident.has(i2enum<IdentificationFlag>(i))) {
+                ident_byte |= static_cast<uint8_t>(1U << i);
+            }
+        }
+        wr_byte(ident_byte);
     }
 
     if (any_bits(flags, SaveDataItemFlagType::MARKED)) {

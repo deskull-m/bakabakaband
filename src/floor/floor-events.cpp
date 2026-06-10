@@ -158,7 +158,7 @@ static int get_dungeon_feeling(const auto &floor)
 
     for (const auto &item_ptr : floor.o_list) {
         auto delta = 0;
-        if (!item_ptr->is_valid() || (item_ptr->is_known() && item_ptr->marked.has(OmType::TOUCHED)) || ((item_ptr->ident & IDENT_SENSE) != 0)) {
+        if (!item_ptr->is_valid() || (item_ptr->is_known() && item_ptr->marked.has(OmType::TOUCHED)) || ((item_ptr->ident.has(IdentificationFlag::SENSE)) != 0)) {
             continue;
         }
 

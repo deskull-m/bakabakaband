@@ -232,7 +232,7 @@ bool curse_armor(CreatureEntity &creature)
     item.damage_dice = Dice(0, 0);
     item.art_flags.clear();
     item.curse_flags.set(CurseTraitType::CURSED);
-    item.ident |= IDENT_BROKEN;
+    item.ident.set(IdentificationFlag::BROKEN);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
@@ -286,7 +286,7 @@ bool curse_weapon_object(CreatureEntity &creature, bool force, ItemEntity &item)
     item.damage_dice = Dice(0, 0);
     item.art_flags.clear();
     item.curse_flags.set(CurseTraitType::CURSED);
-    item.ident |= IDENT_BROKEN;
+    item.ident.set(IdentificationFlag::BROKEN);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
@@ -354,7 +354,7 @@ static void break_curse(ItemEntity &item)
 
     msg_print(_("かけられていた呪いが打ち破られた！", "The curse is broken!"));
     item.curse_flags.clear();
-    item.ident |= IDENT_SENSE;
+    item.ident.set(IdentificationFlag::SENSE);
     item.feeling = FEEL_NONE;
 }
 

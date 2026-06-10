@@ -88,7 +88,7 @@ void ObjectUseEntity::execute()
         }
 
         msg_print(_("この杖にはもう魔力が残っていない。", "The staff has no charges left."));
-        item->ident |= IDENT_EMPTY;
+        item->ident.set(IdentificationFlag::EMPTY);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         static constexpr auto flags = {
             StatusRecalculatingFlag::COMBINATION,

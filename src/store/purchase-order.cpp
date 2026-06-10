@@ -279,7 +279,7 @@ void store_purchase(CreatureEntity &creature, StoreSaleType store_num)
 
     item.inscription.reset();
     item.feeling = FEEL_NONE;
-    item.ident &= ~(IDENT_STORE);
+    item.ident.reset(IdentificationFlag::STORE);
 
     const auto idx = find_autopick_list(creature, &item);
     auto_inscribe_item(&item, idx);

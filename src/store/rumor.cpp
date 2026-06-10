@@ -162,7 +162,7 @@ public:
     {
         ItemEntity item(artifact_rumor.bi_id);
         item.fa_id = artifact_rumor.fa_id;
-        item.ident = IDENT_STORE;
+        item.ident.set(IdentificationFlag::STORE);
         const auto artifact_name = describe_flavor(this->creature, item, OD_NAME_ONLY);
         this->print_rumor(artifact_name);
     }

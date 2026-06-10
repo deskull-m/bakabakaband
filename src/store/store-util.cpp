@@ -161,7 +161,7 @@ tl::optional<int> Store::carry(ItemEntity &item)
         return tl::nullopt;
     }
 
-    item.ident |= IDENT_FULL_KNOWN;
+    item.ident.set(IdentificationFlag::FULL_KNOWN);
     item.inscription.reset();
     item.feeling = FEEL_NONE;
     for (auto slot = 0; slot < this->stock_num; slot++) {
