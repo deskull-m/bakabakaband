@@ -59,7 +59,7 @@ void identify_pack(CreatureEntity &creature)
 bool identify_item(CreatureEntity &creature, ItemEntity *o_ptr)
 {
     const auto known_item_name = describe_flavor(creature, *o_ptr, 0);
-    const auto old_known = any_bits(o_ptr->ident, IDENT_KNOWN);
+    const auto old_known = o_ptr->ident.has(IdentificationFlag::KNOWN);
     if (!o_ptr->is_fully_known()) {
         if (o_ptr->is_fixed_or_random_artifact() || one_in_(5)) {
             chg_virtue(creature, Virtue::KNOWLEDGE, 1);
@@ -180,7 +180,7 @@ bool identify_fully(CreatureEntity &creature, bool only_equip)
     }
 
     auto old_known = identify_item(creature, item.get());
-    item->ident |= (IDENT_FULL_KNOWN);
+    item->ident.set(IdentificationFlag::FULL_KNOWN);
     window_stuff(creature);
     const auto item_name = describe_flavor(creature, *item, 0);
     if (i_idx >= INVEN_MAIN_HAND) {

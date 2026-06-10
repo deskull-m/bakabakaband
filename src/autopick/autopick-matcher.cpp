@@ -132,7 +132,7 @@ bool is_autopick_match(CreatureEntity &creature, const ItemEntity *o_ptr, const 
         return false;
     }
 
-    if (entry.has(FLG_UNIDENTIFIED) && (o_ptr->is_known() || (o_ptr->ident & IDENT_SENSE))) {
+    if (entry.has(FLG_UNIDENTIFIED) && (o_ptr->is_known() || (o_ptr->ident.has(IdentificationFlag::SENSE)))) {
         return false;
     }
 
@@ -195,7 +195,7 @@ bool is_autopick_match(CreatureEntity &creature, const ItemEntity *o_ptr, const 
         if (!o_ptr->is_ego()) {
             return false;
         }
-        const auto sensed_excellent = (o_ptr->ident & IDENT_SENSE) && o_ptr->feeling == FEEL_EXCELLENT;
+        const auto sensed_excellent = (o_ptr->ident.has(IdentificationFlag::SENSE)) && o_ptr->feeling == FEEL_EXCELLENT;
         if (!o_ptr->is_known() && !sensed_excellent) {
             return false;
         }
@@ -209,7 +209,7 @@ bool is_autopick_match(CreatureEntity &creature, const ItemEntity *o_ptr, const 
             if (!o_ptr->is_nameless() || (o_ptr->to_a <= 0 && (o_ptr->to_h + o_ptr->to_d) <= 0)) {
                 return false;
             }
-        } else if (o_ptr->ident & IDENT_SENSE) {
+        } else if (o_ptr->ident.has(IdentificationFlag::SENSE)) {
             if (o_ptr->feeling != FEEL_GOOD) {
                 return false;
             }
@@ -226,7 +226,7 @@ bool is_autopick_match(CreatureEntity &creature, const ItemEntity *o_ptr, const 
             if (!o_ptr->is_nameless()) {
                 return false;
             }
-        } else if (o_ptr->ident & IDENT_SENSE) {
+        } else if (o_ptr->ident.has(IdentificationFlag::SENSE)) {
             switch (o_ptr->feeling) {
             case FEEL_AVERAGE:
             case FEEL_GOOD:
@@ -250,7 +250,7 @@ bool is_autopick_match(CreatureEntity &creature, const ItemEntity *o_ptr, const 
             if (!o_ptr->is_nameless() || o_ptr->is_cursed() || o_ptr->is_broken() || o_ptr->to_a > 0 || (o_ptr->to_h + o_ptr->to_d) > 0) {
                 return false;
             }
-        } else if (o_ptr->ident & IDENT_SENSE) {
+        } else if (o_ptr->ident.has(IdentificationFlag::SENSE)) {
             if (o_ptr->feeling != FEEL_AVERAGE) {
                 return false;
             }

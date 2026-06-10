@@ -111,7 +111,7 @@ static void process_cursed_equipment_characteristics(CreatureEntity &creature, u
     for (int i = INVEN_MAIN_HAND; i < max_i; i++) {
         auto *o_ptr = creature.inventory[i].get();
         auto is_known = o_ptr->is_known();
-        auto is_sensed = is_known || o_ptr->ident & IDENT_SENSE;
+        auto is_sensed = is_known || o_ptr->ident.has(IdentificationFlag::SENSE);
         auto flags = o_ptr->get_flags_known();
 
         if (flags.has(TR_ADD_L_CURSE) || flags.has(TR_ADD_H_CURSE)) {

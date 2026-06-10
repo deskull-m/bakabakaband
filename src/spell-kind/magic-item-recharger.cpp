@@ -107,8 +107,8 @@ bool recharge(CreatureEntity &creature, int power)
             }
 
             item->pval += recharge_amount;
-            item->ident &= ~(IDENT_KNOWN);
-            item->ident &= ~(IDENT_EMPTY);
+            item->ident.reset(IdentificationFlag::KNOWN);
+            item->ident.reset(IdentificationFlag::EMPTY);
         }
     }
 

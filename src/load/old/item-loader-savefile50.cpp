@@ -45,7 +45,16 @@ void ItemLoader50::rd_item(ItemEntity *o_ptr)
     o_ptr->ac = any_bits(flags, SaveDataItemFlagType::AC) ? rd_s16b() : 0;
     o_ptr->damage_dice.num = any_bits(flags, SaveDataItemFlagType::DD) ? rd_byte() : 0;
     o_ptr->damage_dice.sides = any_bits(flags, SaveDataItemFlagType::DS) ? rd_byte() : 0;
-    o_ptr->ident = any_bits(flags, SaveDataItemFlagType::IDENT) ? rd_byte() : 0;
+    o_ptr->ident.clear();
+    if (any_bits(flags, SaveDataItemFlagType::IDENT)) {
+        // 旧 byte ident とビット互換のバイトから鑑定フラグを復元する (セーブ形式不変)
+        const auto ident_byte = rd_byte();
+        for (auto i = 0; i < enum2i(IdentificationFlag::MAX); i++) {
+            if (any_bits<uint8_t>(ident_byte, static_cast<uint8_t>(1U << i))) {
+                o_ptr->ident.set(i2enum<IdentificationFlag>(i));
+            }
+        }
+    }
     o_ptr->marked.clear();
     if (any_bits(flags, SaveDataItemFlagType::MARKED)) {
         rd_FlagGroup_bytes(o_ptr->marked, rd_byte, 1);

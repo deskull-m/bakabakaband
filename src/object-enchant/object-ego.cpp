@@ -259,7 +259,7 @@ void apply_ego(ItemEntity *o_ptr, DEPTH lev)
     ego_interpret_extra_abilities(o_ptr, ego, gen_flags);
 
     if (!ego.cost) {
-        o_ptr->ident |= (IDENT_BROKEN);
+        o_ptr->ident.set(IdentificationFlag::BROKEN);
     }
 
     ego_invest_curse(o_ptr, gen_flags);

@@ -14,6 +14,7 @@
 #include "object/object-mark-types.h"
 #include "system/angband.h"
 #include "system/baseitem/baseitem-key.h"
+#include "system/item/identification-flags.h"
 #include "system/system-variables.h"
 #include "util/dice.h"
 #include "util/flag-group.h"
@@ -77,7 +78,7 @@ public:
 
     Dice damage_dice{}; /*!< Damage dice */
     TIME_EFFECT timeout{}; /*!< Timeout Counter */
-    byte ident{}; /*!< Special flags  */
+    EnumClassFlagGroup<IdentificationFlag> ident{}; /*!< 鑑定状態フラグ (旧 byte ident) */
     EnumClassFlagGroup<OmType> marked{}; /*!< Object is marked */
     tl::optional<std::string> inscription{}; /*!< Inscription */
     tl::optional<std::string> randart_name{}; /*!< Artifact name (random artifacts) */

@@ -77,7 +77,7 @@ bool psychometry(CreatureEntity &creature)
     msg_format("You feel that the %s %s %s...", item_name.data(), ((item->number == 1) ? "is" : "are"), game_inscriptions[feel]);
 #endif
 
-    set_bits(item->ident, IDENT_SENSE);
+    item->ident.set(IdentificationFlag::SENSE);
     item->feeling = feel;
     item->marked.set(OmType::TOUCHED);
 

@@ -446,7 +446,7 @@ static std::string describe_item_feeling(const ItemEntity &item, const describe_
         return game_inscriptions[item.feeling];
     }
 
-    if (item.is_cursed() && (opt.known || any_bits(item.ident, IDENT_SENSE))) {
+    if (item.is_cursed() && (opt.known || item.ident.has(IdentificationFlag::SENSE))) {
         return _("呪われている", "cursed");
     }
 
@@ -455,11 +455,11 @@ static std::string describe_item_feeling(const ItemEntity &item, const describe_
     unidentifiable |= tval == ItemKindType::AMULET;
     unidentifiable |= tval == ItemKindType::LITE;
     unidentifiable |= tval == ItemKindType::FIGURINE;
-    if (unidentifiable && opt.aware && !opt.known && none_bits(item.ident, IDENT_SENSE)) {
+    if (unidentifiable && opt.aware && !opt.known && !item.ident.has(IdentificationFlag::SENSE)) {
         return _("未鑑定", "unidentified");
     }
 
-    if (!opt.known && any_bits(item.ident, IDENT_EMPTY)) {
+    if (!opt.known && item.ident.has(IdentificationFlag::EMPTY)) {
         return _("空", "empty");
     }
 
@@ -494,7 +494,7 @@ static std::string describe_player_inscription(const ItemEntity &item)
 
 static std::string describe_item_discount(const ItemEntity &item, bool hide_discount)
 {
-    if ((item.discount == 0) || (hide_discount && none_bits(item.ident, IDENT_STORE))) {
+    if ((item.discount == 0) || (hide_discount && !item.ident.has(IdentificationFlag::STORE))) {
         return "";
     }
 
@@ -557,7 +557,7 @@ static describe_option_type decide_describe_option(const ItemEntity &item, BIT_F
         opt.flavor = false;
     }
 
-    if (any_bits(mode, OD_STORE) || any_bits(item.ident, IDENT_STORE)) {
+    if (any_bits(mode, OD_STORE) || item.ident.has(IdentificationFlag::STORE)) {
         opt.flavor = false;
         opt.aware = true;
         opt.known = true;

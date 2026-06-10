@@ -688,7 +688,7 @@ static void postprocess_by_taking_photo(CreatureEntity &creature, EffectMonster 
 
     ItemEntity item({ ItemKindType::STATUE, SV_PHOTO });
     item.pval = em_ptr->photo;
-    item.ident |= (IDENT_FULL_KNOWN);
+    item.ident.set(IdentificationFlag::FULL_KNOWN);
     (void)drop_near(creature, item, creature.get_position());
 }
 

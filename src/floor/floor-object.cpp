@@ -55,7 +55,7 @@ static void object_mention(CreatureEntity &creature, ItemEntity &item)
 
     object_aware(creature, item);
     item.mark_as_known();
-    item.ident |= (IDENT_FULL_KNOWN);
+    item.ident.set(IdentificationFlag::FULL_KNOWN);
     const auto item_name = describe_flavor(creature, item, 0);
     msg_format_wizard(creature, CHEAT_OBJECT, _("%sを生成しました。", "%s was generated."), item_name.data());
 }

@@ -35,7 +35,7 @@
 static void sense_inventory_aux(CreatureEntity &creature, INVENTORY_IDX slot, bool heavy)
 {
     auto &item = *creature.inventory[slot];
-    if (any_bits(item.ident, IDENT_SENSE) || item.is_known()) {
+    if (item.ident.has(IdentificationFlag::SENSE) || item.is_known()) {
         return;
     }
 
@@ -113,7 +113,7 @@ static void sense_inventory_aux(CreatureEntity &creature, INVENTORY_IDX slot, bo
 #endif
     }
 
-    item.ident |= (IDENT_SENSE);
+    item.ident.set(IdentificationFlag::SENSE);
     item.feeling = feel;
 
     autopick_alter_item(creature, slot, destroy_feeling);

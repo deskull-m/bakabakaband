@@ -104,7 +104,7 @@ static void do_cmd_knowledge_quests_current(CreatureEntity &creature, FILE *fff)
                     if (quest.has_reward()) {
                         ItemEntity item(quest.get_reward_bi_id());
                         item.fa_id = quest.get_reward().value_or(FixedArtifactId::NONE);
-                        item.ident = IDENT_STORE;
+                        item.ident.set(IdentificationFlag::STORE);
                         item_name = describe_flavor(creature, item, OD_NAME_ONLY);
                     }
 

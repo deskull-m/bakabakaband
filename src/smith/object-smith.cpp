@@ -360,7 +360,7 @@ Smith::DrainEssenceResult Smith::drain_essence(ItemEntity *o_ptr)
         o_ptr->timeout = old_o.timeout;
     }
 
-    o_ptr->ident |= (IDENT_FULL_KNOWN);
+    o_ptr->ident.set(IdentificationFlag::FULL_KNOWN);
     object_aware(this->creature, *o_ptr);
     o_ptr->mark_as_known();
 

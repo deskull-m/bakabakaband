@@ -210,7 +210,7 @@ void ItemMagicApplier::apply_cursed()
     }
 
     if (this->o_ptr->is_worthless()) {
-        set_bits(this->o_ptr->ident, IDENT_BROKEN);
+        this->o_ptr->ident.set(IdentificationFlag::BROKEN);
     }
 
     const auto &baseitem = this->o_ptr->get_baseitem();

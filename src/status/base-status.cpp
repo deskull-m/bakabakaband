@@ -312,9 +312,9 @@ bool lose_all_info(CreatureEntity &creature)
         }
 
         o_ptr->feeling = FEEL_NONE;
-        o_ptr->ident &= ~(IDENT_EMPTY);
-        o_ptr->ident &= ~(IDENT_KNOWN);
-        o_ptr->ident &= ~(IDENT_SENSE);
+        o_ptr->ident.reset(IdentificationFlag::EMPTY);
+        o_ptr->ident.reset(IdentificationFlag::KNOWN);
+        o_ptr->ident.reset(IdentificationFlag::SENSE);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();

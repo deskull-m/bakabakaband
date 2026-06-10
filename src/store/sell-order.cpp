@@ -150,7 +150,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
             identify_item(creature, item.get());
             auto sold_item = item->clone();
             sold_item.number = amt;
-            sold_item.ident |= IDENT_STORE;
+            sold_item.ident.set(IdentificationFlag::STORE);
 
             if (item->is_wand_rod()) {
                 sold_item.pval = item->pval * amt / item->number;
@@ -199,7 +199,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
         }
 
         identify_item(creature, &selling_item);
-        selling_item.ident |= IDENT_FULL_KNOWN;
+        selling_item.ident.set(IdentificationFlag::FULL_KNOWN);
 
         distribute_charges(item.get(), &selling_item, amt);
         msg_format(_("%sを置いた。(%c)", "You drop %s (%c)."), museum_item_name.data(), index_to_label(i_idx));

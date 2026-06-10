@@ -70,7 +70,7 @@ bool can_player_destroy_object(ItemEntity *o_ptr)
         }
 
         o_ptr->feeling = feel;
-        o_ptr->ident |= IDENT_SENSE;
+        o_ptr->ident.set(IdentificationFlag::SENSE);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(StatusRecalculatingFlag::COMBINATION);
         static constexpr auto flags = {

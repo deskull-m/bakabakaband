@@ -138,7 +138,7 @@ void building_recharge(CreatureEntity &creature)
 
         price *= charges;
         item->pval += static_cast<short>(charges);
-        item->ident &= ~(IDENT_EMPTY);
+        item->ident.reset(IdentificationFlag::EMPTY);
     }
 
     const auto item_name = describe_flavor(creature, *item, 0);
@@ -249,14 +249,14 @@ void building_recharge_all(CreatureEntity &creature)
                 o_ptr->pval = base_pval;
             }
 
-            o_ptr->ident &= ~(IDENT_EMPTY);
+            o_ptr->ident.reset(IdentificationFlag::EMPTY);
             break;
         case ItemKindType::WAND:
             if (o_ptr->pval < o_ptr->number * base_pval) {
                 o_ptr->pval = o_ptr->number * base_pval;
             }
 
-            o_ptr->ident &= ~(IDENT_EMPTY);
+            o_ptr->ident.reset(IdentificationFlag::EMPTY);
             break;
         default:
             break;

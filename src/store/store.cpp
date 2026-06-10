@@ -327,7 +327,7 @@ static void store_create(CreatureEntity &creature, short fix_k_idx, StoreSaleTyp
         }
 
         q_ptr->mark_as_known();
-        q_ptr->ident |= IDENT_STORE;
+        q_ptr->ident.set(IdentificationFlag::STORE);
         if (tval == ItemKindType::CHEST) {
             continue;
         }
