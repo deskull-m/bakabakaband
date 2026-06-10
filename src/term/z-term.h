@@ -219,20 +219,18 @@ std::pair<int, int> term_get_size();
 std::pair<int, int> term_locate();
 DisplaySymbol term_what(int x, int y, const DisplaySymbol &ds);
 
-errr term_flush(void);
+void term_flush();
 errr term_key_push(int k);
-errr term_inkey(char *ch, bool wait, bool take);
+char term_inkey(bool wait, bool take);
 
-errr term_save(void);
-errr term_load(bool load_all);
+void term_save();
+void term_load(bool should_load_all);
 
-errr term_exchange(void);
+void term_resize(int w, int h);
 
-errr term_resize(TERM_LEN w, TERM_LEN h);
+void term_activate(term_type *t);
 
-errr term_activate(term_type *t);
-
-errr term_init(term_type *t, TERM_LEN w, TERM_LEN h, int k);
+void term_init(term_type *t, int w, int h, int k);
 
 #ifdef JP
 void term_putstr_v(int x, int y_initial, size_t n, uint8_t color, std::string_view sv);
