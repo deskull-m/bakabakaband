@@ -42,6 +42,25 @@ void place_gold(CreatureEntity &creature, const Pos2D &pos)
 }
 
 /*!
+ * @brief 指定位置に複数個の財宝を生成して床に散布する (財宝地形の DROP_GOLD 用)
+ * @param creature クリーチャーへの参照
+ * @param pos 生成位置
+ * @param drop_count 生成する財宝の個数
+ */
+void place_gold(CreatureEntity &creature, const Pos2D &pos, int drop_count)
+{
+    if (drop_count <= 0) {
+        return;
+    }
+
+    auto &floor = *creature.get_floor();
+    for (auto i = 0; i < drop_count; i++) {
+        auto item = floor.make_gold();
+        (void)drop_near(creature, item, pos, false);
+    }
+}
+
+/*!
  * @brief フロアの指定位置に生成階に応じたベースアイテムの生成を行う
  * @param creature クリーチャーへの参照
  * @param pos 配置したい座標

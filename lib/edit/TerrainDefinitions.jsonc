@@ -1647,6 +1647,7 @@
       },
       "mimic": "MAGMA_VEIN",
       "map_priority": 2,
+      "DROP_GOLD": "1d2",
       "flags": [
         "POWER_10",
         "SECRET",
@@ -1677,6 +1678,7 @@
       },
       "mimic": "QUARTZ_VEIN",
       "map_priority": 2,
+      "DROP_GOLD": "1d2",
       "flags": [
         "POWER_20",
         "SECRET",
@@ -1707,6 +1709,7 @@
       },
       "mimic": null,
       "map_priority": 2,
+      "DROP_GOLD": "2d2",
       "flags": [
         "POWER_20",
         "REMEMBER",
@@ -1736,6 +1739,7 @@
       },
       "mimic": null,
       "map_priority": 2,
+      "DROP_GOLD": "2d2",
       "flags": [
         "POWER_20",
         "REMEMBER",

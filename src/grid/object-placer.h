@@ -6,4 +6,5 @@
 #include <cstdint>
 
 void place_gold(CreatureEntity &creature, const Pos2D &pos);
+void place_gold(CreatureEntity &creature, const Pos2D &pos, int drop_count);
 void place_object(CreatureEntity &creature, const Pos2D &pos, uint32_t mode, BaseitemRestrict restrict = nullptr);

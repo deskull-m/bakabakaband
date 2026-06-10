@@ -134,6 +134,7 @@ errr parse_terrains_json_info(nlohmann::json &element, angband_header *)
 
     terrain.mimic = s;
     terrain.destroyed = s;
+    terrain.gold_drop = Dice{};
     for (auto j = 0; j < MAX_FEAT_STATES; j++) {
         terrain.state[j].action = TerrainCharacteristics::MAX;
         terrain.state[j].result_tag.clear();
@@ -220,6 +221,11 @@ errr parse_terrains_json_info(nlohmann::json &element, angband_header *)
             return PARSE_ERROR_TOO_FEW_ARGUMENTS;
         }
         terrain.random_change_tag = tag_obj.get<std::string>();
+    }
+
+    // 財宝地形 (HAS_GOLD) を掘った際に生成する財宝数 (省略時は従来通り 1 個)
+    if (auto err = info_set_dice(element["DROP_GOLD"], terrain.gold_drop, false)) {
+        return err;
     }
 
     const auto &inter_obj = element["interactions"];

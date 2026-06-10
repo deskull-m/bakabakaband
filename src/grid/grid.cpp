@@ -799,8 +799,9 @@ void cave_alter_feat(CreatureEntity &creature, POSITION y, POSITION x, TerrainCh
 
         /* Handle gold */
         if (old_terrain.flags.has(TerrainCharacteristics::HAS_GOLD) && new_terrain.flags.has_not(TerrainCharacteristics::HAS_GOLD)) {
-            /* Place some gold */
-            place_gold(creature, pos);
+            /* Place some gold (財宝地形に DROP_GOLD 指定があればその個数、無ければ従来通り 1 個) */
+            const auto drop_count = old_terrain.gold_drop.is_valid() ? old_terrain.gold_drop.roll() : 1;
+            place_gold(creature, pos, drop_count);
             found = true;
         }
 
