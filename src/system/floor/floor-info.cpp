@@ -479,8 +479,8 @@ TerrainTag FloorType::select_random_trap() const
         const auto tag = terrains.select_normal_trap();
         const auto &terrain = terrains.get_terrain(tag);
 
-        // POWER値による階層制限チェック
-        if (terrain.power > 0 && this->dun_level < terrain.power) {
+        // 罠の強度による階層制限チェック
+        if (terrain.trap_power > 0 && this->dun_level < terrain.trap_power) {
             continue;
         }
 

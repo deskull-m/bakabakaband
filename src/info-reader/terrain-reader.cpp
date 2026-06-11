@@ -135,6 +135,9 @@ errr parse_terrains_json_info(nlohmann::json &element, angband_header *)
     terrain.mimic = s;
     terrain.destroyed = s;
     terrain.gold_drop = Dice{};
+    terrain.door_power = 0;
+    terrain.trap_power = 0;
+    terrain.tunnel_power = 0;
     for (auto j = 0; j < MAX_FEAT_STATES; j++) {
         terrain.state[j].action = TerrainCharacteristics::MAX;
         terrain.state[j].result_tag.clear();
@@ -169,6 +172,7 @@ errr parse_terrains_json_info(nlohmann::json &element, angband_header *)
     }
 
     std::optional<uint8_t> specific_type;
+    std::optional<uint8_t> terrain_power;
     for (const auto &f_obj : flags_obj) {
         if (!f_obj.is_string()) {
             return PARSE_ERROR_TOO_FEW_ARGUMENTS;
@@ -186,7 +190,9 @@ errr parse_terrains_json_info(nlohmann::json &element, angband_header *)
             continue;
         }
         if (f.starts_with("POWER_")) {
-            info_set_value(terrain.power, std::string(f.substr(sizeof("POWER_") - 1)));
+            uint8_t parsed_power{};
+            info_set_value(parsed_power, std::string(f.substr(sizeof("POWER_") - 1)));
+            terrain_power = parsed_power;
             continue;
         }
         // bakabakaband 独自フラグプレフィックス
@@ -205,6 +211,19 @@ errr parse_terrains_json_info(nlohmann::json &element, angband_header *)
     }
     if (specific_type && !terrain.set_specific_type(*specific_type)) {
         return PARSE_ERROR_INVALID_FLAG;
+    }
+
+    // 単一の POWER 値を、地形が持つ特性フラグに応じて用途別 power へ割り当てる。
+    if (terrain_power) {
+        if (terrain.flags.has(TerrainCharacteristics::DOOR)) {
+            terrain.door_power = *terrain_power;
+        }
+        if (terrain.flags.has(TerrainCharacteristics::TRAP)) {
+            terrain.trap_power = *terrain_power;
+        }
+        if (terrain.flags.has(TerrainCharacteristics::TUNNEL)) {
+            terrain.tunnel_power = *terrain_power;
+        }
     }
 
     // bakabakaband 独自: 確率的ランダム地形変化 (R: ディレクティブ相当)
