@@ -626,6 +626,29 @@ tl::optional<std::string_view> extract_suffix(std::string_view str, std::string_
     return tl::nullopt;
 }
 
+/*!
+ * @brief 整数の桁数を数える
+ *
+ * @param value 数える整数
+ * @param base 桁数を数える基数(省略した場合のデフォルト値は10)
+ * @return 整数の桁数。基数が不正(2未満)な場合は0を返す。
+ */
+int count_digits(int value, int base)
+{
+    if (base < 2) {
+        return 0;
+    }
+
+    int count = 0;
+
+    do {
+        value /= base;
+        count++;
+    } while (value != 0);
+
+    return count;
+}
+
 char hexify_upper(uint8_t value)
 {
     return hex_symbol_table.at(value / 16);
