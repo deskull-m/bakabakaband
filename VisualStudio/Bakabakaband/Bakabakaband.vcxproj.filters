@@ -425,6 +425,9 @@
     <ClCompile Include="..\..\src\locale\japanese.cpp">
       <Filter>locale</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\locale\character-encoding.cpp">
+      <Filter>locale</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\locale\localized-string.cpp">
       <Filter>locale</Filter>
     </ClCompile>
@@ -2038,9 +2041,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\system\angband-version.cpp">
       <Filter>system</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\locale\utf-8.cpp">
-      <Filter>locale</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\wizard\wizard-game-modifier.cpp">
       <Filter>wizard</Filter>
@@ -5088,9 +5088,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\artifact\random-art-effects.h">
       <Filter>artifact</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\locale\utf-8.h">
-      <Filter>locale</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\wizard\wizard-game-modifier.h">
       <Filter>wizard</Filter>

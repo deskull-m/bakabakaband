@@ -14,7 +14,7 @@
 #include "save-file-scanner.h"
 
 #include "game-option/special-options.h"
-#include "locale/japanese.h"
+#include "locale/character-encoding.h"
 #include "system/system-variables.h"
 
 #include "term/gameterm.h"
