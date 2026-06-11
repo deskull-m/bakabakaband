@@ -146,6 +146,9 @@
     <ClCompile Include="..\..\src\io\signal-handlers.cpp">
       <Filter>io</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\io\temp-file.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\io\uid-checker.cpp">
       <Filter>io</Filter>
     </ClCompile>
@@ -2963,6 +2966,9 @@
       <Filter>autopick</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\io\signal-handlers.h">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\io\temp-file.h">
       <Filter>io</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\io\uid-checker.h">
