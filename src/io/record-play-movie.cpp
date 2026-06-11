@@ -10,7 +10,7 @@
 #include "core/asking-player.h"
 #include "io/files-util.h"
 #include "io/signal-handlers.h"
-#include "locale/japanese.h"
+#include "locale/character-encoding.h"
 #include "system/creature-entity.h"
 #include "term/gameterm.h"
 #include "term/z-form.h"

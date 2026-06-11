@@ -571,7 +571,6 @@
     <ClCompile Include="..\..\src\io\input-key-requester.cpp" />
     <ClCompile Include="..\..\src\store\store-key-processor.cpp" />
     <ClCompile Include="..\..\src\load\info-loader.cpp" />
-    <ClCompile Include="..\..\src\locale\utf-8.cpp" />
     <ClCompile Include="..\..\src\main-win\main-win-cfg-reader.cpp" />
     <ClCompile Include="..\..\src\main-win\main-win-mci.cpp" />
     <ClCompile Include="..\..\src\main-win\main-win-music.cpp" />
@@ -1478,7 +1477,6 @@
     <ClInclude Include="..\..\src\load\info-loader.h" />
     <ClInclude Include="..\..\src\locale\character-encoding.h" />
     <ClInclude Include="..\..\src\locale\language-switcher.h" />
-    <ClInclude Include="..\..\src\locale\utf-8.h" />
     <ClInclude Include="..\..\src\main-win\main-win-cfg-reader.h" />
     <ClInclude Include="..\..\src\main-win\main-win-mci.h" />
     <ClInclude Include="..\..\src\main-win\main-win-menuitem.h" />
@@ -1982,6 +1980,7 @@
     <ClCompile Include="..\..\src\grid\grid.cpp" />
     <ClCompile Include="..\..\src\locale\localized-string.cpp" />
     <ClCompile Include="..\..\src\locale\japanese.cpp" />
+    <ClCompile Include="..\..\src\locale\character-encoding.cpp" />
     <ClCompile Include="..\..\src\load\load.cpp" />
     <ClCompile Include="..\..\src\main-win.cpp" />
     <ClCompile Include="..\..\src\cmd-action\cmd-mind.cpp" />

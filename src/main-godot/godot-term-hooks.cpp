@@ -13,7 +13,7 @@
 #include "core/visuals-reseter.h"
 #include "game-option/runtime-arguments.h"
 #include "game-option/special-options.h"
-#include "locale/japanese.h"
+#include "locale/character-encoding.h"
 #include "system/floor/floor-info.h"
 #include "system/player-type-definition.h"
 #include "system/system-variables.h"

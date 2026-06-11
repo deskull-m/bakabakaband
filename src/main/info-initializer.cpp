@@ -23,6 +23,7 @@
 #include "info-reader/vault-reader.h"
 #include "io/files-util.h"
 #include "io/uid-checker.h"
+#include "locale/character-encoding.h"
 #include "main/angband-headers.h"
 #include "main/init-error-messages-table.h"
 #include "object-enchant/object-ego.h"
