@@ -16151,12 +16151,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 15,
-          "rarity": 1,
-        },
-      ],
       "flags": ["SHOW_MODS", "INSTA_ART", "RIDING"],
       "flavor": {
         "ja": "",
@@ -16186,12 +16180,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 44,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -16221,12 +16209,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 30,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -16256,12 +16238,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 50,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -16291,12 +16267,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 70,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -16326,12 +16296,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 50,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -16361,12 +16325,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 60,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -16396,12 +16354,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 70,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -16431,12 +16383,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 50,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -16466,12 +16412,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 70,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -16501,12 +16441,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 80,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -16536,12 +16470,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 90,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -16571,12 +16499,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 100,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -16606,12 +16528,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 110,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART", "FIXED_FLAVOR"],
       "flavor": {
         "ja": "",
@@ -18435,12 +18351,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 20,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -19205,12 +19115,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 100,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART", "FIXED_FLAVOR"],
       "flavor": {
         "ja": "",
@@ -19275,12 +19179,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 15,
-          "rarity": 1,
-        },
-      ],
       "flags": ["SHOW_MODS", "INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -19310,12 +19208,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 60,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -19345,12 +19237,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 15,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -19380,12 +19266,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 30,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -19615,12 +19495,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 1,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -19799,12 +19673,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 30,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -20044,12 +19912,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 60,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -20079,12 +19941,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 60,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -20149,12 +20005,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 10,
-      "allocations": [
-        {
-          "depth": 65,
-          "rarity": 1,
-        },
-      ],
       "flags": ["IGNORE_ACID", "REFLECT", "INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -20184,12 +20034,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 35,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART", "SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -20254,12 +20098,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 10,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -20289,12 +20127,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 50,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -20464,12 +20296,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 1,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -20499,12 +20325,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 1,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -20534,12 +20354,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 1,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -21549,12 +21363,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 50,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -21794,12 +21602,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 50,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -21829,12 +21631,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 50,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -21864,12 +21660,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 50,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -21899,12 +21689,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 50,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -22144,12 +21928,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 60,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -22179,12 +21957,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 70,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -22214,12 +21986,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 20,
-          "rarity": 1,
-        },
-      ],
       "flags": ["SHOW_MODS", "INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -22928,12 +22694,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 30,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART", "NASTY"],
       "flavor": {
         "ja": "",
@@ -23768,12 +23528,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 90,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -27642,12 +27396,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 2,
-      "allocations": [
-        {
-          "depth": 20,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -27677,12 +27425,6 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 2,
-      "allocations": [
-        {
-          "depth": 20,
-          "rarity": 1,
-        },
-      ],
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
