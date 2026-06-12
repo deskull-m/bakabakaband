@@ -42,6 +42,10 @@
         "ja": "盲目",
         "en": "Blindness",
       },
+      "flavor_name": {
+        "ja": "青い",
+        "en": "Blue",
+      },
       "symbol": {
         "character": ",",
         "color": "Blue",
@@ -76,6 +80,10 @@
       "name": {
         "ja": "恐怖",
         "en": "Paranoia",
+      },
+      "flavor_name": {
+        "ja": "黒い",
+        "en": "Black",
       },
       "symbol": {
         "character": ",",
@@ -112,6 +120,10 @@
         "ja": "混乱",
         "en": "Confusion",
       },
+      "flavor_name": {
+        "ja": "黒斑の",
+        "en": "Black Spotted",
+      },
       "symbol": {
         "character": ",",
         "color": "Dark Gray",
@@ -146,6 +158,10 @@
       "name": {
         "ja": "幻覚",
         "en": "Hallucination",
+      },
+      "flavor_name": {
+        "ja": "茶色の",
+        "en": "Brown",
       },
       "symbol": {
         "character": ",",
@@ -182,6 +198,10 @@
         "ja": "毒消し",
         "en": "Cure Poison",
       },
+      "flavor_name": {
+        "ja": "群青の",
+        "en": "Dark Blue",
+      },
       "symbol": {
         "character": ",",
         "color": "Blue",
@@ -216,6 +236,10 @@
       "name": {
         "ja": "盲目治癒",
         "en": "Cure Blindness",
+      },
+      "flavor_name": {
+        "ja": "深緑の",
+        "en": "Dark Green",
       },
       "symbol": {
         "character": ",",
@@ -252,6 +276,10 @@
         "ja": "恐怖除去",
         "en": "Cure Paranoia",
       },
+      "flavor_name": {
+        "ja": "紅色の",
+        "en": "Dark Red",
+      },
       "symbol": {
         "character": ",",
         "color": "Red",
@@ -286,6 +314,10 @@
       "name": {
         "ja": "混乱脱出",
         "en": "Cure Confusion",
+      },
+      "flavor_name": {
+        "ja": "黄色い",
+        "en": "Yellow",
       },
       "symbol": {
         "character": ",",
@@ -322,6 +354,10 @@
         "ja": "脆弱",
         "en": "Weakness",
       },
+      "flavor_name": {
+        "ja": "苔むした",
+        "en": "Furry",
+      },
       "symbol": {
         "character": ",",
         "color": "Light Gray",
@@ -356,6 +392,10 @@
       "name": {
         "ja": "病弱",
         "en": "Unhealth",
+      },
+      "flavor_name": {
+        "ja": "緑の",
+        "en": "Green",
       },
       "symbol": {
         "character": ",",
@@ -392,6 +432,10 @@
         "ja": "耐久力復活",
         "en": "Restore Constitution",
       },
+      "flavor_name": {
+        "ja": "グレーの",
+        "en": "Grey",
+      },
       "symbol": {
         "character": ",",
         "color": "Gray",
@@ -426,6 +470,10 @@
       "name": {
         "ja": "全復活",
         "en": "Restoring",
+      },
+      "flavor_name": {
+        "ja": "空色の",
+        "en": "Light Blue",
       },
       "symbol": {
         "character": ",",
@@ -462,6 +510,10 @@
         "ja": "無知",
         "en": "Stupidity",
       },
+      "flavor_name": {
+        "ja": "黄緑の",
+        "en": "Light Green",
+      },
       "symbol": {
         "character": ",",
         "color": "Light Green",
@@ -496,6 +548,10 @@
       "name": {
         "ja": "愚鈍",
         "en": "Naivety",
+      },
+      "flavor_name": {
+        "ja": "スミレ色の",
+        "en": "Violet",
       },
       "symbol": {
         "character": ",",
@@ -532,6 +588,10 @@
         "ja": "毒",
         "en": "Poison",
       },
+      "flavor_name": {
+        "ja": "赤い",
+        "en": "Red",
+      },
       "symbol": {
         "character": ",",
         "color": "Red",
@@ -566,6 +626,10 @@
       "name": {
         "ja": "病気",
         "en": "Sickness",
+      },
+      "flavor_name": {
+        "ja": "ねばねばした",
+        "en": "Slimy",
       },
       "symbol": {
         "character": ",",
@@ -602,6 +666,10 @@
         "ja": "麻痺",
         "en": "Paralysis",
       },
+      "flavor_name": {
+        "ja": "黄褐色の",
+        "en": "Tan",
+      },
       "symbol": {
         "character": ",",
         "color": "Light Brown",
@@ -636,6 +704,10 @@
       "name": {
         "ja": "腕力復活",
         "en": "Restore Strength",
+      },
+      "flavor_name": {
+        "ja": "白い",
+        "en": "White",
       },
       "symbol": {
         "character": ",",
@@ -672,6 +744,10 @@
         "ja": "疾病",
         "en": "Disease",
       },
+      "flavor_name": {
+        "ja": "白斑の",
+        "en": "White Spotted",
+      },
       "symbol": {
         "character": ",",
         "color": "White",
@@ -706,6 +782,10 @@
       "name": {
         "ja": "重傷の治癒",
         "en": "Cure Serious Wounds",
+      },
+      "flavor_name": {
+        "ja": "しわしわの",
+        "en": "Wrinkled",
       },
       "symbol": {
         "character": ",",
