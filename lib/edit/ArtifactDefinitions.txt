@@ -4535,7 +4535,7 @@ E:the Eye of Annatar the God Lord.
 I:39:12:5
 W:105:150:5:180000
 P:40:1d1:0:0:0
-F:FULL_NAME | ACTIVATE | SEE_INVIS | RES_BLIND | HOLD_EXP | RES_NETHER | RES_CHAOS | RES_NEXUS | LITE_3 | 
+F:FULL_NAME | SEE_INVIS | RES_BLIND | HOLD_EXP | RES_NETHER | RES_CHAOS | RES_NEXUS | LITE_3 |
 F:INSTA_ART | WIS | INT | CHR | TELEPATHY
 D:アルダの東側でメルドールの神王とされる「運命を与たう君」アンナタールは、
 D:神々の主宰でありながら、同時に途方もないトリックスターであり、

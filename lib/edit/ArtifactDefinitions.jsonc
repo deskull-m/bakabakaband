@@ -9976,7 +9976,6 @@
       "ac_bonus": 0,
       "flags": [
         "FULL_NAME",
-        "ACTIVATE",
         "SEE_INVIS",
         "RES_BLIND",
         "HOLD_EXP",
