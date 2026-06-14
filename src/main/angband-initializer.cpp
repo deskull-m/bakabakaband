@@ -32,9 +32,9 @@
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
-#include "time.h"
 #include "util/angband-files.h"
 #include "world/world.h"
+#include <time.h>
 #ifdef WINDOWS
 #include "util/png-displayer.h"
 #endif

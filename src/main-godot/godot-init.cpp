@@ -3,7 +3,7 @@
  * @brief Godot 版ゲーム初期化実装
  */
 
-#include "godot-init.h"
+#include "main-godot/godot-init.h"
 
 #include "core/game-play.h"
 #include "io/files-util.h"

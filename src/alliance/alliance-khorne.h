@@ -1,4 +1,4 @@
-#include "alliance.h"
+#include "alliance/alliance.h"
 
 class AllianceKhorne : public Alliance {
 public:

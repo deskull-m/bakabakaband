@@ -1,4 +1,4 @@
-#include "alliance.h"
+#include "alliance/alliance.h"
 #include <vector>
 
 enum class MonraceId : int16_t;

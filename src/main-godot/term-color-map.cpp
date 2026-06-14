@@ -3,7 +3,7 @@
  * @brief TERM_COLOR → Godot Color マッピング実装
  */
 
-#include "term-color-map.h"
+#include "main-godot/term-color-map.h"
 #include "term/gameterm.h" // angband_color_table
 
 namespace hengband_godot {

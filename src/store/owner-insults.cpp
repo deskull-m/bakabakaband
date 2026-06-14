@@ -1,4 +1,3 @@
-#include "store/owner-insults.h"
 #include "core/asking-player.h"
 #include "game-option/birth-options.h"
 #include "store/say-comments.h"
@@ -7,6 +6,7 @@
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <store/owner-insults.h>
 
 /* Last "increment" during haggling */
 static s32b last_inc = 0L;

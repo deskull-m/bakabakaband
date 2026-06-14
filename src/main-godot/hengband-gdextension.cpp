@@ -3,15 +3,15 @@
  * @brief Hengband GDExtension 実装 + エントリポイント
  */
 
-#include "hengband-gdextension.h"
-#include "godot-audio-manager.h"
-#include "godot-init.h"
-#include "godot-input-handler.h"
-#include "godot-player-status.h"
-#include "godot-term-hooks.h"
-#include "godot-terminal.h"
-#include "godot-tile-layer.h"
-#include "save-file-scanner.h"
+#include "main-godot/hengband-gdextension.h"
+#include "main-godot/godot-audio-manager.h"
+#include "main-godot/godot-init.h"
+#include "main-godot/godot-input-handler.h"
+#include "main-godot/godot-player-status.h"
+#include "main-godot/godot-term-hooks.h"
+#include "main-godot/godot-terminal.h"
+#include "main-godot/godot-tile-layer.h"
+#include "main-godot/save-file-scanner.h"
 
 #include "game-option/special-options.h"
 #include "locale/character-encoding.h"

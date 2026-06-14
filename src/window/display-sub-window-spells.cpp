@@ -1,4 +1,3 @@
-#include "window/display-sub-window-spells.h"
 #include "core/window-redrawer.h"
 #include "game-option/option-flags.h"
 #include "mind/mind-explanations-table.h"
@@ -8,7 +7,6 @@
 #include "player-base/player-class.h"
 #include "player-info/class-info.h"
 #include "player/player-status-table.h"
-#include "realm/realm-names-table.h"
 #include "spell/spells-execution.h"
 #include "spell/technic-info-table.h"
 #include "system/creature-entity.h"
@@ -17,6 +15,8 @@
 #include "term/term-color-types.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
+#include <realm/realm-names-table.h>
+#include <window/display-sub-window-spells.h>
 
 /*!
  * @brief プレイヤーの全既知呪文を表示する / Display all known spells in a window

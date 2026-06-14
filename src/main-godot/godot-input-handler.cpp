@@ -3,7 +3,7 @@
  * @brief Godot 入力処理 → term_key_push 変換 実装
  */
 
-#include "godot-input-handler.h"
+#include "main-godot/godot-input-handler.h"
 
 #include "term/z-term.h"
 #include "util/string-processor.h"

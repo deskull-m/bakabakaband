@@ -1,6 +1,3 @@
-#include "market/arena-info-table.h"
-#include "monster-race/monster-race.h"
-#include "monster-race/race-indice-types.h"
 #include "object/tval-types.h"
 #include "sv-definition/sv-amulet-types.h"
 #include "sv-definition/sv-food-types.h"
@@ -11,6 +8,9 @@
 #include "sv-definition/sv-staff-types.h"
 #include "sv-definition/sv-wand-types.h"
 #include "system/building-type-definition.h"
+#include <market/arena-info-table.h>
+#include <monster-race/monster-race.h>
+#include <monster-race/race-indice-types.h>
 
 /*!
  * @brief 闘技場のモンスターID及び報酬アイテムテーブル

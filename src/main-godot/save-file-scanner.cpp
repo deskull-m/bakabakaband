@@ -7,7 +7,7 @@
  * 対象は SAVEFILE_VERSION >= 4 のセーブファイル (変愚蛮怒 2.x 以降)。
  */
 
-#include "save-file-scanner.h"
+#include "main-godot/save-file-scanner.h"
 
 #include <algorithm>
 #include <filesystem>

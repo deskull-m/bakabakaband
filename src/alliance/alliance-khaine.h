@@ -1,6 +1,6 @@
 #pragma once
 
-#include "alliance.h"
+#include "alliance/alliance.h"
 
 class AllianceKhaine : public Alliance {
 public:
