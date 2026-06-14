@@ -1,10 +1,10 @@
 #pragma once
 
-#include "external-lib/include-json.h"
 #include "object-enchant/object-ego.h"
 #include "room/vault-builder.h"
 #include "system/angband.h"
 #include <functional>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <string_view>
 #include <tuple>

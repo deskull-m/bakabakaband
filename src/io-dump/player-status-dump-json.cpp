@@ -1,5 +1,4 @@
 #include "io-dump/player-status-dump-json.h"
-#include "external-lib/include-json.h"
 #include "locale/character-encoding.h"
 #include "locale/localized-string.h"
 #include "player-base/player-class.h"
@@ -17,6 +16,7 @@
 #include "system/monrace/monrace-definition.h"
 #include "util/enum-converter.h"
 #include "world/world.h"
+#include <nlohmann/json.hpp>
 #include <sstream>
 
 /*!
