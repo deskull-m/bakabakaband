@@ -1694,6 +1694,18 @@
         "DESTROYED": "*FLOOR*",
         "SECRET": "QUARTZ_TREASURE",
       },
+      "generation": {
+        "changes": [
+          {
+            "terrain": "QUARTZ_HIDDEN_2",
+            "probability": 4,
+          },
+          {
+            "terrain": "QUARTZ_HIDDEN_3",
+            "probability": 1,
+          },
+        ],
+      },
     },
     {
       "id": 54,
@@ -1753,6 +1765,18 @@
       "interactions": {
         "DESTROYED": "*FLOOR*",
         "ENSECRET": "QUARTZ_HIDDEN",
+      },
+      "generation": {
+        "changes": [
+          {
+            "terrain": "QUARTZ_TREASURE_2",
+            "probability": 4,
+          },
+          {
+            "terrain": "QUARTZ_TREASURE_3",
+            "probability": 1,
+          },
+        ],
       },
     },
     {
@@ -7971,6 +7995,128 @@
       "interactions": {
         "DESTROYED": "*FLOOR*",
         "HIT_TRAP": "*FLOOR*",
+      },
+    },
+    {
+      "id": 341,
+      "key": "QUARTZ_TREASURE_2",
+      "name": {
+        "ja": "豊かな財宝を含有した石英の鉱脈",
+        "en": "quartz vein with rich treasure",
+      },
+      "symbol": {
+        "character": "*",
+        "color": "Orange",
+        "lit": true,
+      },
+      "mimic": null,
+      "map_priority": 2,
+      "DROP_GOLD": "3d3",
+      "flags": [
+        "POWER_20",
+        "REMEMBER",
+        "TUNNEL",
+        "HAS_GOLD",
+        "WALL",
+        "HURT_ROCK",
+        "CAN_PASS",
+        "HURT_DISI",
+      ],
+      "interactions": {
+        "DESTROYED": "*FLOOR*",
+        "ENSECRET": "QUARTZ_HIDDEN_2",
+      },
+    },
+    {
+      "id": 342,
+      "key": "QUARTZ_TREASURE_3",
+      "name": {
+        "ja": "莫大な財宝を含有した石英の鉱脈",
+        "en": "quartz vein with vast treasure",
+      },
+      "symbol": {
+        "character": "*",
+        "color": "Orange",
+        "lit": true,
+      },
+      "mimic": null,
+      "map_priority": 2,
+      "DROP_GOLD": "4d4",
+      "flags": [
+        "POWER_20",
+        "REMEMBER",
+        "TUNNEL",
+        "HAS_GOLD",
+        "WALL",
+        "HURT_ROCK",
+        "CAN_PASS",
+        "HURT_DISI",
+      ],
+      "interactions": {
+        "DESTROYED": "*FLOOR*",
+        "ENSECRET": "QUARTZ_HIDDEN_3",
+      },
+    },
+    {
+      "id": 343,
+      "key": "QUARTZ_HIDDEN_2",
+      "name": {
+        "ja": "石英の鉱脈(隠された豊かな財宝を含有)",
+        "en": "quartz vein with hidden rich treasure",
+      },
+      "symbol": {
+        "character": "%",
+        "color": "White",
+        "lit": true,
+      },
+      "mimic": "QUARTZ_VEIN",
+      "map_priority": 2,
+      "DROP_GOLD": "3d3",
+      "flags": [
+        "POWER_20",
+        "SECRET",
+        "REMEMBER",
+        "TUNNEL",
+        "HAS_GOLD",
+        "WALL",
+        "HURT_ROCK",
+        "CAN_PASS",
+        "HURT_DISI",
+      ],
+      "interactions": {
+        "DESTROYED": "*FLOOR*",
+        "SECRET": "QUARTZ_TREASURE_2",
+      },
+    },
+    {
+      "id": 344,
+      "key": "QUARTZ_HIDDEN_3",
+      "name": {
+        "ja": "石英の鉱脈(隠された莫大な財宝を含有)",
+        "en": "quartz vein with hidden vast treasure",
+      },
+      "symbol": {
+        "character": "%",
+        "color": "White",
+        "lit": true,
+      },
+      "mimic": "QUARTZ_VEIN",
+      "map_priority": 2,
+      "DROP_GOLD": "4d4",
+      "flags": [
+        "POWER_20",
+        "SECRET",
+        "REMEMBER",
+        "TUNNEL",
+        "HAS_GOLD",
+        "WALL",
+        "HURT_ROCK",
+        "CAN_PASS",
+        "HURT_DISI",
+      ],
+      "interactions": {
+        "DESTROYED": "*FLOOR*",
+        "SECRET": "QUARTZ_TREASURE_3",
       },
     },
   ],

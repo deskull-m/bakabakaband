@@ -89,6 +89,58 @@ static errr set_terrain_symbol(const nlohmann::json &symbol_obj, TerrainType &te
 }
 
 /*!
+ * @brief 生成時の確率的地形変化 (generation.changes) を読み取る (上流 #5393 相当)
+ * @param generation_obj generation を表す JSON 値
+ * @param terrain 地形情報への参照
+ * @return エラーコード
+ */
+static errr set_terrain_generation(const nlohmann::json &generation_obj, TerrainType &terrain)
+{
+    if (generation_obj.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!generation_obj.is_object()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    const auto &changes_obj = generation_obj["changes"];
+    if (!changes_obj.is_array()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    auto probability_sum = 0;
+    for (const auto &change_obj : changes_obj) {
+        if (!change_obj.is_object()) {
+            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        }
+
+        const auto &terrain_obj = change_obj["terrain"];
+        if (!terrain_obj.is_string()) {
+            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        }
+
+        auto change = TerrainGenerationChange{};
+        change.result_tag = terrain_obj.get<std::string>();
+        if (change.result_tag.empty()) {
+            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        }
+
+        if (auto err = info_set_integer(change_obj["probability"], change.probability, true, Range(1, 100))) {
+            return err;
+        }
+
+        probability_sum += change.probability;
+        if (probability_sum > 100) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+
+        terrain.generation_changes.push_back(change);
+    }
+
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief JSON Object から地形情報を 1 エントリ分読み取る
  * @param element 地形情報の JSON Object
  * @param head 使用しない
@@ -135,6 +187,7 @@ errr parse_terrains_json_info(nlohmann::json &element, angband_header *)
     terrain.mimic = s;
     terrain.destroyed = s;
     terrain.gold_drop = Dice{};
+    terrain.generation_changes.clear();
     terrain.door_power = 0;
     terrain.trap_power = 0;
     terrain.tunnel_power = 0;
@@ -244,6 +297,11 @@ errr parse_terrains_json_info(nlohmann::json &element, angband_header *)
 
     // 財宝地形 (HAS_GOLD) を掘った際に生成する財宝数 (省略時は従来通り 1 個)
     if (auto err = info_set_dice(element["DROP_GOLD"], terrain.gold_drop, false)) {
+        return err;
+    }
+
+    // 生成時の確率的地形変化 (上流 #5393 相当)
+    if (auto err = set_terrain_generation(element["generation"], terrain)) {
         return err;
     }
 
