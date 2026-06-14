@@ -4,7 +4,6 @@
  */
 
 #include "main/info-initializer.h"
-#include "external-lib/include-json.h"
 #include "floor/wild.h"
 #include "info-reader/artifact-reader.h"
 #include "info-reader/baseitem-reader.h"
@@ -50,6 +49,7 @@
 #include <fmt/format.h>
 #include <fstream>
 #include <functional>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <string_view>
 #include <sys/stat.h>

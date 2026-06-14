@@ -1206,7 +1206,6 @@
     <ClInclude Include="..\..\src\io-dump\player-status-dump-json.h" />
     <ClInclude Include="..\..\src\io-dump\score-sender.h" />
     <ClInclude Include="..\..\src\knowledge\knowledge-alliance.h" />
-    <ClInclude Include="..\..\src\external-lib\include-json.h" />
     <ClInclude Include="..\..\src\io\macro-configurations-store.h" />
     <ClInclude Include="..\..\src\load\alliance-loader.h" />
     <ClInclude Include="..\..\src\load\creature-common-loader.h" />
