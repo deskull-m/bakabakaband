@@ -3,6 +3,7 @@
 #include "dungeon/quest-monster-placer.h"
 #include "floor/dungeon-tunnel-util.h"
 #include "floor/floor-allocation-types.h"
+#include "floor/floor-generator.h"
 #include "floor/floor-streams.h"
 #include "floor/geometry.h"
 #include "floor/object-allocator.h"
@@ -604,6 +605,7 @@ tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32
 
     make_aqua_streams(creature, &dd, dungeon);
     make_perm_walls(creature);
+    apply_terrain_generation_changes(floor);
 
     // 環状水路の生成（WATERWAYフラグを持つダンジョンで1/8の確率）
     constexpr int waterway_chance = 8;

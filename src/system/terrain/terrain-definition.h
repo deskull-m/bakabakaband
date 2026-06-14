@@ -12,6 +12,8 @@
 #include "view/display-symbol.h"
 #include <cstdint>
 #include <map>
+#include <string>
+#include <vector>
 
 /* Number of feats we change to (Excluding default). Used in TerrainDefinitions.txt. */
 constexpr auto MAX_FEAT_STATES = 8;
@@ -30,6 +32,14 @@ enum class TerrainAction {
     NO_DROP = 2,
     CRASH_GLASS = 3,
     MAX,
+};
+
+class TerrainGenerationChange {
+public:
+    TerrainGenerationChange() = default;
+    std::string result_tag{}; /*!< 生成時の変化先地形タグ */
+    FEAT_IDX result{}; /*!< 生成時の変化先地形ID */
+    int probability{}; /*!< 変化確率(%) */
 };
 
 /*!
@@ -87,6 +97,7 @@ public:
     FEAT_IDX random_change = 0; /*!< ランダム変化先地形ID */
 
     Dice gold_drop{}; /*!< 財宝地形 (HAS_GOLD) を掘った際に生成する財宝数 (上流 #5393 相当) */
+    std::vector<TerrainGenerationChange> generation_changes; /*!< 生成時の変化候補 (上流 #5393 相当) */
 
     static bool has(TerrainCharacteristics tc, TerrainAction ta);
 

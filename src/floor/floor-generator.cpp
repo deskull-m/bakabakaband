@@ -50,6 +50,7 @@
 #include "system/monrace/monrace-list.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
+#include "term/z-rand.h"
 #include "util/bit-flags-calculator.h"
 #include "util/rng-xoshiro.h"
 #include "view/display-messages.h"
@@ -399,6 +400,37 @@ static tl::optional<std::string> level_gen(CreatureEntity &creature, tl::optiona
     return result;
 }
 
+static FEAT_IDX select_terrain_generation_change(FEAT_IDX terrain_id)
+{
+    const auto &terrain = TerrainList::get_instance().get_terrain(terrain_id);
+    if (terrain.generation_changes.empty()) {
+        return terrain_id;
+    }
+
+    const auto chance = randint1(100);
+    auto cumulative_probability = 0;
+    for (const auto &change : terrain.generation_changes) {
+        cumulative_probability += change.probability;
+        if (chance <= cumulative_probability) {
+            return change.result;
+        }
+    }
+
+    return terrain_id;
+}
+
+/*!
+ * @brief 生成時の確率的な地形変化をフロア全体に適用する (上流 #5393 相当)
+ * @param floor フロアへの参照
+ */
+void apply_terrain_generation_changes(FloorType &floor)
+{
+    for (const auto &pos : floor.get_area()) {
+        auto &grid = floor.get_grid(pos);
+        grid.feat = select_terrain_generation_change(grid.feat);
+    }
+}
+
 /*!
  * @brief フロアに存在する全マスの記憶状態を初期化する / Wipe all unnecessary flags after grid_array generation
  */
@@ -584,6 +616,7 @@ void generate_floor(CreatureEntity &creature)
     const auto is_wild_mode = AngbandWorld::get_instance().is_wild_mode();
     for (int num = 0; true; num++) {
         tl::optional<std::string> why;
+        auto should_apply_terrain_generation_changes = true;
         clear_cave(creature);
         creature.x = creature.y = 0;
         if (floor.inside_arena) {
@@ -600,6 +633,11 @@ void generate_floor(CreatureEntity &creature)
             }
         } else {
             why = level_gen(creature);
+            should_apply_terrain_generation_changes = false;
+        }
+
+        if (!why && should_apply_terrain_generation_changes) {
+            apply_terrain_generation_changes(floor);
         }
 
         if (creature.is_sushi_eater()) {
