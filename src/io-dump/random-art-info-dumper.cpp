@@ -92,13 +92,13 @@ void spoil_random_artifact(CreatureEntity &creature)
                 spoil_random_artifact_aux(creature, item, tval, ofs);
             }
 
-            const auto &home = towns_info[1].get_store(StoreSaleType::HOME);
+            const auto &home = TownList::get_instance().get_town(1).get_store(StoreSaleType::HOME);
             for (int i = 0; i < home.stock_num; i++) {
                 auto &item = *home.stock[i];
                 spoil_random_artifact_aux(creature, item, tval, ofs);
             }
 
-            const auto &museum = towns_info[1].get_store(StoreSaleType::MUSEUM);
+            const auto &museum = TownList::get_instance().get_town(1).get_store(StoreSaleType::MUSEUM);
             for (int i = 0; i < museum.stock_num; i++) {
                 auto &item = *museum.stock[i];
                 spoil_random_artifact_aux(creature, item, tval, ofs);

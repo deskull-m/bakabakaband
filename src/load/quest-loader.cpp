@@ -8,19 +8,19 @@
 #include "object-enchant/trg-types.h"
 #include "system/artifact-type-definition.h"
 #include "system/floor/floor-info.h"
-#include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/monrace/monrace-definition.h"
 #include "util/enum-converter.h"
+#include <fmt/format.h>
 
 errr load_town(void)
 {
-    auto max_towns_load = rd_u16b();
-    if (max_towns_load <= towns_info.size()) {
+    size_t max_towns_load = rd_u16b();
+    if (max_towns_load <= TownList::get_instance().size()) {
         return 0;
     }
 
-    load_note(format(_("町が多すぎる(%u)！", "Too many (%u) towns!"), max_towns_load));
+    load_note(fmt::format(_("町が多すぎる({})！", "Too many ({}) towns!"), max_towns_load));
     return 23;
 }
 

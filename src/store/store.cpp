@@ -363,7 +363,7 @@ void store_maintenance(CreatureEntity &creature, int town_num, StoreSaleType sto
         return;
     }
 
-    st_ptr = &towns_info[town_num].get_store(store_num);
+    st_ptr = &TownList::get_instance().get_town(town_num).get_store(store_num);
     ot_ptr = &owners.at(store_num)[st_ptr->owner];
     st_ptr->insult_cur = 0;
     if (store_num == StoreSaleType::BLACK) {
@@ -443,8 +443,8 @@ void store_maintenance(CreatureEntity &creature, int town_num, StoreSaleType sto
 void store_init(int town_num, StoreSaleType store_num)
 {
     int owner_num = owners.at(store_num).size();
-    st_ptr = &towns_info[town_num].get_store(store_num);
-    const int towns_size = towns_info.size();
+    st_ptr = &TownList::get_instance().get_town(town_num).get_store(store_num);
+    const int towns_size = TownList::get_instance().size();
     while (true) {
         st_ptr->owner = randnum0<uint8_t>(owner_num);
 
@@ -457,7 +457,7 @@ void store_init(int town_num, StoreSaleType store_num)
             if (i == town_num) {
                 continue;
             }
-            if (st_ptr->owner == towns_info[i].get_store(store_num).owner) {
+            if (st_ptr->owner == TownList::get_instance().get_town(i).get_store(store_num).owner) {
                 break;
             }
         }

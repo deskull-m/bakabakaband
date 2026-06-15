@@ -179,7 +179,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
             }
 
             inven_item_optimize(creature, i_idx);
-            auto &store = towns_info[creature.get_town_num()].get_store(store_num);
+            auto &store = TownList::get_instance().get_town(creature.get_town_num()).get_store(store_num);
             const auto item_pos = store.carry(sold_item);
             if (item_pos) {
                 store_top = (*item_pos / store_bottom) * store_bottom;

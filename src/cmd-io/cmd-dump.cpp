@@ -252,7 +252,7 @@ void do_cmd_feeling(CreatureEntity &creature)
     }
 
     if (creature.get_town_num() && !floor.is_underground()) {
-        if (towns_info[creature.get_town_num()].name == _("荒野", "wilderness")) {
+        if (TownList::get_instance().get_town(creature.get_town_num()).get_name() == _("荒野", "wilderness")) {
             msg_print(_("何かありそうな荒野のようだ。", "Looks like a strange wilderness."));
             return;
         }

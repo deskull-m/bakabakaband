@@ -191,7 +191,7 @@ std::string map_name(CreatureEntity &creature)
     } else if (AngbandSystem::get_instance().is_phase_out()) {
         return _("闘技場", "Monster Arena");
     } else if (!floor.is_underground() && creature.get_town_num()) {
-        return towns_info[creature.get_town_num()].name;
+        return TownList::get_instance().get_town(creature.get_town_num()).get_name();
     } else {
         return floor.get_dungeon_definition().name;
     }
