@@ -7,47 +7,55 @@
 
 #include "autopick/autopick-command-menu.h"
 #include "autopick/autopick-menu-data-table.h"
-#include "autopick/autopick-util.h"
 #include "io/input-key-acceptor.h"
 #include "system/angband.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "util/int-char-converter.h"
+#include "util/string-processor.h"
+#include <algorithm>
+#include <fmt/format.h>
 
 /*!
  * @brief 自動拾いエディタの画面を再描画する
  * @param redraw 再描画が必要ならTRUE
- * @param level command_menu_type 構造体におけるメニュー (詳細不明)
+ * @param menu_depth エディタのメニュー階層
  * @param start
  * @param linestr
  * @param menu_key 自動拾いエディタのメニューで入力したキー
- * @param max_len
+ * @param max_length メニューボックスの横幅 (メニューの最大文字列長に合わせる)
  */
-static uint8_t redraw_edit_command_menu(bool redraw, int level, int start, std::string_view line, uint8_t initial_menu_key, int max_len)
+static uint8_t redraw_edit_command_menu(bool redraw, size_t menu_depth, size_t start, std::string_view line, uint8_t initial_menu_key, int max_length)
 {
     if (!redraw) {
         return initial_menu_key;
     }
 
-    const auto col0 = 5 + level * 7;
-    const auto row0 = 1 + level * 3;
+    const auto col0 = 5 + menu_depth * 7;
+    const auto row0 = 1 + menu_depth * 3;
     auto row1 = row0 + 1;
     term_putstr(col0, row0, -1, TERM_WHITE, line);
 
+    const auto &menu_data = CommandMenuData::get_instance();
     uint8_t menu_key = 0;
-    for (int i = start; menu_data[i].level >= level; i++) {
-        std::stringstream com_key;
-        if (menu_data[i].level > level) {
+    for (size_t i = start; i < menu_data.size(); i++) {
+        const auto &menu_datum = menu_data.get_datum(i);
+        if (menu_datum.depth < menu_depth) {
+            break;
+        }
+
+        if (menu_datum.depth > menu_depth) {
             continue;
         }
 
-        if (menu_data[i].com_id == -1) {
+        std::stringstream com_key;
+        if (!menu_datum.com_id) {
             com_key << _("▼", ">");
-        } else if (menu_data[i].key != -1) {
-            com_key << '^' << static_cast<char>(menu_data[i].key + '@');
+        } else if (menu_datum.key) {
+            com_key << '^' << static_cast<char>(*menu_datum.key + '@');
         }
 
-        const auto str = format("| %c) %-*s %2s | ", menu_key + 'a', max_len, menu_data[i].name, com_key.str().data());
+        const auto str = fmt::format("| {}) {:<{}} {:2} | ", static_cast<char>(menu_key + 'a'), fmt::bytes(menu_datum.name), max_length, com_key.str());
         term_putstr(col0, row1++, -1, TERM_WHITE, str);
         menu_key++;
     }
@@ -58,20 +66,27 @@ static uint8_t redraw_edit_command_menu(bool redraw, int level, int start, std::
 
 /*!
  * @brief Display the menu, and get a command
+ * @param menu_depth エディタのメニュー階層
  */
-int do_command_menu(int level, int start)
+int do_command_menu(size_t menu_depth, size_t start)
 {
-    auto max_len = 0;
+    /* Ignore lower level sub menus */
+    const auto &menu_data = CommandMenuData::get_instance();
+    size_t max_length = 0;
     std::vector<int> menu_ids;
-    for (auto i = start; menu_data[i].level >= level; i++) {
-        /* Ignore lower level sub menus */
-        if (menu_data[i].level > level) {
+    for (size_t i = start; i < menu_data.size(); i++) {
+        const auto &menu_datum = menu_data.get_datum(i);
+        if (menu_datum.depth < menu_depth) {
+            break;
+        }
+
+        if (menu_datum.depth > menu_depth) {
             continue;
         }
 
-        const int len = strlen(menu_data[i].name);
-        if (len > max_len) {
-            max_len = len;
+        const auto length = menu_datum.name.length();
+        if (length > max_length) {
+            max_length = length;
         }
 
         menu_ids.push_back(i);
@@ -82,10 +97,10 @@ int do_command_menu(int level, int start)
         menu_ids.push_back(-1);
     }
 
-    const auto max_menu_wid = max_len + 3 + 3;
+    const auto max_menu_wid = max_length + 3 + 3;
     std::stringstream ss;
     ss << "+";
-    for (int i = 0; i < max_menu_wid + 2; i++) {
+    for (size_t i = 0; i < max_menu_wid + 2; i++) {
         ss << "-";
     }
 
@@ -94,7 +109,7 @@ int do_command_menu(int level, int start)
     const auto line = ss.str();
     auto menu_key = num_alphabets;
     while (true) {
-        menu_key = redraw_edit_command_menu(redraw, level, start, line, menu_key, max_len);
+        menu_key = redraw_edit_command_menu(redraw, menu_depth, start, line, menu_key, max_length);
         redraw = false;
         prt(format(_("(a-%c) コマンド:", "(a-%c) Command:"), menu_key + 'a' - 1), 0, 0);
         const auto key = inkey();
@@ -105,7 +120,7 @@ int do_command_menu(int level, int start)
         int com_id;
         const auto is_alphabet = (key >= 'a') && (key <= 'z');
         if (!is_alphabet) {
-            com_id = get_com_id(key);
+            com_id = CommandMenuData::get_instance().get_com_id(key);
             if (com_id) {
                 return com_id;
             }
@@ -113,12 +128,17 @@ int do_command_menu(int level, int start)
             continue;
         }
 
-        const auto menu_id = menu_ids[key - 'a'];
+        const auto menu_index = key - 'a';
+        if (static_cast<size_t>(menu_index) >= menu_ids.size()) {
+            continue;
+        }
+
+        const auto menu_id = menu_ids[menu_index];
         if (menu_id < 0) {
             continue;
         }
 
-        com_id = menu_data[menu_id].com_id;
+        com_id = menu_data.get_datum(menu_id).com_id.value_or(-1);
         if (com_id > 0) {
             return com_id;
         }
@@ -127,7 +147,7 @@ int do_command_menu(int level, int start)
             continue;
         }
 
-        com_id = do_command_menu(level + 1, menu_id + 1);
+        com_id = do_command_menu(menu_depth + 1, menu_id + 1);
         if (com_id > 0) {
             return com_id;
         }

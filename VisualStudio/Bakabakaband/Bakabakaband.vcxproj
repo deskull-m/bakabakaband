@@ -884,6 +884,7 @@
     <ClCompile Include="..\..\src\autopick\autopick-finder.cpp" />
     <ClCompile Include="..\..\src\autopick\autopick-initializer.cpp" />
     <ClCompile Include="..\..\src\autopick\autopick-inserter-killer.cpp" />
+    <ClCompile Include="..\..\src\autopick\autopick-keys-table.cpp" />
     <ClCompile Include="..\..\src\autopick\autopick-matcher.cpp" />
     <ClCompile Include="..\..\src\autopick\autopick-menu-data-table.cpp" />
     <ClCompile Include="..\..\src\autopick\autopick-pref-processor.cpp" />

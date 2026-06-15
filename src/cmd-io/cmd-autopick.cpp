@@ -8,6 +8,7 @@
 #include "autopick/autopick-entry.h"
 #include "autopick/autopick-initializer.h"
 #include "autopick/autopick-inserter-killer.h"
+#include "autopick/autopick-menu-data-table.h"
 #include "autopick/autopick-pref-processor.h"
 #include "autopick/autopick-reader-writer.h"
 #include "autopick/autopick-util.h"
@@ -202,7 +203,7 @@ void do_cmd_edit_autopick(CreatureEntity &creature)
 
             insert_single_letter(tb, key);
         } else {
-            com_id = get_com_id((char)key);
+            com_id = CommandMenuData::get_instance().get_com_id((char)key);
         }
 
         if (com_id) {

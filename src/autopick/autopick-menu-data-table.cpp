@@ -7,6 +7,7 @@
 #include "autopick/autopick-menu-data-table.h"
 #include "autopick/autopick-commands-table.h"
 #include "autopick/autopick-keys-table.h"
+#include "locale/language-switcher.h"
 #include "util/int-char-converter.h"
 
 /*
@@ -87,154 +88,139 @@
 
 #define MN_NOUN _("名詞の選択", "Keywords (noun)")
 
-/*
- * Initialize the KEY_* constants declared in autopick-keys-table.h.  Do
- * so using MKEY_* preprocessor macros to satisfy two requirements:
- * 1) The platforms using configure/automake only preprocess .c files (.h
- * files are not touched) with nkf to modify the encoding of Japanese
- * characters.
- * 2) Want to use some of the same strings as initializers for menu_data.
- * To avoid explicitly repeating the strings while satisfying the requirement
- * that the initializers be constant expressions that can be evaluated at
- * compile time, define the MKEY_* preprocessor macros and use them for
- * initializing the KEY_* constants and menu_data.
+constexpr char DELETE = 0x7F;
+
+CommandMenuData CommandMenuData::instance{};
+
+CommandMenuData &CommandMenuData::get_instance()
+{
+    return instance;
+}
+
+void CommandMenuData::initialize()
+{
+    if (!this->menu_data.empty()) {
+        return;
+    }
+
+    this->menu_data.reserve(100);
+    this->menu_data.emplace_back(MN_HELP, 0, tl::nullopt, EC_HELP);
+    this->menu_data.emplace_back(MN_QUIT, 0, KTRL('q'), EC_QUIT);
+    this->menu_data.emplace_back(MN_SAVEQUIT, 0, KTRL('w'), EC_SAVEQUIT);
+    this->menu_data.emplace_back(MN_REVERT, 0, KTRL('z'), EC_REVERT);
+
+    this->menu_data.emplace_back(MN_EDIT, 0, tl::nullopt, tl::nullopt);
+    this->menu_data.emplace_back(MN_CUT, 1, KTRL('x'), EC_CUT);
+    this->menu_data.emplace_back(MN_COPY, 1, KTRL('c'), EC_COPY);
+    this->menu_data.emplace_back(MN_PASTE, 1, KTRL('v'), EC_PASTE);
+    this->menu_data.emplace_back(MN_BLOCK, 1, KTRL('g'), EC_BLOCK);
+    this->menu_data.emplace_back(MN_KILL_LINE, 1, KTRL('k'), EC_KILL_LINE);
+    this->menu_data.emplace_back(MN_DELETE_CHAR, 1, KTRL('d'), EC_DELETE_CHAR);
+    this->menu_data.emplace_back(MN_BACKSPACE, 1, KTRL('h'), EC_BACKSPACE);
+    this->menu_data.emplace_back(MN_RETURN, 1, KTRL('j'), EC_RETURN);
+    this->menu_data.emplace_back(MN_RETURN, 1, KTRL('m'), EC_RETURN);
+
+    this->menu_data.emplace_back(MN_SEARCH, 0, tl::nullopt, tl::nullopt);
+    this->menu_data.emplace_back(MN_SEARCH_STR, 1, KTRL('s'), EC_SEARCH_STR);
+    this->menu_data.emplace_back(MN_SEARCH_FORW, 1, tl::nullopt, EC_SEARCH_FORW);
+    this->menu_data.emplace_back(MN_SEARCH_BACK, 1, KTRL('r'), EC_SEARCH_BACK);
+    this->menu_data.emplace_back(MN_SEARCH_OBJ, 1, KTRL('y'), EC_SEARCH_OBJ);
+    this->menu_data.emplace_back(MN_SEARCH_DESTROYED, 1, tl::nullopt, EC_SEARCH_DESTROYED);
+
+    this->menu_data.emplace_back(MN_MOVE, 0, tl::nullopt, tl::nullopt);
+    this->menu_data.emplace_back(MN_LEFT, 1, KTRL('b'), EC_LEFT);
+    this->menu_data.emplace_back(MN_DOWN, 1, KTRL('n'), EC_DOWN);
+    this->menu_data.emplace_back(MN_UP, 1, KTRL('p'), EC_UP);
+    this->menu_data.emplace_back(MN_RIGHT, 1, KTRL('f'), EC_RIGHT);
+    this->menu_data.emplace_back(MN_BOL, 1, KTRL('a'), EC_BOL);
+    this->menu_data.emplace_back(MN_EOL, 1, KTRL('e'), EC_EOL);
+    this->menu_data.emplace_back(MN_PGUP, 1, KTRL('o'), EC_PGUP);
+    this->menu_data.emplace_back(MN_PGDOWN, 1, KTRL('l'), EC_PGDOWN);
+    this->menu_data.emplace_back(MN_TOP, 1, KTRL('t'), EC_TOP);
+    this->menu_data.emplace_back(MN_BOTTOM, 1, KTRL('u'), EC_BOTTOM);
+
+    this->menu_data.emplace_back(MN_INSERT, 0, tl::nullopt, tl::nullopt);
+    this->menu_data.emplace_back(MN_INSERT_OBJECT, 1, KTRL('i'), EC_INSERT_OBJECT);
+    this->menu_data.emplace_back(MN_INSERT_DESTROYED, 1, tl::nullopt, EC_INSERT_DESTROYED);
+    this->menu_data.emplace_back(MN_INSERT_BLOCK, 1, tl::nullopt, EC_INSERT_BLOCK);
+    this->menu_data.emplace_back(MN_INSERT_MACRO, 1, tl::nullopt, EC_INSERT_MACRO);
+    this->menu_data.emplace_back(MN_INSERT_KEYMAP, 1, tl::nullopt, EC_INSERT_KEYMAP);
+
+    this->menu_data.emplace_back(MN_ADJECTIVE_GEN, 0, tl::nullopt, tl::nullopt);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::UNAWARE), 1, tl::nullopt, EC_IK_UNAWARE);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::UNIDENTIFIED), 1, tl::nullopt, EC_IK_UNIDENTIFIED);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::IDENTIFIED), 1, tl::nullopt, EC_IK_IDENTIFIED);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::STAR_IDENTIFIED), 1, tl::nullopt, EC_IK_STAR_IDENTIFIED);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::COLLECTING), 1, tl::nullopt, EC_OK_COLLECTING);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::ARTIFACT), 1, tl::nullopt, EC_OK_ARTIFACT);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::EGO), 1, tl::nullopt, EC_OK_EGO);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::GOOD), 1, tl::nullopt, EC_OK_GOOD);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::NAMELESS), 1, tl::nullopt, EC_OK_NAMELESS);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::AVERAGE), 1, tl::nullopt, EC_OK_AVERAGE);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::WORTHLESS), 1, tl::nullopt, EC_OK_WORTHLESS);
+    this->menu_data.emplace_back(MN_RARE, 1, tl::nullopt, EC_OK_RARE);
+    this->menu_data.emplace_back(MN_COMMON, 1, tl::nullopt, EC_OK_COMMON);
+
+    this->menu_data.emplace_back(MN_ADJECTIVE_SPECIAL, 0, tl::nullopt, tl::nullopt);
+    this->menu_data.emplace_back(MN_BOOSTED, 1, tl::nullopt, EC_OK_BOOSTED);
+    this->menu_data.emplace_back(MN_MORE_DICE, 1, tl::nullopt, EC_OK_MORE_DICE);
+    this->menu_data.emplace_back(MN_MORE_BONUS, 1, tl::nullopt, EC_OK_MORE_BONUS);
+    this->menu_data.emplace_back(MN_WANTED, 1, tl::nullopt, EC_OK_WANTED);
+    this->menu_data.emplace_back(MN_UNIQUE, 1, tl::nullopt, EC_OK_UNIQUE);
+    this->menu_data.emplace_back(MN_HUMAN, 1, tl::nullopt, EC_OK_HUMAN);
+    this->menu_data.emplace_back(MN_UNREADABLE, 1, tl::nullopt, EC_OK_UNREADABLE);
+    this->menu_data.emplace_back(MN_REALM1, 1, tl::nullopt, EC_OK_REALM1);
+    this->menu_data.emplace_back(MN_REALM2, 1, tl::nullopt, EC_OK_REALM2);
+    this->menu_data.emplace_back(MN_FIRST, 1, tl::nullopt, EC_OK_FIRST);
+    this->menu_data.emplace_back(MN_SECOND, 1, tl::nullopt, EC_OK_SECOND);
+    this->menu_data.emplace_back(MN_THIRD, 1, tl::nullopt, EC_OK_THIRD);
+    this->menu_data.emplace_back(MN_FOURTH, 1, tl::nullopt, EC_OK_FOURTH);
+
+    this->menu_data.emplace_back(MN_NOUN, 0, tl::nullopt, tl::nullopt);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::WEAPONS), 1, tl::nullopt, EC_KK_WEAPONS);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::FAVORITE_WEAPONS), 1, tl::nullopt, EC_KK_FAVORITE_WEAPONS);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::ARMORS), 1, tl::nullopt, EC_KK_ARMORS);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::MISSILES), 1, tl::nullopt, EC_KK_MISSILES);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::DEVICES), 1, tl::nullopt, EC_KK_DEVICES);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::LIGHTS), 1, tl::nullopt, EC_KK_LIGHTS);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::JUNKS), 1, tl::nullopt, EC_KK_JUNKS);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::CORPSES), 1, tl::nullopt, EC_KK_CORPSES);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::SPELLBOOKS), 1, tl::nullopt, EC_KK_SPELLBOOKS);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::SHIELDS), 1, tl::nullopt, EC_KK_SHIELDS);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::BOWS), 1, tl::nullopt, EC_KK_BOWS);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::RINGS), 1, tl::nullopt, EC_KK_RINGS);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::AMULETS), 1, tl::nullopt, EC_KK_AMULETS);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::SUITS), 1, tl::nullopt, EC_KK_SUITS);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::CLOAKS), 1, tl::nullopt, EC_KK_CLOAKS);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::HELMS), 1, tl::nullopt, EC_KK_HELMS);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::GLOVES), 1, tl::nullopt, EC_KK_GLOVES);
+    this->menu_data.emplace_back(autopick_keys.at(AutopickKey::BOOTS), 1, tl::nullopt, EC_KK_BOOTS);
+
+    this->menu_data.emplace_back(MN_COMMAND_LETTER, 0, tl::nullopt, tl::nullopt);
+    this->menu_data.emplace_back(MN_CL_AUTOPICK, 1, tl::nullopt, EC_CL_AUTOPICK);
+    this->menu_data.emplace_back(MN_CL_DESTROY, 1, tl::nullopt, EC_CL_DESTROY);
+    this->menu_data.emplace_back(MN_CL_LEAVE, 1, tl::nullopt, EC_CL_LEAVE);
+    this->menu_data.emplace_back(MN_CL_QUERY, 1, tl::nullopt, EC_CL_QUERY);
+    this->menu_data.emplace_back(MN_CL_NO_DISP, 1, tl::nullopt, EC_CL_NO_DISP);
+
+    this->menu_data.emplace_back(MN_DELETE_CHAR, tl::nullopt, DELETE, EC_DELETE_CHAR);
+}
+
+const CommandMenuDatum &CommandMenuData::get_datum(size_t num) const
+{
+    return this->menu_data.at(num);
+}
+
+/*!
+ * @brief Find a command by 'key'.
  */
-#define MKEY_ALL _("すべての", "all")
-concptr KEY_ALL = MKEY_ALL;
-#define MKEY_UNAWARE _("未判明の", "unaware")
-concptr KEY_UNAWARE = MKEY_UNAWARE;
-#define MKEY_UNIDENTIFIED _("未鑑定の", "unidentified")
-concptr KEY_UNIDENTIFIED = MKEY_UNIDENTIFIED;
-#define MKEY_IDENTIFIED _("鑑定済みの", "identified")
-concptr KEY_IDENTIFIED = MKEY_IDENTIFIED;
-#define MKEY_STAR_IDENTIFIED _("*鑑定*済みの", "*identified*")
-concptr KEY_STAR_IDENTIFIED = MKEY_STAR_IDENTIFIED;
-#define MKEY_COLLECTING _("収集中の", "collecting")
-concptr KEY_COLLECTING = MKEY_COLLECTING;
-#define MKEY_ARTIFACT _("アーティファクト", "artifact")
-concptr KEY_ARTIFACT = MKEY_ARTIFACT;
-#define MKEY_EGO _("エゴ", "ego")
-concptr KEY_EGO = MKEY_EGO;
-#define MKEY_GOOD _("上質の", "good")
-concptr KEY_GOOD = MKEY_GOOD;
-#define MKEY_NAMELESS _("無銘の", "nameless")
-concptr KEY_NAMELESS = MKEY_NAMELESS;
-#define MKEY_AVERAGE _("並の", "average")
-concptr KEY_AVERAGE = MKEY_AVERAGE;
-#define MKEY_WORTHLESS _("無価値の", "worthless")
-concptr KEY_WORTHLESS = MKEY_WORTHLESS;
-#define MKEY_RARE _("レアな", "rare")
-concptr KEY_RARE = MKEY_RARE;
-#define MKEY_COMMON _("ありふれた", "common")
-concptr KEY_COMMON = MKEY_COMMON;
-#define MKEY_BOOSTED _("ダイス目の違う", "dice boosted")
-concptr KEY_BOOSTED = MKEY_BOOSTED;
-#define MKEY_MORE_THAN _("ダイス目", "more than")
-concptr KEY_MORE_THAN = MKEY_MORE_THAN;
-#define MKEY_DICE _("以上の", "dice")
-concptr KEY_DICE = MKEY_DICE;
-#define MKEY_MORE_BONUS _("修正値", "more bonus than")
-concptr KEY_MORE_BONUS = MKEY_MORE_BONUS;
-#define MKEY_MORE_BONUS2 _("以上の", "")
-concptr KEY_MORE_BONUS2 = MKEY_MORE_BONUS2;
-#define MKEY_WANTED _("賞金首の", "wanted")
-concptr KEY_WANTED = MKEY_WANTED;
-#define MKEY_UNIQUE _("ユニーク・モンスターの", "unique monster's")
-concptr KEY_UNIQUE = MKEY_UNIQUE;
-#define MKEY_HUMAN _("人間の", "human")
-concptr KEY_HUMAN = MKEY_HUMAN;
-#define MKEY_UNREADABLE _("読めない", "unreadable")
-concptr KEY_UNREADABLE = MKEY_UNREADABLE;
-#define MKEY_REALM1 _("第一領域の", "first realm's")
-concptr KEY_REALM1 = MKEY_REALM1;
-#define MKEY_REALM2 _("第二領域の", "second realm's")
-concptr KEY_REALM2 = MKEY_REALM2;
-#define MKEY_FIRST _("1冊目の", "first")
-concptr KEY_FIRST = MKEY_FIRST;
-#define MKEY_SECOND _("2冊目の", "second")
-concptr KEY_SECOND = MKEY_SECOND;
-#define MKEY_THIRD _("3冊目の", "third")
-concptr KEY_THIRD = MKEY_THIRD;
-#define MKEY_FOURTH _("4冊目の", "fourth")
-concptr KEY_FOURTH = MKEY_FOURTH;
-#define MKEY_ITEMS _("アイテム", "items")
-concptr KEY_ITEMS = MKEY_ITEMS;
-#define MKEY_WEAPONS _("武器", "weapons")
-concptr KEY_WEAPONS = MKEY_WEAPONS;
-#define MKEY_FAVORITE_WEAPONS _("得意武器", "favorite weapons")
-concptr KEY_FAVORITE_WEAPONS = MKEY_FAVORITE_WEAPONS;
-#define MKEY_ARMORS _("防具", "armors")
-concptr KEY_ARMORS = MKEY_ARMORS;
-#define MKEY_MISSILES _("矢", "missiles")
-concptr KEY_MISSILES = MKEY_MISSILES;
-#define MKEY_DEVICES _("魔法アイテム", "magical devices")
-concptr KEY_DEVICES = MKEY_DEVICES;
-#define MKEY_LIGHTS _("光源", "lights")
-concptr KEY_LIGHTS = MKEY_LIGHTS;
-#define MKEY_JUNKS _("がらくた", "junk")
-concptr KEY_JUNKS = MKEY_JUNKS;
-#define MKEY_CORPSES _("死体や骨", "corpses or skeletons")
-concptr KEY_CORPSES = MKEY_CORPSES;
-#define MKEY_SPELLBOOKS _("魔法書", "spellbooks")
-concptr KEY_SPELLBOOKS = MKEY_SPELLBOOKS;
-#define MKEY_HAFTED _("鈍器", "hafted weapons")
-concptr KEY_HAFTED = MKEY_HAFTED;
-#define MKEY_SHIELDS _("盾", "shields")
-concptr KEY_SHIELDS = MKEY_SHIELDS;
-#define MKEY_BOWS _("弓", "bows")
-concptr KEY_BOWS = MKEY_BOWS;
-#define MKEY_RINGS _("指輪", "rings")
-concptr KEY_RINGS = MKEY_RINGS;
-#define MKEY_AMULETS _("アミュレット", "amulets")
-concptr KEY_AMULETS = MKEY_AMULETS;
-#define MKEY_SUITS _("鎧", "suits")
-concptr KEY_SUITS = MKEY_SUITS;
-#define MKEY_CLOAKS _("クローク", "cloaks")
-concptr KEY_CLOAKS = MKEY_CLOAKS;
-#define MKEY_HELMS _("兜", "helms")
-concptr KEY_HELMS = MKEY_HELMS;
-#define MKEY_GLOVES _("籠手", "gloves")
-concptr KEY_GLOVES = MKEY_GLOVES;
-#define MKEY_BOOTS _("靴", "boots")
-concptr KEY_BOOTS = MKEY_BOOTS;
+int CommandMenuData::get_com_id(char key) const
+{
+    for (const auto &menu_datum : this->menu_data) {
+        if (menu_datum.key == key) {
+            return menu_datum.com_id.value_or(-1);
+        }
+    }
 
-command_menu_type menu_data[MENU_DATA_NUM] = { { MN_HELP, 0, -1, EC_HELP }, { MN_QUIT, 0, KTRL('q'), EC_QUIT }, { MN_SAVEQUIT, 0, KTRL('w'), EC_SAVEQUIT },
-    { MN_REVERT, 0, KTRL('z'), EC_REVERT },
-
-    { MN_EDIT, 0, -1, -1 }, { MN_CUT, 1, KTRL('x'), EC_CUT }, { MN_COPY, 1, KTRL('c'), EC_COPY }, { MN_PASTE, 1, KTRL('v'), EC_PASTE },
-    { MN_BLOCK, 1, KTRL('g'), EC_BLOCK }, { MN_KILL_LINE, 1, KTRL('k'), EC_KILL_LINE }, { MN_DELETE_CHAR, 1, KTRL('d'), EC_DELETE_CHAR },
-    { MN_BACKSPACE, 1, KTRL('h'), EC_BACKSPACE }, { MN_RETURN, 1, KTRL('j'), EC_RETURN }, { MN_RETURN, 1, KTRL('m'), EC_RETURN },
-
-    { MN_SEARCH, 0, -1, -1 }, { MN_SEARCH_STR, 1, KTRL('s'), EC_SEARCH_STR }, { MN_SEARCH_FORW, 1, -1, EC_SEARCH_FORW },
-    { MN_SEARCH_BACK, 1, KTRL('r'), EC_SEARCH_BACK }, { MN_SEARCH_OBJ, 1, KTRL('y'), EC_SEARCH_OBJ }, { MN_SEARCH_DESTROYED, 1, -1, EC_SEARCH_DESTROYED },
-
-    { MN_MOVE, 0, -1, -1 }, { MN_LEFT, 1, KTRL('b'), EC_LEFT }, { MN_DOWN, 1, KTRL('n'), EC_DOWN }, { MN_UP, 1, KTRL('p'), EC_UP },
-    { MN_RIGHT, 1, KTRL('f'), EC_RIGHT }, { MN_BOL, 1, KTRL('a'), EC_BOL }, { MN_EOL, 1, KTRL('e'), EC_EOL }, { MN_PGUP, 1, KTRL('o'), EC_PGUP },
-    { MN_PGDOWN, 1, KTRL('l'), EC_PGDOWN }, { MN_TOP, 1, KTRL('t'), EC_TOP }, { MN_BOTTOM, 1, KTRL('u'), EC_BOTTOM },
-
-    { MN_INSERT, 0, -1, -1 }, { MN_INSERT_OBJECT, 1, KTRL('i'), EC_INSERT_OBJECT }, { MN_INSERT_DESTROYED, 1, -1, EC_INSERT_DESTROYED },
-    { MN_INSERT_BLOCK, 1, -1, EC_INSERT_BLOCK }, { MN_INSERT_MACRO, 1, -1, EC_INSERT_MACRO }, { MN_INSERT_KEYMAP, 1, -1, EC_INSERT_KEYMAP },
-
-    { MN_ADJECTIVE_GEN, 0, -1, -1 }, { MKEY_UNAWARE, 1, -1, EC_IK_UNAWARE }, { MKEY_UNIDENTIFIED, 1, -1, EC_IK_UNIDENTIFIED },
-    { MKEY_IDENTIFIED, 1, -1, EC_IK_IDENTIFIED }, { MKEY_STAR_IDENTIFIED, 1, -1, EC_IK_STAR_IDENTIFIED }, { MKEY_COLLECTING, 1, -1, EC_OK_COLLECTING },
-    { MKEY_ARTIFACT, 1, -1, EC_OK_ARTIFACT }, { MKEY_EGO, 1, -1, EC_OK_EGO }, { MKEY_GOOD, 1, -1, EC_OK_GOOD }, { MKEY_NAMELESS, 1, -1, EC_OK_NAMELESS },
-    { MKEY_AVERAGE, 1, -1, EC_OK_AVERAGE }, { MKEY_WORTHLESS, 1, -1, EC_OK_WORTHLESS }, { MN_RARE, 1, -1, EC_OK_RARE }, { MN_COMMON, 1, -1, EC_OK_COMMON },
-
-    { MN_ADJECTIVE_SPECIAL, 0, -1, -1 }, { MN_BOOSTED, 1, -1, EC_OK_BOOSTED }, { MN_MORE_DICE, 1, -1, EC_OK_MORE_DICE },
-    { MN_MORE_BONUS, 1, -1, EC_OK_MORE_BONUS }, { MN_WANTED, 1, -1, EC_OK_WANTED }, { MN_UNIQUE, 1, -1, EC_OK_UNIQUE }, { MN_HUMAN, 1, -1, EC_OK_HUMAN },
-    { MN_UNREADABLE, 1, -1, EC_OK_UNREADABLE }, { MN_REALM1, 1, -1, EC_OK_REALM1 }, { MN_REALM2, 1, -1, EC_OK_REALM2 }, { MN_FIRST, 1, -1, EC_OK_FIRST },
-    { MN_SECOND, 1, -1, EC_OK_SECOND }, { MN_THIRD, 1, -1, EC_OK_THIRD }, { MN_FOURTH, 1, -1, EC_OK_FOURTH },
-
-    { MN_NOUN, 0, -1, -1 }, { MKEY_WEAPONS, 1, -1, EC_KK_WEAPONS }, { MKEY_FAVORITE_WEAPONS, 1, -1, EC_KK_FAVORITE_WEAPONS },
-    { MKEY_ARMORS, 1, -1, EC_KK_ARMORS }, { MKEY_MISSILES, 1, -1, EC_KK_MISSILES }, { MKEY_DEVICES, 1, -1, EC_KK_DEVICES },
-    { MKEY_LIGHTS, 1, -1, EC_KK_LIGHTS }, { MKEY_JUNKS, 1, -1, EC_KK_JUNKS }, { MKEY_CORPSES, 1, -1, EC_KK_CORPSES },
-    { MKEY_SPELLBOOKS, 1, -1, EC_KK_SPELLBOOKS }, { MKEY_SHIELDS, 1, -1, EC_KK_SHIELDS }, { MKEY_BOWS, 1, -1, EC_KK_BOWS }, { MKEY_RINGS, 1, -1, EC_KK_RINGS },
-    { MKEY_AMULETS, 1, -1, EC_KK_AMULETS }, { MKEY_SUITS, 1, -1, EC_KK_SUITS }, { MKEY_CLOAKS, 1, -1, EC_KK_CLOAKS }, { MKEY_HELMS, 1, -1, EC_KK_HELMS },
-    { MKEY_GLOVES, 1, -1, EC_KK_GLOVES }, { MKEY_BOOTS, 1, -1, EC_KK_BOOTS },
-
-    { MN_COMMAND_LETTER, 0, -1, -1 }, { MN_CL_AUTOPICK, 1, -1, EC_CL_AUTOPICK }, { MN_CL_DESTROY, 1, -1, EC_CL_DESTROY }, { MN_CL_LEAVE, 1, -1, EC_CL_LEAVE },
-    { MN_CL_QUERY, 1, -1, EC_CL_QUERY }, { MN_CL_NO_DISP, 1, -1, EC_CL_NO_DISP },
-
-    { MN_DELETE_CHAR, -1, 0x7F, EC_DELETE_CHAR },
-
-    { nullptr, -1, -1, 0 } };
+    return 0;
+}

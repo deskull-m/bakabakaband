@@ -3,9 +3,10 @@
 #include "system/angband.h"
 #include <string_view>
 
+enum class AutopickMethod;
 struct text_body_type;
 void toggle_keyword(text_body_type *tb, BIT_FLAGS flg);
-void toggle_command_letter(text_body_type *tb, byte flg);
+void toggle_command_letter(text_body_type *tb, AutopickMethod am);
 void add_keyword(text_body_type *tb, BIT_FLAGS flg);
 bool add_empty_line(text_body_type *tb);
 void kill_yank_chain(text_body_type *tb);

@@ -20,7 +20,7 @@ void do_cmd_view_map(CreatureEntity &creature)
     prt(_("お待ち下さい...", "Please wait..."), 0, 0);
     term_fresh();
     term_clear();
-    display_autopick = 0;
+    display_autopick.clear();
 
     int cy, cx;
     display_map(creature, &cy, &cx);
@@ -35,7 +35,7 @@ void do_cmd_view_map(CreatureEntity &creature)
         return;
     }
 
-    display_autopick = ITEM_DISPLAY;
+    display_autopick.set(AutopickMethod::ITEM_DISPLAY);
     while (true) {
         const auto &[wid, hgt] = term_get_size();
         int row_message = hgt - 1;
@@ -44,29 +44,29 @@ void do_cmd_view_map(CreatureEntity &creature)
             row_message, 1);
         move_cursor(cy, cx);
         int i = inkey(true);
-        byte flag;
+        EnumClassFlagGroup<AutopickMethod> flags;
         if ('M' == i) {
-            flag = (DO_AUTOPICK | DO_QUERY_AUTOPICK);
+            flags.set({ AutopickMethod::AUTOPICK, AutopickMethod::QUERY_AUTOPICK });
         } else if ('N' == i) {
-            flag = DONT_AUTOPICK;
+            flags.set(AutopickMethod::NOT_AUTOPICK);
         } else if ('K' == i) {
-            flag = DO_AUTODESTROY;
+            flags.set(AutopickMethod::AUTODESTROY);
         } else if ('D' == i) {
-            flag = (DO_AUTOPICK | DO_QUERY_AUTOPICK | DONT_AUTOPICK);
+            flags.set({ AutopickMethod::AUTOPICK, AutopickMethod::QUERY_AUTOPICK, AutopickMethod::NOT_AUTOPICK });
         } else {
             break;
         }
 
         term_fresh();
-        if (~display_autopick & flag) {
-            display_autopick |= flag;
+        if (display_autopick.has_all_of(flags)) {
+            display_autopick.reset(flags);
         } else {
-            display_autopick &= ~flag;
+            display_autopick.set(flags);
         }
 
         display_map(creature, &cy, &cx);
     }
 
-    display_autopick = 0;
+    display_autopick.clear();
     screen_load();
 }

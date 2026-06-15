@@ -6,24 +6,23 @@
 /*!
  * @brief Process line for auto picker/destroyer.
  */
-void process_autopick_file_command(char *buf)
+void process_autopick_file_command(std::string_view buf)
 {
     autopick_type entry;
-    int i;
-    for (i = 0; buf[i]; i++) {
+    size_t pos = 0;
+    for (; pos < buf.length(); pos++) {
+        const uint8_t c = buf[pos];
 #ifdef JP
-        if (iskanji(buf[i])) {
-            i++;
+        if (iskanji(c)) {
+            pos++;
             continue;
         }
 #endif
-        if (iswspace(buf[i]) && buf[i] != ' ') {
+        if (iswspace(c) && c != ' ') {
             break;
         }
     }
-
-    buf[i] = 0;
-    if (!autopick_new_entry(&entry, buf, false)) {
+    if (!autopick_new_entry(&entry, buf.substr(0, pos), false)) {
         return;
     }
 

@@ -48,18 +48,17 @@ void do_cmd_knowledge_autopick(CreatureEntity &creature)
 
     for (const auto &entry : autopick_list) {
         std::string command;
-        const auto act = entry.action;
-        if (any_bits(act, DONT_AUTOPICK)) {
+        if (entry.action.has(AutopickMethod::NOT_AUTOPICK)) {
             command = _("放置", "Leave");
-        } else if (act & DO_AUTODESTROY) {
+        } else if (entry.action.has(AutopickMethod::AUTODESTROY)) {
             command = _("破壊", "Destroy");
-        } else if (act & DO_AUTOPICK) {
+        } else if (entry.action.has(AutopickMethod::AUTOPICK)) {
             command = _("拾う", "Pickup");
         } else {
             command = _("確認", "Query");
         }
 
-        const auto fmt = any_bits(act, DO_DISPLAY) ? "[%s]" : "(%s)";
+        const auto fmt = entry.action.has(AutopickMethod::DISPLAY) ? "[%s]" : "(%s)";
         fprintf(fff, "%11s", format(fmt, command.data()).data());
         const auto line = autopick_line_from_entry(entry);
         fprintf(fff, " %s", line.data());
