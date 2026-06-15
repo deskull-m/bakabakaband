@@ -1,5 +1,5 @@
 #pragma once
-#include "alliance.h"
+#include "alliance/alliance.h"
 
 class AllianceValinor : public Alliance {
 public:

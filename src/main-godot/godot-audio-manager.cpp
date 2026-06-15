@@ -3,7 +3,7 @@
  * @brief BGM・SE管理ノードの実装
  */
 
-#include "godot-audio-manager.h"
+#include "main-godot/godot-audio-manager.h"
 
 #include "main/sound-definitions-table.h"
 #include "term/z-term.h"

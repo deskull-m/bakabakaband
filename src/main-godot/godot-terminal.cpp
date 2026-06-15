@@ -3,8 +3,8 @@
  * @brief Godot ターミナル描画ノード実装
  */
 
-#include "godot-terminal.h"
-#include "term-color-map.h"
+#include "main-godot/godot-terminal.h"
+#include "main-godot/term-color-map.h"
 
 #include <godot_cpp/classes/font.hpp>
 #include <godot_cpp/classes/image.hpp>

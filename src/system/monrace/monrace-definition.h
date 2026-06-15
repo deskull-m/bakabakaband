@@ -2,7 +2,6 @@
 
 #include "alliance/alliance.h"
 #include "locale/localized-string.h"
-#include "monrace-message.h"
 #include "monster-attack/monster-attack-effect.h"
 #include "monster-attack/monster-attack-table.h"
 #include "monster-race/monster-aura-types.h"
@@ -27,6 +26,7 @@
 #include "system/material-type-definition.h"
 #include "system/monrace/body-structure-types.h"
 #include "system/monrace/extended-slot.h"
+#include "system/monrace/monrace-message.h"
 #include "util/dice.h"
 #include "util/flag-group.h"
 #include "view/display-symbol.h"

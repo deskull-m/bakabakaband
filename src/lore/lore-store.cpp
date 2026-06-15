@@ -4,13 +4,13 @@
  * @author Hourier
  */
 
-#include "lore/lore-store.h"
 #include "core/window-redrawer.h"
 #include "monster/monster-info.h"
 #include "system/creature-entity.h"
-#include "system/floor-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/lore-tracker.h"
+#include <lore/lore-store.h>
+#include <system/floor-type-definition.h>
 
 template <class T>
 static int count_lore_mflag_group(const EnumClassFlagGroup<T> &flags, const EnumClassFlagGroup<T> &r_flags)

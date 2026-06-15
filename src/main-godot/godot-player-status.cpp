@@ -3,7 +3,7 @@
  * @brief プレイヤーステータスのGodot側へのブリッジ実装
  */
 
-#include "godot-player-status.h"
+#include "main-godot/godot-player-status.h"
 
 #include "player-info/class-info.h"
 #include "player-info/race-info.h"

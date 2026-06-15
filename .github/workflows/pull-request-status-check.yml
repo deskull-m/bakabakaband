@@ -32,6 +32,14 @@ jobs:
       - name: Check the format of the json/jsonc files
         run: sh ./.github/scripts/check-json-format.sh
 
+  check_include_style:
+    name: Check the include directive style
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check the include directive style ("" vs <>)
+        run: python3 .github/scripts/check-include-style.py
+
   build_test_clang15_libcpp_without_pch:
     name: Build Japanese version with clang 15 -stdlib=libc++ (without using pre-compiled headers)
     uses: ./.github/workflows/build-with-autotools.yml
