@@ -397,34 +397,41 @@ Expand the power of the list commands    [expand_list]
     symbol" to browse through all of the monsters of a given type.
 
 ***** <allow_smallest_floor>
-Allow unusually small dungeon levels    [allow_smallest_floor]
-    This option enables the creation of levels of varying sizes. Levels
-    that are as small as the town level (i.e. 1 'screen') are possible,
-    yet they can be dangerous, especially for a low level character.
-    Note that this option has the side effect of enabling / disabling
-    'destroyed' levels (they are enabled if small levels are).
+Allow extremely small dungeon floors    [allow_smallest_floor]
+    This option allows the normal floor size selection to include the
+    smallest size. In dungeons where small floors can be generated, it
+    may also generate a floor as small as the town level (i.e. 1
+    'screen'). Such floors can be dangerous, especially for a low level
+    character. This option also enables the generation of some
+    'destroyed' levels. If 'Always generate large dungeon floors' is
+    enabled, the random smallest-floor generation from this
+    option is suppressed.
 
 ***** <always_small_floor>
-Always create unusually small dungeon levels    [always_small_floor]
-    If this option is enabled, then every level will be smaller than
-    usual. See the 'Allow unusually small dungeon levels' option
-    above. In the 'Yeek cave', this option is always enabled.
+Always generate small dungeon floors    [always_small_floor]
+    If this option is enabled, ordinary dungeons choose their floor
+    sizes from the smaller range. If 'Always generate large dungeon
+    floors' is also enabled, this option takes precedence.
+    Dungeon-specific small/large flags and beginner dungeon size rules
+    take precedence over gameplay options. See the 'Allow extremely
+    small dungeon floors' option above.
 
 ***** <allow_largest_floor>
-Allow unusually large dungeon levels    [allow_largest_floor]
-    This option allows the largest possible levels, which are normally
-    excluded from generation, to appear (rarely). Exploring such vast
-    levels takes time, but offers more monsters and items. If 'Always
-    create unusually small dungeon levels' is enabled, the largest
-    levels are not generated.
+Allow extremely large dungeon floors    [allow_largest_floor]
+    This option allows the normal floor size selection to include the
+    largest size. In dungeons where large floors can be generated, it
+    may also randomly generate the largest floor. If 'Always generate
+    small dungeon floors' is enabled, the random largest-floor
+    generation from this option is suppressed.
 
 ***** <always_large_floor>
-Always create unusually large dungeon levels    [always_large_floor]
-    If this option is enabled, then every normal dungeon level will be
-    the largest possible size. Small-floor options (such as 'Always
-    create unusually small dungeon levels') take precedence if also
-    enabled. Dungeon-specific small/large flags and beginner dungeon
-    sizes still take precedence over gameplay options.
+Always generate large dungeon floors    [always_large_floor]
+    If this option is enabled, ordinary dungeons choose their floor
+    sizes from the larger range. If 'Always generate small dungeon
+    floors' is also enabled, this option is ignored.
+    Dungeon-specific small/large flags and beginner dungeon size rules
+    take precedence over gameplay options. See the 'Allow extremely
+    large dungeon floors' option above.
 
 ***** <allow_arena_floor>
 Allow empty 'arena' levels    [allow_arena_floor]
@@ -894,9 +901,12 @@ Stores are permanently closed (*)    [ironman_shops]
     the dungeon without supplies from town.
 
 ***** <ironman_smallest_floor>
-Always create unusually small dungeon levels (*)    [ironman_smallest_floor]
-    If this option is enabled, then every level will be smaller than
-    usual. See the 'Allow unusually small dungeon levels' option above.
+Always generate the smallest dungeon floors (*)    [ironman_smallest_floor]
+    If this option is enabled, every dungeon floor uses the smallest
+    size regardless of dungeon-specific size flags. If 'Always generate
+    very unusual rooms' is also enabled, dungeons that can generate
+    vaults instead use a 2x1-block floor. See the 'Allow extremely
+    small dungeon floors' option above.
 
 ***** <ironman_downward>
 Disable recall and use of up stairs (*)    [ironman_downward]
