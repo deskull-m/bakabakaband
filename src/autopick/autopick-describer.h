@@ -1,4 +1,6 @@
 #pragma once
 
+#include <string>
+
 struct autopick_type;
-void describe_autopick(char *buff, const autopick_type &entry);
+std::string describe_autopick(const autopick_type &entry);

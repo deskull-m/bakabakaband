@@ -1,10 +1,12 @@
 #pragma once
 
+#include "autopick/autopick-methods-table.h"
+#include "util/flag-group.h"
 #include "util/point-2d.h"
 #include <cstdint>
 #include <tl/optional.hpp>
 
-extern uint8_t display_autopick;
+extern EnumClassFlagGroup<AutopickMethod> display_autopick;
 
 class DisplaySymbolPair;
 class CreatureEntity;

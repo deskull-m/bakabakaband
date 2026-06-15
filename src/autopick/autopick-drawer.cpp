@@ -263,19 +263,17 @@ void draw_text_editor(CreatureEntity &creature, text_body_type *tb)
             break;
         }
     } else if (autopick_new_entry(entry, *tb->lines_list[tb->cy], false)) {
-        char buf[MAX_LINELEN];
-
-        describe_autopick(buf, *entry);
-
+        std::stringstream ss;
+        ss << describe_autopick(*entry);
         if (tb->states[tb->cy] & LSTAT_AUTOREGISTER) {
-            strcat(buf, _("この行は後で削除されます。", "  This line will be deleted later."));
+            ss << _("この行は後で削除されます。", "  This line will be deleted later.");
         }
 
         if (tb->states[tb->cy] & LSTAT_BYPASS) {
-            strcat(buf, _("この行は現在は無効な状態です。", "  This line is bypassed currently."));
+            ss << _("この行は現在は無効な状態です。", "  This line is bypassed currently.");
         }
 
-        display_wrap_around(buf, 81, tb->hgt + 2, 0);
+        display_wrap_around(ss.str(), 81, tb->hgt + 2, 0);
     }
 
     if (!str1.empty()) {

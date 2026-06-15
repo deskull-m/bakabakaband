@@ -1,3 +1,5 @@
 #pragma once
 
-void process_autopick_file_command(char *buf);
+#include <string_view>
+
+void process_autopick_file_command(std::string_view buf);

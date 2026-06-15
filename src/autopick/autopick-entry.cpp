@@ -105,32 +105,28 @@ bool autopick_new_entry(autopick_type *entry, std::string_view line_input, bool 
     entry->dice = 0;
     entry->bonus = 0;
 
-    byte act = DO_AUTOPICK | DO_DISPLAY;
+    EnumClassFlagGroup<AutopickMethod> act = { AutopickMethod::AUTOPICK, AutopickMethod::DISPLAY };
     std::string_view line = line_input;
     while (!line.empty()) {
-        if ((act & DO_AUTOPICK) && line.starts_with('!')) {
-            act &= ~DO_AUTOPICK;
-            act |= DO_AUTODESTROY;
-            line.remove_prefix(1);
-            continue;
+        if (act.has(AutopickMethod::AUTOPICK)) {
+            const auto c = line.front();
+            if (c == '!' || c == '~' || c == ';') {
+                act.reset(AutopickMethod::AUTOPICK);
+                if (c == '!') {
+                    act.set(AutopickMethod::AUTODESTROY);
+                } else if (c == '~') {
+                    act.set(AutopickMethod::NOT_AUTOPICK);
+                } else {
+                    act.set(AutopickMethod::QUERY_AUTOPICK);
+                }
+
+                line.remove_prefix(1);
+                continue;
+            }
         }
 
-        if ((act & DO_AUTOPICK) && line.starts_with('~')) {
-            act &= ~DO_AUTOPICK;
-            act |= DONT_AUTOPICK;
-            line.remove_prefix(1);
-            continue;
-        }
-
-        if ((act & DO_AUTOPICK) && line.starts_with(';')) {
-            act &= ~DO_AUTOPICK;
-            act |= DO_QUERY_AUTOPICK;
-            line.remove_prefix(1);
-            continue;
-        }
-
-        if ((act & DO_DISPLAY) && line.starts_with('(')) {
-            act &= ~DO_DISPLAY;
+        if (act.has(AutopickMethod::DISPLAY) && (line.front() == '(')) {
+            act.reset(AutopickMethod::DISPLAY);
             line.remove_prefix(1);
             continue;
         }
@@ -177,30 +173,30 @@ bool autopick_new_entry(autopick_type *entry, std::string_view line_input, bool 
 
         old_sv = sv;
         static const std::vector<std::pair<std::string_view, int>> adjectives = {
-            { KEY_ALL, FLG_ALL },
-            { KEY_COLLECTING, FLG_COLLECTING },
-            { KEY_UNAWARE, FLG_UNAWARE },
-            { KEY_UNIDENTIFIED, FLG_UNIDENTIFIED },
-            { KEY_IDENTIFIED, FLG_IDENTIFIED },
-            { KEY_STAR_IDENTIFIED, FLG_STAR_IDENTIFIED },
-            { KEY_BOOSTED, FLG_BOOSTED },
-            { KEY_WORTHLESS, FLG_WORTHLESS },
-            { KEY_EGO, FLG_EGO },
-            { KEY_GOOD, FLG_GOOD },
-            { KEY_NAMELESS, FLG_NAMELESS },
-            { KEY_AVERAGE, FLG_AVERAGE },
-            { KEY_RARE, FLG_RARE },
-            { KEY_COMMON, FLG_COMMON },
-            { KEY_WANTED, FLG_WANTED },
-            { KEY_UNIQUE, FLG_UNIQUE },
-            { KEY_HUMAN, FLG_HUMAN },
-            { KEY_UNREADABLE, FLG_UNREADABLE },
-            { KEY_REALM1, FLG_REALM1 },
-            { KEY_REALM2, FLG_REALM2 },
-            { KEY_FIRST, FLG_FIRST },
-            { KEY_SECOND, FLG_SECOND },
-            { KEY_THIRD, FLG_THIRD },
-            { KEY_FOURTH, FLG_FOURTH },
+            { autopick_keys.at(AutopickKey::ALL), FLG_ALL },
+            { autopick_keys.at(AutopickKey::COLLECTING), FLG_COLLECTING },
+            { autopick_keys.at(AutopickKey::UNAWARE), FLG_UNAWARE },
+            { autopick_keys.at(AutopickKey::UNIDENTIFIED), FLG_UNIDENTIFIED },
+            { autopick_keys.at(AutopickKey::IDENTIFIED), FLG_IDENTIFIED },
+            { autopick_keys.at(AutopickKey::STAR_IDENTIFIED), FLG_STAR_IDENTIFIED },
+            { autopick_keys.at(AutopickKey::BOOSTED), FLG_BOOSTED },
+            { autopick_keys.at(AutopickKey::WORTHLESS), FLG_WORTHLESS },
+            { autopick_keys.at(AutopickKey::EGO), FLG_EGO },
+            { autopick_keys.at(AutopickKey::GOOD), FLG_GOOD },
+            { autopick_keys.at(AutopickKey::NAMELESS), FLG_NAMELESS },
+            { autopick_keys.at(AutopickKey::AVERAGE), FLG_AVERAGE },
+            { autopick_keys.at(AutopickKey::RARE), FLG_RARE },
+            { autopick_keys.at(AutopickKey::COMMON), FLG_COMMON },
+            { autopick_keys.at(AutopickKey::WANTED), FLG_WANTED },
+            { autopick_keys.at(AutopickKey::UNIQUE), FLG_UNIQUE },
+            { autopick_keys.at(AutopickKey::HUMAN), FLG_HUMAN },
+            { autopick_keys.at(AutopickKey::UNREADABLE), FLG_UNREADABLE },
+            { autopick_keys.at(AutopickKey::REALM1), FLG_REALM1 },
+            { autopick_keys.at(AutopickKey::REALM2), FLG_REALM2 },
+            { autopick_keys.at(AutopickKey::FIRST), FLG_FIRST },
+            { autopick_keys.at(AutopickKey::SECOND), FLG_SECOND },
+            { autopick_keys.at(AutopickKey::THIRD), FLG_THIRD },
+            { autopick_keys.at(AutopickKey::FOURTH), FLG_FOURTH },
         };
         for (const auto &[key, flag] : adjectives) {
             if (const auto sv_opt = match_key(sv, key); sv_opt) {
@@ -217,11 +213,11 @@ bool autopick_new_entry(autopick_type *entry, std::string_view line_input, bool 
         }
 
         /*** Weapons whose dd*ds is more than nn ***/
-        if (const auto sv_opt = match_key(sv, KEY_MORE_THAN); sv_opt) {
+        if (const auto sv_opt = match_key(sv, autopick_keys.at(AutopickKey::MORE_THAN)); sv_opt) {
             if (const auto parsed_val_opt = parse_numeric_value(*sv_opt)) {
                 entry->dice = parsed_val_opt->value;
                 std::string_view remaining_sv = parsed_val_opt->remaining_sv;
-                if (const auto dice_key_sv_opt = match_key(remaining_sv, KEY_DICE); dice_key_sv_opt) {
+                if (const auto dice_key_sv_opt = match_key(remaining_sv, autopick_keys.at(AutopickKey::DICE)); dice_key_sv_opt) {
                     remaining_sv = *dice_key_sv_opt;
                 }
 
@@ -234,12 +230,12 @@ bool autopick_new_entry(autopick_type *entry, std::string_view line_input, bool 
         }
 
         /*** Items whose magical bonus is more than n ***/
-        if (const auto sv_opt = match_key(sv, KEY_MORE_BONUS); sv_opt) {
+        if (const auto sv_opt = match_key(sv, autopick_keys.at(AutopickKey::MORE_BONUS)); sv_opt) {
             if (const auto parsed_val_opt = parse_numeric_value(*sv_opt)) {
                 entry->bonus = parsed_val_opt->value;
                 std::string_view current_parse_sv = parsed_val_opt->remaining_sv;
 #ifdef JP
-                if (const auto bonus2_sv_opt = match_key(current_parse_sv, KEY_MORE_BONUS2); bonus2_sv_opt) {
+                if (const auto bonus2_sv_opt = match_key(current_parse_sv, autopick_keys.at(AutopickKey::MORE_BONUS2)); bonus2_sv_opt) {
                     current_parse_sv = *bonus2_sv_opt;
                 }
 #else
@@ -256,33 +252,33 @@ bool autopick_new_entry(autopick_type *entry, std::string_view line_input, bool 
 
     const auto sv_backup = sv;
     tl::optional<int> previous_flag;
-    if (const auto sv_opt = match_key(sv, KEY_ARTIFACT); sv_opt) {
+    if (const auto sv_opt = match_key(sv, autopick_keys.at(AutopickKey::ARTIFACT)); sv_opt) {
         entry->add(FLG_ARTIFACT);
         previous_flag = FLG_ARTIFACT;
         sv = *sv_opt;
     }
 
     static const std::vector<std::pair<std::string_view, int>> nouns = {
-        { KEY_ITEMS, FLG_ITEMS },
-        { KEY_WEAPONS, FLG_WEAPONS },
-        { KEY_FAVORITE_WEAPONS, FLG_FAVORITE_WEAPONS },
-        { KEY_ARMORS, FLG_ARMORS },
-        { KEY_MISSILES, FLG_MISSILES },
-        { KEY_DEVICES, FLG_DEVICES },
-        { KEY_LIGHTS, FLG_LIGHTS },
-        { KEY_JUNKS, FLG_JUNKS },
-        { KEY_CORPSES, FLG_CORPSES },
-        { KEY_SPELLBOOKS, FLG_SPELLBOOKS },
-        { KEY_HAFTED, FLG_HAFTED },
-        { KEY_SHIELDS, FLG_SHIELDS },
-        { KEY_BOWS, FLG_BOWS },
-        { KEY_RINGS, FLG_RINGS },
-        { KEY_AMULETS, FLG_AMULETS },
-        { KEY_SUITS, FLG_SUITS },
-        { KEY_CLOAKS, FLG_CLOAKS },
-        { KEY_HELMS, FLG_HELMS },
-        { KEY_GLOVES, FLG_GLOVES },
-        { KEY_BOOTS, FLG_BOOTS },
+        { autopick_keys.at(AutopickKey::ITEMS), FLG_ITEMS },
+        { autopick_keys.at(AutopickKey::WEAPONS), FLG_WEAPONS },
+        { autopick_keys.at(AutopickKey::FAVORITE_WEAPONS), FLG_FAVORITE_WEAPONS },
+        { autopick_keys.at(AutopickKey::ARMORS), FLG_ARMORS },
+        { autopick_keys.at(AutopickKey::MISSILES), FLG_MISSILES },
+        { autopick_keys.at(AutopickKey::DEVICES), FLG_DEVICES },
+        { autopick_keys.at(AutopickKey::LIGHTS), FLG_LIGHTS },
+        { autopick_keys.at(AutopickKey::JUNKS), FLG_JUNKS },
+        { autopick_keys.at(AutopickKey::CORPSES), FLG_CORPSES },
+        { autopick_keys.at(AutopickKey::SPELLBOOKS), FLG_SPELLBOOKS },
+        { autopick_keys.at(AutopickKey::HAFTED), FLG_HAFTED },
+        { autopick_keys.at(AutopickKey::SHIELDS), FLG_SHIELDS },
+        { autopick_keys.at(AutopickKey::BOWS), FLG_BOWS },
+        { autopick_keys.at(AutopickKey::RINGS), FLG_RINGS },
+        { autopick_keys.at(AutopickKey::AMULETS), FLG_AMULETS },
+        { autopick_keys.at(AutopickKey::SUITS), FLG_SUITS },
+        { autopick_keys.at(AutopickKey::CLOAKS), FLG_CLOAKS },
+        { autopick_keys.at(AutopickKey::HELMS), FLG_HELMS },
+        { autopick_keys.at(AutopickKey::GLOVES), FLG_GLOVES },
+        { autopick_keys.at(AutopickKey::BOOTS), FLG_BOOTS },
     };
 
     for (const auto &[key, flag] : nouns) {
@@ -340,7 +336,7 @@ void autopick_entry_from_object(CreatureEntity &creature, autopick_type *entry, 
     bool name = true;
     entry->name.clear();
     entry->insc = o_ptr->inscription.value_or("");
-    entry->action = DO_AUTOPICK | DO_DISPLAY;
+    entry->action = { AutopickMethod::AUTOPICK, AutopickMethod::DISPLAY };
     entry->flags[0] = entry->flags[1] = 0L;
     entry->dice = 0;
 
@@ -524,10 +520,10 @@ void autopick_entry_from_object(CreatureEntity &creature, autopick_type *entry, 
     entry->name = str_tolower(std::string(should_add_hat_mark ? "^" : "").append(item_name));
 }
 
-static std::string shape_autopick_key(const std::string &key)
+static std::string shape_autopick_key(std::string_view key)
 {
 #ifdef JP
-    return key;
+    return std::string(key);
 #else
     std::stringstream ss;
     ss << key << ' ';
@@ -541,169 +537,169 @@ static std::string shape_autopick_key(const std::string &key)
 std::string autopick_line_from_entry(const autopick_type &entry)
 {
     std::stringstream ss;
-    if (!(entry.action & DO_DISPLAY)) {
+    if (entry.action.has_not(AutopickMethod::DISPLAY)) {
         ss << '(';
     }
 
-    if (entry.action & DO_QUERY_AUTOPICK) {
+    if (entry.action.has(AutopickMethod::QUERY_AUTOPICK)) {
         ss << ';';
     }
 
-    if (entry.action & DO_AUTODESTROY) {
+    if (entry.action.has(AutopickMethod::AUTODESTROY)) {
         ss << '!';
     }
 
-    if (entry.action & DONT_AUTOPICK) {
+    if (entry.action.has(AutopickMethod::NOT_AUTOPICK)) {
         ss << '~';
     }
 
     if (entry.has(FLG_ALL)) {
-        ss << shape_autopick_key(KEY_ALL);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::ALL));
     }
     if (entry.has(FLG_COLLECTING)) {
-        ss << shape_autopick_key(KEY_COLLECTING);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::COLLECTING));
     }
     if (entry.has(FLG_UNAWARE)) {
-        ss << shape_autopick_key(KEY_UNAWARE);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::UNAWARE));
     }
     if (entry.has(FLG_UNIDENTIFIED)) {
-        ss << shape_autopick_key(KEY_UNIDENTIFIED);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::UNIDENTIFIED));
     }
     if (entry.has(FLG_IDENTIFIED)) {
-        ss << shape_autopick_key(KEY_IDENTIFIED);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::IDENTIFIED));
     }
     if (entry.has(FLG_STAR_IDENTIFIED)) {
-        ss << shape_autopick_key(KEY_STAR_IDENTIFIED);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::STAR_IDENTIFIED));
     }
     if (entry.has(FLG_BOOSTED)) {
-        ss << shape_autopick_key(KEY_BOOSTED);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::BOOSTED));
     }
 
     if (entry.has(FLG_MORE_DICE)) {
-        ss << shape_autopick_key(KEY_MORE_THAN);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::MORE_THAN));
         ss << entry.dice;
-        ss << shape_autopick_key(KEY_DICE);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::DICE));
     }
 
     if (entry.has(FLG_MORE_BONUS)) {
-        ss << shape_autopick_key(KEY_MORE_BONUS);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::MORE_BONUS));
         ss << entry.bonus;
-        ss << shape_autopick_key(KEY_MORE_BONUS2);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::MORE_BONUS2));
     }
 
     if (entry.has(FLG_UNREADABLE)) {
-        ss << shape_autopick_key(KEY_UNREADABLE);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::UNREADABLE));
     }
 
     if (entry.has(FLG_REALM1)) {
-        ss << shape_autopick_key(KEY_REALM1);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::REALM1));
     }
 
     if (entry.has(FLG_REALM2)) {
-        ss << shape_autopick_key(KEY_REALM2);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::REALM2));
     }
 
     if (entry.has(FLG_FIRST)) {
-        ss << shape_autopick_key(KEY_FIRST);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::FIRST));
     }
 
     if (entry.has(FLG_SECOND)) {
-        ss << shape_autopick_key(KEY_SECOND);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::SECOND));
     }
 
     if (entry.has(FLG_THIRD)) {
-        ss << shape_autopick_key(KEY_THIRD);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::THIRD));
     }
 
     if (entry.has(FLG_FOURTH)) {
-        ss << shape_autopick_key(KEY_FOURTH);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::FOURTH));
     }
 
     if (entry.has(FLG_WANTED)) {
-        ss << shape_autopick_key(KEY_WANTED);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::WANTED));
     }
 
     if (entry.has(FLG_UNIQUE)) {
-        ss << shape_autopick_key(KEY_UNIQUE);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::UNIQUE));
     }
 
     if (entry.has(FLG_HUMAN)) {
-        ss << shape_autopick_key(KEY_HUMAN);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::HUMAN));
     }
 
     if (entry.has(FLG_WORTHLESS)) {
-        ss << shape_autopick_key(KEY_WORTHLESS);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::WORTHLESS));
     }
 
     if (entry.has(FLG_GOOD)) {
-        ss << shape_autopick_key(KEY_GOOD);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::GOOD));
     }
 
     if (entry.has(FLG_NAMELESS)) {
-        ss << shape_autopick_key(KEY_NAMELESS);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::NAMELESS));
     }
 
     if (entry.has(FLG_AVERAGE)) {
-        ss << shape_autopick_key(KEY_AVERAGE);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::AVERAGE));
     }
 
     if (entry.has(FLG_RARE)) {
-        ss << shape_autopick_key(KEY_RARE);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::RARE));
     }
 
     if (entry.has(FLG_COMMON)) {
-        ss << shape_autopick_key(KEY_COMMON);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::COMMON));
     }
 
     if (entry.has(FLG_EGO)) {
-        ss << shape_autopick_key(KEY_EGO);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::EGO));
     }
 
     if (entry.has(FLG_ARTIFACT)) {
-        ss << shape_autopick_key(KEY_ARTIFACT);
+        ss << shape_autopick_key(autopick_keys.at(AutopickKey::ARTIFACT));
     }
 
     auto should_separate = true;
     if (entry.has(FLG_ITEMS)) {
-        ss << KEY_ITEMS;
+        ss << autopick_keys.at(AutopickKey::ITEMS);
     } else if (entry.has(FLG_WEAPONS)) {
-        ss << KEY_WEAPONS;
+        ss << autopick_keys.at(AutopickKey::WEAPONS);
     } else if (entry.has(FLG_FAVORITE_WEAPONS)) {
-        ss << KEY_FAVORITE_WEAPONS;
+        ss << autopick_keys.at(AutopickKey::FAVORITE_WEAPONS);
     } else if (entry.has(FLG_ARMORS)) {
-        ss << KEY_ARMORS;
+        ss << autopick_keys.at(AutopickKey::ARMORS);
     } else if (entry.has(FLG_MISSILES)) {
-        ss << KEY_MISSILES;
+        ss << autopick_keys.at(AutopickKey::MISSILES);
     } else if (entry.has(FLG_DEVICES)) {
-        ss << KEY_DEVICES;
+        ss << autopick_keys.at(AutopickKey::DEVICES);
     } else if (entry.has(FLG_LIGHTS)) {
-        ss << KEY_LIGHTS;
+        ss << autopick_keys.at(AutopickKey::LIGHTS);
     } else if (entry.has(FLG_JUNKS)) {
-        ss << KEY_JUNKS;
+        ss << autopick_keys.at(AutopickKey::JUNKS);
     } else if (entry.has(FLG_CORPSES)) {
-        ss << KEY_CORPSES;
+        ss << autopick_keys.at(AutopickKey::CORPSES);
     } else if (entry.has(FLG_SPELLBOOKS)) {
-        ss << KEY_SPELLBOOKS;
+        ss << autopick_keys.at(AutopickKey::SPELLBOOKS);
     } else if (entry.has(FLG_HAFTED)) {
-        ss << KEY_HAFTED;
+        ss << autopick_keys.at(AutopickKey::HAFTED);
     } else if (entry.has(FLG_SHIELDS)) {
-        ss << KEY_SHIELDS;
+        ss << autopick_keys.at(AutopickKey::SHIELDS);
     } else if (entry.has(FLG_BOWS)) {
-        ss << KEY_BOWS;
+        ss << autopick_keys.at(AutopickKey::BOWS);
     } else if (entry.has(FLG_RINGS)) {
-        ss << KEY_RINGS;
+        ss << autopick_keys.at(AutopickKey::RINGS);
     } else if (entry.has(FLG_AMULETS)) {
-        ss << KEY_AMULETS;
+        ss << autopick_keys.at(AutopickKey::AMULETS);
     } else if (entry.has(FLG_SUITS)) {
-        ss << KEY_SUITS;
+        ss << autopick_keys.at(AutopickKey::SUITS);
     } else if (entry.has(FLG_CLOAKS)) {
-        ss << KEY_CLOAKS;
+        ss << autopick_keys.at(AutopickKey::CLOAKS);
     } else if (entry.has(FLG_HELMS)) {
-        ss << KEY_HELMS;
+        ss << autopick_keys.at(AutopickKey::HELMS);
     } else if (entry.has(FLG_GLOVES)) {
-        ss << KEY_GLOVES;
+        ss << autopick_keys.at(AutopickKey::GLOVES);
     } else if (entry.has(FLG_BOOTS)) {
-        ss << KEY_BOOTS;
+        ss << autopick_keys.at(AutopickKey::BOOTS);
     } else if (!entry.has(FLG_ARTIFACT)) {
         should_separate = false;
     }

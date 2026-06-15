@@ -38,20 +38,6 @@ void autopick_type::remove(int flag)
 }
 
 /*!
- * @brief Find a command by 'key'.
- */
-int get_com_id(char key)
-{
-    for (int i = 0; menu_data[i].name; i++) {
-        if (menu_data[i].key == key) {
-            return menu_data[i].com_id;
-        }
-    }
-
-    return 0;
-}
-
-/*!
  * @brief Auto inscription
  */
 void auto_inscribe_item(ItemEntity *o_ptr, int idx)

@@ -117,12 +117,17 @@ static bool is_opt_confirm_destroy(CreatureEntity &creature, ItemEntity *o_ptr)
 
 void auto_destroy_item(CreatureEntity &creature, ItemEntity *o_ptr, int autopick_idx)
 {
-    auto destroy = is_opt_confirm_destroy(creature, o_ptr);
+    bool destroy = false;
+    if (is_opt_confirm_destroy(creature, o_ptr)) {
+        destroy = true;
+    }
 
-    if (autopick_idx >= 0) {
-        if (!(autopick_list[autopick_idx].action & DO_AUTODESTROY)) {
-            destroy = false;
-        } else if (!always_pickup) {
+    if (autopick_idx >= 0 && !(autopick_list[autopick_idx].action.has(AutopickMethod::AUTODESTROY))) {
+        destroy = false;
+    }
+
+    if (!always_pickup) {
+        if (autopick_idx >= 0 && (autopick_list[autopick_idx].action.has(AutopickMethod::AUTODESTROY))) {
             destroy = true;
         }
     }
