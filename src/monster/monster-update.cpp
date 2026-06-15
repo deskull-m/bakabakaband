@@ -35,6 +35,8 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
+#include "system/monrace/monrace-records.h"
+#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "tracking/health-bar-tracker.h"
@@ -515,12 +517,10 @@ static void update_invisible_monster(CreatureEntity &creature, um_type *um_ptr, 
     }
 
     if (!creature.is_hallucinated()) {
-        auto &monrace = monster.get_monrace();
-        auto &shadower = MonraceList::get_instance().get_monrace(MonraceId::KAGE);
-        if ((monster.get_ap_r_idx() == MonraceId::KAGE) && (shadower.r_sights < MAX_SHORT)) {
-            shadower.r_sights++;
-        } else if (monster.is_original_ap() && (monrace.r_sights < MAX_SHORT)) {
-            monrace.r_sights++;
+        if (monster.get_ap_r_idx() == MonraceId::KAGE) {
+            MonraceRecords::get_instance().increment_seen_count(MonraceId::KAGE);
+        } else if (monster.is_original_ap()) {
+            monster.increment_seen_count();
         }
     }
 

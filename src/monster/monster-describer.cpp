@@ -9,6 +9,8 @@
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
+#include "system/monrace/monrace-service.h"
+#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -133,9 +135,8 @@ static std::string get_describing_monster_name(const CreatureEntity &monster, co
         }
     }
 
-    const auto &monraces = MonraceList::get_instance();
-    const auto ids = monraces.search([](const auto &monrace) { return monrace.kind_flags.has_not(MonsterKindType::UNIQUE); });
-    return monraces.get_monrace(rand_choice(ids)).name.string();
+    const auto ids = MonraceService::search([](const auto &monrace) { return monrace.kind_flags.has_not(MonsterKindType::UNIQUE); });
+    return MonraceList::get_instance().get_monrace(rand_choice(ids)).name.string();
 }
 
 #ifdef JP

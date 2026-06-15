@@ -2501,6 +2501,15 @@
     <ClCompile Include="..\..\src\system\monrace\monrace-message.cpp">
       <Filter>system\monrace</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\system\monrace\monrace-record.cpp">
+      <Filter>system\monrace</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\system\monrace\monrace-records.cpp">
+      <Filter>system\monrace</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\system\monrace\monrace-service.cpp">
+      <Filter>system\monrace</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\system\floor\floor-info.cpp">
       <Filter>system\floor</Filter>
     </ClCompile>
@@ -5713,6 +5722,15 @@
       <Filter>system\monrace</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\system\monrace\monrace-message.h">
+      <Filter>system\monrace</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\monrace\monrace-record.h">
+      <Filter>system\monrace</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\monrace\monrace-records.h">
+      <Filter>system\monrace</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\monrace\monrace-service.h">
       <Filter>system\monrace</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\system\floor\floor-info.h">

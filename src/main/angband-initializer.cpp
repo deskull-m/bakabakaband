@@ -29,6 +29,8 @@
 #include "system/dungeon/quest-definition.h"
 #include "system/floor/town-list.h"
 #include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
+#include "system/monrace/monrace-records.h"
 #include "system/services/baseitem-monrace-service.h"
 #include "system/system-variables.h"
 #include "term/gameterm.h"
@@ -205,6 +207,8 @@ void init_angband(CreatureEntity &creature, bool no_term)
 
     init_note(_("[データの初期化中... (モンスター)]", "[Initializing arrays... (monsters)]"));
     init_monrace_definitions();
+    const auto monraces_size = MonraceList::get_instance().size();
+    MonraceRecords::get_instance().initialize(monraces_size);
     const auto error = BaseitemMonraceService::check_specific_drop_gold_flags_duplication();
     if (error) {
         quit(*error);

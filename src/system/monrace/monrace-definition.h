@@ -172,7 +172,6 @@ public:
     int32_t collapse_over = 0; //!< 生成条件：時空崩壊度加減
     int32_t plus_collapse{}; //!< 死亡時の時空崩壊度進行値
     FLOOR_IDX floor_id{}; //!< 存在している保存階ID /  Location of unique monster
-    MONSTER_NUMBER r_sights{}; //!< 見えている数 / Count sightings of this monster
     MONSTER_NUMBER r_deaths{}; //!< このモンスターに殺された人数 / Count deaths from this monster
     MONSTER_NUMBER r_pkills{}; //!< このゲームで倒すのを見た数 / Count visible monsters killed in this life
     MONSTER_NUMBER r_akills{}; //!< このゲームで倒した数 / Count all monsters killed in this life

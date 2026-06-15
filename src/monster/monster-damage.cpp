@@ -44,6 +44,8 @@
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
+#include "system/monrace/monrace-records.h"
+#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "tracking/lore-tracker.h"
@@ -180,19 +182,15 @@ void MonsterDamageProcessor::death_special_flag_monster()
     auto &monster = creature.get_floor()->get_monster(this->m_idx);
     auto monrace_id = monster.get_r_idx();
     auto &monrace = monster.get_monrace();
+    auto &monrace_records = MonraceRecords::get_instance();
     if (monrace.misc_flags.has(MonsterMiscType::TANUKI)) {
         monster.set_ap_r_idx(monrace_id);
-        if (monrace.r_sights < MAX_SHORT) {
-            monrace.r_sights++;
-        }
+        monrace_records.increment_seen_count(monrace_id);
     }
 
     if (monster.is_chameleon()) {
-        auto &real_monrace = monster.get_real_monrace();
         monrace_id = monster.get_real_monrace_id();
-        if (real_monrace.r_sights < MAX_SHORT) {
-            real_monrace.r_sights++;
-        }
+        monrace_records.increment_seen_count(monrace_id);
     }
 
     if (monster.is_cloned()) {

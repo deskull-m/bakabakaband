@@ -757,6 +757,9 @@
     <ClCompile Include="..\..\src\system\monrace\extended-slot.cpp" />
     <ClCompile Include="..\..\src\system\monrace\monrace-definition.cpp" />
     <ClCompile Include="..\..\src\system\monrace\monrace-message.cpp" />
+    <ClCompile Include="..\..\src\system\monrace\monrace-record.cpp" />
+    <ClCompile Include="..\..\src\system\monrace\monrace-records.cpp" />
+    <ClCompile Include="..\..\src\system\monrace\monrace-service.cpp" />
     <ClCompile Include="..\..\src\system\player-type-definition.cpp" />
     <ClCompile Include="..\..\src\system\services\baseitem-monrace-service.cpp" />
     <ClCompile Include="..\..\src\system\terrain\terrain-definition.cpp" />
@@ -1859,6 +1862,9 @@
     <ClInclude Include="..\..\src\system\monrace\extended-slot.h" />
     <ClInclude Include="..\..\src\system\monrace\monrace-definition.h" />
     <ClInclude Include="..\..\src\system\monrace\monrace-message.h" />
+    <ClInclude Include="..\..\src\system\monrace\monrace-record.h" />
+    <ClInclude Include="..\..\src\system\monrace\monrace-records.h" />
+    <ClInclude Include="..\..\src\system\monrace\monrace-service.h" />
     <ClInclude Include="..\..\src\system\item-entity.h" />
     <ClInclude Include="..\..\src\object-enchant\old-ego-extra-values.h" />
     <ClInclude Include="..\..\src\object-enchant\special-object-flags.h" />
