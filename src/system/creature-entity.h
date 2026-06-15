@@ -1400,6 +1400,8 @@ public:
         this->ap_r_idx = new_r_idx;
     }
 
+    void increment_seen_count() const;
+
     /*!
      * @brief 騎乗中のモンスター m_idx を直接設定する (提案 22)
      * @details ride_monster() と異なり mflag2/RIDING の更新を行わない低レベル

@@ -17,6 +17,8 @@
 #include "system/floor/town-list.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
+#include "system/monrace/monrace-records.h"
+#include "system/player-type-definition.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -171,9 +173,9 @@ public:
         auto &monraces = MonraceList::get_instance();
         auto &monrace = monraces.get_monrace(monster_rumor.monrace_id);
         this->print_rumor(monrace.name);
-
-        if (monrace.r_sights == 0) {
-            monrace.r_sights = 1;
+        auto &monrace_records = MonraceRecords::get_instance();
+        if (!monrace_records.has_been_seen(monster_rumor.monrace_id)) {
+            monrace_records.increment_seen_count(monster_rumor.monrace_id);
         }
     }
 

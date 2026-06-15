@@ -24,6 +24,7 @@
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
+#include "system/monrace/monrace-record.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -1517,7 +1518,7 @@ void display_drop_kind_items(lore_type *lore_ptr)
 void display_monster_guardian(lore_type *lore_ptr)
 {
     bool is_kingpin = lore_ptr->misc_flags.has(MonsterMiscType::QUESTOR);
-    is_kingpin &= lore_ptr->monrace->r_sights > 0;
+    is_kingpin &= lore_ptr->record->has_been_seen();
     is_kingpin &= lore_ptr->monrace->max_num > 0;
     is_kingpin &= (lore_ptr->monrace_id == MonraceId::OBERON) || (lore_ptr->monrace_id == MonraceId::SERPENT);
     if (is_kingpin) {

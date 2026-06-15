@@ -41,6 +41,7 @@
 #include "system/monrace/extended-slot.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
+#include "system/monrace/monrace-records.h"
 #include "system/monster-profile.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
@@ -2178,3 +2179,8 @@ bool CreatureEntity::has_anti_tele() const
     return this->anti_tele != 0;
 }
 // clang-format on
+
+void CreatureEntity::increment_seen_count() const
+{
+    MonraceRecords::get_instance().increment_seen_count(this->get_r_idx());
+}
