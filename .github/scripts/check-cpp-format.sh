@@ -1,31 +1,29 @@
 #!/bin/sh
 
-# 上流 (hengband) CI と format 出力を一致させるため、必ず clang-format-15 を使用する。
-# clang-format-18 等の他バージョンは「&noexcept」のスペーシング等で出力差が出るため
-# fallback には用いない (CI とローカルで diff が出るのを防ぐ)。
+# 上流 (hengband) CI と format 出力を一致させるため、clang-format-18 を使用する
+# (上流 PR #4215 で 15 から 18 へ移行)。スタイル定義はリポジトリルートの
+# .clang-format を参照する。
 #
-# clang-format-15 が未導入の環境では明示的に install する。CI (Ubuntu 24.04) では
-# 標準では未インストールだが、universe リポジトリ経由で入手可能。
-if ! command -v clang-format-15 >/dev/null 2>&1; then
+# clang-format-18 が未導入の環境では明示的に install する。
+if ! command -v clang-format-18 >/dev/null 2>&1; then
     if command -v sudo >/dev/null 2>&1; then
         sudo apt-get update >/dev/null
-        sudo apt-get install -y clang-format-15 >/dev/null
+        sudo apt-get install -y clang-format-18 >/dev/null
     else
         apt-get update >/dev/null
-        apt-get install -y clang-format-15 >/dev/null
+        apt-get install -y clang-format-18 >/dev/null
     fi
 fi
 
-if ! command -v clang-format-15 >/dev/null 2>&1; then
-    echo "clang-format-15 is required but could not be installed."
-    echo "Please install clang-format-15 manually (e.g. via 'apt-get install clang-format-15')."
-    echo "Note: clang-format-18 や generic clang-format は出力差があるため使用不可。"
+if ! command -v clang-format-18 >/dev/null 2>&1; then
+    echo "clang-format-18 is required but could not be installed."
+    echo "Please install clang-format-18 manually (e.g. via 'apt-get install clang-format-18')."
     exit 1
 fi
 
 SRC_FILES=$(find src/ -type f -regextype posix-egrep -regex ".*\.(cpp|h)" -not -path "src/external-lib/*")
 
-clang-format-15 -style=file:.github/scripts/check-clang-format-style -i $SRC_FILES
+clang-format-18 -i $SRC_FILES
 clang_format_result=$?
 
 if [ $clang_format_result -ne 0 ]; then
