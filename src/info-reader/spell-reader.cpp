@@ -2,7 +2,6 @@
 #include "info-reader/info-reader-util.h"
 #include "info-reader/json-reader-util.h"
 #include "info-reader/parse-error-types.h"
-#include "main/angband-headers.h"
 #include "system/spell-info-list.h"
 #include "util/enum-converter.h"
 #include "util/string-processor.h"

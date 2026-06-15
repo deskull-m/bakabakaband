@@ -3,7 +3,6 @@
 #include "info-reader/json-reader-util.h"
 #include "info-reader/parse-error-types.h"
 #include "locale/localized-string.h"
-#include "main/angband-headers.h"
 #include "system/creature-party/creature-party-definition.h"
 #include "system/creature-party/creature-party-list.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -91,10 +90,9 @@ static errr set_party_members(nlohmann::json &members_data, CreaturePartyDefinit
 /*!
  * @brief パーティ情報(JSON Object)のパース関数
  * @param party_data パーティデータの格納されたJSON Object
- * @param head ヘッダ構造体
  * @return エラーコード
  */
-errr parse_creature_parties_info(nlohmann::json &party_data, angband_header *)
+errr parse_creature_parties_info(nlohmann::json &party_data)
 {
     if (!party_data["id"].is_number_integer()) {
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;

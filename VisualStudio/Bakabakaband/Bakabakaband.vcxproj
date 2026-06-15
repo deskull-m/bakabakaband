@@ -576,7 +576,7 @@
     <ClCompile Include="..\..\src\main-win\main-win-music.cpp" />
     <ClCompile Include="..\..\src\main-win\main-win-sound.cpp" />
     <ClCompile Include="..\..\src\main-win\main-win-tokenizer.cpp" />
-    <ClCompile Include="..\..\src\main\angband-headers.cpp" />
+    <ClCompile Include="..\..\src\info-reader\definition-hash-data.cpp" />
     <ClCompile Include="..\..\src\main\game-data-initializer.cpp" />
     <ClCompile Include="..\..\src\main\info-initializer.cpp" />
     <ClCompile Include="..\..\src\main\init-error-messages-table.cpp" />
@@ -1489,7 +1489,7 @@
     <ClInclude Include="..\..\src\main-win\main-win-sound.h" />
     <ClInclude Include="..\..\src\main-win\main-win-define.h" />
     <ClInclude Include="..\..\src\main-win\main-win-tokenizer.h" />
-    <ClInclude Include="..\..\src\main\angband-headers.h" />
+    <ClInclude Include="..\..\src\info-reader\definition-hash-data.h" />
     <ClInclude Include="..\..\src\main\game-data-initializer.h" />
     <ClInclude Include="..\..\src\main\info-initializer.h" />
     <ClInclude Include="..\..\src\main\init-error-messages-table.h" />

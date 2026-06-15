@@ -6,7 +6,6 @@
 #include "info-reader/parse-error-types.h"
 #include "info-reader/race-info-tokens-table.h"
 #include "locale/character-encoding.h"
-#include "main/angband-headers.h"
 #include "player-ability/player-ability-types.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -1303,10 +1302,9 @@ static errr set_mon_dead_spawns(const nlohmann::json &dead_spawn_data, MonraceDe
 /*!
  * @brief モンスター種族情報(JSON Object)のパース関数
  * @param mon_data モンスターデータの格納されたJSON Object
- * @param head ヘッダ構造体
  * @return エラーコード
  */
-errr parse_monraces_info(nlohmann::json &mon_data, angband_header *)
+errr parse_monraces_info(nlohmann::json &mon_data)
 {
     if (!mon_data["id"].is_number_integer()) {
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;

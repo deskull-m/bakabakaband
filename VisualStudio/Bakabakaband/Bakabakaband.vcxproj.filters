@@ -1961,8 +1961,8 @@
     <ClCompile Include="..\..\src\main\info-initializer.cpp">
       <Filter>main</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\main\angband-headers.cpp">
-      <Filter>main</Filter>
+    <ClCompile Include="..\..\src\info-reader\definition-hash-data.cpp">
+      <Filter>info-reader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\main\init-error-messages-table.cpp">
       <Filter>main</Filter>
@@ -5020,8 +5020,8 @@
     <ClInclude Include="..\..\src\main\info-initializer.h">
       <Filter>main</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\main\angband-headers.h">
-      <Filter>main</Filter>
+    <ClInclude Include="..\..\src\info-reader\definition-hash-data.h">
+      <Filter>info-reader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\main\init-error-messages-table.h">
       <Filter>main</Filter>
