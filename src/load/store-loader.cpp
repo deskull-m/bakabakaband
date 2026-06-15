@@ -65,7 +65,7 @@ static void home_carry_load(CreatureEntity &creature, Store *store_ptr, ItemEnti
 static void rd_store(CreatureEntity &creature, int town_number_initial, StoreSaleType store_number)
 {
     const auto town_number = town_number_initial;
-    auto &store = towns_info[town_number].get_store(store_number);
+    auto &store = TownList::get_instance().get_town(town_number).get_store(store_number);
     auto sort = store.stock_num > 0;
     store.store_open = rd_s32b();
     store.insult_cur = rd_s16b();

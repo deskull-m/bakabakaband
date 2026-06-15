@@ -174,7 +174,7 @@ void player_birth(CreatureEntity &creature, std::optional<QuestId> initial_quest
     }
 
     write_birth_diary(creature);
-    for (size_t i = 1; i < towns_info.size(); i++) {
+    for (size_t i = 1; i < TownList::get_instance().size(); i++) {
         for (auto sst : STORE_SALE_TYPE_LIST) {
             store_init(i, sst);
         }

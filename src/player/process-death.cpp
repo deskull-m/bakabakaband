@@ -317,8 +317,8 @@ static void inventory_aware(CreatureEntity &creature)
  */
 static void home_aware(CreatureEntity &creature)
 {
-    for (size_t i = 1; i < towns_info.size(); i++) {
-        const auto &store = towns_info[i].get_store(StoreSaleType::HOME);
+    for (size_t i = 1; i < TownList::get_instance().size(); i++) {
+        const auto &store = TownList::get_instance().get_town(i).get_store(StoreSaleType::HOME);
         for (auto j = 0; j < store.stock_num; j++) {
             auto &item = *store.stock[j];
             if (!item.is_valid()) {
@@ -366,8 +366,8 @@ static bool show_dead_player_items(CreatureEntity &creature)
  */
 static void show_dead_home_items(CreatureEntity &creature)
 {
-    for (size_t l = 1; l < towns_info.size(); l++) {
-        const auto &store = towns_info[l].get_store(StoreSaleType::HOME);
+    for (size_t l = 1; l < TownList::get_instance().size(); l++) {
+        const auto &store = TownList::get_instance().get_town(l).get_store(StoreSaleType::HOME);
         if (store.stock_num == 0) {
             continue;
         }

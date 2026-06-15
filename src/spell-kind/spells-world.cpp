@@ -282,13 +282,13 @@ bool tele_town(CreatureEntity &creature)
     clear_bldg(4, 10);
 
     auto num = 0;
-    const int towns_size = towns_info.size();
+    const int towns_size = TownList::get_instance().size();
     for (auto i = 1; i < towns_size; i++) {
         if ((i == VALID_TOWNS) || (i == SECRET_TOWN) || (i == creature.get_town_num()) || !(creature.visit & (1UL << (i - 1)))) {
             continue;
         }
 
-        const auto buf = format("%c) %-20s", I2A(i - 1), towns_info[i].name.data());
+        const auto buf = format("%c) %-20s", I2A(i - 1), TownList::get_instance().get_town(i).get_name().data());
         prt(buf, 5 + i, 5);
         num++;
     }

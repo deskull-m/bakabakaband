@@ -92,7 +92,7 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
     }
 
     inner_town_num = creature.get_town_num();
-    auto &town = towns_info[creature.get_town_num()];
+    auto &town = TownList::get_instance().get_town(creature.get_town_num());
     auto &store = town.get_store(store_num);
     auto &world = AngbandWorld::get_instance();
     if ((store.store_open >= world.game_turn) || ironman_shops) {
@@ -119,7 +119,7 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
     command_new = 0;
     get_com_no_macros = true;
     cur_store_feat = grid.feat;
-    st_ptr = &towns_info[creature.get_town_num()].get_store(store_num);
+    st_ptr = &TownList::get_instance().get_town(creature.get_town_num()).get_store(store_num);
     ot_ptr = &owners.at(store_num)[st_ptr->owner];
     store_top = 0;
 

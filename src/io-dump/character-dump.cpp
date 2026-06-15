@@ -31,7 +31,6 @@
 #include "system/building-type-definition.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/inner-game-data.h"
 #include "system/item-entity.h"
@@ -531,7 +530,8 @@ static void dump_aux_equipment_inventory(CreatureEntity &creature, FILE *fff)
  */
 static void dump_aux_home_museum(CreatureEntity &creature, FILE *fff)
 {
-    const auto &home = towns_info[1].get_store(StoreSaleType::HOME);
+    const auto &outpost = TownList::get_instance().get_town(1);
+    const auto &home = outpost.get_store(StoreSaleType::HOME);
     if (home.stock_num) {
         fmt::println(fff, _("  [我が家のアイテム]", "  [Home Inventory]"));
         auto page = 1;
@@ -547,7 +547,7 @@ static void dump_aux_home_museum(CreatureEntity &creature, FILE *fff)
         fmt::println(fff, "\n");
     }
 
-    const auto &museum = towns_info[1].get_store(StoreSaleType::MUSEUM);
+    const auto &museum = outpost.get_store(StoreSaleType::MUSEUM);
     if (museum.stock_num == 0) {
         return;
     }
