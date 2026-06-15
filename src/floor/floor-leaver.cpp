@@ -1,5 +1,4 @@
 #include "floor/floor-leaver.h"
-#include "dungeon/quest.h"
 #include "floor/floor-mode-changer.h"
 #include "floor/floor-save-util.h"
 #include "floor/floor-save.h"
@@ -27,6 +26,7 @@
 #include "system/artifact-type-definition.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"

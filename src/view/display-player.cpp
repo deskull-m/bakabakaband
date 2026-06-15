@@ -31,6 +31,7 @@
 #include "player/player-status.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/creature-entity.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"

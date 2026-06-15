@@ -7,6 +7,7 @@
 #include "market/building-util.h"
 #include "monster/monster-list.h"
 #include "system/creature-entity.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"

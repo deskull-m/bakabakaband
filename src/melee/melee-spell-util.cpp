@@ -1,10 +1,10 @@
 #include "melee/melee-spell-util.h"
 #include "dungeon/dungeon-flag-types.h"
-#include "dungeon/quest.h"
 #include "floor/geometry.h"
 #include "monster/monster-info.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 

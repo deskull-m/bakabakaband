@@ -6,7 +6,6 @@
  */
 
 #include "monster-attack/monster-attack-switcher.h"
-#include "dungeon/quest.h"
 #include "inventory/inventory-slot-types.h"
 #include "mind/drs-types.h"
 #include "mind/mind-mirror-master.h"
@@ -32,6 +31,7 @@
 #include "status/element-resistance.h"
 #include "status/experience.h"
 #include "system/creature-entity.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "view/display-messages.h"
