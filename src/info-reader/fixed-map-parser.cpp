@@ -21,6 +21,7 @@
 #include "system/angband-exceptions.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
 #include "util/angband-files.h"
 #include "util/string-processor.h"

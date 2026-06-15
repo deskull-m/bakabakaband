@@ -2474,6 +2474,9 @@
     <ClCompile Include="..\..\src\system\dungeon\dungeon-definition.cpp">
       <Filter>system\dungeon</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\system\dungeon\quest-definition.cpp">
+      <Filter>system\dungeon</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\system\dungeon\dungeon-data-definition.cpp">
       <Filter>system\dungeon</Filter>
     </ClCompile>
@@ -5683,6 +5686,9 @@
       <Filter>system\services</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\system\dungeon\dungeon-definition.h">
+      <Filter>system\dungeon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\dungeon\quest-definition.h">
       <Filter>system\dungeon</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\system\dungeon\dungeon-data-definition.h">

@@ -6,7 +6,6 @@
 
 #include "melee/melee-switcher.h"
 #include "core/disturbance.h"
-#include "dungeon/quest.h"
 #include "effect/attribute-types.h"
 #include "melee/melee-util.h"
 #include "monster-attack/monster-attack-effect.h"
@@ -21,6 +20,7 @@
 #include "spell-kind/spells-teleport.h"
 #include "spell/spells-util.h"
 #include "system/creature-entity.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "view/display-messages.h"

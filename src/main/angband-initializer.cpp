@@ -14,7 +14,6 @@
 
 #include "main/angband-initializer.h"
 #include "autopick/autopick-menu-data-table.h"
-#include "dungeon/quest.h"
 #include "floor/wild.h"
 #include "info-reader/feature-reader.h"
 #include "io/files-util.h"
@@ -27,6 +26,7 @@
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/floor/town-list.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/services/baseitem-monrace-service.h"
@@ -35,6 +35,7 @@
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "util/angband-files.h"
+#include "view/display-messages.h"
 #include "world/world.h"
 #include <time.h>
 #ifdef WINDOWS
@@ -234,7 +235,16 @@ void init_angband(CreatureEntity &creature, bool no_term)
     init_buildings();
 
     init_note(_("[配列を初期化しています... (クエスト)]", "[Initializing arrays... (quests)]"));
-    QuestList::get_instance().initialize();
+    try {
+        QuestList::get_instance().initialize();
+    } catch (const std::exception &e) {
+        std::stringstream ss;
+        ss << _("ファイル読み込みエラー: ", "File loading error: ") << e.what();
+        msg_print(ss.str());
+        msg_erase();
+        quit(_("クエスト初期化エラー", "Error of quests initializing"));
+    }
+
     init_note(_("配列を初期化しています... (パーティ)", "[Initializing arrays... (parties)]"));
     init_creature_parties_info();
     init_note(_("[データの初期化中... (宝物庫)]", "[Initializing arrays... (vaults)]"));

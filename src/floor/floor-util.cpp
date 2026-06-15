@@ -4,7 +4,6 @@
  * @author deskull
  */
 #include "floor/floor-util.h"
-#include "dungeon/quest.h"
 #include "effect/effect-characteristics.h"
 #include "floor/floor-object.h"
 #include "floor/line-of-sight.h"
@@ -12,6 +11,7 @@
 #include "system/artifact-type-definition.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
