@@ -1,17 +1,17 @@
 #pragma once
 
 /*!
- * @brief モンスター種族に関するプレイ中の動的な記録を集合論的に取り扱うクラス
+ * @brief モンスター種族に関するプレイ中の動的な記録を集合論的に取り扱うリポジトリ
  * @author Hourier
  * @date 2026/05/26
  */
 
 #include "system/enums/monrace/monrace-id.h"
-#include "util/abstract-map-wrapper.h"
 #include <memory>
+#include <vector>
 
 class MonraceRecord;
-class MonraceRecords : public util::AbstractMapWrapper<MonraceId, std::shared_ptr<MonraceRecord>> {
+class MonraceRecords {
 public:
     MonraceRecords(MonraceRecords &&) = delete;
     MonraceRecords(const MonraceRecords &) = delete;
@@ -32,11 +32,9 @@ private:
 
     static MonraceRecords instance;
 
-    std::map<MonraceId, std::shared_ptr<MonraceRecord>> records;
-    std::map<MonraceId, std::shared_ptr<MonraceRecord>> &get_inner_container() override
-    {
-        return this->records;
-    }
+    std::vector<std::shared_ptr<MonraceRecord>> records;
 
-    void check_monrace_id(MonraceId monrace_id) const;
+    std::shared_ptr<MonraceRecord> &get_record_ref(MonraceId monrace_id);
+    const std::shared_ptr<MonraceRecord> &get_record_ref(MonraceId monrace_id) const;
+    void validate_monrace_id(MonraceId monrace_id) const;
 };
