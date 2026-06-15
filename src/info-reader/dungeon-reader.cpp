@@ -6,7 +6,6 @@
 #include "info-reader/race-info-tokens-table.h"
 #include "io/tokenizer.h"
 #include "locale/character-encoding.h"
-#include "main/angband-headers.h"
 #include "system/artifact-type-definition.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
@@ -140,10 +139,9 @@ static tl::optional<ProbabilityTable<short>> parse_terrain_probability(std::span
 /*!
  * @brief ダンジョン情報(DungeonsDefinition)のパース関数 /
  * @param buf テキスト列
- * @param head ヘッダ構造体
  * @return エラーコード
  */
-errr parse_dungeons_info(std::string_view buf, angband_header *)
+errr parse_dungeons_info(std::string_view buf)
 {
     const auto &tokens = str_split(buf, ':', false);
     const auto &terrains = TerrainList::get_instance();
@@ -1013,7 +1011,7 @@ static void set_dungeon_position(DungeonDefinition &dungeon, const nlohmann::jso
  *          (旧 token-emit 方式は提案 38 で廃止)。version 1 (lines 配列) は
  *          legacy `parse_dungeons_info()` トークンパーサを使う互換パスで継続。
  */
-errr parse_dungeons_info_json(nlohmann::json &dungeon_data, angband_header *head)
+errr parse_dungeons_info_json(nlohmann::json &dungeon_data)
 {
     // version 1 (wrapped-line) 互換パス
     if (dungeon_data.contains("lines") && dungeon_data["lines"].is_array()) {
@@ -1025,7 +1023,7 @@ errr parse_dungeons_info_json(nlohmann::json &dungeon_data, angband_header *head
             if (buf.empty()) {
                 continue;
             }
-            const auto err = parse_dungeons_info(buf, head);
+            const auto err = parse_dungeons_info(buf);
             if (err != PARSE_ERROR_NONE) {
                 return err;
             }

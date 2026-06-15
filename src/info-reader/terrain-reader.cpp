@@ -143,10 +143,9 @@ static errr set_terrain_generation(const nlohmann::json &generation_obj, Terrain
 /*!
  * @brief JSON Object から地形情報を 1 エントリ分読み取る
  * @param element 地形情報の JSON Object
- * @param head 使用しない
  * @return エラーコード
  */
-errr parse_terrains_json_info(nlohmann::json &element, angband_header *)
+errr parse_terrains_json_info(nlohmann::json &element)
 {
     if (element.is_null() || !element.is_object()) {
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;

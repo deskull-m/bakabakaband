@@ -1,12 +1,12 @@
 #include "info-reader/general-parser.h"
 #include "artifact/fixed-art-types.h"
 #include "dungeon/quest.h"
+#include "info-reader/definition-hash-data.h"
 #include "info-reader/info-reader-util.h"
 #include "info-reader/parse-error-types.h"
 #include "info-reader/random-grid-effect-types.h"
 #include "io/tokenizer.h"
 #include "locale/character-encoding.h"
-#include "main/angband-headers.h"
 #include "object-enchant/trg-types.h"
 #include "player-info/class-types.h"
 #include "player-info/race-types.h"
@@ -42,49 +42,43 @@ void dungeon_grid::set_trap_id(TerrainTag tag)
  * @brief パース関数に基づいてデータファイルからデータを読み取る /
  * Initialize an "*_info" array, by parsing an ascii "template" file
  * @param fp 読み取りに使うファイルポインタ
- * @param head ヘッダ構造体
  * @param parse_info_txt_line パース関数
  * @return エラーコード, エラー行番号, エラーが起きた行の内容
  */
-std::tuple<errr, int, std::string> init_info_txt(FILE *fp, angband_header *head, Parser parse_info_txt_line)
+std::tuple<errr, int, std::string> init_info_txt(std::ifstream &ifs, DefinitionHashDataType dhdt, Parser parse_info_txt_line)
 {
     error_idx = -1;
     auto error_line = 0;
 
     util::SHA256 sha256;
-
-    while (true) {
-        const auto line_opt = angband_fgets(fp);
-        if (!line_opt) {
-            break;
-        }
-
-        const std::string_view line = *line_opt;
+    std::string line;
+    while (std::getline(ifs, line)) {
+        line = utf8_to_local(line);
+        const std::string_view sv = line;
         error_line++;
-
-        if (line.empty() || line.starts_with('#')) {
+        if (sv.empty() || sv.starts_with('#')) {
             continue;
         }
 
-        if (!line.substr(1).starts_with(':')) {
-            return { PARSE_ERROR_GENERIC, error_line, std::string(line) };
+        if (!sv.substr(1).starts_with(':')) {
+            return { PARSE_ERROR_GENERIC, error_line, line };
         }
 
-        if (line.starts_with('V')) {
+        if (sv.starts_with('V')) {
             continue;
         }
 
         // N/D/J行はハッシュから除外（日本語対応）
-        if (!line.starts_with('N') && !line.starts_with('D') && !line.starts_with('J')) {
-            sha256.update(line);
+        if (!sv.starts_with('N') && !sv.starts_with('D') && !sv.starts_with('J')) {
+            sha256.update(sv);
         }
 
-        if (auto err = parse_info_txt_line(line, head); err != 0) {
-            return { err, error_line, std::string(line) };
+        if (auto err = parse_info_txt_line(sv); err != 0) {
+            return { err, error_line, line };
         }
     }
 
-    head->digest = sha256.digest();
+    DefinitionHashData::get_instance().set_digest(dhdt, sha256.digest());
     return { PARSE_ERROR_NONE, error_line, "" };
 }
 

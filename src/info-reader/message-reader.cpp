@@ -4,7 +4,6 @@
 #include "info-reader/parse-error-types.h"
 #include "info-reader/race-info-tokens-table.h"
 #include "locale/character-encoding.h"
-#include "main/angband-headers.h"
 #include "player-ability/player-ability-types.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -164,10 +163,9 @@ static errr set_mon_message(const nlohmann::json &group_data)
 /*!
  * @brief モンスターメッセージ情報(JSON Object)のパース関数
  * @param mon_data モンスターメッセージの格納されたJSON Object
- * @param head ヘッダ構造体
  * @return エラーコード
  */
-errr parse_monster_messages_info(nlohmann::json &message_data, angband_header *)
+errr parse_monster_messages_info(nlohmann::json &message_data)
 {
     errr err;
     err = set_mon_message(message_data);

@@ -5,13 +5,13 @@
 #include "flavor/flavor-describer.h"
 #include "game-option/birth-options.h"
 #include "game-option/game-play-options.h"
+#include "info-reader/definition-hash-data.h"
 #include "inventory/inventory-slot-types.h"
 #include "io-dump/player-status-dump.h"
 #include "io-dump/special-class-dump.h"
 #include "io/mutations-dump.h"
 #include "io/write-diary.h"
 #include "knowledge/knowledge-quests.h"
-#include "main/angband-headers.h"
 #include "market/arena-entry.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
@@ -568,33 +568,6 @@ static void dump_aux_home_museum(CreatureEntity &creature, FILE *fff)
 }
 
 /*!
- * @brief チェックサム情報を出力
- * @return チェックサム情報の文字列
- */
-static std::string get_check_sum()
-{
-    static constexpr auto headers = {
-        &artifacts_header,
-        &baseitems_header,
-        &class_magics_header,
-        &class_skills_header,
-        &dungeons_header,
-        &egos_header,
-        &monraces_header,
-        &monster_messages_header,
-        &terrains_header,
-        &vaults_header,
-    };
-
-    util::SHA256 sha256;
-    for (const auto *header : headers) {
-        sha256.update(header->digest.data(), header->digest.size());
-    }
-
-    return util::to_string(sha256.digest());
-}
-
-/*!
  * @brief ダンプ出力のメインルーチン
  * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
@@ -613,7 +586,7 @@ void make_character_dump(CreatureEntity &creature, FILE *fff)
     // モンスターはプレイヤー固有のダンプ項目を持たないため、最低限のダンプのみ出力する
     if (!creature.is_player()) {
         dump_aux_mutations(creature, fff);
-        const std::string checksum = get_check_sum().erase(48);
+        const std::string checksum = DefinitionHashData::get_instance().get_check_sum().erase(48);
         fmt::println(fff, _("  [チェックサム: \"{}\"]\n", "  [Check Sum: \"{}\"]\n"), checksum);
         return;
     }
@@ -635,6 +608,6 @@ void make_character_dump(CreatureEntity &creature, FILE *fff)
     dump_aux_home_museum(creature, fff);
 
     // ダンプの幅をはみ出さないように48文字目以降を切り捨てる
-    const std::string checksum = get_check_sum().erase(48);
+    const std::string checksum = DefinitionHashData::get_instance().get_check_sum().erase(48);
     fmt::println(fff, _("  [チェックサム: \"{}\"]\n", "  [Check Sum: \"{}\"]\n"), checksum);
 }

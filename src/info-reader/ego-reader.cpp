@@ -3,7 +3,6 @@
 #include "info-reader/baseitem-tokens-table.h"
 #include "info-reader/info-reader-util.h"
 #include "info-reader/parse-error-types.h"
-#include "main/angband-headers.h"
 #include "object-enchant/object-ego.h"
 #include "object-enchant/tr-types.h"
 #include "util/bit-flags-calculator.h"
@@ -57,10 +56,9 @@ static bool grab_ego_generate_flags(ego_generate_type &xtra, std::string_view wh
 /*!
  * @brief アイテムエゴ情報(EgoDefinitions)のパース関数
  * @param buf テキスト列
- * @param head ヘッダ構造体
  * @return エラーコード
  */
-errr parse_egos_info(std::string_view buf, angband_header *)
+errr parse_egos_info(std::string_view buf)
 {
     static EgoItemDefinition *e_ptr = nullptr;
     const auto &tokens = str_split(buf, ':', false, 10);

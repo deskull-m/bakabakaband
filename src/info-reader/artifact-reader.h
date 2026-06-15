@@ -4,5 +4,4 @@
 #include <nlohmann/json.hpp>
 #include <string_view>
 
-struct angband_header;
-errr parse_artifacts_info(nlohmann::json &element, angband_header *head);
+errr parse_artifacts_info(nlohmann::json &element);
