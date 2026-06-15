@@ -591,7 +591,9 @@ GitHub Actions の `check_format` ジョブと同等の確認を行う。
 sh .github/scripts/ci-check-format.sh
 ```
 
-- `clang-format-15` が必要。未インストールの場合は `sudo apt-get install clang-format-15`
+- `clang-format-18` が必要。未インストールの場合は `sudo apt-get install clang-format-18`
+  （上流 PR #4215 で clang-format-15 から 18 へ移行。スタイル定義はリポジトリ
+  ルートの `.clang-format` を参照する）
 - 整形が必要なファイルがある場合は差分を表示して終了コード 1 を返す
 
 #### autotools ビルドテスト
