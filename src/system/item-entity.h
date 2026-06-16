@@ -167,6 +167,7 @@ public:
     EgoItemDefinition &get_ego() const;
     ArtifactType &get_fixed_artifact();
     const ArtifactType &get_fixed_artifact() const;
+    std::string get_fixed_artifact_name() const;
     TrFlags get_flags() const;
     TrFlags get_flags_known() const;
     std::string explain_activation() const;

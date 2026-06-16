@@ -862,6 +862,15 @@ const ArtifactType &ItemEntity::get_fixed_artifact() const
     return ArtifactList::get_instance().get_artifact(this->fa_id);
 }
 
+std::string ItemEntity::get_fixed_artifact_name() const
+{
+    if (this->fa_id == FixedArtifactId::NONE) {
+        return "";
+    }
+
+    return this->get_fixed_artifact().build_full_name();
+}
+
 TrFlags ItemEntity::get_flags() const
 {
     const auto &baseitem = this->get_baseitem();
