@@ -25,6 +25,7 @@
 #include "spell-kind/spells-perception.h"
 #include "spell/spells-object.h"
 #include "system/artifact-type-definition.h"
+#include "system/artifact/artifact-record.h"
 #include "system/baseitem/baseitem-allocation.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
@@ -224,7 +225,7 @@ void wiz_restore_aware_flag_of_fixed_arfifact(FixedArtifactId reset_artifact_idx
     const auto max_a_idx = enum2i(artifacts.rbegin()->first);
     const auto message = aware ? "Modified." : "Restored.";
     if (reset_artifact_idx != FixedArtifactId::NONE) {
-        artifacts.get_artifact(reset_artifact_idx).is_generated = aware;
+        ArtifactRecords::get_instance().set_generated(reset_artifact_idx, aware);
         msg_print(message);
         return;
     }
@@ -234,7 +235,7 @@ void wiz_restore_aware_flag_of_fixed_arfifact(FixedArtifactId reset_artifact_idx
         return;
     }
 
-    artifacts.get_artifact(*input_artifact_id).is_generated = aware;
+    ArtifactRecords::get_instance().set_generated(*input_artifact_id, aware);
     msg_print(message);
 }
 
@@ -465,7 +466,7 @@ static void wiz_statistics(CreatureEntity &creature, ItemEntity *o_ptr)
 {
     constexpr auto prompt = "Roll for [n]ormal, [g]ood, or [e]xcellent treasure? ";
     if (o_ptr->is_fixed_artifact()) {
-        o_ptr->get_fixed_artifact().is_generated = false;
+        ArtifactRecords::get_instance().set_generated(o_ptr->fa_id, false);
     }
 
     auto rolls = 1000000;
@@ -524,7 +525,7 @@ static void wiz_statistics(CreatureEntity &creature, ItemEntity *o_ptr)
             }
 
             if (item->is_fixed_artifact()) {
-                item->get_fixed_artifact().is_generated = false;
+                ArtifactRecords::get_instance().set_generated(item->fa_id, false);
             }
 
             if (o_ptr->bi_key != item->bi_key) {
@@ -549,7 +550,7 @@ static void wiz_statistics(CreatureEntity &creature, ItemEntity *o_ptr)
     }
 
     if (o_ptr->is_fixed_artifact()) {
-        o_ptr->get_fixed_artifact().is_generated = true;
+        ArtifactRecords::get_instance().set_generated(o_ptr->fa_id, true);
     }
 }
 
@@ -615,7 +616,7 @@ static void wiz_reroll_item(CreatureEntity &creature, ItemEntity *o_ptr)
         const auto command = input_command(prompt);
         if (!command) {
             if (item.is_fixed_artifact()) {
-                item.get_fixed_artifact().is_generated = false;
+                ArtifactRecords::get_instance().set_generated(item.fa_id, false);
                 item.fa_id = FixedArtifactId::NONE;
             }
 
@@ -629,7 +630,7 @@ static void wiz_reroll_item(CreatureEntity &creature, ItemEntity *o_ptr)
         }
 
         if (item.is_fixed_artifact()) {
-            item.get_fixed_artifact().is_generated = false;
+            ArtifactRecords::get_instance().set_generated(item.fa_id, false);
             item.fa_id = FixedArtifactId::NONE;
         }
 
@@ -1071,8 +1072,7 @@ WishResultType do_cmd_wishing(CreatureEntity &creature, int prob, bool allow_art
     const auto &artifacts = ArtifactList::get_instance();
     if (!wishing_fa_ids.empty()) {
         const auto wishing_fa_id = *wishing_fa_ids.begin();
-        const auto &artifact = artifacts.get_artifact(wishing_fa_id);
-        if (must || (ok_art && !artifact.is_generated)) {
+        if (must || (ok_art && !ArtifactRecords::get_instance().get_generated(wishing_fa_id))) {
             (void)create_named_art(creature, wishing_fa_id, creature.y, creature.x);
         } else {
             wishing_puff_of_smoke();
@@ -1102,8 +1102,7 @@ WishResultType do_cmd_wishing(CreatureEntity &creature, int prob, bool allow_art
         }
 
         if (a_idx != FixedArtifactId::NONE) {
-            const auto &artifact = artifacts.get_artifact(a_idx);
-            if (must || (ok_art && !artifact.is_generated)) {
+            if (must || (ok_art && !ArtifactRecords::get_instance().get_generated(a_idx))) {
                 (void)create_named_art(creature, a_idx, creature.y, creature.x);
             } else {
                 wishing_puff_of_smoke();

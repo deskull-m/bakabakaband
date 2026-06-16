@@ -13,6 +13,7 @@
 #include "object-enchant/special-object-flags.h"
 #include "player/player-status-flags.h"
 #include "system/artifact-type-definition.h"
+#include "system/artifact/artifact-record.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
@@ -196,7 +197,7 @@ bool ItemMagicApplier::set_fixed_artifact_generation_info()
     }
 
     apply_artifact(this->creature, this->o_ptr);
-    this->o_ptr->get_fixed_artifact().is_generated = true;
+    ArtifactRecords::get_instance().set_generated(this->o_ptr->fa_id, true);
     return true;
 }
 

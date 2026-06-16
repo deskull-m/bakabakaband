@@ -30,6 +30,7 @@
 #include "save/player-writer.h"
 #include "save/save-util.h"
 #include "system/artifact-type-definition.h"
+#include "system/artifact/artifact-record.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
@@ -173,9 +174,9 @@ static bool wr_savefile_new(CreatureEntity &creature)
     wr_u16b(tmp16u);
     for (auto i = 0U; i < tmp16u; i++) {
         const auto a_idx = i2enum<FixedArtifactId>(i);
-        const auto &artifact = artifacts.get_artifact(a_idx);
-        wr_bool(artifact.is_generated);
-        wr_s16b(artifact.floor_id);
+        const auto &records = ArtifactRecords::get_instance();
+        wr_bool(records.get_generated(a_idx));
+        wr_s16b(records.get_floor_id(a_idx));
     }
 
     wr_u32b(world.sf_play_time);

@@ -26,6 +26,7 @@
 #include "room/lake-types.h"
 #include "spell-kind/spells-floor.h"
 #include "system/artifact-type-definition.h"
+#include "system/artifact/artifact-record.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-data-definition.h"
 #include "system/dungeon/dungeon-definition.h"
@@ -305,7 +306,7 @@ void build_streamer(CreatureEntity &creature, FEAT_IDX feat, int chance)
 
                     /* Hack -- Preserve unknown artifacts */
                     if (item.is_fixed_artifact()) {
-                        item.get_fixed_artifact().is_generated = false;
+                        ArtifactRecords::get_instance().set_generated(item.fa_id, false);
                         if (cheat_peek) {
                             const auto item_name = describe_flavor(creature, item, (OD_NAME_ONLY | OD_STORE));
                             msg_format(_("伝説のアイテム (%s) はストリーマーにより削除された。", "Artifact (%s) was deleted by streamer."), item_name.data());

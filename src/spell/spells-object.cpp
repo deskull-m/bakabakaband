@@ -32,6 +32,7 @@
 #include "sv-definition/sv-scroll-types.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/artifact-type-definition.h"
+#include "system/artifact/artifact-record.h"
 #include "system/baseitem/baseitem-key.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
@@ -106,11 +107,11 @@ struct AmusementRewardItemVisitor {
 
     tl::optional<ItemEntity> operator()(const FixedArtifactId &fa_id) const
     {
-        const auto &artifact = ArtifactList::get_instance().get_artifact(fa_id);
-        if (artifact.is_generated) {
+        if (ArtifactRecords::get_instance().get_generated(fa_id)) {
             return tl::nullopt;
         }
 
+        const auto &artifact = ArtifactList::get_instance().get_artifact(fa_id);
         ItemEntity item(artifact.bi_key);
         item.fa_id = fa_id;
         ItemMagicApplier(creature, &item, 1, AM_NO_FIXED_ART).execute();

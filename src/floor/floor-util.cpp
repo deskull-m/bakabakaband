@@ -9,6 +9,7 @@
 #include "floor/line-of-sight.h"
 #include "game-option/birth-options.h"
 #include "system/artifact-type-definition.h"
+#include "system/artifact/artifact-record.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/quest-definition.h"
@@ -121,7 +122,7 @@ void wipe_o_list(FloorType &floor)
 
         if (!AngbandWorld::get_instance().character_dungeon || preserve_mode) {
             if (item_ptr->is_fixed_artifact() && !item_ptr->is_known()) {
-                item_ptr->get_fixed_artifact().is_generated = false;
+                ArtifactRecords::get_instance().set_generated(item_ptr->fa_id, false);
             }
         }
 

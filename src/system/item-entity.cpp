@@ -1385,7 +1385,7 @@ bool ItemEntity::try_become_artifact(int dungeon_level)
     }
 
     for (const auto &[a_idx, artifact] : ArtifactList::get_instance()) {
-        if (!artifact.can_generate(this->bi_key)) {
+        if (!artifact.can_generate(a_idx, this->bi_key)) {
             continue;
         }
 
