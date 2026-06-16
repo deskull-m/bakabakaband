@@ -31,6 +31,7 @@
 #include "sv-definition/sv-protector-types.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/artifact-type-definition.h"
+#include "system/artifact/artifact-record.h"
 #include "system/baseitem/baseitem-allocation.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
@@ -359,8 +360,7 @@ static void on_dead_sacred_treasures(CreatureEntity &killer, MonsterDeath *md_pt
     std::vector<FixedArtifactId> candidates;
     std::copy_if(namake_equipments.begin(), namake_equipments.end(), std::back_inserter(candidates),
         [](FixedArtifactId a_idx) {
-            const auto &artifact = ArtifactList::get_instance().get_artifact(a_idx);
-            return !artifact.is_generated;
+            return !ArtifactRecords::get_instance().get_generated(a_idx);
         });
 
     if (candidates.empty()) {

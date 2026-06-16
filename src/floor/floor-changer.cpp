@@ -33,6 +33,7 @@
 #include "player-base/player-class.h"
 #include "spell-kind/spells-floor.h"
 #include "system/artifact-type-definition.h"
+#include "system/artifact/artifact-record.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/dungeon/dungeon-id.h"
@@ -203,7 +204,7 @@ static void update_unique_artifact(const FloorType &floor, int16_t cur_floor_id)
         }
 
         if (item_ptr->is_fixed_artifact()) {
-            item_ptr->get_fixed_artifact().floor_id = cur_floor_id;
+            ArtifactRecords::get_instance().set_floor_id(item_ptr->fa_id, cur_floor_id);
         }
     }
 }
@@ -293,9 +294,8 @@ static void new_floor_allocation(CreatureEntity &creature, saved_floor_type *sf_
             continue;
         }
 
-        auto &artifact = item_ptr->get_fixed_artifact();
-        if (artifact.floor_id == new_floor_id) {
-            artifact.is_generated = true;
+        if (ArtifactRecords::get_instance().get_floor_id(item_ptr->fa_id) == new_floor_id) {
+            ArtifactRecords::get_instance().set_generated(item_ptr->fa_id, true);
         } else {
             delete_i_idx_list.push_back(static_cast<OBJECT_IDX>(i_idx));
         }

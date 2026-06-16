@@ -33,6 +33,7 @@
 #include "sv-definition/sv-scroll-types.h"
 #include "system/angband-system.h"
 #include "system/artifact-type-definition.h"
+#include "system/artifact/artifact-record.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/building-type-definition.h"
@@ -195,8 +196,7 @@ static void drop_artifact_from_unique(CreatureEntity &creature, MonsterDeath *md
  */
 bool drop_single_artifact(CreatureEntity &creature, MonsterDeath *md_ptr, FixedArtifactId a_idx)
 {
-    auto &artifact = ArtifactList::get_instance().get_artifact(a_idx);
-    if (artifact.is_generated) {
+    if (ArtifactRecords::get_instance().get_generated(a_idx)) {
         return false;
     }
 
@@ -213,8 +213,7 @@ static tl::optional<short> drop_dungeon_final_artifact(CreatureEntity &creature,
     }
 
     const auto a_idx = dungeon.final_artifact;
-    const auto &artifact = ArtifactList::get_instance().get_artifact(a_idx);
-    if (artifact.is_generated) {
+    if (ArtifactRecords::get_instance().get_generated(a_idx)) {
         return bi_id;
     }
 

@@ -24,6 +24,7 @@
 #include "spell-class/spells-mirror-master.h"
 #include "system/angband-system.h"
 #include "system/artifact-type-definition.h"
+#include "system/artifact/artifact-record.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/quest-definition.h"
@@ -301,7 +302,7 @@ static void preserve_info(CreatureEntity &creature)
         }
 
         if (o_ptr->is_fixed_artifact()) {
-            o_ptr->get_fixed_artifact().floor_id = 0;
+            ArtifactRecords::get_instance().set_floor_id(o_ptr->fa_id, 0);
         }
     }
 }

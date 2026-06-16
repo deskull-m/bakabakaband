@@ -1,6 +1,7 @@
 #include "system/artifact-type-definition.h"
 #include "artifact/fixed-art-types.h"
 #include "object/tval-types.h"
+#include "system/artifact/artifact-record.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/item-entity.h"
@@ -15,9 +16,9 @@ ArtifactType::ArtifactType()
  * @param bi_key 生成しようとするアーティファクトのベースアイテムキー
  * @param level プレイヤーが今いる階層
  */
-bool ArtifactType::can_generate(const BaseitemKey &generaing_bi_key) const
+bool ArtifactType::can_generate(FixedArtifactId fa_id, const BaseitemKey &generaing_bi_key) const
 {
-    if (this->is_generated) {
+    if (ArtifactRecords::get_instance().get_generated(fa_id)) {
         return false;
     }
 
@@ -38,9 +39,9 @@ bool ArtifactType::can_generate(const BaseitemKey &generaing_bi_key) const
  * @param fa_id 固定アーティファクトID
  * @return 生成に成功したらそのアイテム、失敗したらnullopt
  */
-tl::optional<BaseitemKey> ArtifactType::try_make_instant_artifact(int making_level) const
+tl::optional<BaseitemKey> ArtifactType::try_make_instant_artifact(FixedArtifactId fa_id, int making_level) const
 {
-    if (!this->can_make_instant_artifact()) {
+    if (!this->can_make_instant_artifact(fa_id)) {
         return tl::nullopt;
     }
 
@@ -64,9 +65,9 @@ tl::optional<BaseitemKey> ArtifactType::try_make_instant_artifact(int making_lev
  * @return 生成可否
  * @details 生成済、クエスト属性付き、非INSTA_ARTはfalse、普通のINSTA_ARTはtrue
  */
-bool ArtifactType::can_make_instant_artifact() const
+bool ArtifactType::can_make_instant_artifact(FixedArtifactId fa_id) const
 {
-    auto can_make = !this->is_generated;
+    auto can_make = !ArtifactRecords::get_instance().get_generated(fa_id);
     can_make &= this->gen_flags.has_not(ItemGenerationTraitType::QUESTITEM);
     can_make &= this->gen_flags.has(ItemGenerationTraitType::INSTA_ART);
     return can_make;
@@ -166,17 +167,10 @@ void ArtifactList::emplace(const FixedArtifactId fa_id, ArtifactType &&artifact)
     this->artifacts.emplace(fa_id, std::move(artifact));
 }
 
-void ArtifactList::reset_generated_flags()
-{
-    for (auto &[_, artifact] : this->artifacts) {
-        artifact.is_generated = false;
-    }
-}
-
 tl::optional<ItemEntity> ArtifactList::try_make_instant_artifact(int making_level) const
 {
     for (const auto &[fa_id, artifact] : this->artifacts) {
-        const auto bi_key = artifact.try_make_instant_artifact(making_level);
+        const auto bi_key = artifact.try_make_instant_artifact(fa_id, making_level);
         if (bi_key) {
             ItemEntity instant_artifact(*bi_key);
             instant_artifact.fa_id = fa_id;

@@ -1556,6 +1556,9 @@
     <ClCompile Include="..\..\src\system\artifact-type-definition.cpp">
       <Filter>system</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\system\artifact\artifact-record.cpp">
+      <Filter>system\artifact</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\view\display-store.cpp">
       <Filter>view</Filter>
     </ClCompile>
@@ -4594,6 +4597,9 @@
     <ClInclude Include="..\..\src\system\artifact-type-definition.h">
       <Filter>system</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\system\artifact\artifact-record.h">
+      <Filter>system\artifact</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\view\display-store.h">
       <Filter>view</Filter>
     </ClInclude>
@@ -6363,6 +6369,9 @@
     </Filter>
     <Filter Include="system\dungeon">
       <UniqueIdentifier>{1894220d-5f9a-4d37-b853-abc0076e56bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="system\artifact">
+      <UniqueIdentifier>{2a5b7c3e-4d8f-4a1b-9c6d-7e8f9a0b1c2d}</UniqueIdentifier>
     </Filter>
     <Filter Include="system\monrace">
       <UniqueIdentifier>{aeee8301-7122-495a-938a-9425333f0414}</UniqueIdentifier>

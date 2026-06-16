@@ -17,6 +17,7 @@
 #include "object-enchant/item-magic-applier.h"
 #include "sv-definition/sv-scroll-types.h"
 #include "system/artifact-type-definition.h"
+#include "system/artifact/artifact-record.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
@@ -70,8 +71,7 @@ static void generate_artifact(CreatureEntity &creature, qtwg_type *qtwg_ptr, con
         return;
     }
 
-    const auto &artifact = ArtifactList::get_instance().get_artifact(a_idx);
-    if (!artifact.is_generated && create_named_art(creature, a_idx, *qtwg_ptr->y, *qtwg_ptr->x)) {
+    if (!ArtifactRecords::get_instance().get_generated(a_idx) && create_named_art(creature, a_idx, *qtwg_ptr->y, *qtwg_ptr->x)) {
         return;
     }
 
@@ -240,14 +240,13 @@ static bool parse_qtw_QR(QuestType *q_ptr, const std::vector<std::string> &token
 
     int count = 0;
     auto reward_idx = FixedArtifactId::NONE;
-    auto &artifacts = ArtifactList::get_instance();
     for (auto idx = 2; idx < num; idx++) {
         const auto fa_id = i2enum<FixedArtifactId>(std::stoi(tokens[idx]));
         if (fa_id == FixedArtifactId::NONE) {
             continue;
         }
 
-        if (artifacts.get_artifact(fa_id).is_generated) {
+        if (ArtifactRecords::get_instance().get_generated(fa_id)) {
             continue;
         }
 

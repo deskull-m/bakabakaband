@@ -20,6 +20,7 @@
 #include "perception/identification.h"
 #include "perception/object-perception.h"
 #include "system/artifact-type-definition.h"
+#include "system/artifact/artifact-record.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
@@ -46,7 +47,8 @@ auto collect_known_fixed_artifacts(CreatureEntity &creature)
     const auto comparer = [&artifacts](auto id1, auto id2) { return artifacts.order(id1, id2); };
     std::set<FixedArtifactId, decltype(comparer)> fa_ids(comparer);
     for (const auto &[fa_id, artifact] : artifacts) {
-        if (!artifact.is_generated) {
+        (void)artifact;
+        if (!ArtifactRecords::get_instance().get_generated(fa_id)) {
             continue;
         }
 

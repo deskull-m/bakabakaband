@@ -14,6 +14,7 @@
 #include "player/digestion-processor.h"
 #include "player/player-spell-status.h"
 #include "system/artifact-type-definition.h"
+#include "system/artifact/artifact-record.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/building-type-definition.h"
@@ -57,7 +58,7 @@ void player_wipe_without_name(CreatureEntity &creature)
         creature.inventory[i]->wipe();
     }
 
-    ArtifactList::get_instance().reset_generated_flags();
+    ArtifactRecords::get_instance().reset_generated_flags();
     BaseitemList::get_instance().reset_identification_flags();
     for (auto &[_, monrace] : MonraceList::get_instance()) {
         if (!monrace->is_valid()) {

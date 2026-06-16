@@ -877,6 +877,7 @@
     <ClCompile Include="..\..\src\mspell\mspell-special.cpp" />
     <ClCompile Include="..\..\src\mspell\mspell-status.cpp" />
     <ClCompile Include="..\..\src\system\artifact-type-definition.cpp" />
+    <ClCompile Include="..\..\src\system\artifact\artifact-record.cpp" />
     <ClCompile Include="..\..\src\autopick\autopick-command-menu.cpp" />
     <ClCompile Include="..\..\src\autopick\autopick-describer.cpp" />
     <ClCompile Include="..\..\src\autopick\autopick-destroyer.cpp" />
@@ -1828,6 +1829,7 @@
     <ClInclude Include="..\..\src\mspell\mspell-special.h" />
     <ClInclude Include="..\..\src\mspell\mspell-status.h" />
     <ClInclude Include="..\..\src\system\artifact-type-definition.h" />
+    <ClInclude Include="..\..\src\system\artifact\artifact-record.h" />
     <ClInclude Include="..\..\src\autopick\autopick-command-menu.h" />
     <ClInclude Include="..\..\src\autopick\autopick-commands-table.h" />
     <ClInclude Include="..\..\src\autopick\autopick-describer.h" />

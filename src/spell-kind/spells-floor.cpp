@@ -24,6 +24,7 @@
 #include "spell-kind/spells-teleport.h"
 #include "status/bad-status-setter.h"
 #include "system/artifact-type-definition.h"
+#include "system/artifact/artifact-record.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/quest-definition.h"
@@ -338,7 +339,7 @@ bool destroy_area(CreatureEntity &creature, const POSITION y1, const POSITION x1
                 for (const auto this_o_idx : grid.o_idx_list) {
                     auto &item = *floor.o_list[this_o_idx];
                     if (item.is_fixed_artifact() && (!item.is_known() || in_generate)) {
-                        item.get_fixed_artifact().is_generated = false;
+                        ArtifactRecords::get_instance().set_generated(item.fa_id, false);
 
                         if (in_generate && cheat_peek) {
                             const auto item_name = describe_flavor(creature, item, (OD_NAME_ONLY | OD_STORE));

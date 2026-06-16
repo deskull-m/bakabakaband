@@ -13,7 +13,7 @@
 /*!
  * @class ArtifactType
  * @brief 固定アーティファクト情報の構造体 / Artifact structure.
- * @details is_generated とfloor_id フィールドのみセーブファイルへの保存対象
+ * @details 実行時可変な生成状態 (is_generated / floor_id) は ArtifactRecords に分離している
  */
 enum class FixedArtifactId : short;
 enum class RandomArtActType : short;
@@ -40,16 +40,14 @@ public:
     EnumClassFlagGroup<ItemGenerationTraitType> gen_flags; /*! アイテム生成フラグ / flags for generate */
     DEPTH level{}; /*! 基本生成階 / Artifact level */
     RARITY rarity{}; /*! レアリティ / Artifact rarity */
-    bool is_generated{}; /*! 生成済か否か (生成済でも、「保存モードON」かつ「帰還等で鑑定前に消滅」したら未生成状態に戻る) */
-    FLOOR_IDX floor_id{}; /*! アイテムを落としたフロアのID / Leaved on this location last time */
     RandomArtActType act_idx{}; /*! 発動能力ID / Activative ability index */
     PERCENTAGE broken_rate; /*!< 発動破損率 */
 
-    bool can_generate(const BaseitemKey &bi_key) const;
-    tl::optional<BaseitemKey> try_make_instant_artifact(int making_level) const;
+    bool can_generate(FixedArtifactId fa_id, const BaseitemKey &bi_key) const;
+    tl::optional<BaseitemKey> try_make_instant_artifact(FixedArtifactId fa_id, int making_level) const;
 
 private:
-    bool can_make_instant_artifact() const;
+    bool can_make_instant_artifact(FixedArtifactId fa_id) const;
     bool evaluate_shallow_instant_artifact(int making_level) const;
     bool evaluate_rarity() const;
     bool evaluate_shallow_baseitem(int making_level) const;
@@ -70,7 +68,6 @@ public:
 
     bool order(const FixedArtifactId id1, const FixedArtifactId id2) const;
     void emplace(const FixedArtifactId fa_id, ArtifactType &&artifact);
-    void reset_generated_flags();
     tl::optional<ItemEntity> try_make_instant_artifact(int making_level) const;
 
 private:

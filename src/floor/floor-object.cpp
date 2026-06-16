@@ -25,6 +25,7 @@
 #include "object/object-kind-hook.h"
 #include "perception/object-perception.h"
 #include "system/artifact-type-definition.h"
+#include "system/artifact/artifact-record.h"
 #include "system/baseitem/baseitem-allocation.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
@@ -115,8 +116,7 @@ static void handle_item_disappearance(CreatureEntity &creature, ItemEntity &disa
     }
 
     if (disappearing_item.is_fixed_artifact() && !disappearing_item.is_known() && preserve_mode) {
-        auto &artifact = disappearing_item.get_fixed_artifact();
-        artifact.is_generated = false;
+        ArtifactRecords::get_instance().set_generated(disappearing_item.fa_id, false);
     }
 }
 
@@ -465,8 +465,7 @@ short drop_near(CreatureEntity &subject, ItemEntity &drop_item, const Pos2D &pos
     }
 
     if (drop_item.is_fixed_artifact() && world.character_dungeon && subject.is_player()) {
-        auto &artifact = drop_item.get_fixed_artifact();
-        artifact.floor_id = subject.floor_id;
+        ArtifactRecords::get_instance().set_floor_id(drop_item.fa_id, subject.floor_id);
     }
 
     note_spot(subject, pos_drop);
