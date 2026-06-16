@@ -45,6 +45,7 @@ public:
 
     bool can_generate(FixedArtifactId fa_id, const BaseitemKey &bi_key) const;
     tl::optional<BaseitemKey> try_make_instant_artifact(FixedArtifactId fa_id, int making_level) const;
+    std::string build_full_name() const;
 
 private:
     bool can_make_instant_artifact(FixedArtifactId fa_id) const;

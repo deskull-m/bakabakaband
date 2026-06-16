@@ -808,16 +808,14 @@ void wiz_modify_item(CreatureEntity &creature)
     }
 }
 
-static std::vector<FixedArtifactId> find_wishing_fixed_artifact(CreatureEntity &creature, std::string_view pray_chars)
+static std::vector<FixedArtifactId> find_wishing_fixed_artifact(std::string_view pray_chars)
 {
     std::vector<FixedArtifactId> fa_ids;
     for (const auto &[fa_id, artifact] : ArtifactList::get_instance()) {
-        ItemEntity item(artifact.bi_key);
-        item.fa_id = fa_id;
 #ifdef JP
-        const auto item_name = describe_flavor(creature, item, (OD_OMIT_PREFIX | OD_NAME_ONLY | OD_STORE));
+        const auto item_name = artifact.build_full_name();
 #else
-        const auto item_name = str_tolower(describe_flavor(creature, item, (OD_OMIT_PREFIX | OD_NAME_ONLY | OD_STORE)));
+        const auto item_name = str_tolower(artifact.build_full_name());
 #endif
         std::string art_description = artifact.name;
 #ifdef JP
@@ -847,7 +845,8 @@ static std::vector<FixedArtifactId> find_wishing_fixed_artifact(CreatureEntity &
 
         art_description = str_tolower(art_description);
 #endif
-        const std::string match_name(_(item_name.substr(2), item_name));
+        //!< 先頭の「★」(日本語)、「The 」(英語)を除去する.
+        const auto match_name = item_name.substr(_(2, 4));
         if (cheat_xtra) {
             msg_format("Matching artifact No.%d %s(%s)", enum2i(fa_id), art_description.data(), match_name.data());
         }
@@ -1063,7 +1062,7 @@ WishResultType do_cmd_wishing(CreatureEntity &creature, int prob, bool allow_art
         }
     }
 
-    const auto wishing_fa_ids = allow_art ? find_wishing_fixed_artifact(creature, pray_chars) : std::vector<FixedArtifactId>{};
+    const auto wishing_fa_ids = allow_art ? find_wishing_fixed_artifact(pray_chars) : std::vector<FixedArtifactId>{};
     if (AngbandWorld::get_instance().wizard && ((wishing_fa_ids.size() > 1) || (ego_ids.size() > 1))) {
         msg_print(_("候補が多すぎる！", "Too many matches!"));
         return WishResultType::FAIL;
