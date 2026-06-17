@@ -278,7 +278,7 @@ void update_view(CreatureEntity &creature)
 
         if (xpn < x_max) {
             m = std::min(z, x_max - xpn);
-            if ((ypn <= x_max) && (i < es)) {
+            if ((ypn <= y_max) && (i < es)) {
                 for (k = i, d = 1; d <= m; d++) {
                     if (update_view_aux(creature, ypn, xpn + d, ypn - 1, xpn + d - 1, ypn, xpn + d - 1)) {
                         if (i + d >= es) {
