@@ -55,4 +55,6 @@ private:
     {
         return this->records;
     }
+
+    void validate_fixed_artifact_id(FixedArtifactId fa_id) const;
 };

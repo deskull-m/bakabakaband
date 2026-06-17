@@ -55,4 +55,6 @@ private:
     {
         return this->records;
     }
+
+    void validate_dungeon_id(DungeonId dungeon_id) const;
 };

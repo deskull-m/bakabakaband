@@ -36,4 +36,6 @@ private:
     {
         return this->dungeons;
     }
+
+    void validate_dungeon_id(DungeonId dungeon_id) const;
 };
