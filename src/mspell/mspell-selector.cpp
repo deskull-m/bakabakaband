@@ -157,7 +157,7 @@ static bool spell_annoy(MonsterAbilityType spell)
  */
 static bool spell_summon(MonsterAbilityType spell)
 {
-    return spell_in_between(spell, MonsterAbilityType::S_KIN, MonsterAbilityType::S_PERVERT);
+    return RF_ABILITY_SUMMON_MASK.has(spell);
 }
 
 /*!
