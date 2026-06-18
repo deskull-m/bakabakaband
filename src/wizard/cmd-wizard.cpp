@@ -48,7 +48,7 @@
 /*!
  * @brief デバグコマンド一覧表
  * @details
- * 空き: A,B,E,I,J,k,K,L,q,Q,R,T,U,V,W,y,Y
+ * 空き: A,B,E,I,J,k,K,L,q,Q,R,T,U,W,y,Y
  */
 constexpr std::array debug_menu_table = {
     std::make_tuple('a', _("全状態回復", "Restore all status")),
@@ -83,6 +83,7 @@ constexpr std::array debug_menu_table = {
     std::make_tuple('t', _("テレポート", "Teleport self")),
     std::make_tuple('u', _("啓蒙(忍者以外)", "Wiz-lite all floor except Ninja")),
     std::make_tuple('v', _("時空崩壊度設定", "Set world collapsion degree")),
+    std::make_tuple('V', _("現在のフロアをファイルにダンプ", "Dump current floor to a file")),
     std::make_tuple('w', _("啓蒙(忍者配慮)", "Wiz-lite all floor")),
     std::make_tuple('x', _("経験値を得る(指定可)", "Get experience")),
     std::make_tuple('X', _("所持品を初期状態に戻す", "Return inventory to initial")),
@@ -267,6 +268,9 @@ bool exe_cmd_debug(CreatureEntity &creature, char cmd)
             return false;
         }
     }
+    case 'V':
+        wiz_dump_current_floor(creature);
+        return true;
     case 'w':
         wiz_lite(creature, CreatureClass(creature).equals(PlayerClassType::NINJA));
         return true;
