@@ -14,6 +14,7 @@ void wiz_reset_race(CreatureEntity &creature);
 void wiz_reset_class(CreatureEntity &creature);
 void wiz_reset_realms(CreatureEntity &creature);
 void wiz_dump_options();
+void wiz_dump_current_floor(CreatureEntity &creature);
 void wiz_zap_surrounding_monsters(CreatureEntity &creature);
 void wiz_zap_floor_monsters(CreatureEntity &creature);
 void cheat_death(CreatureEntity &creature, bool no_penalty);

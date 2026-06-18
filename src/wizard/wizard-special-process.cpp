@@ -711,6 +711,58 @@ void wiz_dump_options()
 }
 
 /*!
+ * @brief 現在のフロアの地形をテキストファイルにダンプする
+ * @param creature クリーチャーへの参照
+ * @details Vault 定義 (VaultDefinitions) と同じ N:/X:/D: 形式で出力し、後で
+ *          vault-editor で編集しやすい形に整える土台とする。各グリッドには
+ *          その地形の標準表示文字 (TerrainKind::NORMAL の F_LIT_STANDARD) を割り当てる。
+ */
+void wiz_dump_current_floor(CreatureEntity &creature)
+{
+    const auto &floor = *creature.get_floor();
+    const auto path = path_build(ANGBAND_DIR_USER, "floor-dump.txt");
+    const auto &filename = path.string();
+    std::ofstream ofs(path);
+    if (ofs.bad()) {
+        msg_format(_("ファイル %s を開けませんでした。", "Failed to open file %s."), filename.data());
+        msg_erase();
+        return;
+    }
+
+    const auto height = floor.height;
+    const auto width = floor.width;
+    ofs << "# Current floor dump\n";
+    ofs << format("# Dungeon Level: %d\n", floor.dun_level);
+    ofs << format("# Size (rows x cols): %d x %d\n", height, width);
+    ofs << "# Player position (y, x): " << format("%d, %d\n", creature.y, creature.x);
+    ofs << "#\n";
+    ofs << "# Vault 定義と同じ N:/X:/D: 形式で出力している。各文字は地形の標準表示文字。\n";
+    ofs << "\n";
+    ofs << "N:0:Floor Dump\n";
+    ofs << format("X:0:0:%d:%d\n", height, width);
+
+    for (auto y = 0; y < height; y++) {
+        std::string row;
+        row.reserve(width);
+        for (auto x = 0; x < width; x++) {
+            const auto &terrain = floor.get_grid({ y, x }).get_terrain(TerrainKind::NORMAL);
+            const auto ch = terrain.symbol_definitions.at(F_LIT_STANDARD).character;
+            row.push_back(ch == '\0' ? ' ' : ch);
+        }
+
+        ofs << "D:" << row << '\n';
+    }
+
+    if (ofs.bad()) {
+        msg_format(_("ファイル %s への書き込みに失敗しました。", "Failed to write to file %s."), filename.data());
+        msg_erase();
+        return;
+    }
+
+    msg_format(_("現在のフロアをファイル %s に書き出しました。", "Current floor dump saved to file %s."), filename.data());
+}
+
+/*!
  * @brief プレイヤー近辺の全モンスターを消去する / Delete all nearby monsters
  */
 void wiz_zap_surrounding_monsters(CreatureEntity &creature)
