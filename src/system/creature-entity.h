@@ -2740,6 +2740,13 @@ public:
     virtual int get_material_ac_modifier() const;
 
     /*!
+     * @brief 材質に基づく金銭ドロップ額の倍率 (% 単位) を取得する
+     * @return 保持する材質のうち最も高い gold_drop_percent。材質を持たなければ 100
+     * @details 複数材質を持つ場合は最も貴重な材質の倍率を採用する (合算しない)。
+     */
+    virtual int get_material_gold_drop_percent() const;
+
+    /*!
      * @brief モンスター種族定義の材質指定および材質系 kind_flags に基づいて材質を初期化する
      * @details モンスター以外では何もしない。
      */

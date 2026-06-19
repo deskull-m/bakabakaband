@@ -928,6 +928,18 @@ int CreatureEntity::get_material_ac_modifier() const
     return total;
 }
 
+int CreatureEntity::get_material_gold_drop_percent() const
+{
+    if (this->materials.empty()) {
+        return 100;
+    }
+    auto percent = 0;
+    for (const auto material : this->materials) {
+        percent = std::max(percent, get_material_definition(material).gold_drop_percent);
+    }
+    return percent;
+}
+
 void CreatureEntity::apply_material_stat_modifiers()
 {
     for (auto stat = 0; stat < A_MAX; ++stat) {

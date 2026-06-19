@@ -17,6 +17,8 @@
 #include "util/dice.h"
 #include "util/enum-converter.h"
 #include "util/probability-table.h"
+#include <algorithm>
+#include <limits>
 
 namespace {
 /*!
@@ -109,6 +111,12 @@ void generate_monster_drop_items(CreatureEntity &player, CreatureEntity &monster
         if (do_gold && (!do_item || one_in_(2))) {
             const auto bi_key = BaseitemMonraceService::lookup_fixed_gold_drop(monrace.drop_flags);
             auto item = floor.make_gold(bi_key);
+            // 構成材質に応じて金銭額を増減させる (貴金属系は増、紙・糞は減)。
+            const auto gold_percent = monster.get_material_gold_drop_percent();
+            if (gold_percent != 100) {
+                const auto scaled = static_cast<int>(item.pval) * gold_percent / 100;
+                item.pval = static_cast<PARAMETER_VALUE>(std::clamp(scaled, 1, static_cast<int>(std::numeric_limits<PARAMETER_VALUE>::max())));
+            }
             monster.acquire_item(item);
         } else {
             if (auto item = make_object(player, mo_mode)) {
