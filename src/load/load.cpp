@@ -56,6 +56,58 @@
 #include <string_view>
 #include <vector>
 
+namespace {
+/*!
+ * @brief 既知の固定アーティファクト記録を旧セーブデータ (v51 以前) から復元する
+ * @param creature クリーチャーへの参照
+ * @details v51 以前は固定アーティファクトの「既知」状態を ArtifactRecords に保持しておらず、
+ *          知識画面では「生成済」かつ「現在フロア・所持品に未鑑定で存在しない」ものを既知として
+ *          扱っていた。v52 以降は is_known / is_identified を直接保持するため、旧セーブからの
+ *          ロード時に同等のロジックで既知集合を導出し記録へ移行する。
+ */
+void migrate_artifact_known_records(CreatureEntity &creature)
+{
+    auto &records = ArtifactRecords::get_instance();
+    const auto &artifacts = ArtifactList::get_instance();
+    std::set<FixedArtifactId> known_ids;
+    for (const auto &[fa_id, artifact] : artifacts) {
+        (void)artifact;
+        if (records.get_generated(fa_id)) {
+            known_ids.insert(fa_id);
+        }
+    }
+
+    if (!creature.is_dead()) {
+        const auto &floor = *creature.get_floor();
+        for (const auto &pos : floor.get_area()) {
+            const auto &grid = floor.get_grid(pos);
+            for (const auto this_o_idx : grid.o_idx_list) {
+                const auto &item = *floor.o_list[this_o_idx];
+                if (!item.is_fixed_artifact() || item.is_known()) {
+                    continue;
+                }
+
+                known_ids.erase(item.fa_id);
+            }
+        }
+    }
+
+    for (auto i = 0; i < INVEN_TOTAL; i++) {
+        const auto &item = *creature.inventory[i];
+        if (!item.is_valid() || !item.is_fixed_artifact() || item.is_known()) {
+            continue;
+        }
+
+        known_ids.erase(item.fa_id);
+    }
+
+    for (const auto fa_id : known_ids) {
+        records.set_known(fa_id);
+        records.set_identified(fa_id);
+    }
+}
+}
+
 /*!
  * @brief 変愚蛮怒 v2.1.3で追加された街とクエストについて読み込む
  * @param creature クリーチャーへの参照
