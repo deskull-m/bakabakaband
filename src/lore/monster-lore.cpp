@@ -378,7 +378,7 @@ void process_monster_lore(CreatureEntity &creature, MonraceId r_idx, monster_lor
     set_race_flags(lore_ptr);
     const auto &text = lore_ptr->monrace->text;
 
-    if (show_lore_summary) {
+    if (show_lore_summary || lore_summary_only) {
         display_monster_kind_tags(lore_ptr);
         display_monster_hp_ac_summary(lore_ptr);
         display_monster_speed_summary(lore_ptr);
@@ -396,6 +396,10 @@ void process_monster_lore(CreatureEntity &creature, MonraceId r_idx, monster_lor
         display_monster_magic_tables(creature, lore_ptr);
         display_monster_resistance_table(lore_ptr);
         hook_c_roff(TERM_L_DARK, "------------------------------------------------------------\n");
+    }
+
+    if (lore_summary_only && lore_ptr->mode != MONSTER_LORE_DEBUG) {
+        return;
     }
 
     display_kill_numbers(lore_ptr);
