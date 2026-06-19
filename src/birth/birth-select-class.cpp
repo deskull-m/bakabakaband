@@ -4,12 +4,12 @@
 #include "player-info/class-info.h"
 #include "player-info/race-info.h"
 #include "system/creature-entity.h"
+#include "system/inner-game-data.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
-#include "world/world.h"
 #include <sstream>
 #include <vector>
 
@@ -77,7 +77,7 @@ static void enumerate_class_list(CreatureEntity &creature, char *sym, const std:
         }
 
         auto cs = i2enum<PlayerClassType>(raw);
-        c_put_str(AngbandWorld::get_instance().get_birth_class_color(cs), birth_class_label(creature, display_index, sym, playables), 13 + (display_index / 4), 2 + 19 * (display_index % 4));
+        c_put_str(InnerGameData::get_instance().get_birth_class_color(cs), birth_class_label(creature, display_index, sym, playables), 13 + (display_index / 4), 2 + 19 * (display_index % 4));
     }
 }
 
@@ -89,7 +89,7 @@ static std::string display_class_stat(CreatureEntity &creature, int cs, int *os,
 
     const auto count = static_cast<int>(playables.size());
     auto pclass = i2enum<PlayerClassType>(*os < count ? playables[*os] : 0);
-    c_put_str(AngbandWorld::get_instance().get_birth_class_color(pclass), cur, 13 + (*os / 4), 2 + 19 * (*os % 4));
+    c_put_str(InnerGameData::get_instance().get_birth_class_color(pclass), cur, 13 + (*os / 4), 2 + 19 * (*os % 4));
     put_str("                                   ", 3, 40);
     auto result = birth_class_label(creature, cs, sym, playables);
     if (cs == count) {

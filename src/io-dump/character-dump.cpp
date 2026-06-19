@@ -245,7 +245,7 @@ static void dump_aux_options(FILE *fff)
     }
 
     fmt::print(fff, "\n");
-    if (AngbandWorld::get_instance().noscore) {
+    if (InnerGameData::get_instance().is_no_score()) {
         fmt::println(fff, _("\n 何か不正なことをしてしまっています。", "\n You have done something illegal."));
     }
 

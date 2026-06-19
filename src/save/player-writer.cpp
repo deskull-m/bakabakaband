@@ -246,7 +246,7 @@ void wr_player(CreatureEntity &creature)
     wr_u32b(system.get_seed_town());
     wr_u16b(system.is_panic_save_executed() ? 1 : 0);
     wr_u16b(world.total_winner);
-    wr_u16b(world.noscore);
+    wr_u16b(InnerGameData::get_instance().get_no_score());
     wr_bool(creature.is_dead());
     const auto &df = DungeonFeeling::get_instance();
     wr_byte(static_cast<uint8_t>(df.get_feeling()));

@@ -36,6 +36,7 @@
 #include "system/floor/floor-info.h"
 #include "system/floor/town-list.h"
 #include "system/floor/wilderness-grid.h"
+#include "system/inner-game-data.h"
 #include "system/monrace/monrace-list.h"
 #include "util/angband-files.h"
 #include "view/display-messages.h"
@@ -57,11 +58,7 @@ static bool wr_savefile_new(CreatureEntity &creature)
 {
     compact_monsters(creature, 0);
 
-    uint32_t now = (uint32_t)time((time_t *)0);
     auto &world = AngbandWorld::get_instance();
-    world.sf_system = 0L;
-    world.sf_when = now;
-    world.sf_saves++;
 
     save_xor_byte = 0;
     auto variant_length = VARIANT_NAME.length();
@@ -82,10 +79,13 @@ static bool wr_savefile_new(CreatureEntity &creature)
     v_stamp = 0L;
     x_stamp = 0L;
 
-    wr_u32b(world.sf_system);
-    wr_u32b(world.sf_when);
-    wr_u16b(world.sf_lives);
-    wr_u16b(world.sf_saves);
+    // 旧 sf_system / sf_when / sf_lives / sf_saves の領域 (計 12 バイト)。
+    // 上流 hengband#5402 で未使用フィールドとして廃止されたが、セーブフォーマット
+    // 互換性維持のため予約領域として書き出す (Godot 用 save-file-scanner も同オフセット依存)。
+    wr_u32b(0);
+    wr_u32b(static_cast<uint32_t>(time((time_t *)0)));
+    wr_u16b(0);
+    wr_u16b(0);
 
     wr_u32b(SAVEFILE_VERSION);
     wr_u16b(0);
@@ -179,10 +179,11 @@ static bool wr_savefile_new(CreatureEntity &creature)
         wr_s16b(records.get_floor_id(a_idx));
     }
 
-    wr_u32b(world.sf_play_time);
+    const auto &igd = InnerGameData::get_instance();
+    wr_u32b(igd.get_total_play_time());
     wr_s32b(wc_ptr->collapse_degree);
-    wr_FlagGroup(world.sf_winner, wr_byte);
-    wr_FlagGroup(world.sf_retired, wr_byte);
+    wr_FlagGroup(igd.get_won_classes(), wr_byte);
+    wr_FlagGroup(igd.get_retired_classes(), wr_byte);
 
     wr_alliance_base_power();
 

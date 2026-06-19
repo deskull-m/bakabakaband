@@ -33,6 +33,7 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
+#include "system/inner-game-data.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/target-getter.h"
@@ -127,7 +128,7 @@ void do_cmd_alter(CreatureEntity &creature)
  */
 static bool decide_suicide()
 {
-    if (AngbandWorld::get_instance().noscore) {
+    if (InnerGameData::get_instance().is_no_score()) {
         return true;
     }
 
@@ -192,7 +193,7 @@ void do_cmd_suicide(CreatureEntity &creature)
     creature.set_leaving(true);
     if (world.total_winner) {
         accept_winner_message(creature);
-        world.add_retired_class(creature.pclass);
+        InnerGameData::get_instance().add_retired_class(creature.pclass);
     } else {
         play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_GAMEOVER);
         const auto &floor = *creature.get_floor();

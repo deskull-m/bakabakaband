@@ -454,7 +454,7 @@ bool check_score(CreatureEntity &creature)
 
     /* Wizard-mode pre-empts scoring */
     auto &world = AngbandWorld::get_instance();
-    const auto no_score = world.noscore;
+    const auto no_score = InnerGameData::get_instance().get_no_score();
     if (no_score & 0x000F) {
         msg_print(_("ウィザード・モードではスコアが記録されません。", "Score not registered for wizards."));
         msg_erase();
