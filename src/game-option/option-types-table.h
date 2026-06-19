@@ -93,7 +93,8 @@ enum class GameOptionType : int {
     SHOW_ACTUAL_VALUE = 81,
     SKIP_MORE = 82,
     SHOW_LORE_SUMMARY = 83,
-    // 84-94
+    LORE_SUMMARY_ONLY = 84, /*!< bakabakaband 独自: モンスターの思い出を要約のみ表記にする */
+    // 85-94
     NUMPAD_AS_CURSORKEY = 95,
 
     // 96-127

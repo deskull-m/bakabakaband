@@ -182,6 +182,7 @@ const std::vector<GameOption> option_info = validate_option_info({
     { &show_actual_value, true, GameOptionType::SHOW_ACTUAL_VALUE, "show_actual_value", _("技能値等に実値を並記する", "Show actual values of skills or etc."), GameOptionPage::TEXT },
 
     { &show_lore_summary, true, GameOptionType::SHOW_LORE_SUMMARY, "show_lore_summary", _("モンスターの思い出を要約表記にする", " Show a summary of monster lore."), GameOptionPage::TEXT },
+    { &lore_summary_only, false, GameOptionType::LORE_SUMMARY_ONLY, "lore_summary_only", _("モンスターの思い出を要約のみ表記にする", " Show only the summary of monster lore."), GameOptionPage::TEXT },
 
     /*** Game-Play ***/
     { &stack_force_notes, true, GameOptionType::STACK_FORCE_NOTES, "stack_force_notes", _("異なる銘のアイテムをまとめる", "Merge inscriptions when stacking"), GameOptionPage::GAMEPLAY },
