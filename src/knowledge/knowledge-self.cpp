@@ -22,6 +22,7 @@
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/floor/wilderness-grid.h"
+#include "system/inner-game-data.h"
 #include "system/item-entity.h"
 #include "util/angband-files.h"
 #include "util/buffer-shaper.h"
@@ -102,8 +103,8 @@ static void dump_yourself(CreatureEntity &creature, FILE *fff)
  */
 static void dump_winner_classes(FILE *fff)
 {
-    const auto &world = AngbandWorld::get_instance();
-    const int n = world.sf_winner.count();
+    const auto &igd = InnerGameData::get_instance();
+    const int n = static_cast<int>(igd.get_won_classes_count());
     concptr ss = n > 1 ? _("", "s") : "";
     fprintf(fff, _("*勝利*済みの職業%s : %d\n", "Class of *Winner%s* : %d\n"), ss, n);
     if (n == 0) {
@@ -115,13 +116,13 @@ static void dump_winner_classes(FILE *fff)
     std::string l = "";
     for (int c = 0; c < PLAYER_CLASS_TYPE_MAX; c++) {
         const auto pclass_enum = i2enum<PlayerClassType>(c);
-        if (world.sf_winner.has_not(pclass_enum)) {
+        if (igd.has_not_won_class(pclass_enum)) {
             continue;
         }
 
         auto &player_class = class_info.at(i2enum<PlayerClassType>(c));
         std::string t = player_class.title.string();
-        if (world.sf_retired.has_not(pclass_enum)) {
+        if (igd.has_not_retired_class(pclass_enum)) {
             t = "(" + t + ")";
         }
 
@@ -155,7 +156,7 @@ void do_cmd_knowledge_stat(CreatureEntity &creature)
     auto &world = AngbandWorld::get_instance();
     world.play_time.update();
     const auto play_time = world.play_time.elapsed_sec();
-    const auto all_time = world.sf_play_time + play_time;
+    const auto all_time = InnerGameData::get_instance().get_total_play_time() + play_time;
     fprintf(fff, _("現在のプレイ時間 : %d:%02d:%02d\n", "Current Play Time is %d:%02d:%02d\n"), play_time / (60 * 60), (play_time / 60) % 60, play_time % 60);
     fprintf(fff, _("合計のプレイ時間 : %d:%02d:%02d\n", "  Total play Time is %d:%02d:%02d\n"), all_time / (60 * 60), (all_time / 60) % 60, all_time % 60);
     fputs("\n", fff);

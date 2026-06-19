@@ -90,6 +90,7 @@
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
+#include "system/inner-game-data.h"
 #include "system/item-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
@@ -110,8 +111,8 @@
  */
 bool enter_wizard_mode(const FloorType &floor)
 {
-    auto &world = AngbandWorld::get_instance();
-    if (!world.noscore) {
+    auto &igd = InnerGameData::get_instance();
+    if (!igd.is_no_score()) {
         if (!allow_debug_opts) {
             msg_print(_("ウィザードモードは許可されていません。 ", "Wizard mode is not permitted."));
             return false;
@@ -126,7 +127,7 @@ bool enter_wizard_mode(const FloorType &floor)
 
         constexpr auto mes = _("ウィザードモードに突入してスコアを残せなくなった。", "gave up recording score to enter wizard mode.");
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, mes);
-        world.noscore |= 0x0002;
+        igd.add_no_score(0x0002);
     }
 
     return true;
@@ -140,8 +141,8 @@ bool enter_wizard_mode(const FloorType &floor)
  */
 static bool enter_debug_mode(const FloorType &floor)
 {
-    auto &world = AngbandWorld::get_instance();
-    if (!world.noscore) {
+    auto &igd = InnerGameData::get_instance();
+    if (!igd.is_no_score()) {
         if (!allow_debug_opts) {
             msg_print(_("デバッグコマンドは許可されていません。 ", "Use of debug command is not permitted."));
             return false;
@@ -156,7 +157,7 @@ static bool enter_debug_mode(const FloorType &floor)
 
         constexpr auto mes = _("デバッグモードに突入してスコアを残せなくなった。", "gave up sending score to use debug commands.");
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, mes);
-        world.noscore |= 0x0008;
+        igd.add_no_score(0x0008);
     }
 
     return true;

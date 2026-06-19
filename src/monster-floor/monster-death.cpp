@@ -41,6 +41,7 @@
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
+#include "system/inner-game-data.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -252,7 +253,7 @@ static void on_defeat_last_boss(CreatureEntity &creature)
 {
     auto &world = AngbandWorld::get_instance();
     world.total_winner = true;
-    world.add_winner_class(creature.pclass);
+    InnerGameData::get_instance().add_winner_class(creature.pclass);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TITLE);
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_FINAL_QUEST_CLEAR);
     exe_write_diary(*creature.get_floor(), DiaryKind::DESCRIPTION, 0, _("見事に馬鹿馬鹿蛮怒の勝利者となった！", "finally became *WINNER* of Bakabakaband!"));

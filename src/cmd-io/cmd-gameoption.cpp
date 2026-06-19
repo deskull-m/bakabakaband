@@ -16,6 +16,7 @@
 #include "io/write-diary.h"
 #include "main/sound-of-music.h"
 #include "system/creature-entity.h"
+#include "system/inner-game-data.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
@@ -369,13 +370,13 @@ static void do_cmd_options_cheat(const FloorType &floor, std::string_view player
         case 'y':
         case 'Y':
         case '6': {
-            auto &world = AngbandWorld::get_instance();
-            if (!world.noscore) {
+            auto &igd = InnerGameData::get_instance();
+            if (!igd.is_no_score()) {
                 exe_write_diary(floor, DiaryKind::DESCRIPTION, 0,
                     _("詐欺オプションをONにして、スコアを残せなくなった。", "gave up sending score to use cheating options."));
             }
 
-            world.noscore |= cheat.flag_position * 256 + cheat.offset;
+            igd.add_no_score(cheat.flag_position * 256 + cheat.offset);
             *cheat.value = true;
             k = (k + 1) % n;
             break;
@@ -431,7 +432,7 @@ void do_cmd_options(CreatureEntity &creature)
     const auto &world = AngbandWorld::get_instance();
     while (true) {
         auto n = std::ssize(option_fields);
-        if (!world.noscore && !allow_debug_opts) {
+        if (!InnerGameData::get_instance().is_no_score() && !allow_debug_opts) {
             n--;
         }
 
@@ -533,7 +534,7 @@ void do_cmd_options(CreatureEntity &creature)
         }
         case 'C':
         case 'c': {
-            if (!world.noscore && !allow_debug_opts) {
+            if (!InnerGameData::get_instance().is_no_score() && !allow_debug_opts) {
                 bell();
                 break;
             }

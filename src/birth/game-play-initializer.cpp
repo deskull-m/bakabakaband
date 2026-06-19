@@ -103,7 +103,7 @@ void player_wipe_without_name(CreatureEntity &creature)
     auto &system = AngbandSystem::get_instance();
     system.set_panic_save(false);
 
-    world.noscore = 0;
+    InnerGameData::get_instance().initialize_no_score();
     world.wizard = false;
     system.set_awaiting_report_score(false);
     creature.set_pet_follow_distance(PET_FOLLOW_DIST);

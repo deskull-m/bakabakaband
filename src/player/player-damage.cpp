@@ -62,6 +62,7 @@
 #include "system/dungeon/quest-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
+#include "system/inner-game-data.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"
@@ -535,7 +536,7 @@ void PlayerType::on_death(std::string_view cause)
 
     world.total_winner = false;
     if (is_seppuku_by_won) {
-        world.add_retired_class(this->pclass);
+        InnerGameData::get_instance().add_retired_class(this->pclass);
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, _("勝利の後切腹した。", "committed seppuku after the winning."));
     } else {
         std::string place;

@@ -66,6 +66,7 @@
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/grid-type-definition.h"
+#include "system/inner-game-data.h"
 #include "system/item-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
@@ -859,8 +860,7 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
         }
     }
 
-    auto &world = AngbandWorld::get_instance();
-    world.noscore |= 0x0001;
+    InnerGameData::get_instance().add_no_score(0x0001);
     msg_erase();
 
     creature.is_dead_ = false;
@@ -893,7 +893,7 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
         creature.oldpx = 131;
     }
 
-    world.set_wild_mode(false);
+    AngbandWorld::get_instance().set_wild_mode(false);
     creature.set_leaving(true);
     constexpr auto note = _("                            しかし、生き返った。", "                            but revived.");
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, note);
