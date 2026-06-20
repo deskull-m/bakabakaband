@@ -134,8 +134,7 @@ static errr set_baseitem_allocations(nlohmann::json &allocations_data, BaseitemD
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
     }
 
-    for (auto i = 0; auto &element : allocations_data.items()) {
-        auto &alloc = element.value();
+    for (auto i = 0; const auto &alloc : allocations_data) {
         auto &table = baseitem.alloc_tables[i];
         if (auto err = info_set_integer(alloc["depth"], table.level, true, Range(0, 128))) {
             return err;
