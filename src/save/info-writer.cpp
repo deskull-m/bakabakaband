@@ -16,6 +16,7 @@
 #include "system/item-entity.h"
 #include "util/enum-converter.h"
 #include "world/world.h"
+#include <array>
 
 /*!
  * @brief セーブデータに店舗情報を書き込む
@@ -43,7 +44,8 @@ void wr_randomizer(void)
 {
     wr_u16b(0);
     wr_u16b(0);
-    const auto &state = AngbandSystem::get_instance().get_rng().get_state();
+    std::array<uint32_t, xso::rng32::word_count()> state;
+    AngbandSystem::get_instance().get_rng().get_state(state.begin());
     for (const auto s : state) {
         wr_u32b(s);
     }

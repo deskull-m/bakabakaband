@@ -53,7 +53,6 @@
 #include "system/terrain/terrain-list.h"
 #include "term/z-rand.h"
 #include "util/bit-flags-calculator.h"
-#include "util/rng-xoshiro.h"
 #include "view/display-messages.h"
 #include "window/main-window-util.h"
 #include "wizard/wizard-messages.h"
@@ -326,14 +325,14 @@ static tl::optional<std::string> level_gen(CreatureEntity &creature, tl::optiona
 {
 
     // 乱数種の保存と復元用
-    Xoshiro128StarStar::state_type original_state{};
+    std::array<uint32_t, xso::rng32::word_count()> original_state{};
     bool seed_was_fixed = false;
 
     // 乱数種が指定された場合は固定
     if (seed) {
         auto &rng = AngbandSystem::get_instance().get_rng();
-        original_state = rng.get_state(); // 現在の乱数状態を保存
-        rng = Xoshiro128StarStar(*seed); // 指定された種で乱数を初期化
+        rng.get_state(original_state.begin()); // 現在の乱数状態を保存
+        rng = xso::rng32(*seed); // 指定された種で乱数を初期化
         seed_was_fixed = true;
         msg_format_wizard(creature, CHEAT_DUNGEON,
             _("乱数種を固定してフロア生成: 0x%08X", "Generating floor with fixed seed: 0x%08X"),
@@ -395,7 +394,7 @@ static tl::optional<std::string> level_gen(CreatureEntity &creature, tl::optiona
 
     // 乱数状態を復元
     if (seed_was_fixed) {
-        AngbandSystem::get_instance().get_rng().set_state(original_state);
+        AngbandSystem::get_instance().get_rng().seed(original_state.cbegin(), original_state.cend());
     }
 
     return result;

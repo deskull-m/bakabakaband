@@ -221,7 +221,7 @@ namespace {
         {
             // strip 4: 旧乱数状態の残骸
             strip(4);
-            // Xoshiro128StarStar の state (4 × u32 = 16 バイト)
+            // xso::rng32 (xoshiro 4x32) の state (4 × u32 = 16 バイト)
             strip(4 * 4);
             // 残り RAND_DEG(=63) - 4 個を strip (4 × 59 = 236 バイト)
             strip(4 * 59);

@@ -2253,9 +2253,6 @@
     <ClCompile Include="..\..\src\knowledge\knowledge-alliance.cpp">
       <Filter>knowledge</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\util\rng-xoshiro.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\world\world-collapsion.cpp">
       <Filter>world</Filter>
     </ClCompile>
@@ -5401,9 +5398,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\knowledge\knowledge-alliance.h">
       <Filter>knowledge</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\util\rng-xoshiro.h">
-      <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\world\world-collapsion.h">
       <Filter>world</Filter>
