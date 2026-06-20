@@ -1,6 +1,5 @@
 #include "mutation/mutation-data.h"
 #include "player-base/player-class.h"
-#include "util/rng-xoshiro.h"
 
 const MutationData MutationDataManager::mutation_table[] = {
     // 有益な変異 (0-31)
