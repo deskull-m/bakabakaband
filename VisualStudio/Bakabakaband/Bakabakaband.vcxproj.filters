@@ -2525,6 +2525,9 @@
     <ClCompile Include="..\..\src\system\floor\town-list.cpp">
       <Filter>system\floor</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\system\floor\town-records.cpp">
+      <Filter>system\floor</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\system\terrain\terrain-definition.cpp">
       <Filter>system\terrain</Filter>
     </ClCompile>
@@ -5749,6 +5752,9 @@
       <Filter>system\floor</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\system\floor\town-list.h">
+      <Filter>system\floor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\floor\town-records.h">
       <Filter>system\floor</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\system\enums\terrain\terrain-tag.h">

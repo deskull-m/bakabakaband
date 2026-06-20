@@ -25,6 +25,7 @@
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/floor-list.h"
+#include "system/floor/town-records.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/inner-game-data.h"
 #include "system/item-entity.h"
@@ -109,7 +110,7 @@ void player_wipe_without_name(CreatureEntity &creature)
     creature.set_pet_follow_distance(PET_FOLLOW_DIST);
     creature.set_pet_extra_flags(PF_TELEPORT | PF_ATTACK_SPELL | PF_SUMMON_SPELL);
     DungeonRecords::get_instance().reset_all();
-    creature.visit = 1;
+    TownRecords::get_instance().initialize();
     world.set_wild_mode(false);
     WildernessGrids::get_instance().initialize_position();
 

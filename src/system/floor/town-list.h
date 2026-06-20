@@ -7,6 +7,7 @@
 constexpr short VALID_TOWNS = 6; // @details 旧海底都市クエストのマップを除外する. 有効な町に差し替え完了したら不要になるので注意.
 constexpr auto SECRET_TOWN = 5; // @details ズルの町番号.
 
+enum class TownId;
 class TownList : public util::AbstractVectorWrapper<TownInfo> {
 public:
     TownList(TownList &&) = delete;
@@ -21,6 +22,8 @@ public:
 
     const TownInfo &get_town(size_t index) const;
     TownInfo &get_town(size_t index);
+    const TownInfo &get_town(TownId town_id) const;
+    TownInfo &get_town(TownId town_id);
 
 private:
     TownList() = default;

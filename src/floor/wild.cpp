@@ -41,11 +41,13 @@
 #include "system/enums/terrain/wilderness-terrain.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/town-list.h"
+#include "system/floor/town-records.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/grid-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "util/bit-flags-calculator.h"
+#include "util/enum-converter.h"
 #include "view/display-messages.h"
 #include "window/main-window-util.h"
 #include "world/world.h"
@@ -308,7 +310,7 @@ static void generate_area(CreatureEntity &creature, const Pos2D &pos, bool is_bo
         }
 
         if (!is_corner && !is_border) {
-            creature.visit |= (1UL << (creature.get_town_num() - 1));
+            TownRecords::get_instance().set_visited(i2enum<TownId>(creature.get_town_num() - 1));
         }
     } else {
         generate_wilderness_area(floor, wg, is_corner);

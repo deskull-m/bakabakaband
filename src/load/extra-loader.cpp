@@ -11,6 +11,7 @@
 #include "load/world-loader.h"
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
+#include "system/floor/town-records.h"
 #include "util/enum-converter.h"
 #include "world/world.h"
 
@@ -27,7 +28,17 @@ void rd_extra(CreatureEntity &creature)
     auto &world = AngbandWorld::get_instance();
     world.play_time = ElapsedTime(rd_u32b());
 
-    creature.visit = rd_u32b();
+    // 訪問済みの町情報。旧来の creature.visit ビットマスク (u32) を TownRecords に移行する。
+    // セーブフォーマットは互換のため u32 ビットマスクのまま (bit N = TownId N)。
+    const auto visit_flags = rd_u32b();
+    EnumClassFlagGroup<TownId> visited_towns;
+    for (auto i = 0; i < enum2i(TownId::MAX); i++) {
+        if ((visit_flags & (1U << i)) != 0) {
+            visited_towns.set(i2enum<TownId>(i));
+        }
+    }
+
+    TownRecords::get_instance().set_ids(visited_towns);
     creature.count = rd_u32b();
 
     // [モンスタープレイヤー] プレイヤーがモンスター化している場合の種族 ID を復元する。

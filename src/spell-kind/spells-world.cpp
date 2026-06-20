@@ -32,6 +32,7 @@
 #include "system/floor/floor-info.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
+#include "system/floor/town-records.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
@@ -43,6 +44,7 @@
 #include "target/target-types.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
+#include "util/enum-converter.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -285,7 +287,7 @@ bool tele_town(CreatureEntity &creature)
     auto num = 0;
     const int towns_size = TownList::get_instance().size();
     for (auto i = 1; i < towns_size; i++) {
-        if ((i == VALID_TOWNS) || (i == SECRET_TOWN) || (i == creature.get_town_num()) || !(creature.visit & (1UL << (i - 1)))) {
+        if ((i == VALID_TOWNS) || (i == SECRET_TOWN) || (i == creature.get_town_num()) || !TownRecords::get_instance().has_visited(i2enum<TownId>(i - 1))) {
             continue;
         }
 
@@ -316,7 +318,7 @@ bool tele_town(CreatureEntity &creature)
         }
 
         const auto town_num = key - 'a' + 1;
-        if ((town_num == creature.get_town_num()) || (town_num == VALID_TOWNS) || (town_num == SECRET_TOWN) || !(creature.visit & (1UL << (key - 'a')))) {
+        if ((town_num == creature.get_town_num()) || (town_num == VALID_TOWNS) || (town_num == SECRET_TOWN) || !TownRecords::get_instance().has_visited(i2enum<TownId>(key - 'a'))) {
             continue;
         }
 

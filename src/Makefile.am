@@ -1402,6 +1402,7 @@ hengband_SOURCES = \
 	system/floor/floor-list.cpp system/floor/floor-list.h \
 	system/floor/town-info.cpp system/floor/town-info.h \
 	system/floor/town-list.cpp system/floor/town-list.h \
+	system/floor/town-records.cpp system/floor/town-records.h \
 	system/floor/wilderness-grid.cpp system/floor/wilderness-grid.h \
 	\
 	system/monrace/body-structure-types.h \

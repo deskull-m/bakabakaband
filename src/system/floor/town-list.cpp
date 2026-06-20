@@ -4,6 +4,7 @@
 #include "store/store.h"
 #include "system/angband-exceptions.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/floor/town-records.h"
 #include "util/angband-files.h"
 #include <filesystem>
 #include <fmt/format.h>
@@ -57,6 +58,24 @@ TownInfo &TownList::get_town(size_t index)
     }
 
     return this->towns[index];
+}
+
+const TownInfo &TownList::get_town(TownId town_id) const
+{
+    if ((town_id < TownId::OUTPOST) || (town_id >= TownId::MAX)) {
+        THROW_EXCEPTION(std::out_of_range, fmt::format("Invalid town ID: {}", static_cast<int>(town_id)));
+    }
+
+    return this->get_town(static_cast<size_t>(town_id) + 1);
+}
+
+TownInfo &TownList::get_town(TownId town_id)
+{
+    if ((town_id < TownId::OUTPOST) || (town_id >= TownId::MAX)) {
+        THROW_EXCEPTION(std::out_of_range, fmt::format("Invalid town ID: {}", static_cast<int>(town_id)));
+    }
+
+    return this->get_town(static_cast<size_t>(town_id) + 1);
 }
 
 /*!

@@ -4194,7 +4194,6 @@ public:
 #define KNOW_STAT 0x01
 #define KNOW_HPRATE 0x02
     BIT_FLAGS8 knowledge{}; /* Knowledge about yourself */
-    BIT_FLAGS visit{}; /* Visited towns */
 
     // [提案 42] old_race1/2 / old_realm は private 化済。
     // get_old_race_flags1/2() / set_old_race_flags1/2() / get_old_realm() / set_old_realm() 経由。
