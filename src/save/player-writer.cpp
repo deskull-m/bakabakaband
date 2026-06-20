@@ -19,7 +19,9 @@
 #include "system/dungeon/dungeon-list.h"
 #include "system/dungeon/dungeon-record.h"
 #include "system/floor/floor-info.h"
+#include "system/floor/town-records.h"
 #include "system/inner-game-data.h"
+#include "util/enum-converter.h"
 #include "world/world.h"
 #include <variant>
 
@@ -263,7 +265,18 @@ void wr_player(CreatureEntity &creature)
     /* Save temporary preserved pets (obsolated) */
     wr_s16b(0);
     wr_u32b(world.play_time.elapsed_sec());
-    wr_s32b(creature.visit);
+
+    // 訪問済みの町情報。TownRecords を旧来の creature.visit ビットマスク (u32) に変換して書き出す
+    // (bit N = TownId N)。セーブフォーマット互換のため形式は不変。
+    uint32_t visit_flags = 0;
+    const auto visited_towns = TownRecords::get_instance().get_ids();
+    for (auto i = 0; i < enum2i(TownId::MAX); i++) {
+        if (visited_towns.has(i2enum<TownId>(i))) {
+            visit_flags |= 1U << i;
+        }
+    }
+
+    wr_s32b(visit_flags);
     wr_u32b(creature.count);
 
     // [モンスタープレイヤー] プレイヤーがモンスター化している場合の種族 ID を保存する。
