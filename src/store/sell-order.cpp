@@ -131,7 +131,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
         placed = res.has_value();
         if (placed) {
             const auto price = res.value();
-            store_owner_says_comment(creature, store_num);
+            store_owner_says_comment(price, store_num);
 
             sound(SoundKind::SELL);
             if (store_num == StoreSaleType::BLACK) {

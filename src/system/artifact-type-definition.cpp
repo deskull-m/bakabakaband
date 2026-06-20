@@ -2,6 +2,7 @@
 #include "artifact/fixed-art-types.h"
 #include "object-enchant/tr-types.h"
 #include "object/tval-types.h"
+#include "system/angband-exceptions.h"
 #include "system/artifact/artifact-record.h"
 #ifdef JP
 #else
@@ -11,6 +12,7 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/item-entity.h"
+#include "util/enum-converter.h"
 
 ArtifactType::ArtifactType()
     : bi_key(BaseitemKey(ItemKindType::NONE))
@@ -238,6 +240,23 @@ bool ArtifactList::order(const FixedArtifactId id1, const FixedArtifactId id2) c
 void ArtifactList::emplace(const FixedArtifactId fa_id, ArtifactType &&artifact)
 {
     this->artifacts.emplace(fa_id, std::move(artifact));
+}
+
+std::string ArtifactList::get_full_name(const FixedArtifactId fa_id) const
+{
+    this->validate_fa_id(fa_id);
+    if (fa_id == FixedArtifactId::NONE) {
+        return "";
+    }
+
+    return this->artifacts.at(fa_id).build_full_name();
+}
+
+void ArtifactList::validate_fa_id(const FixedArtifactId fa_id) const
+{
+    if (fa_id < FixedArtifactId::NONE || fa_id > i2enum<FixedArtifactId>(this->artifacts.size())) {
+        THROW_EXCEPTION(std::out_of_range, "Invalid FixedArtifactId: " + std::to_string(static_cast<int>(fa_id)));
+    }
 }
 
 tl::optional<ItemEntity> ArtifactList::try_make_instant_artifact(int making_level) const

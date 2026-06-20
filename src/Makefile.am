@@ -1231,6 +1231,11 @@ hengband_SOURCES = \
 	room/vault-builder.cpp room/vault-builder.h \
 	room/vault-flag-types.h \
 	\
+	rumor/rumor-definition.cpp rumor/rumor-definition.h \
+	rumor/rumor-list.cpp rumor/rumor-list.h \
+	rumor/rumor-rarity.h \
+	rumor/rumor-service.cpp rumor/rumor-service.h \
+	\
 	save/alliance-writer.cpp save/alliance-writer.h \
 	save/creature-common-writer.cpp save/creature-common-writer.h \
 	save/floor-writer.cpp save/floor-writer.h \

@@ -70,6 +70,7 @@ public:
     bool order(const FixedArtifactId id1, const FixedArtifactId id2) const;
     void emplace(const FixedArtifactId fa_id, ArtifactType &&artifact);
     tl::optional<ItemEntity> try_make_instant_artifact(int making_level) const;
+    std::string get_full_name(const FixedArtifactId fa_id) const;
 
 private:
     ArtifactList() = default;
@@ -77,6 +78,8 @@ private:
     static ArtifactType dummy;
 
     std::map<FixedArtifactId, ArtifactType> artifacts{};
+
+    void validate_fa_id(const FixedArtifactId fa_id) const;
 
     std::map<FixedArtifactId, ArtifactType> &get_inner_container() override
     {

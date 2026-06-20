@@ -250,7 +250,7 @@ void store_purchase(CreatureEntity &creature, StoreSaleType store_num)
         return;
     }
 
-    store_owner_says_comment(creature, store_num);
+    store_owner_says_comment(res.value(), store_num);
     if (store_num == StoreSaleType::BLACK) {
         chg_virtue(creature, Virtue::JUSTICE, -1);
     }

@@ -1,11 +1,4 @@
-N:1:Excellent
-R:ARTIFACT:*:{Name}というお宝が地下にはあるそうだ。
-R:MONSTER:*:{Name}というモンスターがいるらしい。
-R:DUNGEON:1:{Name}の場所はココだ： -続く-
-R:TOWN:*:{Name}という街に行ったことはあるかい？
-R:MONSTER:*:タフという言葉は{Name}のためにある。
 
-N:0:Default
 14へ行け。
 42TH ZONE!
 #BAKABAKA-2450

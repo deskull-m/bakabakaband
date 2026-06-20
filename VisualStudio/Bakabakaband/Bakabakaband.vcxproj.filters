@@ -608,6 +608,15 @@
     <ClCompile Include="..\..\src\store\rumor.cpp">
       <Filter>store</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\rumor\rumor-definition.cpp">
+      <Filter>rumor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\rumor\rumor-list.cpp">
+      <Filter>rumor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\rumor\rumor-service.cpp">
+      <Filter>rumor</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\store\say-comments.cpp">
       <Filter>store</Filter>
     </ClCompile>
@@ -3475,6 +3484,18 @@
     <ClInclude Include="..\..\src\store\rumor.h">
       <Filter>store</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\rumor\rumor-definition.h">
+      <Filter>rumor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\rumor\rumor-list.h">
+      <Filter>rumor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\rumor\rumor-rarity.h">
+      <Filter>rumor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\rumor\rumor-service.h">
+      <Filter>rumor</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\store\store-util.h">
       <Filter>store</Filter>
     </ClInclude>
@@ -6141,6 +6162,9 @@
     </Filter>
     <Filter Include="room">
       <UniqueIdentifier>{318835ed-a803-4459-921e-f6afc5411baa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rumor">
+      <UniqueIdentifier>{3b6c7d8e-9f1a-4b2c-8d3e-4f5a6b7c8d9e}</UniqueIdentifier>
     </Filter>
     <Filter Include="effect">
       <UniqueIdentifier>{ed8a9f97-b54e-4204-9076-f32f646f3762}</UniqueIdentifier>

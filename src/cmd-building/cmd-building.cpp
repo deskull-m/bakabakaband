@@ -147,7 +147,7 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
     case BACT_REST:
     case BACT_RUMORS:
     case BACT_FOOD:
-        if (inn_comm(creature, building_action)) {
+        if (inn_comm(creature, building_action, building_cost)) {
             creature.sub_au(building_cost);
         }
 
