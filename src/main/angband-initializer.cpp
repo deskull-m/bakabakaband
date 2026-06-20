@@ -23,6 +23,7 @@
 #include "main/game-data-initializer.h"
 #include "main/info-initializer.h"
 #include "market/building-initializer.h"
+#include "rumor/rumor-service.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
@@ -39,6 +40,8 @@
 #include "util/angband-files.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <exception>
+#include <fmt/format.h>
 #include <time.h>
 #ifdef WINDOWS
 #include "util/png-displayer.h"
@@ -253,6 +256,14 @@ void init_angband(CreatureEntity &creature, bool no_term)
     init_creature_parties_info();
     init_note(_("[データの初期化中... (宝物庫)]", "[Initializing arrays... (vaults)]"));
     init_vaults_info();
+
+    init_note(_("[データの初期化中... (噂)]", "[Initializing arrays... (rumors)]"));
+    try {
+        RumorService::initialize();
+        RumorService::retouch();
+    } catch (const std::exception &e) {
+        quit(fmt::format(_("噂の初期化に失敗: {}", "Error of rumors initializing: {}"), e.what()));
+    }
 
     init_note(_("[データの初期化中... (その他)]", "[Initializing arrays... (other)]"));
     init_other(creature);

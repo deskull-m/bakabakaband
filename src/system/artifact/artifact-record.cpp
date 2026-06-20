@@ -10,6 +10,11 @@ bool ArtifactRecord::get_generated() const
     return this->is_generated;
 }
 
+bool ArtifactRecord::get_known() const
+{
+    return this->is_known;
+}
+
 FLOOR_IDX ArtifactRecord::get_floor_id() const
 {
     return this->floor_id;
@@ -18,6 +23,11 @@ FLOOR_IDX ArtifactRecord::get_floor_id() const
 void ArtifactRecord::set_generated(bool new_state)
 {
     this->is_generated = new_state;
+}
+
+void ArtifactRecord::set_known()
+{
+    this->is_known = true;
 }
 
 void ArtifactRecord::set_floor_id(FLOOR_IDX new_floor_id)
@@ -39,6 +49,13 @@ bool ArtifactRecords::get_generated(FixedArtifactId fa_id) const
     return (it != this->records.end()) && it->second.get_generated();
 }
 
+bool ArtifactRecords::get_known(FixedArtifactId fa_id) const
+{
+    this->validate_fixed_artifact_id(fa_id);
+    const auto it = this->records.find(fa_id);
+    return (it != this->records.end()) && it->second.get_known();
+}
+
 FLOOR_IDX ArtifactRecords::get_floor_id(FixedArtifactId fa_id) const
 {
     this->validate_fixed_artifact_id(fa_id);
@@ -50,6 +67,12 @@ void ArtifactRecords::set_generated(FixedArtifactId fa_id, bool new_state)
 {
     this->validate_fixed_artifact_id(fa_id);
     this->records[fa_id].set_generated(new_state);
+}
+
+void ArtifactRecords::set_known(FixedArtifactId fa_id)
+{
+    this->validate_fixed_artifact_id(fa_id);
+    this->records[fa_id].set_known();
 }
 
 void ArtifactRecords::set_floor_id(FixedArtifactId fa_id, FLOOR_IDX new_floor_id)

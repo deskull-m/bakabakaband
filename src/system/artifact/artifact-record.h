@@ -17,13 +17,16 @@ public:
     ArtifactRecord() = default;
 
     bool get_generated() const;
+    bool get_known() const;
     FLOOR_IDX get_floor_id() const;
 
     void set_generated(bool new_state);
+    void set_known();
     void set_floor_id(FLOOR_IDX new_floor_id);
 
 private:
     bool is_generated = false; //!< 生成済か否か (生成済でも、「保存モードON」かつ「帰還等で鑑定前に消滅」したら未生成状態に戻る)
+    bool is_known = false; //!< プレイヤーが名前を認知したか否か (噂等で名前が言及された場合に true)
     FLOOR_IDX floor_id = 0; //!< アイテムを落としたフロアのID
 };
 
@@ -39,9 +42,11 @@ public:
     static ArtifactRecords &get_instance();
 
     bool get_generated(FixedArtifactId fa_id) const;
+    bool get_known(FixedArtifactId fa_id) const;
     FLOOR_IDX get_floor_id(FixedArtifactId fa_id) const;
 
     void set_generated(FixedArtifactId fa_id, bool new_state);
+    void set_known(FixedArtifactId fa_id);
     void set_floor_id(FixedArtifactId fa_id, FLOOR_IDX new_floor_id);
     void reset_generated_flags();
 

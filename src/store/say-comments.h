@@ -4,5 +4,5 @@
 
 enum class StoreSaleType;
 class CreatureEntity;
-void store_owner_says_comment(CreatureEntity &creature, StoreSaleType store_num);
+void store_owner_says_comment(int price, StoreSaleType store_num);
 void purchase_analyze(CreatureEntity &creature, PRICE price, PRICE value, PRICE guess);

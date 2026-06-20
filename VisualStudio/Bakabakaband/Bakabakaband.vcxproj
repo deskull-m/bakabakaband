@@ -2018,6 +2018,9 @@
     <ClCompile Include="..\..\src\room\rooms-trap.cpp" />
     <ClCompile Include="..\..\src\room\rooms-vault.cpp" />
     <ClCompile Include="..\..\src\room\rooms-builder.cpp" />
+    <ClCompile Include="..\..\src\rumor\rumor-definition.cpp" />
+    <ClCompile Include="..\..\src\rumor\rumor-list.cpp" />
+    <ClCompile Include="..\..\src\rumor\rumor-service.cpp" />
     <ClCompile Include="..\..\src\store\rumor.cpp" />
     <ClCompile Include="..\..\src\save\save.cpp" />
     <ClCompile Include="..\..\src\core\scores.cpp" />
@@ -2305,6 +2308,10 @@
     <ClInclude Include="..\..\src\room\rooms-trap.h" />
     <ClInclude Include="..\..\src\room\rooms-vault.h" />
     <ClInclude Include="..\..\src\room\rooms-builder.h" />
+    <ClInclude Include="..\..\src\rumor\rumor-definition.h" />
+    <ClInclude Include="..\..\src\rumor\rumor-list.h" />
+    <ClInclude Include="..\..\src\rumor\rumor-rarity.h" />
+    <ClInclude Include="..\..\src\rumor\rumor-service.h" />
     <ClInclude Include="..\..\src\store\rumor.h" />
     <ClInclude Include="..\..\src\save\save.h" />
     <ClInclude Include="..\..\src\core\scores.h" />

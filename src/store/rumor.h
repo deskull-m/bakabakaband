@@ -1,4 +1,4 @@
 #pragma once
 
-class CreatureEntity;
-void display_rumor(CreatureEntity &creature, bool ex);
+class RumorDefinition;
+void display_selected_rumor(const RumorDefinition &rumor);
