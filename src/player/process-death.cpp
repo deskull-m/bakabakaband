@@ -300,8 +300,8 @@ void print_monster_tomb(CreatureEntity &creature, CreatureEntity &target)
 static void inventory_aware(CreatureEntity &creature)
 {
     ItemEntity *o_ptr;
-    for (int i = 0; i < INVEN_TOTAL; i++) {
-        o_ptr = creature.inventory[i].get();
+    for (const auto i_idx : INVEN_ALL_SLOTS) {
+        o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid()) {
             continue;
         }

@@ -202,9 +202,9 @@ static DisplaySymbol compensate_stat_by_weapon(uint8_t color, ItemEntity *o_ptr,
  */
 static void display_equipments_compensation(CreatureEntity &creature, int row, int *col)
 {
-    for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
+    for (const auto i_idx : INVEN_WIELDING_SLOTS) {
         ItemEntity *o_ptr;
-        o_ptr = creature.inventory[i].get();
+        o_ptr = creature.inventory[i_idx].get();
         auto flags = o_ptr->get_flags_known();
         for (int stat = 0; stat < A_MAX; stat++) {
             DisplaySymbol symbol(TERM_SLATE, '.');

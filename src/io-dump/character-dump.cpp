@@ -497,28 +497,28 @@ static void dump_aux_equipment_inventory(CreatureEntity &creature, FILE *fff)
 {
     if (creature.get_equip_cnt()) {
         fmt::println(fff, _("  [キャラクタの装備]\n", "  [Character Equipment]\n"));
-        for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-            auto item_name = describe_flavor(creature, *creature.inventory[i], 0);
-            auto is_two_handed = ((i == INVEN_MAIN_HAND) && can_attack_with_sub_hand(creature));
-            is_two_handed |= ((i == INVEN_SUB_HAND) && can_attack_with_main_hand(creature));
+        for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+            auto item_name = describe_flavor(creature, *creature.inventory[i_idx], 0);
+            auto is_two_handed = ((i_idx == INVEN_MAIN_HAND) && can_attack_with_sub_hand(creature));
+            is_two_handed |= ((i_idx == INVEN_SUB_HAND) && can_attack_with_main_hand(creature));
             if (is_two_handed && creature.has_two_handed_weapons()) {
                 item_name = _("(武器を両手持ち)", "(wielding with two-hands)");
             }
 
-            fmt::println(fff, "{}) {}", index_to_label(i), item_name);
+            fmt::println(fff, "{}) {}", index_to_label(i_idx), item_name);
         }
 
         fmt::println(fff, "\n");
     }
 
     fmt::println(fff, _("  [キャラクタの持ち物]\n", "  [Character Inventory]\n"));
-    for (auto i = 0; i < INVEN_PACK; i++) {
-        if (!creature.inventory[i]->is_valid()) {
+    for (const auto i_idx : INVEN_PACK_SLOTS) {
+        if (!creature.inventory[i_idx]->is_valid()) {
             break;
         }
 
-        const auto item_name = describe_flavor(creature, *creature.inventory[i], 0);
-        fmt::println(fff, "{}) {}", index_to_label(i), item_name);
+        const auto item_name = describe_flavor(creature, *creature.inventory[i_idx], 0);
+        fmt::println(fff, "{}) {}", index_to_label(i_idx), item_name);
     }
 
     fmt::println(fff, "\n");

@@ -83,8 +83,8 @@ void known_obj_immunity(CreatureEntity &creature, TrFlags &flags)
 {
     flags.clear();
 
-    for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        const auto *o_ptr = creature.inventory[i].get();
+    for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+        const auto *o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid()) {
             continue;
         }

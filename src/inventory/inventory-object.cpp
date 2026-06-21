@@ -14,10 +14,12 @@
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/redrawing-flags-updater.h"
+#include "util/enum-converter.h"
 #include "util/object-sort.h"
 #include "view/display-messages.h"
 #include "view/object-describer.h"
 #include <algorithm>
+#include <range/v3/algorithm.hpp>
 
 void vary_item(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUMBER num)
 {
@@ -263,7 +265,7 @@ void reorder_pack(CreatureEntity &creature)
  */
 int16_t store_item_to_inventory(CreatureEntity &creature, ItemEntity *o_ptr)
 {
-    INVENTORY_IDX i, j;
+    INVENTORY_IDX i;
     INVENTORY_IDX n = -1;
 
     ItemEntity *j_ptr;
@@ -272,18 +274,18 @@ int16_t store_item_to_inventory(CreatureEntity &creature, ItemEntity *o_ptr)
         SubWindowRedrawingFlag::INVENTORY,
         SubWindowRedrawingFlag::PLAYER,
     };
-    for (j = 0; j < INVEN_PACK; j++) {
-        j_ptr = creature.inventory[j].get();
+    for (const auto i_idx : INVEN_PACK_SLOTS) {
+        j_ptr = creature.inventory[i_idx].get();
         if (!j_ptr->is_valid()) {
             continue;
         }
 
-        n = j;
+        n = enum2i(i_idx);
         if (j_ptr->is_similar(*o_ptr)) {
             j_ptr->absorb(*o_ptr);
             rfu.set_flag(StatusRecalculatingFlag::BONUS);
             rfu.set_flags(flags_swrf);
-            return j;
+            return enum2i(i_idx);
         }
     }
 
@@ -291,6 +293,7 @@ int16_t store_item_to_inventory(CreatureEntity &creature, ItemEntity *o_ptr)
         return -1;
     }
 
+    INVENTORY_IDX j;
     for (j = 0; j <= INVEN_PACK; j++) {
         j_ptr = creature.inventory[j].get();
         if (!j_ptr->is_valid()) {
@@ -300,13 +303,10 @@ int16_t store_item_to_inventory(CreatureEntity &creature, ItemEntity *o_ptr)
 
     i = j;
     if (i < INVEN_PACK && n >= 0) {
-        for (j = 0; j < INVEN_PACK; j++) {
-            if (object_sort_comp(creature, *o_ptr, *creature.inventory[j])) {
-                break;
-            }
-        }
-
-        i = j;
+        const auto sort_it = ranges::find_if(INVEN_PACK_SLOTS, [&](const auto s) {
+            return object_sort_comp(creature, *o_ptr, *creature.inventory[s]);
+        });
+        i = enum2i(sort_it != INVEN_PACK_SLOTS.end() ? *sort_it : INVEN_PACK);
         auto begin = creature.inventory.begin();
         std::rotate(begin + i, begin + n + 1, begin + n + 2);
     }
@@ -349,8 +349,8 @@ bool check_store_item_to_inventory(const CreatureEntity &creature, const ItemEnt
         return true;
     }
 
-    for (int j = 0; j < INVEN_PACK; j++) {
-        const auto *j_ptr = creature.inventory[j].get();
+    for (const auto i_idx : INVEN_PACK_SLOTS) {
+        const auto *j_ptr = creature.inventory[i_idx].get();
         if (!j_ptr->is_valid()) {
             continue;
         }

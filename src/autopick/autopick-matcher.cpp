@@ -345,13 +345,13 @@ bool is_autopick_match(CreatureEntity &creature, const ItemEntity *o_ptr, const 
         return true;
     }
 
-    for (int j = 0; j < INVEN_PACK; j++) {
+    for (const auto i_idx : INVEN_PACK_SLOTS) {
         /*
          * 'Collecting' means the item must be absorbed
          * into an inventory slot.
          * But an item can not be absorbed into itself!
          */
-        if ((creature.inventory[j].get() != o_ptr) && creature.inventory[j]->is_similar(*o_ptr)) {
+        if ((creature.inventory[i_idx].get() != o_ptr) && creature.inventory[i_idx]->is_similar(*o_ptr)) {
             return true;
         }
     }

@@ -70,8 +70,8 @@ auto collect_known_fixed_artifacts(CreatureEntity &creature)
         }
     }
 
-    for (auto i = 0; i < INVEN_TOTAL; i++) {
-        const auto &item = *creature.inventory[i];
+    for (const auto i_idx : INVEN_ALL_SLOTS) {
+        const auto &item = *creature.inventory[i_idx];
         if (!item.is_valid()) {
             continue;
         }

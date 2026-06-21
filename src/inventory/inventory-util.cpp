@@ -16,6 +16,7 @@
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "util/bit-flags-calculator.h"
+#include "util/enum-converter.h"
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
 #include <sstream>
@@ -65,13 +66,13 @@ tl::optional<short> get_tag_floor(const FloorType &floor, char tag, const std::v
     return floor_item_indice;
 }
 
-static tl::optional<std::pair<short, short>> get_inventory_range(BIT_FLAGS mode)
+static tl::optional<EnumRange<inventory_slot_type>> get_inventory_range(BIT_FLAGS mode)
 {
     switch (mode) {
     case USE_EQUIP:
-        return std::make_pair(INVEN_MAIN_HAND, INVEN_TOTAL);
+        return INVEN_WIELDING_SLOTS.to_enum_range();
     case USE_INVEN:
-        return std::make_pair(static_cast<short>(0), INVEN_PACK);
+        return INVEN_PACK_SLOTS;
     default:
         return tl::nullopt;
     }
@@ -99,10 +100,9 @@ tl::optional<short> get_tag(CreatureEntity &creature, char tag, BIT_FLAGS mode, 
         return tl::nullopt;
     }
 
-    const auto &[start, end] = *range;
-    tl::optional<short> i_idx;
-    for (auto i = start; i < end; i++) {
-        const auto &item = *creature.inventory[i];
+    tl::optional<short> result;
+    for (const auto i_idx : *range) {
+        const auto &item = *creature.inventory[i_idx];
         if (!item.is_valid() || !item.is_inscribed()) {
             continue;
         }
@@ -114,18 +114,18 @@ tl::optional<short> get_tag(CreatureEntity &creature, char tag, BIT_FLAGS mode, 
         auto sv = extract_suffix(*item.inscription, '@');
         while (sv) {
             if ((sv->length() > 2) && (sv->at(1) == command_cmd) && (sv->at(2) == tag)) {
-                return i;
+                return i_idx;
             }
 
-            if (!i_idx && is_numeric(tag) && (sv->length() > 1) && (sv->at(1) == tag)) {
-                i_idx = i;
+            if (!result && is_numeric(tag) && (sv->length() > 1) && (sv->at(1) == tag)) {
+                result = i_idx;
             }
 
             sv = extract_suffix(sv->substr(1), '@');
         }
     }
 
-    return i_idx;
+    return result;
 }
 
 /*!
@@ -136,7 +136,7 @@ tl::optional<short> get_tag(CreatureEntity &creature, char tag, BIT_FLAGS mode, 
  */
 bool get_item_okay(CreatureEntity &creature, OBJECT_IDX i, const ItemTester &item_tester)
 {
-    if ((i < 0) || (i >= INVEN_TOTAL)) {
+    if (!INVEN_ALL_SLOTS.contains(i2enum<inventory_slot_type>(i))) {
         return false;
     }
 
@@ -194,7 +194,7 @@ INVENTORY_IDX label_to_equipment(CreatureEntity &creature, int c)
 {
     INVENTORY_IDX i = (INVENTORY_IDX)(islower(c) ? A2I(c) : -1) + INVEN_MAIN_HAND;
 
-    if ((i < INVEN_MAIN_HAND) || (i >= INVEN_TOTAL)) {
+    if (!INVEN_WIELDING_SLOTS.contains(i2enum<inventory_slot_type>(i))) {
         return -1;
     }
 
@@ -221,7 +221,7 @@ INVENTORY_IDX label_to_inventory(CreatureEntity &creature, int c)
 {
     INVENTORY_IDX i = (INVENTORY_IDX)(islower(c) ? A2I(c) : -1);
 
-    if ((i < 0) || (i > INVEN_PACK) || !creature.inventory[i]->is_valid()) {
+    if (!INVEN_PACK_SLOTS.contains(i2enum<inventory_slot_type>(i)) || !creature.inventory[i]->is_valid()) {
         return -1;
     }
 

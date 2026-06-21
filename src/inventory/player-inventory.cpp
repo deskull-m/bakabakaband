@@ -49,8 +49,8 @@
  */
 bool can_get_item(CreatureEntity &creature, const ItemTester &item_tester)
 {
-    for (int j = 0; j < INVEN_TOTAL; j++) {
-        if (item_tester.okay(creature.inventory[j].get())) {
+    for (const auto i_idx : INVEN_ALL_SLOTS) {
+        if (item_tester.okay(creature.inventory[i_idx].get())) {
             return true;
         }
     }

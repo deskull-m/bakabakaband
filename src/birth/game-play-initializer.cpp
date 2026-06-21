@@ -55,8 +55,8 @@ void player_wipe_without_name(CreatureEntity &creature)
     }
 
     QuestList::get_instance().reset_all();
-    for (int i = 0; i < INVEN_TOTAL; i++) {
-        creature.inventory[i]->wipe();
+    for (const auto i_idx : INVEN_ALL_SLOTS) {
+        creature.inventory[i_idx]->wipe();
     }
 
     ArtifactRecords::get_instance().reset_generated_flags();

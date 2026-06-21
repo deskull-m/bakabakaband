@@ -161,8 +161,8 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
         (void)lite_area(creature, Dice::roll(2, (lvl / 2)), (lvl / 10) + 1);
         return true;
     case PlayerMutationType::DET_CURSE:
-        for (int i = 0; i < INVEN_TOTAL; i++) {
-            auto *o_ptr = creature.inventory[i].get();
+        for (const auto i_idx : INVEN_ALL_SLOTS) {
+            auto *o_ptr = creature.inventory[i_idx].get();
             if (!o_ptr->is_valid() || !o_ptr->is_cursed()) {
                 continue;
             }

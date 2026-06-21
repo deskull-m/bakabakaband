@@ -278,8 +278,8 @@ void sense_inventory1(CreatureEntity &creature)
         heavy = true;
     }
 
-    for (INVENTORY_IDX i = 0; i < INVEN_TOTAL; i++) {
-        o_ptr = creature.inventory[i].get();
+    for (const auto i_idx : INVEN_ALL_SLOTS) {
+        o_ptr = creature.inventory[i_idx].get();
 
         if (!o_ptr->is_valid()) {
             continue;
@@ -315,7 +315,7 @@ void sense_inventory1(CreatureEntity &creature)
             continue;
         }
 
-        if ((i < INVEN_MAIN_HAND) && (0 != randint0(5))) {
+        if ((i_idx < INVEN_MAIN_HAND) && (0 != randint0(5))) {
             continue;
         }
 
@@ -323,7 +323,7 @@ void sense_inventory1(CreatureEntity &creature)
             heavy = true;
         }
 
-        sense_inventory_aux(creature, i, heavy);
+        sense_inventory_aux(creature, i_idx, heavy);
     }
 }
 
@@ -406,9 +406,9 @@ void sense_inventory2(CreatureEntity &creature)
         break;
     }
 
-    for (INVENTORY_IDX i = 0; i < INVEN_TOTAL; i++) {
+    for (const auto i_idx : INVEN_ALL_SLOTS) {
         bool okay = false;
-        o_ptr = creature.inventory[i].get();
+        o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
@@ -430,11 +430,11 @@ void sense_inventory2(CreatureEntity &creature)
             continue;
         }
 
-        if ((i < INVEN_MAIN_HAND) && (0 != randint0(5))) {
+        if ((i_idx < INVEN_MAIN_HAND) && (0 != randint0(5))) {
             continue;
         }
 
-        sense_inventory_aux(creature, i, true);
+        sense_inventory_aux(creature, i_idx, true);
     }
 }
 

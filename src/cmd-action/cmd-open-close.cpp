@@ -301,14 +301,14 @@ void do_cmd_bash(CreatureEntity &creature)
  */
 static bool get_spike(CreatureEntity &creature, INVENTORY_IDX *ip)
 {
-    for (INVENTORY_IDX i = 0; i < INVEN_PACK; i++) {
-        auto *o_ptr = creature.inventory[i].get();
+    for (const auto i_idx : INVEN_PACK_SLOTS) {
+        auto *o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
 
         if (o_ptr->bi_key.tval() == ItemKindType::SPIKE) {
-            *ip = i;
+            *ip = i_idx;
             return true;
         }
     }

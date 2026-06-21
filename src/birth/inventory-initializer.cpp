@@ -34,6 +34,7 @@
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "util/enum-converter.h"
+#include <range/v3/view.hpp>
 #include <tuple>
 
 /*!
@@ -42,7 +43,7 @@
 void wield_all(CreatureEntity &creature)
 {
 
-    for (INVENTORY_IDX i_idx = INVEN_PACK - 1; i_idx >= 0; i_idx--) {
+    for (const auto i_idx : INVEN_PACK_SLOTS | ranges::views::reverse) {
         const auto &item = *creature.inventory[i_idx];
         if (!item.is_valid()) {
             continue;
