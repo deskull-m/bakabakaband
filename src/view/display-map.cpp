@@ -4,6 +4,8 @@
 #include "autopick/autopick-util.h"
 #include "game-option/map-screen-options.h"
 #include "game-option/special-options.h"
+#include "system/baseitem/baseitem-config.h"
+#include "system/baseitem/baseitem-service.h"
 #include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
@@ -37,8 +39,7 @@ const std::string image_monsters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQR
 DisplaySymbol image_object()
 {
     if (use_graphics) {
-        const auto &baseitem = BaseitemList::get_instance().pick_one_at_random();
-        return baseitem.symbol_config;
+        return BaseitemService::pick_one_at_random().get_symbol();
     }
 
     const auto color = randnum1<uint8_t>(15);

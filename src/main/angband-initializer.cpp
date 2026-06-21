@@ -25,6 +25,7 @@
 #include "market/building-initializer.h"
 #include "rumor/rumor-service.h"
 #include "system/angband-system.h"
+#include "system/baseitem/baseitem-service.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/quest-definition.h"
@@ -201,6 +202,7 @@ void init_angband(CreatureEntity &creature, bool no_term)
 
     init_note(_("[データの初期化中... (アイテム)]", "[Initializing arrays... (objects)]"));
     init_baseitems_info();
+    BaseitemService::initialize_baseitem_configs();
 
     init_note(_("[データの初期化中... (伝説のアイテム)]", "[Initializing arrays... (artifacts)]"));
     init_artifacts_info();

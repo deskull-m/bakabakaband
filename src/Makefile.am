@@ -1376,9 +1376,12 @@ hengband_SOURCES = \
 	system/gamevalue.h \
 	\
 	system/baseitem/baseitem-allocation.cpp system/baseitem/baseitem-allocation.h \
+	system/baseitem/baseitem-config.cpp system/baseitem/baseitem-config.h \
+	system/baseitem/baseitem-configs.cpp system/baseitem/baseitem-configs.h \
 	system/baseitem/baseitem-definition.cpp system/baseitem/baseitem-definition.h \
 	system/baseitem/baseitem-key.cpp system/baseitem/baseitem-key.h \
 	system/baseitem/baseitem-list.cpp system/baseitem/baseitem-list.h \
+	system/baseitem/baseitem-service.cpp system/baseitem/baseitem-service.h \
 	\
 	system/creature-party/creature-party-definition.cpp system/creature-party/creature-party-definition.h \
 	system/creature-party/creature-party-list.cpp system/creature-party/creature-party-list.h \
