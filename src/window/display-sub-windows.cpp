@@ -24,6 +24,7 @@
 #include "player/player-status-table.h"
 #include "player/player-status.h"
 #include "spell/spells-execution.h"
+#include "system/baseitem/baseitem-service.h"
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/enums/terrain/terrain-tag.h"
@@ -308,6 +309,7 @@ static void display_equipment(CreatureEntity &creature, const ItemTester &item_t
     }
 
     const auto &[wid, hgt] = term_get_size();
+    const auto &empty_symbol = BaseitemService::get_dummy_symbol();
     byte attr = TERM_WHITE;
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
         int cur_row = i - INVEN_MAIN_HAND;
@@ -345,7 +347,8 @@ static void display_equipment(CreatureEntity &creature, const ItemTester &item_t
         }
 
         if (show_item_graph) {
-            term_queue_bigchar(cur_col, cur_row, { item.get_symbol(), {} });
+            const auto ds = item.is_valid() ? item.get_symbol() : empty_symbol;
+            term_queue_bigchar(cur_col, cur_row, { ds, {} });
             if (use_bigtile) {
                 cur_col++;
             }
