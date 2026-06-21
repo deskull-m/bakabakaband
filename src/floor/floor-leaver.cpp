@@ -295,8 +295,8 @@ static void preserve_info(CreatureEntity &creature)
         delete_monster_idx(creature, i);
     }
 
-    for (short i = 0; i < INVEN_PACK; i++) {
-        auto *o_ptr = creature.inventory[i].get();
+    for (const auto i_idx : INVEN_PACK_SLOTS) {
+        auto *o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid()) {
             continue;
         }

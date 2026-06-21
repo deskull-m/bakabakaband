@@ -58,8 +58,8 @@ bool item_tester_hook_use(CreatureEntity &creature, const ItemEntity *o_ptr)
             return false;
         }
 
-        for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-            if ((creature.inventory[i].get() == o_ptr) && o_ptr->get_flags().has(TR_ACTIVATE)) {
+        for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+            if ((creature.inventory[i_idx].get() == o_ptr) && o_ptr->get_flags().has(TR_ACTIVATE)) {
                 return true;
             }
         }

@@ -29,7 +29,6 @@
  */
 COMMAND_CODE show_inventory(CreatureEntity &creature, int target_item, BIT_FLAGS mode, const ItemTester &item_tester)
 {
-    COMMAND_CODE i;
     int k, l, z = 0;
     COMMAND_CODE out_index[23]{};
     TERM_COLOR out_color[23]{};
@@ -38,15 +37,16 @@ COMMAND_CODE show_inventory(CreatureEntity &creature, int target_item, BIT_FLAGS
     auto col = command_gap;
     const auto &[wid, hgt] = term_get_size();
     auto len = wid - col - 1;
-    for (i = 0; i < INVEN_PACK; i++) {
-        const auto &item = *creature.inventory[i];
+    for (const auto i_idx : INVEN_PACK_SLOTS) {
+        const auto &item = *creature.inventory[i_idx];
         if (!item.is_valid()) {
             continue;
         }
 
-        z = i + 1;
+        z = enum2i(i_idx) + 1;
     }
 
+    COMMAND_CODE i;
     const auto inven_label = prepare_label_string(creature, USE_INVEN, item_tester);
     for (k = 0, i = 0; i < z; i++) {
         auto &item = *creature.inventory[i];
@@ -134,22 +134,22 @@ COMMAND_CODE show_inventory(CreatureEntity &creature, int target_item, BIT_FLAGS
  */
 void display_inventory(CreatureEntity &creature, const ItemTester &item_tester)
 {
-    int i, z = 0;
+    int z = 0;
     TERM_COLOR attr = TERM_WHITE;
     if (creature.inventory.empty()) {
         return;
     }
 
     const auto &[wid, hgt] = term_get_size();
-    for (i = 0; i < INVEN_PACK; i++) {
-        auto o_ptr = creature.inventory[i].get();
+    for (const auto i_idx : INVEN_PACK_SLOTS) {
+        auto o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
-        z = i + 1;
+        z = enum2i(i_idx) + 1;
     }
 
-    for (i = 0; i < z; i++) {
+    for (auto i = 0; i < z; i++) {
         if (i >= hgt) {
             break;
         }
@@ -191,7 +191,7 @@ void display_inventory(CreatureEntity &creature, const ItemTester &item_tester)
         }
     }
 
-    for (i = z; i < hgt; i++) {
+    for (auto i = z; i < hgt; i++) {
         term_erase(0, i);
     }
 }

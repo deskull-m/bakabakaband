@@ -305,8 +305,8 @@ bool lose_all_info(CreatureEntity &creature)
 {
     chg_virtue(creature, Virtue::KNOWLEDGE, -5);
     chg_virtue(creature, Virtue::ENLIGHTEN, -5);
-    for (int i = 0; i < INVEN_TOTAL; i++) {
-        auto *o_ptr = creature.inventory[i].get();
+    for (const auto i_idx : INVEN_ALL_SLOTS) {
+        auto *o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid() || o_ptr->is_fully_known()) {
             continue;
         }

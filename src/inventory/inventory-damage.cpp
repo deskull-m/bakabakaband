@@ -13,6 +13,7 @@
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "view/display-messages.h"
+#include <range/v3/view.hpp>
 
 /*!
  * @brief 手持ちのアイテムを指定確率で破損させる /
@@ -33,8 +34,8 @@ void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, in
     }
 
     /* Scan through the slots backwards */
-    for (short i = 0; i < INVEN_PACK; i++) {
-        auto &item = *creature.inventory[i];
+    for (const auto i_idx : INVEN_PACK_SLOTS | ranges::views::reverse) {
+        auto &item = *creature.inventory[i_idx];
         if (!item.is_valid()) {
             continue;
         }
@@ -65,9 +66,9 @@ void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, in
 
         msg_format(_("%s(%c)が%s壊れてしまった！", "%sour %s (%c) %s destroyed!"),
 #ifdef JP
-            item_name.data(), index_to_label(i), ((item.number > 1) ? ((amt == item.number) ? "全部" : (amt > 1 ? "何個か" : "一個")) : ""));
+            item_name.data(), index_to_label(i_idx), ((item.number > 1) ? ((amt == item.number) ? "全部" : (amt > 1 ? "何個か" : "一個")) : ""));
 #else
-            ((item.number > 1) ? ((amt == item.number) ? "All of y" : (amt > 1 ? "Some of y" : "One of y")) : "Y"), item_name.data(), index_to_label(i),
+            ((item.number > 1) ? ((amt == item.number) ? "All of y" : (amt > 1 ? "Some of y" : "One of y")) : "Y"), item_name.data(), index_to_label(i_idx),
             ((amt > 1) ? "were" : "was"));
 #endif
 
@@ -96,7 +97,7 @@ void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, in
 
         /* Destroy "amt" items */
 
-        inven_item_increase(creature, i, -amt);
-        inven_item_optimize(creature, i);
+        inven_item_increase(creature, i_idx, -amt);
+        inven_item_optimize(creature, i_idx);
     }
 }

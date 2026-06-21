@@ -532,11 +532,8 @@ void teleport_away_followable(CreatureEntity &creature, MONSTER_IDX m_idx)
     if (creature.get_mutations().has(PlayerMutationType::VTELEPORT) || CreatureClass(creature).equals(PlayerClassType::IMITATOR)) {
         follow = true;
     } else {
-        ItemEntity *o_ptr;
-        INVENTORY_IDX i;
-
-        for (i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-            o_ptr = creature.inventory[i].get();
+        for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+            const auto *o_ptr = creature.inventory[i_idx].get();
             if (o_ptr->is_valid() && !o_ptr->is_cursed() && o_ptr->get_flags().has(TR_TELEPORT)) {
                 follow = true;
                 break;

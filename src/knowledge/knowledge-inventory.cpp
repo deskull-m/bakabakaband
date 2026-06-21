@@ -177,8 +177,8 @@ static void pad_and_print_header(int label_number, FILE *fff)
 static int show_wearing_equipment_resistances(CreatureEntity &creature, ItemKindType tval, int label_number_initial, FILE *fff)
 {
     auto label_number = label_number_initial;
-    for (short i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        const auto &item = *creature.inventory[i];
+    for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+        const auto &item = *creature.inventory[i_idx];
         if (!item.has_knowledge(tval)) {
             continue;
         }
@@ -201,8 +201,8 @@ static int show_wearing_equipment_resistances(CreatureEntity &creature, ItemKind
 static int show_holding_equipment_resistances(CreatureEntity &creature, ItemKindType tval, int label_number_initial, FILE *fff)
 {
     auto label_number = label_number_initial;
-    for (short i = 0; i < INVEN_PACK; i++) {
-        const auto &item = *creature.inventory[i];
+    for (const auto i_idx : INVEN_PACK_SLOTS) {
+        const auto &item = *creature.inventory[i_idx];
         if (!item.has_knowledge(tval)) {
             continue;
         }

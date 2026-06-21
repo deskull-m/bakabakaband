@@ -107,9 +107,9 @@ static std::array<tr_type, 6> lite_flags = {
  */
 static void process_cursed_equipment_characteristics(CreatureEntity &creature, uint16_t mode, char_stat &char_stat)
 {
-    int max_i = (mode & DP_WP) ? INVEN_BOW + 1 : INVEN_TOTAL;
-    for (int i = INVEN_MAIN_HAND; i < max_i; i++) {
-        auto *o_ptr = creature.inventory[i].get();
+    const auto range = (mode & DP_WP) ? INVEN_WEAPON_SLOTS : INVEN_WIELDING_SLOTS;
+    for (const auto i_idx : range) {
+        auto *o_ptr = creature.inventory[i_idx].get();
         auto is_known = o_ptr->is_known();
         auto is_sensed = is_known || o_ptr->ident.has(IdentificationFlag::SENSE);
         auto flags = o_ptr->get_flags_known();
@@ -156,9 +156,9 @@ static void process_cursed_equipment_characteristics(CreatureEntity &creature, u
  */
 static void process_light_equipment_characteristics(CreatureEntity &creature, all_player_flags *f, uint16_t mode, char_stat &char_stat)
 {
-    int max_i = (mode & DP_WP) ? INVEN_BOW + 1 : INVEN_TOTAL;
-    for (int i = INVEN_MAIN_HAND; i < max_i; i++) {
-        auto *o_ptr = creature.inventory[i].get();
+    const auto range = (mode & DP_WP) ? INVEN_WEAPON_SLOTS : INVEN_WIELDING_SLOTS;
+    for (const auto i_idx : range) {
+        auto *o_ptr = creature.inventory[i_idx].get();
         auto flags = o_ptr->get_flags_known();
 
         auto b = false;
@@ -211,9 +211,9 @@ static void process_light_equipment_characteristics(CreatureEntity &creature, al
  */
 static void process_inventory_characteristic(CreatureEntity &creature, tr_type flag, all_player_flags *f, uint16_t mode, char_stat &char_stat)
 {
-    int max_i = (mode & DP_WP) ? INVEN_BOW + 1 : INVEN_TOTAL;
-    for (int i = INVEN_MAIN_HAND; i < max_i; i++) {
-        auto *o_ptr = creature.inventory[i].get();
+    const auto range = (mode & DP_WP) ? INVEN_WEAPON_SLOTS : INVEN_WIELDING_SLOTS;
+    for (const auto i_idx : range) {
+        auto *o_ptr = creature.inventory[i_idx].get();
         auto flags = o_ptr->get_flags_known();
 
         auto f_imm = flag_to_greater_flag.find(flag);
