@@ -11,6 +11,7 @@
 #include "object/item-use-flags.h"
 #include "object/object-info.h"
 #include "player/player-status-flags.h"
+#include "system/baseitem/baseitem-service.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "term/gameterm.h"
@@ -88,6 +89,7 @@ COMMAND_CODE show_equipment(CreatureEntity &creature, int target_item, BIT_FLAGS
 
     col = (len > wid - _(6, 4)) ? 0 : (wid - len - 1);
     const auto equip_label = prepare_label_string(creature, USE_EQUIP, item_tester);
+    const auto &empty_symbol = BaseitemService::get_dummy_symbol();
     for (j = 0; j < k; j++) {
         i = out_index[j];
         const auto &item = *creature.inventory[i];
@@ -109,7 +111,8 @@ COMMAND_CODE show_equipment(CreatureEntity &creature, int target_item, BIT_FLAGS
         put_str(head, j + 1, col);
         int cur_col = col + 3;
         if (show_item_graph) {
-            term_queue_bigchar(cur_col, j + 1, { item.get_symbol(), {} });
+            const auto ds = item.is_valid() ? item.get_symbol() : empty_symbol;
+            term_queue_bigchar(cur_col, j + 1, { ds, {} });
             if (use_bigtile) {
                 cur_col++;
             }
