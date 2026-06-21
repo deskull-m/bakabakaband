@@ -112,11 +112,10 @@ static errr set_art_flags(const nlohmann::json &flag_data, ArtifactType &artifac
  */
 errr parse_artifacts_info(nlohmann::json &art_data)
 {
-    if (!art_data["id"].is_number_integer()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    int int_id;
+    if (auto err = info_set_integer(art_data["id"], int_id, true, Range(0, 9999))) {
+        return err;
     }
-
-    const auto int_id = art_data["id"].get<int>();
     if (int_id < error_idx) {
         return PARSE_ERROR_NON_SEQUENTIAL_RECORDS;
     }
@@ -170,7 +169,7 @@ errr parse_artifacts_info(nlohmann::json &art_data)
         return err;
     }
     if (auto err = info_set_integer(art_data["damage_bonus"], artifact.to_d, false, Range(-99, 99))) {
-        msg_format(_("アーティファクトの命中補正値読込失敗。ID: '%d'。", "Failed to load damage bonus of artifact. ID: '%d'."), error_idx);
+        msg_format(_("アーティファクトのダメージ補正値読込失敗。ID: '%d'。", "Failed to load damage bonus of artifact. ID: '%d'."), error_idx);
         return err;
     }
     if (auto err = info_set_integer(art_data["ac_bonus"], artifact.to_a, false, Range(-999, 999))) {
