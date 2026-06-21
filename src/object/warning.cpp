@@ -32,10 +32,10 @@ std::shared_ptr<ItemEntity> choose_warning_item(CreatureEntity &creature)
     }
 
     std::vector<int> candidates;
-    for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        const auto &item = creature.inventory[i];
+    for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+        const auto &item = creature.inventory[i_idx];
         if (item->get_flags().has(TR_WARNING)) {
-            candidates.push_back(i);
+            candidates.push_back(i_idx);
         }
     }
 

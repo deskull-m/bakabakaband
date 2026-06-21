@@ -38,14 +38,14 @@
  */
 void identify_pack(CreatureEntity &creature)
 {
-    for (INVENTORY_IDX i = 0; i < INVEN_TOTAL; i++) {
-        auto *o_ptr = creature.inventory[i].get();
+    for (const auto i_idx : INVEN_ALL_SLOTS) {
+        auto *o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
 
         identify_item(creature, o_ptr);
-        autopick_alter_item(creature, i, false);
+        autopick_alter_item(creature, i_idx, false);
     }
 }
 

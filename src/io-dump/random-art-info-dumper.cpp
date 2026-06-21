@@ -82,13 +82,13 @@ void spoil_random_artifact(CreatureEntity &creature)
     spoiler_underline("Random artifacts list.\r", ofs);
     for (const auto &[tval_list, name] : group_artifact_list) {
         for (auto tval : tval_list) {
-            for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-                auto &item = *creature.inventory[i];
+            for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+                auto &item = *creature.inventory[i_idx];
                 spoil_random_artifact_aux(creature, item, tval, ofs);
             }
 
-            for (int i = 0; i < INVEN_PACK; i++) {
-                auto &item = *creature.inventory[i];
+            for (const auto i_idx : INVEN_PACK_SLOTS) {
+                auto &item = *creature.inventory[i_idx];
                 spoil_random_artifact_aux(creature, item, tval, ofs);
             }
 

@@ -9,6 +9,7 @@
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
 #include "inventory/inventory-object.h"
+#include "inventory/inventory-slot-types.h"
 #include "mind/mind-mirror-master.h"
 #include "monster-attack/monster-attack-player.h"
 #include "object/object-info.h"
@@ -126,7 +127,7 @@ static void move_item_to_monster(MonsterAttackPlayer *monap_ptr)
 void process_eat_item(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
     for (int i = 0; i < 10; i++) {
-        auto i_idx = randnum0<short>(INVEN_PACK);
+        const auto i_idx = rand_choice(INVEN_PACK_SLOTS);
         monap_ptr->o_ptr = creature.inventory[i_idx].get();
         if (!monap_ptr->o_ptr->is_valid()) {
             continue;
@@ -155,7 +156,7 @@ void process_eat_item(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 void process_eat_food(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
     for (int i = 0; i < 10; i++) {
-        auto i_idx = randnum0<short>(INVEN_PACK);
+        const auto i_idx = rand_choice(INVEN_PACK_SLOTS);
         monap_ptr->o_ptr = creature.inventory[i_idx].get();
         if (!monap_ptr->o_ptr->is_valid()) {
             continue;

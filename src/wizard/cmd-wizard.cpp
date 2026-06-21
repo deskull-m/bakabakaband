@@ -40,6 +40,7 @@
 #include "world/world.h"
 
 #include <algorithm>
+#include <range/v3/view.hpp>
 #include <sstream>
 #include <string>
 #include <tuple>
@@ -278,9 +279,9 @@ bool exe_cmd_debug(CreatureEntity &creature, char cmd)
         gain_exp(creature, command_arg ? command_arg : (creature.get_exp() + 1));
         return true;
     case 'X':
-        for (INVENTORY_IDX i = INVEN_TOTAL - 1; i >= 0; i--) {
-            if (creature.inventory[i]->is_valid()) {
-                drop_from_inventory(creature, i, 999);
+        for (const auto i_idx : INVEN_ALL_SLOTS | ranges::views::reverse) {
+            if (creature.inventory[i_idx]->is_valid()) {
+                drop_from_inventory(creature, i_idx, 999);
             }
         }
         player_outfit(creature);

@@ -416,15 +416,15 @@ tl::optional<int> display_player(CreatureEntity &creature, const int tmp_mode)
  */
 void display_player_equippy(CreatureEntity &creature, TERM_LEN y, TERM_LEN x, BIT_FLAGS16 mode)
 {
-    const auto max_i = (mode & DP_WP) ? INVEN_BOW + 1 : INVEN_TOTAL;
-    for (int i = INVEN_MAIN_HAND; i < max_i; i++) {
-        const auto &item = *creature.inventory[i];
+    const auto range = (mode & DP_WP) ? INVEN_WEAPON_SLOTS : INVEN_WIELDING_SLOTS;
+    for (const auto i_idx : range) {
+        const auto &item = *creature.inventory[i_idx];
         auto symbol = item.get_symbol();
         if (!equippy_chars || !item.is_valid()) {
             symbol.color = TERM_DARK;
             symbol.character = ' ';
         }
 
-        term_putch(x + i - INVEN_MAIN_HAND, y, symbol);
+        term_putch(x + i_idx - INVEN_MAIN_HAND, y, symbol);
     }
 }

@@ -270,8 +270,8 @@ void wiz_modify_item_activation(CreatureEntity &creature)
  */
 void wiz_identify_full_inventory(CreatureEntity &creature)
 {
-    for (int i = 0; i < INVEN_TOTAL; i++) {
-        auto *o_ptr = creature.inventory[i].get();
+    for (const auto i_idx : INVEN_ALL_SLOTS) {
+        auto *o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid()) {
             continue;
         }

@@ -310,8 +310,8 @@ bool curse_weapon_object(CreatureEntity &creature, bool force, ItemEntity &item)
 void brand_bolts(CreatureEntity &creature)
 {
 
-    for (auto i = 0; i < INVEN_PACK; i++) {
-        auto &item = *creature.inventory[i];
+    for (const auto i_idx : INVEN_PACK_SLOTS) {
+        auto &item = *creature.inventory[i_idx];
         if (item.bi_key.tval() != ItemKindType::BOLT) {
             continue;
         }
