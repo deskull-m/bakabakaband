@@ -25,6 +25,8 @@
 #include "sv-definition/sv-ring-types.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/artifact-type-definition.h"
+#include "system/baseitem/baseitem-config.h"
+#include "system/baseitem/baseitem-configs.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/dungeon/quest-definition.h"
@@ -1603,18 +1605,20 @@ std::string ItemEntity::build_activation_description_dragon_breath() const
  */
 uint8_t ItemEntity::get_color() const
 {
+    const auto &baseitem_configs = BaseitemConfigs::get_instance();
     const auto &baseitem = this->get_baseitem();
     const auto flavor = baseitem.flavor;
     if (flavor != 0) {
-        return BaseitemList::get_instance().get_baseitem(flavor).symbol_config.color;
+        return baseitem_configs.get_color(flavor);
     }
 
-    const auto &symbol_config = baseitem.symbol_config;
+    const auto &symbol_config = baseitem_configs.get_config(this->bi_id);
     auto has_attr = this->is_valid();
     has_attr &= this->is_corpse();
-    has_attr &= symbol_config.color == TERM_DARK;
+    const auto color = symbol_config.get_color();
+    has_attr &= color == TERM_DARK;
     if (!has_attr) {
-        return symbol_config.color;
+        return color;
     }
 
     return this->get_monrace().symbol_config.color;
@@ -1630,7 +1634,8 @@ char ItemEntity::get_character() const
 {
     const auto &baseitem = this->get_baseitem();
     const auto flavor = baseitem.flavor;
-    return flavor ? BaseitemList::get_instance().get_baseitem(flavor).symbol_config.character : baseitem.symbol_config.character;
+    const auto &configs = BaseitemConfigs::get_instance();
+    return flavor > 0 ? configs.get_character(flavor) : configs.get_character(this->bi_id);
 }
 
 /*!
