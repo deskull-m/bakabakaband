@@ -15,7 +15,7 @@ public:
 
 private:
     CreatureEntity &creature;
-    const CreatureEntity *m_ptr;
+    const CreatureEntity &target;
     void change_virtue_non_beginner();
     void change_virtue_unique();
     void change_virtue_good_evil();
