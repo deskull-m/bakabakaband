@@ -30,7 +30,7 @@ struct birther {
 
     short stat_max[6]{}; /* Current "maximal" stat values */
     short stat_max_max[6]{}; /* Maximal "maximal" stat values */
-    int player_hp[PY_MAX_LEVEL]{};
+    int hp_table[PY_MAX_LEVEL]{};
 
     int16_t patron{}; /*! パトロンのID */
 

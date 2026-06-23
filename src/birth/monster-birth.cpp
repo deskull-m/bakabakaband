@@ -696,7 +696,7 @@ void apply_monrace_to_player(CreatureEntity &creature, MonraceId monrace_id)
         creature.set_stat_use(i, creature.get_stat_max(i));
     }
 
-    // HP ダイスをモンスター種族のものに揃える (player_hp[] は get_extra で再計算)
+    // HP ダイスをモンスター種族のものに揃える (hp_table[] は get_extra で再計算)
     creature.hit_dice = monrace.hit_dice;
 
     // 速度: モンスターの基本速度を採用 (110 = 通常)

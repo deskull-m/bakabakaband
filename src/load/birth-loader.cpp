@@ -38,7 +38,7 @@ void load_quick_start(void)
     constexpr int OLD_PY_MAX_LEVEL = 50;
     const int hp_count = loading_savefile_version_is_older_than(49) ? OLD_PY_MAX_LEVEL : PY_MAX_LEVEL;
     for (int i = 0; i < hp_count; i++) {
-        previous_char.player_hp[i] = rd_s16b();
+        previous_char.hp_table[i] = rd_s16b();
     }
 
     previous_char.patron = rd_s16b();

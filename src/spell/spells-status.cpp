@@ -235,30 +235,8 @@ void roll_hitdice(CreatureEntity &creature, spell_operation options)
         return;
     }
 
-    constexpr auto roll_num = 3 + PY_MAX_LEVEL - 1;
-    const auto expected_hp = creature.hit_dice.maxroll() + creature.hit_dice.floored_expected_value_multiplied_by(roll_num);
-    const auto min_value = expected_hp * 3 / 4;
-    const auto max_value = expected_hp * 5 / 4;
-
-    /* Rerate */
-    while (true) {
-        /* Pre-calculate level 1 hitdice */
-        creature.player_hp[0] = creature.hit_dice.maxroll();
-
-        for (int i = 1; i < 4; i++) {
-            creature.player_hp[0] += creature.hit_dice.roll();
-        }
-
-        /* Roll the hitpoint values */
-        for (int i = 1; i < PY_MAX_LEVEL; i++) {
-            creature.player_hp[i] = creature.player_hp[i - 1] + creature.hit_dice.roll();
-        }
-
-        /* Require "valid" hitpoints at highest level */
-        if ((creature.player_hp[PY_MAX_LEVEL - 1] >= min_value) && (creature.player_hp[PY_MAX_LEVEL - 1] <= max_value)) {
-            break;
-        }
-    }
+    // hp_table[] のロールはプレイヤー・モンスター共通の処理に集約。
+    creature.roll_hp_table();
 
     creature.knowledge &= ~(KNOW_HPRATE);
 

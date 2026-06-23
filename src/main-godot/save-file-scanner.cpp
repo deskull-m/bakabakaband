@@ -456,7 +456,7 @@ namespace {
             strip(4); // au (s32)
             strip(6 * 2); // stat_max[A_MAX=6] (s16 各)
             strip(6 * 2); // stat_max_max[A_MAX=6]
-            strip(50 * 2); // player_hp[PY_MAX_LEVEL=50] (s16 各)
+            strip(50 * 2); // hp_table[PY_MAX_LEVEL=50] (s16 各)
             strip(2); // chaos_patron
             strip(8 * 2); // vir_types[8]
             for (int i = 0; i < 4; ++i) {

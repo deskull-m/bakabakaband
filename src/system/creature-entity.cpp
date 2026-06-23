@@ -1719,7 +1719,7 @@ byte CreatureEntity::get_temporary_speed() const
 
 int CreatureEntity::calc_life_rating() const
 {
-    const auto actual_hp = this->player_hp[PY_MAX_LEVEL - 1];
+    const auto actual_hp = this->hp_table[PY_MAX_LEVEL - 1];
 
     // ダイスによる上昇回数は52回（初期3回+LV50までの49回）なので
     // 期待値計算のため2で割っても端数は出ない
@@ -2222,6 +2222,34 @@ int CreatureEntity::calc_max_hp_con_bonus() const
 {
     const auto index = stat_value_to_table_index(this->get_stat_use(A_CON));
     return (static_cast<int>(adj_con_mhp[index]) - 128) * this->get_level() / 4;
+}
+
+void CreatureEntity::roll_hp_table()
+{
+    constexpr auto roll_num = 3 + PY_MAX_LEVEL - 1;
+    const auto expected_hp = this->hit_dice.maxroll() + this->hit_dice.floored_expected_value_multiplied_by(roll_num);
+    const auto min_value = expected_hp * 3 / 4;
+    const auto max_value = expected_hp * 5 / 4;
+
+    /* Rerate */
+    while (true) {
+        /* Pre-calculate level 1 hitdice */
+        this->hp_table[0] = this->hit_dice.maxroll();
+
+        for (int i = 1; i < 4; i++) {
+            this->hp_table[0] += this->hit_dice.roll();
+        }
+
+        /* Roll the hitpoint values */
+        for (int i = 1; i < PY_MAX_LEVEL; i++) {
+            this->hp_table[i] = this->hp_table[i - 1] + this->hit_dice.roll();
+        }
+
+        /* Require "valid" hitpoints at highest level */
+        if ((this->hp_table[PY_MAX_LEVEL - 1] >= min_value) && (this->hp_table[PY_MAX_LEVEL - 1] <= max_value)) {
+            break;
+        }
+    }
 }
 
 void CreatureEntity::set_max_hp(int full_max_hp)
