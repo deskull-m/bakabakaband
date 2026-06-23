@@ -292,6 +292,20 @@ public:
     void roll_hp_table();
 
     /*!
+     * @brief 敵モンスターの最大HPをレベル別HPテーブル経由で算出する (スケール保存)
+     * @param force_max 各レベルのロールを最大値で固定するか (FORCE_MAXHP 用)
+     * @return 実効レベルにおける基礎最大HP (hp_table[level-1] 相当)
+     * @details モンスター種族の全HPダイス (hit_dice) の期待値を実効レベル
+     *          (monrace.level/2) に均等配分する per-level ダイス (1d s) を導き、
+     *          1 レベルずつ累積して hp_table[] を埋める。s を較正することで累積HPの
+     *          期待値が従来の単発ロール (hit_dice.roll()) と一致し、分散のみ低下する
+     *          (より安定したHP)。プレイヤー用 roll_hp_table() の前方加重 (Lv1 maxroll
+     *          + 3 ロール) は敵HPのスケールを膨らませるため用いない。呼出側で事前に
+     *          hit_dice にモンスター種族のダイスを設定しておくこと。
+     */
+    int roll_monster_hp_table(bool force_max);
+
+    /*!
      * @brief クリーチャーの速度を取得
      * @return 速度値
      */

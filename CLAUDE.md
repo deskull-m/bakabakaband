@@ -490,6 +490,40 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
 等価のため残置しているが、動的減少を導入する場合はこれらも `refresh_max_hp()`
 経由に切り替えること。
 
+#### レベル別HPテーブル (`hp_table[]`) と敵モンスターHPのテーブル式
+
+プレイヤーとモンスターの基礎最大HPは `CreatureEntity::hp_table[PY_MAX_LEVEL]`
+(旧 `player_hp`、レベル別累積HPテーブル) を共通の土台とする。
+
+- `roll_hp_table()`: **プレイヤー (および `player_birth_as_monster` のモンスター運用)**
+  用のローラー。Lv1 = `hit_dice.maxroll()` + 3 ロール、以降は各レベルで `hit_dice`
+  を 1 回ずつ累積する前方加重型。`hit_dice` は職業・種族由来の per-level ダイス。
+  最終レベルHPが期待値の 75〜125% に収まるまで振り直す。`roll_hitdice()` (spell)
+  から呼ばれ、プレイヤー固有の UI 更新 (体力ランク / 再描画) はそちらに残す。
+- `roll_monster_hp_table(force_max)`: **敵モンスター生成 (`place_monster_one`)** 用の
+  ローラー。モンスター種族の `hit_dice` は「全HPの単発ロール」スケールなので、その
+  期待値 `num*(sides+1)/2` を実効レベル `L`(= `get_level()` = `monrace.level/2`,
+  `[1, PY_MAX_LEVEL]` にクランプ) に均等配分する per-level ダイス `1d s`
+  (`s = round(num*(sides+1)/L) - 1`, 最低 1d1) を導き、L レベル分を累積して
+  `hp_table[0..L-1]` を埋め `hp_table[L-1]` を返す。**累積HPの期待値は従来の
+  単発ロール `hit_dice.roll()` と一致し (スケール保存)、分散のみ低下する**
+  (より安定したHP)。プレイヤー用の前方加重 (Lv1 maxroll + 3 ロール) は敵HPの
+  スケールを膨らませるため**用いない**。
+
+  - サイズ補正 (`is_huge()`/`is_large()` 等)・CON 補正 (`calc_max_hp_con_bonus()`)・
+    状態補正 (`calc_max_hp_status_bonus()`)・nightmare 倍化・`MONSTER_MAXHP` クランプ
+    は従来通りこの基礎HPの**後段で**乗算/加算する (一切変更なし)。
+  - `calc_min_max_hp()` (= `level+1`) の下限クランプも従来通り後段で効く。これにより
+    「レベルに対し極端に低い `hit_dice` の特殊モンスター (例: Lv50 で 1d3)」も
+    従来と同じく `level+1` に切り上げられ、テーブル式でも実HPは不変。
+  - 実データ (約 2,300 種) での全パイプライン検証では new/old 最終HP比は
+    平均 1.00 / 中央値 1.00 / 99.4% が ±10% 以内 / 1.3 倍超ゼロ。
+
+  **段階移行ステータス:** これは「敵モンスター最大HPのテーブル式移行」の第 1 段
+  (スケール保存=バランス不変で算出経路をテーブル式に統一) である。今後の段階として、
+  per-level ダイスを JSON データ駆動化する案や、モンスターのレベルアップに伴う
+  HP 成長 (`hp_table[]` を生成時より上の添字へ伸ばす) 等が想定される。
+
 ### `psex` の SEX_NONE
 
 `player_sex::SEX_NONE = 4` (MAX_SEXES = 5) が追加され、`init_monster_profile()` で

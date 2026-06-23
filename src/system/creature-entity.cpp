@@ -2252,6 +2252,30 @@ void CreatureEntity::roll_hp_table()
     }
 }
 
+int CreatureEntity::roll_monster_hp_table(bool force_max)
+{
+    // 実効レベル (敵モンスターは get_level() = monrace.level/2)。hp_table[] の
+    // 添字に収めるため [1, PY_MAX_LEVEL] にクランプする。
+    const auto level = std::clamp<int>(this->get_level(), 1, PY_MAX_LEVEL);
+
+    // per-level ダイス 1d s を導く。E[1d s] = s_avg = (s+1)/2 が
+    // monrace 全HP期待値 (num*(sides+1)/2) を level で割った値となるよう s を較正する。
+    //   (s+1)/2 = num*(sides+1)/(2*level)  =>  s = num*(sides+1)/level - 1
+    // 整数丸め (四捨五入) で算出し、最低でも 1d1 を保証する。これにより level
+    // レベル分を累積した期待値が従来の単発ロールと一致する (スケール保存)。
+    const auto numerator = this->hit_dice.num * (this->hit_dice.sides + 1);
+    const auto per_level_sides = std::max(1, (numerator + level / 2) / level - 1);
+    const Dice per_level_die(1, per_level_sides);
+
+    auto total = 0;
+    for (auto i = 0; i < level; i++) {
+        total += force_max ? per_level_die.maxroll() : per_level_die.roll();
+        this->hp_table[i] = total;
+    }
+
+    return total;
+}
+
 void CreatureEntity::set_max_hp(int full_max_hp)
 {
     this->max_maxhp = full_max_hp;
