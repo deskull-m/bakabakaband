@@ -558,10 +558,10 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     }
 
     // 耐久(CON)に基づく最大HP補正をプレイヤーと共通の式で常に適用する。
-    // 低CON個体では負値となり得るため、最低1HPを保証する。
+    // 低CON個体では負値となり得るため、プレイヤーと共通の下限 (レベル+1) を保証する。
     {
         auto hp = m_ptr->max_maxhp + m_ptr->calc_max_hp_con_bonus();
-        m_ptr->max_maxhp = std::clamp(hp, 1, MONSTER_MAXHP);
+        m_ptr->max_maxhp = std::clamp(hp, m_ptr->calc_min_max_hp(), MONSTER_MAXHP);
     }
 
     m_ptr->maxhp = m_ptr->max_maxhp;
