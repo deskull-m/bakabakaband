@@ -32,8 +32,10 @@
 #include "player/player-status-flags.h"
 #include "player/player-status-table.h"
 #include "player/race-info-table.h"
+#include "realm/realm-hex-numbers.h"
 #include "realm/realm-song-numbers.h"
 #include "realm/realm-types.h"
+#include "spell-realm/spells-hex.h"
 #include "system/angband-system.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -2220,4 +2222,29 @@ int CreatureEntity::calc_max_hp_con_bonus() const
 {
     const auto index = stat_value_to_table_index(this->get_stat_use(A_CON));
     return (static_cast<int>(adj_con_mhp[index]) - 128) * this->get_level() / 4;
+}
+
+int CreatureEntity::calc_max_hp_status_bonus()
+{
+    int bonus = 0;
+    if (this->is_hero()) {
+        bonus += 10;
+    }
+    if (this->is_shero()) {
+        bonus += 30;
+    }
+    if (this->get_timed_effect(CreatureTimedEffect::TSUYOSHI) != 0) {
+        bonus += 50;
+    }
+
+    // 呪術 (HEX) はプレイヤー専用。モンスターでは spell_hex_data が無く常に false。
+    SpellHex spell_hex(*this);
+    if (spell_hex.is_spelling_specific(HEX_XTRA_MIGHT)) {
+        bonus += 15;
+    }
+    if (spell_hex.is_spelling_specific(HEX_BUILDING)) {
+        bonus += 60;
+    }
+
+    return bonus;
 }

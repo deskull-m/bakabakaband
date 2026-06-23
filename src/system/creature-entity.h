@@ -232,6 +232,15 @@ public:
     }
 
     /*!
+     * @brief 一時的な状態による最大HP補正値を計算する (プレイヤー・モンスター共通)
+     * @return 加算HP (英雄化 +10 / 狂戦士化 +30 / つよしスペシャル +50 /
+     *         呪術 HEX_XTRA_MIGHT +15 / HEX_BUILDING +60 の合計)
+     * @details 呪術 (HEX) はプレイヤー専用のため、モンスターでは spell_hex_data が
+     *          無く常に 0 となる。英雄化等の時限効果は timed_effects_map で共通管理。
+     */
+    int calc_max_hp_status_bonus();
+
+    /*!
      * @brief クリーチャーの速度を取得
      * @return 速度値
      */

@@ -444,21 +444,7 @@ static void update_max_hitpoints(CreatureEntity &creature)
     if (mhp < creature.calc_min_max_hp()) {
         mhp = creature.calc_min_max_hp();
     }
-    if (creature.is_hero()) {
-        mhp += 10;
-    }
-    if (creature.is_shero()) {
-        mhp += 30;
-    }
-    if (creature.get_timed_effect(CreatureTimedEffect::TSUYOSHI)) {
-        mhp += 50;
-    }
-    if (SpellHex(creature).is_spelling_specific(HEX_XTRA_MIGHT)) {
-        mhp += 15;
-    }
-    if (SpellHex(creature).is_spelling_specific(HEX_BUILDING)) {
-        mhp += 60;
-    }
+    mhp += creature.calc_max_hp_status_bonus();
     if (creature.maxhp == mhp) {
         return;
     }
