@@ -205,6 +205,23 @@ public:
     }
 
     /*!
+     * @brief 能力値の内部値 (stat_use 等) を adj_* テーブルの索引に変換する
+     * @param stat_value 能力値の内部値 (30 = 表示 3.0 〜 STAT_MAX_VALUE)
+     * @return 0 〜 STAT_TABLE_SIZE-1 にクランプした索引
+     * @details プレイヤー・モンスター共通。表示 3.0 未満や上限超過でも
+     *          配列範囲外参照を起こさないようガードを内蔵する。
+     */
+    static int stat_value_to_table_index(int stat_value);
+
+    /*!
+     * @brief 耐久 (CON) に基づく最大HP補正値を計算する (プレイヤー・モンスター共通)
+     * @return レベルと CON に応じた加算HP
+     * @details adj_con_mhp テーブルを CON の内部値から引き、(値 - 128) * レベル / 4 を返す。
+     *          索引算出には stat_value_to_table_index() のガードを用いる。
+     */
+    int calc_max_hp_con_bonus() const;
+
+    /*!
      * @brief クリーチャーの速度を取得
      * @return 速度値
      */

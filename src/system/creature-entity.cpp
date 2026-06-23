@@ -30,6 +30,7 @@
 #include "player/player-personality.h"
 #include "player/player-realm.h"
 #include "player/player-status-flags.h"
+#include "player/player-status-table.h"
 #include "player/race-info-table.h"
 #include "realm/realm-song-numbers.h"
 #include "realm/realm-types.h"
@@ -2195,4 +2196,28 @@ bool CreatureEntity::has_anti_tele() const
 void CreatureEntity::increment_seen_count() const
 {
     MonraceRecords::get_instance().increment_seen_count(this->get_r_idx());
+}
+
+int CreatureEntity::stat_value_to_table_index(int stat_value)
+{
+    // 内部 30-2000 -> 索引 0-197 へ変換 (PlayerBasicStatistics::update_index_status と同一式)。
+    // 30-180:   0-15  (旧 表示 3-18 相当)
+    // 190-2000: 16-197 (表示 18.0 超〜200.0 相当)
+    int index;
+    if (stat_value <= 180) {
+        index = (stat_value - 30) / 10;
+    } else if (stat_value <= STAT_MAX_VALUE) {
+        index = 15 + (stat_value - 180) / 10;
+    } else {
+        index = static_cast<int>(STAT_TABLE_SIZE) - 1;
+    }
+
+    // 表示 3.0 未満 (index < 0) や上限超過でも配列範囲に収める。
+    return std::clamp(index, 0, static_cast<int>(STAT_TABLE_SIZE) - 1);
+}
+
+int CreatureEntity::calc_max_hp_con_bonus() const
+{
+    const auto index = stat_value_to_table_index(this->get_stat_use(A_CON));
+    return (static_cast<int>(adj_con_mhp[index]) - 128) * this->get_level() / 4;
 }
