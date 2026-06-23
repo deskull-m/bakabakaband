@@ -222,6 +222,16 @@ public:
     int calc_max_hp_con_bonus() const;
 
     /*!
+     * @brief 最大HPの下限値を返す (プレイヤー・モンスター共通)
+     * @return レベル + 1
+     * @details 各種補正の結果が極端に小さくなっても、最低でもこの値を最大HPとして保証する。
+     */
+    int calc_min_max_hp() const
+    {
+        return this->get_level() + 1;
+    }
+
+    /*!
      * @brief クリーチャーの速度を取得
      * @return 速度値
      */

@@ -441,8 +441,8 @@ static void update_max_hitpoints(CreatureEntity &creature)
         mhp = mhp * (110 + (((creature.get_level() + 40) * (creature.get_level() + 40) - 1550) / 110)) / 100;
     }
 
-    if (mhp < creature.get_level() + 1) {
-        mhp = creature.get_level() + 1;
+    if (mhp < creature.calc_min_max_hp()) {
+        mhp = creature.calc_min_max_hp();
     }
     if (creature.is_hero()) {
         mhp += 10;
