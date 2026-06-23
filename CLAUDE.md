@@ -451,6 +451,45 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
 スケールアップ) の両方で同じ計算式を使用。さらに `c` ステータス画面 (`display_player`)
 の `ENTRY_HP_REGEN`/`ENTRY_MP_REGEN` 表示もモンスター inspect 時に同じ式で表示される。
 
+### 最大HP算出の統一 (`maxhp` / `max_maxhp` の意味統一)
+
+プレイヤーとモンスターの最大HP算出を観点ごとに `CreatureEntity` の共通メソッドへ
+集約している。各補正は **プレイヤー (`update_max_hitpoints`) とモンスター生成
+(`place_monster_one`) の両経路から同一メソッドを呼ぶ**ことで一致させる。
+
+- `calc_max_hp_con_bonus()`: CON(耐久)補正 `(adj_con_mhp[idx] - 128) * level / 4`。
+  索引は `stat_value_to_table_index()` で配列範囲にクランプ (モンスターは
+  `stat_index[]` を計算しないため `stat_use` から都度算出)。
+- `calc_min_max_hp()`: 最大HP下限 `level + 1`。
+- `calc_max_hp_status_bonus()`: 一時状態補正 (英雄化/狂戦士化/つよし/呪術)。
+  HEX はプレイヤー専用だが `SpellHex(monster)` は安全に常時 false。
+
+**`maxhp` / `max_maxhp` の意味は以下に統一済み (プレイヤー・モンスター共通):**
+
+| フィールド | 意味 |
+|---|---|
+| `max_maxhp` | 本来の最大HP (一時減少前のキャップ)。経験値計算・dealt_damage 上限・捕獲判定など一時減少に左右されるべきでない処理が参照。getter は `get_max_maxhp()` |
+| `maxhp` | 現在の最大HP (一時減少を反映した実効値)。HP回復上限・被ダメージ・表示はこちら。getter は `get_max_hp()` |
+
+旧来プレイヤーの `max_maxhp` は未設定 (0) だったが、本統一で
+`update_max_hitpoints` が `set_max_hp(mhp)` を呼び **プレイヤーでも `max_maxhp` を
+本来の最大HPとして維持**するようになった (プレイヤー専用 `on_take_hit` を持つため
+従来も実害は無かったが、意味が一貫した)。
+
+**拡張点 (将来の「最大HP一時減少」ステータス異常):**
+
+- `get_maxhp_reduction()` (virtual, 既定 0): 一時的な最大HP減少量を返す拡張シーム。
+- `set_max_hp(full)`: `max_maxhp = full` を確定し `refresh_max_hp()` を呼ぶ唯一の窓口。
+- `refresh_max_hp()`: `maxhp = max(1, max_maxhp - get_maxhp_reduction())` を反映し、
+  現在HPが超過していれば切り詰める。減少量が変化したら呼ぶ。
+
+将来「最大HP一時減少」異常を追加する際は、減少量を `get_maxhp_reduction()` が
+返すようにし (時限効果等から算出)、変化時に `refresh_max_hp()` を呼ぶだけで
+プレイヤー・モンスター双方に反映される。`maxhp = max_maxhp` の直接代入
+(polymorph/floor 変更/捕獲復元等の全回復リセット系) は現状 `reduction == 0` で
+等価のため残置しているが、動的減少を導入する場合はこれらも `refresh_max_hp()`
+経由に切り替えること。
+
 ### `psex` の SEX_NONE
 
 `player_sex::SEX_NONE = 4` (MAX_SEXES = 5) が追加され、`init_monster_profile()` で

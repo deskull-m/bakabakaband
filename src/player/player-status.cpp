@@ -445,21 +445,22 @@ static void update_max_hitpoints(CreatureEntity &creature)
         mhp = creature.calc_min_max_hp();
     }
     mhp += creature.calc_max_hp_status_bonus();
-    if (creature.maxhp == mhp) {
+
+    // mhp は一時減少を含まない本来の最大HP。max_maxhp / maxhp の両方が
+    // 変化しなければ再描画不要。
+    const auto old_maxhp = creature.get_max_hp();
+    if ((old_maxhp == mhp) && (creature.get_max_maxhp() == mhp)) {
         return;
     }
 
-    if (creature.hp >= mhp) {
-        creature.hp = mhp;
-        creature.hp_frac = 0;
-    }
-
 #ifdef JP
-    if (creature.has_level_up_message() && (mhp > creature.maxhp)) {
-        msg_format("最大ヒット・ポイントが %d 増加した！", (mhp - creature.maxhp));
+    if (creature.has_level_up_message() && (mhp > old_maxhp)) {
+        msg_format("最大ヒット・ポイントが %d 増加した！", (mhp - old_maxhp));
     }
 #endif
-    creature.maxhp = mhp;
+
+    // 本来の最大HP (max_maxhp) を確定し、現在の最大HP (maxhp) と現在HPを再計算する。
+    creature.set_max_hp(mhp);
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::HP);
