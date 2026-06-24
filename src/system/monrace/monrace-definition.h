@@ -118,6 +118,7 @@ public:
     std::string text = ""; //!< 思い出テキストのオフセット / Lore text offset
     std::string tag = ""; //!< モンスターのタグ / Monster tag
     Dice hit_dice; //!< HPのダイス / Creatures hit dice
+    Dice hit_dice_per_level; //!< レベル別HPテーブル用の1レベルあたりHPダイス (任意指定。未指定時は hit_dice から既定値を算出)
     ARMOUR_CLASS ac{}; //!< アーマークラス / Armour Class
     SLEEP_DEGREE sleep{}; //!< 睡眠値 / Inactive counter (base)
     POSITION aaf{}; //!< 感知範囲(1-100スクエア) / Area affect radius (1-100)

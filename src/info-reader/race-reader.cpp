@@ -1342,6 +1342,12 @@ errr parse_monraces_info(nlohmann::json &mon_data)
         msg_format(_("モンスターHP読込失敗。ID: '%d'。", "Failed to load monster HP. ID: '%d'."), error_idx);
         return err;
     }
+    // レベル別HPテーブル用の1レベルあたりHPダイス (任意指定)。未指定なら hit_dice から既定値を算出する。
+    err = info_set_dice(mon_data["hit_point_per_level"], monrace.hit_dice_per_level, false);
+    if (err) {
+        msg_format(_("モンスターレベル別HP読込失敗。ID: '%d'。", "Failed to load monster HP per level. ID: '%d'."), error_idx);
+        return err;
+    }
     err = info_set_integer(mon_data["vision"], monrace.aaf, true, Range(0, 999));
     if (err) {
         msg_format(_("モンスター感知範囲読込失敗。ID: '%d'。", "Failed to load monster vision. ID: '%d'."), error_idx);
