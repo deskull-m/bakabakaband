@@ -533,8 +533,21 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
     面数 `Y` を維持する都合上、高 `Y`・低 `X` の個体 (例: `3d800` のドラゴン) は
     HP が膨張する** (全 2,300 種中 152 体が 1.5 倍超、最大 8 倍)。これらの
     アンバランス個体は `"hit_point_per_level"` で手動調節する方針。
-  - **今後の段**: モンスターのレベルアップに伴う HP 成長 (`hp_table[]` を生成時
-    より上の添字へ伸ばす) 等。
+  - **第 3 段 (完了, groundwork)**: モンスターのレベルアップに伴う HP 成長機構。
+    `grow_hp_table_to_level(new_level)` が `hp_table[]` を生成時の添字より上へ
+    (旧レベル→新レベルまで) per-level ダイスで累積し、基礎HP増分と CON 補正増分を
+    現在の最大HPに**加算**する (生成時 1 回限りのサイズ補正乱数倍率は成長分には
+    乗じない加算的成長)。per-level ダイスは `make_monster_per_level_die()` に共通化し、
+    既定値の較正レベルを種族本来のレベル (`monrace.level/2`) で固定して反復成長でも
+    ダイスが変動しないようにした。`set_level()` で実効レベルも更新する。
+    **実際のレベルアップ発火は wizard デバッグコマンド `L`
+    (`wiz_level_up_target_monster`) のみ**で、通常プレイのゲームバランスは不変。
+    あわせて進化 (`monster_gain_exp`) 時の最大HP再計算も `roll_monster_hp_table()`
+    のテーブル式に統一した (従来は単発ロールのままだった整合性修正)。
+    モンスターの `hp_table[]` 自体は savefile 非保存だが、成長後の `max_maxhp` /
+    `level` は creature-common で保存されるため成長結果は永続する。
+  - **今後の段**: exp 蓄積等を契機とする実ゲームでのレベルアップ発火
+    (バランス設計を伴う) や、モンスター `hp_table[]` の savefile 保存等。
 
 ### `psex` の SEX_NONE
 

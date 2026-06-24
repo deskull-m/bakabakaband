@@ -67,6 +67,7 @@ constexpr std::array debug_menu_table = {
     std::make_tuple('i', _("鑑定", "Idenfity")),
     std::make_tuple('I', _("アイテム設定コマンドメニュー", "Modify item configurations")),
     std::make_tuple('j', _("指定ダンジョン階にワープ", "Jump to floor depth of target dungeon")),
+    std::make_tuple('L', _("対象モンスターをレベルアップ(HP成長)", "Level up target monster (grow HP)")),
     std::make_tuple('k', _("指定ダメージ・半径0の指定属性のボールを自分に放つ", "Fire a zero ball to self")),
     std::make_tuple('m', _("魔法の地図", "Magic mapping")),
     std::make_tuple('M', _("突然変異コマンドメニュー", "Mutation debug commands")),
@@ -207,6 +208,9 @@ bool exe_cmd_debug(CreatureEntity &creature, char cmd)
         return true;
     case 'k':
         wiz_kill_target(creature, 0, (AttributeType)command_arg, true);
+        return true;
+    case 'L':
+        wiz_level_up_target_monster(creature);
         return true;
     case 'm':
         map_area(creature, DETECT_RAD_ALL * 3);
