@@ -2229,6 +2229,24 @@ int CreatureEntity::calc_max_hp_con_bonus() const
     return (static_cast<int>(adj_con_mhp[index]) - 128) * this->get_level() / 4;
 }
 
+void CreatureEntity::set_max_hp(int full_max_hp)
+{
+    this->max_maxhp = full_max_hp;
+    this->refresh_max_hp();
+}
+
+void CreatureEntity::refresh_max_hp()
+{
+    // 本来の最大HPから一時減少を差し引いた値を現在の最大HPとする (下限1)。
+    this->maxhp = std::max(1, this->max_maxhp - this->get_maxhp_reduction());
+
+    // 現在HPが新しい最大HPに達した/上回る場合は端数を含めて切り詰める。
+    if (this->hp >= this->maxhp) {
+        this->hp = this->maxhp;
+        this->hp_frac = 0;
+    }
+}
+
 int CreatureEntity::calc_max_hp_status_bonus()
 {
     int bonus = 0;
