@@ -571,7 +571,8 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, hp);
     }
 
-    m_ptr->maxhp = m_ptr->max_maxhp;
+    // 本来の最大HP (max_maxhp) を確定済み。一時減少を反映した現在の最大HP (maxhp) を導く。
+    m_ptr->refresh_max_hp();
     if (new_monrace.cur_hp_per != 0) {
         m_ptr->hp = m_ptr->maxhp * new_monrace.cur_hp_per / 100;
     } else {

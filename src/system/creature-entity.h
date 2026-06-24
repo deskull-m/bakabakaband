@@ -205,6 +205,48 @@ public:
     }
 
     /*!
+     * @brief クリーチャーの本来の(一時減少前の)最大HPを取得する
+     * @return 本来の最大HP (max_maxhp)
+     * @details プレイヤー・モンスター共通で「一時的な最大HP減少が一切無い場合の
+     *          最大HP」を表す。経験値計算・dealt_damage 上限・捕獲判定など、
+     *          一時減少に左右されるべきでない処理はこちらを参照する。
+     */
+    virtual int get_max_maxhp() const
+    {
+        return this->max_maxhp;
+    }
+
+    /*!
+     * @brief 一時的な最大HP減少量を取得する (プレイヤー・モンスター共通の拡張点)
+     * @return 現在の最大HP減少量 (>= 0)
+     * @details 既定では減少なし (0)。将来「最大HP一時減少」のステータス異常を
+     *          追加する際は、本メソッド (あるいは派生クラスでのオーバーライド) が
+     *          減少量を返すようにすれば、set_max_hp() / refresh_max_hp() 経由で
+     *          maxhp (現在の最大HP) に自動的に反映される。
+     */
+    virtual int get_maxhp_reduction() const
+    {
+        return 0;
+    }
+
+    /*!
+     * @brief 本来の最大HP (max_maxhp) を確定し、現在の最大HP (maxhp) を再計算する
+     * @param full_max_hp 一時減少を含まない本来の最大HP
+     * @details max_maxhp と maxhp の関係を定義する唯一の窓口。
+     *          max_maxhp に full_max_hp を設定し、refresh_max_hp() で
+     *          一時減少を差し引いた値を maxhp に反映する。
+     */
+    void set_max_hp(int full_max_hp);
+
+    /*!
+     * @brief 本来の最大HP (max_maxhp) から現在の最大HP (maxhp) を再計算する
+     * @details maxhp = max(1, max_maxhp - get_maxhp_reduction()) を反映する。
+     *          一時減少量が変化した際に呼ぶ。現在HP (hp) が新しい maxhp を
+     *          超える場合は maxhp まで切り詰める。
+     */
+    void refresh_max_hp();
+
+    /*!
      * @brief 能力値の内部値 (stat_use 等) を adj_* テーブルの索引に変換する
      * @param stat_value 能力値の内部値 (30 = 表示 3.0 〜 STAT_MAX_VALUE)
      * @return 0 〜 STAT_TABLE_SIZE-1 にクランプした索引
@@ -3875,8 +3917,8 @@ public:
 
     // HP関連
     int hp{}; /*!< 現在のHP / Current Hit points */
-    int maxhp{}; /*!< 現在の最大HP / Max Hit points */
-    int max_maxhp{}; /*!< 生成時の初期最大HP / Max Max Hit points */
+    int maxhp{}; /*!< 現在の最大HP (一時減少を反映した実効値) / Effective max Hit points */
+    int max_maxhp{}; /*!< 本来の最大HP (一時減少前のキャップ。プレイヤー・モンスター共通) / Undiminished max Hit points */
     uint32_t hp_frac{}; /*!< HP小数部 / Current hit frac (times 2^16) */
 
     // 基本パラメータ（主にプレイヤー用、モンスターでは未使用）
