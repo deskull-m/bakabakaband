@@ -564,6 +564,13 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         m_ptr->max_maxhp = std::clamp(hp, m_ptr->calc_min_max_hp(), MONSTER_MAXHP);
     }
 
+    // 一時状態(英雄化/狂戦士化/つよし/呪術)による最大HP補正も共通式で適用する。
+    // 生成直後の通常モンスターは該当状態を持たないため通常は 0。
+    {
+        auto hp = m_ptr->max_maxhp + m_ptr->calc_max_hp_status_bonus();
+        m_ptr->max_maxhp = std::min(MONSTER_MAXHP, hp);
+    }
+
     m_ptr->maxhp = m_ptr->max_maxhp;
     if (new_monrace.cur_hp_per != 0) {
         m_ptr->hp = m_ptr->maxhp * new_monrace.cur_hp_per / 100;
