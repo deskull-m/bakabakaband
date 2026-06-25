@@ -115,7 +115,7 @@ ESP 系 BIT_FLAGS 等）が残存している。モンスターでも将来運�
 | 熟練度 | `spell_exp[]`, `weapon_exp[][]`, `skill_exp[]` | 経験を積むモンスター・成長するボス (提案 10/36 で virtual 化済) |
 | 魔法領域 | `realm1`, `realm2`, `element_realm` | 魔法使い系モンスターのスペル選択根拠 |
 | 突然変異 | `muta`, `trait`, `patron` | 変異個体・カオスパトロン配下 |
-| キャラクタ履歴 | `old_race1/2`, `old_realm`, `history[4][60]`, `player_hp[PY_MAX_LEVEL]` | モンスターのレベル成長履歴 |
+| キャラクタ履歴 | `old_race1/2`, `old_realm`, `history[4][60]`, `hp_table[PY_MAX_LEVEL]` (旧 `player_hp`) | モンスターのレベル成長履歴 |
 | ESP/特殊能力 BIT_FLAGS | `telepathy`, `esp_*`, `cursed`, `special_defense`, `special_attack`, `dec_mana`, `easy_spell` 等 | モンスターの ESP / 呪い装備 / 特殊攻撃防御 (提案 33 で virtual 化済) |
 | 休息/旅行 | `resting`, `running`, `action` | モンスターの待機・徘徊行動状態 |
 | その他 | `class_specific_data`, `old_*` 差分検出キャッシュ | 状態キャッシュはそのままクリーチャー共通で利用 |

@@ -416,7 +416,7 @@ static void update_bonuses(CreatureEntity &creature)
 static void update_max_hitpoints(CreatureEntity &creature)
 {
     int bonus = creature.calc_max_hp_con_bonus();
-    int mhp = creature.player_hp[creature.get_level() - 1];
+    int mhp = creature.hp_table[creature.get_level() - 1];
 
     CreatureClass pc(creature);
     auto is_sorcerer = pc.equals(PlayerClassType::SORCERER);

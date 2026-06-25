@@ -111,7 +111,7 @@ void save_prev_data(CreatureEntity &creature, birther *birther_ptr)
     }
 
     for (int i = 0; i < PY_MAX_LEVEL; i++) {
-        birther_ptr->player_hp[i] = creature.player_hp[i];
+        birther_ptr->hp_table[i] = creature.hp_table[i];
     }
 
     birther_ptr->patron = creature.get_patron();
@@ -164,11 +164,11 @@ void load_prev_data(CreatureEntity &creature, bool swap)
     }
 
     for (int i = 0; i < PY_MAX_LEVEL; i++) {
-        creature.player_hp[i] = previous_char.player_hp[i];
+        creature.hp_table[i] = previous_char.hp_table[i];
     }
 
-    creature.maxhp = creature.player_hp[0];
-    creature.hp = creature.player_hp[0];
+    creature.maxhp = creature.hp_table[0];
+    creature.hp = creature.hp_table[0];
     creature.set_patron(previous_char.patron);
     creature.virtues = previous_char.virtues;
 
