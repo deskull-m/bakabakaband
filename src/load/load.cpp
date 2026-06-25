@@ -149,7 +149,7 @@ static errr load_hp(CreatureEntity &creature)
     }
 
     for (auto i = 0; i < tmp16u; i++) {
-        creature.player_hp[i] = rd_s16b();
+        creature.hp_table[i] = rd_s16b();
     }
 
     return 0;

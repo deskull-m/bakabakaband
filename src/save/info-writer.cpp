@@ -190,7 +190,7 @@ void save_quick_start(void)
     }
 
     for (int i = 0; i < PY_MAX_LEVEL; i++) {
-        wr_s16b((int16_t)previous_char.player_hp[i]);
+        wr_s16b((int16_t)previous_char.hp_table[i]);
     }
 
     wr_s16b(previous_char.patron);

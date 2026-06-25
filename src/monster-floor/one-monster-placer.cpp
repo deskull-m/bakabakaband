@@ -502,6 +502,12 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         (void)set_monster_csleep(floor, g_ptr->m_idx, (val * 2) + randint1(val * 10));
     }
 
+    // 全NPCも生成時に hit_dice をモンスター種族のものに揃え、レベル別HPテーブル
+    // hp_table[] を振る (プレイヤーと共通の土台)。現状、敵モンスターの最大HP算出
+    // には未使用 (max_maxhp は従来通り下記の単発ロールで決定する)。
+    m_ptr->hit_dice = new_monrace.hit_dice;
+    m_ptr->roll_hp_table();
+
     if (new_monrace.misc_flags.has(MonsterMiscType::FORCE_MAXHP)) {
         m_ptr->max_maxhp = new_monrace.hit_dice.maxroll();
     } else {

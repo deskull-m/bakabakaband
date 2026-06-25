@@ -283,6 +283,15 @@ public:
     int calc_max_hp_status_bonus();
 
     /*!
+     * @brief レベル別HPテーブル hp_table[] を hit_dice から振り直す (プレイヤー・モンスター共通)
+     * @details Lv1 は hit_dice の最大値 + 3 回ロール、以降は各レベルで hit_dice を
+     *          1 回ずつ累積する。最終レベルのHPが期待値の 75%〜125% に収まるまで
+     *          振り直す。呼出側で事前に hit_dice を設定しておくこと。
+     *          UI 更新 (再描画・体力ランク表示等) は行わない純粋なロール処理。
+     */
+    void roll_hp_table();
+
+    /*!
      * @brief クリーチャーの速度を取得
      * @return 速度値
      */
@@ -4258,7 +4267,7 @@ public:
     }
     std::vector<int> spell_order_learned{}; /* order spells learned */
 
-    int player_hp[PY_MAX_LEVEL]{};
+    int hp_table[PY_MAX_LEVEL]{};
     std::string last_message = ""; /* Last message on death or retirement */
     char history[4][60]{}; /* Textual "history" for the Player */
 
