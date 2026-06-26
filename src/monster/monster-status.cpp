@@ -331,6 +331,7 @@ void dispel_monster_status(CreatureEntity &creature, MONSTER_IDX m_idx)
 
 /*!
  * @brief モンスターが蓄積した経験値に応じてレベルアップ (HP成長) する
+ * @param creature プレイヤーへの参照 (可視判定・メッセージ表示用)
  * @param monster 対象モンスター
  * @details 種族本来のレベル (monrace.level/2) を基準に、蓄積経験値が自種族の
  *          殺害時経験値 (mexp) の整数倍に達するごとに 1 レベル成長する。成長量は
@@ -338,16 +339,26 @@ void dispel_monster_status(CreatureEntity &creature, MONSTER_IDX m_idx)
  *          進化を持つモンスターは next_exp 到達で進化 (exp リセット) するため、
  *          進化前に到達できる成長レベルは next_exp/mexp までに自然に制限される。
  *          実HP成長は CreatureEntity::grow_hp_table_to_level() (テーブル式) で行う。
+ *          レベルアップした際、そのモンスターがプレイヤーの視界に入っていれば
+ *          「～はレベルアップしたようだ」と通知する。
  */
-static void try_monster_level_up(CreatureEntity &monster)
+static void try_monster_level_up(CreatureEntity &creature, CreatureEntity &monster)
 {
     const auto &monrace = monster.get_monrace();
     const auto base_level = std::clamp<int>(monrace.level / 2, 1, PY_MAX_LEVEL);
     const auto exp_unit = std::max<EXP>(1, monrace.mexp);
     const auto bonus = std::min<int>(static_cast<int>(monster.get_exp() / exp_unit), base_level);
     const auto target_level = std::min<int>(base_level + bonus, PY_MAX_LEVEL);
-    if (target_level > monster.get_level()) {
-        monster.grow_hp_table_to_level(target_level);
+    if (target_level <= monster.get_level()) {
+        return;
+    }
+
+    monster.grow_hp_table_to_level(target_level);
+
+    // レベルアップしたモンスターがプレイヤーの視界に入っていれば通知する。
+    if (monster.is_visible_on_map()) {
+        const auto m_name = monster_desc(creature, monster, 0);
+        msg_format(_("%sはレベルアップしたようだ。", "%s^ seems to have leveled up."), m_name.data());
     }
 }
 
@@ -391,7 +402,7 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
     }
 
     // 蓄積経験値に応じてレベルアップ (HP成長) する。進化先の有無に関わらず発火する。
-    try_monster_level_up(monster);
+    try_monster_level_up(creature, monster);
 
     // 以降は進化処理。進化先を持たないモンスターはレベルアップのみで終了する。
     if (old_monrace.next_exp == 0) {
