@@ -504,8 +504,8 @@ static errr set_mon_blows(nlohmann::json &blow_data, MonraceDefinition &monrace)
     }
 
     for (const auto &blow : blow_data) {
-        const auto &blow_method = blow["method"];
-        const auto &blow_effect = blow["effect"];
+        const auto &blow_method = get_json_value(blow, "method");
+        const auto &blow_effect = get_json_value(blow, "effect");
         if (blow_method.is_null() || blow_effect.is_null()) {
             return PARSE_ERROR_TOO_FEW_ARGUMENTS;
         }
@@ -524,7 +524,7 @@ static errr set_mon_blows(nlohmann::json &blow_data, MonraceDefinition &monrace)
         mon_blow.method = rbm->second;
         mon_blow.effect = rbe->second;
 
-        if (auto err = info_set_dice(blow["damage_dice"], mon_blow.damage_dice, false)) {
+        if (auto err = info_set_dice(get_json_value(blow, "damage_dice"), mon_blow.damage_dice, false)) {
             return err;
         }
 
