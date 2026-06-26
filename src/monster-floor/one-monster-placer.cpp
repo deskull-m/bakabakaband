@@ -502,17 +502,15 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         (void)set_monster_csleep(floor, g_ptr->m_idx, (val * 2) + randint1(val * 10));
     }
 
-    // 全NPCも生成時に hit_dice をモンスター種族のものに揃え、レベル別HPテーブル
-    // hp_table[] を振る (プレイヤーと共通の土台)。現状、敵モンスターの最大HP算出
-    // には未使用 (max_maxhp は従来通り下記の単発ロールで決定する)。
+    // 敵モンスターの基礎最大HPをレベル別HPテーブル経由で算出する (プレイヤーと
+    // 共通の累積式)。hit_dice をモンスター種族のものに揃えたうえで
+    // roll_monster_hp_table() が per-level ダイスを較正して hp_table[] を埋め、
+    // 実効レベルの累積HP (hp_table[level-1] 相当) を返す。期待値は従来の単発ロール
+    // (hit_dice.roll()) と一致し、分散のみ低下する (スケール保存)。FORCE_MAXHP は
+    // 従来通り hit_dice.maxroll() を基礎HPとする。サイズ補正・CON補正・状態補正は
+    // 従来通り後段で乗算。
     m_ptr->hit_dice = new_monrace.hit_dice;
-    m_ptr->roll_hp_table();
-
-    if (new_monrace.misc_flags.has(MonsterMiscType::FORCE_MAXHP)) {
-        m_ptr->max_maxhp = new_monrace.hit_dice.maxroll();
-    } else {
-        m_ptr->max_maxhp = new_monrace.hit_dice.roll();
-    }
+    m_ptr->max_maxhp = m_ptr->roll_monster_hp_table(new_monrace.misc_flags.has(MonsterMiscType::FORCE_MAXHP));
 
     if (m_ptr->is_huge()) {
         m_ptr->max_maxhp *= (randint1(8) + 15) / 8;
