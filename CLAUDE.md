@@ -502,27 +502,39 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   から呼ばれ、プレイヤー固有の UI 更新 (体力ランク / 再描画) はそちらに残す。
 - `roll_monster_hp_table(force_max)`: **敵モンスター生成 (`place_monster_one`)** 用の
   ローラー。モンスター種族の `hit_dice` は「全HPの単発ロール」スケールなので、その
-  期待値 `num*(sides+1)/2` を実効レベル `L`(= `get_level()` = `monrace.level/2`,
-  `[1, PY_MAX_LEVEL]` にクランプ) に均等配分する per-level ダイス `1d s`
-  (`s = round(num*(sides+1)/L) - 1`, 最低 1d1) を導き、L レベル分を累積して
-  `hp_table[0..L-1]` を埋め `hp_table[L-1]` を返す。**累積HPの期待値は従来の
-  単発ロール `hit_dice.roll()` と一致し (スケール保存)、分散のみ低下する**
-  (より安定したHP)。プレイヤー用の前方加重 (Lv1 maxroll + 3 ロール) は敵HPの
-  スケールを膨らませるため**用いない**。
+  per-level ダイス (1 レベルあたりHPダイス) を L レベル分累積して
+  `hp_table[0..L-1]` を埋め `hp_table[L-1]` を返す。`L = get_level() =
+  monrace.level/2`、`[1, PY_MAX_LEVEL]` にクランプ。FORCE_MAXHP は各レベル
+  最大値で累積する。プレイヤー用 `roll_hp_table()` の前方加重 (Lv1 maxroll +
+  3 ロール) は敵HPのスケールを膨らませるため**用いない**。
+
+  per-level ダイスの決定 (提案: 段階移行 第 2 段):
+  - **JSON 明示指定優先**: `MonraceDefinition::hit_dice_per_level`
+    (JSON キー `"hit_point_per_level"`, 形式 `"ndY"`, 任意) が指定されていれば
+    それをそのまま per-level ダイスに使う。アンバランスな個体の手動調節用。
+  - **未指定時の既定値**: 旧 HP ダイス `hit_dice` (= `XdY`) から算出する。
+    **面数は旧 `Y` を維持**し、ダイス数を期待値保存で較正する:
+    `n = round(X / L)` (最低 `1dY`)。`E[n d Y] * L = X*(Y+1)/2` (旧単発ロール
+    期待値) に一致させる狙い。
 
   - サイズ補正 (`is_huge()`/`is_large()` 等)・CON 補正 (`calc_max_hp_con_bonus()`)・
     状態補正 (`calc_max_hp_status_bonus()`)・nightmare 倍化・`MONSTER_MAXHP` クランプ
     は従来通りこの基礎HPの**後段で**乗算/加算する (一切変更なし)。
-  - `calc_min_max_hp()` (= `level+1`) の下限クランプも従来通り後段で効く。これにより
-    「レベルに対し極端に低い `hit_dice` の特殊モンスター (例: Lv50 で 1d3)」も
-    従来と同じく `level+1` に切り上げられ、テーブル式でも実HPは不変。
-  - 実データ (約 2,300 種) での全パイプライン検証では new/old 最終HP比は
-    平均 1.00 / 中央値 1.00 / 99.4% が ±10% 以内 / 1.3 倍超ゼロ。
+  - `calc_min_max_hp()` (= `level+1`) の下限クランプも従来通り後段で効く。
 
-  **段階移行ステータス:** これは「敵モンスター最大HPのテーブル式移行」の第 1 段
-  (スケール保存=バランス不変で算出経路をテーブル式に統一) である。今後の段階として、
-  per-level ダイスを JSON データ駆動化する案や、モンスターのレベルアップに伴う
-  HP 成長 (`hp_table[]` を生成時より上の添字へ伸ばす) 等が想定される。
+  **段階移行ステータス:**
+  - **第 1 段 (完了)**: スケール保存=バランス不変で算出経路をテーブル式に統一。
+    per-level ダイスは `1d s` (`s = round(X*(Y+1)/L) - 1`) を内部算出していた
+    (全パイプライン検証で new/old 最終HP比 平均 1.00 / 中央値 1.00 /
+    99.4% が ±10% 以内 / 1.3 倍超ゼロ)。
+  - **第 2 段 (完了, 当節)**: per-level ダイスを JSON データ駆動化。既定値の
+    面数を旧 `Y` に統一 (`n d Y`, `n = round(X/L)`) し、`"hit_point_per_level"`
+    で個別上書き可能にした。**この既定式は第 1 段の `1d s` とは分布が異なり、
+    面数 `Y` を維持する都合上、高 `Y`・低 `X` の個体 (例: `3d800` のドラゴン) は
+    HP が膨張する** (全 2,300 種中 152 体が 1.5 倍超、最大 8 倍)。これらの
+    アンバランス個体は `"hit_point_per_level"` で手動調節する方針。
+  - **今後の段**: モンスターのレベルアップに伴う HP 成長 (`hp_table[]` を生成時
+    より上の添字へ伸ばす) 等。
 
 ### `psex` の SEX_NONE
 
@@ -557,6 +569,26 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   (`assign_random_personality()` 内の固定指定チェック) でも、プレイヤー運用
   開始 (`apply_monrace_personality()` で対話選択をスキップ) でも同一。
 - 性格適用は `CreatureEntity::set_personality(player_personality_type)` に集約。
+
+### モンスターのレベル別HPダイス指定 (`hit_point_per_level`)
+
+`MonraceDefinition` に `Dice hit_dice_per_level`
+(`src/system/monrace/monrace-definition.h`) を持ち、JSON
+`lib/edit/MonraceDefinitions.jsonc` で「1 レベルあたりのHPダイス」を任意指定できる。
+
+```jsonc
+"hit_point": "3d800",        // 旧来の全HP単発ロール用ダイス (必須)
+"hit_point_per_level": "1d40" // レベル別HPテーブル用 1 レベルあたりダイス (任意)
+```
+
+- 敵モンスターの最大HPは `roll_monster_hp_table()` がこの per-level ダイスを
+  実効レベル `L`(= `monrace.level/2`) 分累積して算出する (詳細は「最大HP算出の
+  統一」節)。
+- **未指定時の既定値**は `hit_point` (`XdY`) から自動算出する: 面数は旧 `Y` を
+  維持し、ダイス数を `n = round(X/L)` (最低 `1dY`) と較正する。
+- この既定式は面数 `Y` を維持する都合上、**高 `Y`・低 `X` の個体 (例: `3d800`)
+  ではHPが膨張する** (約 152 体が 1.5 倍超)。バランス調整が必要な個体に
+  `hit_point_per_level` を明示指定して上書きする。
 
 ### セーブ/ロードの統合 (CreatureEntity 共通シリアライズ) — フェーズ 1〜4
 
