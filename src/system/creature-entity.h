@@ -306,6 +306,16 @@ public:
     int roll_monster_hp_table(bool force_max);
 
     /*!
+     * @brief 敵モンスターのレベルアップに伴い hp_table[] を上の添字へ伸ばし最大HPを成長させる
+     * @param new_level 成長後の実効レベル ([1, PY_MAX_LEVEL] にクランプ)
+     * @details 生成時と同じ per-level ダイスで hp_table を旧レベルから new_level まで累積し、
+     *          基礎HPの増分と CON 補正の増分を現在の最大HPに加算する (加算的成長)。
+     *          set_level() で実効レベルも更新する。new_level が現レベル以下なら何もしない。
+     *          モンスター専用 (プレイヤーは通常のレベルアップ経路で成長する)。
+     */
+    void grow_hp_table_to_level(int new_level);
+
+    /*!
      * @brief クリーチャーの速度を取得
      * @return 速度値
      */

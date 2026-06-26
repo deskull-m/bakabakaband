@@ -2257,23 +2257,36 @@ void CreatureEntity::roll_hp_table()
     }
 }
 
+/*!
+ * @brief 敵モンスターのレベル別HPテーブル用 per-level ダイス (1レベルあたりHPダイス) を求める
+ * @param creature 対象クリーチャー (モンスター)
+ * @return per-level ダイス
+ * @details JSON (MonraceDefinition::hit_dice_per_level) に明示指定があればそれを優先する
+ *          (アンバランスな個体の手動調節用)。未指定時は既定値を hit_dice (旧 XdY) から
+ *          算出する: 面数は旧 Y を維持し、ダイス数を期待値保存で較正する。
+ *            E[n d Y] * L = n*(Y+1)/2 * L が旧単発ロール期待値 X*(Y+1)/2 と
+ *            一致するよう n = round(X / L)。最低でも 1dY を保証する。
+ *          較正に用いる L は種族本来のレベル (monrace.level/2) で固定し、生成後の動的な
+ *          レベルアップ (grow_hp_table_to_level) でも成長ダイスが変動しないようにする。
+ */
+static Dice make_monster_per_level_die(CreatureEntity &creature)
+{
+    auto per_level_die = creature.get_monrace().hit_dice_per_level;
+    if (!per_level_die.is_valid()) {
+        const auto natural_level = std::clamp<int>(creature.get_monrace().level / 2, 1, PY_MAX_LEVEL);
+        const auto num = std::max(1, (creature.hit_dice.num + natural_level / 2) / natural_level);
+        per_level_die = Dice(num, creature.hit_dice.sides);
+    }
+
+    return per_level_die;
+}
+
 int CreatureEntity::roll_monster_hp_table(bool force_max)
 {
     // 実効レベル (敵モンスターは get_level() = monrace.level/2)。hp_table[] の
     // 添字に収めるため [1, PY_MAX_LEVEL] にクランプする。
     const auto effective_level = std::clamp<int>(this->get_level(), 1, PY_MAX_LEVEL);
-
-    // per-level ダイス (1レベルあたりHPダイス) を決定する。
-    // JSON (MonraceDefinition::hit_dice_per_level) に明示指定があればそれを優先する
-    // (アンバランスな個体の手動調節用)。未指定時は既定値を hit_dice (旧 XdY) から
-    // 算出する: 面数は旧 Y を維持し、ダイス数を期待値保存で較正する。
-    //   E[n d Y] * level = n*(Y+1)/2 * level が旧単発ロール期待値 X*(Y+1)/2 と
-    //   一致するよう n = round(X / level)。最低でも 1dY を保証する。
-    auto per_level_die = this->get_monrace().hit_dice_per_level;
-    if (!per_level_die.is_valid()) {
-        const auto num = std::max(1, (this->hit_dice.num + effective_level / 2) / effective_level);
-        per_level_die = Dice(num, this->hit_dice.sides);
-    }
+    const auto per_level_die = make_monster_per_level_die(*this);
 
     // FORCE_MAXHP は「種族 hit_dice の最大値 (maxroll() = num*sides)」を基礎HPと
     // する従来契約 (monster-status / monster-damage / lore 表示が前提) を維持する。
@@ -2293,6 +2306,41 @@ int CreatureEntity::roll_monster_hp_table(bool force_max)
     }
 
     return this->hp_table[effective_level - 1];
+}
+
+void CreatureEntity::grow_hp_table_to_level(int new_level)
+{
+    // 本メソッドは敵モンスター専用 (プレイヤー / モンスター運用は roll_hp_table() と
+    // 通常のレベルアップ経路で HP を成長させる)。
+    if (!this->has_monster_profile()) {
+        return;
+    }
+
+    const auto old_level = std::clamp<int>(this->get_level(), 1, PY_MAX_LEVEL);
+    const auto target_level = std::clamp(new_level, 1, PY_MAX_LEVEL);
+    if (target_level <= old_level) {
+        return;
+    }
+
+    // 生成時と同じ per-level ダイスで hp_table を「生成時より上の添字へ」伸ばす。
+    const auto per_level_die = make_monster_per_level_die(*this);
+    const auto old_base = this->hp_table[old_level - 1];
+    for (auto i = old_level; i < target_level; i++) {
+        this->hp_table[i] = this->hp_table[i - 1] + per_level_die.roll();
+    }
+    const auto base_growth = this->hp_table[target_level - 1] - old_base;
+
+    // CON 補正はレベル依存 (calc_max_hp_con_bonus が get_level() を参照) のため、
+    // レベル確定の前後で差分を取って成長分に加える。
+    const auto old_con_bonus = this->calc_max_hp_con_bonus();
+    this->set_level(static_cast<int16_t>(target_level));
+    const auto con_growth = this->calc_max_hp_con_bonus() - old_con_bonus;
+
+    // 既存の最大HP (生成時のサイズ補正・状態補正等を含む) に基礎成長分と CON 補正
+    // 差分を加算する。サイズ補正は生成時 1 回限りの乱数倍率のため成長分には
+    // 乗じない (現在の最大HPは保ったまま上積みする加算的成長)。
+    const auto grown = this->get_max_maxhp() + base_growth + con_growth;
+    this->set_max_hp(std::clamp(grown, this->calc_min_max_hp(), MONSTER_MAXHP));
 }
 
 void CreatureEntity::set_max_hp(int full_max_hp)

@@ -392,7 +392,10 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
     monster.set_ap_r_idx(monster.get_r_idx());
 
     const auto &new_monrace = monster.get_monrace(); //!< @details 進化後の種族.
-    monster.max_maxhp = new_monrace.misc_flags.has(MonsterMiscType::FORCE_MAXHP) ? new_monrace.hit_dice.maxroll() : new_monrace.hit_dice.roll();
+    // 進化後の最大HPも生成時 (place_monster_one) と同じテーブル式で算出する。
+    // hit_dice を進化後種族のものに揃えてから roll_monster_hp_table() を呼ぶ。
+    monster.hit_dice = new_monrace.hit_dice;
+    monster.max_maxhp = monster.roll_monster_hp_table(new_monrace.misc_flags.has(MonsterMiscType::FORCE_MAXHP));
     if (ironman_nightmare) {
         const auto hp = monster.max_maxhp * 2;
         monster.max_maxhp = std::min(MONSTER_MAXHP, hp);
