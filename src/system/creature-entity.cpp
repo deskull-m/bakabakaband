@@ -2263,21 +2263,24 @@ int CreatureEntity::roll_monster_hp_table(bool force_max)
     // 添字に収めるため [1, PY_MAX_LEVEL] にクランプする。
     const auto effective_level = std::clamp<int>(this->get_level(), 1, PY_MAX_LEVEL);
 
-    // per-level ダイス 1d s を導く。E[1d s] = s_avg = (s+1)/2 が
-    // monrace 全HP期待値 (num*(sides+1)/2) を level で割った値となるよう s を較正する。
-    //   (s+1)/2 = num*(sides+1)/(2*level)  =>  s = num*(sides+1)/level - 1
-    // 整数丸め (四捨五入) で算出し、最低でも 1d1 を保証する。これにより level
-    // レベル分を累積した期待値が従来の単発ロールと一致する (スケール保存)。
-    const auto numerator = this->hit_dice.num * (this->hit_dice.sides + 1);
-    const auto per_level_sides = std::max(1, (numerator + effective_level / 2) / effective_level - 1);
-    const Dice per_level_die(1, per_level_sides);
+    // per-level ダイス (1レベルあたりHPダイス) を決定する。
+    // JSON (MonraceDefinition::hit_dice_per_level) に明示指定があればそれを優先する
+    // (アンバランスな個体の手動調節用)。未指定時は既定値を hit_dice (旧 XdY) から
+    // 算出する: 面数は旧 Y を維持し、ダイス数を期待値保存で較正する。
+    //   E[n d Y] * level = n*(Y+1)/2 * level が旧単発ロール期待値 X*(Y+1)/2 と
+    //   一致するよう n = round(X / level)。最低でも 1dY を保証する。
+    auto per_level_die = this->get_monrace().hit_dice_per_level;
+    if (!per_level_die.is_valid()) {
+        const auto num = std::max(1, (this->hit_dice.num + effective_level / 2) / effective_level);
+        per_level_die = Dice(num, this->hit_dice.sides);
+    }
 
     // FORCE_MAXHP は「種族 hit_dice の最大値 (maxroll() = num*sides)」を基礎HPと
     // する従来契約 (monster-status / monster-damage / lore 表示が前提) を維持する。
-    // per-level ダイスの最大値を累積すると較正 (sides+1 / -1) のぶんだけ maxroll()
-    // からズレるため、force_max 時は maxroll() を各レベルに按分し、最終レベルで
-    // 正確に maxroll() へ到達させる。非強制時は較正済み per-level ダイスを通常
-    // ロールして累積する (スケール保存)。
+    // per-level ダイスの最大値を累積しても較正の丸めや JSON 上書きのぶんだけ
+    // maxroll() からズレ得るため、force_max 時は maxroll() を各レベルに按分し、
+    // 最終レベルで正確に maxroll() へ到達させる。非強制時は較正済み per-level
+    // ダイスを通常ロールして累積する (スケール保存)。
     const auto max_total = this->hit_dice.maxroll();
     auto total = 0;
     for (auto i = 0; i < effective_level; i++) {
