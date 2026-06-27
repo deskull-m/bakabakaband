@@ -330,6 +330,32 @@ void dispel_monster_status(CreatureEntity &creature, MONSTER_IDX m_idx)
 }
 
 /*!
+ * @brief モンスターが蓄積した経験値に応じてレベルアップ (HP成長) する
+ * @param monster 対象モンスター
+ * @return レベルアップ (HP成長) が発生したら true
+ * @details 種族本来のレベル (monrace.level/2) を基準に、蓄積経験値が自種族の
+ *          殺害時経験値 (mexp) の整数倍に達するごとに 1 レベル成長する。成長量は
+ *          基準レベル分まで (実効レベルは最大で基準の 2 倍) に制限し暴走を防ぐ。
+ *          進化を持つモンスターは next_exp 到達で進化 (exp リセット) するため、
+ *          進化前に到達できる成長レベルは next_exp/mexp までに自然に制限される。
+ *          実HP成長は CreatureEntity::grow_hp_table_to_level() (テーブル式) で行う。
+ */
+static bool try_monster_level_up(CreatureEntity &monster)
+{
+    const auto &monrace = monster.get_monrace();
+    const auto base_level = std::clamp<int>(monrace.level / 2, 1, PY_MAX_LEVEL);
+    const auto exp_unit = std::max<EXP>(1, monrace.mexp);
+    const auto bonus = std::min<int>(static_cast<int>(monster.get_exp() / exp_unit), base_level);
+    const auto target_level = std::min<int>(base_level + bonus, PY_MAX_LEVEL);
+    if (target_level > monster.get_level()) {
+        monster.grow_hp_table_to_level(target_level);
+        return true;
+    }
+
+    return false;
+}
+
+/*!
  * @brief モンスターの経験値取得処理
  * @param creature クリーチャーへの参照
  * @param m_idx 経験値を得るモンスターの参照ID
@@ -350,7 +376,7 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
     auto &old_monrace = monster.get_monrace(); //!< @details 現在 (進化前)の種族.
     const auto &monraces = MonraceList::get_instance();
     const auto &monrace_defeated = monraces.get_monrace(monrace_id);
-    if (AngbandSystem::get_instance().is_phase_out() || (old_monrace.next_exp == 0)) {
+    if (AngbandSystem::get_instance().is_phase_out()) {
         return;
     }
 
@@ -368,7 +394,27 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
         return;
     }
 
+    // 蓄積経験値に応じてレベルアップ (HP成長) する。進化先の有無に関わらず発火する。
+    const auto leveled_up = try_monster_level_up(monster);
+
     auto &rfu = RedrawingFlagsUpdater::get_instance();
+
+    // レベルアップで最大HP等が変化した場合は、進化しなくても騎乗中ならボーナス再計算、
+    // 視認中なら再描画を行う (進化パスと同じ共有更新)。
+    if (leveled_up) {
+        if (monster.is_riding()) {
+            rfu.set_flag(StatusRecalculatingFlag::BONUS);
+        }
+
+        update_monster(creature, m_idx, false);
+        lite_spot(creature, monster.get_position());
+    }
+
+    // 以降は進化処理。進化先を持たないモンスターはレベルアップのみで終了する。
+    if (old_monrace.next_exp == 0) {
+        return;
+    }
+
     if (monster.get_exp() < old_monrace.next_exp) {
         if (monster.is_riding()) {
             rfu.set_flag(StatusRecalculatingFlag::BONUS);
@@ -390,6 +436,11 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
     /* Count the monsters on the level */
     monster.get_real_monrace().increment_current_numbers();
     monster.set_ap_r_idx(monster.get_r_idx());
+
+    // 進化前にレベルアップ (HP成長) していた場合、level フィールドに旧レベルが残る。
+    // 進化後は別種族として基準レベルから振り直すため、level を 0 にリセットして
+    // get_level() が進化後種族の monrace.level/2 を返すようにする。
+    monster.set_level(0);
 
     const auto &new_monrace = monster.get_monrace(); //!< @details 進化後の種族.
     // 進化後の最大HPも生成時 (place_monster_one) と同じテーブル式で算出する。
