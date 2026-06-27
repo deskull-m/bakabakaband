@@ -34,6 +34,7 @@
 #include "monster-floor/monster-remover.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
+#include "monster/monster-update.h"
 #include "object-enchant/item-apply-magic.h"
 #include "object-enchant/item-magic-applier.h"
 #include "perception/object-perception.h"
@@ -72,6 +73,8 @@
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "target/grid-selector.h"
+#include "target/target-setter.h"
+#include "target/target-types.h"
 #include "util/angband-files.h"
 #include "util/candidate-selector.h"
 #include "util/dice.h"
@@ -812,6 +815,42 @@ void wiz_zap_floor_monsters(CreatureEntity &creature)
 
         delete_monster_idx(creature, i);
     }
+}
+
+/*!
+ * @brief 対象モンスターを指定レベルまでレベルアップさせ最大HPを成長させる (デバッグ用)
+ * @param creature プレイヤーへの参照
+ * @details レベル別HPテーブルを上の添字へ伸ばすモンスターHP成長機構
+ *          (CreatureEntity::grow_hp_table_to_level) を検証するためのコマンド。
+ *          通常プレイのゲームバランスには影響しない (本コマンド経由でのみ発火する)。
+ */
+void wiz_level_up_target_monster(CreatureEntity &creature)
+{
+    const auto pos = target_set(creature, TARGET_KILL).get_position();
+    if (!pos) {
+        return;
+    }
+
+    auto &floor = *creature.get_floor();
+    const auto &grid = floor.get_grid(*pos);
+    if (!grid.has_monster()) {
+        msg_print(_("そこにはモンスターはいない。", "There is no monster there."));
+        return;
+    }
+
+    auto &monster = floor.get_monster(grid.m_idx);
+    const auto m_name = monster_desc(creature, monster, 0);
+    const auto input_level = input_integer(_("レベル", "Level"), monster.get_level() + 1, PY_MAX_LEVEL, monster.get_level() + 1);
+    if (!input_level.has_value()) {
+        return;
+    }
+
+    const auto old_maxhp = monster.get_max_maxhp();
+    monster.grow_hp_table_to_level(*input_level);
+    update_monster(creature, grid.m_idx, false);
+    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::HEALTH);
+    msg_format(_("%s^をレベル%dに成長させた (最大HP %d→%d)。", "%s^ grew to level %d (max HP %d -> %d)."),
+        m_name.data(), monster.get_level(), old_maxhp, monster.get_max_maxhp());
 }
 
 /* @brief 死を欺く仕様(馬鹿馬鹿蛮怒独自実装) */
