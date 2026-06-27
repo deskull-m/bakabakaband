@@ -204,7 +204,10 @@ void init_class_skills_info()
 void init_dungeons_info()
 {
     auto &dungeons = DungeonList::get_instance();
-    init_json("DungeonDefinitions.jsonc", "dungeons", DefinitionHashDataType::DUNGEONS, dungeons, parse_dungeons_info_json, [&dungeons] { dungeons.retouch(); });
+    auto parser = [](nlohmann::json &dungeon_data) {
+        return DungeonReader(dungeon_data).read();
+    };
+    init_json("DungeonDefinitions.jsonc", "dungeons", DefinitionHashDataType::DUNGEONS, dungeons, parser, [&dungeons] { dungeons.retouch(); });
 }
 
 /*!
@@ -229,7 +232,10 @@ void init_terrains_info()
  */
 void init_monrace_definitions()
 {
-    init_json("MonraceDefinitions.jsonc", "monsters", DefinitionHashDataType::MONRACES, MonraceList::get_instance(), parse_monraces_info);
+    auto parser = [](nlohmann::json &monrace_data) {
+        return RaceReader(monrace_data).read();
+    };
+    init_json("MonraceDefinitions.jsonc", "monsters", DefinitionHashDataType::MONRACES, MonraceList::get_instance(), parser);
 }
 
 /*!
