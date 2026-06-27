@@ -148407,8 +148407,8 @@
         },
       ],
       "flavor": {
-        "ja": "幾星霜を経て知の深淵に達したマインド・フレイヤーだ。その肥大した頭脳は星辰の運行をも読み解き、虚空より隕石と星の光を呼び降ろす。触手の蠢く口の奥で、無数の魂の悲鳴がこだましている。",
-        "en": "A mind flayer that has reached the abyss of knowledge over countless ages. Its swollen brain reads even the motions of the stars, calling down meteors and starlight from the void. Within its writhing, tentacled maw echo the screams of countless devoured souls.",
+        "ja": "幾星霜を経て知の深淵に達したマインド・フレイヤーだ。その肥大した頭脳から放たれる精神波は、触れた者の脳髄を直接掻き乱す。触手の蠢く口の奥で、貪り喰らった無数の魂の悲鳴がこだましている。",
+        "en": "A mind flayer that has reached the abyss of knowledge over countless ages. The psychic waves radiating from its swollen brain ravage the minds of those they touch. Within its writhing, tentacled maw echo the screams of countless devoured souls.",
       },
       "flags": [
         "FORCE_MAXHP",
@@ -148438,12 +148438,6 @@
           "DRAIN_MANA",
           "MIND_BLAST",
           "BRAIN_SMASH",
-          "BO_LITE",
-          "BA_LITE",
-          "BO_METEOR",
-          "BA_METEOR",
-          "BA_VOID",
-          "BA_ABYSS",
         ],
         "probability": "1_IN_5",
       },
