@@ -73,7 +73,7 @@ hengband_SOURCES = \
 	alliance/alliance-fingolfin-noldor.cpp alliance/alliance-fingolfin-noldor.h \
 	alliance/alliance-frieza-clan.cpp alliance/alliance-frieza-clan.h \
 	alliance/alliance-sexy-commando-club.cpp alliance/alliance-sexy-commando-club.h \
-	alliance/alliance-slaanesh.cpp alliance/alliance-sllanesh.h \
+	alliance/alliance-slaanesh.cpp alliance/alliance-slaanesh.h \
 	alliance/alliance-nurgle.cpp alliance/alliance-nurgle.h \
 	alliance/alliance-nanman.cpp alliance/alliance-nanman.h \
 	alliance/alliance-nanto-orthodox.cpp alliance/alliance-nanto-orthodox.h \
@@ -97,7 +97,7 @@ hengband_SOURCES = \
 	alliance/alliance-valinor.cpp alliance/alliance-valinor.h \
 	alliance/alliance-yeek-kingdom.cpp alliance/alliance-yeek-kingdom.h \
 	\
-	artifact/artifact-info.cpp artifact/artifact-info.h \
+	artifact/artifact-info.cpp \
 	artifact/fixed-art-generator.cpp artifact/fixed-art-generator.h \
 	artifact/fixed-art-types.h \
 	artifact/random-art-activation.cpp artifact/random-art-activation.h \
@@ -1533,12 +1533,12 @@ hengband_SOURCES = \
 	world/world.cpp world/world.h \
 	world/world-alliance-processor.cpp world/world-alliance-processor.h \
 	world/world-collapsion.cpp world/world-collapsion.h \
-	world/world-object.cpp world/world-object.h \
+	world/world-object.cpp \
 	world/world-movement-processor.cpp world/world-movement-processor.h \
 	world/world-turn-processor.cpp world/world-turn-processor.h
 
 EXTRA_hengband_SOURCES = \
-	angband.ico angband.rc ang_eng.rc ang_jp.rc maid-x11.cpp main-win.cpp \
+	bakabakaband.ico angband.rc ang_eng.rc ang_jp.rc maid-x11.cpp main-win.cpp \
 	main-win/commandline-win.cpp main-win/commandline-win.h \
 	main-win/graphics-win.cpp main-win/graphics-win.h \
 	main-win/main-win-bg.cpp main-win/main-win-bg.h \
