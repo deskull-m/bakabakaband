@@ -148430,15 +148430,7 @@
         "MINDFLAYER",
       ],
       "skill": {
-        "list": [
-          "BLIND",
-          "HOLD",
-          "SCARE",
-          "FORGET",
-          "DRAIN_MANA",
-          "MIND_BLAST",
-          "BRAIN_SMASH",
-        ],
+        "list": ["BLIND", "HOLD", "SCARE", "FORGET", "DRAIN_MANA", "MIND_BLAST", "BRAIN_SMASH"],
         "probability": "1_IN_5",
       },
     },

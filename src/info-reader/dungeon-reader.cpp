@@ -30,7 +30,7 @@
  * @param what 参照元の文字列
  * @return 見つけたらtrue
  */
-static bool grab_one_dungeon_flag(DungeonDefinition &dungeon, std::string_view what)
+bool DungeonReader::grab_one_dungeon_flag(DungeonDefinition &dungeon, std::string_view what)
 {
     if (EnumClassFlagGroup<DungeonFeatureType>::grab_one_flag(dungeon.flags, dungeon_flags, what)) {
         return true;
@@ -46,7 +46,7 @@ static bool grab_one_dungeon_flag(DungeonDefinition &dungeon, std::string_view w
  * @param what 参照元の文字列
  * @return 見つけたらtrue
  */
-static bool grab_one_basic_monster_flag(DungeonDefinition &dungeon, std::string_view what)
+bool DungeonReader::grab_one_basic_monster_flag(DungeonDefinition &dungeon, std::string_view what)
 {
     if (EnumClassFlagGroup<MonsterFeedType>::grab_one_flag(dungeon.mon_meat_feed_flags, r_info_meat_feed, what)) {
         return true;
@@ -108,7 +108,7 @@ static bool grab_one_basic_monster_flag(DungeonDefinition &dungeon, std::string_
  * @param what 参照元の文字列
  * @return 見つけたらtrue
  */
-static bool grab_one_spell_monster_flag(DungeonDefinition &dungeon, std::string_view what)
+bool DungeonReader::grab_one_spell_monster_flag(DungeonDefinition &dungeon, std::string_view what)
 {
     if (EnumClassFlagGroup<MonsterAbilityType>::grab_one_flag(dungeon.mon_ability_flags, r_info_ability_flags, what)) {
         return true;
@@ -141,7 +141,7 @@ static tl::optional<ProbabilityTable<short>> parse_terrain_probability(std::span
  * @param buf テキスト列
  * @return エラーコード
  */
-errr parse_dungeons_info(std::string_view buf)
+errr DungeonReader::parse_dungeons_info(std::string_view buf)
 {
     const auto &tokens = str_split(buf, ':', false);
     const auto &terrains = TerrainList::get_instance();
@@ -380,6 +380,10 @@ errr parse_dungeons_info(std::string_view buf)
 
     // M:Monster flags
     if (tokens[0] == "M") {
+        if (tokens.size() < 2) {
+            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        }
+
         if (tokens[1] == "X") {
             if (tokens.size() < 3) {
                 return PARSE_ERROR_TOO_FEW_ARGUMENTS;
@@ -392,10 +396,6 @@ errr parse_dungeons_info(std::string_view buf)
 
             dungeon->mon_sex = static_cast<MonsterSex>(sex);
             return 0;
-        }
-
-        if (tokens.size() < 2) {
-            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
         }
 
         const auto &flags = str_split(tokens[1], '|', true);
@@ -453,7 +453,7 @@ errr parse_dungeons_info(std::string_view buf)
 
     if (tokens[0] == "R") {
         int r_type, r_rate;
-        if (tokens.size() < 2) {
+        if (tokens.size() < 3) {
             return PARSE_ERROR_TOO_FEW_ARGUMENTS;
         }
         info_set_value(r_type, tokens[1]);
@@ -548,7 +548,7 @@ static tl::optional<std::string> read_localized_name(const nlohmann::json &name_
  * @param desc_obj description オブジェクト (ja / en キーを含む)
  * @return エラーコード
  */
-static errr set_dungeon_description(DungeonDefinition &dungeon, const nlohmann::json &desc_obj)
+errr DungeonReader::set_dungeon_description(DungeonDefinition &dungeon, const nlohmann::json &desc_obj)
 {
 #ifdef JP
     if (!desc_obj.contains("ja")) {
@@ -579,7 +579,7 @@ static errr set_dungeon_description(DungeonDefinition &dungeon, const nlohmann::
 /*!
  * @brief generation オブジェクトを DungeonDefinition の生成パラメータに直接フィル
  */
-static errr set_dungeon_generation(DungeonDefinition &dungeon, const nlohmann::json &gen_obj)
+errr DungeonReader::set_dungeon_generation(DungeonDefinition &dungeon, const nlohmann::json &gen_obj)
 {
     if (!gen_obj.is_object()) {
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
@@ -698,7 +698,7 @@ static tl::optional<ProbabilityTable<short>> build_probability_table_from_tiles(
 /*!
  * @brief floor オブジェクトを DungeonDefinition の床関連フィールドに直接フィル
  */
-static errr set_dungeon_floor(DungeonDefinition &dungeon, const nlohmann::json &floor_obj)
+errr DungeonReader::set_dungeon_floor(DungeonDefinition &dungeon, const nlohmann::json &floor_obj)
 {
     if (!floor_obj.is_object()) {
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
@@ -718,7 +718,7 @@ static errr set_dungeon_floor(DungeonDefinition &dungeon, const nlohmann::json &
 /*!
  * @brief wall オブジェクトを DungeonDefinition の壁関連フィールドに直接フィル
  */
-static errr set_dungeon_wall(DungeonDefinition &dungeon, const nlohmann::json &wall_obj)
+errr DungeonReader::set_dungeon_wall(DungeonDefinition &dungeon, const nlohmann::json &wall_obj)
 {
     if (!wall_obj.is_object()) {
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
@@ -791,7 +791,7 @@ static errr set_dungeon_wall(DungeonDefinition &dungeon, const nlohmann::json &w
  * @details `guardian` (MonraceId 整数) / `object` (BaseitemId 整数) / `artifact`
  *          (FixedArtifactId 整数) を受け取り、それぞれの整合性も検証する。
  */
-static errr set_dungeon_final_floor(DungeonDefinition &dungeon, const nlohmann::json &final_floor_obj)
+errr DungeonReader::set_dungeon_final_floor(DungeonDefinition &dungeon, const nlohmann::json &final_floor_obj)
 {
     if (final_floor_obj.is_null()) {
         return PARSE_ERROR_NONE;
@@ -839,10 +839,10 @@ static errr set_dungeon_final_floor(DungeonDefinition &dungeon, const nlohmann::
  * @brief JSON flags 配列、および MONSTER_RATE / TRAP_RATE 等のスカラ
  *        + FIXED_ROOM / ALLIANCE 等のサブ構造を DungeonDefinition に直接フィル
  */
-static errr set_dungeon_feature_flags(DungeonDefinition &dungeon, const nlohmann::json &dungeon_data)
+errr DungeonReader::set_dungeon_feature_flags(DungeonDefinition &dungeon, const nlohmann::json &dungeon_json)
 {
-    if (dungeon_data.contains("flags")) {
-        for (const auto &flag : dungeon_data["flags"]) {
+    if (dungeon_json.contains("flags")) {
+        for (const auto &flag : dungeon_json["flags"]) {
             const auto f = flag.get<std::string>();
             if (f.empty()) {
                 continue;
@@ -852,17 +852,17 @@ static errr set_dungeon_feature_flags(DungeonDefinition &dungeon, const nlohmann
             }
         }
     }
-    if (dungeon_data.contains("monster_rate")) {
-        dungeon.monster_rate = dungeon_data["monster_rate"].get<int>();
+    if (dungeon_json.contains("monster_rate")) {
+        dungeon.monster_rate = dungeon_json["monster_rate"].get<int>();
     }
-    if (dungeon_data.contains("trap_rate")) {
-        dungeon.trap_rate = dungeon_data["trap_rate"].get<int>();
+    if (dungeon_json.contains("trap_rate")) {
+        dungeon.trap_rate = dungeon_json["trap_rate"].get<int>();
     }
-    if (dungeon_data.contains("normal_monster_rate")) {
-        dungeon.normal_monster_rate = static_cast<PROB>(dungeon_data["normal_monster_rate"].get<int>());
+    if (dungeon_json.contains("normal_monster_rate")) {
+        dungeon.normal_monster_rate = static_cast<PROB>(dungeon_json["normal_monster_rate"].get<int>());
     }
-    if (dungeon_data.contains("alliance")) {
-        const auto alliance_tag = dungeon_data["alliance"].get<std::string>();
+    if (dungeon_json.contains("alliance")) {
+        const auto alliance_tag = dungeon_json["alliance"].get<std::string>();
         for (const auto &a : alliance_list) {
             if (a.second->tag == alliance_tag) {
                 dungeon.alliance_idx = static_cast<AllianceType>(a.second->id);
@@ -870,8 +870,8 @@ static errr set_dungeon_feature_flags(DungeonDefinition &dungeon, const nlohmann
             }
         }
     }
-    if (dungeon_data.contains("fixed_rooms")) {
-        for (const auto &fr : dungeon_data["fixed_rooms"]) {
+    if (dungeon_json.contains("fixed_rooms")) {
+        for (const auto &fr : dungeon_json["fixed_rooms"]) {
             const auto depth = fr.value("depth", 0);
             const auto id = fr.value("id", 0);
             const auto percentage = fr.value("percentage", 0);
@@ -885,7 +885,7 @@ static errr set_dungeon_feature_flags(DungeonDefinition &dungeon, const nlohmann
  * @brief monster_flags 配列を直接フィル
  *        フラグ文字列の他、`R_CHAR_X` (出現許可シンボル) / `X_FOO` (性別) を扱う
  */
-static errr set_dungeon_monster_flags(DungeonDefinition &dungeon, const nlohmann::json &flags_array)
+errr DungeonReader::set_dungeon_monster_flags(DungeonDefinition &dungeon, const nlohmann::json &flags_array)
 {
     for (const auto &flag_node : flags_array) {
         const auto f = flag_node.get<std::string>();
@@ -917,7 +917,7 @@ static errr set_dungeon_monster_flags(DungeonDefinition &dungeon, const nlohmann
  * @brief symbols 配列を直接フィル (出現許可モンスターシンボル)
  *        従来の `R_CHAR_xxx` 記法に代わる、可読性の高いシンボル配列形式。
  */
-static errr set_dungeon_monster_symbols(DungeonDefinition &dungeon, const nlohmann::json &symbols_array)
+errr DungeonReader::set_dungeon_monster_symbols(DungeonDefinition &dungeon, const nlohmann::json &symbols_array)
 {
     for (const auto &symbol_node : symbols_array) {
         const auto s = symbol_node.get<std::string>();
@@ -932,7 +932,7 @@ static errr set_dungeon_monster_symbols(DungeonDefinition &dungeon, const nlohma
 /*!
  * @brief monster_spells 配列を直接フィル
  */
-static errr set_dungeon_monster_spells(DungeonDefinition &dungeon, const nlohmann::json &flags_array)
+errr DungeonReader::set_dungeon_monster_spells(DungeonDefinition &dungeon, const nlohmann::json &flags_array)
 {
     for (const auto &flag_node : flags_array) {
         const auto f = flag_node.get<std::string>();
@@ -956,7 +956,7 @@ static errr set_dungeon_monster_spells(DungeonDefinition &dungeon, const nlohman
 /*!
  * @brief specific_items 配列を direct-fill (階層別アイテム生成ルール)
  */
-static errr set_dungeon_specific_items(DungeonDefinition &dungeon, const nlohmann::json &items_array)
+errr DungeonReader::set_dungeon_specific_items(DungeonDefinition &dungeon, const nlohmann::json &items_array)
 {
     for (const auto &item : items_array) {
         const auto floor_level = item.value("floor", 0);
@@ -972,7 +972,7 @@ static errr set_dungeon_specific_items(DungeonDefinition &dungeon, const nlohman
 /*!
  * @brief specific_vaults 配列を direct-fill (階層別 Vault 指定)
  */
-static errr set_dungeon_specific_vaults(DungeonDefinition &dungeon, const nlohmann::json &vaults_array)
+errr DungeonReader::set_dungeon_specific_vaults(DungeonDefinition &dungeon, const nlohmann::json &vaults_array)
 {
     for (const auto &v : vaults_array) {
         const auto floor_level = v.value("floor", 0);
@@ -985,7 +985,7 @@ static errr set_dungeon_specific_vaults(DungeonDefinition &dungeon, const nlohma
 /*!
  * @brief room_rates 配列を direct-fill (部屋種別ごとの生成率)
  */
-static errr set_dungeon_room_rates(DungeonDefinition &dungeon, const nlohmann::json &rates_array)
+errr DungeonReader::set_dungeon_room_rates(DungeonDefinition &dungeon, const nlohmann::json &rates_array)
 {
     for (const auto &r : rates_array) {
         const auto type = r.value("type", 0);
@@ -998,7 +998,7 @@ static errr set_dungeon_room_rates(DungeonDefinition &dungeon, const nlohmann::j
 /*!
  * @brief position オブジェクトから wilderness 位置を初期化
  */
-static void set_dungeon_position(DungeonDefinition &dungeon, const nlohmann::json &pos_obj)
+void DungeonReader::set_dungeon_position(DungeonDefinition &dungeon, const nlohmann::json &pos_obj)
 {
     const auto y = pos_obj.value("y", 0);
     const auto x = pos_obj.value("x", 0);
@@ -1011,7 +1011,12 @@ static void set_dungeon_position(DungeonDefinition &dungeon, const nlohmann::jso
  *          (旧 token-emit 方式は提案 38 で廃止)。version 1 (lines 配列) は
  *          legacy `parse_dungeons_info()` トークンパーサを使う互換パスで継続。
  */
-errr parse_dungeons_info_json(nlohmann::json &dungeon_data)
+DungeonReader::DungeonReader(nlohmann::json &dungeon_data)
+    : dungeon_data(dungeon_data)
+{
+}
+
+errr DungeonReader::read()
 {
     // version 1 (wrapped-line) 互換パス
     if (dungeon_data.contains("lines") && dungeon_data["lines"].is_array()) {
@@ -1032,7 +1037,7 @@ errr parse_dungeons_info_json(nlohmann::json &dungeon_data)
     }
 
     // version 2 (structured) パス - direct fill 方式
-    if (!dungeon_data.contains("id")) {
+    if (!dungeon_data.contains("id") || !dungeon_data["id"].is_number_integer()) {
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
     }
     const auto id = dungeon_data["id"].get<int>();
@@ -1044,13 +1049,14 @@ errr parse_dungeons_info_json(nlohmann::json &dungeon_data)
     DungeonDefinition dungeon;
 
     // name (必須)
-    if (dungeon_data.contains("name")) {
-        auto name = read_localized_name(dungeon_data["name"]);
-        if (!name) {
-            return PARSE_ERROR_INVALID_FLAG;
-        }
-        dungeon.name = std::move(*name);
+    if (!dungeon_data.contains("name")) {
+        return PARSE_ERROR_INVALID_FLAG;
     }
+    auto name = read_localized_name(dungeon_data["name"]);
+    if (!name || name->empty()) {
+        return PARSE_ERROR_INVALID_FLAG;
+    }
+    dungeon.name = std::move(*name);
 
     // tag
     if (dungeon_data.contains("tag")) {
