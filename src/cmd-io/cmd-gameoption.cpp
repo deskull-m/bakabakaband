@@ -425,6 +425,8 @@ void extract_option_vars(void)
  */
 void do_cmd_options(CreatureEntity &creature)
 {
+    TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
+
     char k;
     int skey;
     TERM_LEN i, y = 0;
