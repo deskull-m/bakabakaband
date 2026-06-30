@@ -383,7 +383,7 @@ static void update_bonuses(CreatureEntity &creature)
 static void update_max_hitpoints(CreatureEntity &creature)
 {
     int bonus = creature.calc_max_hp_con_bonus();
-    int mhp = creature.hp_table[creature.get_level() - 1];
+    int mhp = creature.get_hp_table(creature.get_level() - 1);
 
     CreatureClass pc(creature);
     auto is_sorcerer = pc.equals(PlayerClassType::SORCERER);
@@ -1467,7 +1467,7 @@ static int16_t calc_num_blow(CreatureEntity &creature, int i)
                 num_blow = (int16_t)num;
             }
 
-            num_blow += (int16_t)creature.extra_blows[i];
+            num_blow += (int16_t)creature.get_extra_blows(i);
             if (pc.equals(PlayerClassType::WARRIOR)) {
                 num_blow += (creature.get_level() / 40);
             } else if (pc.equals(PlayerClassType::BERSERKER)) {
@@ -1555,7 +1555,7 @@ static int16_t calc_num_blow(CreatureEntity &creature, int i)
             num_blow /= 2;
         }
 
-        num_blow += 1 + creature.extra_blows[0];
+        num_blow += 1 + creature.get_extra_blows(0);
     }
 
     return num_blow;

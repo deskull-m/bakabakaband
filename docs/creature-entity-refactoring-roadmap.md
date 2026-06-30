@@ -2687,14 +2687,42 @@ virtual アクセサを整備:
   `remove_knowledge(FLAG)`、`= 0`/load→`set_knowledge()`、save→`get_knowledge()`。
 - フルビルド (g++ -O3 -Werror -Wall -Wextra) と clang-format-18 で検証済み。
 
-### 残作業 (A-3)
+### 提案 A-3 ✅ 完了 (一部スコープ確定で残置)
 
-- **A-3**: 配列/vector (`hp_table[]` / `extra_blows[]` / `extended_inventory`)、
-  汎用名 `count` (要精査) / `class_specific_data`
+配列・汎用名フィールドのうち、スカラ／固定長配列の 3 個を private 化:
 
-**留意**: これらは player 固有・低 churn のフィールドで機能的影響はなく、
-カプセル化の完全性のための作業。`creature-entity.h` 変更は上流マージ衝突を
-増やすため、効果と費用を勘案して進めること。
+| フィールド | 型 | アクセサ |
+|---|---|---|
+| `extra_blows[2]` | int[2] | `get_extra_blows(hand)` / `set_extra_blows(hand, value)` / `add_extra_blows(hand, delta)` |
+| `count` | uint32_t | `get_count()` / `set_count()` |
+| `hp_table[PY_MAX_LEVEL]` | int[] | `get_hp_table(idx)` / `set_hp_table(idx, value)` |
+
+- `extra_blows`: 装備由来追加攻撃。`+=` は `add_extra_blows()`、`= ... = 0` は
+  2 文へ分解。7 サイト migration。
+- `count`: セーブ用カウンタ。`.count` の大多数は `std::map/set::count()` や
+  `ItemEntity::count` など別物のため、`creature.count` のみを慎重に抽出して 6 サイト
+  migration。`++creature.count` は `set_count(get_count()+1)` に展開。
+- `hp_table`: レベル別累積HPテーブル。CreatureEntity 内部 (`roll_hp_table()` /
+  `roll_monster_hp_table()` / `grow_hp_table_to_level()`) の `this->hp_table` 直接操作は
+  private 内アクセスで残置。外部の `creature.hp_table` 読書 9 サイトを migration
+  (`Birther::hp_table` / `previous_char.hp_table` は別構造体のため対象外、慎重に除外)。
+- フルビルド (g++ -O3 -Werror -Wall -Wextra) と clang-format-18 で検証済み。
+
+**残置 (複合型、参照アクセサではカプセル化効果が薄いため見送り):**
+
+- `class_specific_data` (`ClassSpecificData` = std::variant): `std::visit` /
+  `std::get_if` / `std::holds_alternative` / 直接代入で使われ、可変参照を返す
+  アクセサでは実質的な保護にならない。かつ完全にプレイヤー専用データ。
+- `extended_inventory` (`std::vector<std::shared_ptr<ItemEntity>>`): `[i]` への
+  代入・`.size()`・range-for で多用され、これも可変参照アクセサでは保護が薄い。
+  プレイヤー／モンスター共用だが既に `init_extended_inventory()` /
+  `store_item()` 等の OO API で操作経路は整備済み。
+
+**留意**: A-1〜A-3 で CreatureEntity 直下のスカラ／固定長配列フィールドは
+ほぼ全て private 化が完了した。残るのは上記 2 個の複合型のみで、これらは
+参照アクセサ化の費用対効果が低いため現状維持とする。`creature-entity.h`
+変更は上流マージ衝突を増やすため、今後の追加カプセル化は効果と費用を
+勘案して判断する。
 
 ---
 

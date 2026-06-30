@@ -2504,6 +2504,41 @@ public:
     {
         this->num_blow[hand] = value;
     }
+    /*! @brief 装備由来の追加攻撃回数を取得する (A-3) */
+    virtual int get_extra_blows(int hand) const
+    {
+        return this->extra_blows[hand];
+    }
+    /*! @brief 装備由来の追加攻撃回数を設定する (A-3) */
+    virtual void set_extra_blows(int hand, int value)
+    {
+        this->extra_blows[hand] = value;
+    }
+    /*! @brief 装備由来の追加攻撃回数を加算する (A-3) */
+    virtual void add_extra_blows(int hand, int delta)
+    {
+        this->extra_blows[hand] += delta;
+    }
+    /*! @brief セーブ用カウンタを取得する (A-3) */
+    virtual uint32_t get_count() const
+    {
+        return this->count;
+    }
+    /*! @brief セーブ用カウンタを設定する (A-3) */
+    virtual void set_count(uint32_t value)
+    {
+        this->count = value;
+    }
+    /*! @brief レベル別累積HPテーブルの値を取得する (A-3) */
+    virtual int get_hp_table(int level_index) const
+    {
+        return this->hp_table[level_index];
+    }
+    /*! @brief レベル別累積HPテーブルの値を設定する (A-3) */
+    virtual void set_hp_table(int level_index, int value)
+    {
+        this->hp_table[level_index] = value;
+    }
     virtual int16_t get_num_fire() const
     {
         return this->num_fire;
@@ -4352,9 +4387,11 @@ private:
     int16_t learned_spells{};
     int16_t add_spells{};
 
-public:
+    // [A-3] private 化済。get_count() / set_count() 経由。
+private:
     uint32_t count{};
 
+public:
     // [提案 43] timewalk / resting は private 化済。
     // is_timewalking() / set_timewalking() / get_resting() / set_resting() 経由。
 private:
@@ -4459,7 +4496,12 @@ public:
     }
     std::vector<int> spell_order_learned{}; /* order spells learned */
 
+    // [A-3] private 化済。get_hp_table(level_index) / set_hp_table(level_index, value) 経由。
+    // CreatureEntity 内部の roll_hp_table() 等は this->hp_table を直接操作。
+private:
     int hp_table[PY_MAX_LEVEL]{};
+
+public:
     std::string last_message = ""; /* Last message on death or retirement */
     char history[4][60]{}; /* Textual "history" for the Player */
 
@@ -4559,9 +4601,12 @@ private:
     bool old_riding_ryoute{};
     bool old_monlite{};
 
-public:
+    // [A-3] private 化済。get_extra_blows(hand) / set_extra_blows(hand, value) /
+    // add_extra_blows(hand, delta) 経由。
+private:
     int extra_blows[2]{};
 
+public:
     // [提案 39] 装備派生キャッシュフラグは private 化済。
     // is_cumber_armor() / set_cumber_armor() / is_cumber_glove() / set_cumber_glove() /
     // is_heavy_wield(hand) / set_heavy_wield(hand, value) / is_icky_wield(hand) /

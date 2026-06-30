@@ -199,7 +199,7 @@ static void init_world_floor_info(CreatureEntity &creature, std::optional<QuestI
     system.set_seed_town(randint0(0x10000000));
     player_birth(creature, initial_quest_id);
     counts_write(creature, 2, 0);
-    creature.count = 0;
+    creature.set_count(0);
     load = false;
     determine_bounty_uniques(creature);
     determine_daily_bounty(creature);
