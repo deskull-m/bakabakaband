@@ -83,10 +83,10 @@ void player_wipe_without_name(CreatureEntity &creature)
     pss.realm1().initialize();
     pss.realm2().initialize();
 
-    creature.learned_spells = 0;
-    creature.add_spells = 0;
+    creature.set_learned_spells(0);
+    creature.set_add_spells(0);
     creature.knowledge = 0;
-    creature.mutant_regenerate_mod = 100;
+    creature.set_mutant_regenerate_mod(100);
 
     cheat_peek = false;
     cheat_hear = false;

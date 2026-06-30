@@ -200,8 +200,8 @@ static bool wr_savefile_new(CreatureEntity &creature)
     wr_u32b(creature.get_spell_worked_flags(1));
     wr_u32b(creature.get_spell_forgotten_flags(0));
     wr_u32b(creature.get_spell_forgotten_flags(1));
-    wr_s16b(creature.learned_spells);
-    wr_s16b(creature.add_spells);
+    wr_s16b(creature.get_learned_spells());
+    wr_s16b(creature.get_add_spells());
     for (auto i = 0; i < 64; i++) {
         const auto spell_id = (i < std::ssize(creature.spell_order_learned)) ? creature.spell_order_learned[i] : 255;
         wr_byte(static_cast<byte>(spell_id));

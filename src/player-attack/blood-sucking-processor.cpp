@@ -159,7 +159,7 @@ static void drain_result(CreatureEntity &creature, player_attack_type *pa_ptr, b
         *drain_msg = false;
     }
 
-    drain_heal = (drain_heal * creature.mutant_regenerate_mod) / 100;
+    drain_heal = (drain_heal * creature.get_mutant_regenerate_mod()) / 100;
     hp_player(creature, drain_heal);
 }
 

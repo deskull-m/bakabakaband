@@ -642,7 +642,7 @@ void wiz_reset_class(CreatureEntity &creature)
     PlayerSpellStatus pss(creature);
     pss.realm1().initialize();
     pss.realm2().initialize();
-    creature.learned_spells = 0;
+    creature.set_learned_spells(0);
     change_birth_flags();
     handle_stuff(creature);
 }
@@ -668,7 +668,7 @@ void wiz_reset_realms(CreatureEntity &creature)
     PlayerSpellStatus pss(creature);
     pss.realm1().initialize();
     pss.realm2().initialize();
-    creature.learned_spells = 0;
+    creature.set_learned_spells(0);
     change_birth_flags();
     handle_stuff(creature);
 }

@@ -2638,10 +2638,30 @@ virtual アクセサを整備:
   読取は `is_X()` に機械置換。
 - フルビルド (g++ -O3 -Werror -Wall -Wextra) と clang-format-18 で検証済み。
 
-### 残作業 (A-1 続き / A-2 / A-3)
+### 提案 A-1 第2弾 ✅ 完了
 
-- **A-1 続き**: BIT_FLAGS (`easy_2weapon` / `down_saving`)、scalar
-  (`mutant_regenerate_mod` / `learned_spells` / `add_spells`) の private 化
+提案 51 (第1弾, bool 5 個) に続き、BIT_FLAGS 2 個と scalar 3 個を private 化:
+
+| フィールド | 型 | 用途 |
+|---|---|---|
+| `easy_2weapon` | BIT_FLAGS | 二刀流ペナルティ軽減 (手別ビット) |
+| `down_saving` | BIT_FLAGS | 劣化セーヴィングスロー |
+| `mutant_regenerate_mod` | PERCENTAGE | ミュータント体質の自然回復補正(%) |
+| `learned_spells` | int16_t | 習得済み呪文数 |
+| `add_spells` | int16_t | 追加習得可能呪文数 |
+
+- 10 個の virtual アクセサ (`get_X()` / `set_X()`) を整備し、12 ファイル
+  約 22 アクセスサイトを migration。
+- 読取は `get_X()`、書込は `set_X()`、`++` (learned_spells / add_spells) は
+  `set_X(get_X() + 1)` に展開。`PlayerType::apply_creature_specific_regen_modifier`
+  の `this->mutant_regenerate_mod` も `this->get_mutant_regenerate_mod()` に変換。
+- 既存の `has_down_saving()` / `has_easy2_weapon()` は装備集計を計算する別物
+  (キャッシュ値の格納先がこのフィールド)。フィールド getter は `get_down_saving()`
+  / `get_easy_2weapon()` と命名して衝突回避。
+- フルビルド (g++ -O3 -Werror -Wall -Wextra) と clang-format-18 で検証済み。
+
+### 残作業 (A-2 / A-3)
+
 - **A-2**: `energy_need` (compound 多) / `knowledge` (BIT_FLAGS) /
   `element_realm` (getter 既存)
 - **A-3**: 配列/vector (`hp_table[]` / `extra_blows[]` / `extended_inventory`)、

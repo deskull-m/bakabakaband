@@ -269,8 +269,8 @@ static void update_bonuses(CreatureEntity &creature)
     creature.set_esp_unique(has_esp_unique(creature));
     creature.set_telepathy(has_esp_telepathy(creature));
     creature.set_bless_blade(has_bless_blade(creature));
-    creature.easy_2weapon = creature.has_easy2_weapon();
-    creature.down_saving = creature.has_down_saving();
+    creature.set_easy_2weapon(creature.has_easy2_weapon());
+    creature.set_down_saving(creature.has_down_saving());
     creature.set_yoiyami(creature.has_no_ac());
     creature.set_mighty_throw(has_mighty_throw(creature));
     creature.set_dec_mana(has_dec_mana(creature));
@@ -496,7 +496,7 @@ static void update_num_of_spells(CreatureEntity &creature)
         }
     }
 
-    creature.new_spells = num_allowed + creature.add_spells + num_forgotten - creature.learned_spells;
+    creature.new_spells = num_allowed + creature.get_add_spells() + num_forgotten - creature.get_learned_spells();
 
     for (auto it = creature.spell_order_learned.crbegin(); it != creature.spell_order_learned.crend(); ++it) {
         const auto is_realm1 = *it < 32;
@@ -1152,7 +1152,7 @@ static ACTION_SKILL_POWER calc_saving_throw(CreatureEntity &creature)
         pow = 95 + creature.get_level();
     }
 
-    if (creature.down_saving) {
+    if (creature.get_down_saving()) {
         pow /= 2;
     }
 
@@ -1861,7 +1861,7 @@ int16_t calc_double_weapon_penalty(CreatureEntity &creature, INVENTORY_IDX slot)
         }
 
         for (uint i = FLAG_CAUSE_INVEN_MAIN_HAND; i < FLAG_CAUSE_MAX; i <<= 1) {
-            if (penalty > 0 && any_bits(creature.easy_2weapon, i)) {
+            if (penalty > 0 && any_bits(creature.get_easy_2weapon(), i)) {
                 penalty /= 2;
             }
         }

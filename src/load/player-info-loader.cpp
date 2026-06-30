@@ -569,7 +569,7 @@ static void rd_player_status(CreatureEntity &creature)
         creature.set_timed_effect(CreatureTimedEffect::TSUYOSHI, rd_s16b());
     }
     rd_timed_effects(creature);
-    creature.mutant_regenerate_mod = calc_mutant_regenerate_mod(creature);
+    creature.set_mutant_regenerate_mod(calc_mutant_regenerate_mod(creature));
 
     if (!loading_savefile_version_is_older_than(6)) {
         int32_t num = rd_s32b();
