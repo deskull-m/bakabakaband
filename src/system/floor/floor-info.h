@@ -149,6 +149,7 @@ public:
     tl::optional<int> get_mproc_index(short m_idx, CreatureTimedEffect mte);
     void add_mproc(short m_idx, CreatureTimedEffect mte);
     void remove_mproc(short m_idx, CreatureTimedEffect mte);
+    bool set_monster_timed_effect(short m_idx, CreatureTimedEffect mte, int v, int max_value);
 
     CreatureEntity &get_monster(MONSTER_IDX m_idx);
     const CreatureEntity &get_monster(MONSTER_IDX m_idx) const;

@@ -68,6 +68,7 @@ Phase 1-8 完了後に残存している統合作業項目を整理したもの�
 | [46](#提案-46-esp--知覚系フラグの差分検出スナップショット化--完了) | ESP / 知覚系フラグの差分検出スナップショット化 | ✅ 完了 | PerceptionFlagsSnapshot、getter 15 個撤廃 |
 | [47](#提案-47-その他小規模フィールドの-private-化--完了) | その他小規模フィールドまとめ | ✅ 完了 | **+6 = 135 個** (dealt_damage / run_py/px / vanish_stairs_flag / suppress_multi_reward / tracking_bi_id、tval_xtra 削除) |
 | [48](#提案-48-追加の小規模フィールドの-private-化--完了) | 追加の小規模フィールドまとめ | ✅ 完了 | **+6 = 141 個** (tval_ammo / dtrap / autopick_autoregister / recall_dungeon / enchant_energy_need / energy_use) |
+| [49](#提案-49-モンスター時限効果付与プリミティブの集約-b1-第1段--完了) | モンスター時限効果付与プリミティブ集約 (B1 第1段) | ✅ 完了 | FloorType::set_monster_timed_effect、7 setter 集約 |
 
 **累計 private 化フィールド数 (主要マイルストーン):**
 - 提案 29 (3 個) → 32 (10 個) → 32b (37 個) → 33 (72 個) → 34 (77 個) →
@@ -2466,6 +2467,62 @@ virtual を追加し、PlayerEnergy はそれらを呼び出す形に切替え�
 - B-3: 装備フラグキャッシュ (性能必要時)
 
 各提案は独立した PR として進めること。
+
+---
+
+## 提案 49: モンスター時限効果付与プリミティブの集約 (B1 第1段) ✅ 完了
+
+### 背景 (B1「状態異常付与処理の統合」の調査結果)
+
+第2層 B1 として「状態異常付与ロジック (耐性判定＋メッセージ＋セット) を
+`creature.try_inflict_X()` 的な virtual に共通化」を狙ったが、調査の結果
+**プレイヤー経路と モンスター経路の共有ロジックは想定より小さい**ことが判明:
+
+- **プレイヤー** (`BadStatusSetter`): 値クランプ + 豊富な副作用 (行動中断 /
+  構え崩し / 徳変化 / 連携リセット等) + プレイヤー向けメッセージ + `set_timed_effect`。
+- **モンスター** (`set_monster_*`): 値クランプ + **mproc キュー保守**
+  (毎ターン処理対象への登録/解除、`m_idx` キー) + `set_timed_effect`。
+
+両者で真に共通なのは `set_timed_effect` のみ。モンスターは mproc という
+固有機構を、プレイヤーは固有副作用を持つため、単純な `try_inflict_X()`
+virtual では中身が分離した 2 経路になり価値が薄い。さらに統一 `set_timed_effect`
+(提案 5) は mproc を保守しないため、モンスターに直接呼ぶと効果が毎ターン
+処理されない**フットガン**が存在する (各 set_monster_* がこれを個別に吸収)。
+
+**真の統一 (set_timed_effect が mproc を自動保守) には、モンスターが自身の
+`m_idx` を知る仕組みが必要**で、これはモンスターデータ構造とホットパスに
+関わる別提案 (アーキテクチャ判断要) とする。
+
+### 完了内容 (B1 の安全な第 1 段)
+
+モンスター側の「時限効果付与 (mproc 保守込み)」をまず単一プリミティブへ集約:
+
+- `FloorType::set_monster_timed_effect(m_idx, mte, v, max_value)` を新設。
+  クランプ + mproc 保守 (付与時 add / 解除時 remove) + 値設定 + 変化有無
+  (notice) 返却を 1 箇所に集約。`is_X()` ≡ `get_timed_effect(X) > 0` の
+  等価性を確認の上で共通化したため挙動不変。
+- `set_monster_csleep` / `fast` / `slow` / `stunned` / `confused` /
+  `monfear` / `invulner` の 7 setter が、それぞれ複製していたコア
+  (クランプ + mproc + set) を本プリミティブへ委譲。各 setter 固有の
+  前段ガード (monfear の狂乱) と後段再描画は維持。
+- `stunned` / `confused` は 1 行に縮約。`invulner` の解除時エネルギー消費は
+  `notice && v<=0` で等価に再現。
+
+### 効果
+
+- モンスター時限効果付与の「mproc 保守を伴う正しい設定」が単一メソッドに
+  集約され、フットガン (mproc 保守漏れ) を構造的に防止
+- 7 setter 合計で重複コア (1 setter あたり ~10 行) を削減
+- 将来の真の player/monster 時限効果統一 (set_timed_effect への mproc 統合)
+  の足場が整備
+- フルビルド (g++ -O3 -Werror -Wall -Wextra) と clang-format-18 で検証済み
+
+### 残作業 (B1 後続段 / 別提案)
+
+- **アーキテクチャ前提**: モンスター自身の `m_idx` 参照手段の導入
+  (これにより `CreatureEntity::set_timed_effect` がモンスターの mproc を
+  自動保守でき、player/monster の時限効果 API が真に一本化する)
+- 上記完了後、`creature.try_inflict_X()` 的な付与 API の共通化を再検討
 
 ---
 
