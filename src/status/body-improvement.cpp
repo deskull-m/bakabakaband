@@ -124,7 +124,7 @@ bool set_invuln(CreatureEntity &creature, short v, bool do_dec)
             rfu.set_flag(MainWindowRedrawingFlag::MAP);
             rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
             rfu.set_flags(flags_swrf);
-            creature.energy_need += ENERGY_NEED();
+            creature.add_energy_need(ENERGY_NEED());
         }
     }
 

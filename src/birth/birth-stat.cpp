@@ -226,6 +226,6 @@ void get_max_stats(CreatureEntity &creature)
         }
     }
 
-    creature.knowledge &= ~(KNOW_STAT);
+    creature.remove_knowledge(KNOW_STAT);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
 }

@@ -133,7 +133,7 @@ static void load_player_world(CreatureEntity &creature)
     rd_global_configurations(creature);
     rd_extra(creature);
 
-    if (creature.energy_need < -999) {
+    if (creature.get_energy_need() < -999) {
         creature.set_timewalking(true);
     }
 

@@ -620,9 +620,9 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     }
 
     if (!ironman_nightmare) {
-        m_ptr->energy_need = ENERGY_NEED() - randnum0<short>(100);
+        m_ptr->set_energy_need(ENERGY_NEED() - randnum0<short>(100));
     } else {
-        m_ptr->energy_need = ENERGY_NEED() - randnum0<short>(100) * 2;
+        m_ptr->set_energy_need(ENERGY_NEED() - randnum0<short>(100) * 2);
     }
 
     if (!ironman_nightmare) {

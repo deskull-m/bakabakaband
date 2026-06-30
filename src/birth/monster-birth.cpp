@@ -73,7 +73,7 @@ void setup_default_player_attributes(CreatureEntity &creature)
     // ここではポインタ初期化のための既定値を入れておく。
     creature.ppersonality = PERSONALITY_ORDINARY;
     creature.set_patron(0);
-    creature.element_realm = ElementRealmType::NONE;
+    creature.set_element_realm(ElementRealmType::NONE);
 
     sp_ptr = &sex_info[creature.psex];
     creature.race = &race_info[enum2i(creature.prace)];

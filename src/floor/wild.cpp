@@ -851,7 +851,7 @@ bool change_wild_mode(CreatureEntity &creature, bool encount)
     auto &wilderness = WildernessGrids::get_instance();
     if (world.is_wild_mode()) {
         wilderness.set_player_position(creature.get_position());
-        creature.energy_need = 0;
+        creature.set_energy_need(0);
         world.set_wild_mode(false);
         creature.set_leaving(true);
         return true;

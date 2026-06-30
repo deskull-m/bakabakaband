@@ -161,7 +161,7 @@ void do_cmd_knowledge_stat(CreatureEntity &creature)
     fprintf(fff, _("合計のプレイ時間 : %d:%02d:%02d\n", "  Total play Time is %d:%02d:%02d\n"), all_time / (60 * 60), (all_time / 60) % 60, all_time % 60);
     fputs("\n", fff);
 
-    if (creature.knowledge & KNOW_HPRATE) {
+    if (creature.has_knowledge(KNOW_HPRATE)) {
         fprintf(fff, _("現在の体力ランク : %d/100\n\n", "Your current Life Rating is %d/100.\n\n"), creature.calc_life_rating());
     } else {
         fprintf(fff, _("現在の体力ランク : ???\n\n", "Your current Life Rating is ???.\n\n"));
@@ -169,7 +169,7 @@ void do_cmd_knowledge_stat(CreatureEntity &creature)
 
     fprintf(fff, _("能力の最大値\n\n", "Limits of maximum stats\n\n"));
     for (int v_nr = 0; v_nr < A_MAX; v_nr++) {
-        if ((creature.knowledge & KNOW_STAT) || creature.get_stat_max(v_nr) == creature.get_stat_max_max(v_nr)) {
+        if ((creature.has_knowledge(KNOW_STAT)) || creature.get_stat_max(v_nr) == creature.get_stat_max_max(v_nr)) {
             fprintf(fff, "%s 18/%d\n", stat_names[v_nr], creature.get_stat_max_max(v_nr) - 18);
         } else {
             fprintf(fff, "%s ???\n", stat_names[v_nr]);

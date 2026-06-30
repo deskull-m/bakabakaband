@@ -119,7 +119,7 @@ static void dispel_player(CreatureEntity &creature)
             SubWindowRedrawingFlag::DUNGEON,
         };
         rfu.set_flags(flags_swrf);
-        creature.energy_need += ENERGY_NEED();
+        creature.add_energy_need(ENERGY_NEED());
     }
 }
 

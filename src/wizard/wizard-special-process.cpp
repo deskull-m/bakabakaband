@@ -638,7 +638,7 @@ void wiz_reset_class(CreatureEntity &creature)
     if (realm1 != RealmType::NONE) {
         pr.set(realm1, realm2);
     }
-    creature.element_realm = element_realm;
+    creature.set_element_realm(element_realm);
     PlayerSpellStatus pss(creature);
     pss.realm1().initialize();
     pss.realm2().initialize();
@@ -664,7 +664,7 @@ void wiz_reset_realms(CreatureEntity &creature)
     if (realm1 != RealmType::NONE) {
         pr.set(realm1, realm2);
     }
-    creature.element_realm = element_realm;
+    creature.set_element_realm(element_realm);
     PlayerSpellStatus pss(creature);
     pss.realm1().initialize();
     pss.realm2().initialize();
