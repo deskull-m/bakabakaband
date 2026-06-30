@@ -1573,6 +1573,35 @@ public:
         this->riding_t_m_idx = value;
     }
 
+    // [提案 45] ペット追従先 (pet_t_m_idx) / 騎乗ターゲット (riding_t_m_idx) の
+    // ターゲットモンスター idx 保守を集約する共通操作。モンスター index が
+    // 除去・付替え・全消去される際に両ターゲットを一貫更新する。従来は
+    // monster-remover / monster-compaction / dungeon-processor に同一ロジックが
+    // 分散していた不変条件を 1 箇所に集約したもの。
+    void reset_pet_riding_targets()
+    {
+        this->set_pet_t_m_idx(0);
+        this->set_riding_t_m_idx(0);
+    }
+    void clear_pet_riding_targets_pointing_to(MONSTER_IDX m_idx)
+    {
+        if (this->get_pet_t_m_idx() == m_idx) {
+            this->set_pet_t_m_idx(0);
+        }
+        if (this->get_riding_t_m_idx() == m_idx) {
+            this->set_riding_t_m_idx(0);
+        }
+    }
+    void remap_pet_riding_targets(MONSTER_IDX from, MONSTER_IDX to)
+    {
+        if (this->get_pet_t_m_idx() == from) {
+            this->set_pet_t_m_idx(to);
+        }
+        if (this->get_riding_t_m_idx() == from) {
+            this->set_riding_t_m_idx(to);
+        }
+    }
+
     // [提案 42] 差分検出キャッシュ (old_*) の virtual API。
     // update_creature() 系で 1 ターン前の値スナップショットを保持し、
     // 状態変化検出 / メッセージ出力に使用される。

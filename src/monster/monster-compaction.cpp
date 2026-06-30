@@ -46,12 +46,7 @@ static void compact_monsters_aux(CreatureEntity &creature, MONSTER_IDX i1, MONST
         Target::set_last_target(Target::create_monster_target(creature, i2));
     }
 
-    if (creature.get_pet_t_m_idx() == i1) {
-        creature.set_pet_t_m_idx(i2);
-    }
-    if (creature.get_riding_t_m_idx() == i1) {
-        creature.set_riding_t_m_idx(i2);
-    }
+    creature.remap_pet_riding_targets(i1, i2);
 
     if (monster.is_riding()) { // creature.get_riding() == i1 のままの方がいい？
         creature.set_riding(i2);
