@@ -339,7 +339,7 @@ MULTIPLY mult_hissatsu(CreatureEntity &creature, MULTIPLY mult, const TrFlags &f
 
 void concentration(CreatureEntity &creature)
 {
-    int max_csp = std::max(creature.get_msp() * 4, creature.get_level() * 5 + 5);
+    int max_current_mp = std::max(creature.get_max_mp() * 4, creature.get_level() * 5 + 5);
 
     if (total_friends) {
         msg_print(_("今はペットを操ることに集中していないと。", "Your pets demand all of your attention."));
@@ -353,10 +353,10 @@ void concentration(CreatureEntity &creature)
 
     msg_print(_("精神を集中して気合いを溜めた。", "You concentrate to charge your power."));
 
-    creature.add_csp(creature.get_msp() / 2);
-    if (creature.get_csp() >= max_csp) {
-        creature.set_csp(max_csp);
-        creature.csp_frac = 0;
+    creature.add_current_mp(creature.get_max_mp() / 2);
+    if (creature.get_current_mp() >= max_current_mp) {
+        creature.set_current_mp(max_current_mp);
+        creature.current_mp_frac = 0;
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
@@ -519,12 +519,12 @@ void mineuchi(CreatureEntity &creature, player_attack_type *pa_ptr)
 void musou_counterattack(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
     const auto is_musou = CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU);
-    if ((!creature.counter && !is_musou) || !monap_ptr->alive || creature.is_dead() || !monap_ptr->m_ptr->is_visible_on_map() || (creature.get_csp() <= 7)) {
+    if ((!creature.counter && !is_musou) || !monap_ptr->alive || creature.is_dead() || !monap_ptr->m_ptr->is_visible_on_map() || (creature.get_current_mp() <= 7)) {
         return;
     }
 
     const auto m_target_name = monster_desc(creature, *monap_ptr->m_ptr, 0);
-    creature.sub_csp(7);
+    creature.sub_current_mp(7);
     msg_format(_("%s^に反撃した！", "You counterattacked %s!"), m_target_name.data());
     do_cmd_attack(creature, monap_ptr->m_ptr->y, monap_ptr->m_ptr->x, HISSATSU_COUNTER);
     monap_ptr->fear = false;

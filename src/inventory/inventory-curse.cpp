@@ -433,17 +433,17 @@ static void curse_drain_hp(CreatureEntity &creature)
 
 static void curse_drain_mp(CreatureEntity &creature)
 {
-    if ((creature.get_cursed_flags().has_not(CurseTraitType::DRAIN_MANA)) || (creature.get_csp() == 0) || !one_in_(666)) {
+    if ((creature.get_cursed_flags().has_not(CurseTraitType::DRAIN_MANA)) || (creature.get_current_mp() == 0) || !one_in_(666)) {
         return;
     }
 
     const auto *item_ptr = choose_cursed_obj_name(creature, CurseTraitType::DRAIN_MANA);
     const auto item_name = describe_flavor(creature, *item_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     msg_format(_("%sはあなたの魔力を吸収した！", "Your %s drains mana from you!"), item_name.data());
-    creature.sub_csp(std::min<short>(creature.get_level(), 50));
-    if (creature.get_csp() < 0) {
-        creature.set_csp(0);
-        creature.csp_frac = 0;
+    creature.sub_current_mp(std::min<short>(creature.get_level(), 50));
+    if (creature.get_current_mp() < 0) {
+        creature.set_current_mp(0);
+        creature.current_mp_frac = 0;
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);

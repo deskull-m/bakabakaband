@@ -22,7 +22,7 @@ Phase 1-8 完了後に残存している統合作業項目を整理したもの�
 | [3](#提案-3-残存する-playertypeget_instance-多用箇所の削減--完了) | `PlayerType::get_instance()` 多用箇所の削減 | ✅ 完了 | グローバルアクセスの削減 |
 | [4](#提案-4-未統合の状態チェック関数の仮想化--完了) | 未統合の状態チェック関数の仮想化 | ✅ 完了 | has_resist_X 等の自由関数 |
 | [5](#提案-5-timedeffects-オブジェクトとの二重管理解消--完了) | TimedEffects 二重管理解消 | ✅ 完了 | timed_effects_map 統一 |
-| [6](#提案-6-フィールド名の命名統一) | フィールド名の命名統一 | 🚧 | csp/msp → current_mp/max_mp 等 (大規模 diff、後回し) |
+| [6](#提案-6-フィールド名の命名統一--完了-mp-系) | フィールド名の命名統一 (MP 系) | ✅ 完了 | csp/msp → current_mp/max_mp (403 箇所改名) |
 | [7](#提案-7-モンスター可視判定-ml-の-virtual-アクセサ化--完了) | モンスター可視判定 (`ml`) の virtual 化 | ✅ 完了 | is_visible_on_map() |
 | [8](#提案-8-hpmp-自然回復計算の-virtual-hook-化--完了) | HP/MP 自然回復計算の virtual hook 化 | ✅ 完了 | get_base_natural_regen_amount() |
 | [9](#提案-9-monsterprofile-フィールド-virtual-アクセサ化--一部完了) | MonsterProfile read-side virtual | ✅ 一部完了 | get_alliance_idx / get_smart_flags 等 |
@@ -424,7 +424,7 @@ TimedEffects 優先の特殊分岐を持っていた。一方モンスターは 
 
 ---
 
-## 提案 6: フィールド名の命名統一
+## 提案 6: フィールド名の命名統一 ✅ 完了 (MP 系)
 
 ### 背景
 
@@ -432,19 +432,39 @@ TimedEffects 優先の特殊分岐を持っていた。一方モンスターは 
 命名を引きずっているものがある。統合が進んだ今、汎用的な名前に
 改名することで可読性が向上する。
 
-### 候補
+### 完了内容 (MP 系、提案 6 第1弾)
+
+`csp` / `msp` (Angband 由来の current/max spell points) を MP 概念に
+合わせて改名。全体識別子 `\b...\b` アンカーの一括スクリプトで実施し、
+`mspell` 等の部分一致衝突を回避。**403 箇所 / 65 ファイル** を置換、
+フルビルド (g++ -O3 -Werror) と clang-format-18 で検証済み。
+
+| 旧名称 | 新名称 |
+|---|---|
+| `csp` (フィールド) | `current_mp` |
+| `msp` (フィールド) | `max_mp` |
+| `csp_frac` | `current_mp_frac` |
+| `get_csp` / `set_csp` / `add_csp` / `sub_csp` | `get_current_mp` / `set_current_mp` / `add_current_mp` / `sub_current_mp` |
+| `add_csp_with_frac` / `sub_csp_with_frac` | `add_current_mp_with_frac` / `sub_current_mp_with_frac` |
+| `get_msp` / `set_msp` | `get_max_mp` / `set_max_mp` |
+| ローカル `max_csp` / `old_csp` / `baseline_msp` | `max_current_mp` / `old_current_mp` / `baseline_max_mp` |
+
+**上流マージへの影響**: フィールド自体は提案 27b で private 化済みのため、
+上流の `creature->csp` アクセスは元々変換が必要だった。本改名で変換先が
+`get_current_mp()` 等に変わるのみ (CLAUDE.md のマッピング表に追記済み)。
+
+### 残候補 (未着手)
 
 | 現名称 | 候補名 | 備考 |
 |---|---|---|
-| `csp` / `msp` | `current_mp` / `max_mp` | モンスターが MP 使用する設計拡張時に有効 |
-| `exp` / `max_exp` / `max_max_exp` | そのままクリーチャー共通で | モンスター側も経験値概念を将来運用 |
-| `hp_frac` / `csp_frac` | `hp_fraction` / `mp_fraction` | 可読性のみ |
+| `exp` / `max_exp` / `max_max_exp` | そのままクリーチャー共通で | 改名せず維持 |
+| `hp_frac` | `hp_fraction` | 可読性のみ。MP 系と対称にするなら別途検討 |
 
-### 注意
+### 注意 (今後の改名作業)
 
 改名 PR は diff が巨大化し、変愚マージ時の衝突を増やす。
-**提案 1-5 が全て完了してから着手する**のが安全。
-改名時は一括 sed 実行 + ビルド確認を自動化したスクリプトを用意すること。
+改名時は全体識別子 `\b...\b` アンカーの一括スクリプト + ビルド確認を
+用いること (素朴な部分一致 sed は `mspell`↔`msp` 等を破壊する)。
 
 ---
 

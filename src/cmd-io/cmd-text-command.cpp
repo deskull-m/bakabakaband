@@ -195,8 +195,8 @@ static std::vector<TextCommand> get_text_commands()
 #endif
 
                 // 少しの体力消費
-                if (creature.get_csp() > 1) {
-                    creature.sub_csp(1);
+                if (creature.get_current_mp() > 1) {
+                    creature.sub_current_mp(1);
                     auto &rfu = RedrawingFlagsUpdater::get_instance();
                     rfu.set_flag(MainWindowRedrawingFlag::MP);
                 }

@@ -348,11 +348,11 @@ static void rd_hp(CreatureEntity &creature)
  */
 static void rd_mana(CreatureEntity &creature)
 {
-    // msp / csp / csp_frac は v52 以降 rd_creature_common() で読込済み
+    // max_mp / current_mp / current_mp_frac は v52 以降 rd_creature_common() で読込済み
     if (loading_savefile_version_is_older_than(52)) {
-        creature.set_msp(rd_s32b());
-        creature.set_csp(rd_s32b());
-        creature.csp_frac = rd_u32b();
+        creature.set_max_mp(rd_s32b());
+        creature.set_current_mp(rd_s32b());
+        creature.current_mp_frac = rd_u32b();
     }
 }
 

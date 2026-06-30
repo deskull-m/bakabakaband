@@ -652,9 +652,9 @@ static void update_num_of_spells(CreatureEntity &creature)
 int calc_creature_mana(CreatureEntity &creature)
 {
     const auto stat_index = creature.get_stat_index(A_INT);
-    const int msp = adj_mag_mana[stat_index] * (creature.get_level() + 3) / 4;
+    const int max_mp = adj_mag_mana[stat_index] * (creature.get_level() + 3) / 4;
     const int floor_value = std::max(static_cast<int>(creature.get_level()), 1);
-    return std::max(msp, floor_value);
+    return std::max(max_mp, floor_value);
 }
 
 static int calc_innate_baseline_mana(CreatureEntity &creature)
@@ -664,15 +664,15 @@ static int calc_innate_baseline_mana(CreatureEntity &creature)
 
 static void update_max_mana(CreatureEntity &creature)
 {
-    const auto baseline_msp = calc_innate_baseline_mana(creature);
+    const auto baseline_max_mp = calc_innate_baseline_mana(creature);
     if ((mp_ptr->spell_book == ItemKindType::NONE) && mp_ptr->spell_first == SPELL_FIRST_NO_SPELL) {
         // 無魔法職でも常に基礎 MP を持たせる (種族固有能力の行使等に使用)。
-        if (creature.get_msp() != baseline_msp) {
-            if (creature.get_csp() > baseline_msp) {
-                creature.set_csp(baseline_msp);
-                creature.csp_frac = 0;
+        if (creature.get_max_mp() != baseline_max_mp) {
+            if (creature.get_current_mp() > baseline_max_mp) {
+                creature.set_current_mp(baseline_max_mp);
+                creature.current_mp_frac = 0;
             }
-            creature.set_msp(baseline_msp);
+            creature.set_max_mp(baseline_max_mp);
             RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
         }
         return;
@@ -688,7 +688,7 @@ static void update_max_mana(CreatureEntity &creature)
         levels = creature.get_level();
     } else {
         if (mp_ptr->spell_first > creature.get_level()) {
-            creature.set_msp(baseline_msp);
+            creature.set_max_mp(baseline_max_mp);
             RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
             return;
         }
@@ -696,28 +696,28 @@ static void update_max_mana(CreatureEntity &creature)
         levels = (creature.get_level() - mp_ptr->spell_first) + 1;
     }
 
-    int msp;
+    int max_mp;
     if (pc.equals(PlayerClassType::SAMURAI)) {
-        msp = (adj_mag_mana[creature.get_stat_index(mp_ptr->spell_stat)] + 10) * 2;
-        if (msp) {
-            msp += (msp * creature.get_race_info()->r_adj[mp_ptr->spell_stat] / 20);
+        max_mp = (adj_mag_mana[creature.get_stat_index(mp_ptr->spell_stat)] + 10) * 2;
+        if (max_mp) {
+            max_mp += (max_mp * creature.get_race_info()->r_adj[mp_ptr->spell_stat] / 20);
         }
     } else {
-        msp = adj_mag_mana[creature.get_stat_index(mp_ptr->spell_stat)] * (levels + 3) / 4;
-        if (msp) {
-            msp++;
+        max_mp = adj_mag_mana[creature.get_stat_index(mp_ptr->spell_stat)] * (levels + 3) / 4;
+        if (max_mp) {
+            max_mp++;
         }
-        if (msp) {
-            msp += (msp * creature.get_race_info()->r_adj[mp_ptr->spell_stat] / 20);
+        if (max_mp) {
+            max_mp += (max_mp * creature.get_race_info()->r_adj[mp_ptr->spell_stat] / 20);
         }
-        if (msp && (creature.ppersonality == PERSONALITY_MUNCHKIN)) {
-            msp += msp / 2;
+        if (max_mp && (creature.ppersonality == PERSONALITY_MUNCHKIN)) {
+            max_mp += max_mp / 2;
         }
-        if (msp && pc.equals(PlayerClassType::HIGH_MAGE)) {
-            msp += msp / 4;
+        if (max_mp && pc.equals(PlayerClassType::HIGH_MAGE)) {
+            max_mp += max_mp / 4;
         }
-        if (msp && pc.equals(PlayerClassType::SORCERER)) {
-            msp += msp * (25 + creature.get_level()) / 100;
+        if (max_mp && pc.equals(PlayerClassType::SORCERER)) {
+            max_mp += max_mp * (25 + creature.get_level()) / 100;
         }
     }
 
@@ -733,7 +733,7 @@ static void update_max_mana(CreatureEntity &creature)
         should_mp_decrease &= flags.has_not(TR_DEX) || (o_ptr->pval <= 0);
         if (should_mp_decrease) {
             creature.set_cumber_glove(true);
-            msp = (3 * msp) / 4;
+            max_mp = (3 * max_mp) / 4;
         }
     }
 
@@ -835,7 +835,7 @@ static void update_max_mana(CreatureEntity &creature)
         case PlayerClassType::HIGH_MAGE:
         case PlayerClassType::BLUE_MAGE:
         case PlayerClassType::ELEMENTALIST: {
-            msp -= msp * (cur_wgt - max_wgt) / 600;
+            max_mp -= max_mp * (cur_wgt - max_wgt) / 600;
             break;
         }
         case PlayerClassType::PRIEST:
@@ -845,24 +845,24 @@ static void update_max_mana(CreatureEntity &creature)
         case PlayerClassType::FORCETRAINER:
         case PlayerClassType::TOURIST:
         case PlayerClassType::MIRROR_MASTER: {
-            msp -= msp * (cur_wgt - max_wgt) / 800;
+            max_mp -= max_mp * (cur_wgt - max_wgt) / 800;
             break;
         }
         case PlayerClassType::SORCERER: {
-            msp -= msp * (cur_wgt - max_wgt) / 900;
+            max_mp -= max_mp * (cur_wgt - max_wgt) / 900;
             break;
         }
         case PlayerClassType::ROGUE:
         case PlayerClassType::RANGER:
         case PlayerClassType::MONK:
         case PlayerClassType::RED_MAGE: {
-            msp -= msp * (cur_wgt - max_wgt) / 1000;
+            max_mp -= max_mp * (cur_wgt - max_wgt) / 1000;
             break;
         }
         case PlayerClassType::PALADIN:
         case PlayerClassType::CHAOS_WARRIOR:
         case PlayerClassType::WARRIOR_MAGE: {
-            msp -= msp * (cur_wgt - max_wgt) / 1200;
+            max_mp -= max_mp * (cur_wgt - max_wgt) / 1200;
             break;
         }
         case PlayerClassType::SAMURAI: {
@@ -870,28 +870,28 @@ static void update_max_mana(CreatureEntity &creature)
             break;
         }
         default: {
-            msp -= msp * (cur_wgt - max_wgt) / 800;
+            max_mp -= max_mp * (cur_wgt - max_wgt) / 800;
             break;
         }
         }
     }
 
-    if (msp < baseline_msp) {
-        msp = baseline_msp;
+    if (max_mp < baseline_max_mp) {
+        max_mp = baseline_max_mp;
     }
 
-    if (creature.get_msp() != msp) {
-        if ((creature.get_csp() >= msp) && !pc.equals(PlayerClassType::SAMURAI)) {
-            creature.set_csp(msp);
-            creature.csp_frac = 0;
+    if (creature.get_max_mp() != max_mp) {
+        if ((creature.get_current_mp() >= max_mp) && !pc.equals(PlayerClassType::SAMURAI)) {
+            creature.set_current_mp(max_mp);
+            creature.current_mp_frac = 0;
         }
 
 #ifdef JP
-        if (creature.has_level_up_message() && (msp > creature.get_msp())) {
-            msg_format("最大マジック・ポイントが %d 増加した！", (msp - creature.get_msp()));
+        if (creature.has_level_up_message() && (max_mp > creature.get_max_mp())) {
+            msg_format("最大マジック・ポイントが %d 増加した！", (max_mp - creature.get_max_mp()));
         }
 #endif
-        creature.set_msp(msp);
+        creature.set_max_mp(max_mp);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::MP);
         static constexpr auto flags = {

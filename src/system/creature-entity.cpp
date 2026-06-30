@@ -89,7 +89,7 @@ bool CreatureEntity::try_set_position(const Pos2D &pos)
 bool CreatureEntity::is_fully_healthy() const
 {
     auto is_healthy = this->hp == this->maxhp;
-    is_healthy &= this->csp >= this->msp;
+    is_healthy &= this->current_mp >= this->max_mp;
     is_healthy &= !this->is_blind();
     is_healthy &= !this->is_confused();
     is_healthy &= !this->is_poisoned();
@@ -759,14 +759,14 @@ void CreatureEntity::init_extended_inventory()
     }
 }
 
-void CreatureEntity::add_csp_with_frac(int delta, uint32_t delta_frac)
+void CreatureEntity::add_current_mp_with_frac(int delta, uint32_t delta_frac)
 {
-    s64b_add(&this->csp, &this->csp_frac, delta, delta_frac);
+    s64b_add(&this->current_mp, &this->current_mp_frac, delta, delta_frac);
 }
 
-void CreatureEntity::sub_csp_with_frac(int delta, uint32_t delta_frac)
+void CreatureEntity::sub_current_mp_with_frac(int delta, uint32_t delta_frac)
 {
-    s64b_sub(&this->csp, &this->csp_frac, delta, delta_frac);
+    s64b_sub(&this->current_mp, &this->current_mp_frac, delta, delta_frac);
 }
 
 void CreatureEntity::add_exp_with_frac(EXP delta, uint32_t delta_frac)

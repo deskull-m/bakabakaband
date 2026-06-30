@@ -290,8 +290,8 @@ void MindPowerGetter::calculate_mind_chance(bool has_weapon_main, bool has_weapo
     this->chance -= 3 * (this->creature_ptr->get_level() - this->spell->min_lev);
     this->chance -= 3 * (adj_mag_stat[this->creature_ptr->get_stat_index(mp_ptr->spell_stat)] - 1);
     calculate_ki_chance(has_weapon_main, has_weapon_sub);
-    if ((this->use_mind != MindKindType::BERSERKER) && (this->use_mind != MindKindType::NINJUTSU) && (this->mana_cost > this->creature_ptr->get_csp())) {
-        this->chance += 5 * (this->mana_cost - this->creature_ptr->get_csp());
+    if ((this->use_mind != MindKindType::BERSERKER) && (this->use_mind != MindKindType::NINJUTSU) && (this->mana_cost > this->creature_ptr->get_current_mp())) {
+        this->chance += 5 * (this->mana_cost - this->creature_ptr->get_current_mp());
     }
 
     this->chance += this->creature_ptr->get_to_m_chance();

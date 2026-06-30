@@ -110,8 +110,8 @@ static void compensate_death_scythe_reflection_magnification(CreatureEntity &cre
         *magnification = 25;
     }
 
-    if (!CreatureClass(creature).equals(PlayerClassType::SAMURAI) && (death_scythe_flags.has(TR_FORCE_WEAPON)) && (creature.get_csp() > (creature.get_msp() / 30))) {
-        creature.sub_csp((1 + (creature.get_msp() / 30)));
+    if (!CreatureClass(creature).equals(PlayerClassType::SAMURAI) && (death_scythe_flags.has(TR_FORCE_WEAPON)) && (creature.get_current_mp() > (creature.get_max_mp() / 30))) {
+        creature.sub_current_mp((1 + (creature.get_max_mp() / 30)));
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
         *magnification = *magnification * 3 / 2 + 20;
     }

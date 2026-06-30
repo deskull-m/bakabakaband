@@ -33,8 +33,8 @@ struct GodotPlayerStatusSnapshot {
     // --- HP / SP ---
     int chp{ 0 };
     int mhp{ 0 };
-    int csp{ 0 };
-    int msp{ 0 };
+    int current_mp{ 0 };
+    int max_mp{ 0 };
 
     // --- 所持金・経験値 ---
     long gold{ 0 };

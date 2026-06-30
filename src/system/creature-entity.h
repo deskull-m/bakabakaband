@@ -2085,10 +2085,10 @@ public:
         this->max_plv = value;
     }
 
-    /*! @brief 最大 MP (msp) を設定する (提案 27) */
-    virtual void set_msp(int value)
+    /*! @brief 最大 MP (max_mp) を設定する (提案 27) */
+    virtual void set_max_mp(int value)
     {
-        this->msp = value;
+        this->max_mp = value;
     }
 
     /*! @brief 現在の経験値を設定する (提案 27) */
@@ -2136,28 +2136,28 @@ public:
     }
 
     /*! @brief 現在の MP を設定する (提案 27b) */
-    virtual void set_csp(int value)
+    virtual void set_current_mp(int value)
     {
-        this->csp = value;
+        this->current_mp = value;
     }
 
     /*! @brief 現在の MP を加算する (提案 27b) */
-    virtual void add_csp(int delta)
+    virtual void add_current_mp(int delta)
     {
-        this->csp += delta;
+        this->current_mp += delta;
     }
 
     /*! @brief 現在の MP を減算する (提案 27b) */
-    virtual void sub_csp(int delta)
+    virtual void sub_current_mp(int delta)
     {
-        this->csp -= delta;
+        this->current_mp -= delta;
     }
 
     /*! @brief 64bit ペア演算で現在 MP を加算する (提案 32b) */
-    virtual void add_csp_with_frac(int delta, uint32_t delta_frac);
+    virtual void add_current_mp_with_frac(int delta, uint32_t delta_frac);
 
     /*! @brief 64bit ペア演算で現在 MP を減算する (提案 32b) */
-    virtual void sub_csp_with_frac(int delta, uint32_t delta_frac);
+    virtual void sub_current_mp_with_frac(int delta, uint32_t delta_frac);
 
     /*! @brief 64bit ペア演算で経験値を加算する (提案 32b) */
     virtual void add_exp_with_frac(EXP delta, uint32_t delta_frac);
@@ -2169,9 +2169,9 @@ public:
     }
 
     /*! @brief 現在の MP を取得する (提案 31) */
-    virtual int get_csp() const
+    virtual int get_current_mp() const
     {
-        return this->csp;
+        return this->current_mp;
     }
 
     /*! @brief 滋養度を取得する (提案 31) */
@@ -2216,10 +2216,10 @@ public:
         return this->max_plv;
     }
 
-    /*! @brief 最大 MP (msp) を取得する (提案 31) */
-    virtual int get_msp() const
+    /*! @brief 最大 MP (max_mp) を取得する (提案 31) */
+    virtual int get_max_mp() const
     {
-        return this->msp;
+        return this->max_mp;
     }
 
     /*! @brief 現在の経験値を取得する (提案 31) */
@@ -3972,13 +3972,13 @@ public:
     POSITION x{}; /*!< 現在のX座標 / Current location (X) */
 
     // MP関連
-    // [提案 32b] private 化済。get_msp()/set_msp()/get_csp()/set_csp()/add_csp()/sub_csp() 等経由。
+    // [提案 32b] private 化済。get_max_mp()/set_max_mp()/get_current_mp()/set_current_mp()/add_current_mp()/sub_current_mp() 等経由。
 private:
-    MANA_POINT msp{}; /*!< 最大MP / Max mana pts */
-    MANA_POINT csp{}; /*!< 現在MP / Current mana pts */
+    MANA_POINT max_mp{}; /*!< 最大MP / Max mana pts */
+    MANA_POINT current_mp{}; /*!< 現在MP / Current mana pts */
 
 public:
-    uint32_t csp_frac{}; /*!< MP小数部 / Current mana frac (times 2^16) */
+    uint32_t current_mp_frac{}; /*!< MP小数部 / Current mana frac (times 2^16) */
 
     // HP関連
     int hp{}; /*!< 現在のHP / Current Hit points */

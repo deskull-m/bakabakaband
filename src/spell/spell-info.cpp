@@ -133,8 +133,8 @@ PERCENTAGE spell_chance(CreatureEntity &creature, SPELL_IDX spell_id, RealmType 
     }
 
     MANA_POINT need_mana = mod_need_mana(creature, spell.smana, spell_id, use_realm);
-    if (need_mana > creature.get_csp()) {
-        chance += 5 * (need_mana - creature.get_csp());
+    if (need_mana > creature.get_current_mp()) {
+        chance += 5 * (need_mana - creature.get_current_mp());
     }
 
     CreatureClass pc(creature);

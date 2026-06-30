@@ -154,8 +154,8 @@ void print_hp(CreatureEntity &creature)
 /*!
  * @brief MPを表示する / Prints max/cur spell points
  * @param creature クリーチャーへの参照
- * @details プレイヤー職業や msp の値に関わらず常に表示する。
- * モンスターは生成時に msp/csp とも 0 で初期化されるため 0/0 と表示される。
+ * @details プレイヤー職業や max_mp の値に関わらず常に表示する。
+ * モンスターは生成時に max_mp/current_mp とも 0 で初期化されるため 0/0 と表示される。
  */
 void print_sp(CreatureEntity &creature)
 {
@@ -163,22 +163,22 @@ void print_sp(CreatureEntity &creature)
     byte color;
 
     put_str(_("MP", "SP"), ROW_CURSP, COL_CURSP);
-    sprintf(tmp, "%4ld", (long int)creature.get_csp());
-    if (creature.get_msp() <= 0) {
+    sprintf(tmp, "%4ld", (long int)creature.get_current_mp());
+    if (creature.get_max_mp() <= 0) {
         color = TERM_SLATE;
-    } else if (creature.get_csp() >= creature.get_msp()) {
+    } else if (creature.get_current_mp() >= creature.get_max_mp()) {
         color = TERM_L_GREEN;
-    } else if (creature.get_csp() > (creature.get_msp() * mana_warn) / 10) {
+    } else if (creature.get_current_mp() > (creature.get_max_mp() * mana_warn) / 10) {
         color = TERM_YELLOW;
     } else {
         color = TERM_RED;
     }
 
-    c_put_str(color, format("%4d", creature.get_csp()), ROW_CURSP, COL_CURSP + 3);
+    c_put_str(color, format("%4d", creature.get_current_mp()), ROW_CURSP, COL_CURSP + 3);
     put_str("/", ROW_CURSP, COL_CURSP + 7);
-    sprintf(tmp, "%4ld", (long int)creature.get_msp());
-    color = (creature.get_msp() <= 0) ? TERM_SLATE : TERM_L_GREEN;
-    c_put_str(color, format("%4d", creature.get_msp()), ROW_CURSP, COL_CURSP + 8);
+    sprintf(tmp, "%4ld", (long int)creature.get_max_mp());
+    color = (creature.get_max_mp() <= 0) ? TERM_SLATE : TERM_L_GREEN;
+    c_put_str(color, format("%4d", creature.get_max_mp()), ROW_CURSP, COL_CURSP + 8);
 }
 
 /*!
