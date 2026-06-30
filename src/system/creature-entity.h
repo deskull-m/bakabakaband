@@ -639,6 +639,16 @@ public:
     }
 
     /*!
+     * @brief 速度に応じてターン経過分のエネルギーを消費する (提案 B2)
+     * @param speed 適用する速度値 (プレイヤーは自速度、モンスターは騎乗時搭乗者速度/通常は一時速度)
+     * @details `sub_energy_need(speed_to_energy(speed))` を 1 箇所に集約した
+     * プレイヤー・モンスター共通のターンエネルギー消費プリミティブ。速度の決定
+     * (騎乗・一時速度等) は呼出側に残す。定義は creature-entity.cpp (speed-table.h
+     * の include を本ヘッダに持ち込まないため)。
+     */
+    void consume_energy_by_speed(int speed);
+
+    /*!
      * @brief クリーチャーのレベルを取得
      * @return レベル値。個体レベルが設定されていればそれを返し、未設定なら種族レベルの半分を返す。
      */

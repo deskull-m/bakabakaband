@@ -134,6 +134,11 @@ void CreatureEntity::ride_monster(MONSTER_IDX m_idx)
     }
 }
 
+void CreatureEntity::consume_energy_by_speed(int speed)
+{
+    this->sub_energy_need(speed_to_energy(static_cast<byte>(speed)));
+}
+
 void CreatureEntity::plus_incident(INCIDENT incidentID, int num)
 {
     if (this->incident.count(incidentID) == 0) {
