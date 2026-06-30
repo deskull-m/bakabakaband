@@ -2767,7 +2767,7 @@ A トラック（フィールドのカプセル化）が一段落したため、
 | B1 | 時限効果付与＋mproc 保守の統合 (提案 49/50) | 状態異常 | — | — | ✅ 完了 |
 | B2 | ターン・エネルギー消費カーネルの共通化 | 行動 | 中→小 | 低（ただし critical path） | ✅ 完了（縮小） |
 | B3 | モンスター命中判定 2 関数の統合 | 攻撃 | 中 | 低 | ✅ 完了 |
-| B4 | モンスター打撃の武器スロット選択共通化 | 攻撃 | 中 | 低〜中 | 計画 |
+| B4 | モンスター打撃の武器スロット選択共通化 | 攻撃 | 中 | 低〜中 | ✅ 完了 |
 | B5 | HP 回復プリミティブ `heal_hp()` の共通化 | 効果適用 | 中 | 低 | ✅ 完了 |
 | B6 | `is_player()` 真分岐の限定的 virtual 化 | 横断 | 中 | 低〜中 | 計画 |
 | B7 | テレポート先判定の共通化 | 効果適用 | 低〜中 | 中 | 計画 |
@@ -2821,18 +2821,23 @@ clang-format-18 で検証済み。
 
 ---
 
-## 提案 B4: モンスター打撃の武器スロット選択共通化
+## 提案 B4: モンスター打撃の武器スロット選択共通化 ✅ 完了
 
 **現状の分離:** モンスター対プレイヤー (`monster-attack-player.cpp:176-198`) と
 モンスター対モンスター (`melee/monster-attack-monster.cpp:354-373`) が、打撃
 メソッド (HIT/PUNCH/SLASH/STING) に対する二刀流の blow-index 交互選択・単手選択・
-素手 (-1) のロジックを重複実装している。
+素手 (-1) のロジックを重複実装していた。
 
-**提案:** `select_monster_blow_weapon(CreatureEntity &attacker, int blow_index,
-RaceBlowMethodType method) -> int slot` を抽出し両 call site で共用。攻撃側は
-両経路とも `CreatureEntity`（モンスター）なので素直に共通化できる。
+**完了内容:** 攻撃側は両経路とも `CreatureEntity`（モンスター）なので、
+`CreatureEntity::select_melee_weapon_slot(int blow_index, RaceBlowMethodType
+method) const` メソッドに集約し、両 call site の switch ブロック (~20 行 ×2) を
+1 行呼出に置換。`RaceBlowMethodType` は creature-entity.h に前方宣言を追加し、
+定義は creature-entity.cpp（`monster-attack-table.h` を include）に置いた。
+**新規ファイルを作らず既存 TU（creature-entity）に収め、Makefile.am / VS
+プロジェクトの更新を回避**した。挙動不変。
 
-**規模/価値:** 中（重複 ~20 行 ×2）。リスク低〜中（攻撃ループ内のため要回帰確認）。
+**規模/価値:** 中。リスク低〜中（攻撃ループ内のため要回帰確認、ビルドで検証）。
+フルビルド (g++ -O3 -Werror -Wall -Wextra) と clang-format-18 で検証済み。
 
 ---
 
