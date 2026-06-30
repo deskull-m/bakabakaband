@@ -64,7 +64,7 @@ Phase 1-8 完了後に残存している統合作業項目を整理したもの�
 | [42](#提案-42-旧差分検出キャッシュ-old_-の-private-化--完了) | 旧差分検出キャッシュ (`old_*`) private 化 | ✅ 完了 | **+12 = 115 個** (old_race1/2 / old_realm / old_cumber_* / old_heavy_* 等、old_food_aux 削除) |
 | [43](#提案-43-行動状態フラグの-private-化--完了) | 行動状態フラグ private 化 | ✅ 完了 | **+14 = 129 個** (action / running / resting / leaving / playing 等) |
 | [44](#提案-44-突然変異呪い系フラグの-private-化--完了) | 突然変異/呪い系フラグ private 化 | ✅ 完了 | **+5 = 99 個** (muta / cursed / patron 等) |
-| [45](#提案-45-pet_t_m_idx--riding_t_m_idx-系を-target-pos2d-に統合) | pet_t_m_idx / riding_t_m_idx 統合 | 🚧 | Pos2D ベース |
+| [45](#提案-45-pet_t_m_idx--riding_t_m_idx-のターゲット保守ロジック集約--完了) | pet/riding ターゲット保守ロジック集約 | ✅ 完了 | reset/clear/remap_pet_riding_targets |
 | [46](#提案-46-esp--装備集計の差分検出を-update_creature-内-raw-access-に閉じる) | ESP / 装備集計の差分検出を内部に閉じる | 🚧 | get_X_flags() 公開撤廃検討 |
 | [47](#提案-47-その他小規模フィールドの-private-化--完了) | その他小規模フィールドまとめ | ✅ 完了 | **+6 = 135 個** (dealt_damage / run_py/px / vanish_stairs_flag / suppress_multi_reward / tracking_bi_id、tval_xtra 削除) |
 | [48](#提案-48-追加の小規模フィールドの-private-化--完了) | 追加の小規模フィールドまとめ | ✅ 完了 | **+6 = 141 個** (tval_ammo / dtrap / autopick_autoregister / recall_dungeon / enchant_energy_need / energy_use) |
@@ -2119,10 +2119,48 @@ public で 14 個残存していた。プレイヤーの行動制御に使われ
 
 ---
 
-## 提案 45: pet_t_m_idx / riding_t_m_idx 系を `target` Pos2D に統合
+## 提案 45: pet_t_m_idx / riding_t_m_idx のターゲット保守ロジック集約 ✅ 完了
 
-`riding` の getter/setter 化と同様、ターゲットモンスター idx を
-CreatureEntity 共通化。**規模**: 10-15 サイト
+### スコープ修正
+
+当初案は「`target` Pos2D に統合」だったが、`pet_t_m_idx`(ペット追従先) /
+`riding_t_m_idx`(騎乗ターゲット) は**移動するモンスターを idx で追跡**する
+ものであり、固定座標 (Pos2D) へ畳むと「動く対象を追う」セマンティクスが
+壊れるため不適。また両フィールドの「private 化 + virtual getter/setter +
+CreatureEntity 共通化」は**提案 40 で既に達成済み**。
+
+したがって本提案は、残っていた真の課題である**ターゲット idx 保守ロジック
+の重複集約**に再定義した。
+
+### 完了内容
+
+モンスター index が除去・付替え・全消去される際に、プレイヤーが指定した
+追従先 / 騎乗ターゲットを一貫更新する不変条件が、複数ファイルに同一ロジック
+として分散していた。これを `CreatureEntity` の 3 メソッドへ集約:
+
+| メソッド | 役割 |
+|---|---|
+| `reset_pet_riding_targets()` | 両ターゲットを 0 にクリア (フロア離脱・全消去時) |
+| `clear_pet_riding_targets_pointing_to(m_idx)` | 指定 idx を指すターゲットのみクリア (個別除去時) |
+| `remap_pet_riding_targets(from, to)` | 指定 idx を付替え (コンパクション時) |
+
+#### 移行 (4 サイト集約)
+
+- `monster-floor/monster-remover.cpp`: `delete_monster()` の個別クリア →
+  `clear_pet_riding_targets_pointing_to(m_idx)`、`wipe_monsters_list()` の
+  両クリア → `reset_pet_riding_targets()`
+- `monster/monster-compaction.cpp`: i1→i2 付替え → `remap_pet_riding_targets(i1, i2)`
+- `dungeon/dungeon-processor.cpp`: フロア処理終了時の両クリア →
+  `reset_pet_riding_targets()`
+
+`cmd-action/cmd-pet.cpp` の単独 `set_pet_t_m_idx()`(コマンド処理中の個別
+ターゲット設定) は性質が異なるため対象外。
+
+### 効果
+
+- 「モンスター idx 変化時にプレイヤーのターゲット idx を保つ」不変条件が
+  1 箇所に明示集約され、将来同種フィールド追加時の保守漏れを防止
+- フルビルド (g++ -O3 -Werror -Wall -Wextra) と clang-format-18 で検証済み
 
 ---
 
