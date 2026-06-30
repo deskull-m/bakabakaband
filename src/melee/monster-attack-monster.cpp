@@ -49,10 +49,7 @@ static void heal_monster_by_melee(mam_type *mam_ptr)
     }
 
     bool did_heal = mam_ptr->m_ptr->hp < mam_ptr->m_ptr->maxhp;
-    mam_ptr->m_ptr->hp += Dice::roll(4, mam_ptr->damage / 6);
-    if (mam_ptr->m_ptr->hp > mam_ptr->m_ptr->maxhp) {
-        mam_ptr->m_ptr->hp = mam_ptr->m_ptr->maxhp;
-    }
+    mam_ptr->m_ptr->heal_hp(Dice::roll(4, mam_ptr->damage / 6));
 
     HealthBarTracker::get_instance().set_flag_if_tracking(mam_ptr->m_idx);
     if (mam_ptr->m_ptr->is_riding()) {

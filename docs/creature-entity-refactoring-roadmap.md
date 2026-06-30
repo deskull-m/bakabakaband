@@ -2768,7 +2768,7 @@ A トラック（フィールドのカプセル化）が一段落したため、
 | B2 | ターン・エネルギー消費カーネルの共通化 | 行動 | 中 | 低（ただし critical path） | 計画 |
 | B3 | モンスター命中判定 2 関数の統合 | 攻撃 | 中 | 低 | ✅ 完了 |
 | B4 | モンスター打撃の武器スロット選択共通化 | 攻撃 | 中 | 低〜中 | 計画 |
-| B5 | HP 回復プリミティブ `heal_hp()` の共通化 | 効果適用 | 中 | 低 | 計画 |
+| B5 | HP 回復プリミティブ `heal_hp()` の共通化 | 効果適用 | 中 | 低 | ✅ 完了 |
 | B6 | `is_player()` 真分岐の限定的 virtual 化 | 横断 | 中 | 低〜中 | 計画 |
 | B7 | テレポート先判定の共通化 | 効果適用 | 低〜中 | 中 | 計画 |
 | B8 | 大規模統合（effect switcher / 状態異常付与 API / damage sink） | 横断 | 低 | 高 | **見送り（要再評価）** |
@@ -2834,18 +2834,29 @@ RaceBlowMethodType method) -> int slot` を抽出し両 call site で共用。�
 
 ---
 
-## 提案 B5: HP 回復プリミティブ `heal_hp()` の共通化
+## 提案 B5: HP 回復プリミティブ `heal_hp()` の共通化 ✅ 完了
 
-**現状の分離:** プレイヤーは `hp_player(creature, amount)` で回復するが、
-モンスター回復 (`effect-monster-oldies.cpp:157-164` 等) は
-`hp += dam; if (hp > maxhp) hp = maxhp;` の手書きクランプを各所で繰り返す。
+**現状の分離:** モンスター回復経路が
+`hp += dam; if (hp > maxhp) hp = maxhp;` / `hp = std::min(hp + X, maxhp)` の
+手書きクランプを各所で繰り返していた。
 
-**提案:** `CreatureEntity::heal_hp(int amount)`（`maxhp` クランプ＋再描画フックは
-型側）を共通プリミティブとして用意し、モンスター回復経路の生クランプを置換。
-プレイヤー `hp_player` も内部でこれを使えば上限処理が一本化する。
-ダメージ側の `apply_raw_damage()` と対称な「回復側プリミティブ」。
+**完了内容:** `CreatureEntity::heal_hp(int amount)`（`apply_raw_damage()` と対称な
+回復側プリミティブ。現在 HP に加算し `maxhp` でクランプ）を新設し、**生クランプが
+純粋形だった 6 サイトを移行**:
+- `effect-monster-spirit.cpp` (ドレインによる回復)
+- `monster-eating.cpp:284` (吸収攻撃)
+- `melee/monster-attack-monster.cpp:52` (吸収攻撃)
+- `monster-processor.cpp` の `heal` ラムダ 2 箇所 (ポーション)
+- `monster-damage.cpp:533` (マゾヒスト反応)
 
-**規模/価値:** 小〜中。リスク低（クランプ意味論は明確）。HP 直接操作の散在を削減。
+**意図的にスキップ:** メッセージと絡む `mspell-status.cpp`（full-heal 判定が
+`>=` で分岐）、事前クランプ形＋変数再利用の `monster-eating.cpp:234`、
+`MONSTER_MAXHP` ガード付きの `effect-monster-oldies.cpp` は挙動不変を優先して
+現状維持。
+
+**規模/価値:** 小〜中。リスク低（クランプ意味論は明確）。HP 直接操作の散在を削減し、
+将来「最大 HP 一時減少」異常導入時に回復上限を 1 箇所で扱える足場とした。
+フルビルド (g++ -O3 -Werror -Wall -Wextra) と clang-format-18 で検証済み。
 
 ---
 

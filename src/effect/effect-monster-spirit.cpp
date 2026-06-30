@@ -44,10 +44,7 @@ ProcessResult effect_monster_drain_mana(CreatureEntity &creature, EffectMonster 
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    em_ptr->m_ptr->hp += em_ptr->dam;
-    if (em_ptr->m_ptr->hp > em_ptr->m_ptr->maxhp) {
-        em_ptr->m_ptr->hp = em_ptr->m_ptr->maxhp;
-    }
+    em_ptr->m_ptr->heal_hp(em_ptr->dam);
 
     HealthBarTracker::get_instance().set_flag_if_tracking(em_ptr->src_idx);
     if (em_ptr->m_caster_ptr && em_ptr->m_caster_ptr->is_riding()) {

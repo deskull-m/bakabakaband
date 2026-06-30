@@ -281,10 +281,7 @@ void process_drain_life(MonsterAttackPlayer *monap_ptr, const bool resist_drain)
     }
 
     bool did_heal = monap_ptr->m_ptr->hp < monap_ptr->m_ptr->maxhp;
-    monap_ptr->m_ptr->hp += Dice::roll(4, monap_ptr->damage / 6);
-    if (monap_ptr->m_ptr->hp > monap_ptr->m_ptr->maxhp) {
-        monap_ptr->m_ptr->hp = monap_ptr->m_ptr->maxhp;
-    }
+    monap_ptr->m_ptr->heal_hp(Dice::roll(4, monap_ptr->damage / 6));
 
     HealthBarTracker::get_instance().set_flag_if_tracking(monap_ptr->m_idx);
     if (monap_ptr->m_ptr->is_riding()) {
