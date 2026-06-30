@@ -65,7 +65,7 @@ Phase 1-8 完了後に残存している統合作業項目を整理したもの�
 | [43](#提案-43-行動状態フラグの-private-化--完了) | 行動状態フラグ private 化 | ✅ 完了 | **+14 = 129 個** (action / running / resting / leaving / playing 等) |
 | [44](#提案-44-突然変異呪い系フラグの-private-化--完了) | 突然変異/呪い系フラグ private 化 | ✅ 完了 | **+5 = 99 個** (muta / cursed / patron 等) |
 | [45](#提案-45-pet_t_m_idx--riding_t_m_idx-のターゲット保守ロジック集約--完了) | pet/riding ターゲット保守ロジック集約 | ✅ 完了 | reset/clear/remap_pet_riding_targets |
-| [46](#提案-46-esp--装備集計の差分検出を-update_creature-内-raw-access-に閉じる) | ESP / 装備集計の差分検出を内部に閉じる | 🚧 | get_X_flags() 公開撤廃検討 |
+| [46](#提案-46-esp--知覚系フラグの差分検出スナップショット化--完了) | ESP / 知覚系フラグの差分検出スナップショット化 | ✅ 完了 | PerceptionFlagsSnapshot、getter 15 個撤廃 |
 | [47](#提案-47-その他小規模フィールドの-private-化--完了) | その他小規模フィールドまとめ | ✅ 完了 | **+6 = 135 個** (dealt_damage / run_py/px / vanish_stairs_flag / suppress_multi_reward / tracking_bi_id、tval_xtra 削除) |
 | [48](#提案-48-追加の小規模フィールドの-private-化--完了) | 追加の小規模フィールドまとめ | ✅ 完了 | **+6 = 141 個** (tval_ammo / dtrap / autopick_autoregister / recall_dungeon / enchant_energy_need / energy_use) |
 
@@ -2165,11 +2165,46 @@ CreatureEntity 共通化」は**提案 40 で既に達成済み**。
 
 ---
 
-## 提案 46: ESP / 装備集計の差分検出を `update_creature()` 内 raw access に閉じる
+## 提案 46: ESP / 知覚系フラグの差分検出スナップショット化 ✅ 完了
 
-提案 33 で telepathy/esp_* は private 化済だが、`get_X_flags()` が
-差分検出キャッシュ用に依然外部公開。これを `update_creature()`
-内部完結に閉じる試み。
+### 背景
+
+提案 33 で telepathy / esp_* / see_inv / mighty_throw は private 化済だが、
+旧値スナップショット (差分検出キャッシュ) 用に 15 個の `get_X_flags()`
+BIT_FLAGS getter が外部公開されたまま残っていた。これらは
+`update_bonuses()` (player-status.cpp) の「再計算前に旧値退避 → 再計算 →
+新旧比較で再描画フラグ設定」という差分検出のためだけに使われており、
+内部表現 (raw BIT_FLAGS) を外部に漏らしていた。
+
+### 完了内容
+
+- `CreatureEntity` にネスト構造体 `PerceptionFlagsSnapshot` を追加
+  (15 フラグ: telepathy / esp 12 種 / see_inv / mighty_throw)。
+  差分判定ヘルパ 2 種を提供:
+  - `mighty_throw_differs_from(other)` … 強投擲変化 (→ インベントリ再描画)
+  - `monster_perception_differs_from(other)` … テレパシー/ESP/透明視認の
+    いずれか変化 (→ モンスター状態再計算)
+- スナップショット取得 `capture_perception_flags()` を追加
+  (private フィールドを内部で読むため、個別 getter は不要)
+- **個別 `get_X_flags()` 15 個を撤廃**
+  (impact / earthquake は player-attack の実ロジックで使うため残置)
+- `player-status.cpp::update_bonuses()` を書き換え:
+  - 旧 15 行の `BIT_FLAGS old_X = get_X_flags();` → `const auto
+    old_perception = creature.capture_perception_flags();`
+  - 旧 27 行の個別比較ブロック → スナップショット 2 メソッド比較
+
+### 効果
+
+- 内部表現を漏らす public getter 15 個を撤廃し、差分検出を
+  「スナップショット取得 + 比較」という呼出側の関心事に閉じた
+- update_bonuses() の差分検出が ~42 行 → ~10 行に簡素化
+- player-status.cpp の getter 呼出 30 箇所が 2 箇所に集約
+- フルビルド (g++ -O3 -Werror -Wall -Wextra) と clang-format-18 で検証済み
+
+### 残置
+
+`get_impact_flags()` / `get_earthquake_flags()` は player-attack.cpp が
+FLAG_CAUSE_* ビットマスク (どちらの手由来か) を実判定に使うため公開維持。
 
 ---
 

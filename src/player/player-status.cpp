@@ -246,21 +246,7 @@ static void update_bonuses(CreatureEntity &creature)
     ItemEntity *o_ptr;
 
     /* Save the old vision stuff */
-    BIT_FLAGS old_telepathy = creature.get_telepathy_flags();
-    BIT_FLAGS old_esp_animal = creature.get_esp_animal_flags();
-    BIT_FLAGS old_esp_undead = creature.get_esp_undead_flags();
-    BIT_FLAGS old_esp_demon = creature.get_esp_demon_flags();
-    BIT_FLAGS old_esp_orc = creature.get_esp_orc_flags();
-    BIT_FLAGS old_esp_troll = creature.get_esp_troll_flags();
-    BIT_FLAGS old_esp_giant = creature.get_esp_giant_flags();
-    BIT_FLAGS old_esp_dragon = creature.get_esp_dragon_flags();
-    BIT_FLAGS old_esp_human = creature.get_esp_human_flags();
-    BIT_FLAGS old_esp_evil = creature.get_esp_evil_flags();
-    BIT_FLAGS old_esp_good = creature.get_esp_good_flags();
-    BIT_FLAGS old_esp_nonliving = creature.get_esp_nonliving_flags();
-    BIT_FLAGS old_esp_unique = creature.get_esp_unique_flags();
-    BIT_FLAGS old_see_inv = creature.get_see_inv_flags();
-    BIT_FLAGS old_mighty_throw = creature.get_mighty_throw_flags();
+    const auto old_perception = creature.capture_perception_flags();
     int16_t old_speed = static_cast<int16_t>(creature.get_speed());
 
     ARMOUR_CLASS old_dis_ac = creature.get_dis_ac();
@@ -362,31 +348,12 @@ static void update_bonuses(CreatureEntity &creature)
     creature.set_dis_to_a(calc_to_ac(creature, false));
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (old_mighty_throw != creature.get_mighty_throw_flags()) {
+    const auto new_perception = creature.capture_perception_flags();
+    if (new_perception.mighty_throw_differs_from(old_perception)) {
         rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
     }
 
-    if (creature.get_telepathy_flags() != old_telepathy) {
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-    }
-
-    auto is_esp_updated = creature.get_esp_animal_flags() != old_esp_animal;
-    is_esp_updated |= creature.get_esp_undead_flags() != old_esp_undead;
-    is_esp_updated |= creature.get_esp_demon_flags() != old_esp_demon;
-    is_esp_updated |= creature.get_esp_orc_flags() != old_esp_orc;
-    is_esp_updated |= creature.get_esp_troll_flags() != old_esp_troll;
-    is_esp_updated |= creature.get_esp_giant_flags() != old_esp_giant;
-    is_esp_updated |= creature.get_esp_dragon_flags() != old_esp_dragon;
-    is_esp_updated |= creature.get_esp_human_flags() != old_esp_human;
-    is_esp_updated |= creature.get_esp_evil_flags() != old_esp_evil;
-    is_esp_updated |= creature.get_esp_good_flags() != old_esp_good;
-    is_esp_updated |= creature.get_esp_nonliving_flags() != old_esp_nonliving;
-    is_esp_updated |= creature.get_esp_unique_flags() != old_esp_unique;
-    if (is_esp_updated) {
-        rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-    }
-
-    if (creature.get_see_inv_flags() != old_see_inv) {
+    if (new_perception.monster_perception_differs_from(old_perception)) {
         rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
     }
 
