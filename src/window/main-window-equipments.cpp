@@ -44,7 +44,7 @@ COMMAND_CODE show_equipment(CreatureEntity &creature, int target_item, BIT_FLAGS
     k = 0;
     for (const auto i_idx : INVEN_WIELDING_SLOTS) {
         const auto &item = *creature.inventory[i_idx];
-        auto only_slot = !(creature.select_ring_slot ? is_ring_slot(i_idx) : (item_tester.okay(&item) || any_bits(mode, USE_FULL)));
+        auto only_slot = !(creature.is_select_ring_slot() ? is_ring_slot(i_idx) : (item_tester.okay(&item) || any_bits(mode, USE_FULL)));
         auto is_any_hand = (i_idx == INVEN_MAIN_HAND) && can_attack_with_sub_hand(creature);
         is_any_hand |= (i_idx == INVEN_SUB_HAND) && can_attack_with_main_hand(creature);
         auto is_two_handed = is_any_hand && creature.has_two_handed_weapons();

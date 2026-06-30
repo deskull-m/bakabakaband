@@ -140,7 +140,7 @@ bool get_item_okay(CreatureEntity &creature, OBJECT_IDX i, const ItemTester &ite
         return false;
     }
 
-    if (creature.select_ring_slot) {
+    if (creature.is_select_ring_slot()) {
         return is_ring_slot(i);
     }
 
@@ -198,7 +198,7 @@ INVENTORY_IDX label_to_equipment(CreatureEntity &creature, int c)
         return -1;
     }
 
-    if (creature.select_ring_slot) {
+    if (creature.is_select_ring_slot()) {
         return is_ring_slot(i) ? i : -1;
     }
 

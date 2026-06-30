@@ -519,7 +519,7 @@ void mineuchi(CreatureEntity &creature, player_attack_type *pa_ptr)
 void musou_counterattack(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
     const auto is_musou = CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU);
-    if ((!creature.counter && !is_musou) || !monap_ptr->alive || creature.is_dead() || !monap_ptr->m_ptr->is_visible_on_map() || (creature.get_current_mp() <= 7)) {
+    if ((!creature.is_counter() && !is_musou) || !monap_ptr->alive || creature.is_dead() || !monap_ptr->m_ptr->is_visible_on_map() || (creature.get_current_mp() <= 7)) {
         return;
     }
 

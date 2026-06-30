@@ -108,17 +108,17 @@ bool continuous_action_running(CreatureEntity &creature)
  */
 void process_player(CreatureEntity &creature)
 {
-    if (creature.hack_mutation) {
+    if (creature.is_hack_mutation()) {
         msg_print(_("何か変わった気がする！", "You feel different!"));
         (void)gain_mutation(creature, 0);
-        creature.hack_mutation = false;
+        creature.set_hack_mutation(false);
     }
 
-    if (creature.invoking_midnight_curse) {
+    if (creature.is_invoking_midnight_curse()) {
         int count = 0;
         mark_monsters_present(creature);
         activate_ty_curse(creature, false, &count);
-        creature.invoking_midnight_curse = false;
+        creature.set_invoking_midnight_curse(false);
     }
 
     const auto &system = AngbandSystem::get_instance();
@@ -260,7 +260,7 @@ void process_player(CreatureEntity &creature)
     while (creature.energy_need <= 0) {
         rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
         creature.set_sutemi(false);
-        creature.counter = false;
+        creature.set_counter(false);
         creature.set_now_damaged(false);
 
         update_monsters(creature, false);

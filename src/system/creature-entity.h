@@ -4083,7 +4083,19 @@ private:
 
 public:
     // 装備・能力関連フラグ / Equipment and ability flags
+private:
     bool hack_mutation{};
+
+public:
+    // [提案 51] hack_mutation を private 化。is_hack_mutation() / set_hack_mutation() 経由。
+    bool is_hack_mutation() const
+    {
+        return this->hack_mutation;
+    }
+    void set_hack_mutation(bool value)
+    {
+        this->hack_mutation = value;
+    }
 
     // [提案 43] is_fired (フィールド名 fired にリネーム) / level_up_message は
     // private 化済。is_fired() / set_is_fired() / has_level_up_message() /
@@ -4125,7 +4137,19 @@ private:
     BIT_FLAGS see_nocto{}; /* Noctovision */
 
 public:
+private:
     bool invoking_midnight_curse{};
+
+public:
+    // [提案 51] invoking_midnight_curse を private 化。is_invoking_midnight_curse() / set_invoking_midnight_curse() 経由。
+    bool is_invoking_midnight_curse() const
+    {
+        return this->invoking_midnight_curse;
+    }
+    void set_invoking_midnight_curse(bool value)
+    {
+        this->invoking_midnight_curse = value;
+    }
 
     // インシデント記録（ツリー構造）
     std::map<std::string, int32_t> incident_tree{}; /*!< ツリー構造ID（例: "root/attack/critical"）で記録するインシデントカウント */
@@ -4368,7 +4392,19 @@ private:
 public:
     /*** Temporary fields ***/
 
+private:
     bool select_ring_slot{};
+
+public:
+    // [提案 51] select_ring_slot を private 化。is_select_ring_slot() / set_select_ring_slot() 経由。
+    bool is_select_ring_slot() const
+    {
+        return this->select_ring_slot;
+    }
+    void set_select_ring_slot(bool value)
+    {
+        this->select_ring_slot = value;
+    }
 
     // [提案 43] playing / leaving / monk_notify_aux / teleport_town は private 化済。
     // is_playing() / set_playing() / is_leaving() / set_leaving() /
@@ -4440,7 +4476,19 @@ private:
     bool sutemi{};
 
 public:
+private:
     bool counter{};
+
+public:
+    // [提案 51] counter を private 化。is_counter() / set_counter() 経由。
+    bool is_counter() const
+    {
+        return this->counter;
+    }
+    void set_counter(bool value)
+    {
+        this->counter = value;
+    }
 
 private:
     DIRECTION fishing_dir{};
@@ -4464,7 +4512,19 @@ private:
 public:
     Dice damage_dice_bonus[2]{}; /* Extra damage dice num/sides */
 
+private:
     bool no_flowed{};
+
+public:
+    // [提案 51] no_flowed を private 化。is_no_flowed() / set_no_flowed() 経由。
+    bool is_no_flowed() const
+    {
+        return this->no_flowed;
+    }
+    void set_no_flowed(bool value)
+    {
+        this->no_flowed = value;
+    }
 
 private:
     // [提案 48] private 化済。get_tval_ammo() / set_tval_ammo() 経由。

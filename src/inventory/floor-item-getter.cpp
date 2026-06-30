@@ -201,8 +201,8 @@ static void test_equipment_floor(CreatureEntity &creature, FloorItemSelection *f
     }
 
     for (const auto i_idx : INVEN_WIELDING_SLOTS) {
-        if (creature.select_ring_slot ? is_ring_slot(i_idx)
-                                      : item_tester.okay(creature.inventory[i_idx].get()) || (fis_ptr->mode & USE_FULL)) {
+        if (creature.is_select_ring_slot() ? is_ring_slot(i_idx)
+                                           : item_tester.okay(creature.inventory[i_idx].get()) || (fis_ptr->mode & USE_FULL)) {
             fis_ptr->max_equip++;
         }
     }
