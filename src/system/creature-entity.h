@@ -3418,66 +3418,60 @@ public:
         return this->earthquake;
     }
 
-    // 旧値スナップショット用 BIT_FLAGS getter (差分検出キャッシュ向け)。
-    virtual BIT_FLAGS get_telepathy_flags() const
+    // [提案 46] 知覚系フラグ (テレパシー / ESP 12 種 / 透明視認 / 強投擲) の
+    // 差分検出スナップショット。update_bonuses() の再計算前後で
+    // capture_perception_flags() を取得・比較することで、個別の BIT_FLAGS
+    // getter を外部公開せず、差分検出を呼出側の関心事に閉じる。
+    struct PerceptionFlagsSnapshot {
+        BIT_FLAGS telepathy{};
+        BIT_FLAGS esp_animal{};
+        BIT_FLAGS esp_undead{};
+        BIT_FLAGS esp_demon{};
+        BIT_FLAGS esp_orc{};
+        BIT_FLAGS esp_troll{};
+        BIT_FLAGS esp_giant{};
+        BIT_FLAGS esp_dragon{};
+        BIT_FLAGS esp_human{};
+        BIT_FLAGS esp_evil{};
+        BIT_FLAGS esp_good{};
+        BIT_FLAGS esp_nonliving{};
+        BIT_FLAGS esp_unique{};
+        BIT_FLAGS see_inv{};
+        BIT_FLAGS mighty_throw{};
+
+        //!< 強投擲フラグが変化したか (変化時はインベントリ再描画が必要)。
+        bool mighty_throw_differs_from(const PerceptionFlagsSnapshot &other) const
+        {
+            return this->mighty_throw != other.mighty_throw;
+        }
+
+        //!< テレパシー / ESP / 透明視認のいずれかが変化したか
+        //!< (変化時はモンスター状態の再計算が必要)。
+        bool monster_perception_differs_from(const PerceptionFlagsSnapshot &other) const
+        {
+            return (this->telepathy != other.telepathy) || (this->esp_animal != other.esp_animal) || (this->esp_undead != other.esp_undead) || (this->esp_demon != other.esp_demon) || (this->esp_orc != other.esp_orc) || (this->esp_troll != other.esp_troll) || (this->esp_giant != other.esp_giant) || (this->esp_dragon != other.esp_dragon) || (this->esp_human != other.esp_human) || (this->esp_evil != other.esp_evil) || (this->esp_good != other.esp_good) || (this->esp_nonliving != other.esp_nonliving) || (this->esp_unique != other.esp_unique) || (this->see_inv != other.see_inv);
+        }
+    };
+
+    PerceptionFlagsSnapshot capture_perception_flags() const
     {
-        return this->telepathy;
-    }
-    virtual BIT_FLAGS get_esp_animal_flags() const
-    {
-        return this->esp_animal;
-    }
-    virtual BIT_FLAGS get_esp_undead_flags() const
-    {
-        return this->esp_undead;
-    }
-    virtual BIT_FLAGS get_esp_demon_flags() const
-    {
-        return this->esp_demon;
-    }
-    virtual BIT_FLAGS get_esp_orc_flags() const
-    {
-        return this->esp_orc;
-    }
-    virtual BIT_FLAGS get_esp_troll_flags() const
-    {
-        return this->esp_troll;
-    }
-    virtual BIT_FLAGS get_esp_giant_flags() const
-    {
-        return this->esp_giant;
-    }
-    virtual BIT_FLAGS get_esp_dragon_flags() const
-    {
-        return this->esp_dragon;
-    }
-    virtual BIT_FLAGS get_esp_human_flags() const
-    {
-        return this->esp_human;
-    }
-    virtual BIT_FLAGS get_esp_evil_flags() const
-    {
-        return this->esp_evil;
-    }
-    virtual BIT_FLAGS get_esp_good_flags() const
-    {
-        return this->esp_good;
-    }
-    virtual BIT_FLAGS get_esp_nonliving_flags() const
-    {
-        return this->esp_nonliving;
-    }
-    virtual BIT_FLAGS get_esp_unique_flags() const
-    {
-        return this->esp_unique;
-    }
-    virtual BIT_FLAGS get_see_inv_flags() const
-    {
-        return this->see_inv;
-    }
-    virtual BIT_FLAGS get_mighty_throw_flags() const
-    {
-        return this->mighty_throw;
+        return {
+            this->telepathy,
+            this->esp_animal,
+            this->esp_undead,
+            this->esp_demon,
+            this->esp_orc,
+            this->esp_troll,
+            this->esp_giant,
+            this->esp_dragon,
+            this->esp_human,
+            this->esp_evil,
+            this->esp_good,
+            this->esp_nonliving,
+            this->esp_unique,
+            this->see_inv,
+            this->mighty_throw,
+        };
     }
 
     // 特殊攻撃 / 特殊防御フラグ。compound assignment が複数箇所にあるため
