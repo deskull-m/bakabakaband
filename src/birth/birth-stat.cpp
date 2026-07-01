@@ -191,7 +191,7 @@ void get_extra(CreatureEntity &creature, bool roll_hitdie)
         roll_hitdice(creature, SPOP_NO_UPDATE);
     }
 
-    creature.maxhp = creature.hp_table[0];
+    creature.maxhp = creature.get_hp_table(0);
 }
 
 /*!

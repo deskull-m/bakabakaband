@@ -39,7 +39,7 @@ void rd_extra(CreatureEntity &creature)
     }
 
     TownRecords::get_instance().set_ids(visited_towns);
-    creature.count = rd_u32b();
+    creature.set_count(rd_u32b());
 
     // [モンスタープレイヤー] プレイヤーがモンスター化している場合の種族 ID を復元する。
     // セーブファイルバージョン 48 以降で保存される。旧データは PLAYER のまま。

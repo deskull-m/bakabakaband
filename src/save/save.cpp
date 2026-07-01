@@ -191,7 +191,7 @@ static bool wr_savefile_new(CreatureEntity &creature)
     tmp16u = PY_MAX_LEVEL;
     wr_u16b(tmp16u);
     for (int i = 0; i < tmp16u; i++) {
-        wr_s16b((int16_t)creature.hp_table[i]);
+        wr_s16b((int16_t)creature.get_hp_table(i));
     }
 
     wr_u32b(creature.get_spell_learned_flags(0));
