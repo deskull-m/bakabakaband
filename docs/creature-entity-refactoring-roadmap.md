@@ -69,6 +69,7 @@ Phase 1-8 完了後に残存している統合作業項目を整理したもの�
 | [47](#提案-47-その他小規模フィールドの-private-化--完了) | その他小規模フィールドまとめ | ✅ 完了 | **+6 = 135 個** (dealt_damage / run_py/px / vanish_stairs_flag / suppress_multi_reward / tracking_bi_id、tval_xtra 削除) |
 | [48](#提案-48-追加の小規模フィールドの-private-化--完了) | 追加の小規模フィールドまとめ | ✅ 完了 | **+6 = 141 個** (tval_ammo / dtrap / autopick_autoregister / recall_dungeon / enchant_energy_need / energy_use) |
 | [49](#提案-49-モンスター時限効果付与プリミティブの集約-b1-第1段--完了) | モンスター時限効果付与プリミティブ集約 (B1 第1段) | ✅ 完了 | FloorType::set_monster_timed_effect、7 setter 集約 |
+| [50](#提案-50-set_timed_effect-への-mproc-保守統合-b1-後続段--完了-要実機smoke-test) | set_timed_effect への mproc 保守統合 (B1 後続段) | ✅ 完了 (要実機smoke-test) | get_self_m_idx、mproc を set_timed_effect に内包 |
 
 **累計 private 化フィールド数 (主要マイルストーン):**
 - 提案 29 (3 個) → 32 (10 個) → 32b (37 個) → 33 (72 個) → 34 (77 個) →
@@ -2524,6 +2525,69 @@ virtual では中身が分離した 2 経路になり価値が薄い。さらに
   (これにより `CreatureEntity::set_timed_effect` がモンスターの mproc を
   自動保守でき、player/monster の時限効果 API が真に一本化する)
 - 上記完了後、`creature.try_inflict_X()` 的な付与 API の共通化を再検討
+
+---
+
+## 提案 50: set_timed_effect への mproc 保守統合 (B1 後続段) ✅ 完了 (要実機smoke-test)
+
+### 背景・前提調査
+
+提案 49 で「モンスター側の時限効果付与は mproc キュー (毎ターン処理リスト) 保守を
+伴う」ことを集約したが、統一 API `CreatureEntity::set_timed_effect()` を
+モンスターへ直接呼ぶと mproc が保守されない**フットガン**が残っていた
+(`set_monster_*` 経由でのみ保守)。これを解消し、player/monster で
+時限効果設定経路を真に一本化する。
+
+調査で判明した mproc のアーキテクチャ:
+
+- **時限効果 map が source of truth** (savefile に保存)。
+- **mproc は派生キャッシュ**。`FloorType::reset_mproc()` が map から全走査で
+  再構築し、**フロア入場時 (`dungeon-processor` のターンループ直前 L215)**・
+  セーブ後・ポリモーフ後に呼ばれる。さらにゲームプレイ中は付与経路が
+  逐次保守する 2 段構成。
+
+この「フロア入場時 reset_mproc がターン処理前に必ず走る」安全網により、
+ロード中等で mproc 保守が漏れても (または一時的に誤っても) 処理前に
+再構築され整合する。
+
+### 完了内容
+
+- `CreatureEntity::get_self_m_idx()` を追加。モンスターは自身の m_idx を保持
+  しないが、`floor.m_list` 上のインデックスは配置先グリッドの m_idx と一致する
+  ため、現在位置のグリッドから導出する (プレイヤー・未配置・フロア未設定は 0)。
+- `CreatureEntity::set_timed_effect()` に **mproc 保守を内包**。値が 0 を
+  またいで変化した時のみ、対象が「配置済みモンスター」かつ
+  `MONSTER_TIMED_EFFECT_LIST` の 7 効果なら `add_mproc`/`remove_mproc` を行う
+  (file-local `maintain_monster_mproc_on_toggle`)。プレイヤー・未配置時は
+  no-op で `reset_mproc()` に委ねる。
+- `FloorType::set_monster_timed_effect()` から明示 mproc 呼出を撤去
+  (set_timed_effect に集約)。クランプ + notice 算出のみに簡素化。
+- これで mproc を触る箇所は **`reset_mproc()` (全再構築) と
+  `set_timed_effect()` (逐次保守) の 2 箇所のみ**に集約。二重保守なし。
+
+### 安全性の根拠
+
+- ゲームプレイ中: モンスターはグリッド上にあり m_idx が正しく導出され逐次保守。
+- ロード/生成中: モンスター未配置で m_idx=0 のため保守はスキップされるが、
+  フロア入場時の `reset_mproc()` がターン処理前に map から再構築するため整合。
+- `add_mproc` は他に呼出元がなく二重登録経路なし。`remove_mproc` は不在
+  エントリに対し no-op で冪等。
+
+### ⚠️ 残確認 (実機 smoke-test 推奨)
+
+セーブ/ロード・per-turn 処理という critical path への変更のため、ビルド
+(g++ -O3 -Werror) 検証に加え、実機での **(1) 減速/混乱/恐怖等を受けた
+モンスターのセーブ→ロード後の継続、(2) フロア移動を跨いだ効果処理、
+(3) 通常戦闘での状態異常付与/解除** の動作確認を推奨。問題があれば
+`maintain_monster_mproc_on_toggle` のガード条件を見直すこと。
+
+### 今後 (B1 後続)
+
+- mproc 保守が set_timed_effect に集約されたことで、`set_monster_*` 自由関数
+  および `FloorType::set_monster_timed_effect` は「クランプ + メッセージ +
+  再描画」のみの薄いラッパとなった。将来これらを `CreatureEntity` の
+  状態異常付与 API (例: `inflict_*`) へ寄せる余地がある (ただしプレイヤーの
+  豊富な副作用とは別経路のまま)。
 
 ---
 
