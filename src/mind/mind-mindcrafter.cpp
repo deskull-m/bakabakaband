@@ -280,7 +280,7 @@ bool cast_mindcrafter_spell(CreatureEntity &creature, MindMindcrafterType spell)
 
         dam = Dice::roll(plev / 2, 6);
         if (fire_ball(creature, AttributeType::PSI_DRAIN, dir, dam, 0)) {
-            creature.energy_need += randnum1<short>(150);
+            creature.add_energy_need(randnum1<short>(150));
         }
 
         break;

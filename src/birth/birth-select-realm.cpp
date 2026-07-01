@@ -293,10 +293,10 @@ bool get_player_realms(CreatureEntity &creature)
         if (!realm) {
             return false;
         }
-        creature.element_realm = *realm;
+        creature.set_element_realm(*realm);
 
         put_str(_("魔法        :", "Magic       :"), 6, 1);
-        c_put_str(TERM_L_BLUE, get_element_title(creature.element_realm), 6, 15);
+        c_put_str(TERM_L_BLUE, get_element_title(creature.get_element_realm()), 6, 15);
         return true;
     }
 

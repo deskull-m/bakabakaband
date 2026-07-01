@@ -35,7 +35,7 @@ static std::string switch_mind_mindcrafter(CreatureEntity &creature, const PLAYE
     case 12:
         return format(" %sd%d+%d", KWD_DAM, plev * 3, plev * 3);
     case 13:
-        return format(_(" 行動:%ld回", " %ld acts."), (long int)(creature.get_current_mp() + 100 - creature.energy_need - 50) / 100);
+        return format(_(" 行動:%ld回", " %ld acts."), (long int)(creature.get_current_mp() + 100 - creature.get_energy_need() - 50) / 100);
     default:
         return std::string();
     }

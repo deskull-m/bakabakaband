@@ -83,8 +83,8 @@ static void write_birth_diary(CreatureEntity &creature)
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_realm);
     }
 
-    if (creature.element_realm != ElementRealmType::NONE) {
-        const auto mes_element = format(_("%s元素系統に%sを選択した。", "%schose %s system."), indent, get_element_title(creature.element_realm).data());
+    if (creature.get_element_realm() != ElementRealmType::NONE) {
+        const auto mes_element = format(_("%s元素系統に%sを選択した。", "%schose %s system."), indent, get_element_title(creature.get_element_realm()).data());
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_element);
     }
 

@@ -198,7 +198,7 @@ bool set_monster_invulner(FloorType &floor, MONSTER_IDX m_idx, int v, bool energ
 
     // 無敵が解除された (notice かつ v<=0) 場合、行動ターン消費のオプション処理。
     if (notice && (v <= 0) && energy_need && !AngbandWorld::get_instance().is_wild_mode()) {
-        monster.energy_need += ENERGY_NEED();
+        monster.add_energy_need(ENERGY_NEED());
     }
 
     if (!notice) {

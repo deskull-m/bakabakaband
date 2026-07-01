@@ -42,7 +42,7 @@ static void rd_realms(CreatureEntity &creature)
     pr.reset();
 
     if (CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST)) {
-        creature.element_realm = i2enum<ElementRealmType>(rd_byte());
+        creature.set_element_realm(i2enum<ElementRealmType>(rd_byte()));
         (void)rd_byte();
         return;
     }
@@ -381,7 +381,7 @@ static void rd_energy(CreatureEntity &creature)
 {
     // energy_need は v51 以降 rd_creature_common() で読込済み
     if (loading_savefile_version_is_older_than(51)) {
-        creature.energy_need = rd_s16b();
+        creature.set_energy_need(rd_s16b());
     }
     creature.set_enchant_energy_need(rd_s16b());
 }
@@ -598,7 +598,7 @@ void rd_player_info(CreatureEntity &creature)
     rd_special_attack(creature);
     rd_special_action(creature);
     rd_special_defense(creature);
-    creature.knowledge = rd_byte();
+    creature.set_knowledge(rd_byte());
     rd_autopick(creature);
     rd_action(creature);
 }

@@ -85,7 +85,7 @@ void player_wipe_without_name(CreatureEntity &creature)
 
     creature.set_learned_spells(0);
     creature.set_add_spells(0);
-    creature.knowledge = 0;
+    creature.set_knowledge(0);
     creature.set_mutant_regenerate_mod(100);
 
     cheat_peek = false;

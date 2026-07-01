@@ -460,14 +460,14 @@ bool process_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_p
         can_recover_energy &= monrace.feature_flags.has_not(MonsterFeatureType::CAN_FLY);
         can_recover_energy &= monrace.wilderness_flags.has_not(MonsterWildernessType::WILD_WOOD);
         if (can_recover_energy) {
-            monster.energy_need += ENERGY_NEED();
+            monster.add_energy_need(ENERGY_NEED());
         }
 
         // SLOW地形での減速処理（飛行モンスターは影響を受けない）
         auto is_slowed_by_terrain = terrain.flags.has(TerrainCharacteristics::SLOW);
         is_slowed_by_terrain &= monrace.feature_flags.has_not(MonsterFeatureType::CAN_FLY);
         if (is_slowed_by_terrain) {
-            monster.energy_need += ENERGY_NEED() / 2;
+            monster.add_energy_need(ENERGY_NEED() / 2);
         }
 
         if (!update_riding_monster(creature, turn_flags_ptr, m_idx, pos.y, pos.x, pos_neighbor.y, pos_neighbor.x)) {

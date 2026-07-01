@@ -25,7 +25,7 @@ void wr_creature_common(const CreatureEntity &creature)
     wr_u32b(static_cast<uint32_t>(creature.get_dealt_damage()));
 
     wr_s16b(static_cast<int16_t>(creature.speed));
-    wr_s16b(static_cast<int16_t>(creature.energy_need));
+    wr_s16b(static_cast<int16_t>(creature.get_energy_need()));
     wr_s16b(static_cast<int16_t>(creature.ac));
 
     wr_u32b(creature.get_exp());

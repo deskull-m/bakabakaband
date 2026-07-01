@@ -165,7 +165,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
     const auto is_watching = AngbandSystem::get_instance().is_phase_out();
     if (is_watching) {
         if (load_game) {
-            creature.energy_need = 0;
+            creature.set_energy_need(0);
             auto &melee_arena = MeleeArena::get_instance();
             melee_arena.update_gladiators(creature);
         } else {
@@ -207,8 +207,8 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
     floor.monster_level = floor.base_level;
     floor.object_level = floor.base_level;
     world.is_loading_now = true;
-    if (creature.energy_need > 0 && !is_watching && (floor.is_underground() || floor.is_leaving_dungeon() || floor.inside_arena)) {
-        creature.energy_need = 0;
+    if (creature.get_energy_need() > 0 && !is_watching && (floor.is_underground() || floor.is_leaving_dungeon() || floor.inside_arena)) {
+        creature.set_energy_need(0);
     }
 
     floor.leave_dungeon(false);

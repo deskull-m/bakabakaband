@@ -2661,10 +2661,32 @@ virtual アクセサを整備:
   / `get_easy_2weapon()` と命名して衝突回避。
 - フルビルド (g++ -O3 -Werror -Wall -Wextra) と clang-format-18 で検証済み。
 
-### 残作業 (A-2 / A-3)
+### 提案 A-2 ✅ 完了
 
-- **A-2**: `energy_need` (compound 多) / `knowledge` (BIT_FLAGS) /
-  `element_realm` (getter 既存)
+3 フィールド (`energy_need` / `element_realm` / `knowledge`) を private 化:
+
+| フィールド | 型 | アクセサ |
+|---|---|---|
+| `energy_need` | ACTION_ENERGY | `get_energy_need()` / `set_energy_need()` (既存) + 新規 `add_energy_need()` / `sub_energy_need()` |
+| `element_realm` | ElementRealmType | `get_element_realm()` / `set_element_realm()` (既存) |
+| `knowledge` | BIT_FLAGS8 | 新規 `has_knowledge()` / `add_knowledge()` / `remove_knowledge()` / `get_knowledge()` / `set_knowledge()` |
+
+- `energy_need`: get/set は既存だったが約 38 サイトが compound assignment
+  (`+=` / `-=`) や直接読取りでフィールドに触れていた。`add_energy_need()` /
+  `sub_energy_need()` を新設し、`+=`→`add_`、`-=`→`sub_`、`=`→`set_`、
+  読取り→`get_` に regex 一括変換 (`creature` / `monster` / `m_ptr` の
+  `.` / `->` 両アクセス)。プレイヤー・モンスター共用フィールドのため
+  両系統の access site を含む。
+- `element_realm`: get/set 既存。約 25 read + 5 write を migration。
+  CreatureEntity 内部 (`creature-entity.cpp`) の `this->element_realm` 代入は
+  private 内アクセスのため残置。
+- `knowledge`: 自己分析知識フラグ (KNOW_STAT / KNOW_HPRATE)。`& FLAG`→
+  `has_knowledge(FLAG)`、`|= FLAG`→`add_knowledge(FLAG)`、`&= ~FLAG`→
+  `remove_knowledge(FLAG)`、`= 0`/load→`set_knowledge()`、save→`get_knowledge()`。
+- フルビルド (g++ -O3 -Werror -Wall -Wextra) と clang-format-18 で検証済み。
+
+### 残作業 (A-3)
+
 - **A-3**: 配列/vector (`hp_table[]` / `extra_blows[]` / `extended_inventory`)、
   汎用名 `count` (要精査) / `class_specific_data`
 

@@ -65,7 +65,7 @@ void MonsterLoader50::rd_monster_legacy(CreatureEntity &monster)
     monster.set_sub_align(any_bits(flags, SaveDataMonsterFlagType::SUB_ALIGN) ? rd_byte() : 0);
     monster.set_timed_effect(CreatureTimedEffect::SLEEP_OR_PARALYSIS, any_bits(flags, SaveDataMonsterFlagType::SLEEP) ? rd_s16b() : 0);
     monster.speed = rd_byte();
-    monster.energy_need = rd_s16b();
+    monster.set_energy_need(rd_s16b());
     if (loading_savefile_version_is_older_than(38)) {
         MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(monster.get_r_idx());
         monster.ac = r_ptr->ac;

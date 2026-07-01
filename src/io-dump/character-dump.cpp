@@ -447,14 +447,14 @@ static void dump_aux_virtues(CreatureEntity &creature, FILE *fff)
     fmt::println(fff, _("\n\n  [自分に関する情報]\n", "\n\n  [HP-rate & Max stat & Virtues]\n"));
 
 #ifdef JP
-    if (creature.knowledge & KNOW_HPRATE) {
+    if (creature.has_knowledge(KNOW_HPRATE)) {
         fmt::println(fff, "現在の体力ランク : {}/100\n", creature.calc_life_rating());
     } else {
         fmt::println(fff, "現在の体力ランク : ???\n");
     }
     fmt::println(fff, "能力の最大値");
 #else
-    if (creature.knowledge & KNOW_HPRATE) {
+    if (creature.has_knowledge(KNOW_HPRATE)) {
         fmt::println(fff, "Your current Life Rating is {}/100.\n", creature.calc_life_rating());
     } else {
         fmt::println(fff, "Your current Life Rating is ???.\n");
@@ -462,7 +462,7 @@ static void dump_aux_virtues(CreatureEntity &creature, FILE *fff)
     fmt::println(fff, "Limits of maximum stats");
 #endif
     for (auto v_nr = 0; v_nr < A_MAX; v_nr++) {
-        if ((creature.knowledge & KNOW_STAT) || creature.get_stat_max(v_nr) == creature.get_stat_max_max(v_nr)) {
+        if ((creature.has_knowledge(KNOW_STAT)) || creature.get_stat_max(v_nr) == creature.get_stat_max_max(v_nr)) {
             fmt::println(fff, "{} 18/{}", stat_names[v_nr], creature.get_stat_max_max(v_nr) - 18);
         } else {
             fmt::println(fff, "{} ???", stat_names[v_nr]);
