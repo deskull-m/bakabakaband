@@ -1588,6 +1588,19 @@ void CreatureEntity::assign_fixed_player_race_and_class()
     }
 }
 
+void CreatureEntity::assign_fixed_mutations()
+{
+    if (!this->has_monster_profile()) {
+        return;
+    }
+
+    std::vector<PlayerMutationType> fixed_mutations;
+    EnumClassFlagGroup<PlayerMutationType>::get_flags(this->get_monrace().mutations, std::back_inserter(fixed_mutations));
+    for (const auto mutation : fixed_mutations) {
+        this->add_mutation(mutation);
+    }
+}
+
 // [提案 14] AI ターゲット選定の共通化実装
 MONSTER_IDX CreatureEntity::find_nearest_creature(const CreaturePredicate &predicate, bool require_projectable) const
 {

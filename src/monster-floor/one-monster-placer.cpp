@@ -468,6 +468,9 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     // (効果は未反映。フィールド付与のみ)
     m_ptr->assign_fixed_player_race_and_class();
 
+    // [提案 C5-1] JSON で突然変異が固定指定されたモンスターに付与 (付与のみ、per-turn 処理は別段)
+    m_ptr->assign_fixed_mutations();
+
     // 種族が指定されている場合、身長・体重を設定
     get_height_weight(*m_ptr);
 
