@@ -157,7 +157,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
                 return tl::nullopt;
             }
             msg_print(_("相手の攻撃に対して身構えた。", "You prepare to counterattack."));
-            creature.counter = true;
+            creature.set_counter(true);
         }
         break;
 

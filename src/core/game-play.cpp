@@ -100,7 +100,7 @@
 
 static void restore_windows(CreatureEntity &creature)
 {
-    creature.hack_mutation = false;
+    creature.set_hack_mutation(false);
     AngbandWorld::get_instance().character_icky_depth = 1;
     term_activate(angband_terms[0]);
     angband_terms[0]->resize_hook = resize_map;

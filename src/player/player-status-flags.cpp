@@ -755,16 +755,16 @@ void check_no_flowed(CreatureEntity &creature)
     ItemEntity *o_ptr;
     bool has_sw = false, has_kabe = false;
 
-    creature.no_flowed = false;
+    creature.set_no_flowed(false);
 
     if (has_pass_wall(creature) && !has_kill_wall(creature)) {
-        creature.no_flowed = true;
+        creature.set_no_flowed(true);
         return;
     }
 
     PlayerRealm pr(creature);
     if (!pr.realm1().is_available()) {
-        creature.no_flowed = false;
+        creature.set_no_flowed(false);
         return;
     }
 
@@ -794,14 +794,14 @@ void check_no_flowed(CreatureEntity &creature)
     if (has_sw && (pr.realm1().equals(RealmType::NATURE) || pr.realm2().equals(RealmType::NATURE) || pc.equals(PlayerClassType::SORCERER))) {
         const auto &spell = PlayerRealm::get_spell_info(RealmType::NATURE, SPELL_SW);
         if (creature.get_level() >= spell.slevel) {
-            creature.no_flowed = true;
+            creature.set_no_flowed(true);
         }
     }
 
     if (has_kabe && (pr.realm1().equals(RealmType::CRAFT) || pr.realm2().equals(RealmType::CRAFT) || pc.equals(PlayerClassType::SORCERER))) {
         const auto &spell = PlayerRealm::get_spell_info(RealmType::CRAFT, SPELL_WALL);
         if (creature.get_level() >= spell.slevel) {
-            creature.no_flowed = true;
+            creature.set_no_flowed(true);
         }
     }
 }

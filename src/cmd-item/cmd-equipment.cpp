@@ -224,15 +224,15 @@ void do_cmd_wield(CreatureEntity &creature)
         }
 
         constexpr auto s = _("おっと。", "Oops.");
-        creature.select_ring_slot = true;
+        creature.set_select_ring_slot(true);
         const auto &[item_replace, slot_replace] = choose_item(creature, q, s, (USE_EQUIP | IGNORE_BOTHHAND_SLOT));
         if (!item_replace) {
-            creature.select_ring_slot = false;
+            creature.set_select_ring_slot(false);
             return;
         }
 
         slot = slot_replace;
-        creature.select_ring_slot = false;
+        creature.set_select_ring_slot(false);
         break;
     }
     default:

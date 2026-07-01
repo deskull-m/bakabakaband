@@ -319,7 +319,7 @@ static void display_equipment(CreatureEntity &creature, const ItemTester &item_t
         }
 
         const auto &item = *creature.inventory[i_idx];
-        auto do_disp = creature.select_ring_slot ? is_ring_slot(i_idx) : item_tester.okay(&item);
+        auto do_disp = creature.is_select_ring_slot() ? is_ring_slot(i_idx) : item_tester.okay(&item);
         std::string tmp_val = "   ";
 
         if (do_disp) {

@@ -153,7 +153,7 @@ bool BadStatusSetter::set_confusion(const TIME_EFFECT tmp_v)
             }
 
             notice = true;
-            this->creature.counter = false;
+            this->creature.set_counter(false);
             chg_virtue(this->creature, Virtue::HARMONY, -1);
         }
     } else {
@@ -250,7 +250,7 @@ bool BadStatusSetter::set_fear(const TIME_EFFECT tmp_v)
             }
 
             notice = true;
-            this->creature.counter = false;
+            this->creature.set_counter(false);
             chg_virtue(this->creature, Virtue::VALOUR, -1);
         }
     } else {
@@ -303,7 +303,7 @@ bool BadStatusSetter::set_paralysis(const TIME_EFFECT tmp_v)
                 (void)spell_hex.stop_all_spells();
             }
 
-            this->creature.counter = false;
+            this->creature.set_counter(false);
             notice = true;
         }
     } else {
@@ -358,7 +358,7 @@ bool BadStatusSetter::hallucination(const TIME_EFFECT tmp_v)
             msg_print(_("ワーオ！何もかも虹色に見える！", "Oh, wow! Everything looks so cosmic now!"));
             reset_concentration(this->creature, true);
 
-            this->creature.counter = false;
+            this->creature.set_counter(false);
             notice = true;
         }
     } else {
