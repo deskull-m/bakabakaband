@@ -679,6 +679,34 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
 - バランス調整は `mp_cost_divisor` 定数で行う（小さいほど高コスト）。
 - 既定 OFF のため実データ・既定バランスは不変。スキーマに `consumes_mp` を登録済。
 
+### モンスターの突然変異 (`mutations`) — 提案 C5
+
+`MonraceDefinition` に `EnumClassFlagGroup<PlayerMutationType> mutations`
+(`src/system/monrace/monrace-definition.h`) を持ち、JSON
+`lib/edit/MonraceDefinitions.jsonc` で個別モンスターに突然変異を付与できる。
+C トラック第 4 弾で、**JSON オプトイン方式**（既定=なし=バランス不変）。
+
+```jsonc
+"mutations": [ "BERSERK", "REGEN" ]
+```
+
+指定可能なトークンは `r_info_mutation`
+(`src/info-reader/race-info-tokens-table.cpp`、`PlayerMutationType` の enum 名) を参照。
+
+- 生成時に `CreatureEntity::assign_fixed_mutations()`（`place_monster_one`）が
+  `monrace.mutations` を `add_mutation` で付与する。
+- per-turn 処理は**プレイヤー用 `process_world_aux_mutation()` とは分離した専用関数
+  `process_monster_mutation(player, monster)`**（`src/mutation/mutation-processor.cpp`）
+  が担う。巨大なプレイヤー版（UI プロンプト・脱糞・`BadStatusSetter` の徳/構え副作用等
+  深いプレイヤー結合）は改造せず、モンスターに意味のある能動変異のみ curated 実装:
+  **BERS_RAGE**（激怒→恐怖解除+加速）/ **COWARDICE**（恐怖）/ **RTELEPORT**
+  （テレポート）/ **SPEED_FLUX**（速度変動）。効果は `set_monster_monfear/fast/slow` /
+  `teleport_away` 等モンスター安全なプリミティブで適用し、メッセージは視認時のみ。
+- 発火は `process_world()`（`TURNS_PER_TICK`=10 ゲームターン周期）のプレイヤー変異処理
+  直後に変異持ちモンスターを走査して行うため、発動確率はプレイヤー版と同一周期で整合。
+- **未対応の変異は付与しても per-turn では発火しない**（上記 4 種以外）。受動変異
+  （耐性・ESP 等）の反映は将来拡張。スキーマに `mutations` を登録済。
+
 ### モンスターのレベル別HPダイス指定 (`hit_point_per_level`)
 
 `MonraceDefinition` に `Dice hit_dice_per_level`
