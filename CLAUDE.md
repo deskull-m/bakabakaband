@@ -632,6 +632,30 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
 - スキーマ `schema/MonraceDefinitions.schema.json` に `player_race`/`player_class`
   を登録済（CI の JSON 検証を通す）。
 
+### モンスターの能力値成長 (`grows_stats`) — 提案 C2
+
+`MonraceDefinition` に `bool grows_stats`
+(`src/system/monrace/monrace-definition.h`) を持ち、JSON
+`lib/edit/MonraceDefinitions.jsonc` で個別モンスターのレベルアップ時能力値成長を
+有効化できる。C トラック第 2 弾で、**JSON オプトイン方式**（既定 `false`=無効で
+バランス不変）。
+
+```jsonc
+"grows_stats": true
+```
+
+- モンスターのレベルアップ（`try_monster_level_up()`、戦闘で経験値蓄積時）に
+  `grows_stats` が立つ個体のみ、獲得レベル数に応じて
+  `CreatureEntity::grow_stats_by_levels()` が 6 能力値を成長させる。
+- 成長量は保守的な既定値 `stat_growth_per_level = 2`（内部 10 単位 = 表示 0.1/レベル、
+  `src/system/creature-entity.cpp`）。獲得レベル数は基準レベル上限で有界のため成長も
+  有界。バランス調整はこの定数で行う。
+- HP 成長（第 4 段）は従来通り全モンスター共通（`grows_stats` 非依存）。本フラグは
+  **能力値成長のみ**を制御する。
+- **現状の能力値のゲーム効果は限定的**（生成時の CON→最大HP 補正・一部判定）。
+  能力値を戦闘へ広く反映する拡張は将来提案で段階導入する。
+- スキーマに `grows_stats` を登録済。
+
 ### モンスターのレベル別HPダイス指定 (`hit_point_per_level`)
 
 `MonraceDefinition` に `Dice hit_dice_per_level`

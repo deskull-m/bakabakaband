@@ -131,6 +131,7 @@ public:
     player_personality_type personality = PERSONALITY_NONE; //!< 性格固定指定 (PERSONALITY_NONE で未指定=生成時ランダム) / Fixed personality (PERSONALITY_NONE means unspecified)
     PlayerRaceType player_race = PlayerRaceType::NONE; //!< 種族固定指定 (提案C1。NONEで未指定。効果は未反映で prace フィールドのみ付与)
     PlayerClassType player_class = PlayerClassType::NONE; //!< 職業固定指定 (提案C1。NONEで未指定。効果は未反映で pclass フィールドのみ付与)
+    bool grows_stats = false; //!< レベルアップ時に能力値も成長させるか (提案C2。既定false=オプトイン。既定バランス不変)
     EnumClassFlagGroup<MonsterFeedType> meat_feed_flags;
     EnumClassFlagGroup<MonsterAbilityType> ability_flags; //!< 能力フラグ(魔法/ブレス) / Ability Flags
     EnumClassFlagGroup<MonsterAuraType> aura_flags; //!< オーラフラグ / Aura Flags
