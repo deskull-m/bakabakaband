@@ -48,12 +48,12 @@ void check_music(CreatureEntity &creature)
     uint32_t need_mana_frac = 0;
 
     s64b_rshift(&need_mana, &need_mana_frac, 1);
-    if (s64b_cmp(creature.get_csp(), creature.csp_frac, need_mana, need_mana_frac) < 0) {
+    if (s64b_cmp(creature.get_current_mp(), creature.current_mp_frac, need_mana, need_mana_frac) < 0) {
         stop_singing(creature);
         return;
     }
 
-    creature.sub_csp_with_frac(need_mana, need_mana_frac);
+    creature.sub_current_mp_with_frac(need_mana, need_mana_frac);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
     if (interupting_song_effect != 0) {

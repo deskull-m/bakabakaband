@@ -146,8 +146,8 @@ static godot::Dictionary snapshot_to_dict(const GodotPlayerStatusSnapshot &s)
     godot::Dictionary d;
     d["hp"] = s.chp;
     d["max_hp"] = s.mhp;
-    d["sp"] = s.csp;
-    d["max_sp"] = s.msp;
+    d["sp"] = s.current_mp;
+    d["max_sp"] = s.max_mp;
     d["level"] = s.level;
     d["dun_level"] = s.dun_level;
     d["gold"] = static_cast<int64_t>(s.gold);

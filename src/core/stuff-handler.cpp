@@ -76,8 +76,8 @@ bool update_player()
 
 bool redraw_player(CreatureEntity &creature)
 {
-    if (creature.get_csp() > creature.get_msp()) {
-        creature.set_csp(creature.get_msp());
+    if (creature.get_current_mp() > creature.get_max_mp()) {
+        creature.set_current_mp(creature.get_max_mp());
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();

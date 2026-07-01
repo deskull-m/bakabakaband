@@ -121,8 +121,8 @@ static void add_status_to_json(nlohmann::json &j, CreatureEntity &creature)
 {
     j["status"]["hitpoints"] = creature.hp;
     j["status"]["max_hitpoints"] = creature.maxhp;
-    j["status"]["mana"] = creature.get_csp();
-    j["status"]["max_mana"] = creature.get_msp();
+    j["status"]["mana"] = creature.get_current_mp();
+    j["status"]["max_mana"] = creature.get_max_mp();
     j["status"]["armor_class"] = creature.ac;
     j["status"]["display_armor_class"] = creature.get_dis_ac();
 

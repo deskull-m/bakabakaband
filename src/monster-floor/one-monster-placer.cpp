@@ -476,8 +476,8 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     // 最大MPを算出して満タンで開始する。プレイヤーと同じ calc_creature_mana()
     // (レベル・INT ベースの基礎MP) を用いる。これにより regenerate_monsters() の
     // 自然回復 (regenmana) が機能し、種族固有能力の行使にMPを使える。
-    m_ptr->set_msp(calc_creature_mana(*m_ptr));
-    m_ptr->set_csp(m_ptr->get_msp());
+    m_ptr->set_max_mp(calc_creature_mana(*m_ptr));
+    m_ptr->set_current_mp(m_ptr->get_max_mp());
 
     m_ptr->set_visible_on_map(false);
     if (any_bits(mode, PM_FORCE_PET)) {

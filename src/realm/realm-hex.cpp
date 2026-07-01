@@ -577,12 +577,12 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
                 return "";
             }
 
-            creature.add_csp((creature.get_level() / 5) + randint1(creature.get_level() / 5));
+            creature.add_current_mp((creature.get_level() / 5) + randint1(creature.get_level() / 5));
             if (item->get_flags().has(TR_TY_CURSE) || item->curse_flags.has(CurseTraitType::TY_CURSE)) {
-                creature.add_csp(randint1(5));
+                creature.add_current_mp(randint1(5));
             }
-            if (creature.get_csp() > creature.get_msp()) {
-                creature.set_csp(creature.get_msp());
+            if (creature.get_current_mp() > creature.get_max_mp()) {
+                creature.set_current_mp(creature.get_max_mp());
             }
 
             if (item->curse_flags.has(CurseTraitType::PERMA_CURSE)) {

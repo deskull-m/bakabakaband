@@ -318,14 +318,14 @@ static int calculate_mp_regen_rate(CreatureEntity &creature)
     // マイナスの場合は回復しない（減少する）
     if (regen_rate < 0) {
         // 減少量を計算 (表示上はマイナス表示)
-        int64_t mp_decay_per_10turn = ((int64_t)creature.get_msp() * (-regen_rate) / 100 + PY_REGEN_MNBASE) >> 16;
+        int64_t mp_decay_per_10turn = ((int64_t)creature.get_max_mp() * (-regen_rate) / 100 + PY_REGEN_MNBASE) >> 16;
         int64_t mp_per_turn_x100 = (mp_decay_per_10turn * 100) / 10;
         int64_t mp_per_100turn = -(mp_per_turn_x100 * 100); // 100ターン分（マイナス）
         return static_cast<int>(mp_per_100turn);
     }
 
     // 実際の回復量を計算
-    int64_t mp_per_10turn = ((int64_t)creature.get_msp() * regen_rate / 100 + PY_REGEN_MNBASE) >> 16;
+    int64_t mp_per_10turn = ((int64_t)creature.get_max_mp() * regen_rate / 100 + PY_REGEN_MNBASE) >> 16;
     int64_t mp_per_turn_x100 = (mp_per_10turn * 100) / 10; // 100倍して小数5桁表示用
     int64_t mp_per_100turn = mp_per_turn_x100 * 100; // 100ターン分
 

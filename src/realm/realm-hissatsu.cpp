@@ -614,10 +614,10 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
                 }
                 if (is_new) {
                     /* Reserve needed mana point */
-                    creature.sub_csp(spell.smana);
+                    creature.sub_current_mp(spell.smana);
                     is_new = false;
                 } else {
-                    creature.sub_csp(mana_cost_per_monster);
+                    creature.sub_current_mp(mana_cost_per_monster);
                 }
 
                 if (!mdeath) {
@@ -627,14 +627,14 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
                 RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
                 handle_stuff(creature);
-            } while (creature.get_csp() > mana_cost_per_monster);
+            } while (creature.get_current_mp() > mana_cost_per_monster);
 
             if (is_new) {
                 return tl::nullopt;
             }
 
             /* Restore reserved mana */
-            creature.add_csp(spell.smana);
+            creature.add_current_mp(spell.smana);
         }
         break;
 

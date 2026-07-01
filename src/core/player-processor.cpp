@@ -156,7 +156,7 @@ void process_player(CreatureEntity &creature)
 
     if (creature.get_resting() < 0) {
         if (creature.get_resting() == COMMAND_ARG_REST_FULL_HEALING) {
-            if ((creature.hp == creature.maxhp) && (creature.get_csp() >= creature.get_msp())) {
+            if ((creature.hp == creature.maxhp) && (creature.get_current_mp() >= creature.get_max_mp())) {
                 set_action(creature, ACTION_NONE);
             }
         } else if (creature.get_resting() == COMMAND_ARG_REST_UNTIL_DONE) {
@@ -234,24 +234,24 @@ void process_player(CreatureEntity &creature)
 
     if (creature.get_action() == ACTION_LEARN) {
         int32_t cost = 0L;
-        uint32_t cost_frac = (creature.get_msp() + 30L) * 256L;
+        uint32_t cost_frac = (creature.get_max_mp() + 30L) * 256L;
         s64b_lshift(&cost, &cost_frac, 16);
-        if (s64b_cmp(creature.get_csp(), creature.csp_frac, cost, cost_frac) < 0) {
-            creature.set_csp(0);
-            creature.csp_frac = 0;
+        if (s64b_cmp(creature.get_current_mp(), creature.current_mp_frac, cost, cost_frac) < 0) {
+            creature.set_current_mp(0);
+            creature.current_mp_frac = 0;
             set_action(creature, ACTION_NONE);
         } else {
-            creature.sub_csp_with_frac(cost, cost_frac);
+            creature.sub_current_mp_with_frac(cost, cost_frac);
         }
 
         rfu.set_flag(MainWindowRedrawingFlag::MP);
     }
 
     if (CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU)) {
-        if (creature.get_csp() < 3) {
+        if (creature.get_current_mp() < 3) {
             set_action(creature, ACTION_NONE);
         } else {
-            creature.sub_csp(2);
+            creature.sub_current_mp(2);
             rfu.set_flag(MainWindowRedrawingFlag::MP);
         }
     }

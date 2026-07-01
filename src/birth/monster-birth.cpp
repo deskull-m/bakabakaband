@@ -808,7 +808,7 @@ bool player_birth_as_monster(CreatureEntity &creature)
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
     update_creature(creature);
     creature.hp = creature.maxhp;
-    creature.set_csp(creature.get_msp());
+    creature.set_current_mp(creature.get_max_mp());
 
     init_turn(creature);
     init_dungeon_quests(creature);

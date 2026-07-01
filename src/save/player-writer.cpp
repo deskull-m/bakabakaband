@@ -149,8 +149,8 @@ void wr_player(CreatureEntity &creature)
     wr_s16b((int16_t)creature.oldpy);
 
     wr_s16b(0);
-    // maxhp / hp / dealt_damage / hp_frac / msp / csp / csp_frac は
-    // wr_creature_common() で保存済み (hp_frac/msp/csp/csp_frac は v52 拡張)
+    // maxhp / hp / dealt_damage / hp_frac / max_mp / current_mp / current_mp_frac は
+    // wr_creature_common() で保存済み (hp_frac/max_mp/current_mp/current_mp_frac は v52 拡張)
     wr_s16b(creature.get_max_plv());
 
     const auto &dungeon_records = DungeonRecords::get_instance();

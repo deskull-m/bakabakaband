@@ -98,7 +98,7 @@ static bool check_mspell_non_stupid(CreatureEntity &creature, msa_type *msa_ptr)
         return true;
     }
 
-    if (!creature.get_csp()) {
+    if (!creature.get_current_mp()) {
         msa_ptr->ability_flags.reset(MonsterAbilityType::DRAIN_MANA);
     }
 

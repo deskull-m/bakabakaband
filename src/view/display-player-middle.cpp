@@ -309,16 +309,16 @@ static void display_playtime_in_game(CreatureEntity &creature)
         display_player_one_line(ENTRY_HP, format("%4d/%4d", creature.hp, creature.maxhp), TERM_RED);
     }
 
-    // SP は常に表示する。msp <= 0 のクリーチャー（多くのモンスター等）は
-    // 生成時に msp/csp とも 0 で初期化済みのため 0/0 と表示する。
-    if (creature.get_msp() <= 0) {
-        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.get_csp(), creature.get_msp()), TERM_SLATE);
-    } else if (creature.get_csp() >= creature.get_msp()) {
-        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.get_csp(), creature.get_msp()), TERM_L_GREEN);
-    } else if (creature.get_csp() > (creature.get_msp() * mana_warn) / 10) {
-        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.get_csp(), creature.get_msp()), TERM_YELLOW);
+    // SP は常に表示する。max_mp <= 0 のクリーチャー（多くのモンスター等）は
+    // 生成時に max_mp/current_mp とも 0 で初期化済みのため 0/0 と表示する。
+    if (creature.get_max_mp() <= 0) {
+        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.get_current_mp(), creature.get_max_mp()), TERM_SLATE);
+    } else if (creature.get_current_mp() >= creature.get_max_mp()) {
+        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.get_current_mp(), creature.get_max_mp()), TERM_L_GREEN);
+    } else if (creature.get_current_mp() > (creature.get_max_mp() * mana_warn) / 10) {
+        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.get_current_mp(), creature.get_max_mp()), TERM_YELLOW);
     } else {
-        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.get_csp(), creature.get_msp()), TERM_RED);
+        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.get_current_mp(), creature.get_max_mp()), TERM_RED);
     }
 }
 

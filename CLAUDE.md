@@ -50,7 +50,7 @@ CreatureEntity  (基底クラス)  src/system/creature-entity.h
 
 - 座標: `x`, `y`, `oldpx`, `oldpy`
 - HP: `hp`, `maxhp`, `max_maxhp`, `hp_frac`
-- MP: `csp`, `msp`, `csp_frac`
+- MP: `current_mp`, `max_mp`, `current_mp_frac` (旧 `csp` / `msp` / `csp_frac`、提案 6 で改名)
 - 能力値: `stat_cur[]`, `stat_max[]`, `stat_use[]` 等
 - スキル: `skill_dis`, `skill_dev`, `skill_sav` 等
 - タイムドエフェクト: `invuln`, `hero`, `oppose_fire` 等多数
@@ -949,9 +949,10 @@ bakabakaband 側と上流側でよくある構造的差異を以下のルール�
 | `creature.age = X` / `creature.ht = X` / `creature.wt = X` / `creature.prestige = X` 書込 | `creature.set_age(X)` / `set_ht(X)` / `set_wt(X)` / `set_prestige(X)`、加算は `add_age(d)` / `add_prestige(d)`、`prestige /= N` は `divide_prestige(N)` (提案 24) |
 | `creature.inven_cnt` / `creature.equip_cnt` フィールド | **提案 25 でフィールド廃止。** `creature.get_inven_cnt()` / `creature.get_equip_cnt()` を呼ぶ。インベントリ変更時の cnt 同期は不要 (inventory[] から自動計算) |
 | `creature.ambush_flag = X` / `creature.food = X` / `creature.town_num = X` / `creature.level = X` 書込 | `creature.set_ambush_flag(X)` / `set_food(X)` / `set_town_num(X)` / `set_level(X)` (提案 26) |
-| `creature.max_plv = X` / `creature.msp = X` 書込 | `creature.set_max_plv(X)` / `creature.set_msp(X)` (提案 27) |
+| `creature.max_plv = X` / `creature.msp = X` 書込 | `creature.set_max_plv(X)` / `creature.set_max_mp(X)` (提案 27、msp は提案 6 で `max_mp` に改名) |
 | `creature.exp = X` / `creature.max_exp = X` / `creature.max_max_exp = X` 書込 | `creature.set_exp(X)` / `set_max_exp(X)` / `set_max_max_exp(X)` (提案 27) |
-| `creature.au [+\-/]= X` / `creature.csp [+\-]= X` の compound assignment | `creature.set_au(X)` / `add_au(X)` / `sub_au(X)` / `divide_au(X)`、`set_csp(X)` / `add_csp(X)` / `sub_csp(X)` (提案 27b)。約 110 箇所の `+=` / `-=` を移行済み |
+| `creature.au [+\-/]= X` / `creature.csp [+\-]= X` の compound assignment | `creature.set_au(X)` / `add_au(X)` / `sub_au(X)` / `divide_au(X)`、`set_current_mp(X)` / `add_current_mp(X)` / `sub_current_mp(X)` (提案 27b。csp は提案 6 で `current_mp` に改名)。約 110 箇所の `+=` / `-=` を移行済み |
+| `creature.csp` / `creature.msp` / `creature.csp_frac` 読取り (上流の MP フィールド) | `creature.get_current_mp()` / `creature.get_max_mp()` / `current_mp_frac` (提案 6 でフィールドを `current_mp` / `max_mp` / `current_mp_frac` に改名。get/set/add/sub も `*_current_mp` / `*_max_mp` 系へ。**上流マージ時は `csp`→`current_mp`、`msp`→`max_mp` の置換が必要**) |
 | `creature.num_blow[hand]` / `creature.num_fire` / `creature.to_m_chance` / `creature.cur_lite` 読取り | `creature.get_num_blow(hand)` / `get_num_fire()` / `get_to_m_chance()` / `get_cur_lite()` (提案 39) |
 | `creature.num_blow[hand] = X` / `num_fire = X` 等の書込 | `creature.set_num_blow(hand, X)` / `set_num_fire(X)` / `set_to_m_chance(X)` / `set_cur_lite(X)` (提案 39) |
 | `creature.cumber_armor` / `cumber_glove` 読取り | `creature.is_cumber_armor()` / `is_cumber_glove()` (提案 39) |

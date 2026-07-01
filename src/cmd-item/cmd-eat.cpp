@@ -252,10 +252,10 @@ static bool exe_eat_corpse_type_object(CreatureEntity &creature, ItemEntity *o_p
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::DRAIN_MANA)) {
-        creature.sub_csp(30);
-        if (creature.get_csp() < 0) {
-            creature.set_csp(0);
-            creature.csp_frac = 0;
+        creature.sub_current_mp(30);
+        if (creature.get_current_mp() < 0) {
+            creature.set_current_mp(0);
+            creature.current_mp_frac = 0;
         }
     }
 
