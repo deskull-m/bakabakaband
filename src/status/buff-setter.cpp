@@ -90,7 +90,7 @@ void reset_tim_flags(CreatureEntity &creature)
 
     // 非 CreatureTimedEffect のリセット
     creature.set_sutemi(false);
-    creature.counter = false;
+    creature.set_counter(false);
     creature.set_special_attack_flags(0L);
     creature.set_special_defense_flags(0L);
 

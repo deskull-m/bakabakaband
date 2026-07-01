@@ -70,6 +70,7 @@ Phase 1-8 完了後に残存している統合作業項目を整理したもの�
 | [48](#提案-48-追加の小規模フィールドの-private-化--完了) | 追加の小規模フィールドまとめ | ✅ 完了 | **+6 = 141 個** (tval_ammo / dtrap / autopick_autoregister / recall_dungeon / enchant_energy_need / energy_use) |
 | [49](#提案-49-モンスター時限効果付与プリミティブの集約-b1-第1段--完了) | モンスター時限効果付与プリミティブ集約 (B1 第1段) | ✅ 完了 | FloorType::set_monster_timed_effect、7 setter 集約 |
 | [50](#提案-50-set_timed_effect-への-mproc-保守統合-b1-後続段--完了-要実機smoke-test) | set_timed_effect への mproc 保守統合 (B1 後続段) | ✅ 完了 (要実機smoke-test) | get_self_m_idx、mproc を set_timed_effect に内包 |
+| [51](#提案-51-残り-public-bool-フィールドの-private-化-a-1-第1弾--完了) | 残り public bool フィールドの private 化 (A-1 第1弾) | ✅ 完了 | counter / select_ring_slot / no_flowed / hack_mutation / invoking_midnight_curse |
 
 **累計 private 化フィールド数 (主要マイルストーン):**
 - 提案 29 (3 個) → 32 (10 個) → 32b (37 個) → 33 (72 個) → 34 (77 個) →
@@ -2608,6 +2609,48 @@ virtual では中身が分離した 2 経路になり価値が薄い。さらに
   再描画」のみの薄いラッパとなった。将来これらを `CreatureEntity` の
   状態異常付与 API (例: `inflict_*`) へ寄せる余地がある (ただしプレイヤーの
   豊富な副作用とは別経路のまま)。
+
+---
+
+## 提案 51: 残り public bool フィールドの private 化 (A-1 第1弾) ✅ 完了
+
+### 背景
+
+提案 24-48 で 141+ フィールドを private 化したが、未カプセル化の public
+フィールドがまだ残存している (棚卸し結果: 単純スカラ/bool 約 10、energy_need /
+knowledge / element_realm、配列/vector 系、汎用名 count 等)。本提案はその
+うち最も安全な「単純 bool 5 個」を private 化する第1弾。
+
+### 完了内容
+
+以下 5 個の public bool フィールドを private 化し、`is_X()` / `set_X()`
+virtual アクセサを整備:
+
+| フィールド | 用途 |
+|---|---|
+| `counter` | 侍カウンター攻撃の構え |
+| `select_ring_slot` | 指輪スロット選択中フラグ (UI 一時) |
+| `no_flowed` | モンスター流れ込み AI 抑制フラグ |
+| `hack_mutation` | 誕生時の突然変異強制フラグ |
+| `invoking_midnight_curse` | 深夜の呪い発動中フラグ |
+
+- 16 ファイル / 32 アクセスサイト (書込 21・読取 11) を migration。
+  bool 書込は全て `= true`/`= false` のため `set_X(true/false)` に、
+  読取は `is_X()` に機械置換。
+- フルビルド (g++ -O3 -Werror -Wall -Wextra) と clang-format-18 で検証済み。
+
+### 残作業 (A-1 続き / A-2 / A-3)
+
+- **A-1 続き**: BIT_FLAGS (`easy_2weapon` / `down_saving`)、scalar
+  (`mutant_regenerate_mod` / `learned_spells` / `add_spells`) の private 化
+- **A-2**: `energy_need` (compound 多) / `knowledge` (BIT_FLAGS) /
+  `element_realm` (getter 既存)
+- **A-3**: 配列/vector (`hp_table[]` / `extra_blows[]` / `extended_inventory`)、
+  汎用名 `count` (要精査) / `class_specific_data`
+
+**留意**: これらは player 固有・低 churn のフィールドで機能的影響はなく、
+カプセル化の完全性のための作業。`creature-entity.h` 変更は上流マージ衝突を
+増やすため、効果と費用を勘案して進めること。
 
 ---
 

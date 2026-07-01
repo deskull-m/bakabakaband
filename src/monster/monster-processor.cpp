@@ -975,7 +975,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
      *  Forward movements failed, but now received LOS attack!
      *  Try to flow by smell.
      */
-    if (creature.no_flowed && count > 2 && monster.get_target_position().y) {
+    if (creature.is_no_flowed() && count > 2 && monster.get_target_position().y) {
         monster.reset_constant_flag(MonsterConstantFlagType::NOFLOW);
     }
 
@@ -1671,7 +1671,7 @@ void sweep_monster_process(CreatureEntity &creature)
 
         process_monster(creature, m_idx);
         monster.reset_target();
-        if (creature.no_flowed && one_in_(3)) {
+        if (creature.is_no_flowed() && one_in_(3)) {
             monster.set_constant_flag(MonsterConstantFlagType::NOFLOW);
         }
 
@@ -1691,7 +1691,7 @@ bool decide_process_continue(CreatureEntity &creature, CreatureEntity &monster)
 {
     const auto &monrace = monster.get_monrace();
 
-    if (!creature.no_flowed) {
+    if (!creature.is_no_flowed()) {
         monster.reset_constant_flag(MonsterConstantFlagType::NOFLOW);
     }
 

@@ -370,5 +370,5 @@ void WorldTurnProcessor::ring_nightmare_bell(int prev_min)
         PlayerEnergy(this->creature).set_player_turn_energy(100);
     }
 
-    this->creature.invoking_midnight_curse = true;
+    this->creature.set_invoking_midnight_curse(true);
 }
