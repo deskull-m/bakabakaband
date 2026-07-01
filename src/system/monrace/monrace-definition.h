@@ -21,6 +21,8 @@
 #include "monster-race/race-visual-flags.h"
 #include "monster-race/race-wilderness-flags.h"
 #include "player-ability/player-ability-types.h"
+#include "player-info/class-types.h"
+#include "player-info/race-types.h"
 #include "player/player-personality-types.h"
 #include "system/angband.h"
 #include "system/material-type-definition.h"
@@ -127,6 +129,8 @@ public:
     RARITY freq_spell{}; //!< 魔法＆特殊能力仕様頻度(1/n) /  Spell frequency
     MonsterSex sex{}; //!< 性別 / Sex
     player_personality_type personality = PERSONALITY_NONE; //!< 性格固定指定 (PERSONALITY_NONE で未指定=生成時ランダム) / Fixed personality (PERSONALITY_NONE means unspecified)
+    PlayerRaceType player_race = PlayerRaceType::NONE; //!< 種族固定指定 (提案C1。NONEで未指定。効果は未反映で prace フィールドのみ付与)
+    PlayerClassType player_class = PlayerClassType::NONE; //!< 職業固定指定 (提案C1。NONEで未指定。効果は未反映で pclass フィールドのみ付与)
     EnumClassFlagGroup<MonsterFeedType> meat_feed_flags;
     EnumClassFlagGroup<MonsterAbilityType> ability_flags; //!< 能力フラグ(魔法/ブレス) / Ability Flags
     EnumClassFlagGroup<MonsterAuraType> aura_flags; //!< オーラフラグ / Aura Flags
