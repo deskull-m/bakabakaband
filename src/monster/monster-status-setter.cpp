@@ -69,27 +69,11 @@ void anger_monster(CreatureEntity &creature, CreatureEntity &target)
  */
 bool set_monster_csleep(FloorType &floor, MONSTER_IDX m_idx, int v)
 {
-    auto &monster = floor.get_monster(m_idx);
-    bool notice = false;
-    v = (v > 10000) ? 10000 : (v < 0) ? 0
-                                      : v;
-    if (v) {
-        if (!monster.is_asleep()) {
-            floor.add_mproc(m_idx, CreatureTimedEffect::SLEEP_OR_PARALYSIS);
-            notice = true;
-        }
-    } else {
-        if (monster.is_asleep()) {
-            floor.remove_mproc(m_idx, CreatureTimedEffect::SLEEP_OR_PARALYSIS);
-            notice = true;
-        }
-    }
-
-    monster.set_timed_effect(CreatureTimedEffect::SLEEP_OR_PARALYSIS, (int16_t)v);
-    if (!notice) {
+    if (!floor.set_monster_timed_effect(m_idx, CreatureTimedEffect::SLEEP_OR_PARALYSIS, v, 10000)) {
         return false;
     }
 
+    auto &monster = floor.get_monster(m_idx);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (monster.is_visible_on_map()) {
         HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
@@ -114,28 +98,11 @@ bool set_monster_csleep(FloorType &floor, MONSTER_IDX m_idx, int v)
  */
 bool set_monster_fast(FloorType &floor, MONSTER_IDX m_idx, int v)
 {
-    auto &monster = floor.get_monster(m_idx);
-    bool notice = false;
-    v = (v > 200) ? 200 : (v < 0) ? 0
-                                  : v;
-    if (v) {
-        if (!monster.is_accelerated()) {
-            floor.add_mproc(m_idx, CreatureTimedEffect::ACCELERATION);
-            notice = true;
-        }
-    } else {
-        if (monster.is_accelerated()) {
-            floor.remove_mproc(m_idx, CreatureTimedEffect::ACCELERATION);
-            notice = true;
-        }
-    }
-
-    monster.set_timed_effect(CreatureTimedEffect::ACCELERATION, (int16_t)v);
-    if (!notice) {
+    if (!floor.set_monster_timed_effect(m_idx, CreatureTimedEffect::ACCELERATION, v, 200)) {
         return false;
     }
 
-    if (monster.is_riding()) {
+    if (floor.get_monster(m_idx).is_riding()) {
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     }
 
@@ -151,28 +118,11 @@ bool set_monster_fast(FloorType &floor, MONSTER_IDX m_idx, int v)
  */
 bool set_monster_slow(FloorType &floor, MONSTER_IDX m_idx, int v)
 {
-    auto &monster = floor.get_monster(m_idx);
-    bool notice = false;
-    v = (v > 200) ? 200 : (v < 0) ? 0
-                                  : v;
-    if (v) {
-        if (!monster.is_decelerated()) {
-            floor.add_mproc(m_idx, CreatureTimedEffect::DECELERATION);
-            notice = true;
-        }
-    } else {
-        if (monster.is_decelerated()) {
-            floor.remove_mproc(m_idx, CreatureTimedEffect::DECELERATION);
-            notice = true;
-        }
-    }
-
-    monster.set_timed_effect(CreatureTimedEffect::DECELERATION, (int16_t)v);
-    if (!notice) {
+    if (!floor.set_monster_timed_effect(m_idx, CreatureTimedEffect::DECELERATION, v, 200)) {
         return false;
     }
 
-    if (monster.is_riding()) {
+    if (floor.get_monster(m_idx).is_riding()) {
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     }
 
@@ -188,24 +138,7 @@ bool set_monster_slow(FloorType &floor, MONSTER_IDX m_idx, int v)
  */
 bool set_monster_stunned(FloorType &floor, MONSTER_IDX m_idx, int v)
 {
-    auto &monster = floor.get_monster(m_idx);
-    bool notice = false;
-    v = (v > 200) ? 200 : (v < 0) ? 0
-                                  : v;
-    if (v) {
-        if (!monster.is_stunned()) {
-            floor.add_mproc(m_idx, CreatureTimedEffect::STUN);
-            notice = true;
-        }
-    } else {
-        if (monster.is_stunned()) {
-            floor.remove_mproc(m_idx, CreatureTimedEffect::STUN);
-            notice = true;
-        }
-    }
-
-    monster.set_timed_effect(CreatureTimedEffect::STUN, (int16_t)v);
-    return notice;
+    return floor.set_monster_timed_effect(m_idx, CreatureTimedEffect::STUN, v, 200);
 }
 
 /*!
@@ -217,24 +150,7 @@ bool set_monster_stunned(FloorType &floor, MONSTER_IDX m_idx, int v)
  */
 bool set_monster_confused(FloorType &floor, MONSTER_IDX m_idx, int v)
 {
-    auto &monster = floor.get_monster(m_idx);
-    bool notice = false;
-    v = (v > 200) ? 200 : (v < 0) ? 0
-                                  : v;
-    if (v) {
-        if (!monster.is_confused()) {
-            floor.add_mproc(m_idx, CreatureTimedEffect::CONFUSION);
-            notice = true;
-        }
-    } else {
-        if (monster.is_confused()) {
-            floor.remove_mproc(m_idx, CreatureTimedEffect::CONFUSION);
-            notice = true;
-        }
-    }
-
-    monster.set_timed_effect(CreatureTimedEffect::CONFUSION, (int16_t)v);
-    return notice;
+    return floor.set_monster_timed_effect(m_idx, CreatureTimedEffect::CONFUSION, v, 200);
 }
 
 /*!
@@ -247,30 +163,13 @@ bool set_monster_confused(FloorType &floor, MONSTER_IDX m_idx, int v)
 bool set_monster_monfear(FloorType &floor, MONSTER_IDX m_idx, int v)
 {
     auto &monster = floor.get_monster(m_idx);
-    bool notice = false;
 
     // 狂乱状態のモンスターは恐怖しない
     if (monster.is_frenzied() && v > 0) {
         return false;
     }
 
-    v = (v > 200) ? 200 : (v < 0) ? 0
-                                  : v;
-    if (v) {
-        if (!monster.is_fearful()) {
-            floor.add_mproc(m_idx, CreatureTimedEffect::FEAR);
-            notice = true;
-        }
-    } else {
-        if (monster.is_fearful()) {
-            floor.remove_mproc(m_idx, CreatureTimedEffect::FEAR);
-            notice = true;
-        }
-    }
-
-    monster.set_timed_effect(CreatureTimedEffect::FEAR, (int16_t)v);
-
-    if (!notice) {
+    if (!floor.set_monster_timed_effect(m_idx, CreatureTimedEffect::FEAR, v, 200)) {
         return false;
     }
 
@@ -295,25 +194,13 @@ bool set_monster_monfear(FloorType &floor, MONSTER_IDX m_idx, int v)
 bool set_monster_invulner(FloorType &floor, MONSTER_IDX m_idx, int v, bool energy_need)
 {
     auto &monster = floor.get_monster(m_idx);
-    bool notice = false;
-    v = (v > 200) ? 200 : (v < 0) ? 0
-                                  : v;
-    if (v) {
-        if (!monster.is_invulnerable()) {
-            floor.add_mproc(m_idx, CreatureTimedEffect::INVULNERABILITY);
-            notice = true;
-        }
-    } else {
-        if (monster.is_invulnerable()) {
-            floor.remove_mproc(m_idx, CreatureTimedEffect::INVULNERABILITY);
-            if (energy_need && !AngbandWorld::get_instance().is_wild_mode()) {
-                monster.energy_need += ENERGY_NEED();
-            }
-            notice = true;
-        }
+    const auto notice = floor.set_monster_timed_effect(m_idx, CreatureTimedEffect::INVULNERABILITY, v, 200);
+
+    // 無敵が解除された (notice かつ v<=0) 場合、行動ターン消費のオプション処理。
+    if (notice && (v <= 0) && energy_need && !AngbandWorld::get_instance().is_wild_mode()) {
+        monster.energy_need += ENERGY_NEED();
     }
 
-    monster.set_timed_effect(CreatureTimedEffect::INVULNERABILITY, (int16_t)v);
     if (!notice) {
         return false;
     }
