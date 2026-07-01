@@ -3239,20 +3239,43 @@ per-turn 変異処理ループの新設（性能・正当性）、(b) 副作用�
 
 ---
 
-## 提案 C6: 魔法領域詠唱のモンスター運用
+## 提案 C6: 魔法領域詠唱のモンスター運用（設計フェーズ）
 
-**基盤:** `realm1`/`realm2` は生成時に割当済だが、プレイヤーの realm 詠唱
-パイプライン（`cmd-spell` + `PlayerRealm` + 呪文書アイテム）と、モンスターの
-mspell（`MonsterAbilityType` フラグ駆動）は**完全に別系統**。
+### 実コード検証の結論
 
-**作業:** realm 呪文 ↔ モンスター詠唱のマッピング設計。realm 呪文の効果計算を
-mspell 経路から呼べるよう共通化するか、realm→ability の変換表を作る。
+- プレイヤーの realm 詠唱実行 `exe_spell(creature, realm, spell, CAST)`
+  (`spells-execution.cpp`) は realm 毎の `do_*_spell()` に分岐し、その CAST 経路は
+  **`get_aim_dir(creature)` 等の UI プロンプトを直接呼ぶ**（`realm-arcane.cpp` 他多数）。
+  → **`exe_spell` はモンスターからヘッドレス呼出できない。**
+- モンスター詠唱 `monspell_to_player(creature, MonsterAbilityType, ...)`
+  (`assign-monster-spell.h`) は `MonsterAbilityType` 駆動で、**自動ターゲティング・
+  MP 消費(C4)・耐性・メッセージ・smart AI を完備**。UI 非依存。
+- 既に **Blue Mage が `MonsterAbilityType` 呪文をクリーチャーとして詠唱する逆橋渡し**
+  (`blue-magic-caster`) が存在し、「creature が monster ability を撃つ」経路は実績あり。
 
-**デザイン判断（要メンテナ・大）:** 二系統をどう橋渡しするか（マッピング表 vs
-効果計算の共通化）。UI 非依存の詠唱選択ロジックが要る。
+### 橋渡し方式の選択肢
 
-**工数:** 大。**価値:** 中〜高（魔法使い系モンスターにプレイヤー呪文を開く）。
-**リスク:** 高（二系統統合はアーキテクチャ判断）。→ C トラック後半。
+| 案 | 概要 | 工数 | リスク | 備考 |
+|---|---|---|---|---|
+| **A: realm→ability マッピング（推奨）** | realm の呪文を対応する `MonsterAbilityType` に写像し、既存 mspell 経路で詠唱。monster は realm 由来の ability セットを得る | 中 | 低 | mspell インフラ全再利用・UI 問題なし・C4(MP) と統合済。realm 呪文≒monster ability の範囲に限定 |
+| B: exe_spell のヘッドレス化 | 全 realm 呪文にターゲット引数を追加し UI を外す | 特大 | 高 | 全 realm(13) の全呪文を改修。非現実的 |
+| C: curated realm-cast | 数個の realm 呪文を共有効果関数(`fire_ball`等)＋自動ターゲットで個別実装 | 中〜大 | 中 | C5 の process_monster_mutation 流。効果ロジック重複、faithful だが冗長 |
+
+**推奨は案 A**。既存のテスト済み mspell 経路（ターゲティング・MP・耐性・AI）を
+そのまま使え、UI 結合を完全に回避でき、C4 の MP 消費とも自然に統合する。realm は
+「モンスターがどの ability を得るか」を決めるレンズとして機能する。
+
+### 案 A のオプトイン設計案
+
+- JSON `"casts_realm_spells": true`（既定 false）を立て、かつ realm が設定された
+  モンスターに、realm1（必要なら realm2）由来の `MonsterAbilityType` 群を生成時に
+  `ability_flags` へ付与。以降は通常の mspell が撃つ。
+- realm→ability の写像表は保守的な小集合から開始（各 realm 数個）。メンテナが拡張。
+
+**要相談（着手前）:** 橋渡し方式（A/B/C）と、realm→ability 写像の初期範囲。
+本提案は設計フェーズで、方式確定後に段階実装する。
+
+**工数:** 中（案 A）。**価値:** 中〜高。**リスク:** 低（案 A、mspell 再利用）。
 
 ---
 
