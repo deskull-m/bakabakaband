@@ -1219,7 +1219,8 @@ BIT_FLAGS has_earthquake(CreatureEntity &creature)
 void update_extra_blows(CreatureEntity &creature)
 {
     ItemEntity *o_ptr;
-    creature.extra_blows[0] = creature.extra_blows[1] = 0;
+    creature.set_extra_blows(0, 0);
+    creature.set_extra_blows(1, 0);
 
     const melee_type melee_type = player_melee_type(creature);
     const bool two_handed = (melee_type == MELEE_TYPE_WEAPON_TWOHAND || melee_type == MELEE_TYPE_BAREHAND_TWO);
@@ -1233,12 +1234,12 @@ void update_extra_blows(CreatureEntity &creature)
         const auto flags = o_ptr->get_flags();
         if (flags.has(TR_BLOWS)) {
             if ((i_idx == INVEN_MAIN_HAND || i_idx == INVEN_MAIN_RING) && !two_handed) {
-                creature.extra_blows[0] += o_ptr->pval;
+                creature.add_extra_blows(0, o_ptr->pval);
             } else if ((i_idx == INVEN_SUB_HAND || i_idx == INVEN_SUB_RING) && !two_handed) {
-                creature.extra_blows[1] += o_ptr->pval;
+                creature.add_extra_blows(1, o_ptr->pval);
             } else {
-                creature.extra_blows[0] += o_ptr->pval;
-                creature.extra_blows[1] += o_ptr->pval;
+                creature.add_extra_blows(0, o_ptr->pval);
+                creature.add_extra_blows(1, o_ptr->pval);
             }
         }
     }

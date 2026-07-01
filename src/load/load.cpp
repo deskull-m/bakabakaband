@@ -149,7 +149,7 @@ static errr load_hp(CreatureEntity &creature)
     }
 
     for (auto i = 0; i < tmp16u; i++) {
-        creature.hp_table[i] = rd_s16b();
+        creature.set_hp_table(i, rd_s16b());
     }
 
     return 0;
@@ -468,13 +468,14 @@ bool load_savedata(CreatureEntity &creature, bool *new_game)
 
     world.character_loaded = true;
     auto tmp = counts_read(creature, 2);
-    if (tmp > creature.count) {
-        creature.count = tmp;
+    if (tmp > creature.get_count()) {
+        creature.set_count(tmp);
     }
 
     const auto play_time = world.play_time.elapsed_sec();
     if (counts_read(creature, 0) > play_time || counts_read(creature, 1) == play_time) {
-        counts_write(creature, 2, ++creature.count);
+        creature.set_count(creature.get_count() + 1);
+        counts_write(creature, 2, creature.get_count());
     }
 
     counts_write(creature, 1, play_time);
