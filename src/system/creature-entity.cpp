@@ -561,10 +561,74 @@ short CreatureEntity::get_timed_effect(CreatureTimedEffect effect) const
     return (it != this->timed_effects_map.end()) ? it->second : 0;
 }
 
+namespace {
+/*!
+ * @brief モンスターの時限効果が 0 をまたいで変化した際に mproc キャッシュを保守する
+ * @param creature 対象クリーチャー
+ * @param effect 変化した時限効果
+ * @param became_active true なら新規付与 (add)、false なら解除 (remove)
+ * @details mproc はモンスター時限効果の毎ターン処理用の派生キャッシュ。プレイヤー・
+ *          未配置モンスター (ロード中等) は対象外で、その場合は FloorType::reset_mproc()
+ *          による再構築 (フロア入場時等) に委ねる。これによりモンスターへ
+ *          set_timed_effect() を直接呼んでも mproc 保守が漏れない (従来は
+ *          set_monster_* 経由でのみ保守されていた footgun を解消)。
+ */
+void maintain_monster_mproc_on_toggle(CreatureEntity &creature, CreatureTimedEffect effect, bool became_active)
+{
+    if (creature.is_player() || !creature.has_monster_profile()) {
+        return;
+    }
+
+    const auto is_mproc_effect = std::find(MONSTER_TIMED_EFFECT_LIST.begin(), MONSTER_TIMED_EFFECT_LIST.end(), effect) != MONSTER_TIMED_EFFECT_LIST.end();
+    if (!is_mproc_effect) {
+        return;
+    }
+
+    const auto m_idx = creature.get_self_m_idx();
+    if (m_idx <= 0) {
+        return; // グリッド未配置 (ロード中等)。reset_mproc() による再構築に委ねる。
+    }
+
+    auto &floor = *creature.get_floor();
+    if (became_active) {
+        floor.add_mproc(m_idx, effect);
+    } else {
+        floor.remove_mproc(m_idx, effect);
+    }
+}
+}
+
+MONSTER_IDX CreatureEntity::get_self_m_idx() const
+{
+    const auto floor = this->get_floor();
+    if (floor == nullptr) {
+        return 0;
+    }
+
+    const auto m_idx = floor->get_grid(this->get_position()).m_idx;
+    if (m_idx <= 0) {
+        return 0;
+    }
+
+    // グリッド上のモンスターが自分自身であることを確認する。座標が古い / 別モンスターが
+    // 立っている / プレイヤー等で不一致の場合は 0 を返し、他モンスターの m_idx 誤取得を防ぐ。
+    if (&floor->get_monster(m_idx) != this) {
+        return 0;
+    }
+
+    return m_idx;
+}
+
 void CreatureEntity::set_timed_effect(CreatureTimedEffect effect, short value)
 {
+    const auto was_active = this->get_timed_effect(effect) > 0;
     auto key = (effect == CreatureTimedEffect::SLEEP_OR_PARALYSIS) ? CreatureTimedEffect::PARALYSIS : effect;
     this->timed_effects_map[key] = value;
+
+    const auto is_active = value > 0;
+    if (was_active != is_active) {
+        maintain_monster_mproc_on_toggle(*this, effect, is_active);
+    }
 }
 
 int CreatureEntity::get_base_natural_regen_amount() const

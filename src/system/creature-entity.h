@@ -716,6 +716,17 @@ public:
     virtual void set_timed_effect(CreatureTimedEffect effect, short value);
 
     /*!
+     * @brief モンスター自身のフロア上インデックス (m_idx) を、配置先グリッドから導出して返す
+     * @return 配置済みモンスターなら m_idx、プレイヤー・未配置・フロア未設定なら 0
+     * @details モンスターは自身の m_idx を保持しないが、floor.m_list 上のインデックスは
+     *          配置先グリッドの m_idx と一致するため、現在位置のグリッドから導出できる。
+     *          導出した m_idx のモンスターが自分自身であることを検証し、座標が古い等で
+     *          不一致なら 0 を返す (他モンスターの m_idx 誤取得を防止)。
+     *          時限効果の mproc キャッシュ保守 (set_timed_effect) 等で自己参照に用いる。
+     */
+    MONSTER_IDX get_self_m_idx() const;
+
+    /*!
      * @brief 自然回復をスキップすべき状態か（侍 KOUKIJIN 構え・早駆け中等）を判定
      * @return スキップすべきなら true。デフォルトは false（モンスターは常に回復対象）
      * @details PlayerType でオーバーライドし、KOUKIJIN 構え・HAYAGAKE 行動を判定する
