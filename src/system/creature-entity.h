@@ -626,6 +626,18 @@ public:
         this->energy_need = energy;
     }
 
+    /*! @brief 次の行動までに必要なエネルギーを加算する (A-2) */
+    virtual void add_energy_need(ACTION_ENERGY delta)
+    {
+        this->energy_need += delta;
+    }
+
+    /*! @brief 次の行動までに必要なエネルギーを減算する (A-2) */
+    virtual void sub_energy_need(ACTION_ENERGY delta)
+    {
+        this->energy_need -= delta;
+    }
+
     /*!
      * @brief クリーチャーのレベルを取得
      * @return レベル値。個体レベルが設定されていればそれを返し、未設定なら種族レベルの半分を返す。
@@ -2276,6 +2288,36 @@ public:
     virtual BIT_FLAGS get_down_saving() const
     {
         return this->down_saving;
+    }
+
+    /*! @brief 自己分析で得た知識フラグを保持しているか (A-2) */
+    virtual bool has_knowledge(BIT_FLAGS8 flag) const
+    {
+        return (this->knowledge & flag) != 0;
+    }
+
+    /*! @brief 自己分析で得た知識フラグを追加する (A-2) */
+    virtual void add_knowledge(BIT_FLAGS8 flag)
+    {
+        this->knowledge |= flag;
+    }
+
+    /*! @brief 自己分析で得た知識フラグを除去する (A-2) */
+    virtual void remove_knowledge(BIT_FLAGS8 flag)
+    {
+        this->knowledge &= ~flag;
+    }
+
+    /*! @brief 自己分析で得た知識フラグ全体を取得する (A-2, savefile 用) */
+    virtual BIT_FLAGS8 get_knowledge() const
+    {
+        return this->knowledge;
+    }
+
+    /*! @brief 自己分析で得た知識フラグ全体を設定する (A-2, savefile 用) */
+    virtual void set_knowledge(BIT_FLAGS8 value)
+    {
+        this->knowledge = value;
     }
 
     /*! @brief 最大 MP (max_mp) を取得する (提案 31) */
@@ -4076,10 +4118,13 @@ private:
     // [提案 44] private 化済。get_patron()/set_patron() 経由。
     int16_t patron{}; /*!< カオスパトロンのID / Chaos patron ID */
 
-public:
     // エネルギー関連
+    // [A-2] private 化済。get_energy_need() / set_energy_need() /
+    // add_energy_need() / sub_energy_need() 経由。
+private:
     ACTION_ENERGY energy_need{}; /*!< 次の行動までに必要なエネルギー / Energy needed for next move */
 
+public:
     // 速度関連
     int speed{}; /*!< クリーチャーの速度 / Creature speed */
 
@@ -4287,8 +4332,12 @@ public:
 
     RealmType realm1{}; /* First magic realm */
     RealmType realm2{}; /* Second magic realm */
+
+    // [A-2] private 化済。get_element_realm() / set_element_realm() 経由。
+private:
     ElementRealmType element_realm{}; //!< 元素使い領域
 
+public:
     Dice hit_dice{}; /* Hit dice */
     uint16_t expfact{}; /* Experience factor
                          * Note: was byte, causing overflow for Amberite
@@ -4429,8 +4478,12 @@ private:
 public:
 #define KNOW_STAT 0x01
 #define KNOW_HPRATE 0x02
+    // [A-2] private 化済。has_knowledge() / add_knowledge() / remove_knowledge() /
+    // get_knowledge() / set_knowledge() 経由。
+private:
     BIT_FLAGS8 knowledge{}; /* Knowledge about yourself */
 
+public:
     // [提案 42] old_race1/2 / old_realm は private 化済。
     // get_old_race_flags1/2() / set_old_race_flags1/2() / get_old_realm() / set_old_realm() 経由。
 private:

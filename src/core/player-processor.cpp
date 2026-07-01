@@ -137,11 +137,11 @@ void process_player(CreatureEntity &creature)
         WorldTurnProcessor(creature).print_world_collapse();
         WorldTurnProcessor(creature).print_cheat_position();
 
-    } else if (!(load && creature.energy_need <= 0)) {
-        creature.energy_need -= speed_to_energy(static_cast<byte>(creature.get_speed()));
+    } else if (!(load && creature.get_energy_need() <= 0)) {
+        creature.sub_energy_need(speed_to_energy(static_cast<byte>(creature.get_speed())));
     }
 
-    if (creature.energy_need > 0) {
+    if (creature.get_energy_need() > 0) {
         return;
     }
     if (!command_rep) {
@@ -257,7 +257,7 @@ void process_player(CreatureEntity &creature)
     }
 
     /*** Handle actual user input ***/
-    while (creature.energy_need <= 0) {
+    while (creature.get_energy_need() <= 0) {
         rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
         creature.set_sutemi(false);
         creature.set_counter(false);
@@ -330,9 +330,9 @@ void process_player(CreatureEntity &creature)
         pack_overflow(creature);
         if (creature.get_energy_use()) {
             if (creature.is_timewalking() || creature.get_energy_use() > 400) {
-                creature.energy_need += creature.get_energy_use() * TURNS_PER_TICK / 10;
+                creature.add_energy_need(creature.get_energy_use() * TURNS_PER_TICK / 10);
             } else {
-                creature.energy_need += (int16_t)((int32_t)creature.get_energy_use() * ENERGY_NEED() / 100L);
+                creature.add_energy_need((int16_t)((int32_t)creature.get_energy_use() * ENERGY_NEED() / 100L));
             }
 
             if (creature.is_hallucinated()) {
@@ -398,7 +398,7 @@ void process_player(CreatureEntity &creature)
                 rfu.set_flag(MainWindowRedrawingFlag::ACTION);
             }
 
-            if (creature.is_timewalking() && (creature.energy_need > -1000)) {
+            if (creature.is_timewalking() && (creature.get_energy_need() > -1000)) {
                 rfu.set_flag(MainWindowRedrawingFlag::MAP);
                 rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
                 static constexpr auto flags_swrf = {
@@ -409,7 +409,7 @@ void process_player(CreatureEntity &creature)
                 msg_print(_("「時は動きだす…」", "You feel time flowing around you once more."));
                 msg_erase();
                 creature.set_timewalking(false);
-                creature.energy_need = ENERGY_NEED();
+                creature.set_energy_need(ENERGY_NEED());
 
                 handle_stuff(creature);
             }

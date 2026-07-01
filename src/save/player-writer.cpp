@@ -33,7 +33,7 @@ static void wr_relams(CreatureEntity &creature)
 {
     PlayerRealm pr(creature);
     if (CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST)) {
-        wr_byte((byte)creature.element_realm);
+        wr_byte((byte)creature.get_element_realm());
     } else {
         wr_byte((byte)pr.realm1().to_enum());
     }
@@ -227,7 +227,7 @@ void wr_player(CreatureEntity &creature)
     // ELE_ATTACK / ELE_IMMUNE は wr_creature_common() の全時限効果ダンプに集約済み
     wr_u32b(creature.get_special_attack_flags());
     wr_u32b(creature.get_special_defense_flags());
-    wr_byte(creature.knowledge);
+    wr_byte(creature.get_knowledge());
     wr_bool(creature.is_autopick_autoregister());
     wr_byte(0);
     wr_byte((byte)creature.get_action());

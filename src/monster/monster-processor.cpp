@@ -1607,12 +1607,12 @@ void sweep_monster_process(CreatureEntity &creature)
         }
 
         byte speed = monster.is_riding() ? creature.get_speed() : monster.get_temporary_speed();
-        monster.energy_need -= speed_to_energy(speed);
-        if (monster.energy_need > 0) {
+        monster.sub_energy_need(speed_to_energy(speed));
+        if (monster.get_energy_need() > 0) {
             continue;
         }
 
-        monster.energy_need += ENERGY_NEED();
+        monster.add_energy_need(ENERGY_NEED());
         auto m_name = monster_desc(creature, monster, 0);
 
         if (monster.get_death_count() > 0) {

@@ -23,7 +23,7 @@ void rd_creature_common(CreatureEntity &creature)
     creature.set_dealt_damage(static_cast<int>(rd_u32b()));
 
     creature.speed = rd_s16b();
-    creature.energy_need = rd_s16b();
+    creature.set_energy_need(rd_s16b());
     creature.ac = rd_s16b();
 
     creature.set_exp(rd_u32b());

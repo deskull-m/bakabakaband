@@ -211,7 +211,7 @@ bool time_walk(CreatureEntity &creature)
     //	msg_print(_("「『ザ・ワールド』！時は止まった！」", "You yell 'The World! Time has stopped!'"));
     msg_erase();
 
-    creature.energy_need -= 1000 + (100 + creature.get_current_mp() - 50) * TURNS_PER_TICK / 10;
+    creature.sub_energy_need(1000 + (100 + creature.get_current_mp() - 50) * TURNS_PER_TICK / 10);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MAP);
     rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
@@ -238,7 +238,7 @@ void roll_hitdice(CreatureEntity &creature, spell_operation options)
     // hp_table[] のロールはプレイヤー・モンスター共通の処理に集約。
     creature.roll_hp_table();
 
-    creature.knowledge &= ~(KNOW_HPRATE);
+    creature.remove_knowledge(KNOW_HPRATE);
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::HP);
@@ -254,7 +254,7 @@ void roll_hitdice(CreatureEntity &creature, spell_operation options)
 
     if (options & SPOP_DEBUG) {
         msg_format(_("現在の体力ランクは %d/100 です。", "Your life rate is %d/100 now."), creature.calc_life_rating());
-        creature.knowledge |= KNOW_HPRATE;
+        creature.add_knowledge(KNOW_HPRATE);
         return;
     }
 

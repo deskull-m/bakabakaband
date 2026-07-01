@@ -15,7 +15,7 @@
 
 void display_life_rating(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    creature.knowledge |= KNOW_STAT | KNOW_HPRATE;
+    creature.add_knowledge(KNOW_STAT | KNOW_HPRATE);
     auto info = format(_("現在の体力ランク : %d/100", "Your current Life Rating is %d/100."), creature.calc_life_rating());
     self_ptr->info_list.push_back(std::move(info));
     self_ptr->info_list.emplace_back("");

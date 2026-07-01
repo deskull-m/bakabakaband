@@ -197,7 +197,7 @@ void WorldTurnProcessor::process_monster_arena()
     if (m_idxs.empty()) {
         msg_print(_("相打ちに終わりました。", "Nothing survived."));
         msg_erase();
-        this->creature.energy_need = 0;
+        this->creature.set_energy_need(0);
         auto &melee_arena = MeleeArena::get_instance();
         melee_arena.update_gladiators(this->creature);
         return;
@@ -229,7 +229,7 @@ void WorldTurnProcessor::process_monster_arena_winner(int win_m_idx)
     }
 
     msg_erase();
-    this->creature.energy_need = 0;
+    this->creature.set_energy_need(0);
     melee_arena.update_gladiators(this->creature);
 }
 
@@ -243,7 +243,7 @@ void WorldTurnProcessor::process_monster_arena_draw()
     msg_print(_("申し訳ありませんが、この勝負は引き分けとさせていただきます。", "Sorry, but this battle ended in a draw."));
     this->creature.add_au(MeleeArena::get_instance().get_payback(true));
     msg_erase();
-    this->creature.energy_need = 0;
+    this->creature.set_energy_need(0);
     auto &melee_arena = MeleeArena::get_instance();
     melee_arena.update_gladiators(this->creature);
 }
