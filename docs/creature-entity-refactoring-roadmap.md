@@ -3036,7 +3036,7 @@ JSON で明示付与**する形で導入する。これにより:
 | C3 | ESP のモンスター付与 | 🔴 新規 AI 要 | 中〜大 | 中 | ESP をモンスター AI にどう効かせるか（新規設計） |
 | C4 | MP 消費詠唱 | 🟡 pool 有 | 中 | 中 | ✅ 完了（opt-in・レベル比例コスト） |
 | C5 | 突然変異のモンスター運用 | 🟡 処理汎用 | 中 | 中 | ✅ 完了（3段: 付与→専用処理→発火） |
-| C6 | 魔法領域詠唱のモンスター運用 | 🔴 別系統 | 大 | 中〜高 | realm↔ability マッピング設計 |
+| C6 | 魔法領域詠唱のモンスター運用 | 🔴 別系統 | 大 | 中〜高 | ✅ 完了（案A: realm→ability・opt-in） |
 | C7 | class_specific_data の限定運用 | 🔴 | 中 | 低〜中 | 対象クラス(青魔/侍/忍者/僧)の選定 |
 | C8 | 徳・空腹の運用 | 🔴 UI 束縛 | 大 | 低 | **見送り**（UI/物語依存） |
 
@@ -3272,10 +3272,28 @@ per-turn 変異処理ループの新設（性能・正当性）、(b) 副作用�
   `ability_flags` へ付与。以降は通常の mspell が撃つ。
 - realm→ability の写像表は保守的な小集合から開始（各 realm 数個）。メンテナが拡張。
 
-**要相談（着手前）:** 橋渡し方式（A/B/C）と、realm→ability 写像の初期範囲。
-本提案は設計フェーズで、方式確定後に段階実装する。
+### ✅ 完了（案 A: realm→ability マッピング、メンテナ選択）
 
-**工数:** 中（案 A）。**価値:** 中〜高。**リスク:** 低（案 A、mspell 再利用）。
+**完了内容:** `MonraceDefinition::realm_abilities`（`RealmType`、既定 `NONE`）を追加。
+JSON `"realm_abilities": "CHAOS"` を指定した個体は、詠唱時（`msa_type` 構築時）に
+その realm 由来の `MonsterAbilityType` 群が `ability_flags` へ **OR-in** され、以降は
+**既存 mspell 経路（自動ターゲット・MP消費(C4)・耐性・smart AI）がそのまま撃つ**。
+
+- **race-level を尊重した非破壊設計:** モンスター能力は race 単位
+  (`monrace.ability_flags`) で mspell に読まれるため、恒久的に monrace を書き換えず、
+  **詠唱文脈の `msa_type.ability_flags` にのみ OR-in**（他所の lore/spoiler は不変）。
+  JSON パース順にも非依存。
+- realm→ability 写像は `mspell-attack-util.cpp` の file-local
+  `add_realm_granted_abilities()` に保守的な初期セットで実装（LIFE/SORCERY/NATURE/
+  CHAOS/DEATH/TRUMP/ARCANE/CRAFT/DAEMON/CRUSADE の 10 realm。MUSIC/HISSATSU/HEX は
+  技術領域のため現状未マッピング）。バランス調整・拡張はこの表で行う。
+- realm トークン表 `r_info_realm`（13 realm）/ reader `set_mon_realm_abilities` /
+  schema を整備。
+- **既定 `NONE` のため実データ・既定バランスは不変。** 実際に撃たせるには当該
+  monrace に `freq_spell > 0` が要る（メンテナのデータ設定）。
+- フルビルド (g++ -O3 -Werror) / clang-format-18 / validate_json.py で検証済。
+
+**将来拡張余地:** 写像表の精緻化、realm2 の併用、realm レベル依存の能力段階化。
 
 ---
 

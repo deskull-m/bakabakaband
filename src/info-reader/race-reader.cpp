@@ -383,6 +383,32 @@ errr RaceReader::set_mon_player_class(const nlohmann::json &class_data, MonraceD
 }
 
 /*!
+ * @brief JSON Objectからモンスターの詠唱魔法領域を設定する (提案C6)
+ * @param realm_data 魔法領域情報の格納されたJSON Object (文字列)
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details 未指定 (null) なら RealmType::NONE のまま。指定時は詠唱 (mspell) 実行時に
+ *          その realm 由来の MonsterAbilityType 群が能力に追加される (効果反映)。
+ *          トークンは r_info_realm を参照。
+ */
+errr RaceReader::set_mon_realm_abilities(const nlohmann::json &realm_data, MonraceDefinition &monrace)
+{
+    if (realm_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!realm_data.is_string()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    uint32_t realm;
+    if (!info_grab_one_const(realm, r_info_realm, realm_data.get<std::string>())) {
+        return PARSE_ERROR_INVALID_FLAG;
+    }
+    monrace.realm_abilities = static_cast<RealmType>(realm);
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief JSON Objectからモンスターに付与する突然変異をセットする (提案C5)
  * @param mutations_data 突然変異情報の格納されたJSON Array (文字列の配列)
  * @param monrace 保管先のモンスター種族構造体
@@ -1514,6 +1540,11 @@ errr RaceReader::read()
     err = set_mon_mutations(mon_data["mutations"], monrace);
     if (err) {
         msg_format(_("モンスター突然変異読込失敗。ID: '%d'。", "Failed to load monster mutations. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_realm_abilities(mon_data["realm_abilities"], monrace);
+    if (err) {
+        msg_format(_("モンスター魔法領域読込失敗。ID: '%d'。", "Failed to load monster realm_abilities. ID: '%d'."), error_idx);
         return err;
     }
     err = info_set_integer(mon_data["odds_correction_ratio"], monrace.arena_ratio, false, Range(1, 9999));

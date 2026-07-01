@@ -1045,3 +1045,22 @@ const std::unordered_map<std::string_view, PlayerMutationType> r_info_mutation =
     { "DESTROYED_ASSHOLE", PlayerMutationType::DESTROYED_ASSHOLE },
     { "LOST_HEAD", PlayerMutationType::LOST_HEAD },
 };
+
+/*!
+ * @brief 魔法領域トークン (提案 C6: モンスターへの realm 由来能力付与用)
+ */
+const std::unordered_map<std::string_view, RealmType> r_info_realm = {
+    { "LIFE", RealmType::LIFE },
+    { "SORCERY", RealmType::SORCERY },
+    { "NATURE", RealmType::NATURE },
+    { "CHAOS", RealmType::CHAOS },
+    { "DEATH", RealmType::DEATH },
+    { "TRUMP", RealmType::TRUMP },
+    { "ARCANE", RealmType::ARCANE },
+    { "CRAFT", RealmType::CRAFT },
+    { "DAEMON", RealmType::DAEMON },
+    { "CRUSADE", RealmType::CRUSADE },
+    { "MUSIC", RealmType::MUSIC },
+    { "HISSATSU", RealmType::HISSATSU },
+    { "HEX", RealmType::HEX },
+};
