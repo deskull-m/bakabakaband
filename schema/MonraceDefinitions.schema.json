@@ -178,6 +178,10 @@
                         "type": "boolean",
                         "description": "レベルアップ時に能力値も成長させるか (提案C2)。既定false=オプトイン。trueの個体のみ成長。"
                     },
+                    "consumes_mp": {
+                        "type": "boolean",
+                        "description": "呪文詠唱時に MP を消費するか (提案C4)。既定false=オプトイン。trueの個体はMP不足時に詠唱をスキップ。"
+                    },
                     "odds_correction_ratio": {
                         "type": "integer",
                         "description": "闘技場オッズ補正値。1/100を使用、100で等倍200で2倍",

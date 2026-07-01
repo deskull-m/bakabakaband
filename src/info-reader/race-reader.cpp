@@ -1476,6 +1476,11 @@ errr RaceReader::read()
         msg_format(_("モンスター能力成長フラグ読込失敗。ID: '%d'。", "Failed to load monster grows_stats. ID: '%d'."), error_idx);
         return err;
     }
+    err = info_set_bool(mon_data["consumes_mp"], monrace.consumes_mp, false);
+    if (err) {
+        msg_format(_("モンスターMP消費フラグ読込失敗。ID: '%d'。", "Failed to load monster consumes_mp. ID: '%d'."), error_idx);
+        return err;
+    }
     err = info_set_integer(mon_data["odds_correction_ratio"], monrace.arena_ratio, false, Range(1, 9999));
     if (err) {
         msg_format(_("モンスター賭け倍率読込失敗。ID: '%d'。", "Failed to load monster odds for arena. ID: '%d'."), error_idx);

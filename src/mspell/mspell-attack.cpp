@@ -345,10 +345,28 @@ bool make_attack_spell(CreatureEntity &creature, MONSTER_IDX m_idx)
         return false;
     }
 
+    // [提案 C4] consumes_mp が立つ個体は詠唱に MP を消費する (既定 OFF でバランス不変)。
+    // コストはレベル比例の保守的な既定値。全呪文一律コストのため、支払えなければ
+    // どの呪文も使えず、この手番の詠唱をスキップして近接等にフォールする。
+    // 調整はこの除数定数で行う (小さいほど高コスト)。
+    constexpr int mp_cost_divisor = 10;
+    int mp_cost = 0;
+    if (msa_ptr->m_ptr->get_monrace().consumes_mp) {
+        mp_cost = std::max(1, msa_ptr->rlev / mp_cost_divisor);
+        if (msa_ptr->m_ptr->get_current_mp() < mp_cost) {
+            return false;
+        }
+    }
+
     // 特技を使う。
     const auto monspell_res = monspell_to_player(creature, msa_ptr->thrown_spell, msa_ptr->y, msa_ptr->x, m_idx);
     if (!monspell_res.valid) {
         return false;
+    }
+
+    // 詠唱が成立した場合のみ MP を消費する。
+    if (mp_cost > 0) {
+        msa_ptr->m_ptr->sub_current_mp(mp_cost);
     }
 
     msa_ptr->dam = monspell_res.dam;

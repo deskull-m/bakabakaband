@@ -656,6 +656,29 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   能力値を戦闘へ広く反映する拡張は将来提案で段階導入する。
 - スキーマに `grows_stats` を登録済。
 
+### モンスターの MP 消費詠唱 (`consumes_mp`) — 提案 C4
+
+`MonraceDefinition` に `bool consumes_mp`
+(`src/system/monrace/monrace-definition.h`) を持ち、JSON
+`lib/edit/MonraceDefinitions.jsonc` で個別モンスターの呪文詠唱に MP 消費を
+課せる。C トラック第 3 弾で、**JSON オプトイン方式**（既定 `false`=無効で
+バランス不変）。
+
+```jsonc
+"consumes_mp": true
+```
+
+- `make_attack_spell()`（`src/mspell/mspell-attack.cpp`）で、`consumes_mp` が立つ
+  個体は詠唱前に **レベル比例の保守的コスト** `max(1, rlev / mp_cost_divisor)`
+  （既定 `mp_cost_divisor = 10`）を要求する。
+- **MP 不足時はその手番の詠唱をスキップ**して近接等にフォールする（全呪文一律
+  コストのため、支払えなければどの呪文も使えない）。
+- 詠唱が成立した場合のみ `sub_current_mp()` で消費する。モンスターは生成時に
+  満タンの MP（`calc_creature_mana()`）と自然回復を持つため、MP は詠唱を無制限に
+  許さない緩やかな制限として働く。
+- バランス調整は `mp_cost_divisor` 定数で行う（小さいほど高コスト）。
+- 既定 OFF のため実データ・既定バランスは不変。スキーマに `consumes_mp` を登録済。
+
 ### モンスターのレベル別HPダイス指定 (`hit_point_per_level`)
 
 `MonraceDefinition` に `Dice hit_dice_per_level`
