@@ -610,6 +610,38 @@ void FloorType::remove_mproc(short m_idx, CreatureTimedEffect mte)
 }
 
 /*!
+ * @brief モンスターに時限効果を設定し、mproc キュー (時限効果処理リスト) を保守する
+ * @param m_idx 対象モンスターのインデックス
+ * @param mte 設定する時限効果
+ * @param v 効果値 (0 で解除)。[0, max_value] にクランプされる
+ * @param max_value 効果値の上限
+ * @return 効果の有無が変化した (新規付与または完全解除された) 場合 true
+ * @details モンスターの時限効果は mproc キューに登録されたものだけが毎ターン
+ *          処理されるため、効果値の設定と mproc 登録/解除は常に対で行う必要が
+ *          ある。本メソッドはこの不変条件 (クランプ + mproc 保守 + 値設定) を
+ *          1 箇所へ集約し、各 set_monster_* 系が個別に複製していたコア処理を
+ *          共通化する。
+ */
+bool FloorType::set_monster_timed_effect(short m_idx, CreatureTimedEffect mte, int v, int max_value)
+{
+    auto &monster = this->get_monster(m_idx);
+    v = (v < 0) ? 0 : ((v > max_value) ? max_value : v);
+    const auto had_effect = monster.get_timed_effect(mte) > 0;
+    const auto will_have_effect = v > 0;
+    auto notice = false;
+    if (will_have_effect && !had_effect) {
+        this->add_mproc(m_idx, mte);
+        notice = true;
+    } else if (!will_have_effect && had_effect) {
+        this->remove_mproc(m_idx, mte);
+        notice = true;
+    }
+
+    monster.set_timed_effect(mte, static_cast<int16_t>(v));
+    return notice;
+}
+
+/*!
  * @brief モンスター配列の空きを探す
  * @return 使われていないモンスターのフロア内インデックス
  */
