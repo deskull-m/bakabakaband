@@ -109,7 +109,7 @@ int PlayerType::apply_state_regen_modifier(int amount) const
 
 int PlayerType::apply_creature_specific_regen_modifier(int amount) const
 {
-    return (amount * this->mutant_regenerate_mod) / 100;
+    return (amount * this->get_mutant_regenerate_mod()) / 100;
 }
 
 /*!

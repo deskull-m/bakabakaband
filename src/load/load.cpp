@@ -163,8 +163,8 @@ static void load_spells(CreatureEntity &creature)
     creature.set_spell_worked_flags(1, rd_u32b());
     creature.set_spell_forgotten_flags(0, rd_u32b());
     creature.set_spell_forgotten_flags(1, rd_u32b());
-    creature.learned_spells = rd_s16b();
-    creature.add_spells = rd_s16b();
+    creature.set_learned_spells(rd_s16b());
+    creature.set_add_spells(rd_s16b());
 }
 
 static errr verify_checksum()
@@ -232,7 +232,7 @@ static errr exe_reading_savefile(CreatureEntity &creature)
 
     load_spells(creature);
     if (CreatureClass(creature).equals(PlayerClassType::MINDCRAFTER)) {
-        creature.add_spells = 0;
+        creature.set_add_spells(0);
     }
 
     auto load_inventory_result = load_inventory(creature);

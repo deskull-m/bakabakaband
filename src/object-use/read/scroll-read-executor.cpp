@@ -357,7 +357,7 @@ bool ScrollReadExecutor::read()
             break;
         }
 
-        this->creature.add_spells++;
+        this->creature.set_add_spells(this->creature.get_add_spells() + 1);
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::SPELLS);
         this->ident = true;
         break;
