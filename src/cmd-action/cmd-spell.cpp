@@ -880,7 +880,7 @@ void do_cmd_study(CreatureEntity &creature)
     sound(SoundKind::STUDY);
 
     /* One less spell available */
-    creature.learned_spells++;
+    creature.set_learned_spells(creature.get_learned_spells() + 1);
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::SPELLS);

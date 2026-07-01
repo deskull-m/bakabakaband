@@ -256,7 +256,7 @@ bool gain_mutation(CreatureEntity &creature, MUTATION_IDX choose_mut)
         }
     }
 
-    creature.mutant_regenerate_mod = calc_mutant_regenerate_mod(creature);
+    creature.set_mutant_regenerate_mod(calc_mutant_regenerate_mod(creature));
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(creature);
     return true;
@@ -304,7 +304,7 @@ bool lose_mutation(CreatureEntity &creature, MUTATION_IDX choose_mut)
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(creature);
-    creature.mutant_regenerate_mod = calc_mutant_regenerate_mod(creature);
+    creature.set_mutant_regenerate_mod(calc_mutant_regenerate_mod(creature));
     return true;
 }
 
@@ -316,6 +316,6 @@ void lose_all_mutations(CreatureEntity &creature)
         creature.clear_mutations();
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
         handle_stuff(creature);
-        creature.mutant_regenerate_mod = calc_mutant_regenerate_mod(creature);
+        creature.set_mutant_regenerate_mod(calc_mutant_regenerate_mod(creature));
     }
 }

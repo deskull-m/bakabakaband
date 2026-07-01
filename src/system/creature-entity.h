@@ -2087,6 +2087,36 @@ public:
         this->max_plv = value;
     }
 
+    /*! @brief ミュータント体質による自然回復補正(%)を設定する (A-1) */
+    virtual void set_mutant_regenerate_mod(PERCENTAGE value)
+    {
+        this->mutant_regenerate_mod = value;
+    }
+
+    /*! @brief 習得済み呪文数を設定する (A-1) */
+    virtual void set_learned_spells(int16_t value)
+    {
+        this->learned_spells = value;
+    }
+
+    /*! @brief 追加習得可能呪文数を設定する (A-1) */
+    virtual void set_add_spells(int16_t value)
+    {
+        this->add_spells = value;
+    }
+
+    /*! @brief 二刀流ペナルティ軽減フラグを設定する (A-1) */
+    virtual void set_easy_2weapon(BIT_FLAGS value)
+    {
+        this->easy_2weapon = value;
+    }
+
+    /*! @brief 劣化セーヴィングスローフラグを設定する (A-1) */
+    virtual void set_down_saving(BIT_FLAGS value)
+    {
+        this->down_saving = value;
+    }
+
     /*! @brief 最大 MP (max_mp) を設定する (提案 27) */
     virtual void set_max_mp(int value)
     {
@@ -2216,6 +2246,36 @@ public:
     virtual int16_t get_max_plv() const
     {
         return this->max_plv;
+    }
+
+    /*! @brief ミュータント体質による自然回復補正(%)を取得する (A-1) */
+    virtual PERCENTAGE get_mutant_regenerate_mod() const
+    {
+        return this->mutant_regenerate_mod;
+    }
+
+    /*! @brief 習得済み呪文数を取得する (A-1) */
+    virtual int16_t get_learned_spells() const
+    {
+        return this->learned_spells;
+    }
+
+    /*! @brief 追加習得可能呪文数を取得する (A-1) */
+    virtual int16_t get_add_spells() const
+    {
+        return this->add_spells;
+    }
+
+    /*! @brief 二刀流ペナルティ軽減フラグを取得する (A-1) */
+    virtual BIT_FLAGS get_easy_2weapon() const
+    {
+        return this->easy_2weapon;
+    }
+
+    /*! @brief 劣化セーヴィングスローフラグを取得する (A-1) */
+    virtual BIT_FLAGS get_down_saving() const
+    {
+        return this->down_saving;
     }
 
     /*! @brief 最大 MP (max_mp) を取得する (提案 31) */
@@ -4237,16 +4297,19 @@ public:
 
     std::map<INCIDENT, int32_t> incident{}; /*!< これまでに行った出来事カウント（従来型、enumベース） */
 
+    // [A-1] private 化済。get_mutant_regenerate_mod() / set_mutant_regenerate_mod() 経由。
+private:
     PERCENTAGE mutant_regenerate_mod{};
 
     // [提案 32] private 化済。get_max_plv() / set_max_plv() 経由。
-private:
     int16_t max_plv{}; /* Max Player Level */
 
-public:
+    // [A-1] private 化済。get_learned_spells() / set_learned_spells() /
+    // get_add_spells() / set_add_spells() 経由。
     int16_t learned_spells{};
     int16_t add_spells{};
 
+public:
     uint32_t count{};
 
     // [提案 43] timewalk / resting は private 化済。
@@ -4474,11 +4537,11 @@ public:
 private:
     BIT_FLAGS yoiyami{};
 
-public:
+    // [A-1] private 化済。get_easy_2weapon() / set_easy_2weapon() /
+    // get_down_saving() / set_down_saving() 経由。
     BIT_FLAGS easy_2weapon{};
     BIT_FLAGS down_saving{};
 
-private:
     bool sutemi{};
 
 public:
