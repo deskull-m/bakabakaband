@@ -41,7 +41,7 @@ bool do_cmd_cast_learned(CreatureEntity &creature)
 
     const auto &spell = monster_powers.at(*selected_spell);
     const auto need_mana = mod_need_mana(creature, spell.smana, 0, RealmType::NONE);
-    if (need_mana > creature.get_csp()) {
+    if (need_mana > creature.get_current_mp()) {
         msg_print(_("ＭＰが足りません。", "You do not have enough mana to use this power."));
         if (!over_exert) {
             return false;
@@ -71,12 +71,12 @@ bool do_cmd_cast_learned(CreatureEntity &creature)
         }
     }
 
-    if (need_mana <= creature.get_csp()) {
-        creature.sub_csp(need_mana);
+    if (need_mana <= creature.get_current_mp()) {
+        creature.sub_current_mp(need_mana);
     } else {
         int oops = need_mana;
-        creature.set_csp(0);
-        creature.csp_frac = 0;
+        creature.set_current_mp(0);
+        creature.current_mp_frac = 0;
         msg_print(_("精神を集中しすぎて気を失ってしまった！", "You faint from the effort!"));
         (void)BadStatusSetter(creature).mod_paralysis(randnum1<short>(5 * oops + 1));
         chg_virtue(creature, Virtue::KNOWLEDGE, -10);

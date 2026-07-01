@@ -155,10 +155,10 @@ bool SpellsMirrorMaster::mirror_concentration()
     }
 
     msg_print(_("少し頭がハッキリした。", "You feel your head clear a little."));
-    this->creature_ptr->add_csp(5 + this->creature_ptr->get_level() * this->creature_ptr->get_level() / 100);
-    if (this->creature_ptr->get_csp() >= this->creature_ptr->get_msp()) {
-        this->creature_ptr->set_csp(this->creature_ptr->get_msp());
-        this->creature_ptr->csp_frac = 0;
+    this->creature_ptr->add_current_mp(5 + this->creature_ptr->get_level() * this->creature_ptr->get_level() / 100);
+    if (this->creature_ptr->get_current_mp() >= this->creature_ptr->get_max_mp()) {
+        this->creature_ptr->set_current_mp(this->creature_ptr->get_max_mp());
+        this->creature_ptr->current_mp_frac = 0;
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);

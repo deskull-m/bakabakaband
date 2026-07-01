@@ -304,10 +304,10 @@ void process_drain_mana(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr
     }
 
     monap_ptr->do_cut = 0;
-    creature.sub_csp(monap_ptr->damage);
-    if (creature.get_csp() < 0) {
-        creature.set_csp(0);
-        creature.csp_frac = 0;
+    creature.sub_current_mp(monap_ptr->damage);
+    if (creature.get_current_mp() < 0) {
+        creature.set_current_mp(0);
+        creature.current_mp_frac = 0;
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);

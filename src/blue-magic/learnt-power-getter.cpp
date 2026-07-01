@@ -384,8 +384,8 @@ int calculate_blue_magic_failure_probability(CreatureEntity &creature, const mon
 
     chance -= 3 * (adj_mag_stat[creature.get_stat_index(A_INT)] - 1);
     chance = mod_spell_chance_1(creature, chance);
-    if (need_mana > creature.get_csp()) {
-        chance += 5 * (need_mana - creature.get_csp());
+    if (need_mana > creature.get_current_mp()) {
+        chance += 5 * (need_mana - creature.get_current_mp());
     }
 
     PERCENTAGE minfail = adj_mag_fail[creature.get_stat_index(A_INT)];

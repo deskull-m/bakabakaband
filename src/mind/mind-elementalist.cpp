@@ -837,7 +837,7 @@ bool get_element_power(CreatureEntity &creature, SPELL_IDX *sn, bool only_browse
  */
 static bool check_element_mp_sufficiency(CreatureEntity &creature, int mana_cost)
 {
-    if (mana_cost <= creature.get_csp()) {
+    if (mana_cost <= creature.get_current_mp()) {
         return true;
     }
 
@@ -876,7 +876,7 @@ static bool try_cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx
         const auto element = get_element_types(creature.element_realm)[0];
         constexpr auto flags = PROJECT_JUMP | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM;
         project(creature, PROJECT_WHO_UNCTRL_POWER, 2 + plev / 10, creature.y, creature.x, plev * 2, element, flags);
-        creature.set_csp(std::max(0, creature.get_csp() - creature.get_msp() * 10 / (20 + randint1(10))));
+        creature.set_current_mp(std::max(0, creature.get_current_mp() - creature.get_max_mp() * 10 / (20 + randint1(10))));
 
         PlayerEnergy(creature).set_player_turn_energy(100);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -915,12 +915,12 @@ void do_cmd_element(CreatureEntity &creature)
         return;
     }
 
-    if (mana_cost <= creature.get_csp()) {
-        creature.sub_csp(mana_cost);
+    if (mana_cost <= creature.get_current_mp()) {
+        creature.sub_current_mp(mana_cost);
     } else {
         int oops = mana_cost;
-        creature.set_csp(0);
-        creature.csp_frac = 0;
+        creature.set_current_mp(0);
+        creature.current_mp_frac = 0;
         msg_print(_("精神を集中しすぎて気を失ってしまった！", "You faint from the effort!"));
         (void)BadStatusSetter(creature).mod_paralysis(randnum1<short>(5 * oops + 1));
         chg_virtue(creature, Virtue::KNOWLEDGE, -10);
@@ -995,7 +995,7 @@ void display_element_spell_list(CreatureEntity &creature, int y, int x)
 
         constexpr auto fmt = "  %c) %-30s%2d %4d %3d%%%s";
         const auto info_str = format(fmt, I2A(i), name.data(), spell.min_lev, mana_cost, chance, comment.data());
-        const auto color = mana_cost > creature.get_csp() ? TERM_ORANGE : TERM_WHITE;
+        const auto color = mana_cost > creature.get_current_mp() ? TERM_ORANGE : TERM_WHITE;
         c_prt(color, info_str, y + i + 1, x);
     }
     prt("", y + i + 1, x);

@@ -66,9 +66,9 @@ void rd_creature_common(CreatureEntity &creature)
     creature.set_level(rd_s16b());
     creature.set_age(rd_s16b());
     creature.hp_frac = rd_u32b();
-    creature.set_msp(rd_s32b());
-    creature.set_csp(rd_s32b());
-    creature.csp_frac = rd_u32b();
+    creature.set_max_mp(rd_s32b());
+    creature.set_current_mp(rd_s32b());
+    creature.current_mp_frac = rd_u32b();
     creature.set_max_exp(rd_u32b());
     creature.set_max_max_exp(rd_u32b());
     creature.exp_frac = rd_u32b();

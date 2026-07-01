@@ -46,8 +46,8 @@ void player_status_push(const PlayerType *player_ptr)
 
     snap.chp = player_ptr->get_current_hp();
     snap.mhp = player_ptr->get_max_hp();
-    snap.csp = static_cast<int>(player_ptr->get_csp());
-    snap.msp = player_ptr->get_msp();
+    snap.current_mp = static_cast<int>(player_ptr->get_current_mp());
+    snap.max_mp = player_ptr->get_max_mp();
 
     snap.gold = static_cast<long>(player_ptr->get_au());
     snap.exp = static_cast<long>(player_ptr->get_exp());

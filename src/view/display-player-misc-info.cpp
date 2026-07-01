@@ -76,5 +76,5 @@ void display_player_misc_info(CreatureEntity &creature)
 
     c_put_str(TERM_L_BLUE, format("%d", (int)creature.get_level()), 6, 9);
     c_put_str(TERM_L_BLUE, format("%d/%d", (int)creature.hp, (int)creature.maxhp), 7, 9);
-    c_put_str(TERM_L_BLUE, format("%d/%d", (int)creature.get_csp(), (int)creature.get_msp()), 8, 9);
+    c_put_str(TERM_L_BLUE, format("%d/%d", (int)creature.get_current_mp(), (int)creature.get_max_mp()), 8, 9);
 }

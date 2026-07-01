@@ -783,7 +783,7 @@ void update_smart_learn(CreatureEntity &creature, MONSTER_IDX m_idx, int what)
 
         break;
     case DRS_MANA:
-        if (!creature.get_msp()) {
+        if (!creature.get_max_mp()) {
             monster.add_smart_flag(MonsterSmartLearnType::IMM_MANA);
         }
 

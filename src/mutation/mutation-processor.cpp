@@ -497,26 +497,26 @@ void process_world_aux_mutation(CreatureEntity &creature)
     if (creature.get_mutations().has(PlayerMutationType::SP_TO_HP) && one_in_(2000)) {
         MANA_POINT wounds = (MANA_POINT)(creature.maxhp - creature.hp);
         if (wounds > 0) {
-            int healing = creature.get_csp();
+            int healing = creature.get_current_mp();
             if (healing > wounds) {
                 healing = wounds;
             }
 
             hp_player(creature, healing);
-            creature.sub_csp(healing);
+            creature.sub_current_mp(healing);
             RedrawingFlagsUpdater::get_instance().set_flags(flags);
         }
     }
 
     if (creature.get_mutations().has(PlayerMutationType::HP_TO_SP) && !creature.has_anti_magic() && one_in_(4000)) {
-        int wounds = (int)(creature.get_msp() - creature.get_csp());
+        int wounds = (int)(creature.get_max_mp() - creature.get_current_mp());
         if (wounds > 0) {
             int healing = creature.hp;
             if (healing > wounds) {
                 healing = wounds;
             }
 
-            creature.add_csp(healing);
+            creature.add_current_mp(healing);
             RedrawingFlagsUpdater::get_instance().set_flags(flags);
             take_hit(creature, DAMAGE_LOSELIFE, healing, _("頭に昇った血", "blood rushing to the head"));
         }

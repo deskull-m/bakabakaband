@@ -144,7 +144,7 @@ static void attack_dispel(CreatureEntity &creature, player_attack_type *pa_ptr)
     dispel_monster_status(creature, pa_ptr->m_idx);
 
     auto sp = Dice::roll(dd, 8);
-    creature.set_csp(std::min(creature.get_msp(), creature.get_csp() + sp));
+    creature.set_current_mp(std::min(creature.get_max_mp(), creature.get_current_mp() + sp));
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
 }
 

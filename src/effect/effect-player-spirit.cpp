@@ -22,7 +22,7 @@ void effect_player_drain_mana(CreatureEntity &creature, EffectPlayerType *ep_ptr
         return;
     }
 
-    if (creature.get_csp() == 0) {
+    if (creature.get_current_mp() == 0) {
         ep_ptr->dam = 0;
         return;
     }
@@ -33,12 +33,12 @@ void effect_player_drain_mana(CreatureEntity &creature, EffectPlayerType *ep_ptr
         msg_print(_("精神エネルギーを吸い取られてしまった！", "Your psychic energy is drained!"));
     }
 
-    if (ep_ptr->dam >= creature.get_csp()) {
-        ep_ptr->dam = creature.get_csp();
-        creature.set_csp(0);
-        creature.csp_frac = 0;
+    if (ep_ptr->dam >= creature.get_current_mp()) {
+        ep_ptr->dam = creature.get_current_mp();
+        creature.set_current_mp(0);
+        creature.current_mp_frac = 0;
     } else {
-        creature.sub_csp(ep_ptr->dam);
+        creature.sub_current_mp(ep_ptr->dam);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -93,10 +93,10 @@ void effect_player_mind_blast(CreatureEntity &creature, EffectPlayerType *ep_ptr
         (void)bss.mod_hallucination(randint0(250) + 150);
     }
 
-    creature.sub_csp(50);
-    if (creature.get_csp() < 0) {
-        creature.set_csp(0);
-        creature.csp_frac = 0;
+    creature.sub_current_mp(50);
+    if (creature.get_current_mp() < 0) {
+        creature.set_current_mp(0);
+        creature.current_mp_frac = 0;
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
@@ -112,10 +112,10 @@ void effect_player_brain_smash(CreatureEntity &creature, EffectPlayerType *ep_pt
 
     if (!check_multishadow(creature)) {
         msg_print(_("霊的エネルギーで精神が攻撃された。", "Your mind is blasted by psionic energy."));
-        creature.sub_csp(100);
-        if (creature.get_csp() < 0) {
-            creature.set_csp(0);
-            creature.csp_frac = 0;
+        creature.sub_current_mp(100);
+        if (creature.get_current_mp() < 0) {
+            creature.set_current_mp(0);
+            creature.current_mp_frac = 0;
         }
 
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);

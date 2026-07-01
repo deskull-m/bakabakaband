@@ -55,9 +55,9 @@ void wr_creature_common(const CreatureEntity &creature)
     wr_s16b(static_cast<int16_t>(creature.get_level()));
     wr_s16b(creature.get_age());
     wr_u32b(creature.hp_frac);
-    wr_s32b(creature.get_msp());
-    wr_s32b(creature.get_csp());
-    wr_u32b(creature.csp_frac);
+    wr_s32b(creature.get_max_mp());
+    wr_s32b(creature.get_current_mp());
+    wr_u32b(creature.current_mp_frac);
     wr_u32b(creature.get_max_exp());
     wr_u32b(creature.get_max_max_exp());
     wr_u32b(creature.exp_frac);
