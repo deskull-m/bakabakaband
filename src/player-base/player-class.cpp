@@ -554,6 +554,39 @@ void CreatureClass::init_specific_data()
     }
 }
 
+/*!
+ * @brief モンスターに付与されたプレイヤー職業に応じて class_specific_data を初期化する (提案C7)
+ * @details C1 で pclass を付与されたモンスターのうち、モンスター運用に意味のある
+ *          クラス (青魔=学習呪文 / 侍・僧=構え / 忍者=潜伏) のみ variant を初期化する。
+ *          鍛冶・魔道具等のプレイヤーインベントリ/UI 前提のクラスは対象外
+ *          (no_class_specific_data のまま)。現状は groundwork で、モンスター側での
+ *          実効果反映は将来の提案で段階導入する。プレイヤー経路には影響しない。
+ */
+void CreatureClass::init_monster_specific_data()
+{
+    if (this->creature.is_player()) {
+        return;
+    }
+
+    switch (this->creature.get_pclass()) {
+    case PlayerClassType::BLUE_MAGE:
+        this->creature.class_specific_data = std::make_shared<bluemage_data_type>();
+        break;
+    case PlayerClassType::SAMURAI:
+        this->creature.class_specific_data = std::make_shared<samurai_data_type>();
+        break;
+    case PlayerClassType::MONK:
+        this->creature.class_specific_data = std::make_shared<monk_data_type>();
+        break;
+    case PlayerClassType::NINJA:
+        this->creature.class_specific_data = std::make_shared<ninja_data_type>();
+        break;
+    default:
+        // 他クラスはモンスター運用に意味が薄いため no_class_specific_data のまま
+        break;
+    }
+}
+
 bool CreatureClass::has_ninja_speed() const
 {
     if (!this->creature.is_player()) {

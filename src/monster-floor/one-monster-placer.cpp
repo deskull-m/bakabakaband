@@ -34,6 +34,7 @@
 #include "monster/monster-util.h"
 #include "object/warning.h"
 #include "player-ability/player-ability-types.h"
+#include "player-base/player-class.h"
 #include "player/digestion-processor.h"
 #include "player/player-sex.h"
 #include "player/player-status.h"
@@ -467,6 +468,10 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     // [提案 C1] JSON で種族・職業が固定指定されたモンスターに prace/pclass を付与
     // (効果は未反映。フィールド付与のみ)
     m_ptr->assign_fixed_player_race_and_class();
+
+    // [提案 C7] pclass が付与されたモンスターの class_specific_data を初期化
+    // (青魔/侍/僧/忍者のみ。groundwork で実効果反映は将来)
+    CreatureClass(*m_ptr).init_monster_specific_data();
 
     // [提案 C5-1] JSON で突然変異が固定指定されたモンスターに付与 (付与のみ、per-turn 処理は別段)
     m_ptr->assign_fixed_mutations();
