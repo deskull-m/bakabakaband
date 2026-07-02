@@ -530,7 +530,7 @@ void MonsterDamageProcessor::process_masochist_reaction()
         // 一定確率で少量回復
         if (monster.hp > 0) {
             auto heal_amount = randint1(this->dam / 4 + 1);
-            monster.hp = std::min(monster.hp + heal_amount, monster.maxhp);
+            monster.heal_hp(heal_amount);
 
             if (monster.is_visible_on_map()) {
                 msg_format(_("%s^は苦痛に悦んでいる！", "%s^ seems to enjoy the pain!"), monster.get_monrace().name.data());

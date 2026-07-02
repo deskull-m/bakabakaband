@@ -267,7 +267,7 @@ static bool monster_quaff_potion(CreatureEntity &creature, CreatureEntity &monst
     }
 
     auto heal = [&](int amount) {
-        monster.hp = std::min<int>(monster.maxhp, monster.hp + amount);
+        monster.heal_hp(amount);
     };
     auto add_timed = [&](CreatureTimedEffect effect, int duration) {
         const auto current = monster.get_timed_effect(effect);
@@ -652,7 +652,7 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
     }
 
     auto heal = [&](int amount) {
-        monster.hp = std::min<int>(monster.maxhp, monster.hp + amount);
+        monster.heal_hp(amount);
     };
     auto add_timed = [&](CreatureTimedEffect effect, int duration) {
         const auto current = monster.get_timed_effect(effect);

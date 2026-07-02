@@ -707,6 +707,22 @@ public:
     }
 
     /*!
+     * @brief HP を回復する共通プリミティブ (提案 B5)
+     * @param amount 回復量
+     * @details `apply_raw_damage()` と対称な回復側プリミティブ。現在 HP に
+     * amount を加え、現在の最大 HP (maxhp) でクランプする。プレイヤー・
+     * モンスターで散在していた `hp += X; if (hp > maxhp) hp = maxhp;` /
+     * `hp = std::min(hp + X, maxhp)` を一本化する。
+     */
+    void heal_hp(int amount)
+    {
+        this->hp += amount;
+        if (this->hp > this->maxhp) {
+            this->hp = this->maxhp;
+        }
+    }
+
+    /*!
      * @brief クリーチャーの時限効果の残りターン数を取得
      * @param effect 取得する時限効果の種別
      * @return 残りターン数（0なら効果なし）
