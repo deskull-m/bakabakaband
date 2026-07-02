@@ -69,24 +69,15 @@ PERCENTAGE hit_chance(CreatureEntity &creature, int reli, ARMOUR_CLASS ac)
  */
 bool check_hit_from_monster_to_player(CreatureEntity &creature, int power, DEPTH level, int stun)
 {
-    int k = randint0(100);
-    if (stun && one_in_(2)) {
-        return false;
-    }
-    if (k < 10) {
-        return k < 5;
-    }
-    int i = (power + (level * 3));
-
+    // 目標 (プレイヤー) の AC を SUIKEN 補正込みで解決し、素の命中カーネル
+    // (check_hit_from_monster_to_monster) に委譲する。AC 解決は乱数を消費しない
+    // ため、カーネル内の乱数列・挙動はモンスター対モンスターと完全に一致する。
     int ac = creature.get_ac();
     if (creature.has_special_attack(ATTACK_SUIKEN)) {
         ac += (creature.get_level() * 2);
     }
 
-    if ((i > 0) && (randint1(i) > ((ac * 3) / 4))) {
-        return true;
-    }
-    return false;
+    return check_hit_from_monster_to_monster(power, level, static_cast<ARMOUR_CLASS>(ac), stun);
 }
 
 /*!
