@@ -1607,7 +1607,7 @@ void sweep_monster_process(CreatureEntity &creature)
         }
 
         byte speed = monster.is_riding() ? creature.get_speed() : monster.get_temporary_speed();
-        monster.sub_energy_need(speed_to_energy(speed));
+        monster.consume_energy_by_speed(speed);
         if (monster.get_energy_need() > 0) {
             continue;
         }
