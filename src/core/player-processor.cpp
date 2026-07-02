@@ -138,7 +138,7 @@ void process_player(CreatureEntity &creature)
         WorldTurnProcessor(creature).print_cheat_position();
 
     } else if (!(load && creature.get_energy_need() <= 0)) {
-        creature.sub_energy_need(speed_to_energy(static_cast<byte>(creature.get_speed())));
+        creature.consume_energy_by_speed(creature.get_speed());
     }
 
     if (creature.get_energy_need() > 0) {
