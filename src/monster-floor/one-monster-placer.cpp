@@ -464,6 +464,10 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     m_ptr->assign_random_personality();
     m_ptr->assign_random_realm();
 
+    // [提案 C1] JSON で種族・職業が固定指定されたモンスターに prace/pclass を付与
+    // (効果は未反映。フィールド付与のみ)
+    m_ptr->assign_fixed_player_race_and_class();
+
     // 種族が指定されている場合、身長・体重を設定
     get_height_weight(*m_ptr);
 

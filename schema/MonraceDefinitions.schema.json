@@ -166,6 +166,14 @@
                             "FEMALE"
                         ]
                     },
+                    "player_race": {
+                        "type": "string",
+                        "description": "プレイヤー種族固定指定 (提案C1)。トークンは r_info_player_race を参照。効果は未反映で prace フィールドのみ付与。"
+                    },
+                    "player_class": {
+                        "type": "string",
+                        "description": "プレイヤー職業固定指定 (提案C1)。トークンは r_info_player_class を参照。効果は未反映で pclass フィールドのみ付与。"
+                    },
                     "odds_correction_ratio": {
                         "type": "integer",
                         "description": "闘技場オッズ補正値。1/100を使用、100で等倍200で2倍",

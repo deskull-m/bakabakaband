@@ -604,6 +604,34 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   開始 (`apply_monrace_personality()` で対話選択をスキップ) でも同一。
 - 性格適用は `CreatureEntity::set_personality(player_personality_type)` に集約。
 
+### モンスターの種族・職業指定 (`player_race` / `player_class`) — 提案 C1
+
+`MonraceDefinition` に `PlayerRaceType player_race` / `PlayerClassType player_class`
+(`src/system/monrace/monrace-definition.h`) を持ち、JSON
+`lib/edit/MonraceDefinitions.jsonc` で個別モンスターにプレイヤー種族・職業を
+固定指定できる。CreatureEntity 統合の C トラック（モンスターへのプレイヤー機能
+付与）の第 1 弾で、**JSON オプトイン方式**（既定バランス不変・指定個体のみ）。
+
+```jsonc
+"player_race": "HIGH_ELF",
+"player_class": "MAGE"
+```
+
+指定可能なトークンは `r_info_player_race` / `r_info_player_class`
+(`src/info-reader/race-info-tokens-table.cpp`) を参照（`PlayerRaceType` /
+`PlayerClassType` の enum 名がそのままトークン。例: 種族 `HUMAN` / `HIGH_ELF` /
+`DRACONIAN`…、職業 `WARRIOR` / `MAGE` / `PRIEST`…）。
+
+- 未指定 (キー省略 = `NONE`) の場合は従来通り `prace`/`pclass` は NONE のまま。
+- 指定時はモンスター生成 (`place_monster_one`) 内で
+  `CreatureEntity::assign_fixed_player_race_and_class()` が `prace`/`pclass` に付与する
+  (chameleon 判定後の実効 monrace を参照)。
+- **現状は効果未反映**（フィールド付与のみ。種族耐性・職業特典等の戦闘効果は
+  反映しない）。効果反映は将来の C トラック提案でメンテナのバランス判断のもと
+  段階導入する方針。
+- スキーマ `schema/MonraceDefinitions.schema.json` に `player_race`/`player_class`
+  を登録済（CI の JSON 検証を通す）。
+
 ### モンスターのレベル別HPダイス指定 (`hit_point_per_level`)
 
 `MonraceDefinition` に `Dice hit_dice_per_level`

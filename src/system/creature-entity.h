@@ -3106,6 +3106,14 @@ public:
      */
     void assign_random_realm();
 
+    /*!
+     * @brief モンスター種族に固定指定されたプレイヤー種族・職業を付与する (提案C1)
+     * @details JSON `player_race` / `player_class` が指定されたモンスターに限り
+     *          prace / pclass を設定する。未指定 (NONE) なら何もしない。
+     *          現状 種族・職業の効果 (耐性・特典) は未反映で、フィールド付与のみ。
+     */
+    void assign_fixed_player_race_and_class();
+
     byte get_temporary_speed() const;
 
     /*!
