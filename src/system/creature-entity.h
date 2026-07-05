@@ -52,6 +52,7 @@ enum class ExtendedSlotType : uint8_t;
 enum class MonraceId : int16_t;
 enum class MonsterAbilityType;
 enum class PlayerSkillKindType;
+enum class RaceBlowMethodType;
 enum class RealmType;
 enum class Virtue : short;
 
@@ -2018,6 +2019,17 @@ public:
      * @details inventory[INVEN_MAIN_HAND..INVEN_TOTAL) の有効アイテム数を返す。
      */
     short get_equip_cnt() const;
+
+    /*!
+     * @brief 近接打撃で使用する武器スロットを決定する (提案 B4)
+     * @param blow_index 打撃インデックス (二刀流時の交互使用判定に使用)
+     * @param method 打撃メソッド
+     * @return 使用する武器スロット (INVEN_MAIN_HAND / INVEN_SUB_HAND)、武器なしは -1
+     * @details HIT/PUNCH/SLASH/STING の物理打撃で MAIN/SUB の双方が有効な近接武器なら
+     *          blow index で交互、片方のみならそちら、武器なしなら -1。モンスター対
+     *          プレイヤー／モンスター対モンスターの両攻撃経路で共用する。
+     */
+    short select_melee_weapon_slot(int blow_index, RaceBlowMethodType method) const;
 
     /*!
      * @brief 指定スロットに装備可能か判定する (提案: モンスター体構造)
