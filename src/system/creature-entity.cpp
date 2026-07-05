@@ -2453,6 +2453,27 @@ void CreatureEntity::grow_hp_table_to_level(int new_level)
     this->set_max_hp(std::clamp(grown, this->calc_min_max_hp(), MONSTER_MAXHP));
 }
 
+void CreatureEntity::grow_stats_by_levels(int levels_gained)
+{
+    if (levels_gained <= 0) {
+        return;
+    }
+
+    // [提案 C2] レベルあたりの能力値成長量 (内部 10 単位 = 表示 0.1)。保守的な既定値で、
+    // バランス調整はこの定数で行う。獲得レベル数は base_level 上限で有界のため成長も有界。
+    constexpr int stat_growth_per_level = 2;
+    const auto delta = levels_gained * stat_growth_per_level;
+    for (auto stat = 0; stat < A_MAX; ++stat) {
+        const auto grown = std::min<int>(static_cast<int>(this->get_stat_max(stat)) + delta, STAT_MAX_VALUE);
+        this->set_stat_max(stat, static_cast<short>(grown));
+        this->set_stat_cur(stat, static_cast<short>(grown));
+        if (this->get_stat_max_max(stat) < this->get_stat_max(stat)) {
+            this->set_stat_max_max(stat, this->get_stat_max(stat));
+        }
+        this->set_stat_use(stat, this->get_stat_max(stat));
+    }
+}
+
 void CreatureEntity::set_max_hp(int full_max_hp)
 {
     this->max_maxhp = full_max_hp;

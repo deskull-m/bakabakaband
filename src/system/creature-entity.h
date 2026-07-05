@@ -317,6 +317,16 @@ public:
     void grow_hp_table_to_level(int new_level);
 
     /*!
+     * @brief 敵モンスターのレベルアップに伴い能力値を成長させる (提案C2)
+     * @param levels_gained 今回獲得したレベル数 (正のときのみ成長)
+     * @details 6 能力値それぞれに `levels_gained * 成長量` を加算し STAT_MAX_VALUE で
+     *          クランプする。stat_max_max / stat_cur / stat_use も同期する。
+     *          成長量は保守的な既定値でバランス調整用の定数として実装に持つ。
+     *          呼出は grows_stats フラグの立つモンスターのレベルアップ時に限る。
+     */
+    void grow_stats_by_levels(int levels_gained);
+
+    /*!
      * @brief クリーチャーの速度を取得
      * @return 速度値
      */
