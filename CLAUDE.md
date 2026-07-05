@@ -563,8 +563,12 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
       ピット/増殖/召喚での同士討ち時に顕在化する有界な強化。
     - **チューニング**: 成長ペースは `try_monster_level_up()` の `exp_unit`
       (既定 `max(1, mexp)`) で調整可能。成長上限は `base_level` の係数で調整可能。
-  - **今後の段**: モンスター `exp` / `hp_table[]` の savefile 保存 (現状 `level` /
-    `max_maxhp` は保存されるため成長結果自体は永続するが、進行中の exp は非保存) 等。
+  - **今後の段**: モンスター `hp_table[]` の savefile 保存等。**注:** 当初
+    「進行中の exp は非保存」としていたが、creature-common シリアライザ統合 (v52)
+    により `exp` / `max_exp` / `max_max_exp` / `exp_frac` / `level` / `max_maxhp` は
+    **既に保存済**（`creature-common-writer.cpp` 経由）。未保存はレベル別累積 HP の
+    ロール履歴 `hp_table[]` のみで、`max_maxhp` / `level` が保存されるため成長結果
+    自体は永続する（ロード後の再レベルアップは HP を再ロールするが最終値は同等）。
 
 ### `psex` の SEX_NONE
 
