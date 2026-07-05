@@ -333,6 +333,56 @@ errr RaceReader::set_mon_personality(const nlohmann::json &personality_data, Mon
 }
 
 /*!
+ * @brief JSON Objectからモンスターのプレイヤー種族固定指定をセットする (提案C1)
+ * @param race_data 種族情報の格納されたJSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details 未指定 (null) なら PlayerRaceType::NONE のまま (prace 未付与)。
+ *          指定時は生成モンスターの prace に付与する (現状 効果は未反映)。
+ */
+errr RaceReader::set_mon_player_race(const nlohmann::json &race_data, MonraceDefinition &monrace)
+{
+    if (race_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!race_data.is_string()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    uint32_t player_race;
+    if (!info_grab_one_const(player_race, r_info_player_race, race_data.get<std::string>())) {
+        return PARSE_ERROR_INVALID_FLAG;
+    }
+    monrace.player_race = static_cast<PlayerRaceType>(player_race);
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief JSON Objectからモンスターのプレイヤー職業固定指定をセットする (提案C1)
+ * @param class_data 職業情報の格納されたJSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details 未指定 (null) なら PlayerClassType::NONE のまま (pclass 未付与)。
+ *          指定時は生成モンスターの pclass に付与する (現状 効果は未反映)。
+ */
+errr RaceReader::set_mon_player_class(const nlohmann::json &class_data, MonraceDefinition &monrace)
+{
+    if (class_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!class_data.is_string()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    uint32_t player_class;
+    if (!info_grab_one_const(player_class, r_info_player_class, class_data.get<std::string>())) {
+        return PARSE_ERROR_INVALID_FLAG;
+    }
+    monrace.player_class = static_cast<PlayerClassType>(player_class);
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief JSON Objectからモンスターの材質 (副種族) をセットする
  * @param materials_data 材質情報の格納されたJSON Array (文字列の配列)
  * @param monrace 保管先のモンスター種族構造体
@@ -1413,6 +1463,16 @@ errr RaceReader::read()
     err = set_mon_personality(mon_data["personality"], monrace);
     if (err) {
         msg_format(_("モンスター性格読込失敗。ID: '%d'。", "Failed to load monster personality. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_player_race(mon_data["player_race"], monrace);
+    if (err) {
+        msg_format(_("モンスター種族読込失敗。ID: '%d'。", "Failed to load monster player_race. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_player_class(mon_data["player_class"], monrace);
+    if (err) {
+        msg_format(_("モンスター職業読込失敗。ID: '%d'。", "Failed to load monster player_class. ID: '%d'."), error_idx);
         return err;
     }
     err = info_set_integer(mon_data["odds_correction_ratio"], monrace.arena_ratio, false, Range(1, 9999));

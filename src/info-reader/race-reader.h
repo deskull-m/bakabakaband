@@ -28,6 +28,8 @@ private:
     errr set_mon_transform(nlohmann::json &transform_data, MonraceDefinition &monrace);
     errr set_mon_sex(const nlohmann::json &sex_data, MonraceDefinition &monrace);
     errr set_mon_personality(const nlohmann::json &personality_data, MonraceDefinition &monrace);
+    errr set_mon_player_race(const nlohmann::json &race_data, MonraceDefinition &monrace);
+    errr set_mon_player_class(const nlohmann::json &class_data, MonraceDefinition &monrace);
     errr set_mon_materials(const nlohmann::json &materials_data, MonraceDefinition &monrace);
     errr set_mon_body_structure(const nlohmann::json &body_data, MonraceDefinition &monrace);
     errr set_mon_extended_slots(const nlohmann::json &slots_data, MonraceDefinition &monrace);

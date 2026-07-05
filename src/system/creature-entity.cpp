@@ -1584,6 +1584,21 @@ void CreatureEntity::assign_random_realm()
     pr.set(all_realms[randint0(static_cast<int>(all_realms.size()))]);
 }
 
+void CreatureEntity::assign_fixed_player_race_and_class()
+{
+    if (!this->has_monster_profile()) {
+        return;
+    }
+
+    const auto &monrace = this->get_monrace();
+    if (monrace.player_race != PlayerRaceType::NONE) {
+        this->set_prace(monrace.player_race);
+    }
+    if (monrace.player_class != PlayerClassType::NONE) {
+        this->set_pclass(monrace.player_class);
+    }
+}
+
 // [提案 14] AI ターゲット選定の共通化実装
 MONSTER_IDX CreatureEntity::find_nearest_creature(const CreaturePredicate &predicate, bool require_projectable) const
 {

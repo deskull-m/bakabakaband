@@ -3029,7 +3029,7 @@ JSON で明示付与**する形で導入する。これにより:
 | 番号 | 提案 | 基盤 | 工数 | 価値 | 主なデザイン判断 |
 |---|---|---|---|---|---|
 | C0 | 成長状態の savefile 完全永続化 (`hp_table`) | ほぼ完了 | 小 | 小 | バージョン bump 要否 |
-| C1 | 種族・職業の顕在化（`prace`/`pclass` 付与） | ✅ cache 有 | 中 | 高 | どのモンスターに付与するか／耐性・能力の反映範囲 |
+| C1 | 種族・職業の顕在化（`prace`/`pclass` 付与） | ✅ cache 有 | 中 | 高 | ✅ 完了（第1弾: JSON付与・効果なし） |
 | C2 | 能力成長の拡張（stat / 熟練度） | ✅ 成長機構 | 中 | 中 | 成長式・上限・バランス |
 | C3 | ESP のモンスター付与 | 🔴 新規 AI 要 | 中〜大 | 中 | ESP をモンスター AI にどう効かせるか（新規設計） |
 | C4 | MP 消費詠唱 | 🟡 pool 有 | 中 | 中 | コストモデル・枯渇時挙動 |
@@ -3062,7 +3062,31 @@ savefile サイズ）。**低優先**。
 
 ---
 
-## 提案 C1: 種族・職業の顕在化（`prace` / `pclass` 付与）
+## 提案 C1: 種族・職業の顕在化（`prace` / `pclass` 付与） ✅ 第1弾完了（JSON付与・効果なし）
+
+**第1弾 完了内容（メンテナ選択: JSON オプトイン・効果なし）:**
+`MonraceDefinition` に `player_race` / `player_class` を追加し、JSON
+`"player_race": "HIGH_ELF"` / `"player_class": "MAGE"` で個別モンスターに
+プレイヤー種族・職業を固定指定できるようにした。生成時に
+`CreatureEntity::assign_fixed_player_race_and_class()`（chameleon 後の実効
+monrace を参照）が `prace`/`pclass` に付与する。**効果は未反映**（フィールド
+付与のみ、既定バランス完全不変）。`personality` の実装パターンを踏襲。
+
+- トークン表 `r_info_player_race`（132 種）/ `r_info_player_class`（41 職）を
+  `race-info-tokens-table` に追加（enum 名から機械生成）。
+- reader `set_mon_player_race` / `set_mon_player_class` を追加（`info_grab_one_const`
+  経由、未指定=null は NONE のまま）。
+- スキーマ `schema/MonraceDefinitions.schema.json` に両キーを登録し CI JSON
+  検証を通過（`additionalProperties: false` 対応）。実データへの付与は未実施
+  （オプトインのためメンテナが個体選定）。
+- フルビルド (g++ -O3 -Werror -Wall -Wextra) / clang-format-18 / validate_json.py で検証済。
+
+**第2弾以降（未着手）:** 種族耐性・職業特典等の**戦闘効果の反映**。メンテナの
+バランス判断のもと、対象個体・反映範囲を決めて段階導入する。
+
+---
+
+### （参考）当初調査時の基盤メモ
 
 **基盤:** `place_monster_one()` が `MonsterProfile::equivalent_player_races[]` /
 `equivalent_player_classes[]` を生成時にキャッシュ済み（cache は有）。
