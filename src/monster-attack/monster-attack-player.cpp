@@ -173,29 +173,9 @@ bool MonsterAttackPlayer::process_monster_blows()
         // フレーバーの打撃は必中扱い。それ以外は通常の命中判定を行う。
         this->ac = static_cast<ARMOUR_CLASS>(creature.get_ac());
 
-        // [フェーズ B-2 二刀流対応] HIT/PUNCH/SLASH/STING の物理打撃で、
-        // MAIN/SUB の双方が有効な武器なら blow index で交互に使用、
-        // 片方のみなら一貫してそちらを使用、武器なしなら slot < 0
-        this->weapon_slot_for_blow = -1;
-        switch (this->method) {
-        case RaceBlowMethodType::HIT:
-        case RaceBlowMethodType::PUNCH:
-        case RaceBlowMethodType::SLASH:
-        case RaceBlowMethodType::STING: {
-            const bool main_valid = this->m_ptr->inventory[INVEN_MAIN_HAND]->is_valid() && this->m_ptr->inventory[INVEN_MAIN_HAND]->is_melee_weapon();
-            const bool sub_valid = this->m_ptr->inventory[INVEN_SUB_HAND]->is_valid() && this->m_ptr->inventory[INVEN_SUB_HAND]->is_melee_weapon();
-            if (main_valid && sub_valid) {
-                this->weapon_slot_for_blow = (ap_cnt % 2 == 0) ? INVEN_MAIN_HAND : INVEN_SUB_HAND;
-            } else if (main_valid) {
-                this->weapon_slot_for_blow = INVEN_MAIN_HAND;
-            } else if (sub_valid) {
-                this->weapon_slot_for_blow = INVEN_SUB_HAND;
-            }
-            break;
-        }
-        default:
-            break;
-        }
+        // [フェーズ B-2 二刀流対応 / 提案 B4] 物理打撃で使う武器スロットを決定。
+        // (CreatureEntity::select_melee_weapon_slot に集約。対モンスター経路と共用)
+        this->weapon_slot_for_blow = this->m_ptr->select_melee_weapon_slot(ap_cnt, this->method);
 
         bool hit;
         if (this->effect == RaceBlowEffectType::FLAVOR) {

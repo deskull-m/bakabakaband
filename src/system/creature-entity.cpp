@@ -9,6 +9,7 @@
 #include "inventory/inventory-slot-types.h"
 #include "market/arena-entry.h"
 #include "mind/mind-elementalist.h"
+#include "monster-attack/monster-attack-table.h"
 #include "monster-race/race-brightness-flags.h"
 #include "monster-race/race-feature-flags.h"
 #include "monster-race/race-flags-resistance.h"
@@ -711,6 +712,31 @@ short CreatureEntity::get_equip_cnt() const
         }
     }
     return cnt;
+}
+
+short CreatureEntity::select_melee_weapon_slot(int blow_index, RaceBlowMethodType method) const
+{
+    switch (method) {
+    case RaceBlowMethodType::HIT:
+    case RaceBlowMethodType::PUNCH:
+    case RaceBlowMethodType::SLASH:
+    case RaceBlowMethodType::STING: {
+        const auto main_valid = this->inventory[INVEN_MAIN_HAND]->is_valid() && this->inventory[INVEN_MAIN_HAND]->is_melee_weapon();
+        const auto sub_valid = this->inventory[INVEN_SUB_HAND]->is_valid() && this->inventory[INVEN_SUB_HAND]->is_melee_weapon();
+        if (main_valid && sub_valid) {
+            return (blow_index % 2 == 0) ? INVEN_MAIN_HAND : INVEN_SUB_HAND;
+        }
+        if (main_valid) {
+            return INVEN_MAIN_HAND;
+        }
+        if (sub_valid) {
+            return INVEN_SUB_HAND;
+        }
+        return -1;
+    }
+    default:
+        return -1;
+    }
 }
 
 bool CreatureEntity::can_equip_to(int slot) const

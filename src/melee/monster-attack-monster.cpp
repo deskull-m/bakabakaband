@@ -345,29 +345,9 @@ static void repeat_melee(CreatureEntity &creature, mam_type *mam_ptr)
         mam_ptr->method = monrace.blows[ap_cnt].method;
         mam_ptr->damage_dice = monrace.blows[ap_cnt].damage_dice;
 
-        // 物理打撃 (HIT/PUNCH/SLASH/STING) かつ武器装備時は当該打撃で使う武器スロットを決める。
-        // 二刀流なら blow index で交互、片手のみならそちら、武器なしなら -1。
-        // (monster-attack-player.cpp の処理と揃える)
-        mam_ptr->weapon_slot_for_blow = -1;
-        switch (mam_ptr->method) {
-        case RaceBlowMethodType::HIT:
-        case RaceBlowMethodType::PUNCH:
-        case RaceBlowMethodType::SLASH:
-        case RaceBlowMethodType::STING: {
-            const bool main_valid = monster.inventory[INVEN_MAIN_HAND]->is_valid() && monster.inventory[INVEN_MAIN_HAND]->is_melee_weapon();
-            const bool sub_valid = monster.inventory[INVEN_SUB_HAND]->is_valid() && monster.inventory[INVEN_SUB_HAND]->is_melee_weapon();
-            if (main_valid && sub_valid) {
-                mam_ptr->weapon_slot_for_blow = (ap_cnt % 2 == 0) ? INVEN_MAIN_HAND : INVEN_SUB_HAND;
-            } else if (main_valid) {
-                mam_ptr->weapon_slot_for_blow = INVEN_MAIN_HAND;
-            } else if (sub_valid) {
-                mam_ptr->weapon_slot_for_blow = INVEN_SUB_HAND;
-            }
-            break;
-        }
-        default:
-            break;
-        }
+        // 物理打撃で使う武器スロットを決める (提案 B4)。
+        // CreatureEntity::select_melee_weapon_slot に集約。対プレイヤー経路と共用。
+        mam_ptr->weapon_slot_for_blow = monster.select_melee_weapon_slot(ap_cnt, mam_ptr->method);
 
         if (!monster.is_valid()) {
             break;
