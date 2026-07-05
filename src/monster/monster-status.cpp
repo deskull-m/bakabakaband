@@ -354,7 +354,15 @@ static bool try_monster_level_up(CreatureEntity &creature, CreatureEntity &monst
         return false;
     }
 
+    // grow_hp_table_to_level() が set_level() で実効レベルを更新するため、獲得レベル数は
+    // その前に確定させておく。
+    const auto old_level = monster.get_level();
     monster.grow_hp_table_to_level(target_level);
+
+    // [提案 C2] grows_stats が立つ個体のみ能力値も成長させる (既定 OFF でバランス不変)
+    if (monrace.grows_stats) {
+        monster.grow_stats_by_levels(target_level - old_level);
+    }
 
     // レベルアップしたモンスターがプレイヤーの視界に入っていれば通知する。
     if (monster.is_visible_on_map()) {
