@@ -3188,9 +3188,23 @@ MP を要求し、不足時はその手番の詠唱をスキップして近接�
 
 ## 提案 C5: 突然変異のモンスター運用
 
-**基盤:** `muta` は共通フィールド、`process_world_aux_mutation()` の per-turn
-処理は概ね汎用（`is_player()` ガード無しで `get_mutations()` を走査）。
-障壁は副作用（`teleport_player()` / `msg_print` / `disturb`）がプレイヤー専用な点。
+**⚠️ 着手前の実コード検証（C3 同様、要注意）:** `process_world_aux_mutation()` は
+**ターンループで `WorldTurnProcessor` からプレイヤーに対してのみ 1 回呼ばれる**
+（`world-turn-processor.cpp:98`、引数はプレイヤー）。内部で
+`teleport_player(creature, ...)` / `teleport_player_aux(...)` を **`creature`
+（=プレイヤー）に対して直接**呼ぶ。よって:
+- モンスターに `muta` を持たせても **per-turn 処理は現状発火しない**（no-op）。
+- 単純にモンスターへ処理を回すと、`teleport_player` 等がプレイヤー専用のため
+  誤作動する（モンスターの変異でプレイヤーがテレポート等）。
+
+**したがって C5 は C1/C2/C4 より大きく高リスク。** 実装には (a) モンスター毎の
+per-turn 変異処理ループの新設（性能・正当性）、(b) 副作用の脱プレイヤー化
+（`teleport_player`→汎用テレポート、`msg_print`/`disturb` の is_player ガード）、
+(c) モンスターに無意味な変異（DEFECATION 等）の除外フィルタ、が必要。
+
+**基盤（当初メモ）:** `muta` は共通フィールド、`process_world_aux_mutation()` の
+per-turn 処理ロジック自体は概ね汎用（`get_mutations()` を走査）。障壁は上記の
+呼出経路（プレイヤー専用）と副作用。
 
 **作業:** (a) 副作用を脱プレイヤー化（`teleport_player` → 汎用テレポート、
 メッセージを is_player ガード）、(b) モンスターへ突然変異を付与する機構
