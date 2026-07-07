@@ -96,6 +96,20 @@ void WorldTurnProcessor::process_world()
     reduce_lite_life(this->creature);
     process_terrain_effects(this->creature);
     process_world_aux_mutation(this->creature);
+
+    // [提案 C5-3] 突然変異を持つモンスターの per-turn 処理。プレイヤーと同一の
+    // 10 ゲームターン周期 (process_world 全体が TURNS_PER_TICK でゲートされる) のため、
+    // process_monster_mutation 内の発動確率はプレイヤー版とそのまま整合する。
+    // 大多数のモンスターは突然変異を持たず none() 判定で即スキップされる。
+    auto &floor_mut = *this->creature.get_floor();
+    for (MONSTER_IDX m_idx = 1; m_idx < floor_mut.m_max; m_idx++) {
+        auto &monster = floor_mut.m_list[m_idx];
+        if (!monster.is_valid() || monster.get_mutations().none()) {
+            continue;
+        }
+        process_monster_mutation(this->creature, monster);
+    }
+
     process_world_aux_sudden_attack(this->creature);
     process_alliance_recovery(this->creature);
     execute_cursed_items_effect(this->creature);
