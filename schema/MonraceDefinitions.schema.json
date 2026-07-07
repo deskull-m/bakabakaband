@@ -182,6 +182,13 @@
                         "type": "boolean",
                         "description": "呪文詠唱時に MP を消費するか (提案C4)。既定false=オプトイン。trueの個体はMP不足時に詠唱をスキップ。"
                     },
+                    "mutations": {
+                        "type": "array",
+                        "description": "生成時に付与する突然変異トークン配列 (提案C5)。トークンは r_info_mutation を参照。既定=なし=オプトイン。",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
                     "odds_correction_ratio": {
                         "type": "integer",
                         "description": "闘技場オッズ補正値。1/100を使用、100で等倍200で2倍",

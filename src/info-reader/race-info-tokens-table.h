@@ -18,6 +18,7 @@
 #include "monster-race/race-special-flags.h"
 #include "monster-race/race-visual-flags.h"
 #include "monster-race/race-wilderness-flags.h"
+#include "mutation/mutation-flag-types.h"
 #include "player-info/class-types.h"
 #include "player-info/race-types.h"
 #include "player/player-personality-types.h"
@@ -75,3 +76,4 @@ extern const std::unordered_map<std::string_view, ExtendedSlotType> r_info_exten
 extern const std::unordered_map<std::string_view, CreatureMaterialType> r_info_materials;
 extern const std::unordered_map<std::string_view, PlayerRaceType> r_info_player_race;
 extern const std::unordered_map<std::string_view, PlayerClassType> r_info_player_class;
+extern const std::unordered_map<std::string_view, PlayerMutationType> r_info_mutation;
