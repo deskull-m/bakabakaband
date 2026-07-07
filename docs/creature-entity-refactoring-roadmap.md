@@ -3033,7 +3033,7 @@ JSON で明示付与**する形で導入する。これにより:
 | C2 | 能力成長の拡張（stat / 熟練度） | ✅ 成長機構 | 中 | 中 | ✅ stat 成長完了（opt-in）／熟練度は次段 |
 | C3 | ESP のモンスター付与 | 🔴 新規 AI 要 | 中〜大 | 中 | ESP をモンスター AI にどう効かせるか（新規設計） |
 | C4 | MP 消費詠唱 | 🟡 pool 有 | 中 | 中 | ✅ 完了（opt-in・レベル比例コスト） |
-| C5 | 突然変異のモンスター運用 | 🟡 処理汎用 | 中 | 中 | 副作用の脱プレイヤー化・付与対象 |
+| C5 | 突然変異のモンスター運用 | 🟡 処理汎用 | 中 | 中 | ✅ 完了（3段: 付与→専用処理→発火） |
 | C6 | 魔法領域詠唱のモンスター運用 | 🔴 別系統 | 大 | 中〜高 | realm↔ability マッピング設計 |
 | C7 | class_specific_data の限定運用 | 🔴 | 中 | 低〜中 | 対象クラス(青魔/侍/忍者/僧)の選定 |
 | C8 | 徳・空腹の運用 | 🔴 UI 束縛 | 大 | 低 | **見送り**（UI/物語依存） |
@@ -3202,18 +3202,38 @@ per-turn 変異処理ループの新設（性能・正当性）、(b) 副作用�
 （`teleport_player`→汎用テレポート、`msg_print`/`disturb` の is_player ガード）、
 (c) モンスターに無意味な変異（DEFECATION 等）の除外フィルタ、が必要。
 
-**基盤（当初メモ）:** `muta` は共通フィールド、`process_world_aux_mutation()` の
-per-turn 処理ロジック自体は概ね汎用（`get_mutations()` を走査）。障壁は上記の
-呼出経路（プレイヤー専用）と副作用。
+### ✅ 完了（3 段実装、メンテナ承認のもと本格着手）
 
-**作業:** (a) 副作用を脱プレイヤー化（`teleport_player` → 汎用テレポート、
-メッセージを is_player ガード）、(b) モンスターへ突然変異を付与する機構
-（JSON `"mutations": ["BERS_RAGE", ...]`）。DEFECATION 等モンスターに
-無意味な変異は除外フィルタ。
+**採用アーキテクチャの判断:** 巨大なプレイヤー用 `process_world_aux_mutation()`
+（~500 行、`get_aim_dir` 等の UI プロンプト・`player_defecate`・`lose_all_info`・
+`BadStatusSetter` の徳/構え副作用など深いプレイヤー結合）を creature-agnostic に
+改造するのは巨大かつ高リスクで、しかも大半の効果はモンスターに無意味。
+**よって「巨大関数の脱プレイヤー化」ではなく、モンスターに意味のある能動変異のみを
+扱う専用関数 `process_monster_mutation()` を新設**する方針を採った。プレイヤー経路は
+一切変更せず（挙動完全不変・ゼロリスク）、モンスター安全なプリミティブのみ使用する。
 
-**デザイン判断（要メンテナ）:** どの変異をモンスター運用可能とするか（フィルタ表）、付与対象。
+- **C5-1（データ経路）**: `MonraceDefinition::mutations`
+  (`EnumClassFlagGroup<PlayerMutationType>`) を追加。トークン表 `r_info_mutation`
+  (106 種) / reader `set_mon_mutations`（配列）/ schema を整備。生成時
+  `assign_fixed_mutations()` が `add_mutation` で付与。この段では per-turn 処理が
+  プレイヤー専用呼出のため未発火＝挙動不変。
+- **C5-2（専用処理）**: `process_monster_mutation(player, monster)` を新設。
+  curated サブセット（BERS_RAGE=激怒→恐怖解除+加速 / COWARDICE=恐怖 /
+  RTELEPORT=テレポート / SPEED_FLUX=速度変動）のみを、`set_monster_monfear/fast/slow`
+  ・`teleport_away` 等**モンスター安全なプリミティブ**で適用。`BadStatusSetter`・
+  UI プロンプト・脱糞等プレイヤー専用副作用や、モンスターに無意味な変異は扱わない。
+  メッセージはモンスター視認時のみ。
+- **C5-3（発火）**: `process_world()` のプレイヤー変異処理直後に、変異持ちモンスターを
+  走査して `process_monster_mutation()` を呼ぶ。`process_world` 全体が
+  `TURNS_PER_TICK`(10 ゲームターン)でゲートされるため**プレイヤーと同一周期**で、
+  発動確率(`one_in_(3000)` 等)がそのまま整合。大多数のモンスターは `none()` 即スキップ。
 
-**工数:** 中。**価値:** 中（ランダム能力で AI に個性）。**リスク:** 中。
+**バランス:** JSON `"mutations"` を指定した個体のみ発火。既定（未指定）は完全不変。
+**工数:** 中（3 コミット）。**価値:** 中（opt-in 個体に確率的な自己効果を付与）。
+フルビルド (g++ -O3 -Werror) / clang-format-18 / validate_json.py で検証済。
+
+**将来拡張余地:** 対応変異の追加（受動変異の stat/耐性反映等）、モンスター視点での
+より豊かなメッセージ。現状は能動 4 種の最小 curated セット。
 
 ---
 
