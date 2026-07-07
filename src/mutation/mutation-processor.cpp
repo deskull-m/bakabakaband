@@ -12,6 +12,8 @@
 #include "monster-attack/monster-attack-player.h"
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/place-monster-types.h"
+#include "monster/monster-describer.h"
+#include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
 #include "mutation/mutation-flag-types.h"
 #include "mutation/mutation-investor-remover.h"
@@ -41,6 +43,7 @@
 #include "store/store.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
+#include "system/creature-timed-effect-types.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -527,6 +530,72 @@ void process_world_aux_mutation(CreatureEntity &creature)
         msg_print(_("足がもつれて転んだ！", "You trip over your own feet!"));
         take_hit(creature, DAMAGE_NOESCAPE, randint1(creature.get_wt() / 6), _("転倒", "tripping"));
         drop_weapons(creature);
+    }
+}
+
+/*!
+ * @brief モンスターの突然変異を 10 ゲームターン毎に処理する (提案C5)
+ * @param player プレイヤー (メッセージ表示・テレポート処理の視点)
+ * @param monster 対象モンスター
+ * @details プレイヤー用 process_world_aux_mutation() とは分離した、モンスターに
+ *          意味のある能動突然変異のみを扱う専用処理。効果はモンスター安全な
+ *          プリミティブ (set_monster_* / teleport_away) で適用し、プレイヤー専用の
+ *          副作用 (BadStatusSetter の徳変化・UI プロンプト・脱糞等) は用いない。
+ *          メッセージはモンスターが視認可能な時のみ表示する。
+ */
+void process_monster_mutation(CreatureEntity &player, CreatureEntity &monster)
+{
+    if (monster.is_player() || monster.get_mutations().none()) {
+        return;
+    }
+
+    const auto m_idx = monster.get_self_m_idx();
+    if (m_idx <= 0) {
+        return;
+    }
+
+    auto &floor = *monster.get_floor();
+    const auto &muta = monster.get_mutations();
+    const auto visible = monster.is_visible_on_map();
+    const auto level = monster.get_level();
+    const auto notify = [&](concptr msg) {
+        if (visible) {
+            const auto m_name = monster_desc(player, monster, 0);
+            msg_format(msg, m_name.data());
+        }
+    };
+
+    // 激怒 (BERS_RAGE): 恐怖を解除し一時的に加速する (モンスターの狂乱表現)
+    if (muta.has(PlayerMutationType::BERS_RAGE) && one_in_(3000)) {
+        set_monster_monfear(floor, m_idx, 0);
+        set_monster_fast(floor, m_idx, monster.get_timed_effect(CreatureTimedEffect::ACCELERATION) + 10 + randint1(level));
+        notify(_("%sは激怒の発作に襲われた！", "%s^ is seized by a fit of rage!"));
+    }
+
+    // 臆病 (COWARDICE): 恐怖状態になる
+    if (muta.has(PlayerMutationType::COWARDICE) && (randint1(3000) == 13)) {
+        if (!monster.has_resist_fear()) {
+            set_monster_monfear(floor, m_idx, monster.get_timed_effect(CreatureTimedEffect::FEAR) + 13 + randint1(26));
+            notify(_("%sは急に何かに怯えだした！", "%s^ is suddenly afraid!"));
+        }
+    }
+
+    // ランダムテレポート (RTELEPORT)
+    if (muta.has(PlayerMutationType::RTELEPORT) && (randint1(5000) == 88)) {
+        if (!monster.has_resist_shard() && muta.has_not(PlayerMutationType::VTELEPORT) && !monster.has_anti_tele()) {
+            notify(_("%sの位置は突然ひじょうに不確定になった...", "%s^'s position suddenly seems very uncertain..."));
+            teleport_away(player, m_idx, 40, TELEPORT_PASSIVE);
+        }
+    }
+
+    // 加速度変動 (SPEED_FLUX)
+    if (muta.has(PlayerMutationType::SPEED_FLUX) && one_in_(6000)) {
+        if (one_in_(2)) {
+            set_monster_slow(floor, m_idx, monster.get_timed_effect(CreatureTimedEffect::DECELERATION) + randint1(30) + 10);
+        } else {
+            set_monster_fast(floor, m_idx, monster.get_timed_effect(CreatureTimedEffect::ACCELERATION) + randint1(30) + 10);
+        }
+        notify(_("%sの速度が急に変化した。", "%s^'s speed suddenly changes."));
     }
 }
 
