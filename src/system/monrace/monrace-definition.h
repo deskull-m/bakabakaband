@@ -25,6 +25,7 @@
 #include "player-info/class-types.h"
 #include "player-info/race-types.h"
 #include "player/player-personality-types.h"
+#include "realm/realm-types.h"
 #include "system/angband.h"
 #include "system/material-type-definition.h"
 #include "system/monrace/body-structure-types.h"
@@ -135,6 +136,7 @@ public:
     bool grows_stats = false; //!< レベルアップ時に能力値も成長させるか (提案C2。既定false=オプトイン。既定バランス不変)
     bool consumes_mp = false; //!< 呪文詠唱時に MP を消費するか (提案C4。既定false=オプトイン。既定バランス不変)
     EnumClassFlagGroup<PlayerMutationType> mutations{}; //!< 生成時に付与する突然変異 (提案C5。空=なし=オプトイン)
+    RealmType realm_abilities = RealmType::NONE; //!< 詠唱能力を付与する魔法領域 (提案C6。NONE=なし=オプトイン。詠唱時に realm 由来の MonsterAbilityType を追加)
     EnumClassFlagGroup<MonsterFeedType> meat_feed_flags;
     EnumClassFlagGroup<MonsterAbilityType> ability_flags; //!< 能力フラグ(魔法/ブレス) / Ability Flags
     EnumClassFlagGroup<MonsterAuraType> aura_flags; //!< オーラフラグ / Aura Flags

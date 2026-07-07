@@ -22,6 +22,7 @@
 #include "player-info/class-types.h"
 #include "player-info/race-types.h"
 #include "player/player-personality-types.h"
+#include "realm/realm-types.h"
 #include "system/angband.h"
 #include "system/monrace/body-structure-types.h"
 #include "system/monrace/extended-slot.h"
@@ -77,3 +78,4 @@ extern const std::unordered_map<std::string_view, CreatureMaterialType> r_info_m
 extern const std::unordered_map<std::string_view, PlayerRaceType> r_info_player_race;
 extern const std::unordered_map<std::string_view, PlayerClassType> r_info_player_class;
 extern const std::unordered_map<std::string_view, PlayerMutationType> r_info_mutation;
+extern const std::unordered_map<std::string_view, RealmType> r_info_realm;
