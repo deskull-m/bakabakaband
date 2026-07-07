@@ -295,10 +295,8 @@ bool life_stream(CreatureEntity &creature, bool message, bool virtue_change)
 
 bool heroism(CreatureEntity &creature, int base)
 {
-    if (!creature.is_player()) {
-        return false;
-    }
-
+    // [提案D2] メッセージは setter 内の notify_self seam でプレイヤーのみ表示される。
+    // モンスターにも安全に適用できるため is_player ガードを撤去。
     auto ident = false;
     if (BadStatusSetter(creature).set_fear(0)) {
         ident = true;
@@ -317,10 +315,7 @@ bool heroism(CreatureEntity &creature, int base)
 
 bool berserk(CreatureEntity &creature, int base)
 {
-    if (!creature.is_player()) {
-        return false;
-    }
-
+    // [提案D2] is_player ガード撤去 (メッセージは notify_self seam でプレイヤーのみ)。
     auto ident = false;
     if (BadStatusSetter(creature).set_fear(0)) {
         ident = true;
@@ -339,10 +334,7 @@ bool berserk(CreatureEntity &creature, int base)
 
 bool cure_light_wounds(CreatureEntity &creature, int pow)
 {
-    if (!creature.is_player()) {
-        return false;
-    }
-
+    // [提案D2] is_player ガード撤去 (メッセージは notify_self seam でプレイヤーのみ)。
     auto ident = false;
     if (hp_player(creature, pow)) {
         ident = true;
@@ -366,10 +358,7 @@ bool cure_light_wounds(CreatureEntity &creature, int pow)
 
 bool cure_serious_wounds(CreatureEntity &creature, int pow)
 {
-    if (!creature.is_player()) {
-        return false;
-    }
-
+    // [提案D2] is_player ガード撤去 (メッセージは notify_self seam でプレイヤーのみ)。
     auto ident = false;
     if (hp_player(creature, pow)) {
         ident = true;
@@ -397,10 +386,7 @@ bool cure_serious_wounds(CreatureEntity &creature, int pow)
 
 bool cure_critical_wounds(CreatureEntity &creature, int pow)
 {
-    if (!creature.is_player()) {
-        return false;
-    }
-
+    // [提案D2] is_player ガード撤去 (メッセージは notify_self seam でプレイヤーのみ)。
     auto ident = false;
     if (hp_player(creature, pow)) {
         ident = true;
@@ -436,10 +422,7 @@ bool cure_critical_wounds(CreatureEntity &creature, int pow)
 
 bool true_healing(CreatureEntity &creature, int pow)
 {
-    if (!creature.is_player()) {
-        return false;
-    }
-
+    // [提案D2] is_player ガード撤去 (メッセージは notify_self seam でプレイヤーのみ)。
     auto ident = false;
     if (hp_player(creature, pow)) {
         ident = true;

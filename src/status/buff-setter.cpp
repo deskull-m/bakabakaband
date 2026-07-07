@@ -136,7 +136,7 @@ bool set_acceleration(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
                 return false;
             }
         } else if (!is_fast && !creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED)) {
-            msg_print(_("素早く動けるようになった！", "You feel yourself moving much faster!"));
+            creature.notify_self(_("素早く動けるようになった！", "You feel yourself moving much faster!"));
             notice = true;
             chg_virtue(creature, Virtue::PATIENCE, -1);
             chg_virtue(creature, Virtue::DILIGENCE, 1);
@@ -146,7 +146,7 @@ bool set_acceleration(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
             auto is_singing = music_singing(creature, MUSIC_SPEED);
             is_singing |= music_singing(creature, MUSIC_SHERO);
             if (!is_singing) {
-                msg_print(_("動きの素早さがなくなったようだ。", "You feel yourself slow down."));
+                creature.notify_self(_("動きの素早さがなくなったようだ。", "You feel yourself slow down."));
                 sound(SoundKind::BUFF_EXPIRE);
                 notice = true;
             }
@@ -193,12 +193,12 @@ bool set_shield(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
                 return false;
             }
         } else if (!creature.get_timed_effect(CreatureTimedEffect::SHIELD)) {
-            msg_print(_("肌が石になった。", "Your skin turns to stone."));
+            creature.notify_self(_("肌が石になった。", "Your skin turns to stone."));
             notice = true;
         }
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::SHIELD)) {
-            msg_print(_("肌が元に戻った。", "Your skin returns to normal."));
+            creature.notify_self(_("肌が元に戻った。", "Your skin returns to normal."));
             sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
@@ -242,12 +242,12 @@ bool set_magicdef(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
                 return false;
             }
         } else if (!creature.get_timed_effect(CreatureTimedEffect::MAGICDEF)) {
-            msg_print(_("魔法の防御力が増したような気がする。", "You feel more resistant to magic."));
+            creature.notify_self(_("魔法の防御力が増したような気がする。", "You feel more resistant to magic."));
             notice = true;
         }
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::MAGICDEF)) {
-            msg_print(_("魔法の防御力が元に戻った。", "You feel less resistant to magic."));
+            creature.notify_self(_("魔法の防御力が元に戻った。", "You feel less resistant to magic."));
             sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
@@ -291,12 +291,12 @@ bool set_blessed(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
                 return false;
             }
         } else if (!creature.is_blessed()) {
-            msg_print(_("高潔な気分になった！", "You feel righteous!"));
+            creature.notify_self(_("高潔な気分になった！", "You feel righteous!"));
             notice = true;
         }
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::BLESSED) && !music_singing(creature, MUSIC_BLESS)) {
-            msg_print(_("高潔な気分が消え失せた。", "The prayer has expired."));
+            creature.notify_self(_("高潔な気分が消え失せた。", "The prayer has expired."));
             sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
@@ -340,12 +340,12 @@ bool set_hero(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
                 return false;
             }
         } else if (!creature.is_hero()) {
-            msg_print(_("ヒーローになった気がする！", "You feel like a hero!"));
+            creature.notify_self(_("ヒーローになった気がする！", "You feel like a hero!"));
             notice = true;
         }
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::HERO) && !music_singing(creature, MUSIC_HERO) && !music_singing(creature, MUSIC_SHERO)) {
-            msg_print(_("ヒーローの気分が消え失せた。", "The heroism wears off."));
+            creature.notify_self(_("ヒーローの気分が消え失せた。", "The heroism wears off."));
             sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
@@ -394,7 +394,7 @@ bool set_mimic(CreatureEntity &creature, TIME_EFFECT v, MimicKindType mimic_race
                 return false;
             }
         } else if ((!creature.get_timed_effect(CreatureTimedEffect::TIM_MIMIC)) || (creature.get_mimic_form() != mimic_race_idx)) {
-            msg_print(_("自分の体が変わってゆくのを感じた。", "You feel that your body changes."));
+            creature.notify_self(_("自分の体が変わってゆくのを感じた。", "You feel that your body changes."));
             creature.set_mimic_form(mimic_race_idx);
             notice = true;
         }
@@ -402,7 +402,7 @@ bool set_mimic(CreatureEntity &creature, TIME_EFFECT v, MimicKindType mimic_race
 
     else {
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_MIMIC)) {
-            msg_print(_("変身が解けた。", "You are no longer transformed."));
+            creature.notify_self(_("変身が解けた。", "You are no longer transformed."));
             sound(SoundKind::BUFF_EXPIRE);
             if (creature.get_mimic_form() == MimicKindType::DEMON) {
                 set_oppose_fire(creature, 0, true);
@@ -464,13 +464,13 @@ bool set_berserk(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
                 return false;
             }
         } else if (!creature.get_timed_effect(CreatureTimedEffect::BERSERK)) {
-            msg_print(_("殺戮マシーンになった気がする！", "You feel like a killing machine!"));
+            creature.notify_self(_("殺戮マシーンになった気がする！", "You feel like a killing machine!"));
             notice = true;
         }
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::BERSERK)) {
             sound(SoundKind::BUFF_EXPIRE);
-            msg_print(_("野蛮な気持ちが消え失せた。", "You feel less berserk."));
+            creature.notify_self(_("野蛮な気持ちが消え失せた。", "You feel less berserk."));
             notice = true;
         }
     }
@@ -522,7 +522,7 @@ bool set_wraith_form(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
                 return false;
             }
         } else if (!creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
-            msg_print(_("物質界を離れて幽鬼のような存在になった！", "You leave the physical world and turn into a wraith-being!"));
+            creature.notify_self(_("物質界を離れて幽鬼のような存在になった！", "You leave the physical world and turn into a wraith-being!"));
             notice = true;
             chg_virtue(creature, Virtue::UNLIFE, 3);
             chg_virtue(creature, Virtue::HONOUR, -2);
@@ -534,7 +534,7 @@ bool set_wraith_form(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         }
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
-            msg_print(_("不透明になった感じがする。", "You feel opaque."));
+            creature.notify_self(_("不透明になった感じがする。", "You feel opaque."));
             sound(SoundKind::BUFF_EXPIRE);
             notice = true;
             rfu.set_flag(MainWindowRedrawingFlag::MAP);
@@ -580,14 +580,14 @@ bool set_tsuyoshi(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
                 return false;
             }
         } else if (!creature.get_timed_effect(CreatureTimedEffect::TSUYOSHI)) {
-            msg_print(_("「オクレ兄さん！」", "Brother OKURE!"));
+            creature.notify_self(_("「オクレ兄さん！」", "Brother OKURE!"));
             notice = true;
             chg_virtue(creature, Virtue::VITALITY, 2);
         }
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::TSUYOSHI)) {
             sound(SoundKind::BUFF_EXPIRE);
-            msg_print(_("肉体が急速にしぼんでいった。", "Your body has quickly shriveled."));
+            creature.notify_self(_("肉体が急速にしぼんでいった。", "Your body has quickly shriveled."));
 
             (void)dec_stat(creature, A_CON, 20, true);
             (void)dec_stat(creature, A_STR, 20, true);

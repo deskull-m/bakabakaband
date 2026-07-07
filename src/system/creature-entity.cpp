@@ -58,6 +58,7 @@
 #include "tracking/lore-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
+#include "view/display-messages.h"
 #include "world/world.h"
 #include <algorithm>
 #include <range/v3/algorithm.hpp>
@@ -143,6 +144,13 @@ void CreatureEntity::consume_energy_by_speed(int speed)
 bool CreatureEntity::does_save_against(int power) const
 {
     return randint0(100 + power / 2) < this->get_skill_save();
+}
+
+void CreatureEntity::notify_self(std::string_view message) const
+{
+    if (this->is_player()) {
+        msg_print(message);
+    }
 }
 
 void CreatureEntity::plus_incident(INCIDENT incidentID, int num)

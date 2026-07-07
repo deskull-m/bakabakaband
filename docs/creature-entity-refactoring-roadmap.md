@@ -3385,7 +3385,7 @@ A/B と違い挙動が変わるため、対象範囲と数値はメンテナ判�
 | 番号 | 提案 | 種別 | 工数 | 価値 | 状態 |
 |---|---|---|---|---|---|
 | D1 | セービングスロー述語 `does_save_against()` 統一 | 純粋refactor | 小 | 中 | ✅ 完了 |
-| D2 | 回復・状態治療関数の is_player ガード除去 + メッセージ seam | 同化中核 | 中〜大 | 高 | 計画 |
+| D2 | 回復・状態治療関数の is_player ガード除去 + メッセージ seam | 同化中核 | 中〜大 | 高 | ✅ 第1弾完了（seam + 回復6関数） |
 | D3 | 統一クリーチャーテレポートプリミティブ | primitive | 中 | 中 | 計画 |
 | D4 | 属性ダメージ分類器（immune/resist/vuln）の共通化 | primitive | 中 | 中 | 計画 |
 | D5 | 小規模統合（charm/control セーヴ統合ほか） | 純粋refactor | 小 | 低〜中 | ✅ 完了（charm/control。他2件は精査の上見送り） |
@@ -3412,7 +3412,36 @@ effect-monster-charm / mspell-status / mspell-floor / effect-player-resist-hurt�
 
 ---
 
-## 提案 D2: 回復・状態治療関数の is_player ガード除去 + メッセージ seam（同化の中核）
+## 提案 D2: 回復・状態治療関数の is_player ガード除去 + メッセージ seam（同化の中核） ✅ 第1弾完了
+
+### ✅ 第1弾 完了内容（メッセージ seam + 回復6関数）
+
+**メッセージ seam の導入:** `CreatureEntity::notify_self(std::string_view)` を新設。
+プレイヤーなら `msg_print()`、それ以外 (モンスター) では無表示。状態異常/バフ setter
+群の 2 人称メッセージ（`bad-status-setter.cpp` 26 + `buff-setter.cpp` 18 = **44 箇所**）を
+`msg_print(...)` → `creature.notify_self(...)` へ機械置換。**プレイヤーでは
+`notify_self ≡ msg_print` のため挙動完全不変**（現行の setter 呼出は全てプレイヤー）。
+
+**回復6関数のガード除去:** `heroism` / `berserk` / `cure_light_wounds` /
+`cure_serious_wounds` / `cure_critical_wounds` / `true_healing` の
+`if (!creature.is_player()) return false;` を撤去。本体は既に creature-general
+プリミティブ（`hp_player` / `BadStatusSetter::set_*` / `set_hero` 等）のみで、
+メッセージは seam でプレイヤーのみ表示されるため、**モンスターにも安全に適用可能**に
+なった。現状これらを monster に渡す呼出は無いため既存挙動は不変（enabling 変更）。
+
+- フルビルド (g++ -O3 -Werror) / clang-format-18 で検証済。
+
+### 第2弾以降（残）
+
+- 残る回復・治療系（`restore_all_status:527` / `status_shuffle:693` / `life_stream`
+  tail）のガード除去（`do_res_stat` 等は既に creature-general）。
+- `notify_self` を**モンスター視認時の 3 人称文**へ拡張（現状はモンスター無表示）。
+- setter 群の残るプレイヤー専用テール（stance / spell 停止 / redraw）は no-op で
+  モンスター無害だが、必要なら虚拟化で整理。
+- これにより「モンスターの回復・状態治療」を実際に使う機能（C トラックの回復
+  モンスター等）への足場が完成する。
+
+### 参考: 当初の設計メモ
 
 **現状:** `src/spell/spells-status.cpp` の回復・治療関数は**本体が 100% creature-general
 プリミティブ**（`hp_player` / `BadStatusSetter::set_*` / `mod_cut` 等、すべて既に

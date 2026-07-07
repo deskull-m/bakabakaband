@@ -950,6 +950,17 @@ public:
     tl::optional<std::string> get_pain_message(std::string_view monster_name, int damage) const;
 
     /*!
+     * @brief クリーチャー自身に関する状態メッセージを表示する (提案D2 メッセージ seam)
+     * @param message 2 人称の状態メッセージ (プレイヤー視点文)
+     * @details プレイヤーなら `msg_print()` で表示、それ以外 (モンスター) では表示しない。
+     *          状態異常/バフ setter 群の 2 人称メッセージをこの seam に載せ替えることで、
+     *          プレイヤー挙動を完全保存しつつ、それらの setter をモンスターにも安全に
+     *          適用できるようにする (モンスターは 2 人称文を出さない)。将来モンスター
+     *          視認時の 3 人称文へ拡張する余地を残す。定義は creature-entity.cpp。
+     */
+    void notify_self(std::string_view message) const;
+
+    /*!
      * @brief カメレオンの変身を元に戻す。
      * @details r_idx と ap_r_idx を実種族IDにリセットする。
      */
