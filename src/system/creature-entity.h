@@ -3124,6 +3124,13 @@ public:
      */
     void assign_fixed_player_race_and_class();
 
+    /*!
+     * @brief モンスター種族に固定指定された突然変異を付与する (提案C5)
+     * @details JSON `mutations` で指定された突然変異を生成時にモンスターへ付与する。
+     *          未指定 (空) なら何もしない。付与のみで、per-turn 処理の発火は別段。
+     */
+    void assign_fixed_mutations();
+
     byte get_temporary_speed() const;
 
     /*!

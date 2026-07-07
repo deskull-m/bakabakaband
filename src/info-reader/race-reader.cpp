@@ -383,6 +383,36 @@ errr RaceReader::set_mon_player_class(const nlohmann::json &class_data, MonraceD
 }
 
 /*!
+ * @brief JSON Objectからモンスターに付与する突然変異をセットする (提案C5)
+ * @param mutations_data 突然変異情報の格納されたJSON Array (文字列の配列)
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details "mutations": [ "BERSERK", "REGEN" ] のように突然変異トークンの配列で指定。
+ *          未指定 (null) なら空 (突然変異なし)。トークンは r_info_mutation を参照。
+ */
+errr RaceReader::set_mon_mutations(const nlohmann::json &mutations_data, MonraceDefinition &monrace)
+{
+    if (mutations_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!mutations_data.is_array()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    for (const auto &element : mutations_data) {
+        if (!element.is_string()) {
+            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        }
+        uint32_t mutation;
+        if (!info_grab_one_const(mutation, r_info_mutation, element.get<std::string>())) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+        monrace.mutations.set(static_cast<PlayerMutationType>(mutation));
+    }
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief JSON Objectからモンスターの材質 (副種族) をセットする
  * @param materials_data 材質情報の格納されたJSON Array (文字列の配列)
  * @param monrace 保管先のモンスター種族構造体
@@ -1483,6 +1513,11 @@ errr RaceReader::read()
     err = info_set_bool(mon_data["consumes_mp"], monrace.consumes_mp, false);
     if (err) {
         msg_format(_("モンスターMP消費フラグ読込失敗。ID: '%d'。", "Failed to load monster consumes_mp. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_mutations(mon_data["mutations"], monrace);
+    if (err) {
+        msg_format(_("モンスター突然変異読込失敗。ID: '%d'。", "Failed to load monster mutations. ID: '%d'."), error_idx);
         return err;
     }
     err = info_set_integer(mon_data["odds_correction_ratio"], monrace.arena_ratio, false, Range(1, 9999));

@@ -20,6 +20,7 @@
 #include "monster-race/race-special-flags.h"
 #include "monster-race/race-visual-flags.h"
 #include "monster-race/race-wilderness-flags.h"
+#include "mutation/mutation-flag-types.h"
 #include "player-ability/player-ability-types.h"
 #include "player-info/class-types.h"
 #include "player-info/race-types.h"
@@ -133,6 +134,7 @@ public:
     PlayerClassType player_class = PlayerClassType::NONE; //!< 職業固定指定 (提案C1。NONEで未指定。効果は未反映で pclass フィールドのみ付与)
     bool grows_stats = false; //!< レベルアップ時に能力値も成長させるか (提案C2。既定false=オプトイン。既定バランス不変)
     bool consumes_mp = false; //!< 呪文詠唱時に MP を消費するか (提案C4。既定false=オプトイン。既定バランス不変)
+    EnumClassFlagGroup<PlayerMutationType> mutations{}; //!< 生成時に付与する突然変異 (提案C5。空=なし=オプトイン)
     EnumClassFlagGroup<MonsterFeedType> meat_feed_flags;
     EnumClassFlagGroup<MonsterAbilityType> ability_flags; //!< 能力フラグ(魔法/ブレス) / Ability Flags
     EnumClassFlagGroup<MonsterAuraType> aura_flags; //!< オーラフラグ / Aura Flags
