@@ -3388,7 +3388,7 @@ A/B と違い挙動が変わるため、対象範囲と数値はメンテナ判�
 | D2 | 回復・状態治療関数の is_player ガード除去 + メッセージ seam | 同化中核 | 中〜大 | 高 | 計画 |
 | D3 | 統一クリーチャーテレポートプリミティブ | primitive | 中 | 中 | 計画 |
 | D4 | 属性ダメージ分類器（immune/resist/vuln）の共通化 | primitive | 中 | 中 | 計画 |
-| D5 | 小規模統合（charm/control セーヴ統合・時限効果満了エンベロープ） | 純粋refactor | 小 | 低〜中 | 計画 |
+| D5 | 小規模統合（charm/control セーヴ統合ほか） | 純粋refactor | 小 | 低〜中 | ✅ 完了（charm/control。他2件は精査の上見送り） |
 | D6 | `CreatureEntity` インスタンス化可能化（PlayerType dummy 撤廃） | 構造 | 中 | 中 | 計画 |
 | D7 | モンスターの cut/poison DoT（per-turn 未発火のギャップ） | 機能(C隣接) | 中 | 中 | 計画 |
 
@@ -3469,19 +3469,24 @@ lore/note/二次効果（do_polymorph 等）は型別のまま**残す（完全�
 
 ---
 
-## 提案 D5: 小規模統合
+## 提案 D5: 小規模統合 ✅ 完了（charm/control。他2件は見送り）
 
-- **`common_saving_throw_charm`(spells-diceroll.cpp:20) / `common_saving_throw_control`(:60)**:
-  ~90% 同一（`NO_CONF` 早期 return の有無のみ差）。単一ファイル内の trivial dedup。
-- **時限効果満了エンベロープ**: player `reduce_magic_effects_timeout` と monster
-  `process_monsters_timed_effect_aux` は「減算→満了検出→視認時メッセージ」の**外枠が
-  共通**（共有 6 効果 ACCEL/DECEL/STUN/CONFUSION/FEAR/INVULN）。回復量・文言は型別のため、
-  回復量コールバック + メッセージを取る `CreatureEntity` ヘルパに外枠のみ抽出可能
-  （B1 が setter+mproc を統一した続きの、per-turn 側の小整理）。
-- **モンスター対モンスターの属性オーラ** を `fire_dam/cold_dam/elec_dam` 経由に
-  寄せる（`process_aura_damage` の形）。
+**完了: `common_saving_throw_charm` / `common_saving_throw_control` 統合**
+(spells-diceroll.cpp)。~90% 同一（`NO_CONF` 早期 return の有無のみ差）だったため、
+`check_no_conf` フラグを取る file-local `common_saving_throw_impl()` に共通実装を集約し、
+両公開関数は薄い委譲へ。公開 API・挙動（charm の `resistance_flags.set(NO_CONF)`
+という既存の細部含む）は完全保存。フルビルド (g++ -O3 -Werror) / clang-format-18 で検証済。
 
-**工数:** 小。**価値:** 低〜中。
+**精査の上で見送った 2 件:**
+- **時限効果満了エンベロープ**: 「減算→満了検出→視認時メッセージ」の外枠が共通に
+  見えたが、実際は **player 側は満了メッセージを setter 内 (notice フラグ) に畳み込み、
+  monster 側は明示的に出す**構造差があり、共通エンベロープ抽出には一方の再構成が要る。
+  per-turn ホットパスへの侵襲・薄い共有ゆえリスク＞価値で現状維持。
+- **モンスター対モンスター属性オーラの `fire_dam/cold_dam/elec_dam` 再利用**: これらは
+  内部で `take_hit()`（プレイヤー死亡経路）を呼ぶ**プレイヤー専用**関数で、モンスター
+  被害者には使えないと判明。再利用不成立で見送り。
+
+**工数:** 小（実施分）。**価値:** 低〜中。
 
 ---
 
