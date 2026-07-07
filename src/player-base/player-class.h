@@ -47,6 +47,7 @@ public:
     void set_monk_stance(MonkStanceType stance) const;
 
     void init_specific_data();
+    void init_monster_specific_data();
     template <typename T>
     std::shared_ptr<T> get_specific_data() const;
 
