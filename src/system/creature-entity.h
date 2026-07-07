@@ -3898,6 +3898,18 @@ public:
     {
         this->skill_sav = value;
     }
+
+    /*!
+     * @brief 攻撃威力に対する魔法防御セービングスロー判定 (提案D1)
+     * @param power セーヴィングスローの難易度 (通常は攻撃側のレベル / rlev)
+     * @return セーヴィングスローに成功したら true (効果を防いだ)
+     * @details `randint0(100 + power/2) < get_skill_save()` の共通イディオムを集約。
+     *          get_skill_save() は CreatureEntity の virtual のため、プレイヤー・
+     *          モンスターのどちらが対象でも同一経路で判定できる。定義は
+     *          creature-entity.cpp (randit0 を本ヘッダに持ち込まないため)。
+     */
+    bool does_save_against(int power) const;
+
     /*!
      * @brief 隠密スキル
      */

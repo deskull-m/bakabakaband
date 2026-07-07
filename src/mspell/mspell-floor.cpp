@@ -330,7 +330,7 @@ MonsterSpellResult spell_RF6_TELE_LEVEL(CreatureEntity &creature, MONSTER_IDX m_
 
     if (target_type == MONSTER_TO_PLAYER) {
         resist = (creature.has_resist_shard() != 0);
-        saving_throw = (randint0(100 + rlev / 2) < creature.get_skill_save());
+        saving_throw = (creature.does_save_against(rlev));
 
         mspell_cast_msg_bad_status_to_player msg(_("%s^が何か奇妙な言葉をつぶやいた。", "%s^ mumbles strangely."),
             _("%s^があなたの足を指さした。", "%s^ gestures at your feet."), _("しかし効果がなかった！", "You are unaffected!"),

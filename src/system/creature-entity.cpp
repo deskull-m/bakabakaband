@@ -140,6 +140,11 @@ void CreatureEntity::consume_energy_by_speed(int speed)
     this->sub_energy_need(speed_to_energy(static_cast<byte>(speed)));
 }
 
+bool CreatureEntity::does_save_against(int power) const
+{
+    return randint0(100 + power / 2) < this->get_skill_save();
+}
+
 void CreatureEntity::plus_incident(INCIDENT incidentID, int num)
 {
     if (this->incident.count(incidentID) == 0) {
