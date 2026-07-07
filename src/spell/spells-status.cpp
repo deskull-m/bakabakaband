@@ -269,14 +269,13 @@ bool life_stream(CreatureEntity &creature, bool message, bool virtue_change)
     }
 
     if (message) {
-        msg_print(_("体中に生命力が満ちあふれてきた！", "You feel life flow through your body!"));
+        creature.notify_self(_("体中に生命力が満ちあふれてきた！", "You feel life flow through your body!"));
     }
 
     restore_level(creature);
-    if (!creature.is_player()) {
-        return true;
-    }
 
+    // [提案D2] 以降の治療系は setter/do_res_stat 側でメッセージがプレイヤー限定に
+    // なるため、モンスターにも安全。ガード撤去。
     BadStatusSetter bss(creature);
     (void)bss.set_poison(0);
     (void)bss.set_blindness(0);
@@ -507,10 +506,7 @@ bool restore_mana(CreatureEntity &creature, bool magic_eater)
 
 bool restore_all_status(CreatureEntity &creature)
 {
-    if (!creature.is_player()) {
-        return false;
-    }
-
+    // [提案D2] メッセージは do_res_stat 側でプレイヤーのみ表示されるためガード撤去。
     bool ident = false;
     if (do_res_stat(creature, A_STR)) {
         ident = true;
@@ -673,10 +669,7 @@ void apply_nexus(const CreatureEntity &attacker, CreatureEntity &creature)
  */
 void status_shuffle(CreatureEntity &creature)
 {
-    if (!creature.is_player()) {
-        return;
-    }
-
+    // [提案D2] メッセージ無しの純粋な能力値入替のためモンスターにも安全。ガード撤去。
     /* Pick a pair of stats */
     int i = randint0(A_MAX);
     int j;
