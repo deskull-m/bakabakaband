@@ -707,6 +707,35 @@ C トラック第 4 弾で、**JSON オプトイン方式**（既定=なし=バ�
 - **未対応の変異は付与しても per-turn では発火しない**（上記 4 種以外）。受動変異
   （耐性・ESP 等）の反映は将来拡張。スキーマに `mutations` を登録済。
 
+### モンスターの魔法領域詠唱 (`realm_abilities`) — 提案 C6
+
+`MonraceDefinition` に `RealmType realm_abilities`
+(`src/system/monrace/monrace-definition.h`) を持ち、JSON
+`lib/edit/MonraceDefinitions.jsonc` で個別モンスターに魔法領域由来の詠唱能力を
+付与できる。C トラック第 5 弾で、**JSON オプトイン方式**（既定 `NONE`=無効で
+バランス不変）。
+
+```jsonc
+"realm_abilities": "CHAOS"
+```
+
+指定可能なトークンは `r_info_realm`（`RealmType` の enum 名。LIFE / SORCERY /
+NATURE / CHAOS / DEATH / TRUMP / ARCANE / CRAFT / DAEMON / CRUSADE / MUSIC /
+HISSATSU / HEX）を参照。
+
+- **橋渡し方式（メンテナ選択: 案A realm→ability マッピング）:** プレイヤーの
+  `exe_spell()` は `get_aim_dir` 等の UI プロンプトを直呼びしヘッドレス不可のため、
+  realm 呪文を対応する `MonsterAbilityType` に写像し、**既存 mspell 経路**
+  （自動ターゲット・MP消費(C4)・耐性・smart AI）で詠唱させる。
+- **非破壊・race-level 尊重:** モンスター能力は race 単位 (`monrace.ability_flags`)
+  で mspell に読まれるため、恒久的に monrace を書き換えず、詠唱文脈
+  (`msa_type` 構築時) の `ability_flags` にのみ realm 由来能力を **OR-in** する
+  (`src/mspell/mspell-attack-util.cpp` の `add_realm_granted_abilities()`)。
+- 写像表は保守的な初期セット（10 魔法領域。MUSIC/HISSATSU/HEX は未マッピング）で、
+  バランス調整・拡張はこの表で行う。
+- 実際に撃たせるには当該 monrace に `freq_spell > 0`（詠唱頻度）が必要。
+- 既定 `NONE` のため実データ・既定バランスは不変。スキーマに `realm_abilities` を登録済。
+
 ### モンスターのレベル別HPダイス指定 (`hit_point_per_level`)
 
 `MonraceDefinition` に `Dice hit_dice_per_level`

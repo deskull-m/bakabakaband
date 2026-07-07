@@ -189,6 +189,10 @@
                             "type": "string"
                         }
                     },
+                    "realm_abilities": {
+                        "type": "string",
+                        "description": "詠唱能力を付与する魔法領域 (提案C6)。トークンは r_info_realm を参照。指定するとその realm 由来の MonsterAbilityType が詠唱時に追加される。既定=なし=オプトイン。"
+                    },
                     "odds_correction_ratio": {
                         "type": "integer",
                         "description": "闘技場オッズ補正値。1/100を使用、100で等倍200で2倍",
