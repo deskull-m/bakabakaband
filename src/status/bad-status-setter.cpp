@@ -53,9 +53,9 @@ bool BadStatusSetter::set_blindness(const TIME_EFFECT tmp_v)
     if (v > 0) {
         if (!is_blind) {
             if (pr.equals(PlayerRaceType::ANDROID)) {
-                msg_print(_("センサーをやられた！", "The sensor broke!"));
+                this->creature.notify_self(_("センサーをやられた！", "The sensor broke!"));
             } else {
-                msg_print(_("目が見えなくなってしまった！", "You are blind!"));
+                this->creature.notify_self(_("目が見えなくなってしまった！", "You are blind!"));
             }
 
             notice = true;
@@ -64,9 +64,9 @@ bool BadStatusSetter::set_blindness(const TIME_EFFECT tmp_v)
     } else {
         if (is_blind) {
             if (pr.equals(PlayerRaceType::ANDROID)) {
-                msg_print(_("センサーが復旧した。", "The sensor has been restored."));
+                this->creature.notify_self(_("センサーが復旧した。", "The sensor has been restored."));
             } else {
-                msg_print(_("やっと目が見えるようになった。", "You can see again."));
+                this->creature.notify_self(_("やっと目が見えるようになった。", "You can see again."));
             }
 
             notice = true;
@@ -125,22 +125,22 @@ bool BadStatusSetter::set_confusion(const TIME_EFFECT tmp_v)
     const auto is_confused = this->creature.is_confused();
     if (v > 0) {
         if (!is_confused) {
-            msg_print(_("あなたは混乱した！", "You are confused!"));
+            this->creature.notify_self(_("あなたは混乱した！", "You are confused!"));
             if (this->creature.get_action() == ACTION_LEARN) {
-                msg_print(_("学習が続けられない！", "You cannot continue learning!"));
+                this->creature.notify_self(_("学習が続けられない！", "You cannot continue learning!"));
                 auto bluemage_data = CreatureClass(this->creature).get_specific_data<bluemage_data_type>();
                 bluemage_data->new_magic_learned = false;
                 rfu.set_flag(MainWindowRedrawingFlag::ACTION);
                 this->creature.set_action(ACTION_NONE);
             }
             if (this->creature.get_action() == ACTION_MONK_STANCE) {
-                msg_print(_("構えがとけた。", "You lose your stance."));
+                this->creature.notify_self(_("構えがとけた。", "You lose your stance."));
                 CreatureClass(this->creature).set_monk_stance(MonkStanceType::NONE);
                 rfu.set_flag(StatusRecalculatingFlag::BONUS);
                 rfu.set_flag(MainWindowRedrawingFlag::ACTION);
                 this->creature.set_action(ACTION_NONE);
             } else if (this->creature.get_action() == ACTION_SAMURAI_STANCE) {
-                msg_print(_("型が崩れた。", "You lose your stance."));
+                this->creature.notify_self(_("型が崩れた。", "You lose your stance."));
                 CreatureClass(this->creature).lose_balance();
             }
 
@@ -158,7 +158,7 @@ bool BadStatusSetter::set_confusion(const TIME_EFFECT tmp_v)
         }
     } else {
         if (is_confused) {
-            msg_print(_("やっと混乱がおさまった。", "You feel less confused now."));
+            this->creature.notify_self(_("やっと混乱がおさまった。", "You feel less confused now."));
             this->creature.remove_special_attack(ATTACK_SUIKEN);
             notice = true;
         }
@@ -199,12 +199,12 @@ bool BadStatusSetter::set_poison(const TIME_EFFECT tmp_v)
     const auto is_poisoned = this->creature.is_poisoned();
     if (v > 0) {
         if (!is_poisoned) {
-            msg_print(_("毒に侵されてしまった！", "You are poisoned!"));
+            this->creature.notify_self(_("毒に侵されてしまった！", "You are poisoned!"));
             notice = true;
         }
     } else {
         if (is_poisoned) {
-            msg_print(_("やっと毒の痛みがなくなった。", "You are no longer poisoned."));
+            this->creature.notify_self(_("やっと毒の痛みがなくなった。", "You are no longer poisoned."));
             notice = true;
         }
     }
@@ -244,9 +244,9 @@ bool BadStatusSetter::set_fear(const TIME_EFFECT tmp_v)
     const auto is_fearful = this->creature.is_fearful();
     if (v > 0) {
         if (!is_fearful) {
-            msg_print(_("何もかも恐くなってきた！", "You are terrified!"));
+            this->creature.notify_self(_("何もかも恐くなってきた！", "You are terrified!"));
             if (CreatureClass(this->creature).lose_balance()) {
-                msg_print(_("型が崩れた。", "You lose your stance."));
+                this->creature.notify_self(_("型が崩れた。", "You lose your stance."));
             }
 
             notice = true;
@@ -255,7 +255,7 @@ bool BadStatusSetter::set_fear(const TIME_EFFECT tmp_v)
         }
     } else {
         if (is_fearful) {
-            msg_print(_("やっと恐怖を振り払った。", "You feel bolder now."));
+            this->creature.notify_self(_("やっと恐怖を振り払った。", "You feel bolder now."));
             notice = true;
         }
     }
@@ -295,7 +295,7 @@ bool BadStatusSetter::set_paralysis(const TIME_EFFECT tmp_v)
     const auto is_paralyzed = this->creature.is_paralyzed();
     if (v > 0) {
         if (!is_paralyzed) {
-            msg_print(_("体が麻痺してしまった！", "You are paralyzed!"));
+            this->creature.notify_self(_("体が麻痺してしまった！", "You are paralyzed!"));
             reset_concentration(this->creature, true);
 
             SpellHex spell_hex(this->creature);
@@ -308,7 +308,7 @@ bool BadStatusSetter::set_paralysis(const TIME_EFFECT tmp_v)
         }
     } else {
         if (is_paralyzed) {
-            msg_print(_("やっと動けるようになった。", "You can move again."));
+            this->creature.notify_self(_("やっと動けるようになった。", "You can move again."));
             notice = true;
         }
     }
@@ -355,7 +355,7 @@ bool BadStatusSetter::hallucination(const TIME_EFFECT tmp_v)
     if (v > 0) {
         set_tsuyoshi(this->creature, 0, true);
         if (!is_hallucinated) {
-            msg_print(_("ワーオ！何もかも虹色に見える！", "Oh, wow! Everything looks so cosmic now!"));
+            this->creature.notify_self(_("ワーオ！何もかも虹色に見える！", "Oh, wow! Everything looks so cosmic now!"));
             reset_concentration(this->creature, true);
 
             this->creature.set_counter(false);
@@ -363,7 +363,7 @@ bool BadStatusSetter::hallucination(const TIME_EFFECT tmp_v)
         }
     } else {
         if (is_hallucinated) {
-            msg_print(_("やっとはっきりと物が見えるようになった。", "You can see clearly again."));
+            this->creature.notify_self(_("やっとはっきりと物が見えるようになった。", "You can see clearly again."));
             notice = true;
         }
     }
@@ -421,12 +421,12 @@ bool BadStatusSetter::set_deceleration(const TIME_EFFECT tmp_v, bool do_dec)
                 return false;
             }
         } else if (!is_slow) {
-            msg_print(_("体の動きが遅くなってしまった！", "You feel yourself moving slower!"));
+            this->creature.notify_self(_("体の動きが遅くなってしまった！", "You feel yourself moving slower!"));
             notice = true;
         }
     } else {
         if (is_slow) {
-            msg_print(_("動きの遅さがなくなったようだ。", "You feel yourself speed up."));
+            this->creature.notify_self(_("動きの遅さがなくなったようだ。", "You feel yourself speed up."));
             notice = true;
         }
     }
@@ -550,10 +550,10 @@ bool BadStatusSetter::process_stun_effect(const short v)
 void BadStatusSetter::process_stun_status(const PlayerStunRank new_rank, const short v)
 {
     auto stun_mes = PlayerStun::get_stun_mes(new_rank);
-    msg_print(stun_mes);
+    this->creature.notify_self(stun_mes);
     this->decrease_int_wis(v);
     if (CreatureClass(this->creature).lose_balance()) {
-        msg_print(_("型が崩れた。", "You lose your stance."));
+        this->creature.notify_self(_("型が崩れた。", "You lose your stance."));
     }
 
     reset_concentration(this->creature, true);
@@ -570,7 +570,7 @@ void BadStatusSetter::clear_head()
         return;
     }
 
-    msg_print(_("やっと朦朧状態から回復した。", "You are no longer stunned."));
+    this->creature.notify_self(_("やっと朦朧状態から回復した。", "You are no longer stunned."));
     if (disturb_state) {
         disturb(this->creature, false, false);
     }
@@ -585,7 +585,7 @@ void BadStatusSetter::decrease_int_wis(const short v)
         return;
     }
 
-    msg_print(_("割れるような頭痛がする。", "A vicious blow hits your head."));
+    this->creature.notify_self(_("割れるような頭痛がする。", "A vicious blow hits your head."));
     auto rand = randint0(5);
     switch (rand) {
     case 0:
@@ -637,7 +637,7 @@ bool BadStatusSetter::process_cut_effect(const short v)
 void BadStatusSetter::decrease_charisma(const PlayerCutRank new_rank, const short v)
 {
     auto cut_mes = PlayerCut::get_cut_mes(new_rank);
-    msg_print(cut_mes);
+    this->creature.notify_self(cut_mes);
     if (v <= randint1(1000) && !one_in_(16)) {
         return;
     }
@@ -646,7 +646,7 @@ void BadStatusSetter::decrease_charisma(const PlayerCutRank new_rank, const shor
         return;
     }
 
-    msg_print(_("ひどい傷跡が残ってしまった。", "You have been horribly scarred."));
+    this->creature.notify_self(_("ひどい傷跡が残ってしまった。", "You have been horribly scarred."));
     do_dec_stat(this->creature, A_CHR);
 }
 
