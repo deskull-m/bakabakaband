@@ -3383,7 +3383,7 @@ A/B と違い挙動が変わるため、対象範囲と数値はメンテナ判�
 | 番号 | 提案 | 種別 | 工数 | 価値 | 状態 |
 |---|---|---|---|---|---|
 | D1 | セービングスロー述語 `does_save_against()` 統一 | 純粋refactor | 小 | 中 | ✅ 完了 |
-| D2 | 回復・状態治療関数の is_player ガード除去 + メッセージ seam | 同化中核 | 中〜大 | 高 | ✅ 第1弾完了（seam + 回復6関数） |
+| D2 | 回復・状態治療関数の is_player ガード除去 + メッセージ seam | 同化中核 | 中〜大 | 高 | ✅ 完了（回復・治療9関数＋能力値回復） |
 | D3 | 統一クリーチャーテレポートプリミティブ | primitive | 中 | 中 | 計画 |
 | D4 | 属性ダメージ分類器（immune/resist/vuln）の共通化 | primitive | 中 | 中 | 計画 |
 | D5 | 小規模統合（charm/control セーヴ統合ほか） | 純粋refactor | 小 | 低〜中 | ✅ 完了（charm/control。他2件は精査の上見送り） |
@@ -3429,13 +3429,22 @@ effect-monster-charm / mspell-status / mspell-floor / effect-player-resist-hurt�
 
 - フルビルド (g++ -O3 -Werror) / clang-format-18 で検証済。
 
-### 第2弾以降（残）
+### ✅ 第2弾 完了内容（能力値回復系 + life_stream）
 
-- 残る回復・治療系（`restore_all_status:527` / `status_shuffle:693` / `life_stream`
-  tail）のガード除去（`do_res_stat` 等は既に creature-general）。
+- `restore_all_status` / `status_shuffle` / `life_stream` tail の `is_player` ガードを撤去。
+- `base-status.cpp` の能力値メッセージ（`do_dec_stat` / `do_res_stat` / `do_inc_stat`
+  の `msg_format` 4 箇所）を `if (creature.is_player())` でガード（可変長メッセージのため
+  string_view seam ではなく inline gate、挙動はプレイヤー保存）。`status_shuffle` は
+  メッセージ無しの純粋能力値入替のためガード除去のみ。`life_stream` 冒頭の
+  `msg_print` は `notify_self` へ載せ替え。
+- フルビルド (g++ -O3 -Werror) / clang-format-18 で検証済。**回復・状態治療系 9 関数
+  ＋能力値回復がモンスターに安全に適用可能**になった（現状 monster 呼出は無く挙動不変）。
+
+### 第3弾以降（残）
+
 - `notify_self` を**モンスター視認時の 3 人称文**へ拡張（現状はモンスター無表示）。
 - setter 群の残るプレイヤー専用テール（stance / spell 停止 / redraw）は no-op で
-  モンスター無害だが、必要なら虚拟化で整理。
+  モンスター無害だが、必要なら virtual 化で整理。
 - これにより「モンスターの回復・状態治療」を実際に使う機能（C トラックの回復
   モンスター等）への足場が完成する。
 
