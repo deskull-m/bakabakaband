@@ -3356,6 +3356,169 @@ A/B と違い挙動が変わるため、対象範囲と数値はメンテナ判�
 
 ---
 
+# D トラック: プレイヤー・モンスター処理の「同化」に欠かせない残要素
+
+4 観点（残存 `PlayerType` 型シグネチャ / per-turn 処理の分岐 / 計算・効果関数の
+重複 / `is_player()` ガード）を横断調査した結果を D トラックとして整理する。
+
+## 調査の総括（4 観点横断）
+
+- **シグネチャ移行は事実上完了。** `CreatureEntity &` への型統一は済み、`src/` 全体で
+  combat/effect/status を取る自由関数の `PlayerType &`/`*` 引数は **0**
+  (残るのは Godot フロントの `player_status_push` 1 個のみ)。`PlayerType::get_instance()`
+  の 34 呼出も全て entry-point/UI/IO で、処理コード内に「回避策としての静的アクセス」は
+  **無い**。creature-general コードから `PlayerType` への downcast も **0**。
+- **`src/status/` は既に完全 creature-general。** `BadStatusSetter` / buff setter /
+  base-status は全て `CreatureEntity &` を取り accessors で状態変更する。`is_player()`
+  ガードは 1 つも無い。→ **モンスターに渡しても状態は正しく変わる**。
+- **したがって残る"同化"の本丸は 2 つ:**
+  (1) **creature-general な本体をプレイヤーに閉じている `is_player()` 早期 return ガード**
+  (特に回復・状態治療関数群)、
+  (2) **general コードに直書きされた 2 人称メッセージ**（`msg_print("あなたは…")`）。
+  この 2 つを外す（ガード除去 + メッセージの virtual seam 化）ことが、既に general な
+  資産をモンスターへ開く最小工事になる。
+
+## D トラック提案索引
+
+| 番号 | 提案 | 種別 | 工数 | 価値 | 状態 |
+|---|---|---|---|---|---|
+| D1 | セービングスロー述語 `does_save_against()` 統一 | 純粋refactor | 小 | 中 | ✅ 完了 |
+| D2 | 回復・状態治療関数の is_player ガード除去 + メッセージ seam | 同化中核 | 中〜大 | 高 | 計画 |
+| D3 | 統一クリーチャーテレポートプリミティブ | primitive | 中 | 中 | 計画 |
+| D4 | 属性ダメージ分類器（immune/resist/vuln）の共通化 | primitive | 中 | 中 | 計画 |
+| D5 | 小規模統合（charm/control セーヴ統合・時限効果満了エンベロープ） | 純粋refactor | 小 | 低〜中 | 計画 |
+| D6 | `CreatureEntity` インスタンス化可能化（PlayerType dummy 撤廃） | 構造 | 中 | 中 | 計画 |
+| D7 | モンスターの cut/poison DoT（per-turn 未発火のギャップ） | 機能(C隣接) | 中 | 中 | 計画 |
+
+---
+
+## 提案 D1: セービングスロー述語 `does_save_against()` の統一 ✅ 完了
+
+**現状:** `randint0(100 + power/2) < creature.get_skill_save()` の魔法防御セーヴ
+イディオムが **8 ファイル・約 21 箇所**に重複。`get_skill_save()` は
+`CreatureEntity` virtual のため、対象がプレイヤーでもモンスターでも同一経路で判定可能。
+
+**完了内容:** `CreatureEntity::does_save_against(int power)`
+（= `randint0(100 + power/2) < get_skill_save()`、定義は creature-entity.cpp）を新設し、
+**プレーン形 17 箇所**（monster-attack-status / effect-player-curse / effect-monster-psi /
+effect-monster-charm / mspell-status / mspell-floor / effect-player-resist-hurt）を移行。
+`randint0` 1 回・`get_skill_save()` 1 回で乱数列・挙動は完全不変。
+
+**残置:** `std::max<short>(5, get_skill_save())` の下限付き 4 箇所
+(effect-player-spirit) と `>` 反転 while ループは別式のため現状維持。
+フルビルド (g++ -O3 -Werror) と clang-format-18 で検証済。
+
+---
+
+## 提案 D2: 回復・状態治療関数の is_player ガード除去 + メッセージ seam（同化の中核）
+
+**現状:** `src/spell/spells-status.cpp` の回復・治療関数は**本体が 100% creature-general
+プリミティブ**（`hp_player` / `BadStatusSetter::set_*` / `mod_cut` 等、すべて既に
+`CreatureEntity &` で accessors 経由）なのに、先頭の `if (!creature.is_player()) return;`
+だけがモンスター利用を阻んでいる。該当:
+`true_healing`(:437) / `cure_critical_wounds`(:398) / `cure_serious_wounds`(:369) /
+`cure_light_wounds`(:342) / `heroism`(:298) / `berserk`(:320) / `restore_all_status`(:527) /
+`status_shuffle`(:693) / `life_stream`(:276 tail、半分は既にモンスター発火)。
+ガードなしの `fear_monster`(:192) が既存のお手本。
+
+**障壁:** ガードを外すと、general コードに直書きされた 2 人称メッセージ
+（"あなたは元気になった気がする！" 等）がモンスターにも無条件で出る。
+
+**提案:** (a) 回復・治療関数群のガードを除去、(b) メッセージを
+`CreatureEntity::notify_status_message(...)` 的な **virtual seam** に載せ替え
+（プレイヤー=`msg_print`、モンスター=視認時のみモンスター視点文 or 無音）。これにより
+既に general な資産（回復・状態治療）が**そのままモンスターに開く**。同様の seam は
+`BadStatusSetter`/buff setter の 2 人称メッセージにも展開でき、状態異常付与の
+モンスター運用（C5 の専用処理より汎用的）への道が開ける。
+
+**工数:** 中〜大（メッセージ seam の設計 + 全 setter への波及）。**価値:** 高
+（"同化"の本丸）。**リスク:** 中（プレイヤーのメッセージ・挙動を完全保存する必要）。
+**進め方:** まず回復 6 関数のガード除去 + 局所メッセージ gating（小さく検証）→
+seam を setter 群へ横展開、と段階化する。
+
+---
+
+## 提案 D3: 統一クリーチャーテレポートプリミティブ
+
+**現状:** テレポート系は `teleport_player` / `teleport_player_to` / `teleport_player_aux`
+（プレイヤー）と `teleport_away`（モンスター、`CreatureEntity &, m_idx`）に分かれる。
+`apply_nexus`(:644) / `teleport_level`(spells-world.cpp:60) / 突然変異の RTELEPORT 等が
+プレイヤー版に依存し、モンスター運用時に別プリミティブへ切替が要る。
+
+**提案:** 対象クリーチャーを受けて適切に移動する統一プリミティブ（内部で
+is_player 分岐または位置操作の共通化）。これにより apply_nexus / teleport_level の
+ガードを外せる。**工数:** 中。**価値:** 中。**リスク:** 中（移動は副作用が広い）。
+
+---
+
+## 提案 D4: 属性ダメージ分類器（immune/resist/vuln）の共通化
+
+**現状:** プレイヤーの `calc_X_damage_rate()`（`player-status-resist.cpp`）は既に
+`has_immune_X()` / `has_resist_X()` / `has_vuln_X()` virtual だけで倍率を算出し、
+これらの virtual は**モンスターのフラグも解決する**。一方
+`effect-monster-resist-hurt.cpp` は同じ判定を `monrace->resistance_flags` から
+手書きで再実装（しかも倍率定数が player と異なる: 免疫 `/9`・弱点 `*2`・耐性
+`*3/(d6+6)` 等）。
+
+**提案:** 「免疫/耐性/弱点/通常」の**分岐分類器**を `has_*` virtual ベースで共通化し、
+`effect-monster-*` の手書きフラグ判定 20+ 箇所をそれに載せ替える。**数値倍率と
+lore/note/二次効果（do_polymorph 等）は型別のまま**残す（完全な倍率統一は分布が
+異なるため見送り）。**工数:** 中。**価値:** 中（分岐骨格の重複を解消）。**リスク:** 中。
+
+---
+
+## 提案 D5: 小規模統合
+
+- **`common_saving_throw_charm`(spells-diceroll.cpp:20) / `common_saving_throw_control`(:60)**:
+  ~90% 同一（`NO_CONF` 早期 return の有無のみ差）。単一ファイル内の trivial dedup。
+- **時限効果満了エンベロープ**: player `reduce_magic_effects_timeout` と monster
+  `process_monsters_timed_effect_aux` は「減算→満了検出→視認時メッセージ」の**外枠が
+  共通**（共有 6 効果 ACCEL/DECEL/STUN/CONFUSION/FEAR/INVULN）。回復量・文言は型別のため、
+  回復量コールバック + メッセージを取る `CreatureEntity` ヘルパに外枠のみ抽出可能
+  （B1 が setter+mproc を統一した続きの、per-turn 側の小整理）。
+- **モンスター対モンスターの属性オーラ** を `fire_dam/cold_dam/elec_dam` 経由に
+  寄せる（`process_aura_damage` の形）。
+
+**工数:** 小。**価値:** 低〜中。
+
+---
+
+## 提案 D6: `CreatureEntity` インスタンス化可能化（構造）
+
+**現状:** `CreatureEntity` が抽象（インスタンス化不可）のため、spoiler/lore 経路が
+既に `CreatureEntity &` を取る関数へ渡す「ダミープレイヤー」を 5 箇所で作っている
+(`display-lore.cpp:122` / `fixed-artifacts-spoiler.cpp:147` / `items-spoiler.cpp:167` /
+`wizard-spoiler.cpp:189` / singleton)。ブロッカーは「CreatureEntity を構築できない」
+という構造要因。
+
+**提案:** null-creature / インスタンス化可能化でダミー PlayerType を撤廃。あわせて
+`PlayerType::should_skip_natural_regen` / `apply_state_regen_modifier`（Samurai/Monk
+構えの再生補正、`hp-mp-regenerator.cpp:75/98`）を `CreatureEntity` virtual へ hoist し、
+`const_cast<PlayerType&>` を排除。**工数:** 中。**価値:** 中（構造的負債の解消）。
+
+---
+
+## 提案 D7: モンスターの cut/poison DoT（per-turn ギャップ）
+
+**現状:** cut/poison の毎ターンダメージ・自然減少は**プレイヤー専用**
+(`hp-mp-processor.cpp:124-135` / `magic-effects-timeout-reducer.cpp:235-252`)。
+CUT/POISON は `MONSTER_TIMED_EFFECT_LIST` に無いため、モンスターは値を持てても
+**発火しない**（切り傷・毒を与えても無害）。これは重複ではなく**ギャップ**で、
+統一とは「モンスター per-turn 経路に CUT/POISON tick を追加する」機能実装
+（C トラック隣接、opt-in 検討）。**工数:** 中。**価値:** 中（状態異常のモンスター
+運用が意味を持つ）。
+
+---
+
+## D トラック着手順の推奨
+
+**D1（完了）→ D5（小整理）→ D4（分類器）→ D2（同化中核）→ D3（テレポート）→
+D6（構造）→ D7（機能）**。純粋 refactor で安全な D1/D5 を先に、"同化"の本丸で
+価値の高い D2 は seam 設計後に段階着手、機能寄りの D7 は C トラック方針
+（opt-in・バランス確認）で扱う。
+
+---
+
 ## 作業時の共通留意事項
 
 - 新規提案を完了したら本書と `CLAUDE.md` の両方を更新し、進捗を反映する
