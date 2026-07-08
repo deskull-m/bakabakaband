@@ -118,10 +118,7 @@ int PlayerType::apply_creature_specific_regen_modifier(int amount) const
  */
 void regenhp(CreatureEntity &creature, int percent)
 {
-    if (CreatureClass(creature).samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
-        return;
-    }
-    if (creature.get_action() == ACTION_HAYAGAKE) {
+    if (creature.should_skip_natural_regen()) {
         return;
     }
 
