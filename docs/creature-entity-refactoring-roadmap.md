@@ -3390,7 +3390,7 @@ A/B と違い挙動が変わるため、対象範囲と数値はメンテナ判�
 | D4 | 属性ダメージ分類器（immune/resist/vuln）の共通化 | primitive | 中 | 中 | ✅ 第1弾完了（monster側 immune/hurt 共通化） |
 | D5 | 小規模統合（charm/control セーヴ統合ほか） | 純粋refactor | 小 | 低〜中 | ✅ 完了（charm/control。他2件は精査の上見送り） |
 | D6 | spoiler/lore の PlayerType dummy 軽量化（※前提訂正） | 構造 | 小 | 低 | 計画（低優先・前提誤り訂正済） |
-| D7 | モンスターの cut/poison DoT（per-turn 未発火のギャップ） | 機能(C隣接) | 中 | 中 | 計画 |
+| D7 | モンスターの poison DoT（opt-in 機能） | 機能(C隣接) | 中 | 中 | ✅ 完了（poison、opt-in・既定OFF） |
 
 ---
 
@@ -3563,13 +3563,26 @@ virtual へ hoist し `const_cast<PlayerType&>` を排除、は独立の小整�
 
 ## 提案 D7: モンスターの cut/poison DoT（per-turn ギャップ）
 
-**現状:** cut/poison の毎ターンダメージ・自然減少は**プレイヤー専用**
-(`hp-mp-processor.cpp:124-135` / `magic-effects-timeout-reducer.cpp:235-252`)。
-CUT/POISON は `MONSTER_TIMED_EFFECT_LIST` に無いため、モンスターは値を持てても
-**発火しない**（切り傷・毒を与えても無害）。これは重複ではなく**ギャップ**で、
-統一とは「モンスター per-turn 経路に CUT/POISON tick を追加する」機能実装
-（C トラック隣接、opt-in 検討）。**工数:** 中。**価値:** 中（状態異常のモンスター
-運用が意味を持つ）。
+### ✅ 完了（poison DoT、opt-in・既定OFF）
+
+**着手前検証:** cut/poison の毎ターン処理はプレイヤー専用で、モンスターに
+**positive な cut/poison を与える経路が存在しない**（monster-processor は 0 セットのみ、
+BadStatusSetter は実質プレイヤー専用）。よって tick だけ足しても dead code。
+→ **重複解消ではなく「inflict＋tick」の小機能**として、C トラック方針の
+**JSON オプトイン・既定OFF**で実装。
+
+**完了内容（poison に限定）:**
+- `MonraceDefinition::suffers_poison_dot`（bool、既定 false）+ reader + schema。
+- **inflict:** `effect_monster_pois`（D4 で整理済）で、免疫でなく `suffers_poison_dot`
+  が立つ個体は毒攻撃で `POISON` を `max(1, dam/2)` 蓄積（`MAX_SHORT` クランプ）。
+- **tick:** `process_world()`（10 ゲームターン周期、プレイヤー毒 DoT と同一）で
+  `POISON>0` のモンスターに 1/ターンの毒ダメージを `MonsterDamageProcessor`
+  (`AttributeType::POIS`) で与え、`POISON` を 1 減らす。無敵中はスキップ。死亡時は
+  ドロップ・経験値含め正規経路で処理。
+- **既定 OFF のため誰にも POISON が蓄積せず、既定バランス完全不変。** 蓄積量
+  (`dam/2`) と tick 量 (1) で調整可能。cut DoT は近接由来で inflict 経路が別のため
+  今回は poison のみ（将来同様に opt-in 拡張可）。
+- フルビルド (g++ -O3 -Werror) / clang-format-18 / validate_json.py で検証済。
 
 ---
 
