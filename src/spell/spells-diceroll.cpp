@@ -12,12 +12,14 @@
 #include "system/monrace/monrace-definition.h"
 
 /*!
- * @brief モンスター魅了用セービングスロー共通部(汎用系)
- * @param pow 魅了パワー
- * @param m_ptr 対象モンスター
- * @return 魅了に抵抗したらTRUE
+ * @brief モンスター魅了/服従用セービングスロー共通実装 (提案D5)
+ * @param pow 魅了・服従パワー
+ * @param target 対象クリーチャー
+ * @param check_no_conf NO_CONF (混乱耐性) で無条件抵抗させるか (魅了=true / 服従=false)
+ * @return 抵抗したらTRUE
+ * @details charm/control で NO_CONF チェックの有無以外は完全に同一だったため統合。
  */
-bool common_saving_throw_charm(CreatureEntity &creature, int pow, const CreatureEntity &target)
+static bool common_saving_throw_impl(CreatureEntity &creature, int pow, const CreatureEntity &target, bool check_no_conf)
 {
     auto &monrace = target.get_monrace();
 
@@ -33,7 +35,7 @@ bool common_saving_throw_charm(CreatureEntity &creature, int pow, const Creature
         return true;
     }
 
-    if (monrace.resistance_flags.has(MonsterResistanceType::NO_CONF)) {
+    if (check_no_conf && monrace.resistance_flags.has(MonsterResistanceType::NO_CONF)) {
         if (is_original_ap_and_seen(creature, target)) {
             monrace.resistance_flags.set(MonsterResistanceType::NO_CONF);
         }
@@ -52,36 +54,25 @@ bool common_saving_throw_charm(CreatureEntity &creature, int pow, const Creature
 }
 
 /*!
+ * @brief モンスター魅了用セービングスロー共通部(汎用系)
+ * @param pow 魅了パワー
+ * @param target 対象モンスター
+ * @return 魅了に抵抗したらTRUE
+ */
+bool common_saving_throw_charm(CreatureEntity &creature, int pow, const CreatureEntity &target)
+{
+    return common_saving_throw_impl(creature, pow, target, true);
+}
+
+/*!
  * @brief モンスター服従用セービングスロー共通部(部族依存系)
  * @param pow 服従パワー
- * @param m_ptr 対象モンスター
+ * @param target 対象モンスター
  * @return 服従に抵抗したらTRUE
  */
 bool common_saving_throw_control(CreatureEntity &creature, int pow, const CreatureEntity &target)
 {
-    auto &monrace = target.get_monrace();
-
-    if (creature.get_floor()->inside_arena) {
-        return true;
-    }
-
-    /* Memorize a flag */
-    if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
-        if (is_original_ap_and_seen(creature, target)) {
-            monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_ALL);
-        }
-        return true;
-    }
-
-    if (monrace.misc_flags.has(MonsterMiscType::QUESTOR) || target.is_nopet()) {
-        return true;
-    }
-
-    pow += adj_chr_chm[creature.get_stat_index(A_CHR)] - 1;
-    if (monrace.kind_flags.has(MonsterKindType::UNIQUE) || (monrace.population_flags.has(MonsterPopulationType::NAZGUL))) {
-        pow = pow * 2 / 3;
-    }
-    return (monrace.level > randint1((pow - 10) < 1 ? 1 : (pow - 10)) + 5);
+    return common_saving_throw_impl(creature, pow, target, false);
 }
 
 /*!
