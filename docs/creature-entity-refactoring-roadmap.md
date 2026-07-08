@@ -3387,7 +3387,7 @@ A/B と違い挙動が変わるため、対象範囲と数値はメンテナ判�
 | D1 | セービングスロー述語 `does_save_against()` 統一 | 純粋refactor | 小 | 中 | ✅ 完了 |
 | D2 | 回復・状態治療関数の is_player ガード除去 + メッセージ seam | 同化中核 | 中〜大 | 高 | ✅ 完了（回復・治療9関数＋能力値回復） |
 | D3 | 統一クリーチャーテレポートプリミティブ | primitive | 中 | 中 | 計画 |
-| D4 | 属性ダメージ分類器（immune/resist/vuln）の共通化 | primitive | 中 | 中 | 計画 |
+| D4 | 属性ダメージ分類器（immune/resist/vuln）の共通化 | primitive | 中 | 中 | ✅ 第1弾完了（monster側 immune/hurt 共通化） |
 | D5 | 小規模統合（charm/control セーヴ統合ほか） | 純粋refactor | 小 | 低〜中 | ✅ 完了（charm/control。他2件は精査の上見送り） |
 | D6 | spoiler/lore の PlayerType dummy 軽量化（※前提訂正） | 構造 | 小 | 低 | 計画（低優先・前提誤り訂正済） |
 | D7 | モンスターの cut/poison DoT（per-turn 未発火のギャップ） | 機能(C隣接) | 中 | 中 | 計画 |
@@ -3500,10 +3500,25 @@ is_player 分岐または位置操作の共通化）。これにより apply_nex
 手書きで再実装（しかも倍率定数が player と異なる: 免疫 `/9`・弱点 `*2`・耐性
 `*3/(d6+6)` 等）。
 
-**提案:** 「免疫/耐性/弱点/通常」の**分岐分類器**を `has_*` virtual ベースで共通化し、
-`effect-monster-*` の手書きフラグ判定 20+ 箇所をそれに載せ替える。**数値倍率と
-lore/note/二次効果（do_polymorph 等）は型別のまま**残す（完全な倍率統一は分布が
-異なるため見送り）。**工数:** 中。**価値:** 中（分岐骨格の重複を解消）。**リスク:** 中。
+### ✅ 第1弾 完了（monster 側 immune/hurt 処理の共通化）
+
+**設計判断（プレイヤー↔モンスター統合は見送り）:** 実コード検証で、`has_immune_fire()`
+等の virtual は **`::has_immune_fire()`（装備由来）＋ monrace フラグの重ね合わせ**で、
+monster ハンドラの直接 monrace 読取り（装備を含まない）とは**等価でない**（装備で
+耐性が付く monster が現れうる ＝ 挙動変化）。加えて lore 記録 (`r_resistance_flags`)
+は**monrace 固有耐性のみ**を記録する意味論のため、virtual への置換は挙動不変にできない。
+→ **プレイヤー計算式との統合は「装備耐性を monster に反映する」バランス変更を伴う
+別提案**とし、本提案では見送り。
+
+**実施した安全な統合（monster 内の重複解消）:** monster 属性ハンドラの
+「免疫 → ダメージ1/9＋『かなり耐性がある』＋思い出記録」「弱点 → ダメージ2倍＋
+『ひどい痛手』＋思い出記録」の重複ブロックを、file-local ヘルパ
+`apply_monster_element_immune()` / `apply_monster_element_hurt()` に集約。
+acid/elec/fire/cold/pois/stungun の 6 ハンドラを移行（**monrace 読取り・思い出記録の
+意味論は維持、挙動完全不変**）。フルビルド (g++ -O3 -Werror) / clang-format-18 検証済。
+
+**残（第2弾以降）:** 他属性（高位元素・nether/chaos 等）の同型ブロックも同ヘルパへ
+横展開可能（同じく挙動不変）。プレイヤー計算式との真の統合は上記バランス判断が前提。
 
 ---
 
