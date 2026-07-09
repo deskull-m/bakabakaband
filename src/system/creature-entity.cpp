@@ -1877,6 +1877,16 @@ PLAYER_LEVEL CreatureEntity::get_level() const
 }
 
 /*!
+ * @brief 表示用の称号を取得する (提案 E5, 基底 = モンスター既定)
+ * @details モンスターは称号を持たないため "なし" を返す。プレイヤーは
+ * PlayerType::get_title() override が wizard / winner / 職業別称号を返す。
+ */
+std::string CreatureEntity::get_title() const
+{
+    return _("なし", "None");
+}
+
+/*!
  * @brief モンスターの個体加速を設定する / Get initial monster speed
  * @param force_fixed_speed 速度を固定にする(個体差を適用しない)か否か
  */

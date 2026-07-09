@@ -36,25 +36,9 @@ struct condition_layout_info {
  */
 void print_title(CreatureEntity &creature)
 {
-    std::string p;
-    const auto &world = AngbandWorld::get_instance();
-    if (!creature.is_player()) {
-        p = _("なし", "None");
-    } else if (world.wizard) {
-        p = _("［ウィザード］", "[=-WIZARD-=]");
-    } else if (world.total_winner) {
-        if (world.is_player_true_winner()) {
-            p = _("*真・勝利者*", "*TRUEWINNER*");
-        } else {
-            p = _("***勝利者***", "***WINNER***");
-        }
-    } else {
-        const auto &titles = player_titles.at(creature.get_pclass());
-        const auto title_index = std::min(static_cast<size_t>((creature.get_level() - 1) / 5), titles.size() - 1);
-        p = titles.at(title_index);
-    }
-
-    print_field(p, ROW_TITLE, COL_TITLE);
+    // 称号算出は CreatureEntity::get_title() virtual に集約 (提案 E5)。
+    // プレイヤーは wizard / winner / 職業別称号、モンスターは "なし"。
+    print_field(creature.get_title(), ROW_TITLE, COL_TITLE);
 }
 
 /*!

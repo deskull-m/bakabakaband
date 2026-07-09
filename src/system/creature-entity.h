@@ -542,6 +542,14 @@ public:
     }
 
     /*!
+     * @brief 表示用の称号を取得する (提案 E5)
+     * @details プレイヤーは wizard / winner 状態や職業・レベル別称号を返す。
+     * モンスターは既定で "なし" を返す (将来モンスター固有の称号運用の余地)。
+     * 本体は creature-entity.cpp (基底) / player-type-definition.cpp (override) に定義。
+     */
+    virtual std::string get_title() const;
+
+    /*!
      * @brief 第 1 魔法領域 enum を取得する (提案 1/2)
      * @details モンスターは init_monster_profile() で RealmType::NONE に
      * 初期化されており、魔法領域効果は発動しない (NONE ガード前提)。
