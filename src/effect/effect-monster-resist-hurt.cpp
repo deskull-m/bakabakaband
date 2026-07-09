@@ -6,10 +6,12 @@
 #include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
 #include "system/creature-entity.h"
+#include "system/creature-timed-effect-types.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "util/bit-flags-calculator.h"
+#include <algorithm>
 
 namespace {
 /*!
@@ -125,6 +127,15 @@ ProcessResult effect_monster_pois(CreatureEntity &creature, EffectMonster *em_pt
 
     if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::IMMUNE_POISON)) {
         apply_monster_element_immune(creature, em_ptr, MonsterResistanceType::IMMUNE_POISON);
+        return ProcessResult::PROCESS_CONTINUE;
+    }
+
+    // [提案D7] suffers_poison_dot が立つ個体は毒攻撃で継続毒 (POISON DoT) を蓄積する。
+    // 既定OFFのためバランス不変。蓄積量はダメージの半分で有界 (毎ターン 1 ずつ処理される)。
+    if (em_ptr->monrace->suffers_poison_dot && (em_ptr->dam > 0)) {
+        const auto added = std::max(1, em_ptr->dam / 2);
+        const auto current = em_ptr->m_ptr->get_timed_effect(CreatureTimedEffect::POISON);
+        em_ptr->m_ptr->set_timed_effect(CreatureTimedEffect::POISON, static_cast<short>(std::min<int>(MAX_SHORT, current + added)));
     }
 
     return ProcessResult::PROCESS_CONTINUE;
