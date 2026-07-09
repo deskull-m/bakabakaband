@@ -13,6 +13,14 @@ enum class PlayerClassType : short;
 class CreatureClass {
 public:
     CreatureClass(CreatureEntity &creature);
+    /*!
+     * @brief 読み取り専用（const）クリーチャーから構築するためのビュー用コンストラクタ
+     * @details 構え問い合わせ等の const メソッド内から CreatureClass を組み立てるための窓口。
+     * ゲーム状態としての CreatureEntity は実体が const になることが無い（const は
+     * アクセサ修飾子の伝播に過ぎない）ため、内部で 1 箇所に const_cast を局所化する。
+     * これにより呼び出し側（自然回復処理等）から const_cast を排除する。
+     */
+    CreatureClass(const CreatureEntity &creature);
     CreatureClass(const CreatureClass &) = default;
     CreatureClass(CreatureClass &&) = default;
     CreatureClass &operator=(const CreatureClass &) = delete;
