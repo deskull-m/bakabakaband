@@ -3593,6 +3593,140 @@ D6（構造）→ D7（機能）**。純粋 refactor で安全な D1/D5 を先�
 
 ---
 
+## E トラック（API 衛生・重複解消・シリアライズ集約）調査結論
+
+### 位置づけ
+
+A〜D トラックで **フィールドのカプセル化（141 private 化）・状態チェックの
+virtual 化・処理の同化・機能付与** がほぼ出揃った。E トラックはその仕上げとして、
+**リファクタリング過程で残った重複コード・const 不整合・シリアライズの二重記述**を
+掃除する「衛生」トラックである。3 観点（シリアライズ共通ブロック / PlayerType
+メンバ hoist / const・アクセサ衛生）を実コード検証した結論を以下に記す。
+
+**重要な調査所見（過大評価の否定）:**
+
+- **メンバ hoist は実質完了**。`PlayerType` は既に **11 メソッド override の薄い殻**で、
+  再生・ダメージフックは全て CreatureEntity virtual に移行済み。「大規模 hoist」は残って
+  いない。残るのは個別の小整理のみ。
+- **const 化は割に合わない**。41 個の非 const `has_resist_*()` を const 化すると
+  `player-status-flags.cpp` の約 40 関数 + `CreatureRace`/`CreatureClass` ラッパへ
+  カスケードし、692 TU に fan-out するヘッダで churn が甚大。**見送り。**
+- **public スカラの private 化残**（hp/maxhp/ac/stat 配列等）は io-dump 等が raw 値を
+  読む意図的 public であり、閉じるのは pure churn。**見送り。**
+
+### E トラック提案索引
+
+| 番号 | 提案 | 種別 | 工数 | 価値 | 状態 |
+|---|---|---|---|---|---|
+| E1 | `regenhp()` の停止判定重複解消（`should_skip_natural_regen()` 利用） | 重複解消+同化 | 小 | 高 | 計画（安全・実装候補） |
+| E2 | `const_cast<PlayerType&>` 排除（const 構え accessor 新設） | const 衛生 | 小 | 中 | 計画 |
+| E3 | シリアライズ共通ブロック拡張（`prace`/`pclass`/`r_idx`/`ap_r_idx`） | 重複解消 | 中 | 中 | 計画（version 54 bump） |
+| E4 | インライン accessor 本体（約 480 個）の .cpp 移設 | ビルド衛生 | 大（機械的） | 中 | 計画（小刻みコミット） |
+| E5 | `is_player()` 自由関数分岐（約 101 箇所）の virtual 化 | 同化 | 大 | 中 | 計画（サイト別判断） |
+
+---
+
+## 提案 E1: `regenhp()` の停止判定重複解消（`should_skip_natural_regen()` 利用）
+
+**現状（実コード検証済）:** `regenhp()`（`src/hpmp/hp-mp-regenerator.cpp:121-126`）が
+自然回復完全停止判定をインラインで重複実装している:
+
+```cpp
+if (CreatureClass(creature).samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
+    return;
+}
+if (creature.get_action() == ACTION_HAYAGAKE) {
+    return;
+}
+```
+
+これは `PlayerType::should_skip_natural_regen()`（同 75-82、CreatureEntity virtual・
+基底既定 false）と**完全に同一のロジック**である。さらに `regenhp()` は
+`regenerate_monsters()`（同 288）から**モンスターにも呼ばれる**ため、この
+`CreatureClass(monster).samurai_stance_is(...)`（プレイヤー固有の構え判定）が
+モンスターに対して走っている（副作用は無いが意味的に不正な重複）。
+
+**修正案:** インライン 2 分岐を `if (creature.should_skip_natural_regen()) return;`
+1 行に置換。
+
+- **プレイヤー経路**（`hp-mp-processor.cpp:435`）: PlayerType override が同一判定を
+  行うため**挙動完全不変**。
+- **モンスター経路**（`regenerate_monsters:288`）: 基底が false を返すためプレイヤー
+  固有の構え判定が走らなくなる。そもそも `compute_regen_amount()`（同 42）が先に
+  `should_skip_natural_regen()` を適用済みで、停止時は `regen_amount == 0` となり
+  `regenerate_monsters:282` の `continue` で `regenhp` に到達しない。**挙動完全不変。**
+
+→ **重複解消 + 意味的正しさ改善**。call site の乱数消費・HP 計算は不変。工数小・価値高。
+実装候補筆頭。
+
+---
+
+## 提案 E2: `const_cast<PlayerType&>` の排除（const 構え accessor 新設）
+
+**現状:** `PlayerType::should_skip_natural_regen()`（77）と `apply_state_regen_modifier()`
+（100）が const メソッド内で `CreatureClass pc(const_cast<PlayerType &>(*this));` を
+使い構え（`samurai_stance_is` / `monk_stance_is`）を問い合わせている。`CreatureClass`
+コンストラクタが非 const 参照を要求するための回避策。
+
+**修正案:** 構え問い合わせ用の const 経路（例: `CreatureClass` に const 版
+`samurai_stance_is() const` を追加、または `CreatureEntity` に構え getter virtual を
+新設）を用意し `const_cast` を排除。const 正当性の局所改善。工数小・価値中。
+（E1 と同一ファイルのため E1 実装時に併せて検討可）
+
+---
+
+## 提案 E3: シリアライズ共通ブロック拡張（`prace`/`pclass`/`r_idx`/`ap_r_idx`）
+
+**現状:** `prace`/`pclass`/`r_idx`/`ap_r_idx` は `CreatureEntity` 基底フィールドだが、
+`wr_creature_common()`/`rd_creature_common()` に含まれず、**プレイヤー writer と
+モンスター writer で個別に**逐語シリアライズされている（player-writer.cpp:64-65,
+284-285 / monster-writer.cpp:28-29, 43-44）。CLAUDE.md のシリアライズ統合方針
+（共通基底フィールドは共通ブロックに集約）に照らすと残った二重記述。
+
+**修正案:** 4 フィールドを `wr_creature_common()` に末尾追加し、`rd_creature_common()`
+に version 分岐付き読込を追加（**savefile version 54 へ bump**、確立済みパターン）。
+`prace`/`pclass` は `NONE`(-1) を取るため符号付き `s16b` 保存（既存の注意点通り）。
+プレイヤー・モンスター両 reader の旧個別読込は `older_than(54)` ガードで残置。工数中・
+価値中（重複解消・単一ソース化）。エフェクト構造体の残差分は本質的発散のため対象外。
+
+---
+
+## 提案 E4: インライン accessor 本体（約 480 個）の .cpp 移設
+
+**現状:** `creature-entity.h`（約 4,800 行、161 KB）にインライン定義された virtual
+accessor が約 480 個。**692 TU がこのヘッダに fan-out** するため、ヘッダ肥大が
+コンパイル時間のボトルネックになり得る。
+
+**修正案:** 単純な getter/setter 本体を `creature-entity.cpp` へ機械的に移設し、
+ヘッダは宣言のみに縮小。virtual のため inline 展開の実利益は乏しく、移設のリスクは
+低い。**大量のため 1 コミット複数関数の小刻みで進める**（レビュー・マージ競合を
+抑えるため）。工数大（機械的）・価値中（ビルド衛生）。上流マージ競合と衝突しやすい
+ため、変愚マージが一段落したタイミングで着手するのが望ましい。
+
+---
+
+## 提案 E5: `is_player()` 自由関数分岐（約 101 箇所）の virtual 化
+
+**現状:** 提案 35 でヘッダ内の機械的冗長ガードは掃除済だが、自由関数側には
+`if (creature.is_player()) { ... } else { ... }` の**真の振る舞い分岐が約 101 箇所**残る。
+これらは型契約ではなく実際にプレイヤー/モンスターで処理が分かれる本丸。
+
+**修正案:** サイトごとに「プレイヤー/モンスターで意味が対称化できるか」を判断し、
+対称化できるものは `CreatureEntity` virtual に押し込む（B トラック D2 と同じ同化手法）。
+機械的一括は不可でサイト別判断が要るため工数大・価値中。同化トラック（B/D）の
+継続として、個別に価値の高いサイトから拾う運用が現実的。
+
+---
+
+## E トラック着手順の推奨
+
+**E1（重複解消・安全・高価値）→ E2（同一ファイル const 衛生）→ E3（シリアライズ
+集約・version 54）→ E4（ヘッダ軽量化・小刻み）→ E5（同化継続・サイト別）**。
+E1/E2 は同一ファイルで安全なため即着手可。E3 は version bump を伴うが確立済み
+パターン。E4/E5 は上流マージ競合に配慮しタイミングを見て進める。
+
+---
+
 ## 作業時の共通留意事項
 
 - 新規提案を完了したら本書と `CLAUDE.md` の両方を更新し、進捗を反映する
