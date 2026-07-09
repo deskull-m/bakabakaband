@@ -39,9 +39,7 @@ void MonsterWriter::write_to_savedata() const
     wr_byte(static_cast<byte>(this->monster.get_transform_hp_threshold()));
     wr_byte(this->monster.has_transformed() ? 1 : 0);
 
-    // prace / pclass は NONE (-1) を取り得るため符号付き s16b で保存する
-    wr_s16b(static_cast<int16_t>(enum2i(this->monster.prace)));
-    wr_s16b(enum2i(this->monster.pclass));
+    // prace / pclass は wr_creature_common() (v54 拡張) に集約済み
 
     // 通常インベントリ (u16b スロット番号 + アイテム、0xFFFF 終端)
     for (size_t i = 0; i < this->monster.inventory.size(); i++) {

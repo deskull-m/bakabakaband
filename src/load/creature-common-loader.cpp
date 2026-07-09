@@ -1,5 +1,7 @@
 #include "load/creature-common-loader.h"
 #include "load/load-util.h"
+#include "player-info/class-types.h"
+#include "player-info/race-types.h"
 #include "system/creature-entity.h"
 #include "system/material-type-definition.h"
 #include "util/enum-converter.h"
@@ -89,4 +91,13 @@ void rd_creature_common(CreatureEntity &creature)
     for (auto i = 0; i < A_MAX; i++) {
         creature.set_stat_use(i, creature.get_stat_max(i));
     }
+
+    // --- セーブデータバージョン 54 拡張: 種族・職業 ---
+    // v53 以前は prace/pclass をプレイヤー固有経路 (byte) / モンスター固有経路 (s16b)
+    // で読むため、ここでは読まない。
+    if (loading_savefile_version_is_older_than(54)) {
+        return;
+    }
+    creature.prace = i2enum<PlayerRaceType>(rd_s16b());
+    creature.pclass = i2enum<PlayerClassType>(rd_s16b());
 }

@@ -784,7 +784,10 @@ per-turn で発火しない（切り傷・毒の inflict 経路が無い）」�
 
 旧 PlayerType / 旧 MonsterEntity に分かれていたセーブ/ロード処理を、
 `CreatureEntity` 基底フィールド単位で 1 箇所に統合していく方針。
-**セーブデータバージョンは 53** に更新済み (フェーズ1=50 / 2=51 / 3=52 / 4=53)。
+**セーブデータバージョンは 54** に更新済み (フェーズ1=50 / 2=51 / 3=52 / 4=53 /
+E3=54)。v54 で `prace` / `pclass` を共通ブロック (`wr_creature_common`) へ集約
+(従来プレイヤー writer=byte / モンスター writer=s16b の二重記述を s16b に統一。
+旧バージョンは各固有経路の `older_than(54)` ガードで読む)。
 
 - **フェーズ4 で全時限効果 (`timed_effects_map`) を共通化済み**:
   `wr_creature_common()` は `CreatureTimedEffect` を列挙順に全 (約 56) ダンプし、
@@ -812,14 +815,19 @@ per-turn で発火しない（切り傷・毒の inflict 経路が無い）」�
   - 対象フィールド (v52 拡張): `level` / `age` / `hp_frac` / `msp` / `csp` /
     `csp_frac` / `max_exp` / `max_max_exp` / `exp_frac` / 能力値配列
     (`stat_max`/`stat_max_max`/`stat_cur` 各 6)。
+  - 対象フィールド (v54 拡張): `prace` / `pclass` (符号付き `s16b`。C1 で
+    モンスターにも付与可能になった共通フィールド。従来プレイヤー=byte /
+    モンスター=s16b の二重記述を共通ブロックへ集約)。
   - **`rd_creature_common()` は内部でバージョン分岐する**: v52 拡張分は
-    `loading_savefile_version_is_older_than(52)` で囲み、v51 以前のセーブでは
-    読み飛ばす。これにより**呼び出し側 (モンスター reader 等) は変更不要**で
-    v50/v51/v52 を自動的に正しく読める (拡張時はこの 1 箇所だけ直せばよい)。
+    `loading_savefile_version_is_older_than(52)`、v54 拡張分 (`prace`/`pclass`) は
+    `older_than(54)` で囲み、旧セーブでは読み飛ばす。これにより**呼び出し側
+    (モンスター reader 等) は変更不要**で v50〜v54 を自動的に正しく読める
+    (拡張時はこの 1 箇所だけ直せばよい)。
 - **モンスター経路は統合済み**: `MonsterWriter::write_to_savedata()` は
   `wr_creature_common()` + モンスター固有フィールド (r_idx / ap_r_idx /
-  alliance / sub_align / smart / mflag2 / parent / transform / prace /
-  pclass / インベントリ) を書く。旧ビットマスク方式
+  alliance / sub_align / smart / mflag2 / parent / transform /
+  インベントリ) を書く (prace / pclass は v54 で `wr_creature_common()`
+  へ集約済み)。旧ビットマスク方式
   (`SaveDataMonsterFlagType` / `write_monster_flags` / `write_monster_info`)
   は廃止。
 - **プレイヤー経路も統合済み (フェーズ2)**: `wr_player()` は先頭で

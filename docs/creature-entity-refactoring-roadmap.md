@@ -3620,7 +3620,7 @@ virtual 化・処理の同化・機能付与** がほぼ出揃った。E トラ�
 |---|---|---|---|---|---|
 | E1 | `regenhp()` の停止判定重複解消（`should_skip_natural_regen()` 利用） | 重複解消+同化 | 小 | 高 | 計画（安全・実装候補） |
 | E2 | `const_cast<PlayerType&>` 排除（CreatureClass const ビューコンストラクタ） | const 衛生 | 小 | 中 | ✅ 完了 |
-| E3 | シリアライズ共通ブロック拡張（`prace`/`pclass`/`r_idx`/`ap_r_idx`） | 重複解消 | 中 | 中 | 計画（version 54 bump） |
+| E3 | シリアライズ共通ブロック拡張（`prace`/`pclass`） | 重複解消 | 中 | 中 | ✅ 完了（version 54 bump） |
 | E4 | インライン accessor 本体（約 480 個）の .cpp 移設 | ビルド衛生 | 大（機械的） | 中 | 計画（小刻みコミット） |
 | E5 | `is_player()` 自由関数分岐（約 101 箇所）の virtual 化 | 同化 | 大 | 中 | 計画（サイト別判断） |
 
@@ -3683,19 +3683,34 @@ if (creature.get_action() == ACTION_HAYAGAKE) {
 
 ---
 
-## 提案 E3: シリアライズ共通ブロック拡張（`prace`/`pclass`/`r_idx`/`ap_r_idx`）
+## 提案 E3: シリアライズ共通ブロック拡張（`prace`/`pclass`） ✅ 完了
 
-**現状:** `prace`/`pclass`/`r_idx`/`ap_r_idx` は `CreatureEntity` 基底フィールドだが、
-`wr_creature_common()`/`rd_creature_common()` に含まれず、**プレイヤー writer と
-モンスター writer で個別に**逐語シリアライズされている（player-writer.cpp:64-65,
-284-285 / monster-writer.cpp:28-29, 43-44）。CLAUDE.md のシリアライズ統合方針
-（共通基底フィールドは共通ブロックに集約）に照らすと残った二重記述。
+**着手前の前提訂正（実コード検証）:** 当初調査は `prace`/`pclass`/`r_idx`/`ap_r_idx`
+の 4 フィールドを「両 writer で二重記述」としたが**誤り**。実際に二重記述されて
+いたのは `prace`/`pclass` のみ（プレイヤー writer が `byte`、モンスター writer が
+`s16b`）。`r_idx`/`ap_r_idx` は **モンスター writer にしか無い**（プレイヤーは
+monrace 同一性を持たないため）＝重複ではなくモンスター固有。よって共通ブロックへ
+移すのは `prace`/`pclass` のみとし、`r_idx`/`ap_r_idx` はモンスター固有経路に残置。
 
-**修正案:** 4 フィールドを `wr_creature_common()` に末尾追加し、`rd_creature_common()`
-に version 分岐付き読込を追加（**savefile version 54 へ bump**、確立済みパターン）。
-`prace`/`pclass` は `NONE`(-1) を取るため符号付き `s16b` 保存（既存の注意点通り）。
-プレイヤー・モンスター両 reader の旧個別読込は `older_than(54)` ガードで残置。工数中・
-価値中（重複解消・単一ソース化）。エフェクト構造体の残差分は本質的発散のため対象外。
+**完了内容:**
+- **savefile version 54 へ bump**（`angband-version.h`、履歴コメント追記）。
+- `wr_creature_common()` 末尾に `prace`/`pclass` を **`s16b`（NONE=-1 対応）** で追加。
+  `rd_creature_common()` に `older_than(54)` ガード付き読込を追加（v53 以前は各固有
+  経路で読むため読まない）。→ **この 1 箇所の対称拡張で全経路（プレイヤー・
+  モンスター）に反映**（確立済みパターン）。
+- **プレイヤー経路:** `player-writer.cpp` の `wr_byte` 2 行を削除、`player-info-loader.cpp`
+  の `rd_byte` 2 行を `older_than(54)` ガードで残置（v53 以前のみ読む）。
+- **モンスター経路:** `monster-writer.cpp` の `wr_s16b` 2 行を削除、
+  `monster-loader-savefile50.cpp` (`rd_monster_v50`) の `rd_s16b` 読込を
+  `older_than(54)` ガードで残置。`race`/`pclass_ref` ポインタ復元は
+  **バージョン非依存で常に実行**（v54 は共通ブロック値、v53 以前は s16b 読込値を使用）。
+- **C1 との整合:** `prace`/`pclass` は C1 でモンスターにも付与可能になった真に共通の
+  基底フィールドであり、CLAUDE.md の「モンスターにも持たせたいフィールドが出てきた
+  場合に個別に `wr_creature_common()` へ移行する」方針に合致。
+- フルビルド（g++ -O3 -Werror）で全経路の対称性を検証済。CLAUDE.md のシリアライズ
+  節も version 54 に更新。
+
+**対象外:** エフェクト構造体の残差分は本質的発散のため対象外（据え置き）。
 
 ---
 

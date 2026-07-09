@@ -70,4 +70,11 @@ void wr_creature_common(const CreatureEntity &creature)
     for (auto i = 0; i < A_MAX; i++) {
         wr_s16b(creature.get_stat_cur(i));
     }
+
+    // --- セーブデータバージョン 54 拡張: 種族・職業 ---
+    // prace / pclass は CreatureEntity 基底の共通フィールド (C1 でモンスターにも
+    // 付与可能)。従来プレイヤー writer (byte) とモンスター writer (s16b) で個別に
+    // 保存していたものを共通ブロックへ集約。NONE (-1) を取り得るため符号付き s16b。
+    wr_s16b(static_cast<int16_t>(enum2i(creature.prace)));
+    wr_s16b(static_cast<int16_t>(enum2i(creature.pclass)));
 }
