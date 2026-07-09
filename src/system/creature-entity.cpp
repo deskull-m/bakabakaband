@@ -4807,3 +4807,228 @@ EXP CreatureEntity::get_exp() const
 {
     return this->exp;
 }
+
+// ==== 提案 E4: creature-entity.h からの inline virtual accessor 本体移設 ====
+
+Pos2D CreatureEntity::get_position() const
+{
+    return Pos2D(this->y, this->x);
+}
+
+POSITION CreatureEntity::get_x() const
+{
+    return this->x;
+}
+
+POSITION CreatureEntity::get_y() const
+{
+    return this->y;
+}
+
+Pos2D CreatureEntity::get_old_position() const
+{
+    return Pos2D(this->oldpy, this->oldpx);
+}
+
+bool CreatureEntity::is_located_at(const Pos2D &pos) const
+{
+    return (this->y == pos.y) && (this->x == pos.x);
+}
+
+int CreatureEntity::get_current_hp() const
+{
+    return this->hp;
+}
+
+int CreatureEntity::get_max_hp() const
+{
+    return this->maxhp;
+}
+
+int CreatureEntity::get_max_maxhp() const
+{
+    return this->max_maxhp;
+}
+
+int CreatureEntity::get_maxhp_reduction() const
+{
+    return 0;
+}
+
+int CreatureEntity::get_speed() const
+{
+    return this->speed;
+}
+
+void CreatureEntity::set_speed(int new_speed)
+{
+    this->speed = new_speed;
+}
+
+bool CreatureEntity::is_dead() const
+{
+    return this->hp < 0;
+}
+
+FloorType *CreatureEntity::get_floor() const
+{
+    return this->current_floor_ptr;
+}
+
+player_sex CreatureEntity::get_psex() const
+{
+    return this->psex;
+}
+
+player_personality_type CreatureEntity::get_ppersonality() const
+{
+    return this->ppersonality;
+}
+
+PlayerRaceType CreatureEntity::get_prace() const
+{
+    return this->prace;
+}
+
+PlayerClassType CreatureEntity::get_pclass() const
+{
+    return this->pclass;
+}
+
+RealmType CreatureEntity::get_realm1() const
+{
+    return this->realm1;
+}
+
+RealmType CreatureEntity::get_realm2() const
+{
+    return this->realm2;
+}
+
+ElementRealmType CreatureEntity::get_element_realm() const
+{
+    return this->element_realm;
+}
+
+int16_t CreatureEntity::get_patron() const
+{
+    return this->patron;
+}
+
+void CreatureEntity::set_psex(player_sex value)
+{
+    this->psex = value;
+}
+
+void CreatureEntity::set_ppersonality(player_personality_type value)
+{
+    this->ppersonality = value;
+}
+
+void CreatureEntity::set_prace(PlayerRaceType value)
+{
+    this->prace = value;
+}
+
+void CreatureEntity::set_pclass(PlayerClassType value)
+{
+    this->pclass = value;
+}
+
+void CreatureEntity::set_realm1(RealmType value)
+{
+    this->realm1 = value;
+}
+
+void CreatureEntity::set_realm2(RealmType value)
+{
+    this->realm2 = value;
+}
+
+void CreatureEntity::set_element_realm(ElementRealmType value)
+{
+    this->element_realm = value;
+}
+
+void CreatureEntity::set_patron(int16_t value)
+{
+    this->patron = value;
+}
+
+ACTION_ENERGY CreatureEntity::get_energy_need() const
+{
+    return this->energy_need;
+}
+
+void CreatureEntity::set_energy_need(ACTION_ENERGY energy)
+{
+    this->energy_need = energy;
+}
+
+void CreatureEntity::add_energy_need(ACTION_ENERGY delta)
+{
+    this->energy_need += delta;
+}
+
+void CreatureEntity::sub_energy_need(ACTION_ENERGY delta)
+{
+    this->energy_need -= delta;
+}
+
+bool CreatureEntity::is_player() const
+{
+    return false;
+}
+
+void CreatureEntity::on_take_hit(int damage)
+{
+    this->dealt_damage += damage;
+    if (this->dealt_damage > this->max_maxhp * 100) {
+        this->dealt_damage = this->max_maxhp * 100;
+    }
+}
+
+bool CreatureEntity::calc_damage_reduction(int &damage, [[maybe_unused]] int damage_type)
+{
+    (void)damage;
+    return false;
+}
+
+bool CreatureEntity::should_skip_natural_regen() const
+{
+    return false;
+}
+
+int CreatureEntity::apply_state_regen_modifier(int amount) const
+{
+    return amount;
+}
+
+int CreatureEntity::apply_creature_specific_regen_modifier(int amount) const
+{
+    return amount;
+}
+
+void CreatureEntity::reset_chameleon_polymorph()
+{
+    const auto real_id = this->get_real_monrace_id();
+    this->r_idx = real_id;
+    this->ap_r_idx = real_id;
+}
+
+bool CreatureEntity::is_pet() const
+{
+    return this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::PET);
+}
+
+bool CreatureEntity::is_visible_on_map() const
+{
+    return this->has_monster_profile() && this->get_monster_profile().ml;
+}
+
+void CreatureEntity::set_visible_on_map(bool value)
+{
+    if (this->has_monster_profile()) {
+        this->get_monster_profile().ml = value;
+    }
+}
