@@ -1197,173 +1197,96 @@ public:
      * @brief クリーチャーが所属するアライアンスを取得する
      * @return アライアンス種別。デフォルトは AllianceType::NONE（無所属）
      */
-    virtual AllianceType get_alliance_idx() const
-    {
-        return this->has_monster_profile() ? this->get_monster_profile().alliance_idx : AllianceType::NONE;
-    }
+    virtual AllianceType get_alliance_idx() const;
 
     /*!
      * @brief クリーチャーのサブアライメント（中立モンスターが召喚主の影響で一時的に持つ陣営）を取得する
      * @return サブアライメントフラグ。デフォルトは SUB_ALIGN_NEUTRAL
      */
-    virtual BIT_FLAGS8 get_sub_align() const
-    {
-        return this->has_monster_profile() ? this->get_monster_profile().sub_align : static_cast<BIT_FLAGS8>(SUB_ALIGN_NEUTRAL);
-    }
+    virtual BIT_FLAGS8 get_sub_align() const;
 
     /*!
      * @brief このクリーチャーを召喚した親モンスターのインデックスを取得する
      * @return 親モンスター m_idx。召喚されていない（または不明）なら 0
      */
-    virtual MONSTER_IDX get_parent_m_idx() const
-    {
-        return this->has_monster_profile() ? this->get_monster_profile().parent_m_idx : 0;
-    }
+    virtual MONSTER_IDX get_parent_m_idx() const;
 
     /*!
      * @brief アライアンス所属を設定する (提案 9b)
      * @details モンスター以外（プレイヤー）に対する呼出は無視される
      */
-    virtual void set_alliance_idx(AllianceType alliance)
-    {
-        if (this->has_monster_profile()) {
-            this->get_monster_profile().alliance_idx = alliance;
-        }
-    }
+    virtual void set_alliance_idx(AllianceType alliance);
 
     /*!
      * @brief サブアライメントを設定する (提案 9b)
      */
-    virtual void set_sub_align(BIT_FLAGS8 sub_align)
-    {
-        if (this->has_monster_profile()) {
-            this->get_monster_profile().sub_align = sub_align;
-        }
-    }
+    virtual void set_sub_align(BIT_FLAGS8 sub_align);
 
     /*!
      * @brief サブアライメントに特定ビットを追加する (提案 9b)
      */
-    virtual void add_sub_align(BIT_FLAGS8 mask)
-    {
-        if (this->has_monster_profile()) {
-            this->get_monster_profile().sub_align |= mask;
-        }
-    }
+    virtual void add_sub_align(BIT_FLAGS8 mask);
 
     /*!
      * @brief 親モンスター m_idx を設定する (提案 9b)
      */
-    virtual void set_parent_m_idx(MONSTER_IDX m_idx)
-    {
-        if (this->has_monster_profile()) {
-            this->get_monster_profile().parent_m_idx = m_idx;
-        }
-    }
+    virtual void set_parent_m_idx(MONSTER_IDX m_idx);
 
     /*!
      * @brief smart_learn フラグに 1 ビット追加する (提案 9b)
      */
-    virtual void add_smart_flag(MonsterSmartLearnType flag)
-    {
-        if (this->has_monster_profile()) {
-            this->get_monster_profile().smart.set(flag);
-        }
-    }
+    virtual void add_smart_flag(MonsterSmartLearnType flag);
 
     /*!
      * @brief smart_learn フラグを全クリアする (提案 9b)
      */
-    virtual void clear_smart_flags()
-    {
-        if (this->has_monster_profile()) {
-            this->get_monster_profile().smart.clear();
-        }
-    }
+    virtual void clear_smart_flags();
 
     /*!
      * @brief 変身先モンスター種族 ID を取得する (提案 19)
      */
-    virtual MonraceId get_transform_r_idx() const
-    {
-        return this->has_monster_profile() ? this->get_monster_profile().transform_r_idx : MonraceId::PLAYER;
-    }
+    virtual MonraceId get_transform_r_idx() const;
 
     /*!
      * @brief 変身先モンスター種族 ID を設定する (提案 19)
      */
-    virtual void set_transform_r_idx(MonraceId new_r_idx)
-    {
-        if (this->has_monster_profile()) {
-            this->get_monster_profile().transform_r_idx = new_r_idx;
-        }
-    }
+    virtual void set_transform_r_idx(MonraceId new_r_idx);
 
     /*!
      * @brief 変身する HP 閾値 (最大 HP の %) を取得する (提案 19)
      */
-    virtual PERCENTAGE get_transform_hp_threshold() const
-    {
-        return this->has_monster_profile() ? this->get_monster_profile().transform_hp_threshold : 0;
-    }
+    virtual PERCENTAGE get_transform_hp_threshold() const;
 
     /*!
      * @brief 変身する HP 閾値を設定する (提案 19)
      */
-    virtual void set_transform_hp_threshold(PERCENTAGE threshold)
-    {
-        if (this->has_monster_profile()) {
-            this->get_monster_profile().transform_hp_threshold = threshold;
-        }
-    }
+    virtual void set_transform_hp_threshold(PERCENTAGE threshold);
 
     /*!
      * @brief 変身済みかどうか (提案 19)
      */
-    virtual bool has_transformed() const
-    {
-        return this->has_monster_profile() && this->get_monster_profile().has_transformed;
-    }
+    virtual bool has_transformed() const;
 
     /*!
      * @brief 変身済みフラグを設定する (提案 19)
      */
-    virtual void set_has_transformed(bool transformed)
-    {
-        if (this->has_monster_profile()) {
-            this->get_monster_profile().has_transformed = transformed;
-        }
-    }
+    virtual void set_has_transformed(bool transformed);
 
     /*!
      * @brief 自壊までの残りターン数を取得する (提案 19)
      */
-    virtual int get_death_count() const
-    {
-        return this->has_monster_profile() ? this->get_monster_profile().death_count : 0;
-    }
+    virtual int get_death_count() const;
 
     /*!
      * @brief 自壊までの残りターン数を設定する (提案 19)
      */
-    virtual void set_death_count(int new_count)
-    {
-        if (this->has_monster_profile()) {
-            this->get_monster_profile().death_count = new_count;
-        }
-    }
+    virtual void set_death_count(int new_count);
 
     /*!
      * @brief 自壊までの残りターン数を 1 減らす (提案 19)
      * @return 減算後の値
      */
-    virtual int decrement_death_count()
-    {
-        if (this->has_monster_profile()) {
-            return --this->get_monster_profile().death_count;
-        }
-        return 0;
-    }
+    virtual int decrement_death_count();
 
     /*!
      * @brief MonsterConstantFlagType (mflag2) のチェック共通ヘルパ
@@ -1377,100 +1300,51 @@ public:
     /*!
      * @brief MonsterConstantFlagType を立てる (提案 18)
      */
-    virtual void set_constant_flag(MonsterConstantFlagType flag)
-    {
-        if (this->has_monster_profile()) {
-            this->get_monster_profile().mflag2.set(flag);
-        }
-    }
+    virtual void set_constant_flag(MonsterConstantFlagType flag);
 
     /*!
      * @brief MonsterConstantFlagType を複数まとめて立てる (提案 18)
      */
-    virtual void set_constant_flags(std::initializer_list<MonsterConstantFlagType> flags)
-    {
-        if (this->has_monster_profile()) {
-            this->get_monster_profile().mflag2.set(flags);
-        }
-    }
+    virtual void set_constant_flags(std::initializer_list<MonsterConstantFlagType> flags);
 
     /*!
      * @brief MonsterConstantFlagType をクリアする (提案 18)
      */
-    virtual void reset_constant_flag(MonsterConstantFlagType flag)
-    {
-        if (this->has_monster_profile()) {
-            this->get_monster_profile().mflag2.reset(flag);
-        }
-    }
+    virtual void reset_constant_flag(MonsterConstantFlagType flag);
 
     /*!
      * @brief MonsterConstantFlagType を複数まとめてクリアする (提案 18)
      */
-    virtual void reset_constant_flags(std::initializer_list<MonsterConstantFlagType> flags)
-    {
-        if (this->has_monster_profile()) {
-            this->get_monster_profile().mflag2.reset(flags);
-        }
-    }
+    virtual void reset_constant_flags(std::initializer_list<MonsterConstantFlagType> flags);
 
     /*!
      * @brief MonsterConstantFlagType を真偽値で設定する (提案 20)
      * @details savefile 復元等で `mflag2[flag] = bool` 風の代入を行う
      *          パターン用。true なら set、false なら reset。
      */
-    virtual void assign_constant_flag(MonsterConstantFlagType flag, bool value)
-    {
-        if (!this->has_monster_profile()) {
-            return;
-        }
-        if (value) {
-            this->get_monster_profile().mflag2.set(flag);
-        } else {
-            this->get_monster_profile().mflag2.reset(flag);
-        }
-    }
+    virtual void assign_constant_flag(MonsterConstantFlagType flag, bool value);
 
     /*!
      * @brief MonsterConstantFlagType (mflag2) をすべてクリアする (提案 20)
      */
-    virtual void clear_constant_flags()
-    {
-        if (this->has_monster_profile()) {
-            this->get_monster_profile().mflag2.clear();
-        }
-    }
+    virtual void clear_constant_flags();
 
     /*!
      * @brief mflag2 全体を読み取る (提案 20)
      * @details モンスターボール捕獲・解放等で mflag2 ビット集合を
      *          まるごとコピーする用途。プレイヤーは空集合を返す。
      */
-    virtual const EnumClassFlagGroup<MonsterConstantFlagType> &get_all_constant_flags() const
-    {
-        static const EnumClassFlagGroup<MonsterConstantFlagType> empty{};
-        return this->has_monster_profile() ? this->get_monster_profile().mflag2 : empty;
-    }
+    virtual const EnumClassFlagGroup<MonsterConstantFlagType> &get_all_constant_flags() const;
 
     /*!
      * @brief mflag2 全体を上書きする (提案 20)
      */
-    virtual void set_all_constant_flags(const EnumClassFlagGroup<MonsterConstantFlagType> &flags)
-    {
-        if (this->has_monster_profile()) {
-            this->get_monster_profile().mflag2 = flags;
-        }
-    }
+    virtual void set_all_constant_flags(const EnumClassFlagGroup<MonsterConstantFlagType> &flags);
 
     /*!
      * @brief MonsterTemporaryFlagType (mflag) をすべてクリアする (提案 20)
      */
-    virtual void clear_temporary_flags()
-    {
-        if (this->has_monster_profile()) {
-            this->get_monster_profile().mflag.clear();
-        }
-    }
+    virtual void clear_temporary_flags();
 
     /*!
      * @brief MonsterTemporaryFlagType (mflag) のチェック共通ヘルパ (提案 16)
@@ -1483,110 +1357,63 @@ public:
     /*!
      * @brief MonsterTemporaryFlagType を立てる (提案 16)
      */
-    virtual void set_temporary_flag(MonsterTemporaryFlagType flag)
-    {
-        if (this->has_monster_profile()) {
-            this->get_monster_profile().mflag.set(flag);
-        }
-    }
+    virtual void set_temporary_flag(MonsterTemporaryFlagType flag);
 
     /*!
      * @brief MonsterTemporaryFlagType をクリアする (提案 16)
      */
-    virtual void reset_temporary_flag(MonsterTemporaryFlagType flag)
-    {
-        if (this->has_monster_profile()) {
-            this->get_monster_profile().mflag.reset(flag);
-        }
-    }
+    virtual void reset_temporary_flag(MonsterTemporaryFlagType flag);
 
     /*! @brief プレイヤーの視界内 (VIEW) にいるか (提案 16) */
-    virtual bool is_in_view() const
-    {
-        return this->has_temporary_flag(MonsterTemporaryFlagType::VIEW);
-    }
+    virtual bool is_in_view() const;
 
     /*! @brief project_all_los の対象 (LOS) としてマークされているか */
-    virtual bool is_marked_for_los() const
-    {
-        return this->has_temporary_flag(MonsterTemporaryFlagType::LOS);
-    }
+    virtual bool is_marked_for_los() const;
 
     /*! @brief ESP で感知されているか */
-    virtual bool is_sensed_by_esp() const
-    {
-        return this->has_temporary_flag(MonsterTemporaryFlagType::ESP);
-    }
+    virtual bool is_sensed_by_esp() const;
 
     /*! @brief ターン開始時にフロアにいたか (PRESENT_AT_TURN_START) */
-    virtual bool was_present_at_turn_start() const
-    {
-        return this->has_temporary_flag(MonsterTemporaryFlagType::PRESENT_AT_TURN_START);
-    }
+    virtual bool was_present_at_turn_start() const;
 
     /*! @brief 反魔法状態 (PREVENT_MAGIC) か */
-    virtual bool has_prevent_magic() const
-    {
-        return this->has_temporary_flag(MonsterTemporaryFlagType::PREVENT_MAGIC);
-    }
+    virtual bool has_prevent_magic() const;
 
     /*! @brief 正気喪失効果 (SANITY_BLAST) を持つか */
-    virtual bool has_sanity_blast() const
-    {
-        return this->has_temporary_flag(MonsterTemporaryFlagType::SANITY_BLAST);
-    }
+    virtual bool has_sanity_blast() const;
 
     /*!
      * @brief モンスター実種族 ID を取得する (提案 28)
      * @details プレイヤーは MonraceId::PLAYER を保持。
      */
-    virtual MonraceId get_r_idx() const
-    {
-        return this->r_idx;
-    }
+    virtual MonraceId get_r_idx() const;
 
     /*!
      * @brief モンスター外見種族 ID を取得する (提案 28)
      */
-    virtual MonraceId get_ap_r_idx() const
-    {
-        return this->ap_r_idx;
-    }
+    virtual MonraceId get_ap_r_idx() const;
 
     /*!
      * @brief 騎乗中のモンスター m_idx を取得する (提案 28)
      */
-    virtual MONSTER_IDX get_riding() const
-    {
-        return this->riding;
-    }
+    virtual MONSTER_IDX get_riding() const;
 
     /*!
      * @brief モンスター実種族 ID を設定する (提案 22)
      * @details ap_r_idx は変更しない。両方更新したい場合は polymorph_to() を使う。
      */
-    virtual void set_r_idx(MonraceId new_r_idx)
-    {
-        this->r_idx = new_r_idx;
-    }
+    virtual void set_r_idx(MonraceId new_r_idx);
 
     /*!
      * @brief モンスター外見種族 ID を設定する (提案 22)
      */
-    virtual void set_ap_r_idx(MonraceId new_ap_r_idx)
-    {
-        this->ap_r_idx = new_ap_r_idx;
-    }
+    virtual void set_ap_r_idx(MonraceId new_ap_r_idx);
 
     /*!
      * @brief 実種族と外見種族をまとめて設定する (提案 22)
      * @details polymorph / 進化 / 変身などで両者を同期させたいときに使用。
      */
-    virtual void polymorph_to(MonraceId new_r_idx)
-    {
-        this->r_idx = new_r_idx;
-        this->ap_r_idx = new_r_idx;
-    }
+    virtual void polymorph_to(MonraceId new_r_idx);
 
     void increment_seen_count() const;
 
@@ -1597,58 +1424,22 @@ public:
      *          別 idx へ付け替える等の用途。通常の騎乗開始/終了処理は
      *          ride_monster() を使用すること。
      */
-    virtual void set_riding(MONSTER_IDX m_idx)
-    {
-        this->riding = m_idx;
-    }
+    virtual void set_riding(MONSTER_IDX m_idx);
 
     // [提案 40] ペット関連フィールドの virtual API。
     // pet_extra_flags は BIT_FLAGS16 のビットマスク (`PF_OPEN_DOORS` 等) で、
     // 単一フラグ操作は add/remove/has、一括代入は set/get_X_flags 経由。
-    virtual bool has_pet_extra_flag(BIT_FLAGS16 flag) const
-    {
-        return (this->pet_extra_flags & flag) != 0;
-    }
-    virtual void add_pet_extra_flag(BIT_FLAGS16 flag)
-    {
-        this->pet_extra_flags |= flag;
-    }
-    virtual void remove_pet_extra_flag(BIT_FLAGS16 flag)
-    {
-        this->pet_extra_flags &= static_cast<BIT_FLAGS16>(~flag);
-    }
-    virtual BIT_FLAGS16 get_pet_extra_flags() const
-    {
-        return this->pet_extra_flags;
-    }
-    virtual void set_pet_extra_flags(BIT_FLAGS16 value)
-    {
-        this->pet_extra_flags = value;
-    }
-    virtual int16_t get_pet_follow_distance() const
-    {
-        return this->pet_follow_distance;
-    }
-    virtual void set_pet_follow_distance(int16_t value)
-    {
-        this->pet_follow_distance = value;
-    }
-    virtual MONSTER_IDX get_pet_t_m_idx() const
-    {
-        return this->pet_t_m_idx;
-    }
-    virtual void set_pet_t_m_idx(MONSTER_IDX value)
-    {
-        this->pet_t_m_idx = value;
-    }
-    virtual MONSTER_IDX get_riding_t_m_idx() const
-    {
-        return this->riding_t_m_idx;
-    }
-    virtual void set_riding_t_m_idx(MONSTER_IDX value)
-    {
-        this->riding_t_m_idx = value;
-    }
+    virtual bool has_pet_extra_flag(BIT_FLAGS16 flag) const;
+    virtual void add_pet_extra_flag(BIT_FLAGS16 flag);
+    virtual void remove_pet_extra_flag(BIT_FLAGS16 flag);
+    virtual BIT_FLAGS16 get_pet_extra_flags() const;
+    virtual void set_pet_extra_flags(BIT_FLAGS16 value);
+    virtual int16_t get_pet_follow_distance() const;
+    virtual void set_pet_follow_distance(int16_t value);
+    virtual MONSTER_IDX get_pet_t_m_idx() const;
+    virtual void set_pet_t_m_idx(MONSTER_IDX value);
+    virtual MONSTER_IDX get_riding_t_m_idx() const;
+    virtual void set_riding_t_m_idx(MONSTER_IDX value);
 
     // [提案 45] ペット追従先 (pet_t_m_idx) / 騎乗ターゲット (riding_t_m_idx) の
     // ターゲットモンスター idx 保守を集約する共通操作。モンスター index が
@@ -1682,356 +1473,101 @@ public:
     // [提案 42] 差分検出キャッシュ (old_*) の virtual API。
     // update_creature() 系で 1 ターン前の値スナップショットを保持し、
     // 状態変化検出 / メッセージ出力に使用される。
-    virtual POSITION get_old_lite() const
-    {
-        return this->old_lite;
-    }
-    virtual void set_old_lite(POSITION value)
-    {
-        this->old_lite = value;
-    }
-    virtual BIT_FLAGS get_old_race_flags1() const
-    {
-        return this->old_race1;
-    }
-    virtual void set_old_race_flags1(BIT_FLAGS value)
-    {
-        this->old_race1 = value;
-    }
-    virtual BIT_FLAGS get_old_race_flags2() const
-    {
-        return this->old_race2;
-    }
-    virtual void set_old_race_flags2(BIT_FLAGS value)
-    {
-        this->old_race2 = value;
-    }
-    virtual int16_t get_old_realm() const
-    {
-        return this->old_realm;
-    }
-    virtual void set_old_realm(int16_t value)
-    {
-        this->old_realm = value;
-    }
-    virtual int16_t get_old_spells() const
-    {
-        return this->old_spells;
-    }
-    virtual void set_old_spells(int16_t value)
-    {
-        this->old_spells = value;
-    }
-    virtual bool was_cumber_armor() const
-    {
-        return this->old_cumber_armor;
-    }
-    virtual void set_was_cumber_armor(bool value)
-    {
-        this->old_cumber_armor = value;
-    }
-    virtual bool was_cumber_glove() const
-    {
-        return this->old_cumber_glove;
-    }
-    virtual void set_was_cumber_glove(bool value)
-    {
-        this->old_cumber_glove = value;
-    }
-    virtual bool was_heavy_wield(int hand) const
-    {
-        return this->old_heavy_wield[hand];
-    }
-    virtual void set_was_heavy_wield(int hand, bool value)
-    {
-        this->old_heavy_wield[hand] = value;
-    }
-    virtual bool was_heavy_shoot() const
-    {
-        return this->old_heavy_shoot;
-    }
-    virtual void set_was_heavy_shoot(bool value)
-    {
-        this->old_heavy_shoot = value;
-    }
-    virtual bool was_icky_wield(int hand) const
-    {
-        return this->old_icky_wield[hand];
-    }
-    virtual void set_was_icky_wield(int hand, bool value)
-    {
-        this->old_icky_wield[hand] = value;
-    }
-    virtual bool was_icky_riding_wield(int hand) const
-    {
-        return this->old_riding_wield[hand];
-    }
-    virtual void set_was_icky_riding_wield(int hand, bool value)
-    {
-        this->old_riding_wield[hand] = value;
-    }
-    virtual bool was_riding_ryoute() const
-    {
-        return this->old_riding_ryoute;
-    }
-    virtual void set_was_riding_ryoute(bool value)
-    {
-        this->old_riding_ryoute = value;
-    }
-    virtual bool was_monlite() const
-    {
-        return this->old_monlite;
-    }
-    virtual void set_was_monlite(bool value)
-    {
-        this->old_monlite = value;
-    }
+    virtual POSITION get_old_lite() const;
+    virtual void set_old_lite(POSITION value);
+    virtual BIT_FLAGS get_old_race_flags1() const;
+    virtual void set_old_race_flags1(BIT_FLAGS value);
+    virtual BIT_FLAGS get_old_race_flags2() const;
+    virtual void set_old_race_flags2(BIT_FLAGS value);
+    virtual int16_t get_old_realm() const;
+    virtual void set_old_realm(int16_t value);
+    virtual int16_t get_old_spells() const;
+    virtual void set_old_spells(int16_t value);
+    virtual bool was_cumber_armor() const;
+    virtual void set_was_cumber_armor(bool value);
+    virtual bool was_cumber_glove() const;
+    virtual void set_was_cumber_glove(bool value);
+    virtual bool was_heavy_wield(int hand) const;
+    virtual void set_was_heavy_wield(int hand, bool value);
+    virtual bool was_heavy_shoot() const;
+    virtual void set_was_heavy_shoot(bool value);
+    virtual bool was_icky_wield(int hand) const;
+    virtual void set_was_icky_wield(int hand, bool value);
+    virtual bool was_icky_riding_wield(int hand) const;
+    virtual void set_was_icky_riding_wield(int hand, bool value);
+    virtual bool was_riding_ryoute() const;
+    virtual void set_was_riding_ryoute(bool value);
+    virtual bool was_monlite() const;
+    virtual void set_was_monlite(bool value);
 
     // [提案 43] 行動・状態フラグ群の virtual API。
     // action / running / resting / is_fired / level_up_message /
     // timewalk / now_damaged / playing / leaving / monk_notify_aux /
     // teleport_town / yoiyami / sutemi / fishing_dir を private 化し
     // get/set virtual 経由でアクセス。
-    virtual byte get_action() const
-    {
-        return this->action;
-    }
-    virtual void set_action(byte value)
-    {
-        this->action = value;
-    }
-    virtual int16_t get_running() const
-    {
-        return this->running;
-    }
-    virtual void set_running(int16_t value)
-    {
-        this->running = value;
-    }
-    virtual GAME_TURN get_resting() const
-    {
-        return this->resting;
-    }
-    virtual void set_resting(GAME_TURN value)
-    {
-        this->resting = value;
-    }
-    virtual bool is_fired() const
-    {
-        return this->fired;
-    }
-    virtual void set_is_fired(bool value)
-    {
-        this->fired = value;
-    }
-    virtual bool has_level_up_message() const
-    {
-        return this->level_up_message;
-    }
-    virtual void set_level_up_message(bool value)
-    {
-        this->level_up_message = value;
-    }
-    virtual bool is_timewalking() const
-    {
-        return this->timewalk;
-    }
-    virtual void set_timewalking(bool value)
-    {
-        this->timewalk = value;
-    }
-    virtual bool is_now_damaged() const
-    {
-        return this->now_damaged;
-    }
-    virtual void set_now_damaged(bool value)
-    {
-        this->now_damaged = value;
-    }
-    virtual bool is_playing() const
-    {
-        return this->playing;
-    }
-    virtual void set_playing(bool value)
-    {
-        this->playing = value;
-    }
-    virtual bool is_leaving() const
-    {
-        return this->leaving;
-    }
-    virtual void set_leaving(bool value)
-    {
-        this->leaving = value;
-    }
-    virtual bool get_monk_notify_aux() const
-    {
-        return this->monk_notify_aux;
-    }
-    virtual void set_monk_notify_aux(bool value)
-    {
-        this->monk_notify_aux = value;
-    }
-    virtual bool is_teleport_town() const
-    {
-        return this->teleport_town;
-    }
-    virtual void set_teleport_town(bool value)
-    {
-        this->teleport_town = value;
-    }
-    virtual BIT_FLAGS get_yoiyami() const
-    {
-        return this->yoiyami;
-    }
-    virtual void set_yoiyami(BIT_FLAGS value)
-    {
-        this->yoiyami = value;
-    }
-    virtual bool is_sutemi() const
-    {
-        return this->sutemi;
-    }
-    virtual void set_sutemi(bool value)
-    {
-        this->sutemi = value;
-    }
-    virtual DIRECTION get_fishing_dir() const
-    {
-        return this->fishing_dir;
-    }
-    virtual void set_fishing_dir(DIRECTION value)
-    {
-        this->fishing_dir = value;
-    }
+    virtual byte get_action() const;
+    virtual void set_action(byte value);
+    virtual int16_t get_running() const;
+    virtual void set_running(int16_t value);
+    virtual GAME_TURN get_resting() const;
+    virtual void set_resting(GAME_TURN value);
+    virtual bool is_fired() const;
+    virtual void set_is_fired(bool value);
+    virtual bool has_level_up_message() const;
+    virtual void set_level_up_message(bool value);
+    virtual bool is_timewalking() const;
+    virtual void set_timewalking(bool value);
+    virtual bool is_now_damaged() const;
+    virtual void set_now_damaged(bool value);
+    virtual bool is_playing() const;
+    virtual void set_playing(bool value);
+    virtual bool is_leaving() const;
+    virtual void set_leaving(bool value);
+    virtual bool get_monk_notify_aux() const;
+    virtual void set_monk_notify_aux(bool value);
+    virtual bool is_teleport_town() const;
+    virtual void set_teleport_town(bool value);
+    virtual BIT_FLAGS get_yoiyami() const;
+    virtual void set_yoiyami(BIT_FLAGS value);
+    virtual bool is_sutemi() const;
+    virtual void set_sutemi(bool value);
+    virtual DIRECTION get_fishing_dir() const;
+    virtual void set_fishing_dir(DIRECTION value);
 
     // [提案 47] その他の小規模フィールドの virtual API。
-    virtual int32_t get_dealt_damage() const
-    {
-        return this->dealt_damage;
-    }
-    virtual void set_dealt_damage(int32_t value)
-    {
-        this->dealt_damage = value;
-    }
-    virtual void add_dealt_damage(int32_t delta)
-    {
-        this->dealt_damage += delta;
-    }
-    virtual POSITION get_run_py() const
-    {
-        return this->run_py;
-    }
-    virtual void set_run_py(POSITION value)
-    {
-        this->run_py = value;
-    }
-    virtual POSITION get_run_px() const
-    {
-        return this->run_px;
-    }
-    virtual void set_run_px(POSITION value)
-    {
-        this->run_px = value;
-    }
-    virtual bool is_vanish_stairs_flag() const
-    {
-        return this->vanish_stairs_flag;
-    }
-    virtual void set_vanish_stairs_flag(bool value)
-    {
-        this->vanish_stairs_flag = value;
-    }
-    virtual bool is_suppress_multi_reward() const
-    {
-        return this->suppress_multi_reward;
-    }
-    virtual void set_suppress_multi_reward(bool value)
-    {
-        this->suppress_multi_reward = value;
-    }
-    virtual short get_tracking_bi_id() const
-    {
-        return this->tracking_bi_id;
-    }
-    virtual void set_tracking_bi_id(short value)
-    {
-        this->tracking_bi_id = value;
-    }
+    virtual int32_t get_dealt_damage() const;
+    virtual void set_dealt_damage(int32_t value);
+    virtual void add_dealt_damage(int32_t delta);
+    virtual POSITION get_run_py() const;
+    virtual void set_run_py(POSITION value);
+    virtual POSITION get_run_px() const;
+    virtual void set_run_px(POSITION value);
+    virtual bool is_vanish_stairs_flag() const;
+    virtual void set_vanish_stairs_flag(bool value);
+    virtual bool is_suppress_multi_reward() const;
+    virtual void set_suppress_multi_reward(bool value);
+    virtual short get_tracking_bi_id() const;
+    virtual void set_tracking_bi_id(short value);
 
     // [提案 48] さらなる小規模フィールドの virtual API。
-    virtual ItemKindType get_tval_ammo() const
-    {
-        return this->tval_ammo;
-    }
-    virtual void set_tval_ammo(ItemKindType value)
-    {
-        this->tval_ammo = value;
-    }
-    virtual bool is_dtrap() const
-    {
-        return this->dtrap;
-    }
-    virtual void set_dtrap(bool value)
-    {
-        this->dtrap = value;
-    }
-    virtual bool is_autopick_autoregister() const
-    {
-        return this->autopick_autoregister;
-    }
-    virtual void set_autopick_autoregister(bool value)
-    {
-        this->autopick_autoregister = value;
-    }
-    virtual DungeonId get_recall_dungeon() const
-    {
-        return this->recall_dungeon;
-    }
-    virtual void set_recall_dungeon(DungeonId value)
-    {
-        this->recall_dungeon = value;
-    }
-    virtual ENERGY get_enchant_energy_need() const
-    {
-        return this->enchant_energy_need;
-    }
-    virtual void set_enchant_energy_need(ENERGY value)
-    {
-        this->enchant_energy_need = value;
-    }
-    virtual void add_enchant_energy_need(ENERGY delta)
-    {
-        this->enchant_energy_need += delta;
-    }
-    virtual void sub_enchant_energy_need(ENERGY delta)
-    {
-        this->enchant_energy_need -= delta;
-    }
-    virtual ENERGY get_energy_use() const
-    {
-        return this->energy_use;
-    }
-    virtual void set_energy_use(ENERGY value)
-    {
-        this->energy_use = value;
-    }
-    virtual void add_energy_use(ENERGY delta)
-    {
-        this->energy_use += delta;
-    }
-    virtual void sub_energy_use(ENERGY delta)
-    {
-        this->energy_use -= delta;
-    }
-    virtual void mul_energy_use(ENERGY factor)
-    {
-        this->energy_use *= factor;
-    }
-    virtual void div_energy_use(ENERGY divisor)
-    {
-        this->energy_use /= divisor;
-    }
+    virtual ItemKindType get_tval_ammo() const;
+    virtual void set_tval_ammo(ItemKindType value);
+    virtual bool is_dtrap() const;
+    virtual void set_dtrap(bool value);
+    virtual bool is_autopick_autoregister() const;
+    virtual void set_autopick_autoregister(bool value);
+    virtual DungeonId get_recall_dungeon() const;
+    virtual void set_recall_dungeon(DungeonId value);
+    virtual ENERGY get_enchant_energy_need() const;
+    virtual void set_enchant_energy_need(ENERGY value);
+    virtual void add_enchant_energy_need(ENERGY delta);
+    virtual void sub_enchant_energy_need(ENERGY delta);
+    virtual ENERGY get_energy_use() const;
+    virtual void set_energy_use(ENERGY value);
+    virtual void add_energy_use(ENERGY delta);
+    virtual void sub_energy_use(ENERGY delta);
+    virtual void mul_energy_use(ENERGY factor);
+    virtual void div_energy_use(ENERGY divisor);
 
     /*!
      * @brief パック内の所持品数を inventory[] から計算する (提案 25)
@@ -2091,176 +1627,88 @@ public:
     void init_extended_inventory();
 
     /*! @brief 年齢を設定する (提案 24) */
-    virtual void set_age(int16_t value)
-    {
-        this->age = value;
-    }
+    virtual void set_age(int16_t value);
 
     /*! @brief 年齢を加算する (提案 24) */
-    virtual void add_age(int16_t delta)
-    {
-        this->age += delta;
-    }
+    virtual void add_age(int16_t delta);
 
     /*! @brief 身長を設定する (提案 24) */
-    virtual void set_ht(int16_t value)
-    {
-        this->ht = value;
-    }
+    virtual void set_ht(int16_t value);
 
     /*! @brief 体重を設定する (提案 24) */
-    virtual void set_wt(int16_t value)
-    {
-        this->wt = value;
-    }
+    virtual void set_wt(int16_t value);
 
     /*! @brief 名声を設定する (提案 24) */
-    virtual void set_prestige(int16_t value)
-    {
-        this->prestige = value;
-    }
+    virtual void set_prestige(int16_t value);
 
     /*! @brief 名声を加算する (提案 24) */
-    virtual void add_prestige(int16_t delta)
-    {
-        this->prestige += delta;
-    }
+    virtual void add_prestige(int16_t delta);
 
     /*! @brief 名声を半減する等の比率変更 (提案 24) */
-    virtual void divide_prestige(int divisor)
-    {
-        if (divisor != 0) {
-            this->prestige = static_cast<int16_t>(this->prestige / divisor);
-        }
-    }
+    virtual void divide_prestige(int divisor);
 
     /*! @brief 待ち伏せ状態を設定する (提案 26) */
-    virtual void set_ambush_flag(bool value)
-    {
-        this->ambush_flag = value;
-    }
+    virtual void set_ambush_flag(bool value);
 
     /*! @brief 滋養度を設定する (提案 26) */
-    virtual void set_food(int16_t value)
-    {
-        this->food = value;
-    }
+    virtual void set_food(int16_t value);
 
     /*! @brief 現在いる街番号を設定する (提案 26) */
-    virtual void set_town_num(int16_t value)
-    {
-        this->town_num = value;
-    }
+    virtual void set_town_num(int16_t value);
 
     /*! @brief レベルを設定する (提案 26) */
-    virtual void set_level(int16_t value)
-    {
-        this->level = value;
-    }
+    virtual void set_level(int16_t value);
 
     /*! @brief 経験レベル最大値を設定する (提案 27) */
-    virtual void set_max_plv(int16_t value)
-    {
-        this->max_plv = value;
-    }
+    virtual void set_max_plv(int16_t value);
 
     /*! @brief ミュータント体質による自然回復補正(%)を設定する (A-1) */
-    virtual void set_mutant_regenerate_mod(PERCENTAGE value)
-    {
-        this->mutant_regenerate_mod = value;
-    }
+    virtual void set_mutant_regenerate_mod(PERCENTAGE value);
 
     /*! @brief 習得済み呪文数を設定する (A-1) */
-    virtual void set_learned_spells(int16_t value)
-    {
-        this->learned_spells = value;
-    }
+    virtual void set_learned_spells(int16_t value);
 
     /*! @brief 追加習得可能呪文数を設定する (A-1) */
-    virtual void set_add_spells(int16_t value)
-    {
-        this->add_spells = value;
-    }
+    virtual void set_add_spells(int16_t value);
 
     /*! @brief 二刀流ペナルティ軽減フラグを設定する (A-1) */
-    virtual void set_easy_2weapon(BIT_FLAGS value)
-    {
-        this->easy_2weapon = value;
-    }
+    virtual void set_easy_2weapon(BIT_FLAGS value);
 
     /*! @brief 劣化セーヴィングスローフラグを設定する (A-1) */
-    virtual void set_down_saving(BIT_FLAGS value)
-    {
-        this->down_saving = value;
-    }
+    virtual void set_down_saving(BIT_FLAGS value);
 
     /*! @brief 最大 MP (max_mp) を設定する (提案 27) */
-    virtual void set_max_mp(int value)
-    {
-        this->max_mp = value;
-    }
+    virtual void set_max_mp(int value);
 
     /*! @brief 現在の経験値を設定する (提案 27) */
-    virtual void set_exp(EXP value)
-    {
-        this->exp = value;
-    }
+    virtual void set_exp(EXP value);
 
     /*! @brief 最大経験値を設定する (提案 27) */
-    virtual void set_max_exp(EXP value)
-    {
-        this->max_exp = value;
-    }
+    virtual void set_max_exp(EXP value);
 
     /*! @brief 最大の最大経験値を設定する (提案 27) */
-    virtual void set_max_max_exp(EXP value)
-    {
-        this->max_max_exp = value;
-    }
+    virtual void set_max_max_exp(EXP value);
 
     /*! @brief 所持金を設定する (提案 27b) */
-    virtual void set_au(int value)
-    {
-        this->au = value;
-    }
+    virtual void set_au(int value);
 
     /*! @brief 所持金を加算する (提案 27b) */
-    virtual void add_au(int delta)
-    {
-        this->au += delta;
-    }
+    virtual void add_au(int delta);
 
     /*! @brief 所持金を減算する (提案 27b) */
-    virtual void sub_au(int delta)
-    {
-        this->au -= delta;
-    }
+    virtual void sub_au(int delta);
 
     /*! @brief 所持金を比率変更する (提案 27b) */
-    virtual void divide_au(int divisor)
-    {
-        if (divisor != 0) {
-            this->au /= divisor;
-        }
-    }
+    virtual void divide_au(int divisor);
 
     /*! @brief 現在の MP を設定する (提案 27b) */
-    virtual void set_current_mp(int value)
-    {
-        this->current_mp = value;
-    }
+    virtual void set_current_mp(int value);
 
     /*! @brief 現在の MP を加算する (提案 27b) */
-    virtual void add_current_mp(int delta)
-    {
-        this->current_mp += delta;
-    }
+    virtual void add_current_mp(int delta);
 
     /*! @brief 現在の MP を減算する (提案 27b) */
-    virtual void sub_current_mp(int delta)
-    {
-        this->current_mp -= delta;
-    }
+    virtual void sub_current_mp(int delta);
 
     /*! @brief 64bit ペア演算で現在 MP を加算する (提案 32b) */
     virtual void add_current_mp_with_frac(int delta, uint32_t delta_frac);
@@ -2272,130 +1720,67 @@ public:
     virtual void add_exp_with_frac(EXP delta, uint32_t delta_frac);
 
     /*! @brief 所持金を取得する (提案 31) */
-    virtual int get_au() const
-    {
-        return this->au;
-    }
+    virtual int get_au() const;
 
     /*! @brief 現在の MP を取得する (提案 31) */
-    virtual int get_current_mp() const
-    {
-        return this->current_mp;
-    }
+    virtual int get_current_mp() const;
 
     /*! @brief 滋養度を取得する (提案 31) */
-    virtual int16_t get_food() const
-    {
-        return this->food;
-    }
+    virtual int16_t get_food() const;
 
     /*! @brief 現在いる街番号を取得する (提案 31) */
-    virtual int16_t get_town_num() const
-    {
-        return this->town_num;
-    }
+    virtual int16_t get_town_num() const;
 
     /*! @brief 年齢を取得する (提案 31) */
-    virtual int16_t get_age() const
-    {
-        return this->age;
-    }
+    virtual int16_t get_age() const;
 
     /*! @brief 身長を取得する (提案 31) */
-    virtual int16_t get_ht() const
-    {
-        return this->ht;
-    }
+    virtual int16_t get_ht() const;
 
     /*! @brief 体重を取得する (提案 31) */
-    virtual int16_t get_wt() const
-    {
-        return this->wt;
-    }
+    virtual int16_t get_wt() const;
 
     /*! @brief 名声を取得する (提案 31) */
-    virtual int16_t get_prestige() const
-    {
-        return this->prestige;
-    }
+    virtual int16_t get_prestige() const;
 
     /*! @brief 経験レベル最大値を取得する (提案 31) */
-    virtual int16_t get_max_plv() const
-    {
-        return this->max_plv;
-    }
+    virtual int16_t get_max_plv() const;
 
     /*! @brief ミュータント体質による自然回復補正(%)を取得する (A-1) */
-    virtual PERCENTAGE get_mutant_regenerate_mod() const
-    {
-        return this->mutant_regenerate_mod;
-    }
+    virtual PERCENTAGE get_mutant_regenerate_mod() const;
 
     /*! @brief 習得済み呪文数を取得する (A-1) */
-    virtual int16_t get_learned_spells() const
-    {
-        return this->learned_spells;
-    }
+    virtual int16_t get_learned_spells() const;
 
     /*! @brief 追加習得可能呪文数を取得する (A-1) */
-    virtual int16_t get_add_spells() const
-    {
-        return this->add_spells;
-    }
+    virtual int16_t get_add_spells() const;
 
     /*! @brief 二刀流ペナルティ軽減フラグを取得する (A-1) */
-    virtual BIT_FLAGS get_easy_2weapon() const
-    {
-        return this->easy_2weapon;
-    }
+    virtual BIT_FLAGS get_easy_2weapon() const;
 
     /*! @brief 劣化セーヴィングスローフラグを取得する (A-1) */
-    virtual BIT_FLAGS get_down_saving() const
-    {
-        return this->down_saving;
-    }
+    virtual BIT_FLAGS get_down_saving() const;
 
     /*! @brief 自己分析で得た知識フラグを保持しているか (A-2) */
-    virtual bool has_knowledge(BIT_FLAGS8 flag) const
-    {
-        return (this->knowledge & flag) != 0;
-    }
+    virtual bool has_knowledge(BIT_FLAGS8 flag) const;
 
     /*! @brief 自己分析で得た知識フラグを追加する (A-2) */
-    virtual void add_knowledge(BIT_FLAGS8 flag)
-    {
-        this->knowledge |= flag;
-    }
+    virtual void add_knowledge(BIT_FLAGS8 flag);
 
     /*! @brief 自己分析で得た知識フラグを除去する (A-2) */
-    virtual void remove_knowledge(BIT_FLAGS8 flag)
-    {
-        this->knowledge &= ~flag;
-    }
+    virtual void remove_knowledge(BIT_FLAGS8 flag);
 
     /*! @brief 自己分析で得た知識フラグ全体を取得する (A-2, savefile 用) */
-    virtual BIT_FLAGS8 get_knowledge() const
-    {
-        return this->knowledge;
-    }
+    virtual BIT_FLAGS8 get_knowledge() const;
 
     /*! @brief 自己分析で得た知識フラグ全体を設定する (A-2, savefile 用) */
-    virtual void set_knowledge(BIT_FLAGS8 value)
-    {
-        this->knowledge = value;
-    }
+    virtual void set_knowledge(BIT_FLAGS8 value);
 
     /*! @brief 最大 MP (max_mp) を取得する (提案 31) */
-    virtual int get_max_mp() const
-    {
-        return this->max_mp;
-    }
+    virtual int get_max_mp() const;
 
     /*! @brief 現在の経験値を取得する (提案 31) */
-    virtual EXP get_exp() const
-    {
-        return this->exp;
-    }
+    virtual EXP get_exp() const;
 
     /*! @brief 最大経験値を取得する (提案 31) */
     virtual EXP get_max_exp() const;
