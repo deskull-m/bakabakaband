@@ -2400,529 +2400,234 @@ public:
     }
 
     /*! @brief 最大経験値を取得する (提案 31) */
-    virtual EXP get_max_exp() const
-    {
-        return this->max_exp;
-    }
+    virtual EXP get_max_exp() const;
 
     /*! @brief 最大の最大経験値を取得する (提案 31) */
-    virtual EXP get_max_max_exp() const
-    {
-        return this->max_max_exp;
-    }
+    virtual EXP get_max_max_exp() const;
 
     /*! @brief 経験値を加算する (提案 31) */
-    virtual void add_exp(EXP delta)
-    {
-        this->exp += delta;
-    }
+    virtual void add_exp(EXP delta);
 
     /*! @brief 経験値を減算する (提案 31) */
-    virtual void sub_exp(EXP delta)
-    {
-        this->exp -= delta;
-    }
+    virtual void sub_exp(EXP delta);
 
     /*! @brief 最大経験値を加算する (提案 31) */
-    virtual void add_max_exp(EXP delta)
-    {
-        this->max_exp += delta;
-    }
+    virtual void add_max_exp(EXP delta);
 
     /*! @brief 最大経験値を減算する (提案 31) */
-    virtual void sub_max_exp(EXP delta)
-    {
-        this->max_exp -= delta;
-    }
+    virtual void sub_max_exp(EXP delta);
 
     /*! @brief 待ち伏せ状態を取得する (提案 31) */
-    virtual bool get_ambush_flag() const
-    {
-        return this->ambush_flag;
-    }
+    virtual bool get_ambush_flag() const;
 
     /*! @brief 命中ボーナス (近接利き手分以外) を設定する (提案 30) */
-    virtual void set_to_h_b(int16_t value)
-    {
-        this->to_h_b = value;
-    }
+    virtual void set_to_h_b(int16_t value);
 
     /*! @brief 命中ボーナス (その他装備分) を設定する (提案 30) */
-    virtual void set_to_h_m(int16_t value)
-    {
-        this->to_h_m = value;
-    }
+    virtual void set_to_h_m(int16_t value);
 
     /*! @brief ダメージボーナス (その他装備分) を設定する (提案 30) */
-    virtual void set_to_d_m(int16_t value)
-    {
-        this->to_d_m = value;
-    }
+    virtual void set_to_d_m(int16_t value);
 
     /*! @brief AC ボーナスを設定する (提案 30) */
-    virtual void set_to_a(int16_t value)
-    {
-        this->to_a = value;
-    }
+    virtual void set_to_a(int16_t value);
 
     /*! @brief 命中ボーナス to_h[hand] を設定する (提案 31b) */
-    virtual void set_to_h(int hand, int16_t value)
-    {
-        this->to_h[hand] = value;
-    }
+    virtual void set_to_h(int hand, int16_t value);
 
     /*! @brief ダメージボーナス to_d[hand] を設定する (提案 31b) */
-    virtual void set_to_d(int hand, int16_t value)
-    {
-        this->to_d[hand] = value;
-    }
+    virtual void set_to_d(int hand, int16_t value);
 
     /*! @brief 命中ボーナス (近接利き手分以外) を取得する (提案 31b) */
-    virtual int16_t get_to_h_b() const
-    {
-        return this->to_h_b;
-    }
+    virtual int16_t get_to_h_b() const;
 
     /*! @brief 命中ボーナス (その他装備分) を取得する (提案 31b) */
-    virtual int16_t get_to_h_m() const
-    {
-        return this->to_h_m;
-    }
+    virtual int16_t get_to_h_m() const;
 
     /*! @brief ダメージボーナス (その他装備分) を取得する (提案 31b) */
-    virtual int16_t get_to_d_m() const
-    {
-        return this->to_d_m;
-    }
+    virtual int16_t get_to_d_m() const;
 
     /*! @brief AC ボーナスを取得する (提案 31b) */
-    virtual int16_t get_to_a() const
-    {
-        return this->to_a;
-    }
+    virtual int16_t get_to_a() const;
 
     /*! @brief 命中ボーナス to_h[hand] を取得する (提案 31b) */
-    virtual int16_t get_to_h(int hand) const
-    {
-        return this->to_h[hand];
-    }
+    virtual int16_t get_to_h(int hand) const;
 
     /*! @brief ダメージボーナス to_d[hand] を取得する (提案 31b) */
-    virtual int16_t get_to_d(int hand) const
-    {
-        return this->to_d[hand];
-    }
+    virtual int16_t get_to_d(int hand) const;
 
     // [提案 34] 表示用既知値 dis_to_h / dis_to_d / dis_to_h_b / dis_to_a / dis_ac
     // の getter / setter virtual。書込は player-status.cpp の update_creature()
     // から、読取は表示系 (display-player-middle / main-window-left-frame /
     // status-first-page / io-dump 等) から行われる。
-    virtual HIT_PROB get_dis_to_h(int hand) const
-    {
-        return this->dis_to_h[hand];
-    }
-    virtual void set_dis_to_h(int hand, HIT_PROB value)
-    {
-        this->dis_to_h[hand] = value;
-    }
-    virtual HIT_PROB get_dis_to_h_b() const
-    {
-        return this->dis_to_h_b;
-    }
-    virtual void set_dis_to_h_b(HIT_PROB value)
-    {
-        this->dis_to_h_b = value;
-    }
-    virtual int get_dis_to_d(int hand) const
-    {
-        return this->dis_to_d[hand];
-    }
-    virtual void set_dis_to_d(int hand, int value)
-    {
-        this->dis_to_d[hand] = value;
-    }
-    virtual ARMOUR_CLASS get_dis_to_a() const
-    {
-        return this->dis_to_a;
-    }
-    virtual void set_dis_to_a(ARMOUR_CLASS value)
-    {
-        this->dis_to_a = value;
-    }
-    virtual ARMOUR_CLASS get_dis_ac() const
-    {
-        return this->dis_ac;
-    }
-    virtual void set_dis_ac(ARMOUR_CLASS value)
-    {
-        this->dis_ac = value;
-    }
+    virtual HIT_PROB get_dis_to_h(int hand) const;
+    virtual void set_dis_to_h(int hand, HIT_PROB value);
+    virtual HIT_PROB get_dis_to_h_b() const;
+    virtual void set_dis_to_h_b(HIT_PROB value);
+    virtual int get_dis_to_d(int hand) const;
+    virtual void set_dis_to_d(int hand, int value);
+    virtual ARMOUR_CLASS get_dis_to_a() const;
+    virtual void set_dis_to_a(ARMOUR_CLASS value);
+    virtual ARMOUR_CLASS get_dis_ac() const;
+    virtual void set_dis_ac(ARMOUR_CLASS value);
 
     // [提案 39] 装備派生キャッシュフィールド (player-status.cpp の update_creature() から
     // 装備状態に応じて再計算される) の getter / setter virtual。書込は主に update_creature()
     // から、読取は戦闘/表示/AI 等から行われる。
-    virtual void set_ac(ARMOUR_CLASS value)
-    {
-        this->ac = value;
-    }
-    virtual int16_t get_num_blow(int hand) const
-    {
-        return this->num_blow[hand];
-    }
-    virtual void set_num_blow(int hand, int16_t value)
-    {
-        this->num_blow[hand] = value;
-    }
+    virtual void set_ac(ARMOUR_CLASS value);
+    virtual int16_t get_num_blow(int hand) const;
+    virtual void set_num_blow(int hand, int16_t value);
     /*! @brief 装備由来の追加攻撃回数を取得する (A-3) */
-    virtual int get_extra_blows(int hand) const
-    {
-        return this->extra_blows[hand];
-    }
+    virtual int get_extra_blows(int hand) const;
     /*! @brief 装備由来の追加攻撃回数を設定する (A-3) */
-    virtual void set_extra_blows(int hand, int value)
-    {
-        this->extra_blows[hand] = value;
-    }
+    virtual void set_extra_blows(int hand, int value);
     /*! @brief 装備由来の追加攻撃回数を加算する (A-3) */
-    virtual void add_extra_blows(int hand, int delta)
-    {
-        this->extra_blows[hand] += delta;
-    }
+    virtual void add_extra_blows(int hand, int delta);
     /*! @brief セーブ用カウンタを取得する (A-3) */
-    virtual uint32_t get_count() const
-    {
-        return this->count;
-    }
+    virtual uint32_t get_count() const;
     /*! @brief セーブ用カウンタを設定する (A-3) */
-    virtual void set_count(uint32_t value)
-    {
-        this->count = value;
-    }
+    virtual void set_count(uint32_t value);
     /*! @brief レベル別累積HPテーブルの値を取得する (A-3) */
-    virtual int get_hp_table(int level_index) const
-    {
-        return this->hp_table[level_index];
-    }
+    virtual int get_hp_table(int level_index) const;
     /*! @brief レベル別累積HPテーブルの値を設定する (A-3) */
-    virtual void set_hp_table(int level_index, int value)
-    {
-        this->hp_table[level_index] = value;
-    }
-    virtual int16_t get_num_fire() const
-    {
-        return this->num_fire;
-    }
-    virtual void set_num_fire(int16_t value)
-    {
-        this->num_fire = value;
-    }
-    virtual int16_t get_to_m_chance() const
-    {
-        return this->to_m_chance;
-    }
-    virtual void set_to_m_chance(int16_t value)
-    {
-        this->to_m_chance = value;
-    }
-    virtual POSITION get_cur_lite() const
-    {
-        return this->cur_lite;
-    }
-    virtual void set_cur_lite(POSITION value)
-    {
-        this->cur_lite = value;
-    }
-    virtual bool is_cumber_armor() const
-    {
-        return this->cumber_armor;
-    }
-    virtual void set_cumber_armor(bool value)
-    {
-        this->cumber_armor = value;
-    }
-    virtual bool is_cumber_glove() const
-    {
-        return this->cumber_glove;
-    }
-    virtual void set_cumber_glove(bool value)
-    {
-        this->cumber_glove = value;
-    }
-    virtual bool is_heavy_wield(int hand) const
-    {
-        return this->heavy_wield[hand];
-    }
-    virtual void set_heavy_wield(int hand, bool value)
-    {
-        this->heavy_wield[hand] = value;
-    }
-    virtual bool is_icky_wield(int hand) const
-    {
-        return this->icky_wield[hand];
-    }
-    virtual void set_icky_wield(int hand, bool value)
-    {
-        this->icky_wield[hand] = value;
-    }
-    virtual bool is_icky_riding_wield(int hand) const
-    {
-        return this->icky_riding_wield[hand];
-    }
-    virtual void set_icky_riding_wield(int hand, bool value)
-    {
-        this->icky_riding_wield[hand] = value;
-    }
-    virtual bool is_riding_ryoute() const
-    {
-        return this->riding_ryoute;
-    }
-    virtual void set_riding_ryoute(bool value)
-    {
-        this->riding_ryoute = value;
-    }
-    virtual bool is_monlite() const
-    {
-        return this->monlite;
-    }
-    virtual void set_monlite(bool value)
-    {
-        this->monlite = value;
-    }
+    virtual void set_hp_table(int level_index, int value);
+    virtual int16_t get_num_fire() const;
+    virtual void set_num_fire(int16_t value);
+    virtual int16_t get_to_m_chance() const;
+    virtual void set_to_m_chance(int16_t value);
+    virtual POSITION get_cur_lite() const;
+    virtual void set_cur_lite(POSITION value);
+    virtual bool is_cumber_armor() const;
+    virtual void set_cumber_armor(bool value);
+    virtual bool is_cumber_glove() const;
+    virtual void set_cumber_glove(bool value);
+    virtual bool is_heavy_wield(int hand) const;
+    virtual void set_heavy_wield(int hand, bool value);
+    virtual bool is_icky_wield(int hand) const;
+    virtual void set_icky_wield(int hand, bool value);
+    virtual bool is_icky_riding_wield(int hand) const;
+    virtual void set_icky_riding_wield(int hand, bool value);
+    virtual bool is_riding_ryoute() const;
+    virtual void set_riding_ryoute(bool value);
+    virtual bool is_monlite() const;
+    virtual void set_monlite(bool value);
 
     /*! @brief 能力値最大値 stat_max[idx] を取得する (提案 31b) */
-    virtual short get_stat_max(int idx) const
-    {
-        return this->stat_max[idx];
-    }
+    virtual short get_stat_max(int idx) const;
 
     /*! @brief 能力値現在値 stat_cur[idx] を取得する (提案 31b) */
-    virtual short get_stat_cur(int idx) const
-    {
-        return this->stat_cur[idx];
-    }
+    virtual short get_stat_cur(int idx) const;
 
     /*! @brief 能力値最大の最大値 stat_max_max[idx] を取得する (提案 31b) */
-    virtual short get_stat_max_max(int idx) const
-    {
-        return this->stat_max_max[idx];
-    }
+    virtual short get_stat_max_max(int idx) const;
 
     /*! @brief 能力値修正済み値 stat_use[idx] を取得する (提案 31b) */
-    virtual int16_t get_stat_use(int idx) const
-    {
-        return this->stat_use[idx];
-    }
+    virtual int16_t get_stat_use(int idx) const;
 
     /*! @brief 能力値最大修正済み値 stat_top[idx] を取得する (提案 31b) */
-    virtual int16_t get_stat_top(int idx) const
-    {
-        return this->stat_top[idx];
-    }
+    virtual int16_t get_stat_top(int idx) const;
 
     /*! @brief 能力値修正値 stat_add[idx] を取得する (提案 31b) */
-    virtual int16_t get_stat_add(int idx) const
-    {
-        return this->stat_add[idx];
-    }
+    virtual int16_t get_stat_add(int idx) const;
 
     /*! @brief 能力値インデックス stat_index[idx] を取得する (提案 31b) */
-    virtual int16_t get_stat_index(int idx) const
-    {
-        return this->stat_index[idx];
-    }
+    virtual int16_t get_stat_index(int idx) const;
 
     /*! @brief 能力値最大値 stat_max[idx] を設定する (提案 30) */
-    virtual void set_stat_max(int idx, short value)
-    {
-        this->stat_max[idx] = value;
-    }
+    virtual void set_stat_max(int idx, short value);
 
     /*! @brief 能力値現在値 stat_cur[idx] を設定する (提案 30) */
-    virtual void set_stat_cur(int idx, short value)
-    {
-        this->stat_cur[idx] = value;
-    }
+    virtual void set_stat_cur(int idx, short value);
 
     /*! @brief 能力値現在値 stat_cur[idx] を加算する (提案 30) */
-    virtual void add_stat_cur(int idx, short delta)
-    {
-        this->stat_cur[idx] += delta;
-    }
+    virtual void add_stat_cur(int idx, short delta);
 
     /*! @brief 能力値最大の最大値 stat_max_max[idx] を設定する (提案 30) */
-    virtual void set_stat_max_max(int idx, short value)
-    {
-        this->stat_max_max[idx] = value;
-    }
+    virtual void set_stat_max_max(int idx, short value);
 
     /*! @brief 能力値修正済み値 stat_use[idx] を設定する (提案 30) */
-    virtual void set_stat_use(int idx, int16_t value)
-    {
-        this->stat_use[idx] = value;
-    }
+    virtual void set_stat_use(int idx, int16_t value);
 
     /*! @brief 能力値最大修正済み値 stat_top[idx] を設定する (提案 30) */
-    virtual void set_stat_top(int idx, int16_t value)
-    {
-        this->stat_top[idx] = value;
-    }
+    virtual void set_stat_top(int idx, int16_t value);
 
     /*! @brief 能力値修正値 stat_add[idx] を設定する (提案 30) */
-    virtual void set_stat_add(int idx, int16_t value)
-    {
-        this->stat_add[idx] = value;
-    }
+    virtual void set_stat_add(int idx, int16_t value);
 
     /*! @brief 能力値インデックス stat_index[idx] を設定する (提案 30) */
-    virtual void set_stat_index(int idx, int16_t value)
-    {
-        this->stat_index[idx] = value;
-    }
+    virtual void set_stat_index(int idx, int16_t value);
 
     /*! @brief 影 (KAGE) かどうか */
-    virtual bool is_kage() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::KAGE);
-    }
+    virtual bool is_kage() const;
 
     /*! @brief 狂乱状態 (FRENZY) かどうか */
-    virtual bool is_frenzied() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::FRENZY);
-    }
+    virtual bool is_frenzied() const;
 
     /*! @brief カメレオン (CHAMELEON) かどうか */
-    virtual bool is_chameleon() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::CHAMELEON);
-    }
+    virtual bool is_chameleon() const;
 
     /*! @brief クローン個体 (CLONED) かどうか */
-    virtual bool is_cloned() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::CLONED);
-    }
+    virtual bool is_cloned() const;
 
     /*! @brief ペット化禁止 (NOPET) かどうか */
-    virtual bool is_nopet() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::NOPET);
-    }
+    virtual bool is_nopet() const;
 
     /*! @brief 巨大サイズ (HUGE) 個体修飾子 */
-    virtual bool is_huge() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::HUGE);
-    }
+    virtual bool is_huge() const;
 
     /*! @brief 大型サイズ (LARGE) 個体修飾子 */
-    virtual bool is_large() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::LARGE);
-    }
+    virtual bool is_large() const;
 
     /*! @brief 小型サイズ (SMALL) 個体修飾子 */
-    virtual bool is_small() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::SMALL);
-    }
+    virtual bool is_small() const;
 
     /*! @brief 太め (FAT) 個体修飾子 */
-    virtual bool is_fat() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::FAT);
-    }
+    virtual bool is_fat() const;
 
     /*! @brief 痩せ (GAUNT) 個体修飾子 */
-    virtual bool is_gaunt() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::GAUNT);
-    }
+    virtual bool is_gaunt() const;
 
     /*! @brief 軽量 (LIGHTWEIGHT) 個体修飾子 */
-    virtual bool is_lightweight() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::LIGHTWEIGHT);
-    }
+    virtual bool is_lightweight() const;
 
     /*! @brief 全裸 (NAKED) 個体修飾子 */
-    virtual bool is_naked() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::NAKED);
-    }
+    virtual bool is_naked() const;
 
     /*! @brief ゾンビ化 (ZOMBIFIED) 個体修飾子 */
-    virtual bool is_zombified() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::ZOMBIFIED);
-    }
+    virtual bool is_zombified() const;
 
     /*! @brief 不正改造個体 (ILLEGAL_MODIFIED) */
-    virtual bool is_illegal_modified() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::ILLEGAL_MODIFIED);
-    }
+    virtual bool is_illegal_modified() const;
 
     /*! @brief サンタ化 (SANTA) 個体 */
-    virtual bool is_santa() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::SANTA);
-    }
+    virtual bool is_santa() const;
 
     /*! @brief 怒り (ANGER) 状態 */
-    virtual bool is_angered() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::ANGER);
-    }
+    virtual bool is_angered() const;
 
     /*! @brief 嫁化 (WAIFUIZED) 個体 */
-    virtual bool is_waifuized() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::WAIFUIZED);
-    }
+    virtual bool is_waifuized() const;
 
     /*! @brief クイルスラグ産まれ (QUYLTHLUG_BORN) */
-    virtual bool is_quylthlug_born() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::QUYLTHLUG_BORN);
-    }
+    virtual bool is_quylthlug_born() const;
 
     /*! @brief 排泄済み (DEFECATED) */
-    virtual bool is_defecated() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::DEFECATED);
-    }
+    virtual bool is_defecated() const;
 
     /*! @brief 嘔吐済み (VOMITED) */
-    virtual bool is_vomited() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::VOMITED);
-    }
+    virtual bool is_vomited() const;
 
     /*! @brief 流路追跡を行わない (NOFLOW) */
-    virtual bool has_noflow() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::NOFLOW);
-    }
+    virtual bool has_noflow() const;
 
     /*! @brief 抹殺対象外 (NOGENO) */
-    virtual bool is_nogeno() const
-    {
-        return this->has_constant_flag(MonsterConstantFlagType::NOGENO);
-    }
+    virtual bool is_nogeno() const;
 
     /*!
      * @brief プレイヤーに対する学習フラグ（smart_learn）を取得する
      * @return 学習フラグ群。プレイヤー側は空のフラグ集合を返す
      */
-    virtual const EnumClassFlagGroup<MonsterSmartLearnType> &get_smart_flags() const
-    {
-        if (this->has_monster_profile()) {
-            return this->get_monster_profile().smart;
-        }
-        static const EnumClassFlagGroup<MonsterSmartLearnType> empty{};
-        return empty;
-    }
+    virtual const EnumClassFlagGroup<MonsterSmartLearnType> &get_smart_flags() const;
 
     /*!
      * @brief 指定インデックスの呪文熟練度を取得する
@@ -2930,21 +2635,14 @@ public:
      * @return SUB_EXP 値。プレイヤーは spell_exp[spell_idx]、モンスターは default 実装で
      *         同フィールドを参照 (現状は意味を持たないが将来モンスター呪文熟練を導入する余地)
      */
-    virtual SUB_EXP get_spell_exp(int spell_idx) const
-    {
-        return this->spell_exp[spell_idx];
-    }
+    virtual SUB_EXP get_spell_exp(int spell_idx) const;
 
     /*!
      * @brief 指定スキル種別のスキル熟練度を取得する
      * @param skill スキル種別
      * @return SUB_EXP 値。プレイヤーは skill_exp に存在すれば返し、無ければ 0。
      */
-    virtual SUB_EXP get_skill_exp(PlayerSkillKindType skill) const
-    {
-        const auto it = this->skill_exp.find(skill);
-        return (it != this->skill_exp.end()) ? it->second : 0;
-    }
+    virtual SUB_EXP get_skill_exp(PlayerSkillKindType skill) const;
 
     /*!
      * @brief 指定武器種別・サブ種別の武器熟練度を取得する
@@ -2952,75 +2650,40 @@ public:
      * @param sval サブ種別 (0..63)
      * @return SUB_EXP 値。プレイヤーは weapon_exp[tval][sval]、なければ 0
      */
-    virtual SUB_EXP get_weapon_exp(ItemKindType tval, int sval) const
-    {
-        const auto it = this->weapon_exp.find(tval);
-        return (it != this->weapon_exp.end()) ? it->second[sval] : 0;
-    }
+    virtual SUB_EXP get_weapon_exp(ItemKindType tval, int sval) const;
 
     /*!
      * @brief 指定武器種別・サブ種別の武器熟練度の上限値を取得する (提案 10/36)
      */
-    virtual SUB_EXP get_weapon_exp_max(ItemKindType tval, int sval) const
-    {
-        const auto it = this->weapon_exp_max.find(tval);
-        return (it != this->weapon_exp_max.end()) ? it->second[sval] : 0;
-    }
+    virtual SUB_EXP get_weapon_exp_max(ItemKindType tval, int sval) const;
 
     // [提案 10/36] 熟練度書込みの setter virtual 群。
     // 参照取得 (auto &) パターンは player-skill.cpp / wizard-special-process.cpp
     // 等の一部で残存するため、フィールドの private 化はせず、API として
     // 提供のみ行う。
-    virtual void set_spell_exp(int spell_idx, SUB_EXP value)
-    {
-        this->spell_exp[spell_idx] = value;
-    }
-    virtual void add_spell_exp(int spell_idx, SUB_EXP delta)
-    {
-        this->spell_exp[spell_idx] += delta;
-    }
+    virtual void set_spell_exp(int spell_idx, SUB_EXP value);
+    virtual void add_spell_exp(int spell_idx, SUB_EXP delta);
 
-    virtual void set_skill_exp(PlayerSkillKindType skill, SUB_EXP value)
-    {
-        this->skill_exp[skill] = value;
-    }
-    virtual void add_skill_exp(PlayerSkillKindType skill, SUB_EXP delta)
-    {
-        this->skill_exp[skill] += delta;
-    }
+    virtual void set_skill_exp(PlayerSkillKindType skill, SUB_EXP value);
+    virtual void add_skill_exp(PlayerSkillKindType skill, SUB_EXP delta);
 
-    virtual void set_weapon_exp(ItemKindType tval, int sval, SUB_EXP value)
-    {
-        this->weapon_exp[tval][sval] = value;
-    }
-    virtual void add_weapon_exp(ItemKindType tval, int sval, SUB_EXP delta)
-    {
-        this->weapon_exp[tval][sval] += delta;
-    }
+    virtual void set_weapon_exp(ItemKindType tval, int sval, SUB_EXP value);
+    virtual void add_weapon_exp(ItemKindType tval, int sval, SUB_EXP delta);
 
-    virtual void set_weapon_exp_max(ItemKindType tval, int sval, SUB_EXP value)
-    {
-        this->weapon_exp_max[tval][sval] = value;
-    }
+    virtual void set_weapon_exp_max(ItemKindType tval, int sval, SUB_EXP value);
 
     /*!
      * @brief クリーチャーがフレンドリー状態かどうかを判定
      * @return フレンドリーならtrue、デフォルトはfalse（プレイヤーはフレンドリー判定対象外）
      */
-    virtual bool is_friendly() const
-    {
-        return this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FRIENDLY);
-    }
+    virtual bool is_friendly() const;
 
     /*!
      * @brief クリーチャーが敵対状態かどうかを判定
      * @return 敵対ならtrue（ペットでもフレンドリーでもない場合）
      * @note プレイヤーに対してはfalseを返す
      */
-    virtual bool is_hostile() const
-    {
-        return this->has_monster_profile() && !this->is_friendly() && !this->is_pet();
-    }
+    virtual bool is_hostile() const;
 
     /*!
      * @brief クリーチャーを敵対状態に設定する
@@ -3032,12 +2695,7 @@ public:
      * @brief クリーチャーをフレンドリー状態に設定する
      * @details モンスターの場合は FRIENDLY フラグをセットする。
      */
-    virtual void set_friendly()
-    {
-        if (this->has_monster_profile()) {
-            this->get_monster_profile().mflag2.set(MonsterConstantFlagType::FRIENDLY);
-        }
-    }
+    virtual void set_friendly();
 
     virtual void set_individual_speed(bool force_fixed_speed);
 
@@ -3188,19 +2846,13 @@ public:
      * @brief クリーチャーが騎乗されているかどうかを判定
      * @return 騎乗されているならtrue、デフォルトはfalse
      */
-    virtual bool is_riding() const
-    {
-        return this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::RIDING);
-    }
+    virtual bool is_riding() const;
 
     /*!
      * @brief クリーチャーに召喚主がいるかどうかを判定
      * @return 召喚主がいるならtrue、デフォルトはfalse
      */
-    virtual bool has_parent() const
-    {
-        return this->has_monster_profile() && this->get_monster_profile().parent_m_idx > 0;
-    }
+    virtual bool has_parent() const;
 
     bool is_tough() const
     {
@@ -3273,78 +2925,30 @@ public:
      * @details プレイヤーは装備由来 (telepathy フィールドを player-status.cpp が更新)。
      *          モンスター側は対応概念なし（モンスターの感知は別経路）のため常に false。
      */
-    virtual bool has_telepathy() const
-    {
-        return this->telepathy != 0;
-    }
+    virtual bool has_telepathy() const;
     // 種別 ESP 群: プレイヤーは装備由来 (esp_* フィールドを player-status.cpp が更新)。
     // モンスター側に対応概念なしのため、フィールド初期値 0 で常に false を返す。
-    virtual bool has_esp_animal() const
-    {
-        return this->esp_animal != 0;
-    }
-    virtual bool has_esp_nasty() const
-    {
-        return this->esp_nasty != 0;
-    }
-    virtual bool has_esp_homo() const
-    {
-        return this->esp_homo != 0;
-    }
-    virtual bool has_esp_undead() const
-    {
-        return this->esp_undead != 0;
-    }
-    virtual bool has_esp_demon() const
-    {
-        return this->esp_demon != 0;
-    }
-    virtual bool has_esp_orc() const
-    {
-        return this->esp_orc != 0;
-    }
-    virtual bool has_esp_troll() const
-    {
-        return this->esp_troll != 0;
-    }
-    virtual bool has_esp_giant() const
-    {
-        return this->esp_giant != 0;
-    }
-    virtual bool has_esp_dragon() const
-    {
-        return this->esp_dragon != 0;
-    }
-    virtual bool has_esp_human() const
-    {
-        return this->esp_human != 0;
-    }
-    virtual bool has_esp_evil() const
-    {
-        return this->esp_evil != 0;
-    }
-    virtual bool has_esp_good() const
-    {
-        return this->esp_good != 0;
-    }
-    virtual bool has_esp_nonliving() const
-    {
-        return this->esp_nonliving != 0;
-    }
-    virtual bool has_esp_unique() const
-    {
-        return this->esp_unique != 0;
-    }
+    virtual bool has_esp_animal() const;
+    virtual bool has_esp_nasty() const;
+    virtual bool has_esp_homo() const;
+    virtual bool has_esp_undead() const;
+    virtual bool has_esp_demon() const;
+    virtual bool has_esp_orc() const;
+    virtual bool has_esp_troll() const;
+    virtual bool has_esp_giant() const;
+    virtual bool has_esp_dragon() const;
+    virtual bool has_esp_human() const;
+    virtual bool has_esp_evil() const;
+    virtual bool has_esp_good() const;
+    virtual bool has_esp_nonliving() const;
+    virtual bool has_esp_unique() const;
 
     /*!
      * @brief 透明視認の可否
      * @details プレイヤーは装備由来 (see_inv フィールド)。モンスター側は
      *          対応フラグなし（透明モンスターの認知は AI 側で別判定）。
      */
-    virtual bool can_see_invisible() const
-    {
-        return this->see_inv != 0;
-    }
+    virtual bool can_see_invisible() const;
     /*!
      * @brief 水中遊泳の可否
      * @details プレイヤーは装備由来 (can_swim フィールド)、モンスターは
@@ -3363,18 +2967,12 @@ public:
      *          (NO_SLEEP / NO_STUN) で表現されるためこの統一値での
      *          単純な対応は持たず、現状 false 相当を返す。
      */
-    virtual bool has_free_act() const
-    {
-        return this->free_act != 0;
-    }
+    virtual bool has_free_act() const;
     /*!
      * @brief 反魔法能力の有無
      * @details プレイヤーは装備由来。モンスター側に対応フラグなし。
      */
-    virtual bool has_anti_magic() const
-    {
-        return this->anti_magic != 0;
-    }
+    virtual bool has_anti_magic() const;
     /*!
      * @brief テレポート阻害の有無
      * @details プレイヤーは装備由来、モンスターは MonsterResistanceType::RESIST_TELEPORT。
@@ -3388,40 +2986,25 @@ public:
     /*!
      * @brief 経験値吸収耐性の有無
      */
-    virtual bool has_hold_exp() const
-    {
-        return this->hold_exp != 0;
-    }
+    virtual bool has_hold_exp() const;
     /*!
      * @brief 低速消化能力の有無
      */
-    virtual bool has_slow_digest_flag() const
-    {
-        return this->slow_digest != 0;
-    }
+    virtual bool has_slow_digest_flag() const;
     /*!
      * @brief 夜間視能力の有無
      */
-    virtual bool has_see_nocto() const
-    {
-        return this->see_nocto != 0;
-    }
+    virtual bool has_see_nocto() const;
     /*!
      * @brief 特殊攻撃ビットの保有判定
      * @param flag 対象の ATTACK_* ビット
      */
-    virtual bool has_special_attack(BIT_FLAGS flag) const
-    {
-        return (this->special_attack & flag) != 0;
-    }
+    virtual bool has_special_attack(BIT_FLAGS flag) const;
     /*!
      * @brief 特殊防御ビットの保有判定
      * @param flag 対象の DEFENSE_* ビット
      */
-    virtual bool has_special_defense(BIT_FLAGS flag) const
-    {
-        return (this->special_defense & flag) != 0;
-    }
+    virtual bool has_special_defense(BIT_FLAGS flag) const;
     /*!
      * @brief 光源能力の有無 (フィールド値)
      * @details プレイヤーは装備由来 (lite フィールド)、モンスターは
@@ -3431,222 +3014,84 @@ public:
     /*!
      * @brief 警告能力の有無
      */
-    virtual bool has_warning_flag() const
-    {
-        return this->warning != 0;
-    }
+    virtual bool has_warning_flag() const;
     /*!
      * @brief 衝撃付与攻撃の有無 (装備起因)
      */
-    virtual bool has_impact_flag() const
-    {
-        return this->impact != 0;
-    }
+    virtual bool has_impact_flag() const;
     /*!
      * @brief 地震付与攻撃の有無 (装備起因)
      */
-    virtual bool has_earthquake_flag() const
-    {
-        return this->earthquake != 0;
-    }
+    virtual bool has_earthquake_flag() const;
     /*!
      * @brief 魔法消費軽減能力の有無
      */
-    virtual bool has_dec_mana() const
-    {
-        return this->dec_mana != 0;
-    }
+    virtual bool has_dec_mana() const;
     /*!
      * @brief 易しい呪文能力の有無
      */
-    virtual bool has_easy_spell() const
-    {
-        return this->easy_spell != 0;
-    }
+    virtual bool has_easy_spell() const;
     /*!
      * @brief 難しい呪文フラグの有無
      */
-    virtual bool has_hard_spell() const
-    {
-        return this->hard_spell != 0;
-    }
+    virtual bool has_hard_spell() const;
     /*!
      * @brief 強力投擲能力の有無
      */
-    virtual bool has_mighty_throw() const
-    {
-        return this->mighty_throw != 0;
-    }
+    virtual bool has_mighty_throw() const;
     /*!
      * @brief 追加威力弓能力の有無
      */
-    virtual bool has_xtra_might() const
-    {
-        return this->xtra_might != 0;
-    }
+    virtual bool has_xtra_might() const;
     /*!
      * @brief 装備由来の祝福武器有無
      */
-    virtual bool has_bless_blade() const
-    {
-        return this->bless_blade != 0;
-    }
+    virtual bool has_bless_blade() const;
 
     // [提案 33] BIT_FLAGS フィールドの setter virtual 群。
     // すべて player-status.cpp の update_creature() から
     // 装備状態を再計算した結果を書き込むのみ。
-    virtual void set_telepathy(BIT_FLAGS value)
-    {
-        this->telepathy = value;
-    }
-    virtual void set_esp_animal(BIT_FLAGS value)
-    {
-        this->esp_animal = value;
-    }
-    virtual void set_esp_nasty(BIT_FLAGS value)
-    {
-        this->esp_nasty = value;
-    }
-    virtual void set_esp_homo(BIT_FLAGS value)
-    {
-        this->esp_homo = value;
-    }
-    virtual void set_esp_undead(BIT_FLAGS value)
-    {
-        this->esp_undead = value;
-    }
-    virtual void set_esp_demon(BIT_FLAGS value)
-    {
-        this->esp_demon = value;
-    }
-    virtual void set_esp_orc(BIT_FLAGS value)
-    {
-        this->esp_orc = value;
-    }
-    virtual void set_esp_troll(BIT_FLAGS value)
-    {
-        this->esp_troll = value;
-    }
-    virtual void set_esp_giant(BIT_FLAGS value)
-    {
-        this->esp_giant = value;
-    }
-    virtual void set_esp_dragon(BIT_FLAGS value)
-    {
-        this->esp_dragon = value;
-    }
-    virtual void set_esp_human(BIT_FLAGS value)
-    {
-        this->esp_human = value;
-    }
-    virtual void set_esp_evil(BIT_FLAGS value)
-    {
-        this->esp_evil = value;
-    }
-    virtual void set_esp_good(BIT_FLAGS value)
-    {
-        this->esp_good = value;
-    }
-    virtual void set_esp_nonliving(BIT_FLAGS value)
-    {
-        this->esp_nonliving = value;
-    }
-    virtual void set_esp_unique(BIT_FLAGS value)
-    {
-        this->esp_unique = value;
-    }
+    virtual void set_telepathy(BIT_FLAGS value);
+    virtual void set_esp_animal(BIT_FLAGS value);
+    virtual void set_esp_nasty(BIT_FLAGS value);
+    virtual void set_esp_homo(BIT_FLAGS value);
+    virtual void set_esp_undead(BIT_FLAGS value);
+    virtual void set_esp_demon(BIT_FLAGS value);
+    virtual void set_esp_orc(BIT_FLAGS value);
+    virtual void set_esp_troll(BIT_FLAGS value);
+    virtual void set_esp_giant(BIT_FLAGS value);
+    virtual void set_esp_dragon(BIT_FLAGS value);
+    virtual void set_esp_human(BIT_FLAGS value);
+    virtual void set_esp_evil(BIT_FLAGS value);
+    virtual void set_esp_good(BIT_FLAGS value);
+    virtual void set_esp_nonliving(BIT_FLAGS value);
+    virtual void set_esp_unique(BIT_FLAGS value);
 
-    virtual void set_can_swim(bool value)
-    {
-        this->can_swim = value;
-    }
-    virtual void set_levitation(BIT_FLAGS value)
-    {
-        this->levitation = value;
-    }
-    virtual void set_free_act(BIT_FLAGS value)
-    {
-        this->free_act = value;
-    }
-    virtual void set_see_inv(BIT_FLAGS value)
-    {
-        this->see_inv = value;
-    }
-    virtual void set_regenerate(BIT_FLAGS value)
-    {
-        this->regenerate = value;
-    }
-    virtual void set_hold_exp(BIT_FLAGS value)
-    {
-        this->hold_exp = value;
-    }
-    virtual void set_slow_digest(BIT_FLAGS value)
-    {
-        this->slow_digest = value;
-    }
-    virtual void set_lite_flags(BIT_FLAGS value)
-    {
-        this->lite = value;
-    }
-    virtual void set_warning_flags(BIT_FLAGS value)
-    {
-        this->warning = value;
-    }
-    virtual void set_impact_flags(BIT_FLAGS value)
-    {
-        this->impact = value;
-    }
-    virtual void set_earthquake_flags(BIT_FLAGS value)
-    {
-        this->earthquake = value;
-    }
-    virtual void set_dec_mana(BIT_FLAGS value)
-    {
-        this->dec_mana = value;
-    }
-    virtual void set_easy_spell(BIT_FLAGS value)
-    {
-        this->easy_spell = value;
-    }
-    virtual void set_hard_spell(BIT_FLAGS value)
-    {
-        this->hard_spell = value;
-    }
-    virtual void set_mighty_throw(BIT_FLAGS value)
-    {
-        this->mighty_throw = value;
-    }
-    virtual void set_see_nocto(BIT_FLAGS value)
-    {
-        this->see_nocto = value;
-    }
-    virtual void set_anti_magic(BIT_FLAGS value)
-    {
-        this->anti_magic = value;
-    }
-    virtual void set_anti_tele(BIT_FLAGS value)
-    {
-        this->anti_tele = value;
-    }
-    virtual void set_bless_blade(BIT_FLAGS value)
-    {
-        this->bless_blade = value;
-    }
-    virtual void set_xtra_might(BIT_FLAGS value)
-    {
-        this->xtra_might = value;
-    }
+    virtual void set_can_swim(bool value);
+    virtual void set_levitation(BIT_FLAGS value);
+    virtual void set_free_act(BIT_FLAGS value);
+    virtual void set_see_inv(BIT_FLAGS value);
+    virtual void set_regenerate(BIT_FLAGS value);
+    virtual void set_hold_exp(BIT_FLAGS value);
+    virtual void set_slow_digest(BIT_FLAGS value);
+    virtual void set_lite_flags(BIT_FLAGS value);
+    virtual void set_warning_flags(BIT_FLAGS value);
+    virtual void set_impact_flags(BIT_FLAGS value);
+    virtual void set_earthquake_flags(BIT_FLAGS value);
+    virtual void set_dec_mana(BIT_FLAGS value);
+    virtual void set_easy_spell(BIT_FLAGS value);
+    virtual void set_hard_spell(BIT_FLAGS value);
+    virtual void set_mighty_throw(BIT_FLAGS value);
+    virtual void set_see_nocto(BIT_FLAGS value);
+    virtual void set_anti_magic(BIT_FLAGS value);
+    virtual void set_anti_tele(BIT_FLAGS value);
+    virtual void set_bless_blade(BIT_FLAGS value);
+    virtual void set_xtra_might(BIT_FLAGS value);
 
     // impact / earthquake は装備別ハンドフラグを保持しているため
     // BIT_FLAGS 値そのものを返す getter を提供 (any_bits 等に渡す用)。
-    virtual BIT_FLAGS get_impact_flags() const
-    {
-        return this->impact;
-    }
-    virtual BIT_FLAGS get_earthquake_flags() const
-    {
-        return this->earthquake;
-    }
+    virtual BIT_FLAGS get_impact_flags() const;
+    virtual BIT_FLAGS get_earthquake_flags() const;
 
     // [提案 46] 知覚系フラグ (テレパシー / ESP 12 種 / 透明視認 / 強投擲) の
     // 差分検出スナップショット。update_bonuses() の再計算前後で
@@ -3710,158 +3155,59 @@ public:
 
     // 特殊攻撃 / 特殊防御フラグ。compound assignment が複数箇所にあるため
     // add / remove / set / get の 4 種を提供。has_special_attack(flag) は既存。
-    virtual void set_special_attack_flags(BIT_FLAGS value)
-    {
-        this->special_attack = value;
-    }
-    virtual BIT_FLAGS get_special_attack_flags() const
-    {
-        return this->special_attack;
-    }
-    virtual void add_special_attack(BIT_FLAGS flag)
-    {
-        this->special_attack |= flag;
-    }
-    virtual void remove_special_attack(BIT_FLAGS flag)
-    {
-        this->special_attack &= ~flag;
-    }
+    virtual void set_special_attack_flags(BIT_FLAGS value);
+    virtual BIT_FLAGS get_special_attack_flags() const;
+    virtual void add_special_attack(BIT_FLAGS flag);
+    virtual void remove_special_attack(BIT_FLAGS flag);
 
-    virtual void set_special_defense_flags(BIT_FLAGS value)
-    {
-        this->special_defense = value;
-    }
-    virtual BIT_FLAGS get_special_defense_flags() const
-    {
-        return this->special_defense;
-    }
-    virtual void add_special_defense(BIT_FLAGS flag)
-    {
-        this->special_defense |= flag;
-    }
-    virtual void remove_special_defense(BIT_FLAGS flag)
-    {
-        this->special_defense &= ~flag;
-    }
+    virtual void set_special_defense_flags(BIT_FLAGS value);
+    virtual BIT_FLAGS get_special_defense_flags() const;
+    virtual void add_special_defense(BIT_FLAGS flag);
+    virtual void remove_special_defense(BIT_FLAGS flag);
 
     /*!
      * @brief 突然変異フラグ集合への参照
      * @details プレイヤーは装備・レベル・クラス起因の変異、モンスターは
      *          将来的に種族由来の変異を返す想定。
      */
-    virtual const EnumClassFlagGroup<PlayerMutationType> &get_mutations() const
-    {
-        return this->muta;
-    }
+    virtual const EnumClassFlagGroup<PlayerMutationType> &get_mutations() const;
     /*!
      * @brief 後天特性フラグ集合への参照
      */
-    virtual const EnumClassFlagGroup<PlayerMutationType> &get_traits() const
-    {
-        return this->trait;
-    }
+    virtual const EnumClassFlagGroup<PlayerMutationType> &get_traits() const;
     /*!
      * @brief 呪いフラグ集合への参照（装備由来）
      */
-    virtual const EnumClassFlagGroup<CurseTraitType> &get_cursed_flags() const
-    {
-        return this->cursed;
-    }
+    virtual const EnumClassFlagGroup<CurseTraitType> &get_cursed_flags() const;
     /*!
      * @brief 特殊呪いフラグ集合への参照
      */
-    virtual const EnumClassFlagGroup<CurseSpecialTraitType> &get_cursed_special_flags() const
-    {
-        return this->cursed_special;
-    }
+    virtual const EnumClassFlagGroup<CurseSpecialTraitType> &get_cursed_special_flags() const;
 
     // [提案 44] 突然変異/特性/呪いフラグの write-side virtual API。
     // 直接 `creature.muta.set(X)` / `creature.cursed.clear()` 等のフィールド
     // アクセスを置き換える。一括代入 (`set_X()`) は savefile load 用。
-    virtual bool has_mutation(PlayerMutationType m) const
-    {
-        return this->muta.has(m);
-    }
-    virtual void add_mutation(PlayerMutationType m)
-    {
-        this->muta.set(m);
-    }
-    virtual void remove_mutation(PlayerMutationType m)
-    {
-        this->muta.reset(m);
-    }
-    virtual void clear_mutations()
-    {
-        this->muta.clear();
-    }
-    virtual void set_mutations(const EnumClassFlagGroup<PlayerMutationType> &flags)
-    {
-        this->muta = flags;
-    }
-    virtual bool has_trait(PlayerMutationType t) const
-    {
-        return this->trait.has(t);
-    }
-    virtual void add_trait(PlayerMutationType t)
-    {
-        this->trait.set(t);
-    }
-    virtual void remove_trait(PlayerMutationType t)
-    {
-        this->trait.reset(t);
-    }
-    virtual void clear_traits()
-    {
-        this->trait.clear();
-    }
-    virtual void set_traits(const EnumClassFlagGroup<PlayerMutationType> &flags)
-    {
-        this->trait = flags;
-    }
-    virtual bool has_curse(CurseTraitType c) const
-    {
-        return this->cursed.has(c);
-    }
-    virtual void add_curse(CurseTraitType c)
-    {
-        this->cursed.set(c);
-    }
-    virtual void add_curses(const EnumClassFlagGroup<CurseTraitType> &flags)
-    {
-        this->cursed.set(flags);
-    }
-    virtual void remove_curse(CurseTraitType c)
-    {
-        this->cursed.reset(c);
-    }
-    virtual void clear_curses()
-    {
-        this->cursed.clear();
-    }
-    virtual void set_curses(const EnumClassFlagGroup<CurseTraitType> &flags)
-    {
-        this->cursed = flags;
-    }
-    virtual bool has_curse_special(CurseSpecialTraitType c) const
-    {
-        return this->cursed_special.has(c);
-    }
-    virtual void add_curse_special(CurseSpecialTraitType c)
-    {
-        this->cursed_special.set(c);
-    }
-    virtual void remove_curse_special(CurseSpecialTraitType c)
-    {
-        this->cursed_special.reset(c);
-    }
-    virtual void clear_curses_special()
-    {
-        this->cursed_special.clear();
-    }
-    virtual void set_curses_special(const EnumClassFlagGroup<CurseSpecialTraitType> &flags)
-    {
-        this->cursed_special = flags;
-    }
+    virtual bool has_mutation(PlayerMutationType m) const;
+    virtual void add_mutation(PlayerMutationType m);
+    virtual void remove_mutation(PlayerMutationType m);
+    virtual void clear_mutations();
+    virtual void set_mutations(const EnumClassFlagGroup<PlayerMutationType> &flags);
+    virtual bool has_trait(PlayerMutationType t) const;
+    virtual void add_trait(PlayerMutationType t);
+    virtual void remove_trait(PlayerMutationType t);
+    virtual void clear_traits();
+    virtual void set_traits(const EnumClassFlagGroup<PlayerMutationType> &flags);
+    virtual bool has_curse(CurseTraitType c) const;
+    virtual void add_curse(CurseTraitType c);
+    virtual void add_curses(const EnumClassFlagGroup<CurseTraitType> &flags);
+    virtual void remove_curse(CurseTraitType c);
+    virtual void clear_curses();
+    virtual void set_curses(const EnumClassFlagGroup<CurseTraitType> &flags);
+    virtual bool has_curse_special(CurseSpecialTraitType c) const;
+    virtual void add_curse_special(CurseSpecialTraitType c);
+    virtual void remove_curse_special(CurseSpecialTraitType c);
+    virtual void clear_curses_special();
+    virtual void set_curses_special(const EnumClassFlagGroup<CurseSpecialTraitType> &flags);
 
     /*!
      * @brief 種族情報ポインタ
@@ -3882,47 +3228,23 @@ public:
     /*!
      * @brief 赤外線視能力の強さ
      */
-    virtual ACTION_SKILL_POWER get_infravision() const
-    {
-        return this->see_infra;
-    }
-    virtual void set_infravision(ACTION_SKILL_POWER value)
-    {
-        this->see_infra = value;
-    }
+    virtual ACTION_SKILL_POWER get_infravision() const;
+    virtual void set_infravision(ACTION_SKILL_POWER value);
     /*!
      * @brief 解除能力スキル
      */
-    virtual ACTION_SKILL_POWER get_skill_disarm() const
-    {
-        return this->skill_dis;
-    }
-    virtual void set_skill_disarm(ACTION_SKILL_POWER value)
-    {
-        this->skill_dis = value;
-    }
+    virtual ACTION_SKILL_POWER get_skill_disarm() const;
+    virtual void set_skill_disarm(ACTION_SKILL_POWER value);
     /*!
      * @brief 魔道具使用スキル
      */
-    virtual ACTION_SKILL_POWER get_skill_device() const
-    {
-        return this->skill_dev;
-    }
-    virtual void set_skill_device(ACTION_SKILL_POWER value)
-    {
-        this->skill_dev = value;
-    }
+    virtual ACTION_SKILL_POWER get_skill_device() const;
+    virtual void set_skill_device(ACTION_SKILL_POWER value);
     /*!
      * @brief 魔法防御スキル
      */
-    virtual ACTION_SKILL_POWER get_skill_save() const
-    {
-        return this->skill_sav;
-    }
-    virtual void set_skill_save(ACTION_SKILL_POWER value)
-    {
-        this->skill_sav = value;
-    }
+    virtual ACTION_SKILL_POWER get_skill_save() const;
+    virtual void set_skill_save(ACTION_SKILL_POWER value);
 
     /*!
      * @brief 攻撃威力に対する魔法防御セービングスロー判定 (提案D1)
@@ -3938,80 +3260,38 @@ public:
     /*!
      * @brief 隠密スキル
      */
-    virtual ACTION_SKILL_POWER get_skill_stealth() const
-    {
-        return this->skill_stl;
-    }
-    virtual void set_skill_stealth(ACTION_SKILL_POWER value)
-    {
-        this->skill_stl = value;
-    }
+    virtual ACTION_SKILL_POWER get_skill_stealth() const;
+    virtual void set_skill_stealth(ACTION_SKILL_POWER value);
     /*!
      * @brief 知覚スキル
      */
-    virtual ACTION_SKILL_POWER get_skill_search() const
-    {
-        return this->skill_srh;
-    }
-    virtual void set_skill_search(ACTION_SKILL_POWER value)
-    {
-        this->skill_srh = value;
-    }
+    virtual ACTION_SKILL_POWER get_skill_search() const;
+    virtual void set_skill_search(ACTION_SKILL_POWER value);
     /*!
      * @brief 探索スキル
      */
-    virtual ACTION_SKILL_POWER get_skill_perception() const
-    {
-        return this->skill_fos;
-    }
-    virtual void set_skill_perception(ACTION_SKILL_POWER value)
-    {
-        this->skill_fos = value;
-    }
+    virtual ACTION_SKILL_POWER get_skill_perception() const;
+    virtual void set_skill_perception(ACTION_SKILL_POWER value);
     /*!
      * @brief 打撃命中スキル
      */
-    virtual ACTION_SKILL_POWER get_skill_to_hit_melee() const
-    {
-        return this->skill_thn;
-    }
-    virtual void set_skill_to_hit_melee(ACTION_SKILL_POWER value)
-    {
-        this->skill_thn = value;
-    }
+    virtual ACTION_SKILL_POWER get_skill_to_hit_melee() const;
+    virtual void set_skill_to_hit_melee(ACTION_SKILL_POWER value);
     /*!
      * @brief 射撃命中スキル
      */
-    virtual ACTION_SKILL_POWER get_skill_to_hit_bow() const
-    {
-        return this->skill_thb;
-    }
-    virtual void set_skill_to_hit_bow(ACTION_SKILL_POWER value)
-    {
-        this->skill_thb = value;
-    }
+    virtual ACTION_SKILL_POWER get_skill_to_hit_bow() const;
+    virtual void set_skill_to_hit_bow(ACTION_SKILL_POWER value);
     /*!
      * @brief 投射命中スキル
      */
-    virtual ACTION_SKILL_POWER get_skill_to_hit_throw() const
-    {
-        return this->skill_tht;
-    }
-    virtual void set_skill_to_hit_throw(ACTION_SKILL_POWER value)
-    {
-        this->skill_tht = value;
-    }
+    virtual ACTION_SKILL_POWER get_skill_to_hit_throw() const;
+    virtual void set_skill_to_hit_throw(ACTION_SKILL_POWER value);
     /*!
      * @brief 掘削スキル
      */
-    virtual ACTION_SKILL_POWER get_skill_dig() const
-    {
-        return this->skill_dig;
-    }
-    virtual void set_skill_dig(ACTION_SKILL_POWER value)
-    {
-        this->skill_dig = value;
-    }
+    virtual ACTION_SKILL_POWER get_skill_dig() const;
+    virtual void set_skill_dig(ACTION_SKILL_POWER value);
 
     /*!
      * @brief クリーチャーのコピーを返す
@@ -4026,19 +3306,13 @@ public:
      * @brief 現在の変身形態を取得する
      * @return 変身形態（NONE なら通常状態）
      */
-    virtual MimicKindType get_mimic_form() const
-    {
-        return this->mimic_form;
-    }
+    virtual MimicKindType get_mimic_form() const;
 
     /*!
      * @brief 変身形態を設定する
      * @param form 変身形態
      */
-    virtual void set_mimic_form(MimicKindType form)
-    {
-        this->mimic_form = form;
-    }
+    virtual void set_mimic_form(MimicKindType form);
 
     /*!
      * @brief 体力ランク (0-100) を計算する
@@ -4536,64 +3810,19 @@ public:
     // [提案 41] 呪文マスクの virtual API。
     // realm_idx: 0 (realm1) または 1 (realm2)。
     // spell_id: 0..31 (realm 内呪文番号)。
-    virtual BIT_FLAGS get_spell_learned_flags(int realm_idx) const
-    {
-        return (realm_idx == 0) ? this->spell_learned1 : this->spell_learned2;
-    }
-    virtual BIT_FLAGS get_spell_worked_flags(int realm_idx) const
-    {
-        return (realm_idx == 0) ? this->spell_worked1 : this->spell_worked2;
-    }
-    virtual BIT_FLAGS get_spell_forgotten_flags(int realm_idx) const
-    {
-        return (realm_idx == 0) ? this->spell_forgotten1 : this->spell_forgotten2;
-    }
-    virtual void set_spell_learned_flags(int realm_idx, BIT_FLAGS value)
-    {
-        (realm_idx == 0 ? this->spell_learned1 : this->spell_learned2) = value;
-    }
-    virtual void set_spell_worked_flags(int realm_idx, BIT_FLAGS value)
-    {
-        (realm_idx == 0 ? this->spell_worked1 : this->spell_worked2) = value;
-    }
-    virtual void set_spell_forgotten_flags(int realm_idx, BIT_FLAGS value)
-    {
-        (realm_idx == 0 ? this->spell_forgotten1 : this->spell_forgotten2) = value;
-    }
+    virtual BIT_FLAGS get_spell_learned_flags(int realm_idx) const;
+    virtual BIT_FLAGS get_spell_worked_flags(int realm_idx) const;
+    virtual BIT_FLAGS get_spell_forgotten_flags(int realm_idx) const;
+    virtual void set_spell_learned_flags(int realm_idx, BIT_FLAGS value);
+    virtual void set_spell_worked_flags(int realm_idx, BIT_FLAGS value);
+    virtual void set_spell_forgotten_flags(int realm_idx, BIT_FLAGS value);
 
-    virtual bool has_learned_spell(int realm_idx, int spell_id) const
-    {
-        return (this->get_spell_learned_flags(realm_idx) & (1UL << spell_id)) != 0;
-    }
-    virtual bool has_worked_spell(int realm_idx, int spell_id) const
-    {
-        return (this->get_spell_worked_flags(realm_idx) & (1UL << spell_id)) != 0;
-    }
-    virtual bool has_forgotten_spell(int realm_idx, int spell_id) const
-    {
-        return (this->get_spell_forgotten_flags(realm_idx) & (1UL << spell_id)) != 0;
-    }
-    virtual void set_learned_spell(int realm_idx, int spell_id, bool value)
-    {
-        const auto bit = 1UL << spell_id;
-        auto flags = this->get_spell_learned_flags(realm_idx);
-        flags = value ? (flags | bit) : (flags & ~bit);
-        this->set_spell_learned_flags(realm_idx, flags);
-    }
-    virtual void set_worked_spell(int realm_idx, int spell_id, bool value)
-    {
-        const auto bit = 1UL << spell_id;
-        auto flags = this->get_spell_worked_flags(realm_idx);
-        flags = value ? (flags | bit) : (flags & ~bit);
-        this->set_spell_worked_flags(realm_idx, flags);
-    }
-    virtual void set_forgotten_spell(int realm_idx, int spell_id, bool value)
-    {
-        const auto bit = 1UL << spell_id;
-        auto flags = this->get_spell_forgotten_flags(realm_idx);
-        flags = value ? (flags | bit) : (flags & ~bit);
-        this->set_spell_forgotten_flags(realm_idx, flags);
-    }
+    virtual bool has_learned_spell(int realm_idx, int spell_id) const;
+    virtual bool has_worked_spell(int realm_idx, int spell_id) const;
+    virtual bool has_forgotten_spell(int realm_idx, int spell_id) const;
+    virtual void set_learned_spell(int realm_idx, int spell_id, bool value);
+    virtual void set_worked_spell(int realm_idx, int spell_id, bool value);
+    virtual void set_forgotten_spell(int realm_idx, int spell_id, bool value);
     std::vector<int> spell_order_learned{}; /* order spells learned */
 
     // [A-3] private 化済。get_hp_table(level_index) / set_hp_table(level_index, value) 経由。

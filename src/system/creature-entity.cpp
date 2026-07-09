@@ -2552,3 +2552,1278 @@ int CreatureEntity::calc_max_hp_status_bonus()
 
     return bonus;
 }
+
+// ==== 提案 E4: creature-entity.h からの inline virtual accessor 本体移設 ====
+
+EXP CreatureEntity::get_max_exp() const
+{
+    return this->max_exp;
+}
+
+EXP CreatureEntity::get_max_max_exp() const
+{
+    return this->max_max_exp;
+}
+
+void CreatureEntity::add_exp(EXP delta)
+{
+    this->exp += delta;
+}
+
+void CreatureEntity::sub_exp(EXP delta)
+{
+    this->exp -= delta;
+}
+
+void CreatureEntity::add_max_exp(EXP delta)
+{
+    this->max_exp += delta;
+}
+
+void CreatureEntity::sub_max_exp(EXP delta)
+{
+    this->max_exp -= delta;
+}
+
+bool CreatureEntity::get_ambush_flag() const
+{
+    return this->ambush_flag;
+}
+
+void CreatureEntity::set_to_h_b(int16_t value)
+{
+    this->to_h_b = value;
+}
+
+void CreatureEntity::set_to_h_m(int16_t value)
+{
+    this->to_h_m = value;
+}
+
+void CreatureEntity::set_to_d_m(int16_t value)
+{
+    this->to_d_m = value;
+}
+
+void CreatureEntity::set_to_a(int16_t value)
+{
+    this->to_a = value;
+}
+
+void CreatureEntity::set_to_h(int hand, int16_t value)
+{
+    this->to_h[hand] = value;
+}
+
+void CreatureEntity::set_to_d(int hand, int16_t value)
+{
+    this->to_d[hand] = value;
+}
+
+int16_t CreatureEntity::get_to_h_b() const
+{
+    return this->to_h_b;
+}
+
+int16_t CreatureEntity::get_to_h_m() const
+{
+    return this->to_h_m;
+}
+
+int16_t CreatureEntity::get_to_d_m() const
+{
+    return this->to_d_m;
+}
+
+int16_t CreatureEntity::get_to_a() const
+{
+    return this->to_a;
+}
+
+int16_t CreatureEntity::get_to_h(int hand) const
+{
+    return this->to_h[hand];
+}
+
+int16_t CreatureEntity::get_to_d(int hand) const
+{
+    return this->to_d[hand];
+}
+
+HIT_PROB CreatureEntity::get_dis_to_h(int hand) const
+{
+    return this->dis_to_h[hand];
+}
+
+void CreatureEntity::set_dis_to_h(int hand, HIT_PROB value)
+{
+    this->dis_to_h[hand] = value;
+}
+
+HIT_PROB CreatureEntity::get_dis_to_h_b() const
+{
+    return this->dis_to_h_b;
+}
+
+void CreatureEntity::set_dis_to_h_b(HIT_PROB value)
+{
+    this->dis_to_h_b = value;
+}
+
+int CreatureEntity::get_dis_to_d(int hand) const
+{
+    return this->dis_to_d[hand];
+}
+
+void CreatureEntity::set_dis_to_d(int hand, int value)
+{
+    this->dis_to_d[hand] = value;
+}
+
+ARMOUR_CLASS CreatureEntity::get_dis_to_a() const
+{
+    return this->dis_to_a;
+}
+
+void CreatureEntity::set_dis_to_a(ARMOUR_CLASS value)
+{
+    this->dis_to_a = value;
+}
+
+ARMOUR_CLASS CreatureEntity::get_dis_ac() const
+{
+    return this->dis_ac;
+}
+
+void CreatureEntity::set_dis_ac(ARMOUR_CLASS value)
+{
+    this->dis_ac = value;
+}
+
+void CreatureEntity::set_ac(ARMOUR_CLASS value)
+{
+    this->ac = value;
+}
+
+int16_t CreatureEntity::get_num_blow(int hand) const
+{
+    return this->num_blow[hand];
+}
+
+void CreatureEntity::set_num_blow(int hand, int16_t value)
+{
+    this->num_blow[hand] = value;
+}
+
+int CreatureEntity::get_extra_blows(int hand) const
+{
+    return this->extra_blows[hand];
+}
+
+void CreatureEntity::set_extra_blows(int hand, int value)
+{
+    this->extra_blows[hand] = value;
+}
+
+void CreatureEntity::add_extra_blows(int hand, int delta)
+{
+    this->extra_blows[hand] += delta;
+}
+
+uint32_t CreatureEntity::get_count() const
+{
+    return this->count;
+}
+
+void CreatureEntity::set_count(uint32_t value)
+{
+    this->count = value;
+}
+
+int CreatureEntity::get_hp_table(int level_index) const
+{
+    return this->hp_table[level_index];
+}
+
+void CreatureEntity::set_hp_table(int level_index, int value)
+{
+    this->hp_table[level_index] = value;
+}
+
+int16_t CreatureEntity::get_num_fire() const
+{
+    return this->num_fire;
+}
+
+void CreatureEntity::set_num_fire(int16_t value)
+{
+    this->num_fire = value;
+}
+
+int16_t CreatureEntity::get_to_m_chance() const
+{
+    return this->to_m_chance;
+}
+
+void CreatureEntity::set_to_m_chance(int16_t value)
+{
+    this->to_m_chance = value;
+}
+
+POSITION CreatureEntity::get_cur_lite() const
+{
+    return this->cur_lite;
+}
+
+void CreatureEntity::set_cur_lite(POSITION value)
+{
+    this->cur_lite = value;
+}
+
+bool CreatureEntity::is_cumber_armor() const
+{
+    return this->cumber_armor;
+}
+
+void CreatureEntity::set_cumber_armor(bool value)
+{
+    this->cumber_armor = value;
+}
+
+bool CreatureEntity::is_cumber_glove() const
+{
+    return this->cumber_glove;
+}
+
+void CreatureEntity::set_cumber_glove(bool value)
+{
+    this->cumber_glove = value;
+}
+
+bool CreatureEntity::is_heavy_wield(int hand) const
+{
+    return this->heavy_wield[hand];
+}
+
+void CreatureEntity::set_heavy_wield(int hand, bool value)
+{
+    this->heavy_wield[hand] = value;
+}
+
+bool CreatureEntity::is_icky_wield(int hand) const
+{
+    return this->icky_wield[hand];
+}
+
+void CreatureEntity::set_icky_wield(int hand, bool value)
+{
+    this->icky_wield[hand] = value;
+}
+
+bool CreatureEntity::is_icky_riding_wield(int hand) const
+{
+    return this->icky_riding_wield[hand];
+}
+
+void CreatureEntity::set_icky_riding_wield(int hand, bool value)
+{
+    this->icky_riding_wield[hand] = value;
+}
+
+bool CreatureEntity::is_riding_ryoute() const
+{
+    return this->riding_ryoute;
+}
+
+void CreatureEntity::set_riding_ryoute(bool value)
+{
+    this->riding_ryoute = value;
+}
+
+bool CreatureEntity::is_monlite() const
+{
+    return this->monlite;
+}
+
+void CreatureEntity::set_monlite(bool value)
+{
+    this->monlite = value;
+}
+
+short CreatureEntity::get_stat_max(int idx) const
+{
+    return this->stat_max[idx];
+}
+
+short CreatureEntity::get_stat_cur(int idx) const
+{
+    return this->stat_cur[idx];
+}
+
+short CreatureEntity::get_stat_max_max(int idx) const
+{
+    return this->stat_max_max[idx];
+}
+
+int16_t CreatureEntity::get_stat_use(int idx) const
+{
+    return this->stat_use[idx];
+}
+
+int16_t CreatureEntity::get_stat_top(int idx) const
+{
+    return this->stat_top[idx];
+}
+
+int16_t CreatureEntity::get_stat_add(int idx) const
+{
+    return this->stat_add[idx];
+}
+
+int16_t CreatureEntity::get_stat_index(int idx) const
+{
+    return this->stat_index[idx];
+}
+
+void CreatureEntity::set_stat_max(int idx, short value)
+{
+    this->stat_max[idx] = value;
+}
+
+void CreatureEntity::set_stat_cur(int idx, short value)
+{
+    this->stat_cur[idx] = value;
+}
+
+void CreatureEntity::add_stat_cur(int idx, short delta)
+{
+    this->stat_cur[idx] += delta;
+}
+
+void CreatureEntity::set_stat_max_max(int idx, short value)
+{
+    this->stat_max_max[idx] = value;
+}
+
+void CreatureEntity::set_stat_use(int idx, int16_t value)
+{
+    this->stat_use[idx] = value;
+}
+
+void CreatureEntity::set_stat_top(int idx, int16_t value)
+{
+    this->stat_top[idx] = value;
+}
+
+void CreatureEntity::set_stat_add(int idx, int16_t value)
+{
+    this->stat_add[idx] = value;
+}
+
+void CreatureEntity::set_stat_index(int idx, int16_t value)
+{
+    this->stat_index[idx] = value;
+}
+
+bool CreatureEntity::is_kage() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::KAGE);
+}
+
+bool CreatureEntity::is_frenzied() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::FRENZY);
+}
+
+bool CreatureEntity::is_chameleon() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::CHAMELEON);
+}
+
+bool CreatureEntity::is_cloned() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::CLONED);
+}
+
+bool CreatureEntity::is_nopet() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::NOPET);
+}
+
+bool CreatureEntity::is_huge() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::HUGE);
+}
+
+bool CreatureEntity::is_large() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::LARGE);
+}
+
+bool CreatureEntity::is_small() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::SMALL);
+}
+
+bool CreatureEntity::is_fat() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::FAT);
+}
+
+bool CreatureEntity::is_gaunt() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::GAUNT);
+}
+
+bool CreatureEntity::is_lightweight() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::LIGHTWEIGHT);
+}
+
+bool CreatureEntity::is_naked() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::NAKED);
+}
+
+bool CreatureEntity::is_zombified() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::ZOMBIFIED);
+}
+
+bool CreatureEntity::is_illegal_modified() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::ILLEGAL_MODIFIED);
+}
+
+bool CreatureEntity::is_santa() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::SANTA);
+}
+
+bool CreatureEntity::is_angered() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::ANGER);
+}
+
+bool CreatureEntity::is_waifuized() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::WAIFUIZED);
+}
+
+bool CreatureEntity::is_quylthlug_born() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::QUYLTHLUG_BORN);
+}
+
+bool CreatureEntity::is_defecated() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::DEFECATED);
+}
+
+bool CreatureEntity::is_vomited() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::VOMITED);
+}
+
+bool CreatureEntity::has_noflow() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::NOFLOW);
+}
+
+bool CreatureEntity::is_nogeno() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::NOGENO);
+}
+
+const EnumClassFlagGroup<MonsterSmartLearnType> &CreatureEntity::get_smart_flags() const
+{
+    if (this->has_monster_profile()) {
+        return this->get_monster_profile().smart;
+    }
+    static const EnumClassFlagGroup<MonsterSmartLearnType> empty{};
+    return empty;
+}
+
+SUB_EXP CreatureEntity::get_spell_exp(int spell_idx) const
+{
+    return this->spell_exp[spell_idx];
+}
+
+SUB_EXP CreatureEntity::get_skill_exp(PlayerSkillKindType skill) const
+{
+    const auto it = this->skill_exp.find(skill);
+    return (it != this->skill_exp.end()) ? it->second : 0;
+}
+
+SUB_EXP CreatureEntity::get_weapon_exp(ItemKindType tval, int sval) const
+{
+    const auto it = this->weapon_exp.find(tval);
+    return (it != this->weapon_exp.end()) ? it->second[sval] : 0;
+}
+
+SUB_EXP CreatureEntity::get_weapon_exp_max(ItemKindType tval, int sval) const
+{
+    const auto it = this->weapon_exp_max.find(tval);
+    return (it != this->weapon_exp_max.end()) ? it->second[sval] : 0;
+}
+
+void CreatureEntity::set_spell_exp(int spell_idx, SUB_EXP value)
+{
+    this->spell_exp[spell_idx] = value;
+}
+
+void CreatureEntity::add_spell_exp(int spell_idx, SUB_EXP delta)
+{
+    this->spell_exp[spell_idx] += delta;
+}
+
+void CreatureEntity::set_skill_exp(PlayerSkillKindType skill, SUB_EXP value)
+{
+    this->skill_exp[skill] = value;
+}
+
+void CreatureEntity::add_skill_exp(PlayerSkillKindType skill, SUB_EXP delta)
+{
+    this->skill_exp[skill] += delta;
+}
+
+void CreatureEntity::set_weapon_exp(ItemKindType tval, int sval, SUB_EXP value)
+{
+    this->weapon_exp[tval][sval] = value;
+}
+
+void CreatureEntity::add_weapon_exp(ItemKindType tval, int sval, SUB_EXP delta)
+{
+    this->weapon_exp[tval][sval] += delta;
+}
+
+void CreatureEntity::set_weapon_exp_max(ItemKindType tval, int sval, SUB_EXP value)
+{
+    this->weapon_exp_max[tval][sval] = value;
+}
+
+bool CreatureEntity::is_friendly() const
+{
+    return this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::FRIENDLY);
+}
+
+bool CreatureEntity::is_hostile() const
+{
+    return this->has_monster_profile() && !this->is_friendly() && !this->is_pet();
+}
+
+void CreatureEntity::set_friendly()
+{
+    if (this->has_monster_profile()) {
+        this->get_monster_profile().mflag2.set(MonsterConstantFlagType::FRIENDLY);
+    }
+}
+
+bool CreatureEntity::is_riding() const
+{
+    return this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::RIDING);
+}
+
+bool CreatureEntity::has_parent() const
+{
+    return this->has_monster_profile() && this->get_monster_profile().parent_m_idx > 0;
+}
+
+bool CreatureEntity::has_telepathy() const
+{
+    return this->telepathy != 0;
+}
+
+bool CreatureEntity::has_esp_animal() const
+{
+    return this->esp_animal != 0;
+}
+
+bool CreatureEntity::has_esp_nasty() const
+{
+    return this->esp_nasty != 0;
+}
+
+bool CreatureEntity::has_esp_homo() const
+{
+    return this->esp_homo != 0;
+}
+
+bool CreatureEntity::has_esp_undead() const
+{
+    return this->esp_undead != 0;
+}
+
+bool CreatureEntity::has_esp_demon() const
+{
+    return this->esp_demon != 0;
+}
+
+bool CreatureEntity::has_esp_orc() const
+{
+    return this->esp_orc != 0;
+}
+
+bool CreatureEntity::has_esp_troll() const
+{
+    return this->esp_troll != 0;
+}
+
+bool CreatureEntity::has_esp_giant() const
+{
+    return this->esp_giant != 0;
+}
+
+bool CreatureEntity::has_esp_dragon() const
+{
+    return this->esp_dragon != 0;
+}
+
+bool CreatureEntity::has_esp_human() const
+{
+    return this->esp_human != 0;
+}
+
+bool CreatureEntity::has_esp_evil() const
+{
+    return this->esp_evil != 0;
+}
+
+bool CreatureEntity::has_esp_good() const
+{
+    return this->esp_good != 0;
+}
+
+bool CreatureEntity::has_esp_nonliving() const
+{
+    return this->esp_nonliving != 0;
+}
+
+bool CreatureEntity::has_esp_unique() const
+{
+    return this->esp_unique != 0;
+}
+
+bool CreatureEntity::can_see_invisible() const
+{
+    return this->see_inv != 0;
+}
+
+bool CreatureEntity::has_free_act() const
+{
+    return this->free_act != 0;
+}
+
+bool CreatureEntity::has_anti_magic() const
+{
+    return this->anti_magic != 0;
+}
+
+bool CreatureEntity::has_hold_exp() const
+{
+    return this->hold_exp != 0;
+}
+
+bool CreatureEntity::has_slow_digest_flag() const
+{
+    return this->slow_digest != 0;
+}
+
+bool CreatureEntity::has_see_nocto() const
+{
+    return this->see_nocto != 0;
+}
+
+bool CreatureEntity::has_special_attack(BIT_FLAGS flag) const
+{
+    return (this->special_attack & flag) != 0;
+}
+
+bool CreatureEntity::has_special_defense(BIT_FLAGS flag) const
+{
+    return (this->special_defense & flag) != 0;
+}
+
+bool CreatureEntity::has_warning_flag() const
+{
+    return this->warning != 0;
+}
+
+bool CreatureEntity::has_impact_flag() const
+{
+    return this->impact != 0;
+}
+
+bool CreatureEntity::has_earthquake_flag() const
+{
+    return this->earthquake != 0;
+}
+
+bool CreatureEntity::has_dec_mana() const
+{
+    return this->dec_mana != 0;
+}
+
+bool CreatureEntity::has_easy_spell() const
+{
+    return this->easy_spell != 0;
+}
+
+bool CreatureEntity::has_hard_spell() const
+{
+    return this->hard_spell != 0;
+}
+
+bool CreatureEntity::has_mighty_throw() const
+{
+    return this->mighty_throw != 0;
+}
+
+bool CreatureEntity::has_xtra_might() const
+{
+    return this->xtra_might != 0;
+}
+
+bool CreatureEntity::has_bless_blade() const
+{
+    return this->bless_blade != 0;
+}
+
+void CreatureEntity::set_telepathy(BIT_FLAGS value)
+{
+    this->telepathy = value;
+}
+
+void CreatureEntity::set_esp_animal(BIT_FLAGS value)
+{
+    this->esp_animal = value;
+}
+
+void CreatureEntity::set_esp_nasty(BIT_FLAGS value)
+{
+    this->esp_nasty = value;
+}
+
+void CreatureEntity::set_esp_homo(BIT_FLAGS value)
+{
+    this->esp_homo = value;
+}
+
+void CreatureEntity::set_esp_undead(BIT_FLAGS value)
+{
+    this->esp_undead = value;
+}
+
+void CreatureEntity::set_esp_demon(BIT_FLAGS value)
+{
+    this->esp_demon = value;
+}
+
+void CreatureEntity::set_esp_orc(BIT_FLAGS value)
+{
+    this->esp_orc = value;
+}
+
+void CreatureEntity::set_esp_troll(BIT_FLAGS value)
+{
+    this->esp_troll = value;
+}
+
+void CreatureEntity::set_esp_giant(BIT_FLAGS value)
+{
+    this->esp_giant = value;
+}
+
+void CreatureEntity::set_esp_dragon(BIT_FLAGS value)
+{
+    this->esp_dragon = value;
+}
+
+void CreatureEntity::set_esp_human(BIT_FLAGS value)
+{
+    this->esp_human = value;
+}
+
+void CreatureEntity::set_esp_evil(BIT_FLAGS value)
+{
+    this->esp_evil = value;
+}
+
+void CreatureEntity::set_esp_good(BIT_FLAGS value)
+{
+    this->esp_good = value;
+}
+
+void CreatureEntity::set_esp_nonliving(BIT_FLAGS value)
+{
+    this->esp_nonliving = value;
+}
+
+void CreatureEntity::set_esp_unique(BIT_FLAGS value)
+{
+    this->esp_unique = value;
+}
+
+void CreatureEntity::set_can_swim(bool value)
+{
+    this->can_swim = value;
+}
+
+void CreatureEntity::set_levitation(BIT_FLAGS value)
+{
+    this->levitation = value;
+}
+
+void CreatureEntity::set_free_act(BIT_FLAGS value)
+{
+    this->free_act = value;
+}
+
+void CreatureEntity::set_see_inv(BIT_FLAGS value)
+{
+    this->see_inv = value;
+}
+
+void CreatureEntity::set_regenerate(BIT_FLAGS value)
+{
+    this->regenerate = value;
+}
+
+void CreatureEntity::set_hold_exp(BIT_FLAGS value)
+{
+    this->hold_exp = value;
+}
+
+void CreatureEntity::set_slow_digest(BIT_FLAGS value)
+{
+    this->slow_digest = value;
+}
+
+void CreatureEntity::set_lite_flags(BIT_FLAGS value)
+{
+    this->lite = value;
+}
+
+void CreatureEntity::set_warning_flags(BIT_FLAGS value)
+{
+    this->warning = value;
+}
+
+void CreatureEntity::set_impact_flags(BIT_FLAGS value)
+{
+    this->impact = value;
+}
+
+void CreatureEntity::set_earthquake_flags(BIT_FLAGS value)
+{
+    this->earthquake = value;
+}
+
+void CreatureEntity::set_dec_mana(BIT_FLAGS value)
+{
+    this->dec_mana = value;
+}
+
+void CreatureEntity::set_easy_spell(BIT_FLAGS value)
+{
+    this->easy_spell = value;
+}
+
+void CreatureEntity::set_hard_spell(BIT_FLAGS value)
+{
+    this->hard_spell = value;
+}
+
+void CreatureEntity::set_mighty_throw(BIT_FLAGS value)
+{
+    this->mighty_throw = value;
+}
+
+void CreatureEntity::set_see_nocto(BIT_FLAGS value)
+{
+    this->see_nocto = value;
+}
+
+void CreatureEntity::set_anti_magic(BIT_FLAGS value)
+{
+    this->anti_magic = value;
+}
+
+void CreatureEntity::set_anti_tele(BIT_FLAGS value)
+{
+    this->anti_tele = value;
+}
+
+void CreatureEntity::set_bless_blade(BIT_FLAGS value)
+{
+    this->bless_blade = value;
+}
+
+void CreatureEntity::set_xtra_might(BIT_FLAGS value)
+{
+    this->xtra_might = value;
+}
+
+BIT_FLAGS CreatureEntity::get_impact_flags() const
+{
+    return this->impact;
+}
+
+BIT_FLAGS CreatureEntity::get_earthquake_flags() const
+{
+    return this->earthquake;
+}
+
+void CreatureEntity::set_special_attack_flags(BIT_FLAGS value)
+{
+    this->special_attack = value;
+}
+
+BIT_FLAGS CreatureEntity::get_special_attack_flags() const
+{
+    return this->special_attack;
+}
+
+void CreatureEntity::add_special_attack(BIT_FLAGS flag)
+{
+    this->special_attack |= flag;
+}
+
+void CreatureEntity::remove_special_attack(BIT_FLAGS flag)
+{
+    this->special_attack &= ~flag;
+}
+
+void CreatureEntity::set_special_defense_flags(BIT_FLAGS value)
+{
+    this->special_defense = value;
+}
+
+BIT_FLAGS CreatureEntity::get_special_defense_flags() const
+{
+    return this->special_defense;
+}
+
+void CreatureEntity::add_special_defense(BIT_FLAGS flag)
+{
+    this->special_defense |= flag;
+}
+
+void CreatureEntity::remove_special_defense(BIT_FLAGS flag)
+{
+    this->special_defense &= ~flag;
+}
+
+const EnumClassFlagGroup<PlayerMutationType> &CreatureEntity::get_mutations() const
+{
+    return this->muta;
+}
+
+const EnumClassFlagGroup<PlayerMutationType> &CreatureEntity::get_traits() const
+{
+    return this->trait;
+}
+
+const EnumClassFlagGroup<CurseTraitType> &CreatureEntity::get_cursed_flags() const
+{
+    return this->cursed;
+}
+
+const EnumClassFlagGroup<CurseSpecialTraitType> &CreatureEntity::get_cursed_special_flags() const
+{
+    return this->cursed_special;
+}
+
+bool CreatureEntity::has_mutation(PlayerMutationType m) const
+{
+    return this->muta.has(m);
+}
+
+void CreatureEntity::add_mutation(PlayerMutationType m)
+{
+    this->muta.set(m);
+}
+
+void CreatureEntity::remove_mutation(PlayerMutationType m)
+{
+    this->muta.reset(m);
+}
+
+void CreatureEntity::clear_mutations()
+{
+    this->muta.clear();
+}
+
+void CreatureEntity::set_mutations(const EnumClassFlagGroup<PlayerMutationType> &flags)
+{
+    this->muta = flags;
+}
+
+bool CreatureEntity::has_trait(PlayerMutationType t) const
+{
+    return this->trait.has(t);
+}
+
+void CreatureEntity::add_trait(PlayerMutationType t)
+{
+    this->trait.set(t);
+}
+
+void CreatureEntity::remove_trait(PlayerMutationType t)
+{
+    this->trait.reset(t);
+}
+
+void CreatureEntity::clear_traits()
+{
+    this->trait.clear();
+}
+
+void CreatureEntity::set_traits(const EnumClassFlagGroup<PlayerMutationType> &flags)
+{
+    this->trait = flags;
+}
+
+bool CreatureEntity::has_curse(CurseTraitType c) const
+{
+    return this->cursed.has(c);
+}
+
+void CreatureEntity::add_curse(CurseTraitType c)
+{
+    this->cursed.set(c);
+}
+
+void CreatureEntity::add_curses(const EnumClassFlagGroup<CurseTraitType> &flags)
+{
+    this->cursed.set(flags);
+}
+
+void CreatureEntity::remove_curse(CurseTraitType c)
+{
+    this->cursed.reset(c);
+}
+
+void CreatureEntity::clear_curses()
+{
+    this->cursed.clear();
+}
+
+void CreatureEntity::set_curses(const EnumClassFlagGroup<CurseTraitType> &flags)
+{
+    this->cursed = flags;
+}
+
+bool CreatureEntity::has_curse_special(CurseSpecialTraitType c) const
+{
+    return this->cursed_special.has(c);
+}
+
+void CreatureEntity::add_curse_special(CurseSpecialTraitType c)
+{
+    this->cursed_special.set(c);
+}
+
+void CreatureEntity::remove_curse_special(CurseSpecialTraitType c)
+{
+    this->cursed_special.reset(c);
+}
+
+void CreatureEntity::clear_curses_special()
+{
+    this->cursed_special.clear();
+}
+
+void CreatureEntity::set_curses_special(const EnumClassFlagGroup<CurseSpecialTraitType> &flags)
+{
+    this->cursed_special = flags;
+}
+
+ACTION_SKILL_POWER CreatureEntity::get_infravision() const
+{
+    return this->see_infra;
+}
+
+void CreatureEntity::set_infravision(ACTION_SKILL_POWER value)
+{
+    this->see_infra = value;
+}
+
+ACTION_SKILL_POWER CreatureEntity::get_skill_disarm() const
+{
+    return this->skill_dis;
+}
+
+void CreatureEntity::set_skill_disarm(ACTION_SKILL_POWER value)
+{
+    this->skill_dis = value;
+}
+
+ACTION_SKILL_POWER CreatureEntity::get_skill_device() const
+{
+    return this->skill_dev;
+}
+
+void CreatureEntity::set_skill_device(ACTION_SKILL_POWER value)
+{
+    this->skill_dev = value;
+}
+
+ACTION_SKILL_POWER CreatureEntity::get_skill_save() const
+{
+    return this->skill_sav;
+}
+
+void CreatureEntity::set_skill_save(ACTION_SKILL_POWER value)
+{
+    this->skill_sav = value;
+}
+
+ACTION_SKILL_POWER CreatureEntity::get_skill_stealth() const
+{
+    return this->skill_stl;
+}
+
+void CreatureEntity::set_skill_stealth(ACTION_SKILL_POWER value)
+{
+    this->skill_stl = value;
+}
+
+ACTION_SKILL_POWER CreatureEntity::get_skill_search() const
+{
+    return this->skill_srh;
+}
+
+void CreatureEntity::set_skill_search(ACTION_SKILL_POWER value)
+{
+    this->skill_srh = value;
+}
+
+ACTION_SKILL_POWER CreatureEntity::get_skill_perception() const
+{
+    return this->skill_fos;
+}
+
+void CreatureEntity::set_skill_perception(ACTION_SKILL_POWER value)
+{
+    this->skill_fos = value;
+}
+
+ACTION_SKILL_POWER CreatureEntity::get_skill_to_hit_melee() const
+{
+    return this->skill_thn;
+}
+
+void CreatureEntity::set_skill_to_hit_melee(ACTION_SKILL_POWER value)
+{
+    this->skill_thn = value;
+}
+
+ACTION_SKILL_POWER CreatureEntity::get_skill_to_hit_bow() const
+{
+    return this->skill_thb;
+}
+
+void CreatureEntity::set_skill_to_hit_bow(ACTION_SKILL_POWER value)
+{
+    this->skill_thb = value;
+}
+
+ACTION_SKILL_POWER CreatureEntity::get_skill_to_hit_throw() const
+{
+    return this->skill_tht;
+}
+
+void CreatureEntity::set_skill_to_hit_throw(ACTION_SKILL_POWER value)
+{
+    this->skill_tht = value;
+}
+
+ACTION_SKILL_POWER CreatureEntity::get_skill_dig() const
+{
+    return this->skill_dig;
+}
+
+void CreatureEntity::set_skill_dig(ACTION_SKILL_POWER value)
+{
+    this->skill_dig = value;
+}
+
+MimicKindType CreatureEntity::get_mimic_form() const
+{
+    return this->mimic_form;
+}
+
+void CreatureEntity::set_mimic_form(MimicKindType form)
+{
+    this->mimic_form = form;
+}
+
+BIT_FLAGS CreatureEntity::get_spell_learned_flags(int realm_idx) const
+{
+    return (realm_idx == 0) ? this->spell_learned1 : this->spell_learned2;
+}
+
+BIT_FLAGS CreatureEntity::get_spell_worked_flags(int realm_idx) const
+{
+    return (realm_idx == 0) ? this->spell_worked1 : this->spell_worked2;
+}
+
+BIT_FLAGS CreatureEntity::get_spell_forgotten_flags(int realm_idx) const
+{
+    return (realm_idx == 0) ? this->spell_forgotten1 : this->spell_forgotten2;
+}
+
+void CreatureEntity::set_spell_learned_flags(int realm_idx, BIT_FLAGS value)
+{
+    (realm_idx == 0 ? this->spell_learned1 : this->spell_learned2) = value;
+}
+
+void CreatureEntity::set_spell_worked_flags(int realm_idx, BIT_FLAGS value)
+{
+    (realm_idx == 0 ? this->spell_worked1 : this->spell_worked2) = value;
+}
+
+void CreatureEntity::set_spell_forgotten_flags(int realm_idx, BIT_FLAGS value)
+{
+    (realm_idx == 0 ? this->spell_forgotten1 : this->spell_forgotten2) = value;
+}
+
+bool CreatureEntity::has_learned_spell(int realm_idx, int spell_id) const
+{
+    return (this->get_spell_learned_flags(realm_idx) & (1UL << spell_id)) != 0;
+}
+
+bool CreatureEntity::has_worked_spell(int realm_idx, int spell_id) const
+{
+    return (this->get_spell_worked_flags(realm_idx) & (1UL << spell_id)) != 0;
+}
+
+bool CreatureEntity::has_forgotten_spell(int realm_idx, int spell_id) const
+{
+    return (this->get_spell_forgotten_flags(realm_idx) & (1UL << spell_id)) != 0;
+}
+
+void CreatureEntity::set_learned_spell(int realm_idx, int spell_id, bool value)
+{
+    const auto bit = 1UL << spell_id;
+    auto flags = this->get_spell_learned_flags(realm_idx);
+    flags = value ? (flags | bit) : (flags & ~bit);
+    this->set_spell_learned_flags(realm_idx, flags);
+}
+
+void CreatureEntity::set_worked_spell(int realm_idx, int spell_id, bool value)
+{
+    const auto bit = 1UL << spell_id;
+    auto flags = this->get_spell_worked_flags(realm_idx);
+    flags = value ? (flags | bit) : (flags & ~bit);
+    this->set_spell_worked_flags(realm_idx, flags);
+}
+
+void CreatureEntity::set_forgotten_spell(int realm_idx, int spell_id, bool value)
+{
+    const auto bit = 1UL << spell_id;
+    auto flags = this->get_spell_forgotten_flags(realm_idx);
+    flags = value ? (flags | bit) : (flags & ~bit);
+    this->set_spell_forgotten_flags(realm_idx, flags);
+}
