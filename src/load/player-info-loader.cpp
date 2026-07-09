@@ -88,8 +88,11 @@ void rd_base_info(CreatureEntity &creature)
         creature.history[i][history_len] = '\0';
     }
 
-    creature.prace = i2enum<PlayerRaceType>(rd_byte());
-    creature.pclass = i2enum<PlayerClassType>(rd_byte());
+    // prace / pclass は v54 以降 rd_creature_common() で読込済み
+    if (loading_savefile_version_is_older_than(54)) {
+        creature.prace = i2enum<PlayerRaceType>(rd_byte());
+        creature.pclass = i2enum<PlayerClassType>(rd_byte());
+    }
     creature.ppersonality = i2enum<player_personality_type>(rd_byte());
     creature.psex = i2enum<player_sex>(rd_byte());
 

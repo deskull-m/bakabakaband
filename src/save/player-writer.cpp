@@ -61,8 +61,7 @@ void wr_player(CreatureEntity &creature)
         wr_string(creature.history[i]);
     }
 
-    wr_byte((byte)creature.prace);
-    wr_byte((byte)creature.pclass);
+    // prace / pclass は wr_creature_common() の全時限効果後 (v54 拡張) に集約済み
     wr_byte((byte)creature.ppersonality);
     wr_byte((byte)creature.psex);
     wr_relams(creature);
