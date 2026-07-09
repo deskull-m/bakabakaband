@@ -3553,9 +3553,9 @@ acid/elec/fire/cold/pois/stungun の 6 ハンドラを移行（**monrace 読取�
 `CreatureEntity` で置換可能だが、callee がアクセスするフィールドを満たす必要があり、
 価値は低い（wizard/spoiler の非ゲーム経路）。**低優先。**
 
-**別途の小改善:** `PlayerType::should_skip_natural_regen` / `apply_state_regen_modifier`
-（Samurai/Monk 構えの再生補正、`hp-mp-regenerator.cpp:75/98`）を `CreatureEntity`
-virtual へ hoist し `const_cast<PlayerType&>` を排除、は独立の小整理として有効。
+**別途の小改善（→ 提案 E2 で完了）:** `PlayerType::should_skip_natural_regen` /
+`apply_state_regen_modifier`（Samurai/Monk 構えの再生補正）の `const_cast<PlayerType&>`
+排除は E2 で `CreatureClass` const ビューコンストラクタ導入により実施済み。
 
 ---
 
@@ -3619,7 +3619,7 @@ virtual 化・処理の同化・機能付与** がほぼ出揃った。E トラ�
 | 番号 | 提案 | 種別 | 工数 | 価値 | 状態 |
 |---|---|---|---|---|---|
 | E1 | `regenhp()` の停止判定重複解消（`should_skip_natural_regen()` 利用） | 重複解消+同化 | 小 | 高 | 計画（安全・実装候補） |
-| E2 | `const_cast<PlayerType&>` 排除（const 構え accessor 新設） | const 衛生 | 小 | 中 | 計画 |
+| E2 | `const_cast<PlayerType&>` 排除（CreatureClass const ビューコンストラクタ） | const 衛生 | 小 | 中 | ✅ 完了 |
 | E3 | シリアライズ共通ブロック拡張（`prace`/`pclass`/`r_idx`/`ap_r_idx`） | 重複解消 | 中 | 中 | 計画（version 54 bump） |
 | E4 | インライン accessor 本体（約 480 個）の .cpp 移設 | ビルド衛生 | 大（機械的） | 中 | 計画（小刻みコミット） |
 | E5 | `is_player()` 自由関数分岐（約 101 箇所）の virtual 化 | 同化 | 大 | 中 | 計画（サイト別判断） |
@@ -3661,17 +3661,25 @@ if (creature.get_action() == ACTION_HAYAGAKE) {
 
 ---
 
-## 提案 E2: `const_cast<PlayerType&>` の排除（const 構え accessor 新設）
+## 提案 E2: `const_cast<PlayerType&>` の排除（CreatureClass const ビューコンストラクタ） ✅ 完了
 
-**現状:** `PlayerType::should_skip_natural_regen()`（77）と `apply_state_regen_modifier()`
-（100）が const メソッド内で `CreatureClass pc(const_cast<PlayerType &>(*this));` を
-使い構え（`samurai_stance_is` / `monk_stance_is`）を問い合わせている。`CreatureClass`
+**現状（着手前）:** `PlayerType::should_skip_natural_regen()` と
+`apply_state_regen_modifier()` が const メソッド内で
+`CreatureClass pc(const_cast<PlayerType &>(*this));` を使い構え
+（`samurai_stance_is` / `monk_stance_is`）を問い合わせていた。`CreatureClass`
 コンストラクタが非 const 参照を要求するための回避策。
 
-**修正案:** 構え問い合わせ用の const 経路（例: `CreatureClass` に const 版
-`samurai_stance_is() const` を追加、または `CreatureEntity` に構え getter virtual を
-新設）を用意し `const_cast` を排除。const 正当性の局所改善。工数小・価値中。
-（E1 と同一ファイルのため E1 実装時に併せて検討可）
+**完了内容:** `CreatureClass` に読み取り専用ビュー用のコンストラクタ
+`CreatureClass(const CreatureEntity &)` を追加。ゲーム状態としての `CreatureEntity`
+は実体が const になることが無い（const はアクセサ修飾子の伝播に過ぎない）ため、
+`const_cast` を **CreatureClass 内部の 1 箇所に局所化**。呼び出し側
+（`should_skip_natural_regen()` / `apply_state_regen_modifier()`）は
+`CreatureClass pc(*this);` に簡素化され、アプリケーションロジックから `const_cast` を
+排除。read/mutate 混在の CreatureClass API を分割する大規模改修は避け、最小・
+無カスケードで const 正当性を局所改善。フルビルド（g++ -O3 -Werror）で検証済。
+
+**注:** 全面的な const 化（41 個の `has_resist_*()` 等）は E トラック冒頭の所見通り
+692 TU への churn が甚大なため引き続き見送り。本提案は const_cast の局所排除に限定。
 
 ---
 

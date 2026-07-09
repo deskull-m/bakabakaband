@@ -74,7 +74,7 @@ int compute_regen_amount(CreatureEntity &creature)
 
 bool PlayerType::should_skip_natural_regen() const
 {
-    CreatureClass pc(const_cast<PlayerType &>(*this));
+    CreatureClass pc(*this);
     if (pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         return true;
     }
@@ -97,7 +97,7 @@ int PlayerType::get_base_natural_regen_amount() const
 
 int PlayerType::apply_state_regen_modifier(int amount) const
 {
-    CreatureClass pc(const_cast<PlayerType &>(*this));
+    CreatureClass pc(*this);
     if (!pc.monk_stance_is(MonkStanceType::NONE) || !pc.samurai_stance_is(SamuraiStanceType::NONE)) {
         amount /= 2;
     }
