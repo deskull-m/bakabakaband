@@ -3623,7 +3623,7 @@ virtual 化・処理の同化・機能付与** がほぼ出揃った。E トラ�
 | E1 | `regenhp()` の停止判定重複解消（`should_skip_natural_regen()` 利用） | 重複解消+同化 | 小 | 高 | 計画（安全・実装候補） |
 | E2 | `const_cast<PlayerType&>` 排除（CreatureClass const ビューコンストラクタ） | const 衛生 | 小 | 中 | ✅ 完了 |
 | E3 | シリアライズ共通ブロック拡張（`prace`/`pclass`） | 重複解消 | 中 | 中 | ✅ 完了（version 54 bump） |
-| E4 | インライン accessor 本体（約 480 個）の .cpp 移設 | ビルド衛生 | 大（機械的） | 中 | 計画（小刻みコミット） |
+| E4 | インライン accessor 本体（481 個）の .cpp 移設 | ビルド衛生 | 大（機械的） | 中 | ✅ 完了（3 batch・ヘッダ約32%削減） |
 | E5 | `is_player()` 自由関数分岐の virtual 化 | 同化 | 大 | 中 | ✅ 第1弾完了（`get_title()`。残候補は少数・据え置き） |
 
 ---
@@ -3716,17 +3716,32 @@ monrace 同一性を持たないため）＝重複ではなくモンスター固
 
 ---
 
-## 提案 E4: インライン accessor 本体（約 480 個）の .cpp 移設
+## 提案 E4: インライン accessor 本体（481 個）の .cpp 移設 ✅ 完了
 
-**現状:** `creature-entity.h`（約 4,800 行、161 KB）にインライン定義された virtual
+**着手前:** `creature-entity.h`（約 4,800 行、161 KB）にインライン定義された virtual
 accessor が約 480 個。**692 TU がこのヘッダに fan-out** するため、ヘッダ肥大が
 コンパイル時間のボトルネックになり得る。
 
-**修正案:** 単純な getter/setter 本体を `creature-entity.cpp` へ機械的に移設し、
-ヘッダは宣言のみに縮小。virtual のため inline 展開の実利益は乏しく、移設のリスクは
-低い。**大量のため 1 コミット複数関数の小刻みで進める**（レビュー・マージ競合を
-抑えるため）。工数大（機械的）・価値中（ビルド衛生）。上流マージ競合と衝突しやすい
-ため、変愚マージが一段落したタイミングで着手するのが望ましい。
+**完了内容:**
+- inline 定義された virtual accessor の本体 **481 個**を `creature-entity.cpp` へ機械的
+  移設し、ヘッダは宣言のみへ縮小。**ヘッダは 4,811 → 3,288 行（約 32% 削減）**。
+- **include-safe by construction:** `creature-entity.cpp` は `creature-entity.h` を
+  include するためヘッダの include 閉包を全て継承する。したがってヘッダで inline
+  コンパイルできていた本体は .cpp でも必ずコンパイル可能で、**include 追加は一切不要**
+  だった（実際に g++ -O3 -Werror で追加include ゼロで通過）。
+- virtual は vtable 経由呼出のため inline 展開の実利益が乏しく、out-of-line 化の
+  ランタイムコストはゼロ。純粋な**機能変化なしの移設**。
+- **3 batch に分割**（ヘッダ行番号のシフトを避けるため下位行から上位行の順で処理:
+  batch1=251 / batch2=187 / batch3=43 メソッド）、各 batch でフルビルド検証・コミット。
+- 対象は `virtual` メソッドのみ。非 virtual インラインヘルパ（`is_named()` /
+  `calc_min_max_hp()` 等）は **inline 展開の利益があり得るため据え置き**（virtual と
+  異なり out-of-line 化で最適化機会を失う）。`on_death()` の空ボディ hook 1 個も
+  アクセサではないため据え置き。
+
+**留意:** 大規模な機械的移動のため、上流（変愚）マージ作業と時期が重なると衝突し
+やすい。移設スクリプトは `virtual RET NAME(PARAMS) [const]` + 次行 `{` の
+clang-format 標準パターンのみを対象とした balanced-brace 抽出で、宣言/pure/template/
+デストラクタ/演算子/属性前置行を除外している。
 
 ---
 
