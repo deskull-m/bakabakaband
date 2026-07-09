@@ -23,6 +23,8 @@ public:
 
     void wipe() override;
 
+    std::string get_title() const override;
+
     /*!
      * @brief プレイヤー唯一のインスタンスを取得する
      * @return プレイヤーインスタンスへの参照

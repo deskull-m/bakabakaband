@@ -3622,7 +3622,7 @@ virtual 化・処理の同化・機能付与** がほぼ出揃った。E トラ�
 | E2 | `const_cast<PlayerType&>` 排除（CreatureClass const ビューコンストラクタ） | const 衛生 | 小 | 中 | ✅ 完了 |
 | E3 | シリアライズ共通ブロック拡張（`prace`/`pclass`） | 重複解消 | 中 | 中 | ✅ 完了（version 54 bump） |
 | E4 | インライン accessor 本体（約 480 個）の .cpp 移設 | ビルド衛生 | 大（機械的） | 中 | 計画（小刻みコミット） |
-| E5 | `is_player()` 自由関数分岐（約 101 箇所）の virtual 化 | 同化 | 大 | 中 | 計画（サイト別判断） |
+| E5 | `is_player()` 自由関数分岐の virtual 化 | 同化 | 大 | 中 | ✅ 第1弾完了（`get_title()`。残候補は少数・据え置き） |
 
 ---
 
@@ -3728,16 +3728,43 @@ accessor が約 480 個。**692 TU がこのヘッダに fan-out** するため�
 
 ---
 
-## 提案 E5: `is_player()` 自由関数分岐（約 101 箇所）の virtual 化
+## 提案 E5: `is_player()` 自由関数分岐の virtual 化 ✅ 第1弾完了
 
-**現状:** 提案 35 でヘッダ内の機械的冗長ガードは掃除済だが、自由関数側には
-`if (creature.is_player()) { ... } else { ... }` の**真の振る舞い分岐が約 101 箇所**残る。
-これらは型契約ではなく実際にプレイヤー/モンスターで処理が分かれる本丸。
+**全サイト調査結論（75 個の `CreatureEntity::is_player()` 実サイトを分類）:**
+生 grep 約 93 件のうち `EffectMonster::is_player()` / `EffectPlayerType::is_player()`
+（別ラッパクラス）・ヘッダ宣言・コメントを除いた **75 個が実サイト**。内訳:
 
-**修正案:** サイトごとに「プレイヤー/モンスターで意味が対称化できるか」を判断し、
-対称化できるものは `CreatureEntity` virtual に押し込む（B トラック D2 と同じ同化手法）。
-機械的一括は不可でサイト別判断が要るため工数大・価値中。同化トラック（B/D）の
-継続として、個別に価値の高いサイトから拾う運用が現実的。
+- **バケット A（virtual 化可能）: 4 個のみ。** `if (is_player()) {...} else {...}` の
+  両枝が同じ論理値を型別に算出する真の対称分岐。
+- **バケット B（型契約ガード）: 69 個。** `if (!is_player()) return;` 等の早期 return /
+  プレイヤー専用副作用ガード。提案 35 の結論通り、これらは型契約であり削減対象外。
+- **バケット C（本質的発散）: 2 個。** 描画サブシステム dispatch 等、小 virtual に
+  畳めない大規模型別処理。
+
+→ **E5 は提案 35 時点で既にほぼ枯渇しており、機械的 virtual 化余地は 4 サイトのみ。**
+
+**第1弾 完了内容（A2: `get_title()`）:**
+- `print_title()`（`main-window-left-frame.cpp`）の `is_player()` 4 分岐（None /
+  wizard / winner / 職業別称号）を `CreatureEntity::get_title()` virtual に集約。
+  基底（モンスター）は "なし"、`PlayerType::get_title()` override が
+  wizard / winner / 職業・レベル別称号を返す。呼出側は
+  `print_field(creature.get_title(), ...)` に簡素化。
+- 称号は「クリーチャーの表示属性」でありモンスターに既定値を持たせる形は
+  CLAUDE.md のプレイヤー属性共通化方針（`get_pclass()` 等と同じ）に合致。
+- フルビルド（g++ -O3 -Werror）で検証済。
+
+**据え置いた A 候補（3 個、理由付き）:**
+- **A1 `cmd-draw.cpp:174`（ステータス画面プロンプト文字列）:** UI キーヒント文字列の
+  選択。UI 層の局所三項が適切で、`CreatureEntity` に UI 文字列を持たせる価値は低い。
+- **A3 `main-window-left-frame.cpp:83`（exp 表示値）:** プレイヤー枝に android /
+  `exp_need` の残余分岐があり、単純 getter に畳めない。
+- **A4 `melee-util.cpp:18`（近接イベント知覚フィールド）:** 複数フィールド（see_m /
+  see_t / do_silly_attack）を設定するため単一 virtual に畳めない。
+
+**結論:** E5 の機械的 virtual 化は `get_title()` で実質完了。残る 69 ガードは型契約、
+2 サイトは本質的発散、3 A 候補は上記理由で据え置き。今後の「モンスターにも
+振る舞いを持たせる」拡張はガード除去＋モンスター実装（C/D トラックの機能作業）で
+個別に扱う方針。
 
 ---
 
