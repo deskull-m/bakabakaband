@@ -110,47 +110,32 @@ public:
      * @brief クリーチャーの座標を取得
      * @return 座標
      */
-    virtual Pos2D get_position() const
-    {
-        return Pos2D(this->y, this->x);
-    }
+    virtual Pos2D get_position() const;
 
     /*!
      * @brief クリーチャーのX座標を取得
      * @return X座標
      */
-    virtual POSITION get_x() const
-    {
-        return this->x;
-    }
+    virtual POSITION get_x() const;
 
     /*!
      * @brief クリーチャーのY座標を取得
      * @return Y座標
      */
-    virtual POSITION get_y() const
-    {
-        return this->y;
-    }
+    virtual POSITION get_y() const;
 
     /*!
      * @brief クリーチャーの前回の座標を取得
      * @return 前回の座標
      */
-    virtual Pos2D get_old_position() const
-    {
-        return Pos2D(this->oldpy, this->oldpx);
-    }
+    virtual Pos2D get_old_position() const;
 
     /*!
      * @brief 指定座標にクリーチャーがいるかどうかを判定
      * @param pos 判定する座標
      * @return 指定座標にいればtrue
      */
-    virtual bool is_located_at(const Pos2D &pos) const
-    {
-        return (this->y == pos.y) && (this->x == pos.x);
-    }
+    virtual bool is_located_at(const Pos2D &pos) const;
 
     /*!
      * @brief 現在地の隣 (瞬時値)または現在地を返す
@@ -191,19 +176,13 @@ public:
      * @brief クリーチャーの現在HPを取得
      * @return 現在HP
      */
-    virtual int get_current_hp() const
-    {
-        return this->hp;
-    }
+    virtual int get_current_hp() const;
 
     /*!
      * @brief クリーチャーの最大HPを取得
      * @return 最大HP
      */
-    virtual int get_max_hp() const
-    {
-        return this->maxhp;
-    }
+    virtual int get_max_hp() const;
 
     /*!
      * @brief クリーチャーの本来の(一時減少前の)最大HPを取得する
@@ -212,10 +191,7 @@ public:
      *          最大HP」を表す。経験値計算・dealt_damage 上限・捕獲判定など、
      *          一時減少に左右されるべきでない処理はこちらを参照する。
      */
-    virtual int get_max_maxhp() const
-    {
-        return this->max_maxhp;
-    }
+    virtual int get_max_maxhp() const;
 
     /*!
      * @brief 一時的な最大HP減少量を取得する (プレイヤー・モンスター共通の拡張点)
@@ -225,10 +201,7 @@ public:
      *          減少量を返すようにすれば、set_max_hp() / refresh_max_hp() 経由で
      *          maxhp (現在の最大HP) に自動的に反映される。
      */
-    virtual int get_maxhp_reduction() const
-    {
-        return 0;
-    }
+    virtual int get_maxhp_reduction() const;
 
     /*!
      * @brief 本来の最大HP (max_maxhp) を確定し、現在の最大HP (maxhp) を再計算する
@@ -330,10 +303,7 @@ public:
      * @brief クリーチャーの速度を取得
      * @return 速度値
      */
-    virtual int get_speed() const
-    {
-        return this->speed;
-    }
+    virtual int get_speed() const;
 
     /*!<
      * @brief クリーチャーが名前を持っているかどうか
@@ -389,10 +359,7 @@ public:
      * @brief クリーチャーの速度を設定
      * @param new_speed 速度値
      */
-    virtual void set_speed(int new_speed)
-    {
-        this->speed = new_speed;
-    }
+    virtual void set_speed(int new_speed);
 
     /*!
      * @brief クリーチャーが有効（生存中）かどうかを判定
@@ -407,10 +374,7 @@ public:
      * @return 死亡していればtrue
      * @details デフォルト実装は hp < 0（モンスター用）。PlayerType はオーバーライドして is_dead_ フラグを返す。
      */
-    virtual bool is_dead() const
-    {
-        return this->hp < 0;
-    }
+    virtual bool is_dead() const;
 
     /*!
      * @brief クリーチャーの実効ACを取得
@@ -444,10 +408,7 @@ public:
      * @brief クリーチャーが所属するフロアを取得
      * @return フロアへのポインタ
      */
-    virtual FloorType *get_floor() const
-    {
-        return this->current_floor_ptr;
-    }
+    virtual FloorType *get_floor() const;
 
     /*!
      * @brief クリーチャーが所属するフロアを設定
@@ -505,10 +466,7 @@ public:
      * @details モンスターは生成途中で SEX_NONE → kind_flags MALE/FEMALE から
      * 確定値に置換される。プレイヤーは birth で確定済み。
      */
-    virtual player_sex get_psex() const
-    {
-        return this->psex;
-    }
+    virtual player_sex get_psex() const;
 
     /*!
      * @brief 性格 enum を取得する
@@ -516,30 +474,21 @@ public:
      * @details モンスターは init_monster_profile() で PERSONALITY_NONE に
      * 初期化されており、種族側に性格設定が無い限り NONE のまま。
      */
-    virtual player_personality_type get_ppersonality() const
-    {
-        return this->ppersonality;
-    }
+    virtual player_personality_type get_ppersonality() const;
 
     /*!
      * @brief 種族 enum を取得する (提案 1/2)
      * @details モンスターは init_monster_profile() で PlayerRaceType::NONE に
      * 初期化されており、種族効果は発動しない (NONE ガード前提)。
      */
-    virtual PlayerRaceType get_prace() const
-    {
-        return this->prace;
-    }
+    virtual PlayerRaceType get_prace() const;
 
     /*!
      * @brief 職業 enum を取得する (提案 1/2)
      * @details モンスターは init_monster_profile() で PlayerClassType::NONE に
      * 初期化されており、職業効果は発動しない (NONE ガード前提)。
      */
-    virtual PlayerClassType get_pclass() const
-    {
-        return this->pclass;
-    }
+    virtual PlayerClassType get_pclass() const;
 
     /*!
      * @brief 表示用の称号を取得する (提案 E5)
@@ -554,70 +503,34 @@ public:
      * @details モンスターは init_monster_profile() で RealmType::NONE に
      * 初期化されており、魔法領域効果は発動しない (NONE ガード前提)。
      */
-    virtual RealmType get_realm1() const
-    {
-        return this->realm1;
-    }
+    virtual RealmType get_realm1() const;
 
     /*!
      * @brief 第 2 魔法領域 enum を取得する (提案 1/2)
      */
-    virtual RealmType get_realm2() const
-    {
-        return this->realm2;
-    }
+    virtual RealmType get_realm2() const;
 
     /*!
      * @brief 元素使い領域 enum を取得する (提案 1/2)
      */
-    virtual ElementRealmType get_element_realm() const
-    {
-        return this->element_realm;
-    }
+    virtual ElementRealmType get_element_realm() const;
 
     /*!
      * @brief カオスパトロン ID を取得する (提案 1/2)
      * @details プレイヤーのカオス戦士のみ意味を持つ。モンスターは 0。
      */
-    virtual int16_t get_patron() const
-    {
-        return this->patron;
-    }
+    virtual int16_t get_patron() const;
 
     // [提案 1/2] プレイヤー専用フィールド setter virtual 群。
     // 主に birth / wizard / shape-changer 経路から呼ばれる。
-    virtual void set_psex(player_sex value)
-    {
-        this->psex = value;
-    }
-    virtual void set_ppersonality(player_personality_type value)
-    {
-        this->ppersonality = value;
-    }
-    virtual void set_prace(PlayerRaceType value)
-    {
-        this->prace = value;
-    }
-    virtual void set_pclass(PlayerClassType value)
-    {
-        this->pclass = value;
-    }
-    virtual void set_realm1(RealmType value)
-    {
-        this->realm1 = value;
-    }
-    virtual void set_realm2(RealmType value)
-    {
-        this->realm2 = value;
-    }
-    virtual void set_element_realm(ElementRealmType value)
-    {
-        this->element_realm = value;
-    }
-    virtual void set_patron(int16_t value)
-    {
-        this->patron = value;
-    }
+    virtual void set_psex(player_sex value);
+    virtual void set_ppersonality(player_personality_type value);
+    virtual void set_prace(PlayerRaceType value);
+    virtual void set_pclass(PlayerClassType value);
+    virtual void set_realm1(RealmType value);
+    virtual void set_realm2(RealmType value);
+    virtual void set_element_realm(ElementRealmType value);
+    virtual void set_patron(int16_t value);
 
     bool has_living_flag(bool is_appearance = false) const;
     bool has_demon_flag(bool is_appearance = false) const;
@@ -631,31 +544,19 @@ public:
      * @brief 次の行動までに必要なエネルギーを取得
      * @return エネルギー値
      */
-    virtual ACTION_ENERGY get_energy_need() const
-    {
-        return this->energy_need;
-    }
+    virtual ACTION_ENERGY get_energy_need() const;
 
     /*!
      * @brief 次の行動までに必要なエネルギーを設定
      * @param energy エネルギー値
      */
-    virtual void set_energy_need(ACTION_ENERGY energy)
-    {
-        this->energy_need = energy;
-    }
+    virtual void set_energy_need(ACTION_ENERGY energy);
 
     /*! @brief 次の行動までに必要なエネルギーを加算する (A-2) */
-    virtual void add_energy_need(ACTION_ENERGY delta)
-    {
-        this->energy_need += delta;
-    }
+    virtual void add_energy_need(ACTION_ENERGY delta);
 
     /*! @brief 次の行動までに必要なエネルギーを減算する (A-2) */
-    virtual void sub_energy_need(ACTION_ENERGY delta)
-    {
-        this->energy_need -= delta;
-    }
+    virtual void sub_energy_need(ACTION_ENERGY delta);
 
     /*!
      * @brief 速度に応じてターン経過分のエネルギーを消費する (提案 B2)
@@ -678,23 +579,14 @@ public:
      * @return プレイヤーならtrue、モンスターならfalse
      * @details デフォルトはfalse（モンスター）。PlayerTypeのみtrueを返す。
      */
-    virtual bool is_player() const
-    {
-        return false;
-    }
+    virtual bool is_player() const;
 
     /*!
      * @brief ダメージを受けた際のフック（dealt_damage等の蓄積処理）
      * @param damage 受けたダメージ量
      * @details dealt_damage を加算し max_maxhp * 100 を上限とする。
      */
-    virtual void on_take_hit(int damage)
-    {
-        this->dealt_damage += damage;
-        if (this->dealt_damage > this->max_maxhp * 100) {
-            this->dealt_damage = this->max_maxhp * 100;
-        }
-    }
+    virtual void on_take_hit(int damage);
 
     /*!
      * @brief 死亡した際のフック（死亡処理・記録等）
@@ -712,11 +604,7 @@ public:
      * メッセージ表示も行う（そのため非 const）。
      * モンスターはデフォルト実装（軽減なし）で十分。
      */
-    virtual bool calc_damage_reduction(int &damage, [[maybe_unused]] int damage_type)
-    {
-        (void)damage;
-        return false;
-    }
+    virtual bool calc_damage_reduction(int &damage, [[maybe_unused]] int damage_type);
 
     /*!
      * @brief ダメージをHPに適用する共通処理
@@ -788,10 +676,7 @@ public:
      * @return スキップすべきなら true。デフォルトは false（モンスターは常に回復対象）
      * @details PlayerType でオーバーライドし、KOUKIJIN 構え・HAYAGAKE 行動を判定する
      */
-    virtual bool should_skip_natural_regen() const
-    {
-        return false;
-    }
+    virtual bool should_skip_natural_regen() const;
 
     /*!
      * @brief 自然回復ベース量を取得（満腹度等の影響を反映）
@@ -806,10 +691,7 @@ public:
      * @return 補正後の回復量。デフォルトは引数をそのまま返す
      * @details PlayerType でオーバーライドし、僧/侍構え・SLOW_REGEN 呪いによる減衰を適用する
      */
-    virtual int apply_state_regen_modifier(int amount) const
-    {
-        return amount;
-    }
+    virtual int apply_state_regen_modifier(int amount) const;
 
     /*!
      * @brief クリーチャー固有要因による最終回復量補正を適用
@@ -817,10 +699,7 @@ public:
      * @return 補正後の回復量。デフォルトは引数をそのまま返す
      * @details PlayerType でオーバーライドし、ミュータント体質 (mutant_regenerate_mod) による補正を適用する
      */
-    virtual int apply_creature_specific_regen_modifier(int amount) const
-    {
-        return amount;
-    }
+    virtual int apply_creature_specific_regen_modifier(int amount) const;
 
     short get_remaining_sleep() const
     {
@@ -974,12 +853,7 @@ public:
      * @brief カメレオンの変身を元に戻す。
      * @details r_idx と ap_r_idx を実種族IDにリセットする。
      */
-    virtual void reset_chameleon_polymorph()
-    {
-        const auto real_id = this->get_real_monrace_id();
-        this->r_idx = real_id;
-        this->ap_r_idx = real_id;
-    }
+    virtual void reset_chameleon_polymorph();
 
     /*!
      * @brief ルアー記録に宝物情報を追加する
@@ -1102,10 +976,7 @@ public:
      * @brief クリーチャーがペットかどうかを判定
      * @return ペットならtrue、デフォルトはfalse（プレイヤーはペットではない）
      */
-    virtual bool is_pet() const
-    {
-        return this->has_monster_profile() && this->get_monster_profile().mflag2.has(MonsterConstantFlagType::PET);
-    }
+    virtual bool is_pet() const;
 
     /*!
      * @brief クリーチャーがマップ上で視認可能（プレイヤーから見える）かどうかを判定
@@ -1114,10 +985,7 @@ public:
      *          持たないクリーチャーは false（プレイヤー自身を「視認対象」として
      *          扱わないことで既存の `is_seen()` 等の意味論を維持）
      */
-    virtual bool is_visible_on_map() const
-    {
-        return this->has_monster_profile() && this->get_monster_profile().ml;
-    }
+    virtual bool is_visible_on_map() const;
 
     // [提案 14] AI ターゲット選定の共通化
     using CreaturePredicate = std::function<bool(const CreatureEntity &)>;
@@ -1188,12 +1056,7 @@ public:
      * @param value 視認状態
      * @details モンスターのみ意味を持つ。プレイヤーには無効。
      */
-    virtual void set_visible_on_map(bool value)
-    {
-        if (this->has_monster_profile()) {
-            this->get_monster_profile().ml = value;
-        }
-    }
+    virtual void set_visible_on_map(bool value);
 
     /*!
      * @brief クリーチャーが所属するアライアンスを取得する
