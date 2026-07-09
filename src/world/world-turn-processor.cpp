@@ -3,6 +3,7 @@
 #include "core/disturbance.h"
 #include "core/magic-effects-timeout-reducer.h"
 #include "dungeon/quest.h"
+#include "effect/attribute-types.h"
 #include "floor/floor-events.h"
 #include "floor/floor-mode-changer.h"
 #include "floor/wild.h"
@@ -18,6 +19,7 @@
 #include "market/bounty.h"
 #include "monster-floor/monster-generator.h"
 #include "monster-floor/monster-summon.h"
+#include "monster/monster-damage.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-status.h"
 #include "monster/monster-timed-effects.h"
@@ -32,6 +34,7 @@
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
 #include "system/creature-entity.h"
+#include "system/creature-timed-effect-types.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
@@ -108,6 +111,23 @@ void WorldTurnProcessor::process_world()
             continue;
         }
         process_monster_mutation(this->creature, monster);
+    }
+
+    // [提案 D7] 継続毒 (POISON) を受けたモンスターの毎ターン毒ダメージ。プレイヤーの
+    // 毒 DoT (process_player_hp_mp、1/ターン) と同一周期・同一量。POISON は
+    // suffers_poison_dot 個体にしか蓄積しないため、既定では誰にも発火しない。
+    for (MONSTER_IDX m_idx = 1; m_idx < floor_mut.m_max; m_idx++) {
+        auto &monster = floor_mut.m_list[m_idx];
+        if (!monster.is_valid() || (monster.get_timed_effect(CreatureTimedEffect::POISON) <= 0) || monster.is_invulnerable()) {
+            continue;
+        }
+        auto fear = false;
+        MonsterDamageProcessor mdp(this->creature, m_idx, 1, &fear, AttributeType::POIS);
+        if (mdp.mon_take_hit(_("は毒で倒れた。", " dies from poison."))) {
+            continue; // 死亡済 (monster は削除されている)
+        }
+        const auto poison = monster.get_timed_effect(CreatureTimedEffect::POISON);
+        monster.set_timed_effect(CreatureTimedEffect::POISON, static_cast<short>(poison - 1));
     }
 
     process_world_aux_sudden_attack(this->creature);

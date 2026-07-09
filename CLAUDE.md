@@ -736,6 +736,30 @@ HISSATSU / HEX）を参照。
 - 実際に撃たせるには当該 monrace に `freq_spell > 0`（詠唱頻度）が必要。
 - 既定 `NONE` のため実データ・既定バランスは不変。スキーマに `realm_abilities` を登録済。
 
+### モンスターの継続毒 (`suffers_poison_dot`) — 提案 D7
+
+`MonraceDefinition` に `bool suffers_poison_dot`
+(`src/system/monrace/monrace-definition.h`) を持ち、JSON
+`lib/edit/MonraceDefinitions.jsonc` で個別モンスターが毒攻撃で継続毒 (POISON DoT) を
+受けるようにできる。D トラック（処理同化）で判明した「モンスターは POISON を持てても
+per-turn で発火しない（切り傷・毒の inflict 経路が無い）」ギャップを、**JSON オプトイン
+方式**（既定 `false`=無効でバランス不変）の小機能として埋めたもの。
+
+```jsonc
+"suffers_poison_dot": true
+```
+
+- **inflict:** `effect_monster_pois`（`src/effect/effect-monster-resist-hurt.cpp`）で、
+  毒免疫でなく `suffers_poison_dot` が立つ個体は毒攻撃を受けると `POISON` タイマーを
+  `max(1, dam/2)` 蓄積する。
+- **tick:** `process_world()`（`TURNS_PER_TICK`=10 ゲームターン周期、プレイヤーの毒 DoT
+  と同一）で `POISON>0` のモンスターに 1/ターンの毒ダメージを `MonsterDamageProcessor`
+  (`AttributeType::POIS`) で与え、`POISON` を 1 減らす。無敵中はスキップ。死亡時は
+  ドロップ・経験値も正規経路で処理。
+- 既定 OFF のため誰にも POISON が蓄積せず**既定バランス不変**。蓄積量 (`dam/2`)・
+  tick 量 (1) で調整可能。cut DoT は近接由来で inflict 経路が別のため今回は poison のみ。
+- スキーマに `suffers_poison_dot` を登録済。
+
 ### モンスターのレベル別HPダイス指定 (`hit_point_per_level`)
 
 `MonraceDefinition` に `Dice hit_dice_per_level`
