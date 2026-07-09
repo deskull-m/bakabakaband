@@ -11,6 +11,36 @@
 #include "system/monrace/monrace-definition.h"
 #include "util/bit-flags-calculator.h"
 
+namespace {
+/*!
+ * @brief モンスターが属性に免疫を持つ場合の共通処理 (提案D4)
+ * @details ダメージ 1/9・「かなり耐性がある」メッセージ・思い出フラグ記録を集約。
+ *          属性別に重複していた同一処理の統合 (挙動不変、monrace フラグ読取・
+ *          思い出記録のセマンティクスは維持)。
+ */
+void apply_monster_element_immune(CreatureEntity &creature, EffectMonster *em_ptr, MonsterResistanceType immune_flag)
+{
+    em_ptr->note = _("にはかなり耐性がある！", " resists a lot.");
+    em_ptr->dam /= 9;
+    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
+        em_ptr->monrace->r_resistance_flags.set(immune_flag);
+    }
+}
+
+/*!
+ * @brief モンスターが属性に弱点を持つ場合の共通処理 (提案D4)
+ * @details ダメージ 2 倍・「ひどい痛手をうけた」メッセージ・思い出フラグ記録を集約。
+ */
+void apply_monster_element_hurt(CreatureEntity &creature, EffectMonster *em_ptr, MonsterResistanceType hurt_flag)
+{
+    em_ptr->note = _("はひどい痛手をうけた。", " is hit hard.");
+    em_ptr->dam *= 2;
+    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
+        em_ptr->monrace->r_resistance_flags.set(hurt_flag);
+    }
+}
+}
+
 /*!
  * @brief モンスターの耐性がなく、効果もない場合の処理
  * @param em_ptr 魔法効果情報への参照ポインタ
@@ -31,14 +61,8 @@ ProcessResult effect_monster_acid(CreatureEntity &creature, EffectMonster *em_pt
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::IMMUNE_ACID)) {
-        return ProcessResult::PROCESS_CONTINUE;
-    }
-
-    em_ptr->note = _("にはかなり耐性がある！", " resists a lot.");
-    em_ptr->dam /= 9;
-    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::IMMUNE_ACID);
+    if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::IMMUNE_ACID)) {
+        apply_monster_element_immune(creature, em_ptr, MonsterResistanceType::IMMUNE_ACID);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -50,14 +74,8 @@ ProcessResult effect_monster_elec(CreatureEntity &creature, EffectMonster *em_pt
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::IMMUNE_ELEC)) {
-        return ProcessResult::PROCESS_CONTINUE;
-    }
-
-    em_ptr->note = _("にはかなり耐性がある！", " resists a lot.");
-    em_ptr->dam /= 9;
-    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::IMMUNE_ELEC);
+    if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::IMMUNE_ELEC)) {
+        apply_monster_element_immune(creature, em_ptr, MonsterResistanceType::IMMUNE_ELEC);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -70,23 +88,12 @@ ProcessResult effect_monster_fire(CreatureEntity &creature, EffectMonster *em_pt
     }
 
     if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::IMMUNE_FIRE)) {
-        em_ptr->note = _("にはかなり耐性がある！", " resists a lot.");
-        em_ptr->dam /= 9;
-        if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::IMMUNE_FIRE);
-        }
-
+        apply_monster_element_immune(creature, em_ptr, MonsterResistanceType::IMMUNE_FIRE);
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::HURT_FIRE)) {
-        return ProcessResult::PROCESS_CONTINUE;
-    }
-
-    em_ptr->note = _("はひどい痛手をうけた。", " is hit hard.");
-    em_ptr->dam *= 2;
-    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::HURT_FIRE);
+    if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::HURT_FIRE)) {
+        apply_monster_element_hurt(creature, em_ptr, MonsterResistanceType::HURT_FIRE);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -99,23 +106,12 @@ ProcessResult effect_monster_cold(CreatureEntity &creature, EffectMonster *em_pt
     }
 
     if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::IMMUNE_COLD)) {
-        em_ptr->note = _("にはかなり耐性がある！", " resists a lot.");
-        em_ptr->dam /= 9;
-        if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::IMMUNE_COLD);
-        }
-
+        apply_monster_element_immune(creature, em_ptr, MonsterResistanceType::IMMUNE_COLD);
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::HURT_COLD)) {
-        return ProcessResult::PROCESS_CONTINUE;
-    }
-
-    em_ptr->note = _("はひどい痛手をうけた。", " is hit hard.");
-    em_ptr->dam *= 2;
-    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::HURT_COLD);
+    if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::HURT_COLD)) {
+        apply_monster_element_hurt(creature, em_ptr, MonsterResistanceType::HURT_COLD);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -127,14 +123,8 @@ ProcessResult effect_monster_pois(CreatureEntity &creature, EffectMonster *em_pt
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::IMMUNE_POISON)) {
-        return ProcessResult::PROCESS_CONTINUE;
-    }
-
-    em_ptr->note = _("にはかなり耐性がある！", " resists a lot.");
-    em_ptr->dam /= 9;
-    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::IMMUNE_POISON);
+    if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::IMMUNE_POISON)) {
+        apply_monster_element_immune(creature, em_ptr, MonsterResistanceType::IMMUNE_POISON);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -915,14 +905,8 @@ ProcessResult effect_monster_stungun(CreatureEntity &creature, EffectMonster *em
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::IMMUNE_ELEC)) {
-        return ProcessResult::PROCESS_CONTINUE;
-    }
-
-    em_ptr->note = _("にはかなり耐性がある！", " resists a lot.");
-    em_ptr->dam /= 9;
-    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::IMMUNE_ELEC);
+    if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::IMMUNE_ELEC)) {
+        apply_monster_element_immune(creature, em_ptr, MonsterResistanceType::IMMUNE_ELEC);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
