@@ -36,6 +36,11 @@ CreatureClass::CreatureClass(CreatureEntity &creature)
 {
 }
 
+CreatureClass::CreatureClass(const CreatureEntity &creature)
+    : creature(const_cast<CreatureEntity &>(creature))
+{
+}
+
 bool CreatureClass::equals(PlayerClassType type) const
 {
     if (!this->creature.is_player()) {
