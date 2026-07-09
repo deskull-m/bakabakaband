@@ -626,11 +626,39 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
 - 指定時はモンスター生成 (`place_monster_one`) 内で
   `CreatureEntity::assign_fixed_player_race_and_class()` が `prace`/`pclass` に付与する
   (chameleon 判定後の実効 monrace を参照)。
-- **現状は効果未反映**（フィールド付与のみ。種族耐性・職業特典等の戦闘効果は
-  反映しない）。効果反映は将来の C トラック提案でメンテナのバランス判断のもと
-  段階導入する方針。
+- **第1弾は効果未反映**（フィールド付与のみ。種族耐性・職業特典等の戦闘効果は
+  反映しない）。効果反映は C トラックのバランス判断のもと段階導入する方針。
 - スキーマ `schema/MonraceDefinitions.schema.json` に `player_race`/`player_class`
   を登録済（CI の JSON 検証を通す）。
+
+### モンスターの種族属性耐性の反映 (`applies_player_race_resistances`) — 提案 C1第2弾
+
+`MonraceDefinition` に `bool applies_player_race_resistances`
+(`src/system/monrace/monrace-definition.h`) を持ち、JSON
+`lib/edit/MonraceDefinitions.jsonc` で「付与された `player_race`（C1）の属性耐性を
+被ダメージへ反映する」を有効化できる。C1 第1弾（種族付与・効果なし）に対し、
+**耐性という最初の戦闘効果**を JSON オプトイン方式（既定 `false`=無効でバランス不変）で
+導入したもの。
+
+```jsonc
+"player_race": "HIGH_ELF",
+"applies_player_race_resistances": true
+```
+
+- **反映対象:** 基本 5 属性（火 `TR_RES_FIRE` / 冷 `TR_RES_COLD` / 電 `TR_RES_ELEC` /
+  酸 `TR_RES_ACID` / 毒 `TR_RES_POIS`）。付与種族の `CreatureRace::tr_flags()` に
+  当該耐性があれば、`effect-monster-resist-hurt.cpp` の各属性ハンドラで
+  被ダメージを**約 1/3 に軽減**（プレイヤーの部分耐性と同水準）。
+- **配線箇所:** `target_race_resists_element(em_ptr, tr_type)` /
+  `apply_monster_race_resistance(em_ptr)`（`effect-monster-resist-hurt.cpp` の
+  匿名 namespace）。免疫 (`IMMUNE_*`) が優先、弱点 (`HURT_*`) とは排他
+  (`else if`)。毒は D7 の DoT 蓄積 (`dam/2`) より前に軽減を適用するため継続毒も減る。
+- **安全性:** `prace == NONE` は `false` を返すため、耐性反映は「有効な種族を持つ
+  個体」に限定され OOB 等は起きない。既定 `false` のため誰にも反映されず
+  **既定バランス完全不変**。
+- **未反映:** 職業特典・種族の非耐性特典（ESP・赤外線視等）は対象外（将来段階）。
+  軽減率（現状 1/3）はハンドラの `apply_monster_race_resistance` で調整可能。
+- スキーマに `applies_player_race_resistances` を登録済。
 
 ### モンスターの能力値成長 (`grows_stats`) — 提案 C2
 

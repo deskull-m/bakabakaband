@@ -3031,7 +3031,7 @@ JSON で明示付与**する形で導入する。これにより:
 | 番号 | 提案 | 基盤 | 工数 | 価値 | 主なデザイン判断 |
 |---|---|---|---|---|---|
 | C0 | 成長状態の savefile 完全永続化 (`hp_table`) | ほぼ完了 | 小 | 小 | バージョン bump 要否 |
-| C1 | 種族・職業の顕在化（`prace`/`pclass` 付与） | ✅ cache 有 | 中 | 高 | ✅ 完了（第1弾: JSON付与・効果なし） |
+| C1 | 種族・職業の顕在化（`prace`/`pclass` 付与） | ✅ cache 有 | 中 | 高 | ✅ 第1弾（JSON付与）+第2弾（種族耐性opt-in反映）完了 |
 | C2 | 能力成長の拡張（stat / 熟練度） | ✅ 成長機構 | 中 | 中 | ✅ stat 成長完了（opt-in）／熟練度は次段 |
 | C3 | ESP のモンスター付与 | 🔴 新規 AI 要 | 中〜大 | 中 | ESP をモンスター AI にどう効かせるか（新規設計） |
 | C4 | MP 消費詠唱 | 🟡 pool 有 | 中 | 中 | ✅ 完了（opt-in・レベル比例コスト） |
@@ -3083,8 +3083,25 @@ monrace を参照）が `prace`/`pclass` に付与する。**効果は未反映*
   （オプトインのためメンテナが個体選定）。
 - フルビルド (g++ -O3 -Werror -Wall -Wextra) / clang-format-18 / validate_json.py で検証済。
 
-**第2弾以降（未着手）:** 種族耐性・職業特典等の**戦闘効果の反映**。メンテナの
-バランス判断のもと、対象個体・反映範囲を決めて段階導入する。
+**第2弾 ✅ 完了（種族耐性の opt-in 反映）:**
+`MonraceDefinition::applies_player_race_resistances`（bool, 既定 false）を追加。
+付与された `player_race`（C1第1弾）が基本 5 属性（火/冷/電/酸/毒）の耐性
+（`TR_RES_*`）を持つ個体は、`effect-monster-resist-hurt.cpp` の各属性ハンドラで
+被ダメージを約 1/3 に軽減する（プレイヤー部分耐性と同水準）。
+
+- 配線: 匿名 namespace の `target_race_resists_element()` /
+  `apply_monster_race_resistance()`。免疫優先・弱点排他（`else if`）、毒は D7 の
+  DoT 蓄積前に軽減。`prace == NONE` は false（OOB 回避）。
+- **既定 false のため誰にも反映されず既定バランス不変。** 軽減率はハンドラ定数で調整可。
+- 実コード調査で判明した重要事実: 耐性クエリ経路（`common_cause_flags`）は元々
+  `is_player()` ガード無しで monster prace を読むが、**モンスター被ダメージ経路は
+  monrace フラグを直接読む**ため prace 付与だけでは戦闘に反映されなかった。本第2弾は
+  その被ダメージ経路へ種族耐性を opt-in で明示配線したもの。
+- reader（`info_set_bool`）／schema／CLAUDE.md 整備。フルビルド（g++ -O3 -Werror）／
+  validate_json.py で検証済。
+
+**第3弾以降（未着手）:** 職業特典・種族の非耐性特典（ESP・赤外線視・stat 補正等）の
+反映。メンテナのバランス判断のもと段階導入する。
 
 ---
 

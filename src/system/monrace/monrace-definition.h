@@ -138,6 +138,7 @@ public:
     EnumClassFlagGroup<PlayerMutationType> mutations{}; //!< 生成時に付与する突然変異 (提案C5。空=なし=オプトイン)
     RealmType realm_abilities = RealmType::NONE; //!< 詠唱能力を付与する魔法領域 (提案C6。NONE=なし=オプトイン。詠唱時に realm 由来の MonsterAbilityType を追加)
     bool suffers_poison_dot = false; //!< 毒攻撃で継続毒(POISON DoT)を受けるか (提案D7。既定false=オプトイン。既定バランス不変)
+    bool applies_player_race_resistances = false; //!< 付与された player_race の属性耐性を被ダメージへ反映するか (提案C1第2弾。既定false=オプトイン。既定バランス不変)
     EnumClassFlagGroup<MonsterFeedType> meat_feed_flags;
     EnumClassFlagGroup<MonsterAbilityType> ability_flags; //!< 能力フラグ(魔法/ブレス) / Ability Flags
     EnumClassFlagGroup<MonsterAuraType> aura_flags; //!< オーラフラグ / Aura Flags
