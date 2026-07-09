@@ -3387,7 +3387,7 @@ A/B と違い挙動が変わるため、対象範囲と数値はメンテナ判�
 | D3 | 統一クリーチャーテレポートプリミティブ | primitive | 中 | 中 | 計画 |
 | D4 | 属性ダメージ分類器（immune/resist/vuln）の共通化 | primitive | 中 | 中 | 計画 |
 | D5 | 小規模統合（charm/control セーヴ統合ほか） | 純粋refactor | 小 | 低〜中 | ✅ 完了（charm/control。他2件は精査の上見送り） |
-| D6 | `CreatureEntity` インスタンス化可能化（PlayerType dummy 撤廃） | 構造 | 中 | 中 | 計画 |
+| D6 | spoiler/lore の PlayerType dummy 軽量化（※前提訂正） | 構造 | 小 | 低 | 計画（低優先・前提誤り訂正済） |
 | D7 | モンスターの cut/poison DoT（per-turn 未発火のギャップ） | 機能(C隣接) | 中 | 中 | 計画 |
 
 ---
@@ -3526,18 +3526,21 @@ lore/note/二次効果（do_polymorph 等）は型別のまま**残す（完全�
 
 ---
 
-## 提案 D6: `CreatureEntity` インスタンス化可能化（構造）
+## 提案 D6: spoiler/lore の PlayerType dummy 軽量化（前提訂正済・低優先）
 
-**現状:** `CreatureEntity` が抽象（インスタンス化不可）のため、spoiler/lore 経路が
-既に `CreatureEntity &` を取る関数へ渡す「ダミープレイヤー」を 5 箇所で作っている
-(`display-lore.cpp:122` / `fixed-artifacts-spoiler.cpp:147` / `items-spoiler.cpp:167` /
-`wizard-spoiler.cpp:189` / singleton)。ブロッカーは「CreatureEntity を構築できない」
-という構造要因。
+**⚠️ 当初前提の訂正（実コード検証）:** 調査時「`CreatureEntity` はインスタンス化
+不可」としたが**誤り**。`CreatureEntity` に純粋仮想は無く（`= 0` は全てメンバ既定値）、
+モンスターは `std::vector<CreatureEntity> m_list` として**直接インスタンス化されている**
+（＝ concrete class）。よって「インスタンス化可能化」という課題自体が存在しない。
 
-**提案:** null-creature / インスタンス化可能化でダミー PlayerType を撤廃。あわせて
-`PlayerType::should_skip_natural_regen` / `apply_state_regen_modifier`（Samurai/Monk
-構えの再生補正、`hp-mp-regenerator.cpp:75/98`）を `CreatureEntity` virtual へ hoist し、
-`const_cast<PlayerType&>` を排除。**工数:** 中。**価値:** 中（構造的負債の解消）。
+**残る小課題:** spoiler/lore が便宜上 `PlayerType dummy;`（重量オブジェクト）を作る
+2 箇所 (`display-lore.cpp:122` / `items-spoiler.cpp:167`)。原理的には軽量な
+`CreatureEntity` で置換可能だが、callee がアクセスするフィールドを満たす必要があり、
+価値は低い（wizard/spoiler の非ゲーム経路）。**低優先。**
+
+**別途の小改善:** `PlayerType::should_skip_natural_regen` / `apply_state_regen_modifier`
+（Samurai/Monk 構えの再生補正、`hp-mp-regenerator.cpp:75/98`）を `CreatureEntity`
+virtual へ hoist し `const_cast<PlayerType&>` を排除、は独立の小整理として有効。
 
 ---
 
