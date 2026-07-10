@@ -281,7 +281,8 @@ ProcessResult effect_monster_plasma(CreatureEntity &creature, EffectMonster *em_
 
 static bool effect_monster_nether_resist(CreatureEntity &creature, EffectMonster *em_ptr)
 {
-    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_NETHER)) {
+    const auto native_resist = em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_NETHER);
+    if (!native_resist && !target_race_resists_element(em_ptr, TR_RES_NETHER)) {
         return false;
     }
 
@@ -297,7 +298,7 @@ static bool effect_monster_nether_resist(CreatureEntity &creature, EffectMonster
         em_ptr->dam /= randint1(6) + 6;
     }
 
-    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
+    if (native_resist && is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
         em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_NETHER);
     }
 
@@ -355,11 +356,12 @@ ProcessResult effect_monster_chaos(CreatureEntity &creature, EffectMonster *em_p
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_CHAOS)) {
+    const auto native_chaos_resist = em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_CHAOS);
+    if (native_chaos_resist || target_race_resists_element(em_ptr, TR_RES_CHAOS)) {
         em_ptr->note = _("には耐性がある。", " resists.");
         em_ptr->dam *= 3;
         em_ptr->dam /= randint1(6) + 6;
-        if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
+        if (native_chaos_resist && is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
             em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_CHAOS);
         }
     } else if (em_ptr->monrace->kind_flags.has(MonsterKindType::DEMON) && one_in_(3)) {
@@ -383,14 +385,15 @@ ProcessResult effect_monster_shards(CreatureEntity &creature, EffectMonster *em_
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_SHARDS)) {
+    const auto native_resist = em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_SHARDS);
+    if (!native_resist && !target_race_resists_element(em_ptr, TR_RES_SHARDS)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
     em_ptr->note = _("には耐性がある。", " resists.");
     em_ptr->dam *= 3;
     em_ptr->dam /= randint1(6) + 6;
-    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
+    if (native_resist && is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
         em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_SHARDS);
     }
 
@@ -422,7 +425,8 @@ ProcessResult effect_monster_sound(CreatureEntity &creature, EffectMonster *em_p
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_SOUND)) {
+    const auto native_resist = em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_SOUND);
+    if (!native_resist && !target_race_resists_element(em_ptr, TR_RES_SOUND)) {
         em_ptr->do_stun = (10 + randint1(15) + em_ptr->r) / (em_ptr->r + 1);
         return ProcessResult::PROCESS_CONTINUE;
     }
@@ -430,7 +434,7 @@ ProcessResult effect_monster_sound(CreatureEntity &creature, EffectMonster *em_p
     em_ptr->note = _("には耐性がある。", " resists.");
     em_ptr->dam *= 2;
     em_ptr->dam /= randint1(6) + 6;
-    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
+    if (native_resist && is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
         em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_SOUND);
     }
 
@@ -443,7 +447,8 @@ ProcessResult effect_monster_confusion(CreatureEntity &creature, EffectMonster *
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::NO_CONF)) {
+    const auto native_resist = em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_CONF);
+    if (!native_resist && !target_race_resists_element(em_ptr, TR_RES_CONF)) {
         em_ptr->do_conf = (10 + randint1(15) + em_ptr->r) / (em_ptr->r + 1);
         return ProcessResult::PROCESS_CONTINUE;
     }
@@ -451,7 +456,7 @@ ProcessResult effect_monster_confusion(CreatureEntity &creature, EffectMonster *
     em_ptr->note = _("には耐性がある。", " resists.");
     em_ptr->dam *= 3;
     em_ptr->dam /= randint1(6) + 6;
-    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
+    if (native_resist && is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
         em_ptr->monrace->resistance_flags.set(MonsterResistanceType::NO_CONF);
     }
 
@@ -464,14 +469,15 @@ ProcessResult effect_monster_disenchant(CreatureEntity &creature, EffectMonster 
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_DISENCHANT)) {
+    const auto native_resist = em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_DISENCHANT);
+    if (!native_resist && !target_race_resists_element(em_ptr, TR_RES_DISEN)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
     em_ptr->note = _("には耐性がある。", " resists.");
     em_ptr->dam *= 3;
     em_ptr->dam /= randint1(6) + 6;
-    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
+    if (native_resist && is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
         em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_DISENCHANT);
     }
 
@@ -484,14 +490,15 @@ ProcessResult effect_monster_nexus(CreatureEntity &creature, EffectMonster *em_p
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_NEXUS)) {
+    const auto native_resist = em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_NEXUS);
+    if (!native_resist && !target_race_resists_element(em_ptr, TR_RES_NEXUS)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
     em_ptr->note = _("には耐性がある。", " resists.");
     em_ptr->dam *= 3;
     em_ptr->dam /= randint1(6) + 6;
-    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
+    if (native_resist && is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
         em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_NEXUS);
     }
 

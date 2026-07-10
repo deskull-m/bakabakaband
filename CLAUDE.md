@@ -645,14 +645,24 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
 "applies_player_race_resistances": true
 ```
 
-- **反映対象:** 基本 5 属性（火 `TR_RES_FIRE` / 冷 `TR_RES_COLD` / 電 `TR_RES_ELEC` /
-  酸 `TR_RES_ACID` / 毒 `TR_RES_POIS`）。付与種族の `CreatureRace::tr_flags()` に
-  当該耐性があれば、`effect-monster-resist-hurt.cpp` の各属性ハンドラで
-  被ダメージを**約 1/3 に軽減**（プレイヤーの部分耐性と同水準）。
+- **反映対象（第2弾: 基本 5 属性）:** 火 `TR_RES_FIRE` / 冷 `TR_RES_COLD` /
+  電 `TR_RES_ELEC` / 酸 `TR_RES_ACID` / 毒 `TR_RES_POIS`。付与種族の
+  `CreatureRace::tr_flags()` に当該耐性があれば、`effect-monster-resist-hurt.cpp` の
+  各属性ハンドラで被ダメージを**約 1/3 に軽減**（プレイヤーの部分耐性と同水準）。
+- **反映対象（第3弾: 二次属性 7 種）:** 地獄 `TR_RES_NETHER` / 混沌 `TR_RES_CHAOS` /
+  破片 `TR_RES_SHARDS` / 轟音 `TR_RES_SOUND` / 混乱 `TR_RES_CONF` /
+  劣化 `TR_RES_DISEN` / 因果 `TR_RES_NEXUS`。各ハンドラの**ネイティブ耐性経路へ
+  OR-in** する形で反映（種族耐性でネイティブと同じ軽減・副作用抑止を発火）。
+  轟音は `do_stun`、混乱は `do_conf`、混沌は polymorph/混乱の**状態異常も抑止**する。
+  種族由来耐性では monrace ネイティブ耐性の思い出フラグ (`r_resistance_flags`) を
+  記録しない（`native_resist` ガード）。付随攻撃（rocket/icee/void/abyss 等の
+  複合・特殊ロジック）は対象外（将来拡張余地）。
 - **配線箇所:** `target_race_resists_element(em_ptr, tr_type)` /
-  `apply_monster_race_resistance(em_ptr)`（`effect-monster-resist-hurt.cpp` の
-  匿名 namespace）。免疫 (`IMMUNE_*`) が優先、弱点 (`HURT_*`) とは排他
-  (`else if`)。毒は D7 の DoT 蓄積 (`dam/2`) より前に軽減を適用するため継続毒も減る。
+  `apply_monster_race_resistance(em_ptr)`（基本 5 属性用の 1/3 軽減）（
+  `effect-monster-resist-hurt.cpp` の匿名 namespace）。基本属性は免疫 (`IMMUNE_*`)
+  優先・弱点 (`HURT_*`) と排他 (`else if`)。毒は D7 の DoT 蓄積 (`dam/2`) より前に
+  軽減を適用するため継続毒も減る。二次属性は各ハンドラのネイティブ resist 条件へ
+  `|| target_race_resists_element(...)` を OR-in。
 - **安全性:** `prace == NONE` は `false` を返すため、耐性反映は「有効な種族を持つ
   個体」に限定され OOB 等は起きない。既定 `false` のため誰にも反映されず
   **既定バランス完全不変**。

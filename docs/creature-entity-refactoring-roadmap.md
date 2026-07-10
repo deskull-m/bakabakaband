@@ -3031,7 +3031,7 @@ JSON で明示付与**する形で導入する。これにより:
 | 番号 | 提案 | 基盤 | 工数 | 価値 | 主なデザイン判断 |
 |---|---|---|---|---|---|
 | C0 | 成長状態の savefile 完全永続化 (`hp_table`) | ほぼ完了 | 小 | 小 | バージョン bump 要否 |
-| C1 | 種族・職業の顕在化（`prace`/`pclass` 付与） | ✅ cache 有 | 中 | 高 | ✅ 第1弾（JSON付与）+第2弾（種族耐性opt-in反映）完了 |
+| C1 | 種族・職業の顕在化（`prace`/`pclass` 付与） | ✅ cache 有 | 中 | 高 | ✅ 第1弾(付与)+第2弾(基本5属性耐性)+第3弾(二次7属性耐性) 完了 |
 | C2 | 能力成長の拡張（stat / 熟練度） | ✅ 成長機構 | 中 | 中 | ✅ stat 成長完了（opt-in）／熟練度は次段 |
 | C3 | ESP のモンスター付与 | 🔴 新規 AI 要 | 中〜大 | 中 | ESP をモンスター AI にどう効かせるか（新規設計） |
 | C4 | MP 消費詠唱 | 🟡 pool 有 | 中 | 中 | ✅ 完了（opt-in・レベル比例コスト） |
@@ -3100,8 +3100,24 @@ monrace を参照）が `prace`/`pclass` に付与する。**効果は未反映*
 - reader（`info_set_bool`）／schema／CLAUDE.md 整備。フルビルド（g++ -O3 -Werror）／
   validate_json.py で検証済。
 
-**第3弾以降（未着手）:** 職業特典・種族の非耐性特典（ESP・赤外線視・stat 補正等）の
-反映。メンテナのバランス判断のもと段階導入する。
+**第3弾 ✅ 完了（二次属性への耐性反映拡大）:**
+第2弾（基本 5 属性）と同じ opt-in フラグ `applies_player_race_resistances` の被覆を
+**二次属性 7 種**（地獄 `TR_RES_NETHER` / 混沌 `TR_RES_CHAOS` / 破片 `TR_RES_SHARDS` /
+轟音 `TR_RES_SOUND` / 混乱 `TR_RES_CONF` / 劣化 `TR_RES_DISEN` / 因果 `TR_RES_NEXUS`）へ
+拡大。
+
+- 各ハンドラのネイティブ resist 条件へ `|| target_race_resists_element(em_ptr, TR_RES_X)`
+  を **OR-in** し、種族耐性でネイティブと同じ軽減・**副作用抑止**（轟音の `do_stun`・
+  混乱の `do_conf`・混沌の polymorph/混乱）を発火させる。
+- 種族由来 resist では monrace ネイティブ耐性の思い出フラグを記録しない
+  （`native_resist` ローカルでガード）。
+- フラグ被覆拡大のみで新フラグは追加せず、**既定 false のまま＝バランス不変**。
+  複合/特殊攻撃（rocket/icee_bolt/void/abyss）は多属性・特殊ロジックのため対象外。
+- フルビルド（g++ -O3 -Werror）で検証済。
+
+**第4弾以降（未着手）:** 職業特典・種族の非耐性特典（ESP・赤外線視・stat 補正等）の
+反映。ESP/赤外線視はモンスター AI 索敵の新規実装が要る（C3 と同課題）ため大。
+メンテナのバランス判断のもと段階導入する。
 
 ---
 
