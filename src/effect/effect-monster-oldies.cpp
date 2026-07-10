@@ -6,6 +6,7 @@
 #include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
 #include "monster/monster-util.h"
+#include "object-enchant/tr-types.h"
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
@@ -241,6 +242,8 @@ ProcessResult effect_monster_old_sleep(CreatureEntity &creature, EffectMonster *
 
     bool has_resistance = em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
     has_resistance |= em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_SLEEP);
+    // [提案C1第5弾] 付与種族が自由行動 (TR_FREE_ACT) を持てば魔法睡眠を無効化 (opt-in・既定OFF)
+    has_resistance |= target_race_resists_element(em_ptr, TR_FREE_ACT);
     has_resistance |= (em_ptr->monrace->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
 
     if (has_resistance) {
@@ -301,6 +304,8 @@ ProcessResult effect_monster_stasis(EffectMonster *em_ptr, bool to_evil)
     int stasis_damage = (em_ptr->dam - 10) < 1 ? 1 : (em_ptr->dam - 10);
     bool has_resistance = em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
     has_resistance |= em_ptr->monrace->level > randint1(stasis_damage) + 10;
+    // [提案C1第5弾] 付与種族が自由行動 (TR_FREE_ACT) を持てば拘束(stasis)を無効化 (opt-in・既定OFF)
+    has_resistance |= target_race_resists_element(em_ptr, TR_FREE_ACT);
     if (to_evil) {
         has_resistance |= em_ptr->monrace->kind_flags.has_not(MonsterKindType::EVIL);
     }
