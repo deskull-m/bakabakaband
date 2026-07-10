@@ -34,6 +34,7 @@
 #include "monster/monster-update.h"
 #include "monster/monster-util.h"
 #include "object-enchant/special-object-flags.h"
+#include "object-enchant/tr-types.h"
 #include "spell-kind/blood-curse.h"
 #include "spell-kind/spells-polymorph.h"
 #include "spell-kind/spells-teleport.h"
@@ -470,7 +471,9 @@ static void effect_damage_piles_confusion(CreatureEntity &creature, EffectMonste
  */
 static void effect_damage_piles_fear(CreatureEntity &creature, EffectMonster *em_ptr)
 {
-    if (em_ptr->do_fear == 0 || em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_FEAR)) {
+    // [提案C1第4弾] 付与種族が恐怖耐性 (TR_RES_FEAR) を持つ個体は恐怖を無効化する
+    // (applies_player_race_resistances opt-in・既定OFF)。全恐怖源が通る中央ゲート。
+    if (em_ptr->do_fear == 0 || em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_FEAR) || target_race_resists_element(em_ptr, TR_RES_FEAR)) {
         return;
     }
 

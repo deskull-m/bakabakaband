@@ -657,11 +657,16 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   種族由来耐性では monrace ネイティブ耐性の思い出フラグ (`r_resistance_flags`) を
   記録しない（`native_resist` ガード）。付随攻撃（rocket/icee/void/abyss 等の
   複合・特殊ロジック）は対象外（将来拡張余地）。
-- **配線箇所:** `target_race_resists_element(em_ptr, tr_type)` /
-  `apply_monster_race_resistance(em_ptr)`（基本 5 属性用の 1/3 軽減）（
-  `effect-monster-resist-hurt.cpp` の匿名 namespace）。基本属性は免疫 (`IMMUNE_*`)
+- **反映対象（第4弾: 状態異常耐性・恐怖）:** 恐怖 `TR_RES_FEAR`。全恐怖源が通る
+  中央ゲート `effect_damage_piles_fear`（`effect-monster.cpp`）の `do_fear→恐怖` 変換を
+  種族恐怖耐性で無効化（`NO_FEAR` と同経路に OR-in）。ダメージ属性でない状態異常
+  耐性を反映した最初の例。
+- **共通述語の配置:** `target_race_resists_element(EffectMonster*, tr_type)` は
+  `effect-monster-util.{h,cpp}` に配置（属性ダメージ／状態異常の両 TU から使う共通述語）。
+  ダメージ軽減 `apply_monster_race_resistance(em_ptr)`（基本 5 属性用の 1/3 軽減）は
+  `effect-monster-resist-hurt.cpp` の匿名 namespace。基本属性は免疫 (`IMMUNE_*`)
   優先・弱点 (`HURT_*`) と排他 (`else if`)。毒は D7 の DoT 蓄積 (`dam/2`) より前に
-  軽減を適用するため継続毒も減る。二次属性は各ハンドラのネイティブ resist 条件へ
+  軽減を適用するため継続毒も減る。二次属性・恐怖は各ネイティブ耐性条件へ
   `|| target_race_resists_element(...)` を OR-in。
 - **安全性:** `prace == NONE` は `false` を返すため、耐性反映は「有効な種族を持つ
   個体」に限定され OOB 等は起きない。既定 `false` のため誰にも反映されず
