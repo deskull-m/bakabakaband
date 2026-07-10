@@ -2,6 +2,7 @@
 #include "effect/effect-monster-util.h"
 #include "monster-race/race-flags-resistance.h"
 #include "monster/monster-info.h"
+#include "object-enchant/tr-types.h"
 #include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
 
@@ -36,11 +37,14 @@ ProcessResult effect_monster_lite(CreatureEntity &creature, EffectMonster *em_pt
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_LITE)) {
+    // [提案C1第6弾] 付与種族が光耐性 (TR_RES_LITE) を持てばネイティブ耐性と同様に軽減 (opt-in・既定OFF)。
+    // 光耐性は光弱点 (HURT_LITE) より優先 (else if で弱点経路を回避)。
+    const auto native_lite_resist = em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_LITE);
+    if (native_lite_resist || target_race_resists_element(em_ptr, TR_RES_LITE)) {
         em_ptr->note = _("には耐性がある！", " resists!");
         em_ptr->dam *= 2;
         em_ptr->dam /= (randint1(6) + 6);
-        if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
+        if (native_lite_resist && is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
             em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_LITE);
         }
     } else if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::HURT_LITE)) {
@@ -62,14 +66,16 @@ ProcessResult effect_monster_dark(CreatureEntity &creature, EffectMonster *em_pt
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_DARK)) {
+    // [提案C1第6弾] 付与種族が闇耐性 (TR_RES_DARK) を持てばネイティブ耐性と同様に軽減 (opt-in・既定OFF)。
+    const auto native_dark_resist = em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_DARK);
+    if (!native_dark_resist && !target_race_resists_element(em_ptr, TR_RES_DARK)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
     em_ptr->note = _("には耐性がある！", " resists!");
     em_ptr->dam *= 2;
     em_ptr->dam /= (randint1(6) + 6);
-    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
+    if (native_dark_resist && is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
         em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_DARK);
     }
 
