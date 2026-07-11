@@ -54,3 +54,14 @@ public:
     bool is_monster() const;
     Pos2D get_position() const;
 };
+
+enum tr_type : int;
+
+/*!
+ * @brief 対象モンスターが付与された player_race 由来の属性耐性を持つか (提案C1第2弾/第3弾/第4弾)
+ * @details opt-in フラグ applies_player_race_resistances が立ち、かつ有効な player_race
+ *          を持つ個体のみ、その種族の tr_flags に指定耐性 (res_flag) があれば true。
+ *          既定 OFF のため誰にも反映されずバランス不変。prace==NONE は安全に false。
+ *          属性ダメージ (effect-monster-resist-hurt) と状態異常 (fear 等) の両方から使う共通述語。
+ */
+bool target_race_resists_element(EffectMonster *em_ptr, tr_type res_flag);
