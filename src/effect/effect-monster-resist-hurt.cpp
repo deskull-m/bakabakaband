@@ -5,6 +5,9 @@
 #include "monster/monster-info.h"
 #include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
+#include "object-enchant/tr-types.h"
+#include "player-base/player-race.h"
+#include "player-info/race-types.h"
 #include "system/creature-entity.h"
 #include "system/creature-timed-effect-types.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -41,6 +44,33 @@ void apply_monster_element_hurt(CreatureEntity &creature, EffectMonster *em_ptr,
         em_ptr->monrace->r_resistance_flags.set(hurt_flag);
     }
 }
+
+/*!
+ * @brief 対象モンスターが付与された player_race 由来の属性耐性を持つか (提案C1第2弾)
+ * @details opt-in フラグ applies_player_race_resistances が立ち、かつ有効な player_race
+ *          を持つ個体のみ、その種族の tr_flags に指定耐性があれば true。既定 OFF の
+ *          ため誰にも反映されずバランス不変。prace==NONE は安全に false を返す。
+ */
+bool target_race_resists_element(EffectMonster *em_ptr, tr_type res_flag)
+{
+    if (!em_ptr->monrace->applies_player_race_resistances) {
+        return false;
+    }
+    if (em_ptr->m_ptr->get_prace() == PlayerRaceType::NONE) {
+        return false;
+    }
+    return CreatureRace(em_ptr->m_ptr).tr_flags().has(res_flag);
+}
+
+/*!
+ * @brief player_race 由来の属性耐性による被ダメージ軽減 (提案C1第2弾)
+ * @details プレイヤーの部分耐性と同様、被ダメージを約 1/3 に軽減する。
+ */
+void apply_monster_race_resistance(EffectMonster *em_ptr)
+{
+    em_ptr->note = _("には耐性がある。", " resists.");
+    em_ptr->dam = (em_ptr->dam + 2) / 3;
+}
 }
 
 /*!
@@ -65,6 +95,8 @@ ProcessResult effect_monster_acid(CreatureEntity &creature, EffectMonster *em_pt
 
     if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::IMMUNE_ACID)) {
         apply_monster_element_immune(creature, em_ptr, MonsterResistanceType::IMMUNE_ACID);
+    } else if (target_race_resists_element(em_ptr, TR_RES_ACID)) {
+        apply_monster_race_resistance(em_ptr);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -78,6 +110,8 @@ ProcessResult effect_monster_elec(CreatureEntity &creature, EffectMonster *em_pt
 
     if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::IMMUNE_ELEC)) {
         apply_monster_element_immune(creature, em_ptr, MonsterResistanceType::IMMUNE_ELEC);
+    } else if (target_race_resists_element(em_ptr, TR_RES_ELEC)) {
+        apply_monster_race_resistance(em_ptr);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -96,6 +130,8 @@ ProcessResult effect_monster_fire(CreatureEntity &creature, EffectMonster *em_pt
 
     if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::HURT_FIRE)) {
         apply_monster_element_hurt(creature, em_ptr, MonsterResistanceType::HURT_FIRE);
+    } else if (target_race_resists_element(em_ptr, TR_RES_FIRE)) {
+        apply_monster_race_resistance(em_ptr);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -114,6 +150,8 @@ ProcessResult effect_monster_cold(CreatureEntity &creature, EffectMonster *em_pt
 
     if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::HURT_COLD)) {
         apply_monster_element_hurt(creature, em_ptr, MonsterResistanceType::HURT_COLD);
+    } else if (target_race_resists_element(em_ptr, TR_RES_COLD)) {
+        apply_monster_race_resistance(em_ptr);
     }
 
     return ProcessResult::PROCESS_CONTINUE;
@@ -128,6 +166,12 @@ ProcessResult effect_monster_pois(CreatureEntity &creature, EffectMonster *em_pt
     if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::IMMUNE_POISON)) {
         apply_monster_element_immune(creature, em_ptr, MonsterResistanceType::IMMUNE_POISON);
         return ProcessResult::PROCESS_CONTINUE;
+    }
+
+    // [提案C1第2弾] player_race 由来の毒耐性を反映 (opt-in・既定OFF)。
+    // dam 軽減を D7 の DoT 蓄積 (dam/2) より前に行うことで継続毒も軽減される。
+    if (target_race_resists_element(em_ptr, TR_RES_POIS)) {
+        apply_monster_race_resistance(em_ptr);
     }
 
     // [提案D7] suffers_poison_dot が立つ個体は毒攻撃で継続毒 (POISON DoT) を蓄積する。

@@ -197,6 +197,10 @@
                         "type": "boolean",
                         "description": "毒攻撃で継続毒(POISON DoT)を受けるか (提案D7)。既定false=オプトイン。trueの個体のみ毒攻撃後に継続ダメージを受ける。"
                     },
+                    "applies_player_race_resistances": {
+                        "type": "boolean",
+                        "description": "付与された player_race の属性耐性(火/冷/電/酸/毒)を被ダメージへ反映するか (提案C1第2弾)。既定false=オプトイン。trueかつ有効なplayer_raceを持つ個体のみ、種族耐性がある属性の被ダメージが約1/3に軽減される。"
+                    },
                     "odds_correction_ratio": {
                         "type": "integer",
                         "description": "闘技場オッズ補正値。1/100を使用、100で等倍200で2倍",
