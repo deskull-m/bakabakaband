@@ -3029,7 +3029,7 @@ JSON で明示付与**する形で導入する。これにより:
 | 番号 | 提案 | 基盤 | 工数 | 価値 | 主なデザイン判断 |
 |---|---|---|---|---|---|
 | C0 | 成長状態の savefile 完全永続化 (`hp_table`) | ほぼ完了 | 小 | 小 | バージョン bump 要否 |
-| C1 | 種族・職業の顕在化（`prace`/`pclass` 付与） | ✅ cache 有 | 中 | 高 | ✅ 第1弾(付与)+第2弾(基本5属性耐性)+第3弾(二次7属性耐性) 完了 |
+| C1 | 種族・職業の顕在化（`prace`/`pclass` 付与） | ✅ cache 有 | 中 | 高 | ✅ 1(付与)/2(基本5耐性)/3(二次7耐性)/4(恐怖耐性) 完了 |
 | C2 | 能力成長の拡張（stat / 熟練度） | ✅ 成長機構 | 中 | 中 | ✅ stat 成長完了（opt-in）／熟練度は次段 |
 | C3 | ESP のモンスター付与 | 🔴 新規 AI 要 | 中〜大 | 中 | ESP をモンスター AI にどう効かせるか（新規設計） |
 | C4 | MP 消費詠唱 | 🟡 pool 有 | 中 | 中 | ✅ 完了（opt-in・レベル比例コスト） |
@@ -3113,9 +3113,22 @@ monrace を参照）が `prace`/`pclass` に付与する。**効果は未反映*
   複合/特殊攻撃（rocket/icee_bolt/void/abyss）は多属性・特殊ロジックのため対象外。
 - フルビルド（g++ -O3 -Werror）で検証済。
 
-**第4弾以降（未着手）:** 職業特典・種族の非耐性特典（ESP・赤外線視・stat 補正等）の
-反映。ESP/赤外線視はモンスター AI 索敵の新規実装が要る（C3 と同課題）ため大。
-メンテナのバランス判断のもと段階導入する。
+**第4弾 ✅ 完了（状態異常耐性・恐怖の反映）:**
+種族の恐怖耐性 `TR_RES_FEAR` を反映。全恐怖源が通る中央ゲート
+`effect_damage_piles_fear`（`effect-monster.cpp`）の `do_fear→恐怖` 変換を、
+`NO_FEAR` と同経路へ `|| target_race_resists_element(em_ptr, TR_RES_FEAR)` を OR-in
+して無効化。ダメージ属性でない**状態異常耐性を反映した最初の例**。
+
+- 共通述語 `target_race_resists_element(EffectMonster*, tr_type)` を
+  `effect-monster-resist-hurt.cpp` の匿名 namespace から **`effect-monster-util.{h,cpp}`
+  へ昇格**（属性ダメージ／状態異常の両 TU から使う共通述語に）。
+- 同じ opt-in フラグ `applies_player_race_resistances` を使用（新フラグなし）。
+  既定 false のままバランス不変。フルビルド（g++ -O3 -Werror）で検証済。
+
+**第5弾以降（未着手）:** 職業特典・種族の非耐性特典（ESP・赤外線視・stat 補正等）。
+ESP/赤外線視はモンスター AI 索敵の新規実装が要る（C3 と同課題）ため大。
+麻痺耐性（`TR_FREE_ACT`）等の追加状態異常も同パターンで拡張可能。メンテナの
+バランス判断のもと段階導入する。
 
 ---
 

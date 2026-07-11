@@ -6,8 +6,6 @@
 #include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
 #include "object-enchant/tr-types.h"
-#include "player-base/player-race.h"
-#include "player-info/race-types.h"
 #include "system/creature-entity.h"
 #include "system/creature-timed-effect-types.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -43,23 +41,6 @@ void apply_monster_element_hurt(CreatureEntity &creature, EffectMonster *em_ptr,
     if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
         em_ptr->monrace->r_resistance_flags.set(hurt_flag);
     }
-}
-
-/*!
- * @brief 対象モンスターが付与された player_race 由来の属性耐性を持つか (提案C1第2弾)
- * @details opt-in フラグ applies_player_race_resistances が立ち、かつ有効な player_race
- *          を持つ個体のみ、その種族の tr_flags に指定耐性があれば true。既定 OFF の
- *          ため誰にも反映されずバランス不変。prace==NONE は安全に false を返す。
- */
-bool target_race_resists_element(EffectMonster *em_ptr, tr_type res_flag)
-{
-    if (!em_ptr->monrace->applies_player_race_resistances) {
-        return false;
-    }
-    if (em_ptr->m_ptr->get_prace() == PlayerRaceType::NONE) {
-        return false;
-    }
-    return CreatureRace(em_ptr->m_ptr).tr_flags().has(res_flag);
 }
 
 /*!

@@ -11,6 +11,9 @@
 #include "monster/monster-info.h"
 #include "monster/monster-status.h"
 #include "monster/monster-util.h"
+#include "object-enchant/tr-types.h"
+#include "player-base/player-race.h"
+#include "player-info/race-types.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
@@ -65,4 +68,15 @@ bool EffectMonster::is_monster() const
 Pos2D EffectMonster::get_position() const
 {
     return { this->y, this->x };
+}
+
+bool target_race_resists_element(EffectMonster *em_ptr, tr_type res_flag)
+{
+    if (!em_ptr->monrace->applies_player_race_resistances) {
+        return false;
+    }
+    if (em_ptr->m_ptr->get_prace() == PlayerRaceType::NONE) {
+        return false;
+    }
+    return CreatureRace(em_ptr->m_ptr).tr_flags().has(res_flag);
 }
