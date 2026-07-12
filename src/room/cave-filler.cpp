@@ -92,7 +92,7 @@ void generate_hmap(FloorType &floor, POSITION y0, POSITION x0, POSITION xsiz, PO
     for (POSITION i = 0; i <= xsize; i++) {
         for (POSITION j = 0; j <= ysize; j++) {
             floor.grid_array[(int)(fill_data.ymin + j)][(int)(fill_data.xmin + i)].feat = -1;
-            floor.grid_array[(int)(fill_data.ymin + j)][(int)(fill_data.xmin + i)].info &= ~(CAVE_ICKY);
+            floor.grid_array[(int)(fill_data.ymin + j)][(int)(fill_data.xmin + i)].info &= ~(CAVE_NO_TELEPORT_DEST);
         }
     }
 
@@ -180,11 +180,11 @@ static bool hack_isnt_wall(CreatureEntity &creature, POSITION y, POSITION x, int
     BIT_FLAGS info1, BIT_FLAGS info2, BIT_FLAGS info3)
 {
     auto &floor = *creature.get_floor();
-    if (floor.grid_array[y][x].info & CAVE_ICKY) {
+    if (floor.grid_array[y][x].info & CAVE_NO_TELEPORT_DEST) {
         return false;
     }
 
-    floor.grid_array[y][x].info |= (CAVE_ICKY);
+    floor.grid_array[y][x].info |= (CAVE_NO_TELEPORT_DEST);
     if (floor.grid_array[y][x].feat <= c1) {
         if (randint1(100) < 75) {
             floor.grid_array[y][x].feat = feat1;
@@ -244,12 +244,12 @@ static void cave_fill(CreatureEntity &creature, const Pos2D &initial_pos)
             const auto pos_to = pos + d.vec();
             auto &grid = floor.get_grid(pos_to);
             if (!floor.contains(pos_to, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
-                grid.info |= CAVE_ICKY;
+                grid.info |= CAVE_NO_TELEPORT_DEST;
                 continue;
             }
 
             if ((pos_to.x <= fill_data.xmin) || (pos_to.x >= fill_data.xmax) || (pos_to.y <= fill_data.ymin) || (pos_to.y >= fill_data.ymax)) {
-                grid.info |= CAVE_ICKY;
+                grid.info |= CAVE_NO_TELEPORT_DEST;
                 continue;
             }
 
@@ -285,7 +285,7 @@ bool generate_fracave(CreatureEntity &creature, POSITION y0, POSITION x0, POSITI
         for (POSITION x = 0; x <= xsize; ++x) {
             for (POSITION y = 0; y <= ysize; ++y) {
                 place_bold(creature, y0 + y - yhsize, x0 + x - xhsize, GB_EXTRA);
-                floor.grid_array[y0 + y - yhsize][x0 + x - xhsize].info &= ~(CAVE_ICKY | CAVE_ROOM);
+                floor.grid_array[y0 + y - yhsize][x0 + x - xhsize].info &= ~(CAVE_NO_TELEPORT_DEST | CAVE_ROOM);
             }
         }
 
@@ -319,8 +319,8 @@ bool generate_fracave(CreatureEntity &creature, POSITION y0, POSITION x0, POSITI
             place_bold(creature, y0 + ysize - yhsize, x0 + i - xhsize, GB_EXTRA);
         }
 
-        grid1.info &= ~(CAVE_ICKY);
-        grid2.info &= ~(CAVE_ICKY);
+        grid1.info &= ~(CAVE_NO_TELEPORT_DEST);
+        grid2.info &= ~(CAVE_NO_TELEPORT_DEST);
     }
 
     for (int i = 1; i < ysize; ++i) {
@@ -350,15 +350,15 @@ bool generate_fracave(CreatureEntity &creature, POSITION y0, POSITION x0, POSITI
             place_bold(creature, y0 + i - yhsize, x0 + xsize - xhsize, GB_EXTRA);
         }
 
-        grid1.info &= ~(CAVE_ICKY);
-        grid2.info &= ~(CAVE_ICKY);
+        grid1.info &= ~(CAVE_NO_TELEPORT_DEST);
+        grid2.info &= ~(CAVE_NO_TELEPORT_DEST);
     }
 
     for (POSITION x = 1; x < xsize; ++x) {
         for (POSITION y = 1; y < ysize; ++y) {
             auto &grid1 = floor.grid_array[y0 + y - yhsize][x0 + x - xhsize];
             if (grid1.is_floor() && grid1.is_icky()) {
-                grid1.info &= ~CAVE_ICKY;
+                grid1.info &= ~CAVE_NO_TELEPORT_DEST;
                 if (light) {
                     grid1.info |= (CAVE_GLOW);
                 }
@@ -372,7 +372,7 @@ bool generate_fracave(CreatureEntity &creature, POSITION y0, POSITION x0, POSITI
 
             auto &grid2 = floor.grid_array[y0 + y - yhsize][x0 + x - xhsize];
             if (grid2.is_outer() && grid2.is_icky()) {
-                grid2.info &= ~(CAVE_ICKY);
+                grid2.info &= ~(CAVE_NO_TELEPORT_DEST);
                 if (light) {
                     grid2.info |= (CAVE_GLOW);
                 }
@@ -388,7 +388,7 @@ bool generate_fracave(CreatureEntity &creature, POSITION y0, POSITION x0, POSITI
             }
 
             place_bold(creature, y0 + y - yhsize, x0 + x - xhsize, GB_EXTRA);
-            grid2.info &= ~(CAVE_ICKY | CAVE_ROOM);
+            grid2.info &= ~(CAVE_NO_TELEPORT_DEST | CAVE_ROOM);
         }
     }
 
@@ -468,7 +468,7 @@ bool generate_lake(CreatureEntity &creature, POSITION y0, POSITION x0, POSITION 
             for (auto y = 0; y <= ysize; ++y) {
                 const Pos2D pos(y0 + y - yhsize, x0 + x - xhsize);
                 place_bold(creature, pos.y, pos.x, GB_FLOOR);
-                floor.get_grid(pos).info &= ~(CAVE_ICKY);
+                floor.get_grid(pos).info &= ~(CAVE_NO_TELEPORT_DEST);
             }
         }
 
@@ -480,8 +480,8 @@ bool generate_lake(CreatureEntity &creature, POSITION y0, POSITION x0, POSITION 
         const Pos2DVec vec(ysize, 0);
         place_bold(creature, pos.y, pos.x, GB_EXTRA);
         place_bold(creature, (pos + vec).y, (pos + vec).x, GB_EXTRA);
-        floor.get_grid(pos).info &= ~(CAVE_ICKY);
-        floor.get_grid(pos + vec).info &= ~(CAVE_ICKY);
+        floor.get_grid(pos).info &= ~(CAVE_NO_TELEPORT_DEST);
+        floor.get_grid(pos + vec).info &= ~(CAVE_NO_TELEPORT_DEST);
     }
 
     for (auto i = 1; i < ysize; ++i) {
@@ -489,8 +489,8 @@ bool generate_lake(CreatureEntity &creature, POSITION y0, POSITION x0, POSITION 
         const Pos2DVec vec(0, xsize);
         place_bold(creature, pos.y, pos.x, GB_EXTRA);
         place_bold(creature, (pos + vec).y, (pos + vec).x, GB_EXTRA);
-        floor.get_grid(pos).info &= ~(CAVE_ICKY);
-        floor.get_grid(pos + vec).info &= ~(CAVE_ICKY);
+        floor.get_grid(pos).info &= ~(CAVE_NO_TELEPORT_DEST);
+        floor.get_grid(pos + vec).info &= ~(CAVE_NO_TELEPORT_DEST);
     }
 
     for (auto x = 1; x < xsize; ++x) {
@@ -501,7 +501,7 @@ bool generate_lake(CreatureEntity &creature, POSITION y0, POSITION x0, POSITION 
                 place_bold(creature, pos.y, pos.x, GB_EXTRA);
             }
 
-            grid.info &= ~(CAVE_ICKY | CAVE_ROOM);
+            grid.info &= ~(CAVE_NO_TELEPORT_DEST | CAVE_ROOM);
             if (floor.has_terrain_characteristics(pos, TerrainCharacteristics::LAVA)) {
                 if (floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::DARKNESS)) {
                     grid.info |= CAVE_GLOW;

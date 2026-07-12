@@ -148,7 +148,7 @@ void place_pit_inner(CreatureEntity &creature, const Pos2D &center)
 
     for (auto y = rectangle.top_left.y; y <= rectangle.bottom_right.y; y++) {
         for (auto x = rectangle.top_left.x; x <= rectangle.bottom_right.x; x++) {
-            floor.get_grid({ y, x }).add_info(CAVE_ICKY);
+            floor.get_grid({ y, x }).add_info(CAVE_NO_TELEPORT_DEST);
         }
     }
 
@@ -382,22 +382,22 @@ bool build_type13(CreatureEntity &creature, DungeonData *dd_ptr)
     for (auto x = rectangle.top_left.x + 3; x <= rectangle.bottom_right.x - 3; x++) {
         auto &grid_top = floor.get_grid({ center->y - 2, x });
         place_grid(creature, grid_top, GB_FLOOR);
-        grid_top.add_info(CAVE_ICKY);
+        grid_top.add_info(CAVE_NO_TELEPORT_DEST);
 
         auto &grid_bottom = floor.get_grid({ center->y + 2, x });
         place_grid(creature, grid_bottom, GB_FLOOR);
-        grid_bottom.add_info(CAVE_ICKY);
+        grid_bottom.add_info(CAVE_NO_TELEPORT_DEST);
     }
 
     /* Place the floor area 2 */
     for (auto x = rectangle.top_left.x + 5; x <= rectangle.bottom_right.x - 5; x++) {
         auto &grid_left = floor.get_grid({ center->y - 3, x });
         place_grid(creature, grid_left, GB_FLOOR);
-        grid_left.add_info(CAVE_ICKY);
+        grid_left.add_info(CAVE_NO_TELEPORT_DEST);
 
         auto &grid_right = floor.get_grid({ center->y + 3, x });
         place_grid(creature, grid_right, GB_FLOOR);
-        grid_right.add_info(CAVE_ICKY);
+        grid_right.add_info(CAVE_NO_TELEPORT_DEST);
     }
 
     /* Corridor */
