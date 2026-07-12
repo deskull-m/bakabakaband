@@ -661,6 +661,11 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   中央ゲート `effect_damage_piles_fear`（`effect-monster.cpp`）の `do_fear→恐怖` 変換を
   種族恐怖耐性で無効化（`NO_FEAR` と同経路に OR-in）。ダメージ属性でない状態異常
   耐性を反映した最初の例。
+- **反映対象（第5弾: 自由行動＝睡眠/拘束耐性）:** 自由行動 `TR_FREE_ACT`（耐麻痺）。
+  プレイヤーの麻痺免疫に相当するモンスター状態異常＝魔法睡眠 `effect_monster_old_sleep`
+  と拘束 `effect_monster_stasis`（`effect-monster-oldies.cpp`）の `has_resistance` 集約へ
+  `NO_SLEEP`・UNIQUE・レベルセーヴと同列に OR-in（抵抗時は「効果がなかった」表示）。
+  psi 睡眠・円月の特殊睡眠は据え置き（主要ハンドラのみ方針）。
 - **共通述語の配置:** `target_race_resists_element(EffectMonster*, tr_type)` は
   `effect-monster-util.{h,cpp}` に配置（属性ダメージ／状態異常の両 TU から使う共通述語）。
   ダメージ軽減 `apply_monster_race_resistance(em_ptr)`（基本 5 属性用の 1/3 軽減）は
