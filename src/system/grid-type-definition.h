@@ -12,7 +12,7 @@
  */
 #define CAVE_MARK 0x0001 /*!< 現在プレイヤーの記憶に収まっている / memorized feature */
 #define CAVE_GLOW 0x0002 /*!< マス自体が光源を持っている / self-illuminating */
-#define CAVE_ICKY 0x0004 /*!< 生成されたVaultの一部である / part of a vault */
+#define CAVE_NO_TELEPORT_DEST 0x0004 /*!< Vaultの一部でありテレポート等の移動先にできない / part of a vault; forbidden as a teleport destination */
 #define CAVE_ROOM 0x0008 /*!< 生成された部屋の一部である / part of a room */
 #define CAVE_LITE 0x0010 /*!< 現在光に照らされている / lite flag  */
 #define CAVE_VIEW 0x0020 /*!< 現在プレイヤーの視界に収まっている / view flag */
