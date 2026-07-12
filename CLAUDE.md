@@ -666,6 +666,10 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   と拘束 `effect_monster_stasis`（`effect-monster-oldies.cpp`）の `has_resistance` 集約へ
   `NO_SLEEP`・UNIQUE・レベルセーヴと同列に OR-in（抵抗時は「効果がなかった」表示）。
   psi 睡眠・円月の特殊睡眠は据え置き（主要ハンドラのみ方針）。
+- **反映対象（第6弾: 光/闇耐性）:** 光 `TR_RES_LITE` / 闇 `TR_RES_DARK`。
+  `effect_monster_lite` / `effect_monster_dark`（`effect-monster-lite-dark.cpp`）の
+  ネイティブ resist 条件へ OR-in。光耐性は光弱点 `HURT_LITE` より優先（`else if`）。
+  種族由来 resist では思い出フラグを記録しない（`native_*_resist` ガード）。
 - **共通述語の配置:** `target_race_resists_element(EffectMonster*, tr_type)` は
   `effect-monster-util.{h,cpp}` に配置（属性ダメージ／状態異常の両 TU から使う共通述語）。
   ダメージ軽減 `apply_monster_race_resistance(em_ptr)`（基本 5 属性用の 1/3 軽減）は
