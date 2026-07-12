@@ -113,7 +113,7 @@ void build_maze_vault(CreatureEntity &creature, const Pos2D &center, const Pos2D
             auto &grid = floor.get_grid({ y, x });
             grid.info |= CAVE_ROOM;
             if (is_vault) {
-                grid.info |= CAVE_ICKY;
+                grid.info |= CAVE_NO_TELEPORT_DEST;
             }
             if ((x == x1 - 1) || (x == x2 + 1) || (y == y1 - 1) || (y == y2 + 1)) {
                 place_grid(creature, grid, GB_OUTER);

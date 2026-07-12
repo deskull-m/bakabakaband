@@ -565,7 +565,7 @@ void lite_spot(CreatureEntity &creature, const Pos2D &pos)
  * and should be illuminated by "lite room" and "darkness" spells.
  *
  *
- * A grid may be marked as "CAVE_ICKY" which means it is part of a "vault",
+ * A grid may be marked as "CAVE_NO_TELEPORT_DEST" which means it is part of a "vault",
  * and should be unavailable for "teleportation" destinations.
  *
  *

@@ -87,7 +87,7 @@ std::array<Pos2D, NUM_BUBBLES> create_bubbles_center(const Pos2DVec &vec)
 void set_boundaries(CreatureEntity &creature, const Pos2D &pos)
 {
     place_bold(creature, pos.y, pos.x, GB_OUTER_NOPERM);
-    creature.get_floor()->get_grid(pos).add_info(CAVE_ROOM | CAVE_ICKY);
+    creature.get_floor()->get_grid(pos).add_info(CAVE_ROOM | CAVE_NO_TELEPORT_DEST);
 }
 }
 
@@ -149,7 +149,7 @@ static void build_bubble_vault(CreatureEntity &creature, const Pos2D &pos0, cons
             }
 
             /* clean up rest of flags */
-            floor.get_grid({ pos0.y - vec_half.y + y, pos0.x - vec_half.x + x }).add_info(CAVE_ROOM | CAVE_ICKY);
+            floor.get_grid({ pos0.y - vec_half.y + y, pos0.x - vec_half.x + x }).add_info(CAVE_ROOM | CAVE_NO_TELEPORT_DEST);
         }
     }
 
@@ -179,7 +179,7 @@ static void build_room_vault(CreatureEntity &creature, const Pos2D &center, cons
         for (auto y1 = 0; y1 < vec.y; y1++) {
             const Pos2D pos(center.y - vec_half.y + y1, x);
             place_bold(creature, pos.y, pos.x, GB_EXTRA);
-            floor.get_grid(pos).info &= (~CAVE_ICKY);
+            floor.get_grid(pos).info &= (~CAVE_NO_TELEPORT_DEST);
         }
     }
 
@@ -240,7 +240,7 @@ static void build_cave_vault(CreatureEntity &creature, const Pos2D &center, cons
     /* Set icky flag because is a vault */
     const Rect2D area(center, vec_half);
     for (const auto &pos : area) {
-        floor.get_grid(pos).info |= CAVE_ICKY;
+        floor.get_grid(pos).info |= CAVE_NO_TELEPORT_DEST;
     }
 
     /* Fill with monsters and treasure, low difficulty */
@@ -335,7 +335,7 @@ void build_vault(vault_type &vault, CreatureEntity &creature, POSITION yval, POS
             grid.mimic = 0;
 
             /* Part of a vault */
-            grid.info |= (CAVE_ROOM | CAVE_ICKY);
+            grid.info |= (CAVE_ROOM | CAVE_NO_TELEPORT_DEST);
 
             if (vault.feature_list.find(*t) != vault.feature_list.end()) {
                 grid.set_terrain_id(vault.feature_list.find(*t)->second);
@@ -578,7 +578,7 @@ static void build_target_vault(CreatureEntity &creature, const Pos2D &center, co
             const Pos2D pos(y, x);
             auto &grid = floor.get_grid(pos);
             grid.info &= ~(CAVE_ROOM);
-            grid.info |= CAVE_ICKY;
+            grid.info |= CAVE_NO_TELEPORT_DEST;
 
             if (dist2(center.y, center.x, pos.y, pos.x, h1, h2, h3, h4) <= rad - 1) {
                 /* inside- so is floor */
@@ -708,7 +708,7 @@ static void build_elemental_vault(CreatureEntity &creature, const Pos2D &center,
     /* Set icky flag because is a vault */
     const Rect2D area(center, vec_half);
     for (const auto &pos : area) {
-        floor.get_grid(pos).info |= CAVE_ICKY;
+        floor.get_grid(pos).info |= CAVE_NO_TELEPORT_DEST;
     }
 
     /* make a few rooms in the vault */
@@ -747,7 +747,7 @@ static void build_mini_c_vault(CreatureEntity &creature, const Pos2D &center, co
             break;
         }
 
-        floor.get_grid(pos).info |= (CAVE_ROOM | CAVE_ICKY);
+        floor.get_grid(pos).info |= (CAVE_ROOM | CAVE_NO_TELEPORT_DEST);
         place_bold(creature, pos.y, pos.x, GB_OUTER_NOPERM);
     }
 
@@ -757,7 +757,7 @@ static void build_mini_c_vault(CreatureEntity &creature, const Pos2D &center, co
             break;
         }
 
-        floor.get_grid(pos).info |= (CAVE_ROOM | CAVE_ICKY);
+        floor.get_grid(pos).info |= (CAVE_ROOM | CAVE_NO_TELEPORT_DEST);
         place_bold(creature, pos.y, pos.x, GB_OUTER_NOPERM);
     }
 
@@ -767,7 +767,7 @@ static void build_mini_c_vault(CreatureEntity &creature, const Pos2D &center, co
             break;
         }
 
-        floor.get_grid(pos).info |= (CAVE_ROOM | CAVE_ICKY);
+        floor.get_grid(pos).info |= (CAVE_ROOM | CAVE_NO_TELEPORT_DEST);
         place_bold(creature, pos.y, pos.x, GB_OUTER_NOPERM);
     }
 
@@ -777,14 +777,14 @@ static void build_mini_c_vault(CreatureEntity &creature, const Pos2D &center, co
             break;
         }
 
-        floor.get_grid(pos).info |= (CAVE_ROOM | CAVE_ICKY);
+        floor.get_grid(pos).info |= (CAVE_ROOM | CAVE_NO_TELEPORT_DEST);
         place_bold(creature, pos.y, pos.x, GB_OUTER_NOPERM);
     }
 
     for (auto y = y1 - 1; y <= y2 + 1; y++) {
         for (auto x = x1 - 1; x <= x2 + 1; x++) {
             auto &grid = floor.get_grid({ y, x });
-            grid.info |= (CAVE_ROOM | CAVE_ICKY);
+            grid.info |= (CAVE_ROOM | CAVE_NO_TELEPORT_DEST);
 
             /* Permanent walls */
             place_grid(creature, grid, GB_INNER_PERM);
@@ -846,7 +846,7 @@ static void build_castle_vault(CreatureEntity &creature, const Pos2D &center, co
     /* generate the room */
     auto &floor = *creature.get_floor();
     for (const auto &pos : area.resized(1)) {
-        floor.get_grid(pos).info |= (CAVE_ROOM | CAVE_ICKY);
+        floor.get_grid(pos).info |= (CAVE_ROOM | CAVE_NO_TELEPORT_DEST);
         /* Make everything a floor */
         place_bold(creature, pos.y, pos.x, GB_FLOOR);
     }
