@@ -748,7 +748,6 @@ hengband_SOURCES = \
 	io-dump/special-class-dump.cpp io-dump/special-class-dump.h \
 	\
 	knowledge/knowledge-alliance.cpp knowledge/knowledge-alliance.h \
-	item-info/flavor-initializer.cpp item-info/flavor-initializer.h \
 	\
 	knowledge/item-group-table.cpp knowledge/item-group-table.h \
 	knowledge/knowledge-autopick.cpp knowledge/knowledge-autopick.h \
@@ -1381,6 +1380,8 @@ hengband_SOURCES = \
 	system/baseitem/baseitem-definition.cpp system/baseitem/baseitem-definition.h \
 	system/baseitem/baseitem-key.cpp system/baseitem/baseitem-key.h \
 	system/baseitem/baseitem-list.cpp system/baseitem/baseitem-list.h \
+	system/baseitem/baseitem-record.cpp system/baseitem/baseitem-record.h \
+	system/baseitem/baseitem-records.cpp system/baseitem/baseitem-records.h \
 	system/baseitem/baseitem-service.cpp system/baseitem/baseitem-service.h \
 	\
 	system/creature-party/creature-party-definition.cpp system/creature-party/creature-party-definition.h \

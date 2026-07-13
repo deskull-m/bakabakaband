@@ -33,6 +33,7 @@ enum class SmithEffectType : short;
 class ActivationType;
 class ArtifactType;
 class BaseitemDefinition;
+class BaseitemRecord;
 class DisplaySymbol;
 class EgoItemDefinition;
 class MonraceDefinition;
@@ -163,7 +164,8 @@ public:
     bool has_bias() const;
     bool is_bounty() const;
     bool is_target_of(QuestId quest_id) const;
-    BaseitemDefinition &get_baseitem() const;
+    const BaseitemDefinition &get_baseitem() const;
+    BaseitemRecord &get_baseitem_record() const;
     EgoItemDefinition &get_ego() const;
     ArtifactType &get_fixed_artifact();
     const ArtifactType &get_fixed_artifact() const;

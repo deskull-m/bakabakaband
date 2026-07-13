@@ -4,8 +4,10 @@
 #include "game-option/play-record-options.h"
 #include "io/write-diary.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/baseitem/baseitem-record.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
+#include "system/player-type-definition.h"
 
 /*!
  * @brief オブジェクトを＊鑑定＊済にする
@@ -15,8 +17,9 @@
 void object_aware(CreatureEntity &creature, const ItemEntity &item)
 {
     const bool is_already_awared = item.is_aware();
-    auto &baseitem = item.get_baseitem();
-    baseitem.mark_awareness(true);
+    const auto &baseitem = item.get_baseitem();
+    auto &baseitem_record = item.get_baseitem_record();
+    baseitem_record.mark_awareness(true);
 
     // 以下、playrecordに記録しない場合はreturnする
     if (!record_ident) {

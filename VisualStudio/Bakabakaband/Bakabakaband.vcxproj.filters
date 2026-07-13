@@ -2404,9 +2404,6 @@
     <ClCompile Include="..\..\src\monster\monster-pain-describer.cpp">
       <Filter>monster</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\item-info\flavor-initializer.cpp">
-      <Filter>item-info</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\system\redrawing-flags-updater.cpp">
       <Filter>system</Filter>
     </ClCompile>
@@ -2475,6 +2472,12 @@
       <Filter>system\baseitem</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\system\baseitem\baseitem-configs.cpp">
+      <Filter>system\baseitem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\system\baseitem\baseitem-record.cpp">
+      <Filter>system\baseitem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\system\baseitem\baseitem-records.cpp">
       <Filter>system\baseitem</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\system\baseitem\baseitem-service.cpp">
@@ -5661,7 +5664,6 @@
     <ClInclude Include="..\..\src\system\angband-system.h">
       <Filter>system</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\item-info\flavor-initializer.h" />
     <ClInclude Include="..\..\src\mspell\mspell-attack\abstract-mspell.h" />
     <ClInclude Include="..\..\src\load\angband-version-comparer.h" />
     <ClInclude Include="..\..\src\mspell\mspell-attack\mspell-particularity.h" />
@@ -5722,6 +5724,12 @@
       <Filter>system\baseitem</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\system\baseitem\baseitem-configs.h">
+      <Filter>system\baseitem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\baseitem\baseitem-record.h">
+      <Filter>system\baseitem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\baseitem\baseitem-records.h">
       <Filter>system\baseitem</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\system\baseitem\baseitem-service.h">
