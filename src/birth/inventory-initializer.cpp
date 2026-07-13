@@ -31,6 +31,7 @@
 #include "sv-definition/sv-weapon-types.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/baseitem/baseitem-service.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "util/enum-converter.h"
@@ -304,5 +305,5 @@ void player_outfit(CreatureEntity &creature)
         add_outfit(creature, item);
     }
 
-    BaseitemList::get_instance().mark_common_items_as_aware();
+    BaseitemService::mark_common_items_as_aware();
 }
