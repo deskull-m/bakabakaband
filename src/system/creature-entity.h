@@ -575,6 +575,14 @@ public:
     virtual PLAYER_LEVEL get_level() const;
 
     /*!
+     * @brief モンスターの戦闘習熟による近接命中補正を返す (提案C2第2弾)
+     * @details grows_melee_proficiency が立つモンスターのみ、生成時の基準レベル
+     * (monrace.level/2) を超えて成長した分を近接命中判定の rlev へ加算する補正として返す。
+     * 既定 false / 未成長 / プレイヤーでは 0 を返すため既定バランス不変。
+     */
+    int get_melee_proficiency_bonus() const;
+
+    /*!
      * @brief クリーチャーがプレイヤーかどうかを判定
      * @return プレイヤーならtrue、モンスターならfalse
      * @details デフォルトはfalse（モンスター）。PlayerTypeのみtrueを返す。

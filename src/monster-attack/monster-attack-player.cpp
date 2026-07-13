@@ -88,7 +88,8 @@ void MonsterAttackPlayer::make_attack_normal()
     }
 
     const auto &monrace = this->m_ptr->get_monrace();
-    this->rlev = ((monrace.level >= 1) ? monrace.level : 1);
+    // [提案C2第2弾] 戦闘習熟(レベル成長分)を近接命中へ加算 (grows_melee_proficiency・既定OFF)。
+    this->rlev = ((monrace.level >= 1) ? monrace.level : 1) + this->m_ptr->get_melee_proficiency_bonus();
     angband_strcpy(this->m_name, monster_desc(creature, *this->m_ptr, 0), sizeof(this->m_name));
     angband_strcpy(this->ddesc, monster_desc(creature, *this->m_ptr, MD_WRONGDOER_NAME), sizeof(this->ddesc));
     if (CreatureClass(creature).samurai_stance_is(SamuraiStanceType::IAI)) {
