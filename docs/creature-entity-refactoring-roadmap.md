@@ -3283,6 +3283,20 @@ AC へ拡大。`CreatureEntity::get_ac()` のモンスター分岐で、プレ�
 個体は魔法睡眠・混乱・変身・減速・拘束・朦朧に抵抗しやすくなる。既定 OFF のため
 バランス不変。フルビルドで検証済。
 
+**WIS→セーヴの一括適用（続き ✅ 完了）:** oldies 6 ハンドラに続き、コードベース全体の
+レベル基準モンスターセーヴ（`monrace.level > randint1(...)`）のうち**精神/状態異常系**へ
+WIS 補正を統一適用し、「WIS がモンスターのセーヴを助ける」を一貫させた。
+- `spells-diceroll.cpp` の `common_saving_throw_impl`（魅了/服従の DRY 共通実装。
+  charm / control undead/demon/animal / charm living / domination の 6 呼出を 1 箇所で反映）
+- `effect-monster-psi.cpp`（psi 攻撃耐性）
+- `effect-monster-spirit.cpp`（mind_blast / brain_smash＝精神攻撃）
+- `effect-monster-evil.cpp`（turn undead / turn evil / turn all＝恐怖セーヴ）
+- **除外:** `effect-monster-evil.cpp` の RESIST_TELEPORT 判定（`level > randint1(100)`）は
+  テレポート耐性であり精神/状態異常セーヴではないため対象外。射撃・魔法命中は
+  **モンスター経路が auto-hit（`check_hit` 不使用・`project` で必中）** のため反映先が無く、
+  能力値→命中の拡大は近接に限る（エンジン仕様）。
+既定 OFF のためバランス不変。フルビルドで検証済。
+
 **能力値戦闘反映のまとめ（`applies_stat_combat_bonus`）:** STR→近接ダメージ・
 STR/DEX→近接命中・DEX→AC・WIS→状態異常セーヴを 1 フラグで一括制御。プレイヤーの
 近接戦闘とセーヴの主要な能力値補正を opt-in でモンスターに反映する形が揃った。
