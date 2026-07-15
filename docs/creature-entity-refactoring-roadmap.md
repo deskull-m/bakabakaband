@@ -3258,8 +3258,16 @@ melee-util / monster-attack-player 全経路で確認）。よって「player we
 - 既定 OFF のため実データ・既定バランス不変。reader/schema/CLAUDE.md 整備。
   フルビルド／validate_json で検証済。
 
-**次段候補（未着手）:** STR/DEX → 近接命中、DEX → AC、能力値 → セーヴ等への拡張。
-バランス感度が高いため adj テーブルベースで段階導入し、都度 opt-in フラグで制御する。
+**第3弾の続き ✅ 完了（STR/DEX → 近接命中）:** 同じ `applies_stat_combat_bonus` フラグの
+被覆を命中へ拡大。`CreatureEntity::get_melee_stat_hit_bonus()` が、プレイヤーと同じ
+`adj_str_th` / `adj_dex_th` テーブル（`stat_value_to_table_index` で索引）で STR/DEX の
+命中補正（各 `adj-128` の和）を返す。近接命中の両経路の `power`（`check_hit_from_monster_
+to_*` の accuracy 入力）へ加算。ダメージ（STR）と同じフラグで一括制御（新フラグなし）。
+既定 OFF のためバランス不変。フルビルドで検証済。
+
+**次段候補（未着手）:** DEX → AC、能力値 → セーヴ等への拡張。バランス感度が高いため
+adj テーブルベースで段階導入し、`applies_stat_combat_bonus` の被覆をさらに広げるか
+別フラグにするかは反映範囲の粒度次第で判断する。
 
 **デザイン判断メモ:** player weapon_exp/skill_exp は innate blow のモンスターに
 概念が合わないため、モンスターの熟練度は「戦闘経験＝レベル成長」で表現した。武器を

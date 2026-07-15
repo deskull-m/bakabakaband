@@ -187,6 +187,8 @@ bool MonsterAttackPlayer::process_monster_blows()
             if (this->weapon_slot_for_blow >= 0) {
                 power += this->m_ptr->inventory[this->weapon_slot_for_blow]->to_h;
             }
+            // [提案C2第3弾] 能力値(STR/DEX)を近接命中へ反映 (applies_stat_combat_bonus・既定OFF)。
+            power += this->m_ptr->get_melee_stat_hit_bonus();
             hit = check_hit_from_monster_to_player(creature, power, this->rlev, this->m_ptr->get_remaining_stun());
         }
 
