@@ -3841,6 +3841,45 @@ virtual 化・処理の同化・機能付与** がほぼ出揃った。E トラ�
 | E3 | シリアライズ共通ブロック拡張（`prace`/`pclass`） | 重複解消 | 中 | 中 | ✅ 完了（version 54 bump） |
 | E4 | インライン accessor 本体（481 個）の .cpp 移設 | ビルド衛生 | 大（機械的） | 中 | ✅ 完了（3 batch・ヘッダ約32%削減） |
 | E5 | `is_player()` 自由関数分岐の virtual 化 | 同化 | 大 | 中 | ✅ 第1弾完了（`get_title()`。残候補は少数・据え置き） |
+| E6 | 一時ステータス setter 末尾の共通後処理集約（`notice_bonus_status_change()`） | 重複解消 | 小 | 中 | ✅ 完了（18 サイト・byte 一致） |
+
+---
+
+## 提案 E6: 一時ステータス setter 末尾の共通後処理集約 ✅ 完了
+
+**現状（実コード検証済）:** 多数の一時ステータス setter（`set_tim_*` / `set_*` 系）が
+末尾に **byte 一致**の共通後処理を重複して持っていた:
+
+```cpp
+auto &rfu = RedrawingFlagsUpdater::get_instance();
+rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+if (!notice) {
+    return false;
+}
+if (disturb_state || Travel::get_instance().is_ongoing()) {
+    disturb(creature, false, true);
+}
+rfu.set_flag(StatusRecalculatingFlag::BONUS);
+handle_stuff(creature);
+return true;
+```
+
+**実施:** 新規 file-local でない共通関数
+`notice_bonus_status_change(CreatureEntity &, bool notice)`
+（`src/status/status-change-notice.{h,cpp}`）へ集約。**byte 一致の 18 サイト**
+（`status/temporary-resistance.cpp` 6 / `status/body-improvement.cpp` 4 /
+`status/buff-setter.cpp` 3 / `mind/mind-mirror-master.cpp` 2 /
+`mind/mind-magic-resistance.cpp` 1 / `racial/racial-kutar.cpp` 1 /
+`spell-realm/spells-song.cpp` 1）を `return notice_bonus_status_change(creature, notice);`
+へ置換。各末尾で **約 13 行 → 1 行**（計 200 行超の重複を解消）。
+
+**対象外（byte 不一致のため据え置き）:** `MainWindowRedrawingFlag::BASIC` を使う
+`shape-changer.cpp`、`StatusRecalculatingFlag::MONSTER_STATUSES` を `set_flags` で
+複数指定する `sight-setter.cpp`、および `rfu` を末尾以前で宣言・別フラグ設定する
+一部関数（recalc フラグや再描画対象が異なるため共通化すると挙動が変わる）。
+
+Makefile.am / VisualStudio プロジェクト（`.vcxproj` / `.filters`）に新ファイルを登録。
+挙動完全不変（純粋な suffix 抽出）。フルビルド (g++ -O3 -Werror) / clang-format-18 で検証済。
 
 ---
 

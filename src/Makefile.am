@@ -1325,6 +1325,7 @@ hengband_SOURCES = \
 	status/experience.cpp status/experience.h \
 	status/shape-changer.cpp status/shape-changer.h \
 	status/sight-setter.cpp status/sight-setter.h \
+	status/status-change-notice.cpp status/status-change-notice.h \
 	status/temporary-resistance.cpp status/temporary-resistance.h \
 	\
 	store/home.cpp store/home.h \

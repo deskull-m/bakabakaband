@@ -10,6 +10,7 @@
 #include "main/sound-of-music.h"
 #include "realm/realm-song-numbers.h"
 #include "spell-realm/spells-song.h"
+#include "status/status-change-notice.h"
 #include "system/creature-entity.h"
 #include "system/creature-timed-effect-types.h"
 #include "system/redrawing-flags-updater.h"
@@ -178,19 +179,7 @@ bool set_tim_regen(CreatureEntity &creature, short v, bool do_dec)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::TIM_REGEN, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (!notice) {
-        return false;
-    }
-
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
-    return true;
+    return notice_bonus_status_change(creature, notice);
 }
 
 /*!
@@ -227,19 +216,7 @@ bool set_tim_reflect(CreatureEntity &creature, short v, bool do_dec)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::TIM_REFLECT, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (!notice) {
-        return false;
-    }
-
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
-    return true;
+    return notice_bonus_status_change(creature, notice);
 }
 
 /*!
@@ -276,19 +253,7 @@ bool set_pass_wall(CreatureEntity &creature, short v, bool do_dec)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::TIM_PASS_WALL, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (!notice) {
-        return false;
-    }
-
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
-    return true;
+    return notice_bonus_status_change(creature, notice);
 }
 
 /*!
@@ -374,17 +339,5 @@ bool set_tim_exorcism(CreatureEntity &creature, short v, bool do_dec)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::TIM_EXORCISM, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (!notice) {
-        return false;
-    }
-
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
-    return true;
+    return notice_bonus_status_change(creature, notice);
 }
