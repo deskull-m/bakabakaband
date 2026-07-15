@@ -27,7 +27,8 @@ ProcessResult effect_monster_old_poly(EffectMonster *em_ptr)
 
     bool has_resistance = em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
     has_resistance |= em_ptr->monrace->misc_flags.has(MonsterMiscType::QUESTOR);
-    has_resistance |= (em_ptr->monrace->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
+    // [提案C2第3弾・セーヴ] applies_stat_combat_bonus の個体は WIS セーヴ補正を実効レベルへ加算 (opt-in・既定OFF)
+    has_resistance |= ((em_ptr->monrace->level + em_ptr->m_ptr->get_save_stat_bonus()) > randint1(std::max(1, em_ptr->dam - 10)) + 10);
 
     if (has_resistance) {
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
@@ -212,7 +213,8 @@ ProcessResult effect_monster_old_slow(CreatureEntity &creature, EffectMonster *e
     }
 
     bool has_resistance = em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
-    has_resistance |= (em_ptr->monrace->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
+    // [提案C2第3弾・セーヴ] applies_stat_combat_bonus の個体は WIS セーヴ補正を実効レベルへ加算 (opt-in・既定OFF)
+    has_resistance |= ((em_ptr->monrace->level + em_ptr->m_ptr->get_save_stat_bonus()) > randint1(std::max(1, em_ptr->dam - 10)) + 10);
 
     /* Powerful monsters can resist */
     if (has_resistance) {
@@ -244,7 +246,8 @@ ProcessResult effect_monster_old_sleep(CreatureEntity &creature, EffectMonster *
     has_resistance |= em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_SLEEP);
     // [提案C1第5弾] 付与種族が自由行動 (TR_FREE_ACT) を持てば魔法睡眠を無効化 (opt-in・既定OFF)
     has_resistance |= target_race_resists_element(em_ptr, TR_FREE_ACT);
-    has_resistance |= (em_ptr->monrace->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
+    // [提案C2第3弾・セーヴ] applies_stat_combat_bonus の個体は WIS セーヴ補正を実効レベルへ加算 (opt-in・既定OFF)
+    has_resistance |= ((em_ptr->monrace->level + em_ptr->m_ptr->get_save_stat_bonus()) > randint1(std::max(1, em_ptr->dam - 10)) + 10);
 
     if (has_resistance) {
         if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_SLEEP)) {
@@ -278,7 +281,8 @@ ProcessResult effect_monster_old_conf(CreatureEntity &creature, EffectMonster *e
 
     bool has_resistance = em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
     has_resistance |= em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_CONF);
-    has_resistance |= (em_ptr->monrace->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
+    // [提案C2第3弾・セーヴ] applies_stat_combat_bonus の個体は WIS セーヴ補正を実効レベルへ加算 (opt-in・既定OFF)
+    has_resistance |= ((em_ptr->monrace->level + em_ptr->m_ptr->get_save_stat_bonus()) > randint1(std::max(1, em_ptr->dam - 10)) + 10);
     if (has_resistance) {
         if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_CONF)) {
             if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
@@ -303,7 +307,8 @@ ProcessResult effect_monster_stasis(EffectMonster *em_ptr, bool to_evil)
 
     int stasis_damage = (em_ptr->dam - 10) < 1 ? 1 : (em_ptr->dam - 10);
     bool has_resistance = em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
-    has_resistance |= em_ptr->monrace->level > randint1(stasis_damage) + 10;
+    // [提案C2第3弾・セーヴ] applies_stat_combat_bonus の個体は WIS セーヴ補正を実効レベルへ加算 (opt-in・既定OFF)
+    has_resistance |= (em_ptr->monrace->level + em_ptr->m_ptr->get_save_stat_bonus()) > randint1(stasis_damage) + 10;
     // [提案C1第5弾] 付与種族が自由行動 (TR_FREE_ACT) を持てば拘束(stasis)を無効化 (opt-in・既定OFF)
     has_resistance |= target_race_resists_element(em_ptr, TR_FREE_ACT);
     if (to_evil) {
@@ -331,7 +336,8 @@ ProcessResult effect_monster_stun(EffectMonster *em_ptr)
     em_ptr->do_stun = Dice::roll((em_ptr->caster_lev / 20) + 3, (em_ptr->dam)) + 1;
 
     bool has_resistance = em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
-    has_resistance |= (em_ptr->monrace->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
+    // [提案C2第3弾・セーヴ] applies_stat_combat_bonus の個体は WIS セーヴ補正を実効レベルへ加算 (opt-in・既定OFF)
+    has_resistance |= ((em_ptr->monrace->level + em_ptr->m_ptr->get_save_stat_bonus()) > randint1(std::max(1, em_ptr->dam - 10)) + 10);
     if (has_resistance) {
         em_ptr->do_stun = 0;
         em_ptr->note = _("には効果がなかった。", " is unaffected.");

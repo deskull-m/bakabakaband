@@ -601,6 +601,16 @@ public:
     int get_melee_stat_hit_bonus() const;
 
     /*!
+     * @brief モンスターの能力値(WIS)によるセーヴィングスロー補正を返す (提案C2第3弾・セーヴ)
+     * @details applies_stat_combat_bonus が立つモンスターのみ、プレイヤーと同じ
+     * adj_wis_sav テーブル (stat_value_to_table_index で索引) で WIS に応じた
+     * セーヴ補正 (直接加算値・-128 オフセット無し) を返す。レベル基準の
+     * 状態異常セーヴ判定 (monrace.level > randint1(...)) の実効レベルに加算する。
+     * 既定 false / プレイヤーでは 0 を返すため既定バランス不変。
+     */
+    int get_save_stat_bonus() const;
+
+    /*!
      * @brief クリーチャーがプレイヤーかどうかを判定
      * @return プレイヤーならtrue、モンスターならfalse
      * @details デフォルトはfalse（モンスター）。PlayerTypeのみtrueを返す。
