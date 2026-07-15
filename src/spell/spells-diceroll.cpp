@@ -50,7 +50,8 @@ static bool common_saving_throw_impl(CreatureEntity &creature, int pow, const Cr
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE) || (monrace.population_flags.has(MonsterPopulationType::NAZGUL))) {
         pow = pow * 2 / 3;
     }
-    return (monrace.level > randint1((pow - 10) < 1 ? 1 : (pow - 10)) + 5);
+    // [提案C2第3弾・セーヴ] applies_stat_combat_bonus の対象は WIS セーヴ補正を実効レベルへ加算 (opt-in・既定OFF)
+    return ((monrace.level + target.get_save_stat_bonus()) > randint1((pow - 10) < 1 ? 1 : (pow - 10)) + 5);
 }
 
 /*!
