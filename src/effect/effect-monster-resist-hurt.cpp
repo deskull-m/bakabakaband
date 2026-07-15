@@ -52,6 +52,22 @@ void apply_monster_race_resistance(EffectMonster *em_ptr)
     em_ptr->note = _("には耐性がある。", " resists.");
     em_ptr->dam = (em_ptr->dam + 2) / 3;
 }
+
+/*!
+ * @brief モンスターが属性に (monrace 固有の) 部分耐性を持つ場合の共通処理 (提案D4第2弾)
+ * @details 「耐性がある」メッセージ・ダメージ *3/(1d6+6)・思い出フラグ記録を集約。
+ *          複数ハンドラ (plasma / force / inertia / time 等) に byte 一致で重複していた
+ *          部分耐性ブロックの統合 (挙動不変、monrace フラグ読取・思い出記録のセマンティクスは維持)。
+ */
+void apply_monster_element_resist(CreatureEntity &creature, EffectMonster *em_ptr, MonsterResistanceType resist_flag)
+{
+    em_ptr->note = _("には耐性がある。", " resists.");
+    em_ptr->dam *= 3;
+    em_ptr->dam /= randint1(6) + 6;
+    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
+        em_ptr->monrace->r_resistance_flags.set(resist_flag);
+    }
+}
 }
 
 /*!
@@ -250,13 +266,7 @@ ProcessResult effect_monster_plasma(CreatureEntity &creature, EffectMonster *em_
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    em_ptr->note = _("には耐性がある。", " resists.");
-    em_ptr->dam *= 3;
-    em_ptr->dam /= randint1(6) + 6;
-    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_PLASMA);
-    }
-
+    apply_monster_element_resist(creature, em_ptr, MonsterResistanceType::RESIST_PLASMA);
     return ProcessResult::PROCESS_CONTINUE;
 }
 
@@ -498,13 +508,7 @@ ProcessResult effect_monster_force(CreatureEntity &creature, EffectMonster *em_p
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    em_ptr->note = _("には耐性がある。", " resists.");
-    em_ptr->dam *= 3;
-    em_ptr->dam /= randint1(6) + 6;
-    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_FORCE);
-    }
-
+    apply_monster_element_resist(creature, em_ptr, MonsterResistanceType::RESIST_FORCE);
     return ProcessResult::PROCESS_CONTINUE;
 }
 
@@ -516,13 +520,7 @@ ProcessResult effect_monster_inertial(CreatureEntity &creature, EffectMonster *e
     }
 
     if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_INERTIA)) {
-        em_ptr->note = _("には耐性がある。", " resists.");
-        em_ptr->dam *= 3;
-        em_ptr->dam /= randint1(6) + 6;
-        if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_INERTIA);
-        }
-
+        apply_monster_element_resist(creature, em_ptr, MonsterResistanceType::RESIST_INERTIA);
         return ProcessResult::PROCESS_CONTINUE;
     }
 
@@ -551,13 +549,7 @@ ProcessResult effect_monster_time(CreatureEntity &creature, EffectMonster *em_pt
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    em_ptr->note = _("には耐性がある。", " resists.");
-    em_ptr->dam *= 3;
-    em_ptr->dam /= randint1(6) + 6;
-    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_TIME);
-    }
-
+    apply_monster_element_resist(creature, em_ptr, MonsterResistanceType::RESIST_TIME);
     return ProcessResult::PROCESS_CONTINUE;
 }
 
@@ -679,17 +671,9 @@ ProcessResult effect_monster_icee_bolt(CreatureEntity &creature, EffectMonster *
     }
 
     if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::IMMUNE_COLD)) {
-        em_ptr->note = _("にはかなり耐性がある！", " resists a lot.");
-        em_ptr->dam /= 9;
-        if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::IMMUNE_COLD);
-        }
+        apply_monster_element_immune(creature, em_ptr, MonsterResistanceType::IMMUNE_COLD);
     } else if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::HURT_COLD)) {
-        em_ptr->note = _("はひどい痛手をうけた。", " is hit hard.");
-        em_ptr->dam *= 2;
-        if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::HURT_COLD);
-        }
+        apply_monster_element_hurt(creature, em_ptr, MonsterResistanceType::HURT_COLD);
     } else if (target_race_resists_element(em_ptr, TR_RES_COLD)) {
         // [提案C1第7弾] 冷気ダメージも種族の冷気耐性で軽減 (effect_monster_cold と同水準)。
         apply_monster_race_resistance(em_ptr);
@@ -834,11 +818,7 @@ ProcessResult effect_monster_dirt(CreatureEntity &creature, EffectMonster *em_pt
 
     // 毒完全耐性があるモンスターは大幅に軽減
     if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::IMMUNE_POISON)) {
-        em_ptr->note = _("にはかなり耐性がある！", " resists a lot.");
-        em_ptr->dam /= 9;
-        if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::IMMUNE_POISON);
-        }
+        apply_monster_element_immune(creature, em_ptr, MonsterResistanceType::IMMUNE_POISON);
         return ProcessResult::PROCESS_CONTINUE;
     }
 
