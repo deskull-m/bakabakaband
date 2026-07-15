@@ -387,13 +387,14 @@ ProcessResult effect_monster_rocket(CreatureEntity &creature, EffectMonster *em_
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_SHARDS)) {
+    const auto native_resist = em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_SHARDS);
+    if (!native_resist && !target_race_resists_element(em_ptr, TR_RES_SHARDS)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
     em_ptr->note = _("はいくらか耐性を示した。", " resists somewhat.");
     em_ptr->dam /= 2;
-    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
+    if (native_resist && is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
         em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_SHARDS);
     }
 
@@ -672,7 +673,8 @@ ProcessResult effect_monster_icee_bolt(CreatureEntity &creature, EffectMonster *
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_SOUND)) {
+    // [提案C1第7弾] 音耐性 (轟音付随のスタン) を種族の TR_RES_SOUND でも無効化。
+    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_SOUND) && !target_race_resists_element(em_ptr, TR_RES_SOUND)) {
         em_ptr->do_stun = (randint1(15) + 1) / (em_ptr->r + 1);
     }
 
@@ -688,6 +690,9 @@ ProcessResult effect_monster_icee_bolt(CreatureEntity &creature, EffectMonster *
         if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
             em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::HURT_COLD);
         }
+    } else if (target_race_resists_element(em_ptr, TR_RES_COLD)) {
+        // [提案C1第7弾] 冷気ダメージも種族の冷気耐性で軽減 (effect_monster_cold と同水準)。
+        apply_monster_race_resistance(em_ptr);
     }
 
     return ProcessResult::PROCESS_CONTINUE;

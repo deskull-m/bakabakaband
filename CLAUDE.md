@@ -670,6 +670,9 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   `effect_monster_lite` / `effect_monster_dark`（`effect-monster-lite-dark.cpp`）の
   ネイティブ resist 条件へ OR-in。光耐性は光弱点 `HURT_LITE` より優先（`else if`）。
   種族由来 resist では思い出フラグを記録しない（`native_*_resist` ガード）。
+- **反映対象（第7弾: 複合攻撃＝カバレッジ完成）:** rocket は破片 `TR_RES_SHARDS`、
+  icee_bolt は付随スタンを `TR_RES_SOUND`・冷気本体を `TR_RES_COLD`（1/3 軽減）で反映。
+  第3弾で主要ハンドラのみ対象とした分の残りを埋めてカバレッジを完成。
 - **共通述語の配置:** `target_race_resists_element(EffectMonster*, tr_type)` は
   `effect-monster-util.{h,cpp}` に配置（属性ダメージ／状態異常の両 TU から使う共通述語）。
   ダメージ軽減 `apply_monster_race_resistance(em_ptr)`（基本 5 属性用の 1/3 軽減）は
