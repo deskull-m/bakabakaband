@@ -1561,6 +1561,11 @@ errr RaceReader::read()
         msg_format(_("モンスター種族耐性反映フラグ読込失敗。ID: '%d'。", "Failed to load monster applies_player_race_resistances. ID: '%d'."), error_idx);
         return err;
     }
+    err = info_set_bool(mon_data["grows_melee_proficiency"], monrace.grows_melee_proficiency, false);
+    if (err) {
+        msg_format(_("モンスター戦闘習熟フラグ読込失敗。ID: '%d'。", "Failed to load monster grows_melee_proficiency. ID: '%d'."), error_idx);
+        return err;
+    }
     err = info_set_integer(mon_data["odds_correction_ratio"], monrace.arena_ratio, false, Range(1, 9999));
     if (err) {
         msg_format(_("モンスター賭け倍率読込失敗。ID: '%d'。", "Failed to load monster odds for arena. ID: '%d'."), error_idx);
