@@ -3299,6 +3299,17 @@ WIS 補正を統一適用し、「WIS がモンスターのセーヴを助ける
   能力値→命中の拡大は近接に限る（エンジン仕様）。
 既定 OFF のためバランス不変。フルビルドで検証済。
 
+**WIS→セーヴのレベル判定を述語へ集約（DRY 続き ✅ 完了）:** WIS 補正を注入した
+レベル基準セーヴ式 `(monrace.level + WIS) > randint1(max(1, difficulty-10)) + 10` が
+約 10 サイトに散在していたため、共通述語 `monster_saves_status_by_level(em_ptr, difficulty)`
+（`effect-monster-util.{h,cpp}`）へ集約。`difficulty` は通常 `em_ptr->dam`、術者レベル基準の
+効果（mind_blast / brain_smash）は `caster_lev` を渡す。移行サイト: oldies の poly / slow /
+sleep / conf / stun / stasis（6）、evil の turn undead / turn evil / turn all（3）、spirit の
+mind_blast / brain_smash（2）。`randint1` の消費は 1 回のみ・呼出側の短絡評価も保存され
+**挙動完全不変**。WIS 補正の注入点が 1 箇所に一元化され、将来のセーヴ調整が容易になった。
+stasis の未使用化した `stasis_damage` ローカルも削除。（psi は `randint1(3*dam)` で式が
+異なるため対象外・インライン維持、charm/control は `common_saving_throw_impl` に別途集約済）。
+
 **能力値戦闘反映のまとめ（`applies_stat_combat_bonus`）:** STR→近接ダメージ・
 STR/DEX→近接命中・DEX→AC・WIS→状態異常セーヴを 1 フラグで一括制御。プレイヤーの
 近接戦闘とセーヴの主要な能力値補正を opt-in でモンスターに反映する形が揃った。

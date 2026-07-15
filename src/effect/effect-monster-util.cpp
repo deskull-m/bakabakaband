@@ -19,6 +19,8 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
+#include "term/z-rand.h"
+#include <algorithm>
 
 /*!
  * @brief EffectMonster構造体のコンストラクタ
@@ -79,4 +81,10 @@ bool target_race_resists_element(EffectMonster *em_ptr, tr_type res_flag)
         return false;
     }
     return CreatureRace(em_ptr->m_ptr).tr_flags().has(res_flag);
+}
+
+bool monster_saves_status_by_level(EffectMonster *em_ptr, int difficulty)
+{
+    const auto effective_level = em_ptr->monrace->level + em_ptr->m_ptr->get_save_stat_bonus();
+    return effective_level > randint1(std::max(1, difficulty - 10)) + 10;
 }
