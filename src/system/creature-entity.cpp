@@ -1892,6 +1892,20 @@ int CreatureEntity::get_melee_proficiency_bonus() const
     return grown > 0 ? grown : 0;
 }
 
+int CreatureEntity::get_melee_stat_damage_bonus() const
+{
+    if (!this->has_monster_profile()) {
+        return 0;
+    }
+
+    if (!this->get_monrace().applies_stat_combat_bonus) {
+        return 0;
+    }
+
+    const auto index = stat_value_to_table_index(this->get_stat_use(A_STR));
+    return static_cast<int>(adj_str_td[index]) - 128;
+}
+
 /*!
  * @brief 表示用の称号を取得する (提案 E5, 基底 = モンスター既定)
  * @details モンスターは称号を持たないため "なし" を返す。プレイヤーは

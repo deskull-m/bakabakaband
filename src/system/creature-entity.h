@@ -583,6 +583,15 @@ public:
     int get_melee_proficiency_bonus() const;
 
     /*!
+     * @brief モンスターの能力値(STR)による近接ダメージ補正を返す (提案C2第3弾)
+     * @details applies_stat_combat_bonus が立つモンスターのみ、プレイヤーと同じ
+     * adj_str_td テーブル (stat_value_to_table_index で索引) で STR に応じた
+     * 近接ダメージ補正 (adj-128) を返す。既定 false / プレイヤーでは 0 を返す
+     * ため既定バランス不変。
+     */
+    int get_melee_stat_damage_bonus() const;
+
+    /*!
      * @brief クリーチャーがプレイヤーかどうかを判定
      * @return プレイヤーならtrue、モンスターならfalse
      * @details デフォルトはfalse（モンスター）。PlayerTypeのみtrueを返す。

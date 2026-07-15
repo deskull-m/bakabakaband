@@ -737,6 +737,30 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
 - **安全性:** プレイヤー・未成長・フラグ OFF では 0 を返すため**既定バランス不変**。
 - スキーマに `grows_melee_proficiency` を登録済。
 
+### モンスターの能力値の戦闘反映＝STR→近接ダメージ (`applies_stat_combat_bonus`) — 提案 C2第3弾
+
+`MonraceDefinition` に `bool applies_stat_combat_bonus`
+(`src/system/monrace/monrace-definition.h`) を持ち、JSON
+`lib/edit/MonraceDefinitions.jsonc` で「能力値(STR)を近接ダメージへ反映」を
+有効化できる。C2 の「能力値を戦闘へ反映」拡張の第1弾で、**JSON オプトイン方式**
+（既定 `false`=無効でバランス不変）。
+
+```jsonc
+"applies_stat_combat_bonus": true
+```
+
+- **効果:** `CreatureEntity::get_melee_stat_damage_bonus()` が、フラグ ON の個体につき
+  プレイヤーと同じ `adj_str_td` テーブル（monster の内部×10 stat を
+  `stat_value_to_table_index()` で索引化）で STR 補正 `adj-128` を返し、近接ダメージへ
+  加算する。両経路（monster-vs-monster / monster-vs-player）の `damage_dice.roll()`
+  直後に加算し、負値は 0 下限クランプ（explode 時は据え置き）。
+- **能力値スケールの扱い:** モンスター stat は内部×10（30-400）だが、CON→HP 補正
+  （`calc_max_hp_con_bonus`）と同じ `stat_value_to_table_index()` で adj テーブル索引に
+  変換するため、プレイヤー用 adj テーブルをそのまま流用できる。
+- **安全性:** プレイヤー・フラグ OFF では 0 を返すため**既定バランス不変**。
+- **未反映:** STR/DEX→命中、DEX→AC、能力値→セーヴ等は次段（都度 opt-in・段階導入）。
+- スキーマに `applies_stat_combat_bonus` を登録済。
+
 ### モンスターの MP 消費詠唱 (`consumes_mp`) — 提案 C4
 
 `MonraceDefinition` に `bool consumes_mp`
