@@ -1942,6 +1942,21 @@ int CreatureEntity::get_melee_stat_hit_bonus() const
     return (static_cast<int>(adj_str_th[str_index]) - 128) + (static_cast<int>(adj_dex_th[dex_index]) - 128);
 }
 
+int CreatureEntity::get_save_stat_bonus() const
+{
+    if (!this->has_monster_profile()) {
+        return 0;
+    }
+
+    if (!this->get_monrace().applies_stat_combat_bonus) {
+        return 0;
+    }
+
+    // adj_wis_sav は直接加算テーブル (0-19, -128 オフセット無し)。
+    const auto index = stat_value_to_table_index(this->get_stat_use(A_WIS));
+    return static_cast<int>(adj_wis_sav[index]);
+}
+
 /*!
  * @brief 表示用の称号を取得する (提案 E5, 基底 = モンスター既定)
  * @details モンスターは称号を持たないため "なし" を返す。プレイヤーは
