@@ -592,6 +592,15 @@ public:
     int get_melee_stat_damage_bonus() const;
 
     /*!
+     * @brief モンスターの能力値(STR/DEX)による近接命中補正を返す (提案C2第3弾)
+     * @details applies_stat_combat_bonus が立つモンスターのみ、プレイヤーと同じ
+     * adj_str_th / adj_dex_th テーブル (stat_value_to_table_index で索引) で
+     * STR/DEX に応じた近接命中補正 (各 adj-128 の和) を返す。既定 false /
+     * プレイヤーでは 0 を返すため既定バランス不変。
+     */
+    int get_melee_stat_hit_bonus() const;
+
+    /*!
      * @brief クリーチャーがプレイヤーかどうかを判定
      * @return プレイヤーならtrue、モンスターならfalse
      * @details デフォルトはfalse（モンスター）。PlayerTypeのみtrueを返す。
