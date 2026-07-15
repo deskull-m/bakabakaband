@@ -3688,8 +3688,28 @@ monster ハンドラの直接 monrace 読取り（装備を含まない）とは
 acid/elec/fire/cold/pois/stungun の 6 ハンドラを移行（**monrace 読取り・思い出記録の
 意味論は維持、挙動完全不変**）。フルビルド (g++ -O3 -Werror) / clang-format-18 検証済。
 
-**残（第2弾以降）:** 他属性（高位元素・nether/chaos 等）の同型ブロックも同ヘルパへ
-横展開可能（同じく挙動不変）。プレイヤー計算式との真の統合は上記バランス判断が前提。
+### ✅ 第2弾 完了（部分耐性ヘルパの新設＋immune/hurt 横展開）
+
+**部分耐性ヘルパ `apply_monster_element_resist()` の新設:** 複数ハンドラに **byte 一致**で
+重複していた部分耐性ブロック（`note "resists."`・ダメージ `*3/(1d6+6)`・思い出フラグ記録）を
+file-local ヘルパへ集約。**byte 一致で移行できた 4 ハンドラ**（plasma / force / inertia /
+time）を移行。挙動完全不変（monrace 読取り・思い出記録のセマンティクス維持）。
+
+- **除外（byte 不一致のため見送り）:** gravity / meteor は note 文が `" resists!"`（感嘆符）で
+  異なり、gravity は途中に `do_dist = 0` の追加文があるため対象外。water は immune 兄弟枝と
+  思い出記録を共有する構造差、C1第3弾の二次属性（nether/chaos/shards/sound/conf/disen/
+  nexus）は race 耐性 OR-in の `native_resist` ガードで思い出記録条件が異なるため対象外。
+  hell_fire/holy_fire は `r_kind_flags`（`r_resistance_flags` でない）を記録するため別系統。
+
+**immune/hurt ヘルパの横展開:** 第1弾で 6 ハンドラに入れた `apply_monster_element_immune()` /
+`apply_monster_element_hurt()` を、残りの byte 一致サイトへ展開: icee_bolt の IMMUNE_COLD /
+HURT_COLD、dirt の IMMUNE_POISON（計 3 サイト）。
+
+合計 7 サイトの重複を集約。フルビルド (g++ -O3 -Werror) / clang-format-18 で検証済。
+
+**残（第3弾以降）:** プレイヤー計算式との真の統合は上記バランス判断（装備耐性を monster に
+反映する変更）が前提のため引き続き別提案。残る部分耐性ブロックは note 文・付随処理が
+個別に異なるため、無理な共通化はせず現状維持。
 
 ---
 
