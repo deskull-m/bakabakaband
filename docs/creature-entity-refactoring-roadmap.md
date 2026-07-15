@@ -3842,6 +3842,28 @@ virtual 化・処理の同化・機能付与** がほぼ出揃った。E トラ�
 | E4 | インライン accessor 本体（481 個）の .cpp 移設 | ビルド衛生 | 大（機械的） | 中 | ✅ 完了（3 batch・ヘッダ約32%削減） |
 | E5 | `is_player()` 自由関数分岐の virtual 化 | 同化 | 大 | 中 | ✅ 第1弾完了（`get_title()`。残候補は少数・据え置き） |
 | E6 | 一時ステータス setter 末尾の共通後処理集約（`notice_bonus_status_change()`） | 重複解消 | 小 | 中 | ✅ 完了（18 サイト・byte 一致） |
+| E7 | `MonsterSpellResult` の learnable 生成定型集約（`make_learnable()`） | 重複解消 | 小 | 中 | ✅ 完了（36 サイト・byte 一致） |
+
+---
+
+## 提案 E7: `MonsterSpellResult::make_learnable()` による learnable 生成の集約 ✅ 完了
+
+**現状（実コード検証済）:** モンスター呪文ハンドラが末尾で
+`auto res = MonsterSpellResult::make_valid([dam]); res.learnable = 〈式〉; return res;`
+という 3〜4 行の定型を多数重複していた（learnable 式は `target_type == MONSTER_TO_PLAYER`
+または `proj_res.affected_player`）。
+
+**実施:** `MonsterSpellResult` に静的ファクトリ
+`make_learnable(bool learnable, int dam = 0)` を追加し、上記定型を 1 行
+`return MonsterSpellResult::make_learnable(〈式〉[, dam]);` へ置換。**byte 一致の 36 サイト**
+（`mspell-summon.cpp` 30 / `mspell-status.cpp` 3 / `mspell-attack/abstract-mspell.cpp` 1 /
+`mspell-attack/mspell-breath.cpp` 1 / `mspell-attack/mspell-curse.cpp` 1）を移行。
+
+**対象外:** `res` を生成後にさらに加工・条件分岐してから返す関数（`mspell-dispel.cpp` /
+`mspell-floor.cpp` / `assign-monster-spell.cpp` 等、`res.learnable = false` を後段で
+条件的に上書きする箇所）は末尾定型でないため据え置き。
+
+挙動完全不変（同値のファクトリ抽出）。フルビルド (g++ -O3 -Werror) / clang-format-18 で検証済。
 
 ---
 
