@@ -1694,6 +1694,16 @@ int CreatureEntity::get_ac() const
             }
             total_ac += item_ptr->ac + item_ptr->to_a;
         }
+
+        // [提案C2第3弾] 能力値(DEX)を AC へ反映 (applies_stat_combat_bonus・既定OFF)。
+        // プレイヤーと同じ adj_dex_ta テーブルで DEX 補正を加算し、負値は 0 下限。
+        if (this->get_monrace().applies_stat_combat_bonus) {
+            const auto dex_index = stat_value_to_table_index(this->get_stat_use(A_DEX));
+            total_ac += static_cast<int>(adj_dex_ta[dex_index]) - 128;
+            if (total_ac < 0) {
+                total_ac = 0;
+            }
+        }
     }
 
     return total_ac;

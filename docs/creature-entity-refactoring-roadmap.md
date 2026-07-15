@@ -3267,9 +3267,19 @@ melee-util / monster-attack-player 全経路で確認）。よって「player we
 to_*` の accuracy 入力）へ加算。ダメージ（STR）と同じフラグで一括制御（新フラグなし）。
 既定 OFF のためバランス不変。フルビルドで検証済。
 
-**次段候補（未着手）:** DEX → AC、能力値 → セーヴ等への拡張。バランス感度が高いため
-adj テーブルベースで段階導入し、`applies_stat_combat_bonus` の被覆をさらに広げるか
-別フラグにするかは反映範囲の粒度次第で判断する。
+**第3弾の続き ✅ 完了（DEX → AC）:** 同じ `applies_stat_combat_bonus` フラグの被覆を
+AC へ拡大。`CreatureEntity::get_ac()` のモンスター分岐で、プレイヤーと同じ
+`adj_dex_ta` テーブル（`stat_value_to_table_index` で索引）の DEX 補正（`adj-128`）を
+`total_ac` へ加算し、負値は 0 下限クランプ。get_ac() は攻撃側の命中判定
+（`mam_ptr->ac = t_ptr->get_ac()`）で参照されるため、高 DEX の被対象個体は被弾しにくく
+なる。命中（攻撃側）と対になる守勢反映。既定 OFF のためバランス不変。
+
+**能力値戦闘反映のまとめ（`applies_stat_combat_bonus`）:** STR→近接ダメージ・
+STR/DEX→近接命中・DEX→AC を 1 フラグで一括制御。プレイヤーの近接戦闘の主要な
+能力値補正を opt-in でモンスターに反映する形が揃った。
+
+**次段候補（未着手）:** 能力値→セーヴ（`get_skill_save` への DEX/WIS 等の反映）、
+射撃・魔法命中への能力値反映等。都度 opt-in で段階導入する。
 
 **デザイン判断メモ:** player weapon_exp/skill_exp は innate blow のモンスターに
 概念が合わないため、モンスターの熟練度は「戦闘経験＝レベル成長」で表現した。武器を
