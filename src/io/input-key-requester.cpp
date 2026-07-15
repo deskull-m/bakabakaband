@@ -19,6 +19,7 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
+#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h" //!< @todo 相互依存している、後で何とかする.
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
@@ -39,6 +40,15 @@ TERM_LEN command_gap = 999; /* アイテムの表示に使う (詳細未調査) 
 int16_t command_new; /* Command chaining from inven/equip view */
 
 static char request_command_buffer[256]{}; /*!< Special buffer to hold the action of the current keymap */
+
+void set_command_repeat_from_arg()
+{
+    if (command_arg) {
+        command_rep = command_arg - 1;
+        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
+        command_arg = 0;
+    }
+}
 
 InputKeyRequestor::InputKeyRequestor(CreatureEntity &creature, bool shopping)
     : creature_ptr(&creature)
