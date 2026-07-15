@@ -3219,14 +3219,38 @@ monrace を参照）が `prace`/`pclass` に付与する。**効果は未反映*
   本提案は成長機構・データ経路の確立が主眼で、効果の深化は下記次段以降。
 - フルビルド (g++ -O3 -Werror -Wall -Wextra) / clang-format-18 / validate_json.py で検証済。
 
-### 第2弾以降（未着手）
+### 第2弾 ✅ 完了（戦闘習熟＝近接命中補正、モンスター適合形）
 
-- **熟練度成長**: 攻撃・詠唱で `weapon_exp`/`skill_exp` を蓄積し命中/ダメージへ反映
-  （命中式は B3 で共通化済のため差込口は明確）。別途 growth-on-use フックが要る。
+**着手前の実コード検証（重要）:** プレイヤーの `weapon_exp`（武器熟練度）は
+**モンスターの innate blow（RaceBlow）には適用されない**ことを確認した。モンスター
+近接は `power = mbe_info[effect].power`（固定表）・`rlev = monrace.level`（固定の種族
+レベル）で命中判定され、`weapon_exp` を一切参照しない（monster-attack-monster /
+melee-util / monster-attack-player 全経路で確認）。よって「player weapon_exp の反映」
+は**そのままでは実装不可**。
+
+**モンスター適合形で実装:** モンスターの「戦闘習熟」は**撃破による経験値でのレベル
+成長（第4段）**に相当するため、それを近接命中へ反映する形とした。現状 `rlev` は
+`monrace.level`（固定）で、モンスターがレベルアップしても**命中は向上しない**という
+ギャップを埋める。
+
+- `MonraceDefinition::grows_melee_proficiency`（bool・既定 false）を追加。
+- `CreatureEntity::get_melee_proficiency_bonus()` を新設。フラグ ON の個体のみ、
+  生成時基準 `monrace.level/2` を超えて成長した分（`get_level() - monrace.level/2`、
+  0 下限）を返す。プレイヤー・未成長・フラグ OFF では 0（バランス不変）。
+- 近接命中の両経路（monster-vs-monster `melee-util.cpp`、monster-vs-player
+  `monster-attack-player.cpp`）の `rlev` へ本ボーナスを加算。命中式（B3 共通化済の
+  `check_hit_from_monster_to_*`）はそのまま利用。
+- 満成長で `rlev` は最大 `monrace.level → 1.5×monrace.level`（有界）。reader/schema/
+  CLAUDE.md 整備。既定 OFF のため実データ・既定バランス不変。フルビルド／
+  validate_json で検証済。
+
 - **能力値のゲーム効果拡張**: 成長した stat を戦闘（命中・ダメージ・セーヴ等）へ
-  広く反映する。メンテナのバランス判断のもと段階導入。
+  広く反映する（未着手）。メンテナのバランス判断のもと段階導入。
 
-**デザイン判断（残）:** 熟練度をモンスター戦闘にどう効かせるか、能力値効果の反映範囲。
+**デザイン判断メモ:** player weapon_exp/skill_exp は innate blow のモンスターに
+概念が合わないため、モンスターの熟練度は「戦闘経験＝レベル成長」で表現した。武器を
+装備するモンスター（提案12）への weapon_exp 反映は、モンスター攻撃が innate blow
+主体のため対象外（将来、装備武器で殴るモンスターを実装する場合の拡張余地）。
 
 ---
 

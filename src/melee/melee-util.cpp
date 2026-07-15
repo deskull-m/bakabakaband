@@ -32,7 +32,8 @@ mam_type *initialize_mam_type(CreatureEntity &creature, mam_type *mam_ptr, MONST
 
     const auto &monrace = mam_ptr->m_ptr->get_monrace();
     mam_ptr->ac = static_cast<ARMOUR_CLASS>(mam_ptr->t_ptr->get_ac());
-    mam_ptr->rlev = ((monrace.level >= 1) ? monrace.level : 1);
+    // [提案C2第2弾] 戦闘習熟(レベル成長分)を近接命中へ加算 (grows_melee_proficiency・既定OFF)。
+    mam_ptr->rlev = ((monrace.level >= 1) ? monrace.level : 1) + mam_ptr->m_ptr->get_melee_proficiency_bonus();
     mam_ptr->blinked = false;
     mam_ptr->power = 0;
     mam_ptr->obvious = false;

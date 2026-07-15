@@ -1887,6 +1887,22 @@ PLAYER_LEVEL CreatureEntity::get_level() const
     return this->level;
 }
 
+int CreatureEntity::get_melee_proficiency_bonus() const
+{
+    if (!this->has_monster_profile()) {
+        return 0;
+    }
+
+    const auto &monrace = this->get_monrace();
+    if (!monrace.grows_melee_proficiency) {
+        return 0;
+    }
+
+    const auto base_level = monrace.level / 2;
+    const auto grown = static_cast<int>(this->get_level()) - base_level;
+    return grown > 0 ? grown : 0;
+}
+
 /*!
  * @brief 表示用の称号を取得する (提案 E5, 基底 = モンスター既定)
  * @details モンスターは称号を持たないため "なし" を返す。プレイヤーは

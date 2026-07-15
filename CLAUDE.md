@@ -711,6 +711,32 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   能力値を戦闘へ広く反映する拡張は将来提案で段階導入する。
 - スキーマに `grows_stats` を登録済。
 
+### モンスターの戦闘習熟＝近接命中補正 (`grows_melee_proficiency`) — 提案 C2第2弾
+
+`MonraceDefinition` に `bool grows_melee_proficiency`
+(`src/system/monrace/monrace-definition.h`) を持ち、JSON
+`lib/edit/MonraceDefinitions.jsonc` で「レベル成長で得た戦闘習熟を近接命中へ反映」を
+有効化できる。C2第1弾（stat 成長）に続くモンスター成長の拡張で、**JSON オプトイン方式**
+（既定 `false`=無効でバランス不変）。
+
+```jsonc
+"grows_melee_proficiency": true
+```
+
+- **背景（重要）:** プレイヤーの `weapon_exp`（武器熟練度）は**モンスターの innate
+  blow には適用されない**（モンスター近接は `power = mbe_info[effect].power`・
+  `rlev = monrace.level` 固定で weapon_exp を参照しない）。よってモンスターの「熟練度」は
+  **撃破によるレベル成長（第4段）**で表現する。
+- **効果:** `CreatureEntity::get_melee_proficiency_bonus()` が、フラグ ON の個体につき
+  生成時基準 `monrace.level/2` を超えて成長した分（`get_level() - monrace.level/2`、
+  0 下限）を返し、近接命中判定の `rlev` に加算する。両経路（monster-vs-monster =
+  `melee-util.cpp`、monster-vs-player = `monster-attack-player.cpp`）に配線。命中式は
+  B3 共通化済の `check_hit_from_monster_to_*` をそのまま利用。
+- 現状 `rlev` は `monrace.level` 固定で、モンスターがレベルアップしても命中が向上
+  しないギャップを埋める。満成長で `rlev` は最大 `1.5×monrace.level`（有界）。
+- **安全性:** プレイヤー・未成長・フラグ OFF では 0 を返すため**既定バランス不変**。
+- スキーマに `grows_melee_proficiency` を登録済。
+
 ### モンスターの MP 消費詠唱 (`consumes_mp`) — 提案 C4
 
 `MonraceDefinition` に `bool consumes_mp`
