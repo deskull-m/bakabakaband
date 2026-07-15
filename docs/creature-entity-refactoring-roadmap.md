@@ -3030,7 +3030,7 @@ JSON で明示付与**する形で導入する。これにより:
 |---|---|---|---|---|---|
 | C0 | 成長状態の savefile 完全永続化 (`hp_table`) | ほぼ完了 | 小 | 小 | バージョン bump 要否 |
 | C1 | 種族・職業の顕在化（`prace`/`pclass` 付与） | ✅ cache 有 | 中 | 高 | ✅ 1(付与)/2(基本5)/3(二次7)/4(恐怖)/5(自由行動)/6(光闇)/7(複合攻撃) 完了 |
-| C2 | 能力成長の拡張（stat / 熟練度） | ✅ 成長機構 | 中 | 中 | ✅ stat成長(opt-in)+熟練度=近接命中(opt-in) 完了／能力値の戦闘広範反映は次段 |
+| C2 | 能力成長の拡張（stat / 熟練度） | ✅ 成長機構 | 中 | 中 | ✅ stat成長/熟練度=近接命中/STR→近接ダメージ(全opt-in) 完了／命中・AC・セーヴ反映は次段 |
 | C3 | ESP のモンスター付与 | 🔴 新規 AI 要 | 中〜大 | 中 | ESP をモンスター AI にどう効かせるか（新規設計） |
 | C4 | MP 消費詠唱 | 🟡 pool 有 | 中 | 中 | ✅ 完了（opt-in・レベル比例コスト） |
 | C5 | 突然変異のモンスター運用 | 🟡 処理汎用 | 中 | 中 | ✅ 完了（3段: 付与→専用処理→発火） |
@@ -3244,8 +3244,22 @@ melee-util / monster-attack-player 全経路で確認）。よって「player we
   CLAUDE.md 整備。既定 OFF のため実データ・既定バランス不変。フルビルド／
   validate_json で検証済。
 
-- **能力値のゲーム効果拡張**: 成長した stat を戦闘（命中・ダメージ・セーヴ等）へ
-  広く反映する（未着手）。メンテナのバランス判断のもと段階導入。
+### 第3弾 ✅ 完了（能力値の戦闘反映＝STR→近接ダメージ、第1弾）
+
+能力値を戦闘へ反映する拡張の第1弾として、**STR を近接ダメージへ opt-in 反映**。
+
+- `MonraceDefinition::applies_stat_combat_bonus`（bool・既定 false）を追加。
+- `CreatureEntity::get_melee_stat_damage_bonus()` を新設。フラグ ON の個体のみ、
+  プレイヤーと同じ `adj_str_td` テーブル（`stat_value_to_table_index` で monster の
+  内部×10 stat を索引化）で STR 補正 `adj-128` を返す。プレイヤー・フラグ OFF では 0。
+- 近接ダメージの両経路（monster-vs-monster `monster-attack-monster.cpp`、
+  monster-vs-player `monster-attack-player.cpp`）の `damage_dice.roll()` 直後に加算し、
+  負値を 0 下限クランプ（explode 時は据え置き）。
+- 既定 OFF のため実データ・既定バランス不変。reader/schema/CLAUDE.md 整備。
+  フルビルド／validate_json で検証済。
+
+**次段候補（未着手）:** STR/DEX → 近接命中、DEX → AC、能力値 → セーヴ等への拡張。
+バランス感度が高いため adj テーブルベースで段階導入し、都度 opt-in フラグで制御する。
 
 **デザイン判断メモ:** player weapon_exp/skill_exp は innate blow のモンスターに
 概念が合わないため、モンスターの熟練度は「戦闘経験＝レベル成長」で表現した。武器を

@@ -205,6 +205,10 @@
                         "type": "boolean",
                         "description": "レベルアップで得た戦闘習熟を近接命中へ反映するか (提案C2第2弾)。既定false=オプトイン。trueの個体は、生成時レベルを超えて成長した分だけ近接攻撃の命中判定が向上する。"
                     },
+                    "applies_stat_combat_bonus": {
+                        "type": "boolean",
+                        "description": "能力値(STR)を近接ダメージへ反映するか (提案C2第3弾)。既定false=オプトイン。trueの個体は、プレイヤーと同じ adj_str_td テーブルで STR に応じた近接ダメージ補正を受ける。"
+                    },
                     "odds_correction_ratio": {
                         "type": "integer",
                         "description": "闘技場オッズ補正値。1/100を使用、100で等倍200で2倍",
