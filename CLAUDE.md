@@ -762,7 +762,11 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   `applies_stat_combat_bonus` フラグの個体につき `adj_str_th` / `adj_dex_th` で STR/DEX の
   命中補正（各 `adj-128` の和）を返し、両経路の命中判定 `power` へ加算する。ダメージ
   （STR）と命中（STR/DEX）を 1 フラグで一括制御。
-- **未反映:** DEX→AC、能力値→セーヴ等は次段（都度 opt-in・段階導入）。
+- **AC への拡大（同フラグ）:** `CreatureEntity::get_ac()` のモンスター分岐で、同じ
+  `applies_stat_combat_bonus` の個体につき `adj_dex_ta` テーブルの DEX 補正（`adj-128`）を
+  加算（負値 0 下限）。get_ac() は攻撃側の命中判定で被対象の AC として参照されるため、
+  高 DEX 個体は被弾しにくくなる（命中と対の守勢反映）。
+- **未反映:** 能力値→セーヴ、射撃・魔法命中への反映等は次段（都度 opt-in・段階導入）。
 - スキーマに `applies_stat_combat_bonus` を登録済。
 
 ### モンスターの MP 消費詠唱 (`consumes_mp`) — 提案 C4
