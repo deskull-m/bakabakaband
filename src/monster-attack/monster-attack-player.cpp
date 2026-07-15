@@ -279,6 +279,14 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
         this->damage = 0;
     }
 
+    // [提案C2第3弾] 能力値(STR)を近接ダメージへ反映 (applies_stat_combat_bonus・既定OFF)。
+    if (!this->explode) {
+        this->damage += this->m_ptr->get_melee_stat_damage_bonus();
+        if (this->damage < 0) {
+            this->damage = 0;
+        }
+    }
+
     // [フェーズ B-2b / 二刀流対応] 装備武器によるダメージボーナス
     // weapon_slot_for_blow は process_monster_blows() で設定され、
     // 物理打撃 (HIT/PUNCH/SLASH/STING) かつ武器装備時のみ有効

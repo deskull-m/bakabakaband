@@ -278,6 +278,12 @@ static void process_melee(CreatureEntity &creature, mam_type *mam_ptr)
     mam_ptr->obvious = true;
     mam_ptr->damage = mam_ptr->damage_dice.roll();
 
+    // [提案C2第3弾] 能力値(STR)を近接ダメージへ反映 (applies_stat_combat_bonus・既定OFF)。
+    mam_ptr->damage += mam_ptr->m_ptr->get_melee_stat_damage_bonus();
+    if (mam_ptr->damage < 0) {
+        mam_ptr->damage = 0;
+    }
+
     // 武器を装備している場合、プレイヤーと共通の calc_attack_damage_with_slay() で
     // スレイ・ブランド効果を反映したダメージを加算する。
     if (!mam_ptr->explode && (mam_ptr->weapon_slot_for_blow >= 0)) {
