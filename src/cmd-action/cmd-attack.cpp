@@ -53,8 +53,23 @@
 #include "target/target-getter.h"
 #include "tracking/lore-tracker.h"
 #include "util/bit-flags-calculator.h"
+#include "util/point-2d.h"
 #include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
+
+/*!
+ * @brief 進行方向にモンスターが立ちふさがっている場合の打撃処理 (定型集約)
+ * @param creature クリーチャーへの参照
+ * @param pos 立ちふさがっているモンスターの座標
+ * @details 各種コマンド (開閉/解体/トンネル等) で移動先にモンスターがいる場合の
+ *          「ターンエネルギー消費 → メッセージ → 打撃」の定型を集約したもの。
+ */
+void attack_monster_in_the_way(CreatureEntity &creature, const Pos2D &pos)
+{
+    PlayerEnergy(creature).set_player_turn_energy(100);
+    msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
+    do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
+}
 
 /*!
  * @brief プレイヤーの変異要素による打撃処理
