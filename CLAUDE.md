@@ -766,7 +766,16 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   `applies_stat_combat_bonus` の個体につき `adj_dex_ta` テーブルの DEX 補正（`adj-128`）を
   加算（負値 0 下限）。get_ac() は攻撃側の命中判定で被対象の AC として参照されるため、
   高 DEX 個体は被弾しにくくなる（命中と対の守勢反映）。
-- **未反映:** 能力値→セーヴ、射撃・魔法命中への反映等は次段（都度 opt-in・段階導入）。
+- **セーヴィングスローへの拡大（同フラグ）:** `CreatureEntity::get_save_stat_bonus()` が
+  同じ `applies_stat_combat_bonus` の個体につき `adj_wis_sav` テーブルの WIS 補正
+  （**直接加算値・`-128` オフセット無し**、`stat_value_to_table_index` で索引）を返し、
+  状態異常のセーヴ判定（`effect-monster-oldies.cpp` の poly / slow / sleep / conf /
+  stasis / stun 各ハンドラの `monrace.level > randint1(...)` 比較）の実効レベルへ加算する。
+  モンスターのセーヴはプレイヤーの `skill_sav` ではなくレベル基準判定で行われるため、
+  WIS 補正を実効レベルに上乗せする形で反映する。高 WIS 個体は魔法睡眠・混乱・変身等の
+  状態異常に抵抗しやすくなる。**注:** `adj_wis_sav` は他の adj テーブル（STR/DEX 系は
+  中心 128）と異なり **0-19 の直接加算テーブル**なので `-128` しない。
+- **未反映:** 射撃・魔法命中への能力値反映等は次段（都度 opt-in・段階導入）。
 - スキーマに `applies_stat_combat_bonus` を登録済。
 
 ### モンスターの MP 消費詠唱 (`consumes_mp`) — 提案 C4

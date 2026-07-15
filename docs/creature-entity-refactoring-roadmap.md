@@ -3274,12 +3274,23 @@ AC へ拡大。`CreatureEntity::get_ac()` のモンスター分岐で、プレ�
 （`mam_ptr->ac = t_ptr->get_ac()`）で参照されるため、高 DEX の被対象個体は被弾しにくく
 なる。命中（攻撃側）と対になる守勢反映。既定 OFF のためバランス不変。
 
-**能力値戦闘反映のまとめ（`applies_stat_combat_bonus`）:** STR→近接ダメージ・
-STR/DEX→近接命中・DEX→AC を 1 フラグで一括制御。プレイヤーの近接戦闘の主要な
-能力値補正を opt-in でモンスターに反映する形が揃った。
+**第3弾の続き ✅ 完了（WIS → セーヴィングスロー）:** 同じ `applies_stat_combat_bonus`
+フラグの被覆をセーヴへ拡大。`CreatureEntity::get_save_stat_bonus()` が、プレイヤーと同じ
+`adj_wis_sav` テーブル（`stat_value_to_table_index` で索引）の WIS 補正を返す。**注意:**
+`adj_wis_sav` は STR/DEX 系（中心 128）と異なり **0-19 の直接加算テーブル**なので
+`-128` しない。モンスターのセーヴはプレイヤーの `skill_sav`（モンスターでは未計算≈0）
+ではなく**レベル基準判定**（`monrace.level > randint1(...)`）で行われるため、本 WIS 補正を
+**実効レベルへ加算**する形で反映する。適用先は `effect-monster-oldies.cpp` の状態異常
+セーヴ 6 ハンドラ（old_poly / old_slow / old_sleep / old_conf / stasis / stun）。高 WIS
+個体は魔法睡眠・混乱・変身・減速・拘束・朦朧に抵抗しやすくなる。既定 OFF のため
+バランス不変。フルビルドで検証済。
 
-**次段候補（未着手）:** 能力値→セーヴ（`get_skill_save` への DEX/WIS 等の反映）、
-射撃・魔法命中への能力値反映等。都度 opt-in で段階導入する。
+**能力値戦闘反映のまとめ（`applies_stat_combat_bonus`）:** STR→近接ダメージ・
+STR/DEX→近接命中・DEX→AC・WIS→状態異常セーヴを 1 フラグで一括制御。プレイヤーの
+近接戦闘とセーヴの主要な能力値補正を opt-in でモンスターに反映する形が揃った。
+
+**次段候補（未着手）:** 射撃・魔法命中への能力値反映、能力値→他系統セーヴ
+（呪文抵抗・恐怖等のレベル基準判定以外の経路）等。都度 opt-in で段階導入する。
 
 **デザイン判断メモ:** player weapon_exp/skill_exp は innate blow のモンスターに
 概念が合わないため、モンスターの熟練度は「戦闘経験＝レベル成長」で表現した。武器を
