@@ -305,7 +305,7 @@ ProcessResult effect_monster_stasis(EffectMonster *em_ptr, bool to_evil)
         em_ptr->obvious = true;
     }
 
-    int stasis_damage = (em_ptr->dam - 10) < 1 ? 1 : (em_ptr->dam - 10);
+    int stasis_damage = std::max(1, em_ptr->dam - 10);
     bool has_resistance = em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
     // [提案C2第3弾・セーヴ] applies_stat_combat_bonus の個体は WIS セーヴ補正を実効レベルへ加算 (opt-in・既定OFF)
     has_resistance |= (em_ptr->monrace->level + em_ptr->m_ptr->get_save_stat_bonus()) > randint1(stasis_damage) + 10;

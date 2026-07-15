@@ -769,12 +769,20 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
 - **セーヴィングスローへの拡大（同フラグ）:** `CreatureEntity::get_save_stat_bonus()` が
   同じ `applies_stat_combat_bonus` の個体につき `adj_wis_sav` テーブルの WIS 補正
   （**直接加算値・`-128` オフセット無し**、`stat_value_to_table_index` で索引）を返し、
-  状態異常のセーヴ判定（`effect-monster-oldies.cpp` の poly / slow / sleep / conf /
-  stasis / stun 各ハンドラの `monrace.level > randint1(...)` 比較）の実効レベルへ加算する。
-  モンスターのセーヴはプレイヤーの `skill_sav` ではなくレベル基準判定で行われるため、
-  WIS 補正を実効レベルに上乗せする形で反映する。高 WIS 個体は魔法睡眠・混乱・変身等の
-  状態異常に抵抗しやすくなる。**注:** `adj_wis_sav` は他の adj テーブル（STR/DEX 系は
-  中心 128）と異なり **0-19 の直接加算テーブル**なので `-128` しない。
+  状態異常・精神攻撃のセーヴ判定（`monrace.level > randint1(...)` 比較）の実効レベルへ
+  加算する。モンスターのセーヴはプレイヤーの `skill_sav` ではなくレベル基準判定で
+  行われるため、WIS 補正を実効レベルに上乗せする形で反映する。高 WIS 個体は魔法睡眠・
+  混乱・変身・恐怖・精神攻撃・魅了/服従等に抵抗しやすくなる。**注:** `adj_wis_sav` は
+  他の adj テーブル（STR/DEX 系は中心 128）と異なり **0-19 の直接加算テーブル**なので
+  `-128` しない。**適用先（レベル基準セーヴを一括反映）:**
+  - `effect-monster-oldies.cpp`: poly / slow / sleep / conf / stasis / stun
+  - `spells-diceroll.cpp` の `common_saving_throw_impl`: 魅了/服従系 6 呼出
+    (charm / control undead/demon/animal / charm living / domination) を DRY に一括反映
+  - `effect-monster-psi.cpp`: psi 攻撃耐性
+  - `effect-monster-spirit.cpp`: mind_blast / brain_smash（精神攻撃）
+  - `effect-monster-evil.cpp`: turn undead / turn evil / turn all（恐怖セーヴ）
+  - **除外:** teleport 耐性（`effect-monster-evil.cpp` の RESIST_TELEPORT 判定）は
+    精神/状態異常セーヴではないため対象外。
 - **未反映:** 射撃・魔法命中への能力値反映等は次段（都度 opt-in・段階導入）。
 - スキーマに `applies_stat_combat_bonus` を登録済。
 
