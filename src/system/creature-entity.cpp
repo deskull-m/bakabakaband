@@ -1906,6 +1906,21 @@ int CreatureEntity::get_melee_stat_damage_bonus() const
     return static_cast<int>(adj_str_td[index]) - 128;
 }
 
+int CreatureEntity::get_melee_stat_hit_bonus() const
+{
+    if (!this->has_monster_profile()) {
+        return 0;
+    }
+
+    if (!this->get_monrace().applies_stat_combat_bonus) {
+        return 0;
+    }
+
+    const auto str_index = stat_value_to_table_index(this->get_stat_use(A_STR));
+    const auto dex_index = stat_value_to_table_index(this->get_stat_use(A_DEX));
+    return (static_cast<int>(adj_str_th[str_index]) - 128) + (static_cast<int>(adj_dex_th[dex_index]) - 128);
+}
+
 /*!
  * @brief 表示用の称号を取得する (提案 E5, 基底 = モンスター既定)
  * @details モンスターは称号を持たないため "なし" を返す。プレイヤーは

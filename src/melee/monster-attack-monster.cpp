@@ -265,7 +265,9 @@ static void process_monster_attack_effect(CreatureEntity &creature, mam_type *ma
 static void process_melee(CreatureEntity &creature, mam_type *mam_ptr)
 {
     const auto remaining_stun = mam_ptr->m_ptr->get_remaining_stun();
-    if (mam_ptr->effect != RaceBlowEffectType::NONE && !check_hit_from_monster_to_monster(mam_ptr->power, mam_ptr->rlev, mam_ptr->ac, remaining_stun)) {
+    // [提案C2第3弾] 能力値(STR/DEX)を近接命中へ反映 (applies_stat_combat_bonus・既定OFF)。
+    const auto hit_power = mam_ptr->power + mam_ptr->m_ptr->get_melee_stat_hit_bonus();
+    if (mam_ptr->effect != RaceBlowEffectType::NONE && !check_hit_from_monster_to_monster(hit_power, mam_ptr->rlev, mam_ptr->ac, remaining_stun)) {
         describe_monster_missed_monster(*creature.get_floor(), mam_ptr);
         return;
     }

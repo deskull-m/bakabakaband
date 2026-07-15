@@ -758,7 +758,11 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   （`calc_max_hp_con_bonus`）と同じ `stat_value_to_table_index()` で adj テーブル索引に
   変換するため、プレイヤー用 adj テーブルをそのまま流用できる。
 - **安全性:** プレイヤー・フラグ OFF では 0 を返すため**既定バランス不変**。
-- **未反映:** STR/DEX→命中、DEX→AC、能力値→セーヴ等は次段（都度 opt-in・段階導入）。
+- **近接命中への拡大（同フラグ）:** `get_melee_stat_hit_bonus()` が同じ
+  `applies_stat_combat_bonus` フラグの個体につき `adj_str_th` / `adj_dex_th` で STR/DEX の
+  命中補正（各 `adj-128` の和）を返し、両経路の命中判定 `power` へ加算する。ダメージ
+  （STR）と命中（STR/DEX）を 1 フラグで一括制御。
+- **未反映:** DEX→AC、能力値→セーヴ等は次段（都度 opt-in・段階導入）。
 - スキーマに `applies_stat_combat_bonus` を登録済。
 
 ### モンスターの MP 消費詠唱 (`consumes_mp`) — 提案 C4
