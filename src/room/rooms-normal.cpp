@@ -14,6 +14,28 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 
+namespace {
+/*!
+ * @brief 矩形領域 [y1,y2]×[x1,x2] を部屋の床で敷き詰める (部屋生成の定型集約)
+ * @param should_brighten 部屋を明るくする場合 true (CAVE_GLOW を付与)
+ * @details rooms-normal 内で 6 箇所重複していた「床設置 + CAVE_ROOM + 任意の CAVE_GLOW」の
+ *          二重ループを集約したもの。挙動不変。
+ */
+void fill_room_floor(CreatureEntity &creature, FloorType &floor, POSITION y1, POSITION y2, POSITION x1, POSITION x2, bool should_brighten)
+{
+    for (auto y = y1; y <= y2; y++) {
+        for (auto x = x1; x <= x2; x++) {
+            auto &grid = floor.get_grid({ y, x });
+            place_grid(creature, grid, GB_FLOOR);
+            grid.info |= (CAVE_ROOM);
+            if (should_brighten) {
+                grid.info |= (CAVE_GLOW);
+            }
+        }
+    }
+}
+}
+
 /*!
  * @brief タイプ1の部屋…通常可変長方形の部屋を生成する
  * @param creature クリーチャーへの参照
@@ -52,16 +74,7 @@ bool build_type1(CreatureEntity &creature, DungeonData *dd_ptr)
     const auto right = center->x + (width - 1) / 2;
 
     /* Place a full floor under the room */
-    for (auto y = top - 1; y <= bottom + 1; y++) {
-        for (auto x = left - 1; x <= right + 1; x++) {
-            auto &grid = floor.get_grid({ y, x });
-            place_grid(creature, grid, GB_FLOOR);
-            grid.info |= (CAVE_ROOM);
-            if (should_brighten) {
-                grid.info |= (CAVE_GLOW);
-            }
-        }
-    }
+    fill_room_floor(creature, floor, top - 1, bottom + 1, left - 1, right + 1, should_brighten);
 
     /* Walls around the room */
     for (auto y = top - 1; y <= bottom + 1; y++) {
@@ -195,28 +208,10 @@ bool build_type2(CreatureEntity &creature, DungeonData *dd_ptr)
     auto x2b = center->x + randint1(10);
 
     /* Place a full floor for room "a" */
-    for (auto y = y1a - 1; y <= y2a + 1; y++) {
-        for (auto x = x1a - 1; x <= x2a + 1; x++) {
-            auto &grid = floor.get_grid({ y, x });
-            place_grid(creature, grid, GB_FLOOR);
-            grid.info |= (CAVE_ROOM);
-            if (should_brighten) {
-                grid.info |= (CAVE_GLOW);
-            }
-        }
-    }
+    fill_room_floor(creature, floor, y1a - 1, y2a + 1, x1a - 1, x2a + 1, should_brighten);
 
     /* Place a full floor for room "b" */
-    for (auto y = y1b - 1; y <= y2b + 1; y++) {
-        for (auto x = x1b - 1; x <= x2b + 1; x++) {
-            auto &grid = floor.get_grid({ y, x });
-            place_grid(creature, grid, GB_FLOOR);
-            grid.info |= (CAVE_ROOM);
-            if (should_brighten) {
-                grid.info |= (CAVE_GLOW);
-            }
-        }
-    }
+    fill_room_floor(creature, floor, y1b - 1, y2b + 1, x1b - 1, x2b + 1, should_brighten);
 
     /* Place the walls around room "a" */
     for (auto y = y1a - 1; y <= y2a + 1; y++) {
@@ -303,28 +298,10 @@ bool build_type3(CreatureEntity &creature, DungeonData *dd_ptr)
     auto x2b = center->x + dx;
 
     /* Place a full floor for room "a" */
-    for (auto y = y1a - 1; y <= y2a + 1; y++) {
-        for (auto x = x1a - 1; x <= x2a + 1; x++) {
-            auto &grid = floor.get_grid({ y, x });
-            place_grid(creature, grid, GB_FLOOR);
-            grid.info |= (CAVE_ROOM);
-            if (should_brighten) {
-                grid.info |= (CAVE_GLOW);
-            }
-        }
-    }
+    fill_room_floor(creature, floor, y1a - 1, y2a + 1, x1a - 1, x2a + 1, should_brighten);
 
     /* Place a full floor for room "b" */
-    for (auto y = y1b - 1; y <= y2b + 1; y++) {
-        for (auto x = x1b - 1; x <= x2b + 1; x++) {
-            auto &grid = floor.get_grid({ y, x });
-            place_grid(creature, grid, GB_FLOOR);
-            grid.info |= (CAVE_ROOM);
-            if (should_brighten) {
-                grid.info |= (CAVE_GLOW);
-            }
-        }
-    }
+    fill_room_floor(creature, floor, y1b - 1, y2b + 1, x1b - 1, x2b + 1, should_brighten);
 
     /* Place the walls around room "a" */
     for (auto y = y1a - 1; y <= y2a + 1; y++) {
@@ -495,16 +472,7 @@ bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr)
     const auto x2_outer = center->x + 11;
 
     /* Place a full floor under the room */
-    for (auto y = y1_outer - 1; y <= y2_outer + 1; y++) {
-        for (auto x = x1_outer - 1; x <= x2_outer + 1; x++) {
-            auto &grid = floor.get_grid({ y, x });
-            place_grid(creature, grid, GB_FLOOR);
-            grid.info |= (CAVE_ROOM);
-            if (should_brighten) {
-                grid.info |= (CAVE_GLOW);
-            }
-        }
-    }
+    fill_room_floor(creature, floor, y1_outer - 1, y2_outer + 1, x1_outer - 1, x2_outer + 1, should_brighten);
 
     /* Outer Walls */
     for (auto y = y1_outer - 1; y <= y2_outer + 1; y++) {
