@@ -65,3 +65,15 @@ enum tr_type : int;
  *          属性ダメージ (effect-monster-resist-hurt) と状態異常 (fear 等) の両方から使う共通述語。
  */
 bool target_race_resists_element(EffectMonster *em_ptr, tr_type res_flag);
+
+/*!
+ * @brief 状態異常/精神攻撃に対するモンスターのレベル基準セーヴ判定 (提案D4/C2第3弾セーヴ)
+ * @param difficulty セーヴ難易度の基準値 (通常は em_ptr->dam。術者レベル基準の効果は caster_lev)
+ * @return 抵抗に成功したら true
+ * @details 実効レベル (monrace.level + WIS セーヴ補正) が randint1(max(1, difficulty-10)) + 10 を
+ *          上回れば抵抗成功。oldies (poly/slow/sleep/conf/stun/stasis)・evil (turn 系)・
+ *          spirit (mind_blast/brain_smash) に散在していた同一式を集約し、WIS 補正
+ *          (applies_stat_combat_bonus、既定 OFF) の注入点を一元化する。randint1 の消費は
+ *          1 回のみで、呼出側の短絡評価 (`UNIQUE || ...` 等) も保存される。
+ */
+bool monster_saves_status_by_level(EffectMonster *em_ptr, int difficulty);

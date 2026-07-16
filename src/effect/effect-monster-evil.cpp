@@ -111,8 +111,7 @@ ProcessResult effect_monster_turn_undead(CreatureEntity &creature, EffectMonster
     }
 
     em_ptr->do_fear = Dice::roll(3, (em_ptr->dam / 2)) + 1;
-    // [提案C2第3弾・セーヴ] applies_stat_combat_bonus の個体は WIS セーヴ補正を実効レベルへ加算 (opt-in・既定OFF)
-    if ((em_ptr->monrace->level + em_ptr->m_ptr->get_save_stat_bonus()) > randint1((em_ptr->dam - 10) < 1 ? 1 : (em_ptr->dam - 10)) + 10) {
+    if (monster_saves_status_by_level(em_ptr, em_ptr->dam)) {
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
         em_ptr->obvious = false;
         em_ptr->do_fear = 0;
@@ -139,8 +138,7 @@ ProcessResult effect_monster_turn_evil(CreatureEntity &creature, EffectMonster *
     }
 
     em_ptr->do_fear = Dice::roll(3, (em_ptr->dam / 2)) + 1;
-    // [提案C2第3弾・セーヴ] applies_stat_combat_bonus の個体は WIS セーヴ補正を実効レベルへ加算 (opt-in・既定OFF)
-    if ((em_ptr->monrace->level + em_ptr->m_ptr->get_save_stat_bonus()) > randint1((em_ptr->dam - 10) < 1 ? 1 : (em_ptr->dam - 10)) + 10) {
+    if (monster_saves_status_by_level(em_ptr, em_ptr->dam)) {
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
         em_ptr->obvious = false;
         em_ptr->do_fear = 0;
@@ -157,10 +155,9 @@ ProcessResult effect_monster_turn_all(EffectMonster *em_ptr)
     }
 
     em_ptr->do_fear = Dice::roll(3, (em_ptr->dam / 2)) + 1;
-    // [提案C2第3弾・セーヴ] applies_stat_combat_bonus の個体は WIS セーヴ補正を実効レベルへ加算 (opt-in・既定OFF)
     if (em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE) ||
         em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_FEAR) ||
-        ((em_ptr->monrace->level + em_ptr->m_ptr->get_save_stat_bonus()) > randint1((em_ptr->dam - 10) < 1 ? 1 : (em_ptr->dam - 10)) + 10)) {
+        monster_saves_status_by_level(em_ptr, em_ptr->dam)) {
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
         em_ptr->obvious = false;
         em_ptr->do_fear = 0;

@@ -71,8 +71,7 @@ ProcessResult effect_monster_mind_blast(CreatureEntity &creature, EffectMonster 
 
     bool has_immute = em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
     has_immute |= em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_CONF);
-    // [提案C2第3弾・セーヴ] applies_stat_combat_bonus の個体は WIS セーヴ補正を実効レベルへ加算 (opt-in・既定OFF)
-    has_immute |= ((em_ptr->monrace->level + em_ptr->m_ptr->get_save_stat_bonus()) > randint1(std::max(1, em_ptr->caster_lev - 10)) + 10);
+    has_immute |= monster_saves_status_by_level(em_ptr, em_ptr->caster_lev);
 
     if (has_immute) {
         if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_CONF)) {
@@ -120,8 +119,7 @@ ProcessResult effect_monster_brain_smash(CreatureEntity &creature, EffectMonster
 
     bool has_immute = em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
     has_immute |= em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_CONF);
-    // [提案C2第3弾・セーヴ] applies_stat_combat_bonus の個体は WIS セーヴ補正を実効レベルへ加算 (opt-in・既定OFF)
-    has_immute |= ((em_ptr->monrace->level + em_ptr->m_ptr->get_save_stat_bonus()) > randint1(std::max(1, em_ptr->caster_lev - 10)) + 10);
+    has_immute |= monster_saves_status_by_level(em_ptr, em_ptr->caster_lev);
 
     if (has_immute) {
         if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_CONF)) {
