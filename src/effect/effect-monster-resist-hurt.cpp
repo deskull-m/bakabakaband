@@ -54,19 +54,32 @@ void apply_monster_race_resistance(EffectMonster *em_ptr)
 }
 
 /*!
- * @brief モンスターが属性に (monrace 固有の) 部分耐性を持つ場合の共通処理 (提案D4第2弾)
- * @details 「耐性がある」メッセージ・ダメージ *3/(1d6+6)・思い出フラグ記録を集約。
- *          複数ハンドラ (plasma / force / inertia / time 等) に byte 一致で重複していた
- *          部分耐性ブロックの統合 (挙動不変、monrace フラグ読取・思い出記録のセマンティクスは維持)。
+ * @brief 種族耐性 (C1第3弾) OR-in 付き部分耐性の共通処理 (提案D4第2弾)
+ * @param native_resist monrace 固有耐性フラグを持つか (思い出記録は固有耐性時のみ)
+ * @details 「耐性がある」メッセージ・ダメージ *3/(1d6+6)・思い出フラグ記録を集約した
+ *          部分耐性の単一実装。native_resist が true の時のみ思い出 (r_resistance_flags) を
+ *          記録する。二次属性 (chaos / shards / disenchant / nexus) の byte 一致ブロックや、
+ *          native 固定の `apply_monster_element_resist` はいずれも本関数へ委譲する。挙動不変。
  */
-void apply_monster_element_resist(CreatureEntity &creature, EffectMonster *em_ptr, MonsterResistanceType resist_flag)
+void apply_monster_element_resist_native(CreatureEntity &creature, EffectMonster *em_ptr, MonsterResistanceType resist_flag, bool native_resist)
 {
     em_ptr->note = _("には耐性がある。", " resists.");
     em_ptr->dam *= 3;
     em_ptr->dam /= randint1(6) + 6;
-    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
+    if (native_resist && is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
         em_ptr->monrace->r_resistance_flags.set(resist_flag);
     }
+}
+
+/*!
+ * @brief モンスターが属性に (monrace 固有の) 部分耐性を持つ場合の共通処理 (提案D4第2弾)
+ * @details 複数ハンドラ (plasma / force / inertia / time 等) に byte 一致で重複していた
+ *          部分耐性ブロックの統合。monrace 固有耐性のため native_resist=true 固定で
+ *          `apply_monster_element_resist_native` へ委譲する (挙動不変)。
+ */
+void apply_monster_element_resist(CreatureEntity &creature, EffectMonster *em_ptr, MonsterResistanceType resist_flag)
+{
+    apply_monster_element_resist_native(creature, em_ptr, resist_flag, true);
 }
 }
 
@@ -349,12 +362,7 @@ ProcessResult effect_monster_chaos(CreatureEntity &creature, EffectMonster *em_p
 
     const auto native_chaos_resist = em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_CHAOS);
     if (native_chaos_resist || target_race_resists_element(em_ptr, TR_RES_CHAOS)) {
-        em_ptr->note = _("には耐性がある。", " resists.");
-        em_ptr->dam *= 3;
-        em_ptr->dam /= randint1(6) + 6;
-        if (native_chaos_resist && is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-            em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_CHAOS);
-        }
+        apply_monster_element_resist_native(creature, em_ptr, MonsterResistanceType::RESIST_CHAOS, native_chaos_resist);
     } else if (em_ptr->monrace->kind_flags.has(MonsterKindType::DEMON) && one_in_(3)) {
         em_ptr->note = _("はいくらか耐性を示した。", " resists somewhat.");
         em_ptr->dam *= 3;
@@ -381,13 +389,7 @@ ProcessResult effect_monster_shards(CreatureEntity &creature, EffectMonster *em_
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    em_ptr->note = _("には耐性がある。", " resists.");
-    em_ptr->dam *= 3;
-    em_ptr->dam /= randint1(6) + 6;
-    if (native_resist && is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_SHARDS);
-    }
-
+    apply_monster_element_resist_native(creature, em_ptr, MonsterResistanceType::RESIST_SHARDS, native_resist);
     return ProcessResult::PROCESS_CONTINUE;
 }
 
@@ -466,13 +468,7 @@ ProcessResult effect_monster_disenchant(CreatureEntity &creature, EffectMonster 
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    em_ptr->note = _("には耐性がある。", " resists.");
-    em_ptr->dam *= 3;
-    em_ptr->dam /= randint1(6) + 6;
-    if (native_resist && is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_DISENCHANT);
-    }
-
+    apply_monster_element_resist_native(creature, em_ptr, MonsterResistanceType::RESIST_DISENCHANT, native_resist);
     return ProcessResult::PROCESS_CONTINUE;
 }
 
@@ -487,13 +483,7 @@ ProcessResult effect_monster_nexus(CreatureEntity &creature, EffectMonster *em_p
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    em_ptr->note = _("には耐性がある。", " resists.");
-    em_ptr->dam *= 3;
-    em_ptr->dam /= randint1(6) + 6;
-    if (native_resist && is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_NEXUS);
-    }
-
+    apply_monster_element_resist_native(creature, em_ptr, MonsterResistanceType::RESIST_NEXUS, native_resist);
     return ProcessResult::PROCESS_CONTINUE;
 }
 
