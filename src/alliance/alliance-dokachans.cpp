@@ -23,5 +23,5 @@ int AllianceDokachans::calcImpressionPoint([[maybe_unused]] const CreatureEntity
 
 bool AllianceDokachans::isAnnihilated()
 {
-    return MonraceList::get_instance().get_monrace(MonraceId::DOKACHAN).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::DOKACHAN });
 }

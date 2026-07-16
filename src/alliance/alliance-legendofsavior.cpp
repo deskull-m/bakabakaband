@@ -26,7 +26,7 @@ int AllianceLegendOfSavior::calcImpressionPoint([[maybe_unused]] const CreatureE
 
 bool AllianceLegendOfSavior::isAnnihilated()
 {
-    return MonraceList::get_instance().get_monrace(MonraceId::KENSHIROU).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::KENSHIROU });
 }
 
 void AllianceLegendOfSavior::panishment(CreatureEntity &creature)

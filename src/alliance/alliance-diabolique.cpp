@@ -51,22 +51,7 @@ int AllianceDiabolique::calcImpressionPoint(const CreatureEntity &creature) cons
 
 bool AllianceDiabolique::isAnnihilated()
 {
-    if (MonraceList::get_instance().get_monrace(MonraceId::DIABOLIQUE_GOLDO).mob_num != 0) {
-        return false;
-    }
-    if (MonraceList::get_instance().get_monrace(MonraceId::DIABOLIQUE_KAENOH).mob_num != 0) {
-        return false;
-    }
-    if (MonraceList::get_instance().get_monrace(MonraceId::DIABOLIQUE_AZURITE).mob_num != 0) {
-        return false;
-    }
-    if (MonraceList::get_instance().get_monrace(MonraceId::DIABOLIQUE_FATRAS).mob_num != 0) {
-        return false;
-    }
-    if (MonraceList::get_instance().get_monrace(MonraceId::DIABOLIQUE_PENGZU).mob_num != 0) {
-        return false;
-    }
-    return true;
+    return all_monraces_extinct({ MonraceId::DIABOLIQUE_GOLDO, MonraceId::DIABOLIQUE_KAENOH, MonraceId::DIABOLIQUE_AZURITE, MonraceId::DIABOLIQUE_FATRAS, MonraceId::DIABOLIQUE_PENGZU });
 }
 
 void AllianceDiabolique::panishment(CreatureEntity &creature)

@@ -26,5 +26,5 @@ int AllianceGOLAN::calcImpressionPoint([[maybe_unused]] const CreatureEntity &cr
 bool AllianceGOLAN::isAnnihilated()
 {
     // 総帥『カーネル』が存在しない場合、GOLANは壊滅する
-    return MonraceList::get_instance().get_monrace(MonraceId::GOLAN_COLONEL).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::GOLAN_COLONEL });
 }

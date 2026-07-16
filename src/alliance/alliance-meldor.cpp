@@ -14,6 +14,5 @@ int AllianceMeldor::calcImpressionPoint([[maybe_unused]] const CreatureEntity &c
 
 bool AllianceMeldor::isAnnihilated()
 {
-    const auto &monrace_list = MonraceList::get_instance();
-    return monrace_list.get_monrace(MonraceId::ANNATAR).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::ANNATAR });
 }

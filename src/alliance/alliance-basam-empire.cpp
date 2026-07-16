@@ -21,5 +21,5 @@ int AllianceBasamEmpire::calcImpressionPoint(const CreatureEntity &creature) con
 bool AllianceBasamEmpire::isAnnihilated()
 {
     // 『オゴレス王』が存在しない場合、バサム帝国は壊滅する
-    return MonraceList::get_instance().get_monrace(MonraceId::OGRES_KING).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::OGRES_KING });
 }

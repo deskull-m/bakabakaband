@@ -29,7 +29,7 @@ int AllianceFangFamily::calcImpressionPoint(const CreatureEntity &creature) cons
 
 bool AllianceFangFamily::isAnnihilated()
 {
-    return MonraceList::get_instance().get_monrace(MonraceId::KING_FANG_FAMILY).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::KING_FANG_FAMILY });
 }
 
 void AllianceFangFamily::panishment(CreatureEntity &creature)

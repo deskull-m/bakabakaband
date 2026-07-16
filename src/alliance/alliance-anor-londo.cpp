@@ -42,6 +42,5 @@ void AllianceAnorLondo::panishment([[maybe_unused]] CreatureEntity &creature)
  */
 bool AllianceAnorLondo::isAnnihilated()
 {
-    const auto &monrace_list = MonraceList::get_instance();
-    return monrace_list.get_monrace(MonraceId::GWYN).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::GWYN });
 }
