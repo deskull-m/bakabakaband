@@ -3714,7 +3714,15 @@ time）を移行。挙動完全不変（monrace 読取り・思い出記録の�
 `apply_monster_element_hurt()` を、残りの byte 一致サイトへ展開: icee_bolt の IMMUNE_COLD /
 HURT_COLD、dirt の IMMUNE_POISON（計 3 サイト）。
 
-合計 7 サイトの重複を集約。フルビルド (g++ -O3 -Werror) / clang-format-18 で検証済。
+**種族耐性 OR-in 版ヘルパ `apply_monster_element_resist_native()` の新設:** C1第3弾で
+race 耐性 (opt-in) の OR-in を入れた二次属性ハンドラは、思い出記録を `native_resist`
+（monrace 固有耐性を持つか）で条件化した部分耐性ブロックを持つ。この byte 一致ブロックを
+専用ヘルパへ集約し、chaos（第1分岐）/ shards / disenchant / nexus の 4 サイトを移行。
+sound（軽減が `*2` で異なる）・confusion（live `resistance_flags.set(NO_CONF)` を記録する
+quirk）・nether（immune 兄弟枝と思い出記録を共有）は byte 不一致のため対象外。
+
+合計 11 サイト（第1弾からの通算では immune/hurt 9 + resist 4 + resist_native 4）の重複を
+集約。フルビルド (g++ -O3 -Werror) / clang-format-18 で検証済。
 
 **残（第3弾以降）:** プレイヤー計算式との真の統合は上記バランス判断（装備耐性を monster に
 反映する変更）が前提のため引き続き別提案。残る部分耐性ブロックは note 文・付随処理が
