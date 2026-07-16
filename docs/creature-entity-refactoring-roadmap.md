@@ -3721,8 +3721,14 @@ race 耐性 (opt-in) の OR-in を入れた二次属性ハンドラは、思い�
 sound（軽減が `*2` で異なる）・confusion（live `resistance_flags.set(NO_CONF)` を記録する
 quirk）・nether（immune 兄弟枝と思い出記録を共有）は byte 不一致のため対象外。
 
-合計 11 サイト（第1弾からの通算では immune/hurt 9 + resist 4 + resist_native 4）の重複を
-集約。フルビルド (g++ -O3 -Werror) / clang-format-18 で検証済。
+**光/闇ハンドラの専用ヘルパ `apply_monster_lite_dark_resist()`（別ファイル）:** lite / dark は
+軽減率が `*2/(1d6+6)`・メッセージが `" resists!"` で resist-hurt の helper 群とは異なるが、
+両者間では byte 一致。`effect-monster-lite-dark.cpp` に file-local ヘルパを新設し lite（第1分岐）/
+dark の 2 サイトを集約（native_resist 条件も維持、挙動不変）。
+
+合計 13 サイト（immune/hurt 9 + resist 4 + resist_native 4 + lite/dark 2、※ helper 定義除く）の
+重複を集約。effect-monster の属性耐性ハンドラの byte 一致重複はこれで概ね解消。フルビルド
+(g++ -O3 -Werror) / clang-format-18 で検証済。
 
 **残（第3弾以降）:** プレイヤー計算式との真の統合は上記バランス判断（装備耐性を monster に
 反映する変更）が前提のため引き続き別提案。残る部分耐性ブロックは note 文・付随処理が
