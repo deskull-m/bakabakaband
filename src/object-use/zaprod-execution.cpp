@@ -144,14 +144,7 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
         gain_exp(creature, (item_level + (creature.get_level() >> 1)) / creature.get_level());
     }
 
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::EQUIPMENT,
-        SubWindowRedrawingFlag::PLAYER,
-        SubWindowRedrawingFlag::FLOOR_ITEMS,
-        SubWindowRedrawingFlag::FOUND_ITEMS,
-    };
-    rfu.set_flags(flags_swrf);
+    rfu.set_item_related_sub_window_flags();
 }
 
 bool ObjectZapRodEntity::check_can_zap()

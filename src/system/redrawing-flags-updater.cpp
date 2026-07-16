@@ -83,6 +83,18 @@ void RedrawingFlagsUpdater::set_flags(const EnumClassFlagGroup<StatusRecalculati
     this->status_flags.set(flags);
 }
 
+void RedrawingFlagsUpdater::set_item_related_sub_window_flags()
+{
+    static constexpr auto flags = {
+        SubWindowRedrawingFlag::INVENTORY,
+        SubWindowRedrawingFlag::EQUIPMENT,
+        SubWindowRedrawingFlag::PLAYER,
+        SubWindowRedrawingFlag::FLOOR_ITEMS,
+        SubWindowRedrawingFlag::FOUND_ITEMS,
+    };
+    this->sub_window_flags.set(flags);
+}
+
 void RedrawingFlagsUpdater::reset_flag(MainWindowRedrawingFlag flag)
 {
     this->main_window_flags.reset(flag);
