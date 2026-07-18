@@ -22,5 +22,5 @@ int AllianceBinzyouBuddhism::calcImpressionPoint([[maybe_unused]] const Creature
 
 bool AllianceBinzyouBuddhism::isAnnihilated()
 {
-    return MonraceList::get_instance().get_monrace(MonraceId::BINZYOU_MUR).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::BINZYOU_MUR });
 }

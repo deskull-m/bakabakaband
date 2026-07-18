@@ -44,5 +44,5 @@ void AllianceIde::panishment([[maybe_unused]] CreatureEntity &creature)
  */
 bool AllianceIde::isAnnihilated()
 {
-    return MonraceList::get_instance().get_monrace(MonraceId::IDE).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::IDE });
 }

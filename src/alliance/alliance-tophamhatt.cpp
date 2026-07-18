@@ -27,5 +27,5 @@ int AllianceTophamHatt::calcImpressionPoint(const CreatureEntity &creature) cons
 
 bool AllianceTophamHatt::isAnnihilated()
 {
-    return MonraceList::get_instance().get_monrace(MonraceId::TOPHAMHATT_ENGINEER).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::TOPHAMHATT_ENGINEER });
 }

@@ -35,6 +35,5 @@ int AllianceTrioThePunch::calcImpressionPoint(const CreatureEntity &creature) co
 bool AllianceTrioThePunch::isAnnihilated()
 {
     // 全てのメンバーが倒されている場合、トリオ・ザ・パンチは壊滅する
-    const auto &monrace_list = MonraceList::get_instance();
-    return monrace_list.get_monrace(MonraceId::KAMAKURAKUN).mob_num == 0 && monrace_list.get_monrace(MonraceId::SANTOS).mob_num == 0 && monrace_list.get_monrace(MonraceId::ROSESABU).mob_num == 0 && monrace_list.get_monrace(MonraceId::MASTER_CHEN).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::KAMAKURAKUN, MonraceId::SANTOS, MonraceId::ROSESABU, MonraceId::MASTER_CHEN });
 }

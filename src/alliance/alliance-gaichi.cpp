@@ -24,5 +24,5 @@ int AllianceGaichi::calcImpressionPoint([[maybe_unused]] const CreatureEntity &c
  */
 bool AllianceGaichi::isAnnihilated()
 {
-    return MonraceList::get_instance().get_monrace(MonraceId::BIO_CORE).mob_num == 0 && MonraceList::get_instance().get_monrace(MonraceId::GAICHI_MOA).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::BIO_CORE, MonraceId::GAICHI_MOA });
 }

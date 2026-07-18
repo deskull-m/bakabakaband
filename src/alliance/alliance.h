@@ -1,6 +1,7 @@
 #pragma once
 #include "system/angband.h"
 #include "util/flag-group.h"
+#include <initializer_list>
 #include <map>
 #include <string>
 #include <vector>
@@ -138,6 +139,8 @@ public:
 protected:
     static int calcPlayerPower(const CreatureEntity &creature, const int bias, const int base_level);
     static int calcIronmanHostilityPenalty();
+    //! 指定した全モンレースが絶滅 (mob_num == 0) しているかを返す (isAnnihilated の定型集約)
+    static bool all_monraces_extinct(std::initializer_list<MonraceId> monrace_ids);
 };
 
 // 分離されたアライアンスクラスのインクルード

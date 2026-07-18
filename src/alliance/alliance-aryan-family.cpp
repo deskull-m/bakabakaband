@@ -46,5 +46,5 @@ int AllianceAryanFamily::calcImpressionPoint(const CreatureEntity &creature) con
 bool AllianceAryanFamily::isAnnihilated()
 {
     // アーリアン・ファミリーのボス『ビッグ・アイ』が存在しない場合、アーリアンファミリーは壊滅する
-    return MonraceList::get_instance().get_monrace(MonraceId::BIG_EYE).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::BIG_EYE });
 }

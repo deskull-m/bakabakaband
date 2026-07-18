@@ -31,5 +31,5 @@ int AllianceSuren::calcImpressionPoint([[maybe_unused]] const CreatureEntity &cr
 
 bool AllianceSuren::isAnnihilated()
 {
-    return MonraceList::get_instance().get_monrace(MonraceId::SUREN).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::SUREN });
 }

@@ -22,7 +22,7 @@ int AllianceShittoDan::calcImpressionPoint([[maybe_unused]] const CreatureEntity
 
 bool AllianceShittoDan::isAnnihilated()
 {
-    return MonraceList::get_instance().get_monrace(MonraceId::SHITTO_MASK).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::SHITTO_MASK });
 }
 
 void AllianceShittoDan::panishment(CreatureEntity &creature)

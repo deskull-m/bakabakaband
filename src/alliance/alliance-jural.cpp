@@ -33,7 +33,7 @@ int AllianceJural::calcImpressionPoint(const CreatureEntity &creature) const
 
 bool AllianceJural::isAnnihilated()
 {
-    return MonraceList::get_instance().get_monrace(MonraceId::JURAL_WITCHKING).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::JURAL_WITCHKING });
 }
 
 void AllianceJural::panishment(CreatureEntity &creature)

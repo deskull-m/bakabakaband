@@ -24,5 +24,5 @@ int AllianceKenohgun::calcImpressionPoint(const CreatureEntity &creature) const
 
 bool AllianceKenohgun::isAnnihilated()
 {
-    return MonraceList::get_instance().get_monrace(MonraceId::RAOU).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::RAOU });
 }

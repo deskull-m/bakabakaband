@@ -48,8 +48,7 @@ int AllianceKhorne::calcImpressionPoint(const CreatureEntity &creature) const
 
 bool AllianceKhorne::isAnnihilated()
 {
-    const auto &monrace_list = MonraceList::get_instance();
-    return monrace_list.get_monrace(MonraceId::KHORNE).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::KHORNE });
 }
 
 void AllianceKhorne::panishment(CreatureEntity &creature)

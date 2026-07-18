@@ -40,5 +40,5 @@ void AllianceFingolfinNoldor::panishment([[maybe_unused]] CreatureEntity &creatu
 bool AllianceFingolfinNoldor::isAnnihilated()
 {
     // 聡明の上級王『フィンゴルフィン』が存在しない場合、フィンゴルフィン統ノルドールは壊滅する
-    return MonraceList::get_instance().get_monrace(MonraceId::FINGOLFIN).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::FINGOLFIN });
 }
