@@ -113,11 +113,7 @@ void do_cmd_open(CreatureEntity &creature)
         }
     }
 
-    if (command_arg) {
-        command_rep = command_arg - 1;
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
-        command_arg = 0;
-    }
+    set_command_repeat_from_arg();
 
     if (const auto dir = get_rep_dir(creature, true)) {
         const auto pos = creature.get_neighbor(dir);
@@ -162,11 +158,7 @@ void do_cmd_close(CreatureEntity &creature)
         }
     }
 
-    if (command_arg) {
-        command_rep = command_arg - 1;
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
-        command_arg = 0;
-    }
+    set_command_repeat_from_arg();
 
     auto more = false;
     if (const auto dir = get_rep_dir(creature)) {
@@ -211,11 +203,7 @@ void do_cmd_disarm(CreatureEntity &creature)
         }
     }
 
-    if (command_arg) {
-        command_rep = command_arg - 1;
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
-        command_arg = 0;
-    }
+    set_command_repeat_from_arg();
 
     auto more = false;
     if (const auto dir = get_rep_dir(creature, true)) {
@@ -263,11 +251,7 @@ void do_cmd_bash(CreatureEntity &creature)
     }
 
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
-    if (command_arg) {
-        command_rep = command_arg - 1;
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
-        command_arg = 0;
-    }
+    set_command_repeat_from_arg();
 
     auto more = false;
     if (const auto dir = get_rep_dir(creature)) {

@@ -36,11 +36,7 @@ void do_cmd_tunnel(CreatureEntity &creature)
 {
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
-    if (command_arg) {
-        command_rep = command_arg - 1;
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
-        command_arg = 0;
-    }
+    set_command_repeat_from_arg();
 
     const auto dir = get_rep_dir(creature);
     if (!dir) {

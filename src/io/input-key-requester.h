@@ -17,6 +17,14 @@ extern TERM_LEN command_gap;
 extern int16_t command_wrk;
 extern int16_t command_new;
 
+/*!
+ * @brief 数値プレフィックス (command_arg) からコマンド反復回数をセットする
+ * @details command_arg が指定されていれば command_rep = command_arg - 1 とし、
+ *          ACTION 再描画をセットして command_arg をクリアする。多数のコマンド
+ *          ハンドラ冒頭に byte 一致で重複していた定型を集約したもの。
+ */
+void set_command_repeat_from_arg();
+
 enum class KeymapMode;
 class CreatureEntity;
 class SpecialMenuContent;

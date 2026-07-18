@@ -48,11 +48,7 @@
  */
 void do_cmd_search(CreatureEntity &creature)
 {
-    if (command_arg) {
-        command_rep = command_arg - 1;
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
-        command_arg = 0;
-    }
+    set_command_repeat_from_arg();
 
     PlayerEnergy(creature).set_player_turn_energy(100);
     search(creature);
@@ -110,11 +106,7 @@ void do_cmd_alter(CreatureEntity &creature)
 {
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
-    if (command_arg) {
-        command_rep = command_arg - 1;
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
-        command_arg = 0;
-    }
+    set_command_repeat_from_arg();
 
     if (!exe_alter(creature)) {
         disturb(creature, false, false);

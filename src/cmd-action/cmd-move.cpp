@@ -387,11 +387,7 @@ void do_cmd_go_down(CreatureEntity &creature)
  */
 void do_cmd_walk(CreatureEntity &creature, bool pickup)
 {
-    if (command_arg) {
-        command_rep = command_arg - 1;
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
-        command_arg = 0;
-    }
+    set_command_repeat_from_arg();
 
     auto more = false;
     const auto is_wild_mode = AngbandWorld::get_instance().is_wild_mode();
@@ -469,11 +465,7 @@ void do_cmd_run(CreatureEntity &creature)
 void do_cmd_stay(CreatureEntity &creature, bool pickup)
 {
     uint32_t mpe_mode = MPE_STAYING | MPE_ENERGY_USE;
-    if (command_arg) {
-        command_rep = command_arg - 1;
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
-        command_arg = 0;
-    }
+    set_command_repeat_from_arg();
 
     PlayerEnergy(creature).set_player_turn_energy(100);
     if (pickup) {
