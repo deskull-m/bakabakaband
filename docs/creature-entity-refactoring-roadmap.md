@@ -3841,6 +3841,31 @@ virtual 化・処理の同化・機能付与** がほぼ出揃った。E トラ�
 | E5 | `is_player()` 自由関数分岐の virtual 化 | 同化 | 大 | 中 | ✅ 第1弾完了（`get_title()`。残候補は少数・据え置き） |
 | E6 | 一時ステータス setter 末尾の共通後処理集約（`notice_bonus_status_change()`） | 重複解消 | 小 | 中 | ✅ 完了（18 サイト・byte 一致） |
 | E7 | `MonsterSpellResult` の learnable 生成定型集約（`make_learnable()`） | 重複解消 | 小 | 中 | ✅ 完了（36 サイト・byte 一致） |
+| E8 | コマンド反復回数セット定型集約（`set_command_repeat_from_arg()`） | 重複解消 | 小 | 中 | ✅ 完了（9 サイト・byte 一致） |
+| E9 | 進路上モンスター打撃定型集約（`attack_monster_in_the_way()`） | 重複解消 | 小 | 低〜中 | ✅ 完了（5 サイト・byte 一致） |
+
+---
+
+## 提案 E8/E9: cmd-action の定型重複解消 ✅ 完了
+
+`cmd-action/` を掘り下げ、byte 一致の同型重複を 2 件集約（挙動不変）。
+
+- **E8 `set_command_repeat_from_arg()`**（`io/input-key-requester.{h,cpp}`）: 各コマンド
+  ハンドラ冒頭の「数値プレフィックス → 反復回数セット → ACTION 再描画 → arg クリア」
+  定型（`command_arg`/`command_rep` グローバルと同 TU に配置）。9 サイト移行
+  （open-close 4 / move 2 / others 2 / tunnel 1）。
+- **E9 `attack_monster_in_the_way()`**（`cmd-action/cmd-attack.{h,cpp}`）: 開閉/破壊/
+  トンネル等で進路にモンスターがいる場合の「ターンエネルギー消費 → メッセージ → 打撃」
+  定型。5 サイト移行（open-close 4 / tunnel 1）。**除外:** disarm 分岐はエネルギー消費
+  行を持たず定型不一致のため据え置き（既存挙動保存）。
+
+**掘り下げで見送った候補（記録）:**
+- **cmd-attack の恐怖リアクション block（berserk/flee メッセージ、3〜4 サイト）**:
+  ガードの `monster` 参照の由来・`grid.m_idx` vs `m_idx`・berserk 分岐の `fear = false`
+  有無が関数ごとに微妙に異なり、安全な機械抽出には各関数のインデックス由来検証が必要。
+  誤抽出の挙動変化リスクを避け、人手レビュー向け候補として据え置き。
+- **spell/mane/pet の呪文選択メニュー loop（`while (!flag)` / `input_command`）**:
+  各コマンドで選択肢・確定処理が異なる大きな UI ループで機械抽出困難。
 
 ---
 
