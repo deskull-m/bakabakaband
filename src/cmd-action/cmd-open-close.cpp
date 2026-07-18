@@ -122,9 +122,7 @@ void do_cmd_open(CreatureEntity &creature)
         if (grid.get_terrain(TerrainKind::MIMIC).flags.has_not(TerrainCharacteristics::OPEN) && !o_idx) {
             msg_print(_("そこには開けるものが見当たらない。", "You see nothing there to open."));
         } else if (grid.has_monster() && !floor.get_monster(grid.m_idx).is_riding()) {
-            PlayerEnergy(creature).set_player_turn_energy(100);
-            msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
-            do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
+            attack_monster_in_the_way(creature, pos);
         } else if (o_idx) {
             more = exe_open_chest(creature, pos, o_idx);
         } else {
@@ -167,9 +165,7 @@ void do_cmd_close(CreatureEntity &creature)
         if (grid.get_terrain(TerrainKind::MIMIC).flags.has_not(TerrainCharacteristics::CLOSE)) {
             msg_print(_("そこには閉じるものが見当たらない。", "You see nothing there to close."));
         } else if (grid.has_monster()) {
-            PlayerEnergy(creature).set_player_turn_energy(100);
-            msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
-            do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
+            attack_monster_in_the_way(creature, pos);
         } else {
             more = exe_close(creature, pos);
         }
@@ -260,9 +256,7 @@ void do_cmd_bash(CreatureEntity &creature)
         if (grid.get_terrain(TerrainKind::MIMIC).flags.has_not(TerrainCharacteristics::BASH)) {
             msg_print(_("そこには体当たりするものが見当たらない。", "You see nothing there to bash."));
         } else if (grid.has_monster()) {
-            PlayerEnergy(creature).set_player_turn_energy(100);
-            msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
-            do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
+            attack_monster_in_the_way(creature, pos);
         } else {
             more = exe_bash(creature, pos.y, pos.x, dir);
         }
@@ -330,9 +324,7 @@ void do_cmd_spike(CreatureEntity &creature)
     } else if (!get_spike(creature, &i_idx)) {
         msg_print(_("くさびを持っていない！", "You have no spikes!"));
     } else if (grid.has_monster()) {
-        PlayerEnergy(creature).set_player_turn_energy(100);
-        msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
-        do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
+        attack_monster_in_the_way(creature, pos);
     } else {
         PlayerEnergy(creature).set_player_turn_energy(100);
         msg_format(_("%sにくさびを打ち込んだ。", "You jam the %s with a spike."), terrain_mimic.name.data());
