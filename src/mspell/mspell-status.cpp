@@ -152,10 +152,7 @@ MonsterSpellResult spell_RF5_DRAIN_MANA(CreatureEntity &creature, POSITION y, PO
         update_smart_learn(creature, m_idx, DRS_MANA);
     }
 
-    auto res = MonsterSpellResult::make_valid();
-    res.learnable = proj_res.affected_player;
-
-    return res;
+    return MonsterSpellResult::make_learnable(proj_res.affected_player);
 }
 
 /*!
@@ -190,10 +187,7 @@ MonsterSpellResult spell_RF5_MIND_BLAST(CreatureEntity &creature, POSITION y, PO
     const auto dam = monspell_damage(creature, MonsterAbilityType::MIND_BLAST, m_idx, DAM_ROLL);
     const auto proj_res = pointed(creature, y, x, m_idx, AttributeType::MIND_BLAST, dam, target_type);
 
-    auto res = MonsterSpellResult::make_valid(dam);
-    res.learnable = proj_res.affected_player;
-
-    return res;
+    return MonsterSpellResult::make_learnable(proj_res.affected_player, dam);
 }
 
 /*!
@@ -228,10 +222,7 @@ MonsterSpellResult spell_RF5_BRAIN_SMASH(CreatureEntity &creature, POSITION y, P
     const auto dam = monspell_damage(creature, MonsterAbilityType::BRAIN_SMASH, m_idx, DAM_ROLL);
     const auto proj_res = pointed(creature, y, x, m_idx, AttributeType::BRAIN_SMASH, dam, target_type);
 
-    auto res = MonsterSpellResult::make_valid(dam);
-    res.learnable = proj_res.affected_player;
-
-    return res;
+    return MonsterSpellResult::make_learnable(proj_res.affected_player, dam);
 }
 
 /*!

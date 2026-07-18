@@ -164,8 +164,5 @@ MonsterSpellResult spell_RF4_BREATH(CreatureEntity &creature, MonsterAbilityType
         data->drs.execute(creature, m_idx);
     }
 
-    auto res = MonsterSpellResult::make_valid(dam);
-    res.learnable = proj_res.affected_player;
-
-    return res;
+    return MonsterSpellResult::make_learnable(proj_res.affected_player, dam);
 }

@@ -20,6 +20,14 @@ public:
         return MonsterSpellResult(true, dam);
     }
 
+    //! valid かつ learnable を指定して生成する (res.learnable = ... の定型を集約)
+    static MonsterSpellResult make_learnable(bool learnable, int dam = 0)
+    {
+        MonsterSpellResult res(true, dam);
+        res.learnable = learnable;
+        return res;
+    }
+
     static MonsterSpellResult make_invalid()
     {
         return MonsterSpellResult(false);
