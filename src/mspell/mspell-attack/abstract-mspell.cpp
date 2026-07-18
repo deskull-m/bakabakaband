@@ -40,8 +40,5 @@ MonsterSpellResult AbstractMSpellAttack::shoot(POSITION y, POSITION x)
         this->data.drs.execute(*this->creature_ptr, this->m_idx);
     }
 
-    auto res = MonsterSpellResult::make_valid(dam);
-    res.learnable = proj_res.affected_player;
-
-    return res;
+    return MonsterSpellResult::make_learnable(proj_res.affected_player, dam);
 }

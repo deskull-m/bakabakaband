@@ -84,8 +84,5 @@ MonsterSpellResult spell_RF5_CAUSE(CreatureEntity &creature, MonsterAbilityType 
 
     pointed(creature, y, x, m_idx, curse_list.at(ms_type).type, dam, target_type);
 
-    auto res = MonsterSpellResult::make_valid(dam);
-    res.learnable = target_type == MONSTER_TO_PLAYER;
-
-    return res;
+    return MonsterSpellResult::make_learnable(target_type == MONSTER_TO_PLAYER, dam);
 }
