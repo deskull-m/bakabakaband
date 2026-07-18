@@ -3843,6 +3843,7 @@ virtual 化・処理の同化・機能付与** がほぼ出揃った。E トラ�
 | E7 | `MonsterSpellResult` の learnable 生成定型集約（`make_learnable()`） | 重複解消 | 小 | 中 | ✅ 完了（36 サイト・byte 一致） |
 | E8 | コマンド反復回数セット定型集約（`set_command_repeat_from_arg()`） | 重複解消 | 小 | 中 | ✅ 完了（9 サイト・byte 一致） |
 | E9 | 進路上モンスター打撃定型集約（`attack_monster_in_the_way()`） | 重複解消 | 小 | 低〜中 | ✅ 完了（5 サイト・byte 一致） |
+| E10 | アイテム関連サブウィンドウ再描画定型集約（`set_item_related_sub_window_flags()`） | 重複解消 | 小 | 低〜中 | ✅ 完了（7 サイト・byte 一致） |
 
 ---
 
