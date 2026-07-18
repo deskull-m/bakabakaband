@@ -18,6 +18,7 @@
 #include "status/base-status.h"
 #include "status/buff-setter.h"
 #include "status/element-resistance.h"
+#include "status/status-change-notice.h"
 #include "system/creature-entity.h"
 #include "system/creature-timed-effect-types.h"
 #include "system/redrawing-flags-updater.h"
@@ -205,19 +206,7 @@ bool set_shield(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::SHIELD, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (!notice) {
-        return false;
-    }
-
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
-    return true;
+    return notice_bonus_status_change(creature, notice);
 }
 
 /*!
@@ -254,19 +243,7 @@ bool set_magicdef(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::MAGICDEF, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (!notice) {
-        return false;
-    }
-
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
-    return true;
+    return notice_bonus_status_change(creature, notice);
 }
 
 /*!
@@ -303,19 +280,7 @@ bool set_blessed(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::BLESSED, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (!notice) {
-        return false;
-    }
-
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
-    return true;
+    return notice_bonus_status_change(creature, notice);
 }
 
 /*!
