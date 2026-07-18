@@ -1316,6 +1316,9 @@
     <ClCompile Include="..\..\src\status\sight-setter.cpp">
       <Filter>status</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\status\status-change-notice.cpp">
+      <Filter>status</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\status\buff-setter.cpp">
       <Filter>status</Filter>
     </ClCompile>
@@ -4358,6 +4361,9 @@
       <Filter>player</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\status\sight-setter.h">
+      <Filter>status</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\status\status-change-notice.h">
       <Filter>status</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\status\buff-setter.h">
