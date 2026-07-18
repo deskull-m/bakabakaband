@@ -53,9 +53,7 @@ void do_cmd_tunnel(CreatureEntity &creature)
     } else if (terrain_mimic.flags.has_not(TerrainCharacteristics::TUNNEL)) {
         msg_print(_("そこは掘れない。", "You can't tunnel through that."));
     } else if (grid.has_monster()) {
-        PlayerEnergy(creature).set_player_turn_energy(100);
-        msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
-        do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
+        attack_monster_in_the_way(creature, pos);
     } else {
         more = exe_tunnel(creature, pos.y, pos.x);
     }
