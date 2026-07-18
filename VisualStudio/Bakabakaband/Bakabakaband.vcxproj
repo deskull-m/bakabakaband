@@ -737,6 +737,7 @@
     <ClCompile Include="..\..\src\status\element-resistance.cpp" />
     <ClCompile Include="..\..\src\status\shape-changer.cpp" />
     <ClCompile Include="..\..\src\status\sight-setter.cpp" />
+    <ClCompile Include="..\..\src\status\status-change-notice.cpp" />
     <ClCompile Include="..\..\src\status\experience.cpp" />
     <ClCompile Include="..\..\src\status\temporary-resistance.cpp" />
     <ClCompile Include="..\..\src\stdafx.cpp">
@@ -1670,6 +1671,7 @@
     <ClInclude Include="..\..\src\status\element-resistance.h" />
     <ClInclude Include="..\..\src\status\shape-changer.h" />
     <ClInclude Include="..\..\src\status\sight-setter.h" />
+    <ClInclude Include="..\..\src\status\status-change-notice.h" />
     <ClInclude Include="..\..\src\status\experience.h" />
     <ClInclude Include="..\..\src\status\temporary-resistance.h" />
     <ClInclude Include="..\..\src\stdafx.h" />

@@ -5,6 +5,7 @@
 #include "game-option/disturbance-options.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
+#include "status/status-change-notice.h"
 #include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
@@ -43,19 +44,7 @@ bool set_tim_levitation(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::TIM_LEVITATION, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (!notice) {
-        return false;
-    }
-
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
-    return true;
+    return notice_bonus_status_change(creature, notice);
 }
 
 bool set_ultimate_res(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
@@ -86,19 +75,7 @@ bool set_ultimate_res(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (!notice) {
-        return false;
-    }
-
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
-    return true;
+    return notice_bonus_status_change(creature, notice);
 }
 
 bool set_tim_res_nether(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
@@ -131,19 +108,7 @@ bool set_tim_res_nether(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::TIM_RES_NETHER, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (!notice) {
-        return false;
-    }
-
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
-    return true;
+    return notice_bonus_status_change(creature, notice);
 }
 
 bool set_tim_res_lite(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
@@ -173,19 +138,7 @@ bool set_tim_res_lite(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::TIM_RES_LITE, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (!notice) {
-        return false;
-    }
-
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
-    return true;
+    return notice_bonus_status_change(creature, notice);
 }
 
 bool set_tim_res_dark(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
@@ -215,19 +168,7 @@ bool set_tim_res_dark(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::TIM_RES_DARK, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (!notice) {
-        return false;
-    }
-
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
-    return true;
+    return notice_bonus_status_change(creature, notice);
 }
 
 bool set_tim_res_fear(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
@@ -295,19 +236,7 @@ bool set_tim_res_time(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::TIM_RES_TIME, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (!notice) {
-        return false;
-    }
-
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
-    return true;
+    return notice_bonus_status_change(creature, notice);
 }
 
 bool set_tim_imm_dark(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
