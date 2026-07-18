@@ -101,6 +101,9 @@ public:
     void set_flags(const EnumClassFlagGroup<SubWindowRedrawingFlag> &flags);
     void set_flags(const EnumClassFlagGroup<StatusRecalculatingFlag> &flags);
 
+    //! アイテム関連サブウィンドウ (INVENTORY/EQUIPMENT/PLAYER/FLOOR_ITEMS/FOUND_ITEMS) の再描画をまとめてセットする
+    void set_item_related_sub_window_flags();
+
     void reset_flag(MainWindowRedrawingFlag flag);
     void reset_flag(SubWindowRedrawingFlag flag);
     void reset_flag(StatusRecalculatingFlag flag);

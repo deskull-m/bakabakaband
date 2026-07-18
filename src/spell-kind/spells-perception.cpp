@@ -77,14 +77,7 @@ bool identify_item(CreatureEntity &creature, ItemEntity *o_ptr)
         StatusRecalculatingFlag::REORDER,
     };
     rfu.set_flags(flags_srf);
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::EQUIPMENT,
-        SubWindowRedrawingFlag::PLAYER,
-        SubWindowRedrawingFlag::FLOOR_ITEMS,
-        SubWindowRedrawingFlag::FOUND_ITEMS,
-    };
-    rfu.set_flags(flags_swrf);
+    rfu.set_item_related_sub_window_flags();
     record_item_name = known_item_name;
     record_turn = AngbandWorld::get_instance().game_turn;
 

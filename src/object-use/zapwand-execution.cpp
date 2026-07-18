@@ -123,14 +123,7 @@ void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
         gain_exp(this->creature, (item_level + (this->creature.get_level() >> 1)) / this->creature.get_level());
     }
 
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::EQUIPMENT,
-        SubWindowRedrawingFlag::PLAYER,
-        SubWindowRedrawingFlag::FLOOR_ITEMS,
-        SubWindowRedrawingFlag::FOUND_ITEMS,
-    };
-    rfu.set_flags(flags_swrf);
+    rfu.set_item_related_sub_window_flags();
     rfu.set_flags(flags_srf);
     item->pval--;
     if (i_idx >= 0) {
