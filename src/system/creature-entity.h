@@ -1527,6 +1527,27 @@ public:
      */
     void init_extended_inventory();
 
+    /*! @brief 拡張インベントリのスロット数を返す */
+    size_t get_extended_inventory_size() const;
+
+    /*!
+     * @brief 拡張インベントリの指定スロットのアイテム (nullable) を返す (読取り用)
+     * @param idx スロットインデックス (呼出側で範囲確認すること)
+     */
+    const std::shared_ptr<ItemEntity> &get_extended_item(size_t idx) const;
+
+    /*!
+     * @brief 拡張インベントリ全体を読取り専用参照で返す (走査用)
+     */
+    const std::vector<std::shared_ptr<ItemEntity>> &get_extended_inventory() const;
+
+    /*!
+     * @brief 拡張インベントリの指定スロットのアイテムを確保して返す (生成/ロード用)
+     * @param idx スロットインデックス (呼出側で範囲確認すること)
+     * @details スロットが空 (nullptr) の場合は空の ItemEntity を生成して格納し、その参照を返す。
+     */
+    ItemEntity &ensure_extended_item(size_t idx);
+
     /*! @brief 年齢を設定する (提案 24) */
     virtual void set_age(int16_t value);
 
@@ -2754,11 +2775,9 @@ public:
     // 所持品数 inven_cnt / 装備品数 equip_cnt は提案 25 で inventory[] から自動計算する
     // get_inven_cnt() / get_equip_cnt() に置換済み。
 
-    // [Phase 2] 拡張装備スロット (尾の指輪、第二の首など、種族固有部位)。
-    // body_structure の get_extended_slots() で定義されるスロットに対応し、
-    // インデックス順に格納される。プレイヤーは HUMANOID で空。
-    // モンスター生成時に init_extended_inventory() で初期化。
-    std::vector<std::shared_ptr<ItemEntity>> extended_inventory{};
+    // [Phase 2] 拡張装備スロット (尾の指輪、第二の首など、種族固有部位) は
+    // private 化し、get_extended_inventory_size() / get_extended_item() /
+    // ensure_extended_item() / get_extended_inventory() 経由でアクセスする。
 
     // 座標関連
     POSITION oldpy{}; /*!< 前回のY座標 / Previous location (Y) */
@@ -3327,4 +3346,11 @@ private:
     std::string build_attitude_description() const;
     tl::optional<bool> order_pet_named(const CreatureEntity &other) const;
     tl::optional<bool> order_pet_hp(const CreatureEntity &other) const;
+
+    // [Phase 2] 拡張装備スロット (尾の指輪、第二の首など、種族固有部位)。
+    // body_structure の get_extended_slots() で定義されるスロットに対応し、
+    // インデックス順に格納される。プレイヤーは HUMANOID で空。
+    // モンスター生成時に init_extended_inventory() で初期化。アクセスは
+    // get_extended_inventory_size() / get_extended_item() / ensure_extended_item() 経由。
+    std::vector<std::shared_ptr<ItemEntity>> extended_inventory{};
 };

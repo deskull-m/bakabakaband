@@ -242,16 +242,13 @@ void MonsterLoader50::rd_monster_legacy(CreatureEntity &monster)
                 if (n == 0xFFFF) {
                     break;
                 }
-                if (n >= monster.extended_inventory.size()) {
+                if (n >= monster.get_extended_inventory_size()) {
                     // 範囲外: ダミー読込で savefile を進める
                     auto dummy = std::make_shared<ItemEntity>();
                     item_loader->rd_item(dummy.get());
                     continue;
                 }
-                if (!monster.extended_inventory[n]) {
-                    monster.extended_inventory[n] = std::make_shared<ItemEntity>();
-                }
-                item_loader->rd_item(monster.extended_inventory[n].get());
+                item_loader->rd_item(&monster.ensure_extended_item(n));
             }
         }
     }
@@ -351,15 +348,12 @@ void MonsterLoader50::rd_monster_v50(CreatureEntity &monster)
             if (n == 0xFFFF) {
                 break;
             }
-            if (n >= monster.extended_inventory.size()) {
+            if (n >= monster.get_extended_inventory_size()) {
                 auto dummy = std::make_shared<ItemEntity>();
                 item_loader->rd_item(dummy.get());
                 continue;
             }
-            if (!monster.extended_inventory[n]) {
-                monster.extended_inventory[n] = std::make_shared<ItemEntity>();
-            }
-            item_loader->rd_item(monster.extended_inventory[n].get());
+            item_loader->rd_item(&monster.ensure_extended_item(n));
         }
     }
 }

@@ -169,8 +169,8 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
         // [Phase 2.5] 拡張装備スロットへの装備メッセージ
         if (acquired_slot >= INVEN_EXTENDED_BASE && player_can_see_bold(creature, ny, nx)) {
             const auto ext_idx = static_cast<size_t>(acquired_slot - INVEN_EXTENDED_BASE);
-            if (ext_idx < monster.extended_inventory.size() && monster.extended_inventory[ext_idx]) {
-                const auto eq_name = describe_flavor(creature, *monster.extended_inventory[ext_idx], 0);
+            if (ext_idx < monster.get_extended_inventory_size() && monster.get_extended_item(ext_idx)) {
+                const auto eq_name = describe_flavor(creature, *monster.get_extended_item(ext_idx), 0);
                 const auto slot_name = get_extended_slot_name(monster.get_extended_slot_type(ext_idx));
                 msg_format(_("%s^は%sに%sを装着した。", "%s^ attaches %s to its %s."),
                     m_name.data(),
