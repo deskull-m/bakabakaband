@@ -3845,6 +3845,7 @@ virtual 化・処理の同化・機能付与** がほぼ出揃った。E トラ�
 | E9 | 進路上モンスター打撃定型集約（`attack_monster_in_the_way()`） | 重複解消 | 小 | 低〜中 | ✅ 完了（5 サイト・byte 一致） |
 | E10 | アイテム関連サブウィンドウ再描画定型集約（`set_item_related_sub_window_flags()`） | 重複解消 | 小 | 低〜中 | ✅ 完了（7 サイト・byte 一致） |
 | E11 | alliance の `isAnnihilated` 全滅判定を共通ヘルパへ集約（`all_monraces_extinct()`） | 重複解消 | 中 | 中 | ✅ 完了（32 サブクラス・同型ロジック） |
+| E12 | 部屋の床敷き詰め二重ループを集約（`fill_room_floor()`） | 重複解消 | 小 | 低〜中 | ✅ 完了（rooms-normal の `fill_room_floor(` マッチ 7 件のうち、`src/room/rooms-normal.cpp:24` は関数定義のため除外。呼び出しは 6 サイト） |
 
 ---
 
