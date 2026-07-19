@@ -234,18 +234,10 @@ bool build_type2(CreatureEntity &creature, DungeonData *dd_ptr)
     }
 
     /* Replace the floor for room "a" */
-    for (auto y = y1a; y <= y2a; y++) {
-        for (auto x = x1a; x <= x2a; x++) {
-            place_grid(creature, floor.get_grid({ y, x }), GB_FLOOR);
-        }
-    }
+    fill_room_floor(creature, floor, y1a, y2a, x1a, x2a, should_brighten);
 
     /* Replace the floor for room "b" */
-    for (auto y = y1b; y <= y2b; y++) {
-        for (auto x = x1b; x <= x2b; x++) {
-            place_grid(creature, floor.get_grid({ y, x }), GB_FLOOR);
-        }
-    }
+    fill_room_floor(creature, floor, y1b, y2b, x1b, x2b, should_brighten);
 
     return true;
 }
@@ -324,18 +316,10 @@ bool build_type3(CreatureEntity &creature, DungeonData *dd_ptr)
     }
 
     /* Replace the floor for room "a" */
-    for (auto y = y1a; y <= y2a; y++) {
-        for (auto x = x1a; x <= x2a; x++) {
-            place_grid(creature, floor.get_grid({ y, x }), GB_FLOOR);
-        }
-    }
+    fill_room_floor(creature, floor, y1a, y2a, x1a, x2a, should_brighten);
 
     /* Replace the floor for room "b" */
-    for (auto y = y1b; y <= y2b; y++) {
-        for (auto x = x1b; x <= x2b; x++) {
-            place_grid(creature, floor.get_grid({ y, x }), GB_FLOOR);
-        }
-    }
+    fill_room_floor(creature, floor, y1b, y2b, x1b, x2b, should_brighten);
 
     const Rect2D rect_inner(y1b, x1a, y2b, x2a);
     /* Special features (3/4) */
