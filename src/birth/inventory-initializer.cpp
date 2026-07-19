@@ -63,13 +63,10 @@ void wield_all(CreatureEntity &creature)
         // インデックスでアクセスすると vector subscript out of range で落ちる。
         if (slot >= INVEN_EXTENDED_BASE) {
             const auto ext_idx = static_cast<size_t>(slot - INVEN_EXTENDED_BASE);
-            if (ext_idx >= creature.extended_inventory.size()) {
+            if (ext_idx >= creature.get_extended_inventory_size()) {
                 continue;
             }
-            if (!creature.extended_inventory[ext_idx]) {
-                creature.extended_inventory[ext_idx] = std::make_shared<ItemEntity>();
-            }
-            auto &ext_slot_item = *creature.extended_inventory[ext_idx];
+            auto &ext_slot_item = creature.ensure_extended_item(ext_idx);
             if (ext_slot_item.is_valid()) {
                 continue;
             }

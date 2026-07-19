@@ -63,7 +63,7 @@ short find_extended_slot(CreatureEntity &creature, ItemKindType tval)
         if (!accepts) {
             continue;
         }
-        if (i >= creature.extended_inventory.size() || !creature.extended_inventory[i] || !creature.extended_inventory[i]->is_valid()) {
+        if (i >= creature.get_extended_inventory_size() || !creature.get_extended_item(i) || !creature.get_extended_item(i)->is_valid()) {
             return static_cast<short>(INVEN_EXTENDED_BASE + i);
         }
     }

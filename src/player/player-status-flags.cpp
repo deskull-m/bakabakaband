@@ -132,7 +132,7 @@ BIT_FLAGS check_equipment_flags(CreatureEntity &creature, tr_type tr_flag)
     }
 
     // [Phase 2.6] 拡張装備スロット (モンスターのみ) も集計対象に含める
-    for (const auto &item_ptr : creature.extended_inventory) {
+    for (const auto &item_ptr : creature.get_extended_inventory()) {
         if (!item_ptr || !item_ptr->is_valid()) {
             continue;
         }

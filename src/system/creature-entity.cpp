@@ -814,6 +814,30 @@ void CreatureEntity::init_extended_inventory()
     }
 }
 
+size_t CreatureEntity::get_extended_inventory_size() const
+{
+    return this->extended_inventory.size();
+}
+
+const std::shared_ptr<ItemEntity> &CreatureEntity::get_extended_item(size_t idx) const
+{
+    return this->extended_inventory[idx];
+}
+
+const std::vector<std::shared_ptr<ItemEntity>> &CreatureEntity::get_extended_inventory() const
+{
+    return this->extended_inventory;
+}
+
+ItemEntity &CreatureEntity::ensure_extended_item(size_t idx)
+{
+    if (!this->extended_inventory[idx]) {
+        this->extended_inventory[idx] = std::make_shared<ItemEntity>();
+    }
+
+    return *this->extended_inventory[idx];
+}
+
 void CreatureEntity::add_current_mp_with_frac(int delta, uint32_t delta_frac)
 {
     s64b_add(&this->current_mp, &this->current_mp_frac, delta, delta_frac);
