@@ -139,6 +139,7 @@ public:
     RealmType realm_abilities = RealmType::NONE; //!< 詠唱能力を付与する魔法領域 (提案C6。NONE=なし=オプトイン。詠唱時に realm 由来の MonsterAbilityType を追加)
     bool suffers_poison_dot = false; //!< 毒攻撃で継続毒(POISON DoT)を受けるか (提案D7。既定false=オプトイン。既定バランス不変)
     bool applies_player_race_resistances = false; //!< 付与された player_race の属性耐性を被ダメージへ反映するか (提案C1第2弾。既定false=オプトイン。既定バランス不変)
+    bool applies_player_race_reflection = false; //!< 付与された player_race の反射(TR_REFLECT)をボルト反射へ反映するか (提案C1第8弾。既定false=オプトイン。既定バランス不変)
     bool grows_melee_proficiency = false; //!< レベルアップで得た戦闘習熟を近接命中へ反映するか (提案C2第2弾。既定false=オプトイン。既定バランス不変)
     bool applies_stat_combat_bonus = false; //!< 能力値(STR)を近接ダメージへ反映するか (提案C2第3弾。既定false=オプトイン。既定バランス不変)
     EnumClassFlagGroup<MonsterFeedType> meat_feed_flags;

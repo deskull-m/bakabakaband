@@ -3167,9 +3167,19 @@ monrace を参照）が `prace`/`pclass` に付与する。**効果は未反映*
   （`native_resist` ガード）。同じ opt-in フラグ `applies_player_race_resistances`
   を使用（新フラグなし）。既定 false のままバランス不変。フルビルドで検証済。
 
-**種族耐性反映トラックのまとめ（第2〜7弾で完了）:** プレイヤー種族が持つ
-**主要な属性耐性・状態異常防御はほぼ全て**モンスターへ opt-in 反映済み（基本5属性・
-二次7属性・光/闇・恐怖・自由行動＝睡眠/拘束、及び複合攻撃 rocket/icee）。
+**第8弾 ✅ 完了（反射＝ボルト反射）:** 反射 `TR_REFLECT` をモンスターのボルト反射へ
+opt-in 反映。属性耐性とは別軸の防御特典のため**独立フラグ
+`applies_player_race_reflection`（既定 false）** を新設。`effect-processor.cpp` の
+ボルト反射判定 `monrace.misc_flags.has(REFLECTING)` へ
+`|| monster.has_race_granted_reflection()` を OR-in。述語 `has_race_granted_reflection()`
+は `CreatureEntity` メソッド（`has_monster_profile` && フラグ && `prace!=NONE` &&
+`CreatureRace(this).tr_flags().has(TR_REFLECT)`）。const 呼出のため CreatureRace は
+const_cast（`tr_flags()` は read-only）。reader/schema/CLAUDE.md 整備、既定 false で
+バランス不変。フルビルド (BUILD_EXIT=0) / validate_json 8/8 で検証済。
+
+**種族特典反映トラックのまとめ（第2〜8弾で完了）:** プレイヤー種族が持つ
+**主要な属性耐性・状態異常防御・防御特典はほぼ全て**モンスターへ opt-in 反映済み（基本5属性・
+二次7属性・光/闇・恐怖・自由行動＝睡眠/拘束、複合攻撃 rocket/icee、及び反射）。
 
 **未反映（意図的）:** 職業特典・種族の非耐性特典（ESP・赤外線視）はモンスター AI 索敵の
 新規実装が要る（C3 と同課題）ため大。stat 補正はプレイヤー(percentile 3-18)と

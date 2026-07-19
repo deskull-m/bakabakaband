@@ -2215,6 +2215,8 @@ public:
     virtual bool has_pass_wall();
     virtual bool has_kill_wall();
     virtual BIT_FLAGS has_reflect();
+    //! 付与された player_race 由来の反射 (TR_REFLECT) を持つか (提案C1第8弾。opt-in・既定OFF・モンスター専用)
+    bool has_race_granted_reflection() const;
     virtual bool has_two_handed_weapons();
     virtual BIT_FLAGS has_sh_fire();
     virtual BIT_FLAGS has_sh_elec();

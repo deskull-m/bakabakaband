@@ -673,6 +673,15 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
 - **反映対象（第7弾: 複合攻撃＝カバレッジ完成）:** rocket は破片 `TR_RES_SHARDS`、
   icee_bolt は付随スタンを `TR_RES_SOUND`・冷気本体を `TR_RES_COLD`（1/3 軽減）で反映。
   第3弾で主要ハンドラのみ対象とした分の残りを埋めてカバレッジを完成。
+- **反映対象（第8弾: 反射＝ボルト反射）:** 反射 `TR_REFLECT`。**別フラグ
+  `applies_player_race_reflection`（既定 `false`=オプトイン）** で制御する（属性耐性の
+  `applies_player_race_resistances` とは別軸のため独立フラグ）。`effect-processor.cpp`
+  のボルト反射判定（`monrace.misc_flags.has(REFLECTING)`）へ
+  `|| monster.has_race_granted_reflection()` を OR-in。付与種族が `TR_REFLECT` を持てば
+  モンスターの `REFLECTING` と同様にボルトを反射する。述語 `has_race_granted_reflection()`
+  は `CreatureEntity` のメソッド（`applies_player_race_reflection` ガード＋`prace!=NONE`＋
+  `CreatureRace(this).tr_flags().has(TR_REFLECT)`）。ダメージ属性でも状態異常でもない
+  防御特典を反映した最初の例。
 - **共通述語の配置:** `target_race_resists_element(EffectMonster*, tr_type)` は
   `effect-monster-util.{h,cpp}` に配置（属性ダメージ／状態異常の両 TU から使う共通述語）。
   ダメージ軽減 `apply_monster_race_resistance(em_ptr)`（基本 5 属性用の 1/3 軽減）は
