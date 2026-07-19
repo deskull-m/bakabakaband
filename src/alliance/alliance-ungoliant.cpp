@@ -31,6 +31,5 @@ int AllianceUngoliant::calcImpressionPoint(const CreatureEntity &creature) const
 bool AllianceUngoliant::isAnnihilated()
 {
     // 光なき闇の大蜘蛛『ウンゴリアント』と闇の蜘蛛『シェロブ』が両方とも存在しない場合、ウンゴリアント一族は壊滅する
-    const auto &monrace_list = MonraceList::get_instance();
-    return monrace_list.get_monrace(MonraceId::UNGOLIANT).mob_num == 0 && monrace_list.get_monrace(MonraceId::SHELOB).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::UNGOLIANT, MonraceId::SHELOB });
 }

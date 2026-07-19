@@ -226,6 +226,18 @@ bool Alliance::isAnnihilated()
     return false;
 }
 
+bool Alliance::all_monraces_extinct(std::initializer_list<MonraceId> monrace_ids)
+{
+    const auto &monraces = MonraceList::get_instance();
+    for (const auto monrace_id : monrace_ids) {
+        if (monraces.get_monrace(monrace_id).mob_num != 0) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool Alliance::isFriendly([[maybe_unused]] const CreatureEntity &creature) const
 {
     return false;

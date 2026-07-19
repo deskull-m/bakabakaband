@@ -39,5 +39,5 @@ void AllianceFeanorNoldor::panishment([[maybe_unused]] CreatureEntity &creature)
 bool AllianceFeanorNoldor::isAnnihilated()
 {
     // 憤怒の上級王『フェアノール』が存在しない場合、フェアノール統ノルドールは壊滅する
-    return MonraceList::get_instance().get_monrace(MonraceId::FEANOR).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::FEANOR });
 }

@@ -21,5 +21,5 @@ int AllianceAngartha::calcImpressionPoint([[maybe_unused]] const CreatureEntity 
 bool AllianceAngartha::isAnnihilated()
 {
     // 万色の『サルマン』が存在しない場合、アンガルサは壊滅する
-    return MonraceList::get_instance().get_monrace(MonraceId::SARUMAN).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::SARUMAN });
 }

@@ -30,5 +30,5 @@ int AllianceNumenor::calcImpressionPoint([[maybe_unused]] const CreatureEntity &
 bool AllianceNumenor::isAnnihilated()
 {
     // 黄金王『アル=ファラゾン』が存在しない場合、ヌメノールは壊滅する
-    return MonraceList::get_instance().get_monrace(MonraceId::AR_PHARAZON).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::AR_PHARAZON });
 }

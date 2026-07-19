@@ -252,5 +252,5 @@ void AllianceNibelung::panishment([[maybe_unused]] CreatureEntity &creature)
 bool AllianceNibelung::isAnnihilated()
 {
     // ニーベルング族の王『アルベリヒ』が存在しない場合、ニーベルングの王国は壊滅する
-    return MonraceList::get_instance().get_monrace(MonraceId::ALBERICH).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::ALBERICH });
 }

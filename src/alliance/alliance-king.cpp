@@ -27,5 +27,5 @@ int AllianceKING::calcImpressionPoint([[maybe_unused]] const CreatureEntity &cre
 
 bool AllianceKING::isAnnihilated()
 {
-    return MonraceList::get_instance().get_monrace(MonraceId::KING_SHIN).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::KING_SHIN });
 }

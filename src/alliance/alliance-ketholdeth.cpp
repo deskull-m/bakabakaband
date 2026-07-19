@@ -11,5 +11,5 @@ int AllianceKetholdeth::calcImpressionPoint([[maybe_unused]] const CreatureEntit
 
 bool AllianceKetholdeth::isAnnihilated()
 {
-    return MonraceList::get_instance().get_monrace(MonraceId::PRINCESS_KETHOLDETH).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::PRINCESS_KETHOLDETH });
 }

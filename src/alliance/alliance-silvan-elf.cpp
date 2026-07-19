@@ -33,6 +33,5 @@ void AllianceSilvanElf::panishment(CreatureEntity &creature)
 bool AllianceSilvanElf::isAnnihilated()
 {
     // 森エルフの王『スランドゥイル』と緑葉の『レゴラス』が両方とも存在しない場合、シルヴァンエルフは壊滅する
-    const auto &monrace_list = MonraceList::get_instance();
-    return monrace_list.get_monrace(MonraceId::THRANDUIL).mob_num == 0 && monrace_list.get_monrace(MonraceId::LEGOLAS).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::THRANDUIL, MonraceId::LEGOLAS });
 }

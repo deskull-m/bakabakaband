@@ -26,5 +26,5 @@ int AllianceUtumno::calcImpressionPoint(const CreatureEntity &creature) const
 bool AllianceUtumno::isAnnihilated()
 {
     // 冥王『メルコール』が存在しない場合、ウトゥムノは壊滅する
-    return MonraceList::get_instance().get_monrace(MonraceId::MORGOTH).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::MORGOTH });
 }
