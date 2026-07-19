@@ -71,6 +71,7 @@ Phase 1-8 完了後に残存している統合作業項目を整理したもの�
 | [49](#提案-49-モンスター時限効果付与プリミティブの集約-b1-第1段--完了) | モンスター時限効果付与プリミティブ集約 (B1 第1段) | ✅ 完了 | FloorType::set_monster_timed_effect、7 setter 集約 |
 | [50](#提案-50-set_timed_effect-への-mproc-保守統合-b1-後続段--完了-要実機smoke-test) | set_timed_effect への mproc 保守統合 (B1 後続段) | ✅ 完了 (要実機smoke-test) | get_self_m_idx、mproc を set_timed_effect に内包 |
 | [51](#提案-51-残り-public-bool-フィールドの-private-化-a-1-第1弾--完了) | 残り public bool フィールドの private 化 (A-1 第1弾) | ✅ 完了 | counter / select_ring_slot / no_flowed / hack_mutation / invoking_midnight_curse |
+| 52 | `extended_inventory` (拡張装備スロット) の private 化 | ✅ 完了 | get_extended_inventory_size / get_extended_item / ensure_extended_item / get_extended_inventory。**残存 public plain field は class_specific_data のみ** |
 
 **累計 private 化フィールド数 (主要マイルストーン):**
 - 提案 29 (3 個) → 32 (10 個) → 32b (37 個) → 33 (72 個) → 34 (77 個) →
