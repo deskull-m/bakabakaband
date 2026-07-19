@@ -53,8 +53,8 @@ void MonsterWriter::write_to_savedata() const
     wr_u16b(0xFFFF);
 
     // 拡張装備スロット (同形式)
-    for (size_t i = 0; i < this->monster.extended_inventory.size(); i++) {
-        const auto &item = this->monster.extended_inventory[i];
+    for (size_t i = 0; i < this->monster.get_extended_inventory_size(); i++) {
+        const auto &item = this->monster.get_extended_item(i);
         if (!item || !item->is_valid()) {
             continue;
         }

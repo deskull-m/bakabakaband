@@ -58,10 +58,10 @@ void display_equipment_section(CreatureEntity &creature)
         const auto name = get_extended_slot_name(slot_type);
         const auto label = format("%-12s :", name.empty() ? "" : name.data());
         c_put_str(TERM_WHITE, label, row, EQUIPMENT_COL);
-        if (i >= creature.extended_inventory.size() || !creature.extended_inventory[i] || !creature.extended_inventory[i]->is_valid()) {
+        if (i >= creature.get_extended_inventory_size() || !creature.get_extended_item(i) || !creature.get_extended_item(i)->is_valid()) {
             c_put_str(TERM_L_DARK, _("(なし)", "(empty)"), row, EQUIPMENT_COL + 14);
         } else {
-            const auto desc = describe_flavor(creature, *creature.extended_inventory[i], OD_OMIT_PREFIX | OD_NAME_AND_ENCHANT);
+            const auto desc = describe_flavor(creature, *creature.get_extended_item(i), OD_OMIT_PREFIX | OD_NAME_AND_ENCHANT);
             c_put_str(TERM_L_GREEN, desc.substr(0, 24), row, EQUIPMENT_COL + 14);
         }
         ++row;
