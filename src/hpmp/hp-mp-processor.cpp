@@ -469,14 +469,15 @@ bool hp_player(CreatureEntity &creature, int num)
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::HP);
         rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+        // [提案D2] 2 人称回復メッセージは notify_self seam でプレイヤーのみ表示 (モンスター回復時は無音)。
         if (num < 5) {
-            msg_print(_("少し気分が良くなった。", "You feel a little better."));
+            creature.notify_self(_("少し気分が良くなった。", "You feel a little better."));
         } else if (num < 15) {
-            msg_print(_("気分が良くなった。", "You feel better."));
+            creature.notify_self(_("気分が良くなった。", "You feel better."));
         } else if (num < 35) {
-            msg_print(_("とても気分が良くなった。", "You feel much better."));
+            creature.notify_self(_("とても気分が良くなった。", "You feel much better."));
         } else {
-            msg_print(_("ひじょうに気分が良くなった。", "You feel very good."));
+            creature.notify_self(_("ひじょうに気分が良くなった。", "You feel very good."));
         }
 
         return true;
