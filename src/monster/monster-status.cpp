@@ -357,12 +357,15 @@ static bool try_monster_level_up(CreatureEntity &creature, CreatureEntity &monst
     // grow_hp_table_to_level() が set_level() で実効レベルを更新するため、獲得レベル数は
     // その前に確定させておく。
     const auto old_level = monster.get_level();
-    monster.grow_hp_table_to_level(target_level);
 
-    // [提案 C2] grows_stats が立つ個体のみ能力値も成長させる (既定 OFF でバランス不変)
+    // [提案 C2] grows_stats が立つ個体は能力値成長を先に行う (既定 OFF でバランス不変)。
+    // grow_hp_table_to_level() の CON→HP 補正は呼出時点の CON を参照するため、能力値成長を
+    // 先に反映することで、今回獲得したレベル分の HP に成長後の CON が反映され整合する。
     if (monrace.grows_stats) {
         monster.grow_stats_by_levels(target_level - old_level);
     }
+
+    monster.grow_hp_table_to_level(target_level);
 
     // レベルアップしたモンスターがプレイヤーの視界に入っていれば通知する。
     if (monster.is_visible_on_map()) {
