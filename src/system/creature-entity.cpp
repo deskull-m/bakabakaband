@@ -20,8 +20,10 @@
 #include "monster/monster-pain-describer.h"
 #include "monster/monster-timed-effects.h"
 #include "monster/monster-util.h"
+#include "object-enchant/tr-types.h"
 #include "object/object-info.h"
 #include "player-ability/player-ability-types.h"
+#include "player-base/player-race.h"
 #include "player-info/bard-data-type.h"
 #include "player-info/class-info.h"
 #include "player-info/class-types.h"
@@ -2346,6 +2348,22 @@ BIT_FLAGS CreatureEntity::has_reflect()
         return this->get_monrace().misc_flags.has(MonsterMiscType::REFLECTING) ? static_cast<BIT_FLAGS>(FLAG_CAUSE_RACE) : 0U;
     }
     return ::has_reflect(*this);
+}
+
+bool CreatureEntity::has_race_granted_reflection() const
+{
+    // [提案C1第8弾] 付与種族の反射をボルト反射へ反映 (opt-in・既定OFF・モンスター専用)
+    if (!this->has_monster_profile()) {
+        return false;
+    }
+    if (!this->get_monrace().applies_player_race_reflection) {
+        return false;
+    }
+    if (this->get_prace() == PlayerRaceType::NONE) {
+        return false;
+    }
+
+    return CreatureRace(const_cast<CreatureEntity *>(this)).tr_flags().has(TR_REFLECT);
 }
 bool CreatureEntity::has_two_handed_weapons()
 {

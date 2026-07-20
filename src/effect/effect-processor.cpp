@@ -272,7 +272,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
             if (positions.size() <= 1) {
                 const auto &monster = floor.get_monster(grid.m_idx);
                 auto &monrace = monster.get_monrace();
-                if ((flag & PROJECT_REFLECTABLE) && grid.m_idx && monrace.misc_flags.has(MonsterMiscType::REFLECTING) && (!monster.is_riding() || !(flag & PROJECT_PLAYER)) && (!src_idx || path_n > 1) && !one_in_(10)) {
+                if ((flag & PROJECT_REFLECTABLE) && grid.m_idx && (monrace.misc_flags.has(MonsterMiscType::REFLECTING) || monster.has_race_granted_reflection()) && (!monster.is_riding() || !(flag & PROJECT_PLAYER)) && (!src_idx || path_n > 1) && !one_in_(10)) {
 
                     Pos2D pos_reflection(0, 0);
                     auto max_attempts = 10;
