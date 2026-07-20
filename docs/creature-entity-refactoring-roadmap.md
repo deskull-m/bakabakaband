@@ -3182,10 +3182,14 @@ const_cast（`tr_flags()` は read-only）。reader/schema/CLAUDE.md 整備、�
 二次7属性・光/闇・恐怖・自由行動＝睡眠/拘束、複合攻撃 rocket/icee、及び反射）。
 
 **未反映（意図的）:** 職業特典・種族の非耐性特典（ESP・赤外線視）はモンスター AI 索敵の
-新規実装が要る（C3 と同課題）ため大。stat 補正はプレイヤー(percentile 3-18)と
-モンスター(内部 ×10・線形 30-400)で能力値スケールが異なり `r_adj` の単純反映が
-不可のため据え置き。time/gravity/water/plasma 系は player 種族が該当耐性を持たない
-ため対象外。
+新規実装が要る（C3 と同課題）ため大。time/gravity/water/plasma 系は player 種族が
+該当耐性を持たないため対象外。
+
+**（訂正）能力値の戦闘反映は C2 第3弾で解決済み:** かつて「stat 補正はプレイヤー
+(percentile 3-18)とモンスター(内部 ×10・線形 30-400)でスケールが異なり反映不可」と
+していたが、`stat_value_to_table_index()`（CON→HP と同じ索引変換）により**モンスター
+stat を adj テーブル索引へ変換して反映可能**と判明し、C2 第3弾で STR→近接ダメージ／
+STR/DEX→命中／DEX→AC／WIS→セーヴを opt-in 反映済み（`applies_stat_combat_bonus`）。
 
 ---
 
