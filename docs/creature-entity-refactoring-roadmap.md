@@ -3181,9 +3181,14 @@ const_cast（`tr_flags()` は read-only）。reader/schema/CLAUDE.md 整備、�
 **主要な属性耐性・状態異常防御・防御特典はほぼ全て**モンスターへ opt-in 反映済み（基本5属性・
 二次7属性・光/闇・恐怖・自由行動＝睡眠/拘束、複合攻撃 rocket/icee、及び反射）。
 
+**第9弾 ✅ 完了（水耐性）:** `TR_RES_WATER` を `effect_monster_water` のネイティブ
+`RESIST_WATER` 判定へ `native_resist` パターンで OR-in（部分軽減 `dam*3/(1d6+6)`、思い出
+記録は固有耐性時のみ）。**実データ検証で 14 のプレイヤー種族が `TR_RES_WATER` を付与**する
+ことが判明し、下記「対象外」の記述（water を含む）が誤りだったため訂正・実装した。
+
 **未反映（意図的）:** 職業特典・種族の非耐性特典（ESP・赤外線視）はモンスター AI 索敵の
-新規実装が要る（C3 と同課題）ため大。time/gravity/water/plasma 系は player 種族が
-該当耐性を持たないため対象外。
+新規実装が要る（C3 と同課題）ため大。time/gravity/plasma 系は player 種族が
+該当耐性を持たないため対象外（water は第9弾で反映済み）。
 
 **（訂正）能力値の戦闘反映は C2 第3弾で解決済み:** かつて「stat 補正はプレイヤー
 (percentile 3-18)とモンスター(内部 ×10・線形 30-400)でスケールが異なり反映不可」と

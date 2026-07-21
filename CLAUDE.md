@@ -682,6 +682,14 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   は `CreatureEntity` のメソッド（`applies_player_race_reflection` ガード＋`prace!=NONE`＋
   `CreatureRace(this).tr_flags().has(TR_REFLECT)`）。ダメージ属性でも状態異常でもない
   防御特典を反映した最初の例。
+- **反映対象（第9弾: 水耐性）:** 水 `TR_RES_WATER`。`effect_monster_water`
+  （`effect-monster-resist-hurt.cpp`）のネイティブ `RESIST_WATER` 判定へ
+  `native_resist` パターンで OR-in（`!native_resist && !target_race_resists_element(...)`
+  なら早期 return、成立時は `dam*3/(1d6+6)` の部分軽減）。**14 のプレイヤー種族が
+  `TR_RES_WATER` を付与する**（当初 roadmap は「水系は player 種族が該当耐性を持たない
+  ため対象外」としていたが誤りで、本弾で訂正・実装）。種族由来 resist では思い出フラグを
+  記録しない（`native_resist` ガード）。WATER_ELEM/UNMAKER の完全耐性分岐は monrace 固有
+  ID 判定のため race-monster には非該当（部分軽減側になる）。
 - **共通述語の配置:** `target_race_resists_element(EffectMonster*, tr_type)` は
   `effect-monster-util.{h,cpp}` に配置（属性ダメージ／状態異常の両 TU から使う共通述語）。
   ダメージ軽減 `apply_monster_race_resistance(em_ptr)`（基本 5 属性用の 1/3 軽減）は
