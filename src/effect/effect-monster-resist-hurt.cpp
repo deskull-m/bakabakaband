@@ -334,7 +334,9 @@ ProcessResult effect_monster_water(CreatureEntity &creature, EffectMonster *em_p
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::RESIST_WATER)) {
+    // [提案C1第9弾] 付与種族の水耐性 (TR_RES_WATER) を native と同経路で反映 (opt-in・既定OFF)。
+    const auto native_resist = em_ptr->monrace->resistance_flags.has(MonsterResistanceType::RESIST_WATER);
+    if (!native_resist && !target_race_resists_element(em_ptr, TR_RES_WATER)) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
@@ -347,7 +349,8 @@ ProcessResult effect_monster_water(CreatureEntity &creature, EffectMonster *em_p
         em_ptr->dam /= randint1(6) + 6;
     }
 
-    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
+    // 種族由来 resist では monrace ネイティブ耐性の思い出フラグを記録しない (native_resist ガード)。
+    if (native_resist && is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
         em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::RESIST_WATER);
     }
 
