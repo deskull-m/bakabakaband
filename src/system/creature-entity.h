@@ -55,6 +55,7 @@ enum class PlayerSkillKindType;
 enum class RaceBlowMethodType;
 enum class RealmType;
 enum class Virtue : short;
+enum tr_type : int;
 
 enum class INCIDENT {
     WALK = 0,
@@ -2217,6 +2218,8 @@ public:
     virtual BIT_FLAGS has_reflect();
     //! 付与された player_race 由来の反射 (TR_REFLECT) を持つか (提案C1第8弾。opt-in・既定OFF・モンスター専用)
     bool has_race_granted_reflection() const;
+    //! 付与された player_race 由来の再生 (TR_REGEN) を持つか (提案C1第10弾。opt-in・既定OFF・モンスター専用)
+    bool has_race_granted_regeneration() const;
     virtual bool has_two_handed_weapons();
     virtual BIT_FLAGS has_sh_fire();
     virtual BIT_FLAGS has_sh_elec();
@@ -3338,6 +3341,8 @@ protected:
     FloorType *current_floor_ptr{}; /*!< 現在所属しているフロアへのポインタ / Current floor pointer */
 
 private:
+    //! 付与された player_race が指定 tr_flag を持つか (opt-in 特典反映の共通述語・モンスター専用)
+    bool race_grants_tr_flag(tr_type tr_flag) const;
     std::string build_damage_description() const;
     std::string build_attitude_description() const;
     tl::optional<bool> order_pet_named(const CreatureEntity &other) const;
