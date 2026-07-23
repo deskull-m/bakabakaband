@@ -1008,6 +1008,10 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
  */
 bool process_stealth(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
+    // [提案C3第1弾] テレパシーを持つモンスターは忍者の超隠密を無視して常に気付く (opt-in・既定OFF)。
+    if (creature.get_floor()->get_monster(m_idx).has_race_granted_telepathy()) {
+        return true;
+    }
 
     auto ninja_data = CreatureClass(creature).get_specific_data<ninja_data_type>();
     if (!ninja_data || !ninja_data->s_stealth) {

@@ -2224,6 +2224,8 @@ public:
     bool has_race_granted_regeneration() const;
     //! 付与された player_race 由来の加速 (TR_SPEED) を持つか (提案C1第11弾。opt-in・既定OFF・モンスター専用)
     bool has_race_granted_speed() const;
+    //! 付与された player_race 由来のテレパシー (TR_TELEPATHY) を AI 索敵で使えるか (提案C3第1弾。opt-in・既定OFF・モンスター専用)
+    bool has_race_granted_telepathy() const;
     virtual bool has_two_handed_weapons();
     virtual BIT_FLAGS has_sh_fire();
     virtual BIT_FLAGS has_sh_elec();

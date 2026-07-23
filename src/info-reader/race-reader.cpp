@@ -1576,6 +1576,11 @@ errr RaceReader::read()
         msg_format(_("モンスター種族加速反映フラグ読込失敗。ID: '%d'。", "Failed to load monster applies_player_race_speed. ID: '%d'."), error_idx);
         return err;
     }
+    err = info_set_bool(mon_data["applies_player_race_telepathy"], monrace.applies_player_race_telepathy, false);
+    if (err) {
+        msg_format(_("モンスター種族テレパシー反映フラグ読込失敗。ID: '%d'。", "Failed to load monster applies_player_race_telepathy. ID: '%d'."), error_idx);
+        return err;
+    }
     err = info_set_bool(mon_data["grows_melee_proficiency"], monrace.grows_melee_proficiency, false);
     if (err) {
         msg_format(_("モンスター戦闘習熟フラグ読込失敗。ID: '%d'。", "Failed to load monster grows_melee_proficiency. ID: '%d'."), error_idx);

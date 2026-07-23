@@ -2381,6 +2381,12 @@ bool CreatureEntity::has_race_granted_speed() const
     // [提案C1第11弾] 付与種族の加速を生成時速度へ反映 (opt-in・既定OFF・モンスター専用)
     return this->race_grants_tr_flag(TR_SPEED) && this->get_monrace().applies_player_race_speed;
 }
+
+bool CreatureEntity::has_race_granted_telepathy() const
+{
+    // [提案C3第1弾] 付与種族のテレパシーを AI 索敵へ反映 (opt-in・既定OFF・モンスター専用)
+    return this->race_grants_tr_flag(TR_TELEPATHY) && this->get_monrace().applies_player_race_telepathy;
+}
 bool CreatureEntity::has_two_handed_weapons()
 {
     if (this->has_monster_profile()) {
