@@ -215,7 +215,11 @@
                     },
                     "applies_player_race_telepathy": {
                         "type": "boolean",
-                        "description": "付与された player_race のテレパシー(TR_TELEPATHY)を AI 索敵へ反映するか (提案C3第1弾)。既定false=オプトイン。trueかつ種族がテレパシーを持つ個体のみ、忍者の超隠密状態を無視して常にプレイヤーに気付く。"
+                        "description": "付与された player_race の ESP(テレパシー/善悪・生命形態・人間の限定ESP)をプレイヤー感知へ反映するか (提案C3第1/2/3弾-A)。既定false=オプトイン。trueかつ種族のESPがプレイヤーを感知する個体のみ、忍者の超隠密を無視して常に気付き、睡眠中も感知半径内で壁越しに覚醒しうる。"
+                    },
+                    "applies_player_race_esp_tracking": {
+                        "type": "boolean",
+                        "description": "付与された player_race の ESP でプレイヤーを能動追跡(壁越し索敵)するか (提案C3第3弾-B)。既定false=オプトイン。trueかつ種族のESPがプレイヤーを感知する個体のみ、noflow等の視認制約を無視して flow ベースの追跡でプレイヤーへ壁越しに接近する。感知(A)とは別軸の移動AI反映。"
                     },
                     "grows_melee_proficiency": {
                         "type": "boolean",

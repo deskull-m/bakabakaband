@@ -142,7 +142,8 @@ public:
     bool applies_player_race_reflection = false; //!< 付与された player_race の反射(TR_REFLECT)をボルト反射へ反映するか (提案C1第8弾。既定false=オプトイン。既定バランス不変)
     bool applies_player_race_regeneration = false; //!< 付与された player_race の再生(TR_REGEN)を自然回復倍化へ反映するか (提案C1第10弾。既定false=オプトイン。既定バランス不変)
     bool applies_player_race_speed = false; //!< 付与された player_race の加速(TR_SPEED)を生成時の速度へ反映するか (提案C1第11弾。既定false=オプトイン。既定バランス不変)
-    bool applies_player_race_telepathy = false; //!< 付与された player_race のテレパシー(TR_TELEPATHY)を AI 索敵へ反映するか (提案C3第1弾。既定false=オプトイン。既定バランス不変)
+    bool applies_player_race_telepathy = false; //!< 付与された player_race の ESP(テレパシー/限定ESP)をプレイヤー感知(超隠密無視・睡眠覚醒)へ反映するか (提案C3第1/2/3弾-A。既定false=オプトイン。既定バランス不変)
+    bool applies_player_race_esp_tracking = false; //!< 付与された player_race の ESP でプレイヤーを能動追跡(壁越し索敵)するか (提案C3第3弾-B。既定false=オプトイン。既定バランス不変)
     bool grows_melee_proficiency = false; //!< レベルアップで得た戦闘習熟を近接命中へ反映するか (提案C2第2弾。既定false=オプトイン。既定バランス不変)
     bool applies_stat_combat_bonus = false; //!< 能力値(STR)を近接ダメージへ反映するか (提案C2第3弾。既定false=オプトイン。既定バランス不変)
     EnumClassFlagGroup<MonsterFeedType> meat_feed_flags;

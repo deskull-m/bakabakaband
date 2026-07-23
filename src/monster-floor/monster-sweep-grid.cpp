@@ -494,9 +494,13 @@ public:
             deciders.push_back(std::make_unique<RangedAttackMoveGridDecider>(creature_ptr, m_idx));
         }
 
-        const auto should_go_straight = no_flow || can_pass_wall || can_kill_wall;
+        // [提案C3第3弾-B] 種族 ESP でプレイヤーを能動追跡する個体は、noflow 等の視認制約を無視して
+        // flow (騒音/臭跡) ベースの壁越し追跡を常に試みる (opt-in・既定OFF)。noflow モンスターに
+        // ESP 由来の索敵能力を補償する狙い。
+        const auto tracks_via_esp = monster.tracks_player_via_esp(*creature_ptr);
+        const auto should_go_straight = (no_flow || can_pass_wall || can_kill_wall) && !tracks_via_esp;
         const auto try_circumventing = (distance_to_player > 1) && (monrace.freq_spell == 0) && (m_grid.get_cost(gf) <= 5);
-        if (!should_go_straight && (!is_visible_from_player || try_circumventing)) {
+        if (!should_go_straight && (!is_visible_from_player || try_circumventing || tracks_via_esp)) {
             if (m_grid.get_cost(gf) > 0) {
                 deciders.push_back(std::make_unique<NoiseTrackingMoveGridDecider>(creature_ptr, m_idx));
             } else if (m_grid.when > 0) {

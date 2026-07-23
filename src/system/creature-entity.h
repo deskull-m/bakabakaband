@@ -2222,8 +2222,10 @@ public:
     bool has_race_granted_regeneration() const;
     //! 付与された player_race 由来の加速 (TR_SPEED) を持つか (提案C1第11弾。opt-in・既定OFF・モンスター専用)
     bool has_race_granted_speed() const;
-    //! 付与された player_race 由来のテレパシー (TR_TELEPATHY) を AI 索敵で使えるか (提案C3第1弾。opt-in・既定OFF・モンスター専用)
-    bool has_race_granted_telepathy() const;
+    //! 付与された player_race 由来の ESP (テレパシー含む) が指定プレイヤーを感知するか (提案C3第3弾-A。opt-in・既定OFF・モンスター専用)
+    bool senses_player_via_esp(const CreatureEntity &player) const;
+    //! 付与された player_race 由来の ESP で指定プレイヤーを能動追跡 (壁越し索敵) するか (提案C3第3弾-B。opt-in・既定OFF・モンスター専用)
+    bool tracks_player_via_esp(const CreatureEntity &player) const;
     virtual bool has_two_handed_weapons();
     virtual BIT_FLAGS has_sh_fire();
     virtual BIT_FLAGS has_sh_elec();
@@ -3347,6 +3349,8 @@ protected:
 private:
     //! 付与された player_race が指定 tr_flag を持つか (opt-in 特典反映の共通述語・モンスター専用)
     bool race_grants_tr_flag(tr_type tr_flag) const;
+    //! 付与された player_race 由来の ESP フラグが指定プレイヤーを分類上感知するか (有効化フラグ判定なし・提案C3第3弾)
+    bool race_esp_senses_player(const CreatureEntity &player) const;
     std::string build_damage_description() const;
     std::string build_attitude_description() const;
     tl::optional<bool> order_pet_named(const CreatureEntity &other) const;

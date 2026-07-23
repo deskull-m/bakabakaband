@@ -1008,8 +1008,9 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
  */
 bool process_stealth(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    // [提案C3第1弾] テレパシーを持つモンスターは忍者の超隠密を無視して常に気付く (opt-in・既定OFF)。
-    if (creature.get_floor()->get_monster(m_idx).has_race_granted_telepathy()) {
+    // [提案C3第1/3弾-A] ESP (テレパシー/限定ESP) でプレイヤーを感知するモンスターは
+    // 忍者の超隠密を無視して常に気付く (opt-in・既定OFF)。
+    if (creature.get_floor()->get_monster(m_idx).senses_player_via_esp(creature)) {
         return true;
     }
 

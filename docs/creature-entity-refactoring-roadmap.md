@@ -3405,8 +3405,39 @@ one-monster-placer 等）がプレイヤーを渡すことを確認済。**モ�
 なく、ステルスも引き続き効く保守的スコープ。第1弾と同じフラグ `applies_player_race_telepathy`
 ＋述語 `has_race_granted_telepathy()` を再利用（新フラグなし）。フルビルド (BUILD_EXIT=0) で検証済。
 
-**残（第3弾以降・大）:** 種族別 ESP（esp_evil 等）でプレイヤー種別を感知、ESP による
-能動的な壁越し索敵ターゲティング（移動 AI への反映）等。いずれも新規 AI ＋バランス判断を要する。
+### ✅ 第3弾 完了（限定 ESP への一般化 A ＋ 能動的壁越し索敵 B）
+
+第1/2弾はテレパシー `TR_TELEPATHY`（全感知）専用だったが、これを限定 ESP へ一般化し、
+さらに ESP による能動的な壁越しターゲティングを追加した。A・B の 2 サブ機能とも
+**JSON オプトイン方式**（既定 OFF・既定バランス不変）。
+
+**A. 種族別 ESP → プレイヤー感知（既存フラグ再利用）:** 対象 ESP を善悪
+（`TR_ESP_EVIL`/`TR_ESP_GOOD`）・生命形態（`TR_ESP_UNDEAD`/`TR_ESP_DEMON`/
+`TR_ESP_NONLIVING`）・人間（`TR_ESP_HUMAN`）へ拡張。**プレイヤーの分類**は
+`player.alignment` の正負（善悪）、`CreatureRace(player).life()`（生命形態）、種族シンボル
+`'p'`（人間系＝救援召喚のシンボル分類に準拠）で判定。新述語 `senses_player_via_esp(player)`
+（`CreatureEntity`）＋共通分類ヘルパ `race_esp_senses_player(player)`（有効化フラグ判定なし・
+private）を追加し、第1弾 `process_stealth` と第2弾睡眠覚醒の 2 経路を
+`has_race_granted_telepathy()` → `senses_player_via_esp(creature)` に置換（旧メソッド削除・
+テレパシーは全感知として包含）。フラグは既存 `applies_player_race_telepathy` を再利用（新設なし）。
+`esp_animal`/`esp_dragon`/`esp_orc`/`esp_troll`/`esp_giant`/`esp_unique` は現行プレイヤーが
+該当分類を持たないため不活性（将来 mimic/polymorph 拡張余地）。
+
+**B. ESP 索敵＝能動的壁越しターゲティング（新フラグ）:** **別フラグ
+`applies_player_race_esp_tracking`（既定 `false`）**（受動感知 A とは別軸の侵襲的な移動 AI
+反映のため独立フラグ）。述語 `tracks_player_via_esp(player)` が真の個体は、
+`monster-sweep-grid.cpp` の `create_deciders` で `should_go_straight`（noflow/pass_wall/
+kill_wall）を無効化し、視認状況（`is_visible_from_player`）に依らず flow ベースの追跡
+（騒音 `NoiseTrackingMoveGridDecider`／臭跡 `ScentTrackingMoveGridDecider`）を常に試みる。
+noflow モンスターは本来 flow 追跡が下手（`has_noflow` && cost>2）だが、ESP がその索敵能力を
+補償する。**注:** 通常モンスターは既定で flow/デフォルトによりプレイヤー方向へ向かうため、
+B の実効差は主に noflow 個体に現れる（設計時に確認済の限定的だが明確な効果）。
+
+フルビルド (BUILD_EXIT=0) / validate_json 8/8 で検証済。
+
+**残（第4弾以降）:** ESP による透明/無敵プレイヤー感知（本ゲームではモンスター AI 要因で
+ないため優先度低）、mimic/polymorph でプレイヤー分類が変化する将来ケースでの
+非該当 ESP（animal/dragon 等）の活性化。
 
 ---
 

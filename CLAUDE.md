@@ -723,6 +723,26 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   テレパシー持ちなら**感知半径 `MAX_MONSTER_SENSING` 内で aaf/視線を問わず**感知しうる分岐を
   追加。**直後の notice 確率判定（`notice^3 > csleep_noise`＝プレイヤーの騒音/ステルス依存）
   は据え置き**のため即覚醒ではなくステルスも効く（保守的スコープ）。
+- **反映対象（C3第3弾-A: テレパシーの限定 ESP への一般化）:** C3第1/2弾はテレパシー
+  `TR_TELEPATHY`（全感知）専用だったが、これを**善悪 ESP（`TR_ESP_EVIL`/`TR_ESP_GOOD`）・
+  生命形態 ESP（`TR_ESP_UNDEAD`/`TR_ESP_DEMON`/`TR_ESP_NONLIVING`）・人間 ESP（`TR_ESP_HUMAN`）**
+  へ一般化。既存フラグ `applies_player_race_telepathy` を再利用（新フラグなし）。新述語
+  `senses_player_via_esp(player)`（`CreatureEntity`）が付与種族の ESP フラグと**プレイヤーの
+  分類**（`player.alignment` の正負で善悪、`CreatureRace(player).life()` で生命形態、種族シンボル
+  `'p'` で人間系）を照合し、命中すれば感知。共通分類ヘルパ `race_esp_senses_player(player)`
+  （有効化フラグ判定なし・private）に集約し、C3第1弾の `process_stealth` と第2弾の睡眠覚醒の
+  2 経路を `has_race_granted_telepathy()` → `senses_player_via_esp(creature)` に置換
+  （旧メソッドは削除、テレパシーは全感知として包含）。`esp_animal`/`esp_dragon`/`esp_orc`/
+  `esp_troll`/`esp_giant`/`esp_unique` は現行プレイヤーが該当分類を持たないため不活性
+  （将来 mimic/polymorph 拡張余地）。
+- **反映対象（C3第3弾-B: ESP 索敵＝能動的壁越しターゲティング）:** **別フラグ
+  `applies_player_race_esp_tracking`（既定 `false`=オプトイン）**（受動感知 A とは別軸の
+  侵襲的な移動 AI 反映のため独立フラグ）。述語 `tracks_player_via_esp(player)` が真の個体は、
+  `monster-sweep-grid.cpp` の `create_deciders` で `should_go_straight`（noflow/pass_wall/
+  kill_wall）を無効化し、視認状況に依らず **flow（騒音 `NoiseTracking`／臭跡 `ScentTracking`）
+  ベースの壁越し追跡を常に試みる**。noflow モンスターは本来 flow 追跡が下手（`has_noflow`）
+  だが、ESP がその索敵を補償する形。感知（A）と追跡（B）は独立にオプトイン可能。
+  述語は共通ヘルパ `race_esp_senses_player(player)` ＋ B 用フラグ。
 - **共通述語の配置:** `target_race_resists_element(EffectMonster*, tr_type)` は
   `effect-monster-util.{h,cpp}` に配置（属性ダメージ／状態異常の両 TU から使う共通述語）。
   ダメージ軽減 `apply_monster_race_resistance(em_ptr)`（基本 5 属性用の 1/3 軽減）は

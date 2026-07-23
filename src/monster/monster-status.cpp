@@ -128,10 +128,11 @@ static void process_monsters_timed_effect_aux(CreatureEntity &creature, MONSTER_
                 is_wakeup = true;
             }
 
-            // [提案C3第2弾] テレパシー持ちは感知半径 (MAX_MONSTER_SENSING) 内なら aaf/視線を問わず
-            // プレイヤーを感知しうる (壁越し・遠距離)。ただし下の notice 確率判定は据え置きのため
-            // 即覚醒ではなく、プレイヤーのステルスも引き続き効く。opt-in・既定OFF。
-            else if (monster.has_race_granted_telepathy()) {
+            // [提案C3第2/3弾-A] ESP (テレパシー/限定ESP) でプレイヤーを感知するモンスターは
+            // 感知半径 (MAX_MONSTER_SENSING) 内なら aaf/視線を問わずプレイヤーを感知しうる
+            // (壁越し・遠距離)。ただし下の notice 確率判定は据え置きのため即覚醒ではなく、
+            // プレイヤーのステルスも引き続き効く。opt-in・既定OFF。
+            else if (monster.senses_player_via_esp(creature)) {
                 is_wakeup = true;
             }
         }

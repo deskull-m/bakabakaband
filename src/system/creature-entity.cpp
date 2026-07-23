@@ -27,6 +27,7 @@
 #include "player-info/bard-data-type.h"
 #include "player-info/class-info.h"
 #include "player-info/class-types.h"
+#include "player-info/race-info.h"
 #include "player-info/race-types.h"
 #include "player-info/sniper-data-type.h"
 #include "player-info/spell-hex-data-type.h"
@@ -2371,10 +2372,68 @@ bool CreatureEntity::has_race_granted_speed() const
     return this->race_grants_tr_flag(TR_SPEED) && this->get_monrace().applies_player_race_speed;
 }
 
-bool CreatureEntity::has_race_granted_telepathy() const
+bool CreatureEntity::race_esp_senses_player(const CreatureEntity &player) const
 {
-    // [提案C3第1弾] 付与種族のテレパシーを AI 索敵へ反映 (opt-in・既定OFF・モンスター専用)
-    return this->race_grants_tr_flag(TR_TELEPATHY) && this->get_monrace().applies_player_race_telepathy;
+    // [提案C3第3弾] 付与種族の ESP フラグが指定プレイヤーを「分類上」感知するかを返す共通述語 (モンスター専用)。
+    // 有効化フラグ (applies_player_race_telepathy / applies_player_race_esp_tracking) の判定は呼出側が行う。
+    if (!this->has_monster_profile()) {
+        return false;
+    }
+    if (this->get_prace() == PlayerRaceType::NONE) {
+        return false;
+    }
+
+    const auto tr = CreatureRace(const_cast<CreatureEntity *>(this)).tr_flags();
+    // 全感知テレパシーは無条件でプレイヤーを感知する (C3第1/2弾の従来挙動を包含)。
+    if (tr.has(TR_TELEPATHY)) {
+        return true;
+    }
+
+    // 善悪 ESP: プレイヤーのアライメント数値で判定 (正=善 / 負=悪)。
+    if (tr.has(TR_ESP_EVIL) && (player.alignment < 0)) {
+        return true;
+    }
+    if (tr.has(TR_ESP_GOOD) && (player.alignment > 0)) {
+        return true;
+    }
+
+    // 生命形態 ESP: プレイヤー種族の PlayerRaceLifeType で判定。
+    const auto life = CreatureRace(const_cast<CreatureEntity *>(&player)).life();
+    if (tr.has(TR_ESP_UNDEAD) && (life == PlayerRaceLifeType::UNDEAD)) {
+        return true;
+    }
+    if (tr.has(TR_ESP_DEMON) && (life == PlayerRaceLifeType::DEMON)) {
+        return true;
+    }
+    if (tr.has(TR_ESP_NONLIVING) && (life == PlayerRaceLifeType::NONLIVING)) {
+        return true;
+    }
+
+    // 人間 ESP: プレイヤー種族シンボルが 'p' (人間系) なら感知 (救援召喚のシンボル分類に準拠)。
+    if (tr.has(TR_ESP_HUMAN)) {
+        const auto *race_info = player.get_race_info();
+        if ((race_info->symbol != nullptr) && (race_info->symbol[0] == 'p')) {
+            return true;
+        }
+    }
+
+    // esp_animal / esp_dragon / esp_orc / esp_troll / esp_giant / esp_unique は
+    // 現行プレイヤーが該当分類を持たないため不活性 (将来 mimic/polymorph 拡張余地)。
+    return false;
+}
+
+bool CreatureEntity::senses_player_via_esp(const CreatureEntity &player) const
+{
+    // [提案C3第3弾-A] 付与種族の ESP でプレイヤーを感知するか (opt-in・既定OFF・モンスター専用)。
+    // 従来の has_race_granted_telepathy (C3第1/2弾) を限定 ESP へ一般化したもの。
+    return this->race_esp_senses_player(player) && this->get_monrace().applies_player_race_telepathy;
+}
+
+bool CreatureEntity::tracks_player_via_esp(const CreatureEntity &player) const
+{
+    // [提案C3第3弾-B] 付与種族の ESP でプレイヤーを能動追跡 (壁越し索敵) するか (opt-in・既定OFF・モンスター専用)。
+    // 受動感知 (A) とは別軸の侵襲的な移動 AI 反映のため独立フラグで制御する。
+    return this->race_esp_senses_player(player) && this->get_monrace().applies_player_race_esp_tracking;
 }
 bool CreatureEntity::has_two_handed_weapons()
 {
