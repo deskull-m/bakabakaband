@@ -2375,6 +2375,12 @@ bool CreatureEntity::has_race_granted_regeneration() const
     // [提案C1第10弾] 付与種族の再生を自然回復倍化へ反映 (opt-in・既定OFF・モンスター専用)
     return this->race_grants_tr_flag(TR_REGEN) && this->get_monrace().applies_player_race_regeneration;
 }
+
+bool CreatureEntity::has_race_granted_speed() const
+{
+    // [提案C1第11弾] 付与種族の加速を生成時速度へ反映 (opt-in・既定OFF・モンスター専用)
+    return this->race_grants_tr_flag(TR_SPEED) && this->get_monrace().applies_player_race_speed;
+}
 bool CreatureEntity::has_two_handed_weapons()
 {
     if (this->has_monster_profile()) {

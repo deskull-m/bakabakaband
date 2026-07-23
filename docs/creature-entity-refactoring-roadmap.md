@@ -3190,8 +3190,15 @@ const_cast（`tr_flags()` は read-only）。reader/schema/CLAUDE.md 整備、�
 **独立フラグ `applies_player_race_regeneration`**（既定 false）。反射・再生の述語は共通の
 private ヘルパ `race_grants_tr_flag(tr_type)` に集約。**10 のプレイヤー種族が付与**。
 race-perk 集計により、残る未反映特典は AI 要（ESP/see_invis/telepathy）・モンスターに無意味
-（sustain/hold_exp/slow_digest）・常時発動バフでバランス判断要（speed）に整理され、
-clean-hook の耐性/防御特典反映は一通り完了。
+（sustain/hold_exp/slow_digest）に整理された。
+
+**第11弾 ✅ 完了（加速）:** `TR_SPEED` を生成時速度へ opt-in 反映。**独立フラグ
+`applies_player_race_speed`**（既定 false）。`place_monster_one` のサイズ補正後段で
+`has_race_granted_speed()` が真なら固定 +3 を `speed` に加算。**設計上の注意:** プレイヤーの
+種族速度は `CreatureRace::speed()` 経由で種族依存（KLACKON/SPRITE のみ level/10）かつ
+位置/レベル依存で動的であり、TR_SPEED フラグ自体は速度値を持たない（動物種族は表示用）。
+モンスター速度は静的 `speed` フィールドのため動的反映は侵襲的すぎるとし、**保守的な固定
+近似 (+3、調整用 constexpr)** を採用。これで clean-hook の耐性/防御/常時特典の反映を一通り完了。
 
 **未反映（意図的）:** 職業特典・種族の非耐性特典（ESP・赤外線視）はモンスター AI 索敵の
 新規実装が要る（C3 と同課題）ため大。time/gravity/plasma 系は player 種族が
