@@ -2350,20 +2350,30 @@ BIT_FLAGS CreatureEntity::has_reflect()
     return ::has_reflect(*this);
 }
 
-bool CreatureEntity::has_race_granted_reflection() const
+bool CreatureEntity::race_grants_tr_flag(tr_type tr_flag) const
 {
-    // [提案C1第8弾] 付与種族の反射をボルト反射へ反映 (opt-in・既定OFF・モンスター専用)
-    if (!this->has_monster_profile()) {
-        return false;
-    }
-    if (!this->get_monrace().applies_player_race_reflection) {
+    // 付与された player_race が指定 tr_flag を持つか (opt-in 特典反映の共通述語・モンスター専用)。
+    // 有効化フラグ (applies_player_race_*) の判定は呼出側が行う。
+    if (this->is_player()) {
         return false;
     }
     if (this->get_prace() == PlayerRaceType::NONE) {
         return false;
     }
 
-    return CreatureRace(const_cast<CreatureEntity *>(this)).tr_flags().has(TR_REFLECT);
+    return CreatureRace(const_cast<CreatureEntity *>(this)).tr_flags().has(tr_flag);
+}
+
+bool CreatureEntity::has_race_granted_reflection() const
+{
+    // [提案C1第8弾] 付与種族の反射をボルト反射へ反映 (opt-in・既定OFF・モンスター専用)
+    return this->race_grants_tr_flag(TR_REFLECT) && this->get_monrace().applies_player_race_reflection;
+}
+
+bool CreatureEntity::has_race_granted_regeneration() const
+{
+    // [提案C1第10弾] 付与種族の再生を自然回復倍化へ反映 (opt-in・既定OFF・モンスター専用)
+    return this->race_grants_tr_flag(TR_REGEN) && this->get_monrace().applies_player_race_regeneration;
 }
 bool CreatureEntity::has_two_handed_weapons()
 {
@@ -2434,7 +2444,8 @@ bool CreatureEntity::has_levitation() const
 bool CreatureEntity::has_regen_flag() const
 {
     if (this->has_monster_profile()) {
-        return this->get_monrace().misc_flags.has(MonsterMiscType::REGENERATE);
+        // [提案C1第10弾] 付与種族の再生 (TR_REGEN) も native REGENERATE と同様に自然回復を倍化 (opt-in・既定OFF)。
+        return this->get_monrace().misc_flags.has(MonsterMiscType::REGENERATE) || this->has_race_granted_regeneration();
     }
     return this->regenerate != 0;
 }

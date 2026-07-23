@@ -690,6 +690,15 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   ため対象外」としていたが誤りで、本弾で訂正・実装）。種族由来 resist では思い出フラグを
   記録しない（`native_resist` ガード）。WATER_ELEM/UNMAKER の完全耐性分岐は monrace 固有
   ID 判定のため race-monster には非該当（部分軽減側になる）。
+- **反映対象（第10弾: 再生）:** 再生 `TR_REGEN`。**別フラグ
+  `applies_player_race_regeneration`（既定 `false`=オプトイン）**（属性耐性・反射とは別軸の
+  常時発動特典のため独立フラグ）。`has_regen_flag()` のモンスター分岐（native REGENERATE
+  判定）へ `|| has_race_granted_regeneration()` を OR-in。付与種族が `TR_REGEN` を持てば
+  monrace の `REGENERATE` と同様に自然回復量が 2 倍になる（`compute_regen_amount` の
+  `has_regen_flag()` 分岐）。**10 のプレイヤー種族が `TR_REGEN` を付与**。反射・再生の
+  述語は共通の private ヘルパ `race_grants_tr_flag(tr_type)`（has_monster_profile ＋
+  prace!=NONE ＋ `CreatureRace(this).tr_flags().has(flag)`）に集約し、有効化フラグの判定は
+  各公開メソッド側で行う。
 - **共通述語の配置:** `target_race_resists_element(EffectMonster*, tr_type)` は
   `effect-monster-util.{h,cpp}` に配置（属性ダメージ／状態異常の両 TU から使う共通述語）。
   ダメージ軽減 `apply_monster_race_resistance(em_ptr)`（基本 5 属性用の 1/3 軽減）は

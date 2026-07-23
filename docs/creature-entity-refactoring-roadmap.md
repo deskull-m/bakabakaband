@@ -3184,6 +3184,15 @@ const_cast（`tr_flags()` は read-only）。reader/schema/CLAUDE.md 整備、�
 記録は固有耐性時のみ）。**実データ検証で 14 のプレイヤー種族が `TR_RES_WATER` を付与**する
 ことが判明し、下記「対象外」の記述（water を含む）が誤りだったため訂正・実装した。
 
+**第10弾 ✅ 完了（再生）:** `TR_REGEN` を `has_regen_flag()` のモンスター分岐（native
+`REGENERATE` 判定）へ `|| has_race_granted_regeneration()` で OR-in。付与種族が再生を持てば
+自然回復量が 2 倍（`compute_regen_amount`）。属性耐性・反射とは別軸の常時発動特典のため
+**独立フラグ `applies_player_race_regeneration`**（既定 false）。反射・再生の述語は共通の
+private ヘルパ `race_grants_tr_flag(tr_type)` に集約。**10 のプレイヤー種族が付与**。
+race-perk 集計により、残る未反映特典は AI 要（ESP/see_invis/telepathy）・モンスターに無意味
+（sustain/hold_exp/slow_digest）・常時発動バフでバランス判断要（speed）に整理され、
+clean-hook の耐性/防御特典反映は一通り完了。
+
 **未反映（意図的）:** 職業特典・種族の非耐性特典（ESP・赤外線視）はモンスター AI 索敵の
 新規実装が要る（C3 と同課題）ため大。time/gravity/plasma 系は player 種族が
 該当耐性を持たないため対象外（water は第9弾で反映済み）。
