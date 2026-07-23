@@ -2679,6 +2679,18 @@ private:
     MonraceId r_idx{}; /*!< モンスターの実種族ID (これが0の時は死亡扱いになる) / Monster race index 0 = dead. */
     MonraceId ap_r_idx{}; /*!< モンスターの外見種族ID（あやしい影、たぬき、ジュラル星人誤認などにより変化する）Monster race appearance index */
 
+    // get_monrace() / get_apparent_monrace() の結果キャッシュ (性能最適化)。
+    // MonraceList::get_monrace() は約 2300 要素の std::map の O(log n) 探索を行うが、
+    // これらは画面描画・モンスター AI・呪文判定のホットパスで毎フレーム・毎ターン
+    // 同一クリーチャーに対し多数回呼ばれる。monraces のエントリはロード時のみ追加され、
+    // 以降 shared_ptr の指す MonraceDefinition は差し替えられない (in-place 更新のみ) ため、
+    // 生ポインタはセッション中安定。id が現在の r_idx / ap_r_idx と一致する限り再探索を省く
+    // 自己検証型の遅延キャッシュ。r_idx 変化 (変身・カメレオン・付替え) は id 不一致で自動失効。
+    mutable MonraceDefinition *cached_monrace{};
+    mutable MonraceId cached_monrace_id{};
+    mutable MonraceDefinition *cached_apparent_monrace{};
+    mutable MonraceId cached_apparent_monrace_id{};
+
 public:
     // [提案 47] dealt_damage は private 化済。get_dealt_damage() / set_dealt_damage() / add_dealt_damage() 経由。
 private:

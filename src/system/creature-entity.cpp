@@ -182,7 +182,13 @@ bool CreatureEntity::check_sub_alignments(const byte sub_align1, const byte sub_
 
 MonraceDefinition &CreatureEntity::get_monrace() const
 {
-    return MonraceList::get_instance().get_monrace(this->r_idx);
+    // 自己検証型の遅延キャッシュ (宣言部のコメント参照)。id が一致すれば map 探索を省く。
+    if ((this->cached_monrace == nullptr) || (this->cached_monrace_id != this->r_idx)) {
+        this->cached_monrace = &MonraceList::get_instance().get_monrace(this->r_idx);
+        this->cached_monrace_id = this->r_idx;
+    }
+
+    return *this->cached_monrace;
 }
 
 std::shared_ptr<MonraceDefinition> CreatureEntity::get_monrace_shared()
@@ -197,7 +203,13 @@ std::shared_ptr<const MonraceDefinition> CreatureEntity::get_monrace_shared() co
 
 MonraceDefinition &CreatureEntity::get_apparent_monrace() const
 {
-    return MonraceList::get_instance().get_monrace(this->ap_r_idx);
+    // 自己検証型の遅延キャッシュ (get_monrace() と同様)。id が一致すれば map 探索を省く。
+    if ((this->cached_apparent_monrace == nullptr) || (this->cached_apparent_monrace_id != this->ap_r_idx)) {
+        this->cached_apparent_monrace = &MonraceList::get_instance().get_monrace(this->ap_r_idx);
+        this->cached_apparent_monrace_id = this->ap_r_idx;
+    }
+
+    return *this->cached_apparent_monrace;
 }
 
 std::shared_ptr<MonraceDefinition> CreatureEntity::get_apparent_monrace_shared()
