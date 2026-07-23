@@ -578,8 +578,7 @@ short CreatureEntity::get_timed_effect(CreatureTimedEffect effect) const
 {
     // 提案 5 (最終): SLEEP_OR_PARALYSIS は PARALYSIS と同一エントリで扱う
     auto key = (effect == CreatureTimedEffect::SLEEP_OR_PARALYSIS) ? CreatureTimedEffect::PARALYSIS : effect;
-    const auto it = this->timed_effects_map.find(key);
-    return (it != this->timed_effects_map.end()) ? it->second : 0;
+    return this->timed_effects[static_cast<size_t>(key)];
 }
 
 namespace {
@@ -644,7 +643,7 @@ void CreatureEntity::set_timed_effect(CreatureTimedEffect effect, short value)
 {
     const auto was_active = this->get_timed_effect(effect) > 0;
     auto key = (effect == CreatureTimedEffect::SLEEP_OR_PARALYSIS) ? CreatureTimedEffect::PARALYSIS : effect;
-    this->timed_effects_map[key] = value;
+    this->timed_effects[static_cast<size_t>(key)] = value;
 
     const auto is_active = value > 0;
     if (was_active != is_active) {

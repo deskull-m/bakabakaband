@@ -253,7 +253,7 @@ public:
      * @return 加算HP (英雄化 +10 / 狂戦士化 +30 / つよしスペシャル +50 /
      *         呪術 HEX_XTRA_MIGHT +15 / HEX_BUILDING +60 の合計)
      * @details 呪術 (HEX) はプレイヤー専用のため、モンスターでは spell_hex_data が
-     *          無く常に 0 となる。英雄化等の時限効果は timed_effects_map で共通管理。
+     *          無く常に 0 となる。英雄化等の時限効果は timed_effects で共通管理。
      */
     int calc_max_hp_status_bonus();
 
@@ -680,10 +680,9 @@ public:
      * @brief クリーチャーの時限効果の残りターン数を取得
      * @param effect 取得する時限効果の種別
      * @return 残りターン数（0なら効果なし）
-     * @details デフォルト実装は CreatureEntity::timed_effects_map を参照する。
-     *          PlayerType は STUN / CONFUSION / FEAR / ACCELERATION / DECELERATION /
-     *          PARALYSIS / BLINDNESS に限り TimedEffects オブジェクト経由で管理し、
-     *          それ以外はデフォルト実装（= map）へフォールバックする。
+     * @details プレイヤー・モンスター共通で CreatureEntity::timed_effects
+     *          (enum 添字の std::array) の該当スロットを参照する。
+     *          SLEEP_OR_PARALYSIS は PARALYSIS と同一スロットを共有する。
      */
     virtual short get_timed_effect(CreatureTimedEffect effect) const;
 
@@ -692,8 +691,9 @@ public:
      * @param effect 設定する時限効果の種別
      * @param value 設定するターン数
      * @note メッセージや副作用は発生しない。ゲームロジックからの呼び出しには専用セッターを使うこと。
-     * @details デフォルト実装は CreatureEntity::timed_effects_map を更新する。
-     *          PlayerType は get_timed_effect と同様に特定の効果だけ TimedEffects 経由。
+     * @details プレイヤー・モンスター共通で CreatureEntity::timed_effects
+     *          (enum 添字の std::array) の該当スロットを更新する。
+     *          モンスターの場合は 0 をまたぐ変化時に mproc キャッシュも保守する。
      */
     virtual void set_timed_effect(CreatureTimedEffect effect, short value);
 
@@ -3341,8 +3341,11 @@ public:
 
 protected:
     // 時限効果の統一ストレージ（外部からは get/set_timed_effect() 経由でアクセスすること）
-    // プレイヤー・モンスター共通。提案 5 完了で全効果が map 単一管理。
-    std::map<CreatureTimedEffect, TIME_EFFECT> timed_effects_map{};
+    // プレイヤー・モンスター共通。提案 5 完了で全効果が単一管理。
+    // 性能上の理由で std::map から enum 添字の std::array に変更済み
+    // (get_timed_effect / set_timed_effect が毎フレーム・毎ターン大量に呼ばれ、
+    //  赤黒木探索がホットパスのボトルネックだったため O(1) 直接アクセスに変更)。
+    std::array<TIME_EFFECT, static_cast<size_t>(CreatureTimedEffect::MAX)> timed_effects{};
 
     // 変身形態（外部からは get_mimic_form() / set_mimic_form() 経由でアクセスすること）
     MimicKindType mimic_form{};

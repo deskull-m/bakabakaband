@@ -2,9 +2,9 @@
 
 /*!
  * @brief クリーチャー（プレイヤー・モンスター共通）の時限効果の種別
- * @details CreatureEntity::timed_effects_map の共通ストレージ、および PlayerType の TimedEffects
+ * @details CreatureEntity::timed_effects の共通ストレージ、および PlayerType の TimedEffects
  * オブジェクト (STUN / CONFUSION / 等) と対応する。適用のないクリーチャーでは
- * get_timed_effect() が 0 を返し、set_timed_effect() は map に 0 を書き込むのみとなる。
+ * get_timed_effect() が 0 を返し、set_timed_effect() は該当スロットに 0 を書き込むのみとなる。
  */
 enum class CreatureTimedEffect {
     // --- モンスター・プレイヤー共通 ---
