@@ -127,6 +127,13 @@ static void process_monsters_timed_effect_aux(CreatureEntity &creature, MONSTER_
             else if ((cdis <= MAX_PLAYER_SIGHT) && floor.has_los_at({ monster.y, monster.x })) {
                 is_wakeup = true;
             }
+
+            // [提案C3第2弾] テレパシー持ちは感知半径 (MAX_MONSTER_SENSING) 内なら aaf/視線を問わず
+            // プレイヤーを感知しうる (壁越し・遠距離)。ただし下の notice 確率判定は据え置きのため
+            // 即覚醒ではなく、プレイヤーのステルスも引き続き効く。opt-in・既定OFF。
+            else if (monster.has_race_granted_telepathy()) {
+                is_wakeup = true;
+            }
         }
 
         if (!is_wakeup) {

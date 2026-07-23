@@ -3395,8 +3395,18 @@ one-monster-placer 等）がプレイヤーを渡すことを確認済。**モ�
 共通ヘルパ `race_grants_tr_flag(TR_TELEPATHY)`。**C トラックで初めて AI 挙動に触れた反映**
 （効果は超隠密無視に限定＝低リスク）。フルビルド (BUILD_EXIT=0) / validate_json 8/8 で検証済。
 
-**残（第2弾以降・大）:** 睡眠中モンスターの ESP による覚醒、種族別 ESP（esp_evil 等）で
-プレイヤー種別を感知、壁越し索敵距離等。いずれも新規 AI ＋バランス判断を要する大物。
+### ✅ 第2弾 完了（睡眠中の ESP 感知＝壁越し覚醒）
+
+**実装:** 睡眠モンスターの覚醒判定（`monster-status.cpp` の
+`process_monsters_timed_effect_aux`、SLEEP_OR_PARALYSIS 分岐）の `is_wakeup` 決定に、
+テレパシー持ちの分岐を追加。**感知半径 `MAX_MONSTER_SENSING` 内なら aaf/視線を問わず**
+（壁越し・遠距離）プレイヤーを感知しうる。**ただし直後の notice 確率判定
+（`notice^3 > csleep_noise` = プレイヤーの騒音/ステルス依存）は据え置き**のため即覚醒では
+なく、ステルスも引き続き効く保守的スコープ。第1弾と同じフラグ `applies_player_race_telepathy`
+＋述語 `has_race_granted_telepathy()` を再利用（新フラグなし）。フルビルド (BUILD_EXIT=0) で検証済。
+
+**残（第3弾以降・大）:** 種族別 ESP（esp_evil 等）でプレイヤー種別を感知、ESP による
+能動的な壁越し索敵ターゲティング（移動 AI への反映）等。いずれも新規 AI ＋バランス判断を要する。
 
 ---
 

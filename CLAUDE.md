@@ -717,6 +717,12 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   バランス判断を要するため将来段（roadmap C3 参照）。プレイヤー無敵化（透明）は本ゲームで
   モンスター AI 要因でないため see_invis 反映は対象外。述語 `has_race_granted_telepathy()`
   は共通ヘルパ `race_grants_tr_flag(TR_TELEPATHY)` ＋有効化フラグ。
+- **反映対象（C3第2弾: 睡眠中の壁越し感知）:** 同じ `applies_player_race_telepathy` を
+  睡眠覚醒にも反映（新フラグなし）。睡眠モンスターの覚醒判定
+  （`monster-status.cpp` の `process_monsters_timed_effect_aux`）の `is_wakeup` 決定へ、
+  テレパシー持ちなら**感知半径 `MAX_MONSTER_SENSING` 内で aaf/視線を問わず**感知しうる分岐を
+  追加。**直後の notice 確率判定（`notice^3 > csleep_noise`＝プレイヤーの騒音/ステルス依存）
+  は据え置き**のため即覚醒ではなくステルスも効く（保守的スコープ）。
 - **共通述語の配置:** `target_race_resists_element(EffectMonster*, tr_type)` は
   `effect-monster-util.{h,cpp}` に配置（属性ダメージ／状態異常の両 TU から使う共通述語）。
   ダメージ軽減 `apply_monster_race_resistance(em_ptr)`（基本 5 属性用の 1/3 軽減）は
