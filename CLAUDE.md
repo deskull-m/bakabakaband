@@ -707,6 +707,16 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   TR_SPEED フラグ自体は速度値を持たない（多くの動物種族は表示用）。モンスター速度は
   静的な `speed` フィールドで動くため、動的反映は侵襲的すぎるとして**保守的な固定近似
   (+3)** を採用（`one-monster-placer.cpp` の調整用 constexpr）。
+- **反映対象（C3第1弾: テレパシー＝AI 索敵）:** テレパシー `TR_TELEPATHY`。**別フラグ
+  `applies_player_race_telepathy`（既定 `false`=オプトイン）**。`process_stealth`
+  （`monster-processor.cpp`、モンスターがプレイヤーに気付くか判定）の冒頭で
+  `has_race_granted_telepathy()` が真なら `return true`（常に気付く）。効果は**忍者の
+  超隠密状態（`ninja_data->s_stealth`）を無視**する点に限定される（通常時はモンスターは
+  元々プレイヤー位置を把握しているため、awareness ギャップは超隠密のみ）。**C トラックで
+  初めて AI 挙動に触れた反映**。壁越し感知・睡眠中の感知等のより広い ESP は新規 AI・
+  バランス判断を要するため将来段（roadmap C3 参照）。プレイヤー無敵化（透明）は本ゲームで
+  モンスター AI 要因でないため see_invis 反映は対象外。述語 `has_race_granted_telepathy()`
+  は共通ヘルパ `race_grants_tr_flag(TR_TELEPATHY)` ＋有効化フラグ。
 - **共通述語の配置:** `target_race_resists_element(EffectMonster*, tr_type)` は
   `effect-monster-util.{h,cpp}` に配置（属性ダメージ／状態異常の両 TU から使う共通述語）。
   ダメージ軽減 `apply_monster_race_resistance(em_ptr)`（基本 5 属性用の 1/3 軽減）は

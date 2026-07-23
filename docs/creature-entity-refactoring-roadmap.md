@@ -3380,6 +3380,22 @@ one-monster-placer 等）がプレイヤーを渡すことを確認済。**モ�
 **工数:** 中〜大（新規 AI）。**価値:** 中（AI に深みは出るが実装は非自明）。
 **リスク:** 中〜高（AI 挙動変更）。→ **当初「最優先」としたが基盤誤認により降格。**
 
+### ✅ 第1弾 完了（テレパシー→超隠密無視、保守的スコープ）
+
+**実コード再調査の結論:** モンスター AI の「awareness（プレイヤーに気付くか）」ギャップは
+実質 `process_stealth`（`monster-processor.cpp`）の**忍者の超隠密（`s_stealth`）判定のみ**。
+通常時モンスターはプレイヤー位置を把握しており「壁越し感知」で埋めるギャップは無い。
+プレイヤー無敵化（透明）もモンスター AI 要因ではない（see_invis 反映は対象外）。
+
+→ よって tractable な C3 の第1弾として、**テレパシー `TR_TELEPATHY` を持つモンスターは
+超隠密を無視して常に気付く**を実装。`process_stealth` 冒頭で `has_race_granted_telepathy()`
+が真なら `return true`。独立フラグ `applies_player_race_telepathy`（既定 false）＋述語は
+共通ヘルパ `race_grants_tr_flag(TR_TELEPATHY)`。**C トラックで初めて AI 挙動に触れた反映**
+（効果は超隠密無視に限定＝低リスク）。フルビルド (BUILD_EXIT=0) / validate_json 8/8 で検証済。
+
+**残（第2弾以降・大）:** 睡眠中モンスターの ESP による覚醒、種族別 ESP（esp_evil 等）で
+プレイヤー種別を感知、壁越し索敵距離等。いずれも新規 AI ＋バランス判断を要する大物。
+
 ---
 
 ## 提案 C4: MP 消費詠唱 ✅ 完了（opt-in・レベル比例コスト）
