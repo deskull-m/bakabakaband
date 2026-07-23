@@ -93,6 +93,8 @@
 #include "tracking/lore-tracker.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <algorithm>
+#include <tl/optional.hpp>
 
 void decide_drop_from_monster(CreatureEntity &creature, MONSTER_IDX m_idx, bool is_riding_mon);
 bool process_stealth(CreatureEntity &creature, MONSTER_IDX m_idx);
@@ -164,6 +166,16 @@ static bool ai_is_in_fighting_context(const CreatureEntity &creature, const Crea
  */
 static bool monster_quaff_potion(CreatureEntity &creature, CreatureEntity &monster)
 {
+    // ポーションを 1 個も持たないモンスターは何も飲めない。毎ターン全モンスターに対して
+    // 呼ばれるため、状態判定やインベントリ走査に入る前に早期に打ち切る (振る舞い不変)。
+    const auto has_potion = std::any_of(monster.inventory.begin(), monster.inventory.end(), [](const auto &item_ptr) {
+        const auto &item = *item_ptr;
+        return item.is_valid() && (item.bi_key.tval() == ItemKindType::POTION);
+    });
+    if (!has_potion) {
+        return false;
+    }
+
     const bool low_hp_severe = monster.hp < monster.maxhp / 4;
     const bool low_hp_mid = monster.hp < monster.maxhp / 2;
     const bool poisoned_heavy = monster.get_timed_effect(CreatureTimedEffect::POISON) > 100;
@@ -171,7 +183,18 @@ static bool monster_quaff_potion(CreatureEntity &creature, CreatureEntity &monst
     const bool not_fast = monster.get_timed_effect(CreatureTimedEffect::ACCELERATION) == 0;
     const bool not_resistant = monster.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE) == 0 && monster.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD) == 0;
     const bool not_buffed = monster.get_timed_effect(CreatureTimedEffect::HERO) == 0 && monster.get_timed_effect(CreatureTimedEffect::BERSERK) == 0;
-    const bool fighting_context = ai_is_in_fighting_context(creature, monster);
+
+    // ai_is_in_fighting_context() はペットの場合 has_visible_creature() による
+    // O(N) の m_list 全走査を伴い、毎ターン全モンスターに対して呼ばれると O(N^2) に
+    // なる。戦闘想定を要する強化アイテム (加速/耐性/英雄化/狂戦士化) を実際に所持し
+    // 選択判定に達したときだけ 1 回評価するよう遅延・メモ化する。
+    tl::optional<bool> fighting_context_cache;
+    auto fighting_context = [&]() -> bool {
+        if (!fighting_context_cache) {
+            fighting_context_cache = ai_is_in_fighting_context(creature, monster);
+        }
+        return *fighting_context_cache;
+    };
 
     INVENTORY_IDX potion_slot = -1;
     int priority = -1; // 0=最優先 ... 大=後回し
@@ -231,22 +254,22 @@ static bool monster_quaff_potion(CreatureEntity &creature, CreatureEntity &monst
             }
             break;
         case SV_POTION_BESERK_STRENGTH:
-            if (fearful || (fighting_context && not_buffed)) {
+            if (fearful || (not_buffed && fighting_context())) {
                 select_if(idx, 8);
             }
             break;
         case SV_POTION_HEROISM:
-            if (fearful || (fighting_context && not_buffed)) {
+            if (fearful || (not_buffed && fighting_context())) {
                 select_if(idx, 9);
             }
             break;
         case SV_POTION_SPEED:
-            if (fighting_context && not_fast) {
+            if (not_fast && fighting_context()) {
                 select_if(idx, 10);
             }
             break;
         case SV_POTION_RESISTANCE:
-            if (fighting_context && not_resistant) {
+            if (not_resistant && fighting_context()) {
                 select_if(idx, 11);
             }
             break;
@@ -499,6 +522,18 @@ static bool monster_read_scroll(CreatureEntity &creature, CreatureEntity &monste
  */
 static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &monster, MONSTER_IDX m_idx)
 {
+    // 杖/ロッドを 1 個も持たないモンスターは、以降の攻撃標的探索
+    // (ペットは find_nearest_creature() による O(N) の m_list 全走査 + 視線判定) を
+    // 行っても device_slot が確定せず必ず false を返す。毎ターン全モンスターに対して
+    // 呼ばれるため、ここで早期に打ち切って O(N^2) の無駄な探索を避ける (振る舞い不変)。
+    const auto has_usable_device = std::any_of(monster.inventory.begin(), monster.inventory.end(), [](const auto &item_ptr) {
+        const auto &item = *item_ptr;
+        return item.is_valid() && ((item.bi_key.tval() == ItemKindType::WAND) || (item.bi_key.tval() == ItemKindType::ROD));
+    });
+    if (!has_usable_device) {
+        return false;
+    }
+
     const bool low_hp_mid = monster.hp < monster.maxhp / 2;
     const bool not_fast = monster.get_timed_effect(CreatureTimedEffect::ACCELERATION) == 0;
     const bool has_status = monster.is_fearful() || monster.is_confused() || monster.is_stunned() || monster.get_timed_effect(CreatureTimedEffect::POISON) > 0;
