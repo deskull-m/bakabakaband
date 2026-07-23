@@ -627,6 +627,14 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         m_ptr->speed += randint1(3) + 2; // +2～+4の加速ボーナス
     }
 
+    // [提案C1第11弾] 付与種族の加速 (TR_SPEED) を生成時速度へ opt-in 反映 (既定OFF)。
+    // プレイヤーの種族速度は種族依存 (KLACKON/SPRITE のみ) かつ位置/レベル依存で動的なため、
+    // 静的な speed フィールドで動くモンスターには保守的な固定近似 (+3) を用いる。調整用定数。
+    if (m_ptr->has_race_granted_speed()) {
+        constexpr short race_granted_speed_bonus = 3;
+        m_ptr->speed += race_granted_speed_bonus;
+    }
+
     if (any_bits(mode, PM_HASTE)) {
         (void)set_monster_fast(floor, g_ptr->m_idx, 100);
     }

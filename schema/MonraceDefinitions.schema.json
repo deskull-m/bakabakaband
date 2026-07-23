@@ -209,6 +209,10 @@
                         "type": "boolean",
                         "description": "付与された player_race の再生(TR_REGEN)を自然回復倍化へ反映するか (提案C1第10弾)。既定false=オプトイン。trueかつ有効なplayer_raceを持つ個体のみ、種族が再生を持てばモンスターのREGENERATEと同様に自然回復量が2倍になる。"
                     },
+                    "applies_player_race_speed": {
+                        "type": "boolean",
+                        "description": "付与された player_race の加速(TR_SPEED)を生成時の速度へ反映するか (提案C1第11弾)。既定false=オプトイン。trueかつ種族が加速を持つ個体のみ、生成時に控えめな加速ボーナス(+3)を得る。プレイヤーの種族速度は種族依存・動的なため、モンスターには保守的な固定近似を用いる。"
+                    },
                     "grows_melee_proficiency": {
                         "type": "boolean",
                         "description": "レベルアップで得た戦闘習熟を近接命中へ反映するか (提案C2第2弾)。既定false=オプトイン。trueの個体は、生成時レベルを超えて成長した分だけ近接攻撃の命中判定が向上する。"

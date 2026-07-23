@@ -699,6 +699,14 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
   述語は共通の private ヘルパ `race_grants_tr_flag(tr_type)`（has_monster_profile ＋
   prace!=NONE ＋ `CreatureRace(this).tr_flags().has(flag)`）に集約し、有効化フラグの判定は
   各公開メソッド側で行う。
+- **反映対象（第11弾: 加速）:** 加速 `TR_SPEED`。**別フラグ
+  `applies_player_race_speed`（既定 `false`=オプトイン）**。`place_monster_one` の生成時
+  速度設定（サイズ補正の後段）で `has_race_granted_speed()` が真なら保守的な固定
+  ボーナス **+3** を `speed` に加算。**注意:** プレイヤーの種族速度は `CreatureRace::speed()`
+  経由で**種族依存（KLACKON/SPRITE のみ level/10）かつ位置/レベル依存で動的**であり、
+  TR_SPEED フラグ自体は速度値を持たない（多くの動物種族は表示用）。モンスター速度は
+  静的な `speed` フィールドで動くため、動的反映は侵襲的すぎるとして**保守的な固定近似
+  (+3)** を採用（`one-monster-placer.cpp` の調整用 constexpr）。
 - **共通述語の配置:** `target_race_resists_element(EffectMonster*, tr_type)` は
   `effect-monster-util.{h,cpp}` に配置（属性ダメージ／状態異常の両 TU から使う共通述語）。
   ダメージ軽減 `apply_monster_race_resistance(em_ptr)`（基本 5 属性用の 1/3 軽減）は
