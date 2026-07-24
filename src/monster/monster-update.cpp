@@ -621,11 +621,18 @@ void update_monster(CreatureEntity &creature, MONSTER_IDX m_idx, bool full)
  */
 void update_monsters(CreatureEntity &creature, bool full)
 {
-    // [提案 14b]
-    const auto targets = creature.collect_creatures([](const CreatureEntity &) {
-        return true;
-    });
-    for (auto i : targets) {
+    // [提案 14b] 以前は collect_creatures([]{ return true; }) で全生存モンスターを
+    // 一旦 vector に集めてから回していたが、本関数はプレイヤー移動・視界更新ごとに
+    // 呼ばれるホットパスであり、毎回のヒープ確保と全モンスターへの std::function
+    // 呼び出しが純粋なオーバーヘッドになる。update_monster() は m_list の構成
+    // (m_max / is_valid) を変えないため、collect_creatures と同じ走査セマンティクス
+    // (i=1..m_max, is_valid) を保ったまま直接ループに置き換える。
+    const auto &floor = *creature.get_floor();
+    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+        if (!floor.get_monster(i).is_valid()) {
+            continue;
+        }
+
         update_monster(creature, i, full);
     }
 }
