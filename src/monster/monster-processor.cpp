@@ -176,8 +176,8 @@ static bool monster_quaff_potion(CreatureEntity &creature, CreatureEntity &monst
         return false;
     }
 
-    const bool low_hp_severe = monster.hp < monster.maxhp / 4;
-    const bool low_hp_mid = monster.hp < monster.maxhp / 2;
+    const bool low_hp_severe = monster.get_current_hp() < monster.get_max_hp() / 4;
+    const bool low_hp_mid = monster.get_current_hp() < monster.get_max_hp() / 2;
     const bool poisoned_heavy = monster.get_timed_effect(CreatureTimedEffect::POISON) > 100;
     const bool fearful = monster.is_fearful();
     const bool not_fast = monster.get_timed_effect(CreatureTimedEffect::ACCELERATION) == 0;
