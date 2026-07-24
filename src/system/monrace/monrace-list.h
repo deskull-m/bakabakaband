@@ -67,8 +67,18 @@ public:
 private:
     MonraceList() = default;
 
+    //! @brief get_monrace() の結果を MonraceId 添字で引く O(1) フラットキャッシュ
+    //! @details monraces (std::map, 約 2300 要素) の .at() は O(log n) のツリー探索で、
+    //!          描画・AI・呪文判定のホットパスで多発する。monraces のエントリはロード時
+    //!          (emplace) にのみ追加され、以降 shared_ptr の指す MonraceDefinition は差し替え
+    //!          られず in-place 更新のみのため、生ポインタはセッション中安定。範囲内かつ非 null
+    //!          なら即返し、未キャッシュ時は .at() (無効 id はここで例外) で引いて充填する。
+    //!          存在しない id は例外となり負エントリを残さないため、追加 emplace による無効化は不要。
+    MonraceDefinition &get_monrace_cached(MonraceId monrace_id) const;
+
     static MonraceList instance;
     std::map<MonraceId, std::shared_ptr<MonraceDefinition>> monraces;
+    mutable std::vector<MonraceDefinition *> monrace_flat_cache;
 
     const static std::map<MonraceId, std::set<MonraceId>> unified_uniques;
 
