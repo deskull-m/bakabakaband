@@ -111,9 +111,28 @@ MonraceDefinition &MonraceList::emplace(MonraceId monrace_id)
  * @return モンスター定義への参照
  * @details モンスター実体からモンスター定義を得るためには使用しないこと
  */
+MonraceDefinition &MonraceList::get_monrace_cached(MonraceId monrace_id) const
+{
+    // MonraceId は非負 (PLAYER=0) だが、万一負値・無効 id が来た場合は static_cast<size_t> が
+    // 巨大値となり範囲外→ .at() のフォールバックで従来通り例外を投げる (セマンティクス保存)。
+    const auto idx = static_cast<size_t>(monrace_id);
+    if (idx < this->monrace_flat_cache.size()) {
+        if (auto *cached = this->monrace_flat_cache[idx]; cached != nullptr) {
+            return *cached;
+        }
+    }
+
+    auto &monrace = *this->monraces.at(monrace_id);
+    if (idx >= this->monrace_flat_cache.size()) {
+        this->monrace_flat_cache.resize(idx + 1, nullptr);
+    }
+    this->monrace_flat_cache[idx] = &monrace;
+    return monrace;
+}
+
 MonraceDefinition &MonraceList::get_monrace(MonraceId monrace_id)
 {
-    return *this->monraces.at(monrace_id);
+    return this->get_monrace_cached(monrace_id);
 }
 
 /*!
@@ -124,7 +143,7 @@ MonraceDefinition &MonraceList::get_monrace(MonraceId monrace_id)
  */
 const MonraceDefinition &MonraceList::get_monrace(MonraceId monrace_id) const
 {
-    return *this->monraces.at(monrace_id);
+    return this->get_monrace_cached(monrace_id);
 }
 
 std::shared_ptr<MonraceDefinition> MonraceList::get_monrace_shared(MonraceId monrace_id)
