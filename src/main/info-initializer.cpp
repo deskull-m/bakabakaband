@@ -160,14 +160,23 @@ static void init_json(std::string_view filename, std::string_view keyname, Defin
 }
 
 /*!
+ * @brief Readerクラスを用いてlib/edit/.jsoncを読み込む
+ * @details init_json の parser に「JSON要素からReaderを構築して read() する」定型ラムダを
+ * 与える処理を共通化したもの。SpellReader は捕捉メンバを取るため現状維持。
+ */
+template <typename Reader, typename InfoType>
+static void init_json_reader(std::string_view filename, std::string_view keyname, DefinitionHashDataType dhdt, InfoType &info, std::function<void()> retouch = nullptr)
+{
+    auto parser = [](nlohmann::json &element) { return Reader(element).read(); };
+    init_json(filename, keyname, dhdt, info, parser, retouch);
+}
+
+/*!
  * @brief 固定アーティファクト情報読み込みのメインルーチン
  */
 void init_artifacts_info()
 {
-    auto parser = [](nlohmann::json &art_data) {
-        return ArtifactReader(art_data).read();
-    };
-    init_json("ArtifactDefinitions.jsonc", "artifacts", DefinitionHashDataType::ARTIFACTS, ArtifactList::get_instance(), parser);
+    init_json_reader<ArtifactReader>("ArtifactDefinitions.jsonc", "artifacts", DefinitionHashDataType::ARTIFACTS, ArtifactList::get_instance());
 }
 
 /*!
@@ -175,10 +184,7 @@ void init_artifacts_info()
  */
 void init_baseitems_info()
 {
-    auto parser = [](nlohmann::json &baseitem_data) {
-        return BaseitemReader(baseitem_data).read();
-    };
-    init_json("BaseitemDefinitions.jsonc", "baseitems", DefinitionHashDataType::BASEITEMS, BaseitemList::get_instance(), parser);
+    init_json_reader<BaseitemReader>("BaseitemDefinitions.jsonc", "baseitems", DefinitionHashDataType::BASEITEMS, BaseitemList::get_instance());
 }
 
 /*!
@@ -187,10 +193,7 @@ void init_baseitems_info()
 void init_class_magics_info()
 {
     class_magics_info.assign(PLAYER_CLASS_TYPE_MAX, {});
-    auto parser = [](nlohmann::json &class_data) {
-        return MagicReader(class_data).read();
-    };
-    init_json("ClassMagicDefinitions.jsonc", "classes", DefinitionHashDataType::CLASS_MAGICS, class_magics_info, parser);
+    init_json_reader<MagicReader>("ClassMagicDefinitions.jsonc", "classes", DefinitionHashDataType::CLASS_MAGICS, class_magics_info);
 }
 
 /*!
@@ -207,10 +210,7 @@ void init_class_skills_info()
 void init_dungeons_info()
 {
     auto &dungeons = DungeonList::get_instance();
-    auto parser = [](nlohmann::json &dungeon_data) {
-        return DungeonReader(dungeon_data).read();
-    };
-    init_json("DungeonDefinitions.jsonc", "dungeons", DefinitionHashDataType::DUNGEONS, dungeons, parser, [&dungeons] { dungeons.retouch(); });
+    init_json_reader<DungeonReader>("DungeonDefinitions.jsonc", "dungeons", DefinitionHashDataType::DUNGEONS, dungeons, [&dungeons] { dungeons.retouch(); });
 }
 
 /*!
@@ -235,10 +235,7 @@ void init_terrains_info()
  */
 void init_monrace_definitions()
 {
-    auto parser = [](nlohmann::json &monrace_data) {
-        return RaceReader(monrace_data).read();
-    };
-    init_json("MonraceDefinitions.jsonc", "monsters", DefinitionHashDataType::MONRACES, MonraceList::get_instance(), parser);
+    init_json_reader<RaceReader>("MonraceDefinitions.jsonc", "monsters", DefinitionHashDataType::MONRACES, MonraceList::get_instance());
 }
 
 /*!
@@ -246,10 +243,7 @@ void init_monrace_definitions()
  */
 void init_monster_message_definitions()
 {
-    auto parser = [](nlohmann::json &message_data) {
-        return MessageReader(message_data).read();
-    };
-    init_json("MonsterMessages.jsonc", "groups", DefinitionHashDataType::MONSTER_MESSAGES, MonraceMessageList::get_instance(), parser);
+    init_json_reader<MessageReader>("MonsterMessages.jsonc", "groups", DefinitionHashDataType::MONSTER_MESSAGES, MonraceMessageList::get_instance());
 }
 
 /*!
