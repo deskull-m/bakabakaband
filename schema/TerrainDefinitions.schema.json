@@ -1,0 +1,185 @@
+{
+  "type": "object",
+  "required": ["version", "terrains"],
+  "properties": {
+    "version": {
+      "type": "number",
+      "description": "Version情報"
+    },
+    "terrains": {
+      "type": "array",
+      "description": "地形情報定義の配列",
+      "items": {
+        "type": "object",
+        "required": ["id", "key", "name", "symbol", "flags"],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "key": {
+            "description": "地形の識別子",
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "object",
+            "description": "地形のゲーム内表記",
+            "required": ["ja", "en"],
+            "properties": {
+              "ja": {
+                "type": "string"
+              },
+              "en": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          },
+          "symbol": {
+            "type": "object",
+            "description": "地形の表示シンボル",
+            "required": ["character", "color", "lit"],
+            "properties": {
+              "character": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1
+              },
+              "color": {
+                "type": "string"
+              },
+              "lit": {
+                "description": "地形が明るいかどうか",
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          },
+          "mimic": {
+            "description": "他の地形への模倣 例:罠→床",
+            "type": ["string", "null"],
+            "minLength": 1
+          },
+          "map_priority": {
+            "description": "マップ表示優先度",
+            "type": ["integer", "null"]
+          },
+          "flags": {
+            "description": "地形フラグ (bakabakaband独自拡張の POWER_* / SUBTYPE_* / C-PRIORITY_* / HYGIENE_* 等のパラメトリックフラグを含むため enum では制約しない)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "DROP_GOLD": {
+            "description": "採掘時に得られる財宝量のダイス表記 (例: 2d2)",
+            "type": "string",
+            "pattern": "^[1-9][0-9]*d[1-9][0-9]*$"
+          },
+          "random_change": {
+            "description": "ターン経過による確率的な地形変化",
+            "type": "object",
+            "required": ["prob", "tag"],
+            "properties": {
+              "prob": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "tag": {
+                "description": "変化先の地形識別子",
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "additionalProperties": false
+          },
+          "generation": {
+            "description": "フロア生成時の地形変化定義",
+            "type": ["object", "null"],
+            "required": ["changes"],
+            "properties": {
+              "changes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["terrain", "probability"],
+                  "properties": {
+                    "terrain": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "probability": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 100
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "interactions": {
+            "type": "object",
+            "description": "特定行動後の地形変化定義 (値は変化先の地形識別子)",
+            "properties": {
+              "BASH": {
+                "type": "string",
+                "minLength": 1
+              },
+              "CLOSE": {
+                "type": "string",
+                "minLength": 1
+              },
+              "DESTROYED": {
+                "type": "string",
+                "minLength": 1
+              },
+              "DISARM": {
+                "type": "string",
+                "minLength": 1
+              },
+              "ENSECRET": {
+                "type": "string",
+                "minLength": 1
+              },
+              "HIT_TRAP": {
+                "type": "string",
+                "minLength": 1
+              },
+              "MAY_HAVE_GOLD": {
+                "type": "string",
+                "minLength": 1
+              },
+              "OPEN": {
+                "type": "string",
+                "minLength": 1
+              },
+              "SECRET": {
+                "type": "string",
+                "minLength": 1
+              },
+              "SHAFT": {
+                "type": "string",
+                "minLength": 1
+              },
+              "SPIKE": {
+                "type": "string",
+                "minLength": 1
+              },
+              "UNPERM": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

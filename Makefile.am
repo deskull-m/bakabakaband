@@ -18,7 +18,8 @@ schema_files = \
 	schema/DungeonDefinitions.schema.json \
 	schema/MonraceDefinitions.schema.json \
 	schema/MonsterMessages.schema.json \
-	schema/SpellDefinitions.schema.json
+	schema/SpellDefinitions.schema.json \
+	schema/TerrainDefinitions.schema.json
 
 EXTRA_DIST = \
 	autopick.txt \
