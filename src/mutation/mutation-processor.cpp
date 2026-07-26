@@ -22,6 +22,7 @@
 #include "player-info/equipment-info.h"
 #include "player/digestion-processor.h"
 #include "player/player-damage.h"
+#include "player/player-sex.h"
 #include "player/player-status-flags.h"
 #include "spell-kind/spells-floor.h"
 #include "spell-kind/spells-launcher.h"
@@ -67,6 +68,26 @@ void process_world_aux_sudden_attack(CreatureEntity &creature)
     if (randint1(100) == 36) {
         for (auto a : alliance_list) {
             a.second->panishment(creature);
+        }
+    }
+
+    // とくさんレイドイベント (#2094)
+    // 男性プレイヤーに極低確率で発生する。「とくさんか？」の声に Y/N どちらで答えても、
+    // 敵対的な男性ホモ (HOMO_SEXUAL かつ MALE) のモンスターが召喚される。
+    constexpr auto tokusan_raid_chance = 1919;
+    if (creature.is_player() && (creature.get_psex() == SEX_MALE) && one_in_(tokusan_raid_chance)) {
+        disturb(creature, true, true);
+        msg_print(_("「とくさんか？」", "A voice asks, \"Are you Tokusan?\""));
+        (void)input_check(_("とくさんか？", "Are you Tokusan?"));
+        auto summoned = false;
+        const auto summon_count = randint1(3);
+        for (auto i = 0; i < summon_count; i++) {
+            if (summon_specific(creature, creature.get_y(), creature.get_x(), 100, SUMMON_TOKUSAN, PM_ALLOW_GROUP)) {
+                summoned = true;
+            }
+        }
+        if (summoned) {
+            msg_print(_("はい、皆様の玩具。", "Yes, you are everyone's plaything."));
         }
     }
 

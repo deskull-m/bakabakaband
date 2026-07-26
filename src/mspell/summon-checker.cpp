@@ -72,6 +72,8 @@ bool check_summon_specific(CreatureEntity &creature, MonraceId summoner_idx, Mon
         return monrace.kind_flags.has(MonsterKindType::PUYO);
     case SUMMON_HOMO:
         return monrace.kind_flags.has(MonsterKindType::HOMO_SEXUAL);
+    case SUMMON_TOKUSAN:
+        return monrace.kind_flags.has(MonsterKindType::HOMO_SEXUAL) && monrace.is_male();
     case SUMMON_PERVERTS:
         return monrace.kind_flags.has(MonsterKindType::PERVERT);
     case SUMMON_WALL:
