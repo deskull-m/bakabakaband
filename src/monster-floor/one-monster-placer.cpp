@@ -54,6 +54,101 @@
 #include <range/v3/algorithm.hpp>
 #include <time.h>
 
+namespace {
+/*!
+ * @brief 無形/エネルギー体の部族フラグ (体格サイズを持たないため HUGE/LARGE/SMALL 不可)
+ */
+const EnumClassFlagGroup<MonsterKindType> FORMLESS_KINDS = {
+    MonsterKindType::GHOST,
+    MonsterKindType::ELEMENTAL,
+    MonsterKindType::VORTEX,
+};
+
+/*!
+ * @brief 柔組織(肉)を持たない部族フラグ (肥満 FAT / 痩せ GAUNT 不可)
+ * @details 構造物・機械・素材製・骨格・無形・抽象・不定形、および植物/菌
+ * (植物・菌の体格変化はいずれ別途定義するため現状は除外)。
+ */
+const EnumClassFlagGroup<MonsterKindType> NON_FLESH_KINDS = {
+    // 構造物・機械
+    MonsterKindType::GOLEM,
+    MonsterKindType::ROBOT,
+    MonsterKindType::WHEEL,
+    MonsterKindType::SHIP,
+    MonsterKindType::MIMIC,
+    MonsterKindType::ALARM,
+    MonsterKindType::EXPLOSIVE,
+    // 素材製
+    MonsterKindType::WOODEN,
+    MonsterKindType::IRON,
+    MonsterKindType::COPPER,
+    MonsterKindType::STONE,
+    MonsterKindType::SILVER,
+    MonsterKindType::GOLD,
+    MonsterKindType::MITHRIL,
+    MonsterKindType::ADAMANTITE,
+    MonsterKindType::DARKSTEEL,
+    MonsterKindType::WARPSTONE,
+    MonsterKindType::PAPER,
+    // 骨格 (肉が無い)
+    MonsterKindType::SKELETON,
+    MonsterKindType::LICH,
+    // 無形/エネルギー/抽象/不定形
+    MonsterKindType::GHOST,
+    MonsterKindType::ELEMENTAL,
+    MonsterKindType::VORTEX,
+    MonsterKindType::QUANTUM,
+    MonsterKindType::VIRUS,
+    MonsterKindType::WALL,
+    MonsterKindType::OOZE,
+    // 植物・菌 (肥満/痩せは別途定義予定)
+    MonsterKindType::PLANT,
+    MonsterKindType::TREEFOLK,
+    MonsterKindType::FUNGAS,
+    MonsterKindType::FUNGUS,
+};
+
+/*!
+ * @brief NONLIVING でも肉体(柔組織)を持つ例外部族フラグ
+ * @details デーモン等は NONLIVING 扱いだが肉体を持つため肥満/痩せの対象とする。
+ */
+const EnumClassFlagGroup<MonsterKindType> FLESHY_NONLIVING_KINDS = {
+    MonsterKindType::DEMON,
+    MonsterKindType::ZOMBIE,
+    MonsterKindType::VAMPIRE,
+};
+
+/*!
+ * @brief 有形の実体を持つか (体格サイズ HUGE/LARGE/SMALL の付与対象か)
+ * @details 無形/エネルギー体でなければ有形とみなす。構造物・素材製・不定形(ウーズ)も対象。
+ */
+bool has_solid_body(const MonraceDefinition &monrace)
+{
+    return monrace.kind_flags.has_none_of(FORMLESS_KINDS);
+}
+
+/*!
+ * @brief 柔組織(肉)を持つか (肥満 FAT / 痩せ GAUNT の付与対象か)
+ * @details 非肉体系フラグを持たず、かつ生者または肉体系 NONLIVING 例外(デーモン等)であること。
+ */
+bool has_flesh_body(const MonraceDefinition &monrace)
+{
+    if (monrace.kind_flags.has_any_of(NON_FLESH_KINDS)) {
+        return false;
+    }
+
+    return monrace.kind_flags.has_not(MonsterKindType::NONLIVING) || monrace.kind_flags.has_any_of(FLESHY_NONLIVING_KINDS);
+}
+
+/*!
+ * @brief 不定形の部族か (体格サイズ変化を積極的に起こす対象か)
+ */
+bool is_actively_resizable(const MonraceDefinition &monrace)
+{
+    return monrace.kind_flags.has(MonsterKindType::OOZE);
+}
+}
+
 /*!
  * @param creature クリーチャーへの参照
  * @brief モンスターの表層IDを設定する / Set initial racial appearance of a monster
@@ -331,21 +426,30 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         }
     }
 
-    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && one_in_(100)) {
-        m_ptr->set_constant_flag(MonsterConstantFlagType::HUGE);
-    } else if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && !m_ptr->is_huge() && one_in_(15)) {
-        m_ptr->set_constant_flag(MonsterConstantFlagType::LARGE);
+    // 体格サイズ (巨大/大型/小型): 有形の実体を持つ部族のみ。無形/エネルギー体は対象外。
+    // 不定形 (ウーズ) は積極的にサイズ変化させる。
+    const auto is_not_unique = monrace.kind_flags.has_not(MonsterKindType::UNIQUE);
+    if (is_not_unique && has_solid_body(monrace)) {
+        const auto resizable = is_actively_resizable(monrace);
+        const auto huge_chance = resizable ? 30 : 100;
+        const auto large_chance = resizable ? 6 : 15;
+        const auto small_chance = resizable ? 6 : 18;
+        if (one_in_(huge_chance)) {
+            m_ptr->set_constant_flag(MonsterConstantFlagType::HUGE);
+        } else if (one_in_(large_chance)) {
+            m_ptr->set_constant_flag(MonsterConstantFlagType::LARGE);
+        }
+
+        if (!m_ptr->is_large() && !m_ptr->is_huge() && one_in_(small_chance)) {
+            m_ptr->set_constant_flag(MonsterConstantFlagType::SMALL);
+        }
     }
 
-    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && !m_ptr->is_large() && !m_ptr->is_huge() && one_in_(18)) {
-        m_ptr->set_constant_flag(MonsterConstantFlagType::SMALL);
-    }
-
-    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
-        monrace.kind_flags.has_not(MonsterKindType::NONLIVING) && one_in_(20)) {
+    // 肥満/痩せ: 柔組織(肉)を持つ部族のみ。NONLIVING でも肉体系(デーモン等)は対象。
+    // 構造物・素材製・骨格・無形・不定形・植物/菌は対象外。
+    if (is_not_unique && has_flesh_body(monrace) && one_in_(20)) {
         m_ptr->set_constant_flag(MonsterConstantFlagType::FAT);
-    } else if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
-               monrace.kind_flags.has_not(MonsterKindType::NONLIVING) && !m_ptr->is_fat() && one_in_(25)) {
+    } else if (is_not_unique && has_flesh_body(monrace) && !m_ptr->is_fat() && one_in_(25)) {
         m_ptr->set_constant_flag(MonsterConstantFlagType::GAUNT);
     }
 
@@ -372,9 +476,9 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         m_ptr->set_constant_flag(MonsterConstantFlagType::ILLEGAL_MODIFIED);
     }
 
-    // 軽量化フラグの付与
+    // 軽量化フラグの付与 (構造物系: ゴーレム・ロボット)
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
-        monrace.kind_flags.has(MonsterKindType::GOLEM) &&
+        (monrace.kind_flags.has(MonsterKindType::GOLEM) || monrace.kind_flags.has(MonsterKindType::ROBOT)) &&
         one_in_(15)) {
         m_ptr->set_constant_flag(MonsterConstantFlagType::LIGHTWEIGHT);
     }
