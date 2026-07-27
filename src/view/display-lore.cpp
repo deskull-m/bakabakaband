@@ -897,6 +897,11 @@ void display_monster_kind(lore_type *lore_ptr)
         has_specific_kind = true;
     }
 
+    if (lore_ptr->kind_flags.has(MonsterKindType::SAIYAN)) {
+        hook_c_roff(TERM_L_RED, _("サイヤ人", " saiyan"));
+        has_specific_kind = true;
+    }
+
     if (lore_ptr->kind_flags.has(MonsterKindType::HYDRA)) {
         hook_c_roff(TERM_L_GREEN, _("ヒドラ", " hydra"));
         has_specific_kind = true;
