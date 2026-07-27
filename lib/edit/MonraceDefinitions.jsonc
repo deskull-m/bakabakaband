@@ -64524,6 +64524,7 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "ALIEN",
+        "SAIYAN",
         "FORCE_MAXHP",
         "KILL_WALL",
         "HUMAN",
@@ -104699,6 +104700,7 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "ALIEN",
+        "SAIYAN",
         "OPEN_DOOR",
         "BASH_DOOR",
         "CAN_FLY",
@@ -122775,6 +122777,7 @@
         "DROP_CORPSE",
         "EAT_BERSERKER",
         "ALIEN",
+        "SAIYAN",
       ],
     },
     {

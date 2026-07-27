@@ -492,6 +492,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "MERFOLK", MonsterKindType::MERFOLK }, // マーフォーク
     { "SHARK", MonsterKindType::SHARK }, // サメ
     { "MESUGAKI", MonsterKindType::MESUGAKI }, // メスガキ
+    { "SAIYAN", MonsterKindType::SAIYAN }, // サイヤ人
     { "HYDRA", MonsterKindType::HYDRA }, // ヒドラ
     { "SHIP", MonsterKindType::SHIP }, // 船舶
     { "SLUG", MonsterKindType::SLUG }, // ナメクジ
