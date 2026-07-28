@@ -10,6 +10,8 @@
 #include "mind/mind-elementalist.h"
 #include "player-info/bard-data-type.h"
 #include "player-info/bluemage-data-type.h"
+#include "player-info/class-info.h"
+#include "player-info/class-types.h"
 #include "player-info/equipment-info.h"
 #include "player-info/force-trainer-data-type.h"
 #include "player-info/magic-eater-data-type.h"
@@ -21,6 +23,7 @@
 #include "player-info/sniper-data-type.h"
 #include "player-info/spell-hex-data-type.h"
 #include "player/attack-defense-types.h"
+#include "player/patron.h"
 #include "player/player-realm.h"
 #include "player/player-status-flags.h"
 #include "player/special-defense-types.h"
@@ -30,6 +33,7 @@
 #include "system/item-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
+#include "util/enum-converter.h"
 
 CreatureClass::CreatureClass(CreatureEntity &creature)
     : creature(creature)
@@ -626,4 +630,21 @@ std::span<const std::string> CreatureClass::get_subtitle_candidates() const
     }
 
     return candidates.subspan(1, max - 2);
+}
+
+/*!
+ * @brief 表示用の職業名を取得する
+ * @details カオスパトロンに衛府(Efu)を選んだ混沌の戦士は「怨身忍者」と表記する。
+ * それ以外は職業定義の名称をそのまま返す。
+ * @param creature クリーチャーへの参照
+ * @return 表示用の職業名
+ */
+LocalizedString get_class_title(const CreatureEntity &creature)
+{
+    const auto is_chaos_warrior = CreatureClass(creature).equals(PlayerClassType::CHAOS_WARRIOR);
+    if (is_chaos_warrior && (creature.get_patron() == enum2i(PatronType::EFU))) {
+        return LocalizedString("怨身忍者", "Onshin-Ninja");
+    }
+
+    return creature.get_class_info()->title;
 }

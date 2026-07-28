@@ -5,6 +5,7 @@
 
 #include "main-godot/godot-player-status.h"
 
+#include "player-base/player-class.h"
 #include "player-info/class-info.h"
 #include "player-info/race-info.h"
 #include "system/floor/floor-info.h"
@@ -36,8 +37,8 @@ void player_status_push(const PlayerType *player_ptr)
     if (const auto *race_info = player_ptr->get_race_info(); race_info) {
         snap.race_name = race_info->title.string();
     }
-    if (const auto *class_info = player_ptr->get_class_info(); class_info) {
-        snap.class_name = class_info->title.string();
+    if (player_ptr->get_class_info() != nullptr) {
+        snap.class_name = get_class_title(*player_ptr).string();
     }
 
     snap.level = player_ptr->get_level();

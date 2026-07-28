@@ -132,9 +132,9 @@ std::vector<Patron> patron_list = {
         A_DEX),
 
     Patron({ "衛府", "Efu" },
-        { REW_H_SUMMON, REW_H_SUMMON, REW_H_SUMMON, REW_H_SUMMON, REW_WRATH, REW_DESTRUCT, REW_DESTRUCT, REW_DESTRUCT, REW_GENOCIDE, REW_GENOCIDE, REW_GENOCIDE,
-            REW_HEAL_FUL, REW_HEAL_FUL, REW_GAIN_ABL, REW_GAIN_ABL, REW_GAIN_EXP, REW_GAIN_EXP, REW_AUGM_ABL, REW_AUGM_ABL, REW_AUGM_ABL },
-        A_STR),
+        { REW_TY_CURSE, REW_TY_CURSE, REW_WRATH, REW_H_SUMMON, REW_RUIN_ABL, REW_IGNORE, REW_IGNORE, REW_POLY_WND, REW_POLY_SLF, REW_POLY_SLF,
+            REW_SER_UNDE, REW_SER_DEMO, REW_HEAL_FUL, REW_GAIN_EXP, REW_GAIN_ABL, REW_SER_MONS, REW_CHAOS_WP, REW_GOOD_OBS, REW_GREA_OBJ, REW_AUGM_ABL },
+        A_DEX),
 };
 
 Patron::Patron(LocalizedString &&name, std::vector<patron_reward> reward_table, const player_ability_type boost_stat)

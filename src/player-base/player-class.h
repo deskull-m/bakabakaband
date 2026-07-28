@@ -1,5 +1,6 @@
 #pragma once
 
+#include "locale/localized-string.h"
 #include "object-enchant/tr-flags.h"
 #include "system/creature-entity.h"
 #include <initializer_list>
@@ -65,6 +66,15 @@ public:
 private:
     CreatureEntity &creature;
 };
+
+/*!
+ * @brief 表示用の職業名を取得する
+ * @details 通常は職業定義の名称を返すが、カオスパトロンに衛府(Efu)を選んだ
+ * 混沌の戦士は「怨身忍者」と表記する。
+ * @param creature クリーチャーへの参照
+ * @return 表示用の職業名
+ */
+LocalizedString get_class_title(const CreatureEntity &creature);
 
 /**
  * @brief 職業固有データへのアクセスを取得する

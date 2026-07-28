@@ -1,4 +1,5 @@
 #include "view/display-player-misc-info.h"
+#include "player-base/player-class.h"
 #include "player-info/class-info.h"
 #include "player-info/mimic-info-table.h"
 #include "player/player-personality.h"
@@ -65,7 +66,7 @@ void display_player_misc_info(CreatureEntity &creature)
         c_put_str(TERM_SLATE, _("なし", "None"), 4, 9);
     }
     if (creature.pclass_ref != nullptr) {
-        c_put_str(TERM_L_BLUE, (*creature.get_class_info()).title, 5, 9);
+        c_put_str(TERM_L_BLUE, get_class_title(creature), 5, 9);
     } else {
         c_put_str(TERM_SLATE, _("なし", "None"), 5, 9);
     }

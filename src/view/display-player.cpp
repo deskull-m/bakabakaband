@@ -107,7 +107,7 @@ static void display_player_basic_info(CreatureEntity &creature)
         display_player_one_line(ENTRY_RACE, _("なし", "None"), TERM_SLATE);
     }
     if (creature.pclass_ref != nullptr) {
-        display_player_one_line(ENTRY_CLASS, (*creature.get_class_info()).title, TERM_L_BLUE);
+        display_player_one_line(ENTRY_CLASS, get_class_title(creature), TERM_L_BLUE);
     } else {
         display_player_one_line(ENTRY_CLASS, _("なし", "None"), TERM_SLATE);
     }
