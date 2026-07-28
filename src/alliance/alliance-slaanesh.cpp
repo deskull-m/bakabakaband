@@ -6,6 +6,7 @@
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/one-monster-placer.h"
 #include "monster-floor/place-monster-types.h"
+#include "player/patron.h"
 #include "spell/summon-types.h"
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -24,6 +25,11 @@ int AllianceSlaanesh::calcImpressionPoint(const CreatureEntity &creature) const
 
     // 魅力による追加ボーナス
     impression += (creature.get_stat_use(A_CHR) - 10) * 5;
+
+    // 宿敵コーンをパトロンとするプレイヤーへの嫌悪
+    if (creature.is_player() && creature.get_patron() == static_cast<int16_t>(PatronType::KHORNE)) {
+        impression -= 20;
+    }
 
     // 魔法使用による好感度向上（コーンとは逆）
     // if (creature.realm1 != REALM_NONE || creature.realm2 != REALM_NONE) {

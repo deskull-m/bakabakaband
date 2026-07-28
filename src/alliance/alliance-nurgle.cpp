@@ -8,6 +8,7 @@
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/one-monster-placer.h"
 #include "monster-floor/place-monster-types.h"
+#include "player/patron.h"
 #include "spell/summon-types.h"
 #include "status/bad-status-setter.h"
 #include "system/creature-entity.h"
@@ -39,6 +40,11 @@ int AllianceNurgle::calcImpressionPoint(const CreatureEntity &creature) const
 
     // 魅力は逆に低い方が好まれる（醜さは美徳）
     impression -= (creature.get_stat_use(A_CHR) - 10) * 4;
+
+    // 宿敵ティーンチをパトロンとするプレイヤーへの嫌悪
+    if (creature.is_player() && creature.get_patron() == static_cast<int16_t>(PatronType::TZEENTCH)) {
+        impression -= 20;
+    }
 
     // 種族による評価
     switch (creature.prace) {

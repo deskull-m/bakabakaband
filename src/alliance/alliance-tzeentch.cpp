@@ -6,6 +6,7 @@
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/one-monster-placer.h"
 #include "monster-floor/place-monster-types.h"
+#include "player/patron.h"
 #include "spell/summon-types.h"
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -24,6 +25,11 @@ int AllianceTzeentch::calcImpressionPoint(const CreatureEntity &creature) const
     // 知力と魔法能力による追加評価
     impression += (creature.get_stat_use(A_INT) - 10) * 4;
     impression += (creature.get_stat_use(A_WIS) - 10) * 2;
+
+    // 宿敵ナーグルをパトロンとするプレイヤーへの嫌悪
+    if (creature.is_player() && creature.get_patron() == static_cast<int16_t>(PatronType::NURGLE)) {
+        impression -= 20;
+    }
 
     /*
     // 魔法使用による大幅な好感度向上
