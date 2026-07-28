@@ -6,6 +6,7 @@
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/one-monster-placer.h"
 #include "monster-floor/place-monster-types.h"
+#include "player/patron.h"
 #include "spell/summon-types.h"
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -20,6 +21,11 @@ int AllianceKhorne::calcImpressionPoint(const CreatureEntity &creature) const
     impression += calcIronmanHostilityPenalty();
     // プレイヤーの戦闘力を評価（コーンは戦闘を重視）
     impression += Alliance::calcPlayerPower(creature, 3, 50);
+
+    // 宿敵スラーネッシュをパトロンとするクリーチャーへの嫌悪
+    if (creature.get_patron() == static_cast<int16_t>(PatronType::SLAANESH)) {
+        impression -= 20;
+    }
 
     /*
 
