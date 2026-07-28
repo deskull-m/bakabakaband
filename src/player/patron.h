@@ -12,6 +12,9 @@
 enum class PatronType : int16_t {
     NONE = -1, //!< なし
     KHORNE = 11, //!< コーン
+    SLAANESH = 12, //!< スラーネッシュ
+    NURGLE = 13, //!< ナーグル
+    TZEENTCH = 14, //!< ティーンチ
     GETTER = 16, //!< ゲッター
     EFU = 18, //!< 衛府
 };
