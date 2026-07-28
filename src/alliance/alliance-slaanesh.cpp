@@ -26,6 +26,11 @@ int AllianceSlaanesh::calcImpressionPoint(const CreatureEntity &creature) const
     // 魅力による追加ボーナス
     impression += (creature.get_stat_use(A_CHR) - 10) * 5;
 
+    // スラーネッシュを崇拝するクリーチャーへの好意
+    if (creature.get_patron() == static_cast<int16_t>(PatronType::SLAANESH)) {
+        impression += 30;
+    }
+
     // 宿敵コーンをパトロンとするクリーチャーへの嫌悪
     if (creature.get_patron() == static_cast<int16_t>(PatronType::KHORNE)) {
         impression -= 20;

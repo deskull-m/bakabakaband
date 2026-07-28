@@ -26,6 +26,11 @@ int AllianceTzeentch::calcImpressionPoint(const CreatureEntity &creature) const
     impression += (creature.get_stat_use(A_INT) - 10) * 4;
     impression += (creature.get_stat_use(A_WIS) - 10) * 2;
 
+    // ティーンチを崇拝するクリーチャーへの好意
+    if (creature.get_patron() == static_cast<int16_t>(PatronType::TZEENTCH)) {
+        impression += 30;
+    }
+
     // 宿敵ナーグルをパトロンとするクリーチャーへの嫌悪
     if (creature.get_patron() == static_cast<int16_t>(PatronType::NURGLE)) {
         impression -= 20;
