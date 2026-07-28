@@ -41,6 +41,11 @@ int AllianceNurgle::calcImpressionPoint(const CreatureEntity &creature) const
     // 魅力は逆に低い方が好まれる（醜さは美徳）
     impression -= (creature.get_stat_use(A_CHR) - 10) * 4;
 
+    // ナーグルを崇拝するクリーチャーへの好意
+    if (creature.get_patron() == static_cast<int16_t>(PatronType::NURGLE)) {
+        impression += 30;
+    }
+
     // 宿敵ティーンチをパトロンとするクリーチャーへの嫌悪
     if (creature.get_patron() == static_cast<int16_t>(PatronType::TZEENTCH)) {
         impression -= 20;
