@@ -1100,6 +1100,44 @@ MSVC ビルドは `.github/workflows/build-test-with-msvc.yml` を参照。
 MSBuild -warnAsError .\VisualStudio\Bakabakaband.sln /t:Rebuild /p:Configuration=Debug
 ```
 
+#### Godot (GDExtension / SCons) ビルド確認
+
+Godot 4.x 版 (`src/main-godot/` の GDExtension バックエンド) はゲームコア
+(`src/`) を共有 DLL/共有ライブラリとしてビルドし、`godot_project/` から
+ロードする。autotools / MSVC の端末版ビルドとは**独立**しており、CI には
+組み込んでいない。ビルドシステムはリポジトリルートの `SConstruct` (SCons)。
+
+```bash
+# 依存ツール: SCons 4.x / Python 3.8+ / C++20 対応コンパイラ
+#   (Ubuntu 例) sudo apt-get install scons python3
+#   (pip 経由)  pip install scons
+
+# 1. godot-cpp サブモジュール (branch 4.3) を取得
+git submodule update --init godot-cpp
+
+# 2. GDExtension ライブラリをビルド
+scons platform=linux target=template_debug      # Linux デバッグ
+scons platform=windows target=template_debug    # Windows デバッグ (既定)
+scons platform=linux target=template_release     # リリース
+# 並列ビルドは -j$(nproc) を付与
+
+# 3. Godot から起動
+godot --path godot_project
+```
+
+- ビルド成果物は `bin/bakabakaband.<platform>.<target>.x86_64.<so|dll>` に
+  出力され、`godot_project/bakabakaband.gdextension` の `libraries` パスと
+  一致する (`.gitignore` 対象)。
+- `SConstruct` はゲームコアを glob 収集し、端末版バックエンド
+  (`main-win` / `main-unix` / `main-x11` / `main-gcu` 等)・`src/net/`
+  (libcurl 依存)・`src/test/` を除外する。GCC では godot-cpp 既定の
+  `-fno-exceptions` を除去し `-fexceptions` を付与する等の差異があるため、
+  ソース追加・除外時は `SConstruct` の `exclude_*` 集合を更新すること。
+- `USE_GODOT` / `GODOT_RICH_UI` マクロで端末ステータス描画を抑制し Godot 側の
+  StatusPanel に委ねる分岐が入る (通常ビルドではマクロ未定義で無効)。
+- 詳細な設計・移植改変点・既知の制限は
+  [`docs/godot-interface.md`](docs/godot-interface.md) を参照。
+
 ---
 
 ## 変愚蛮怒（上流）からのマージ指針
