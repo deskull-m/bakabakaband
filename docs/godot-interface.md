@@ -45,7 +45,8 @@ bakabakaband/
 │   ├── godot-player-status.{cpp,h}    # プレイヤーステータスのブリッジ
 │   ├── save-file-scanner.{cpp,h}      # タイトル画面用セーブファイル一覧
 │   ├── term-color-map.{cpp,h}         # 端末カラー → Godot Color 変換
-│   └── stack-trace-godot.cpp          # スタックトレース (Godot 版スタブ)
+│   ├── stack-trace-godot.cpp          # スタックトレース (Godot 版スタブ)
+│   └── win-exception-tracer.cpp       # Windows 例外トレーサ
 ├── godot_project/           # Godot プロジェクト
 │   ├── project.godot
 │   ├── bakabakaband.gdextension
@@ -68,7 +69,19 @@ bakabakaband/
 | Python | 3.8 以上 | SCons 実行環境 |
 | C++ コンパイラ | C++20 対応 (MSVC v143+ / g++ / clang++) | コンパイル |
 
+SCons が未インストールの場合は次のいずれかで導入する。
+
+```bash
+# Ubuntu / Debian
+sudo apt-get install scons python3
+# または pip 経由 (任意の OS)
+pip install scons
+```
+
 ### 1. サブモジュールの取得
+
+`godot-cpp` (branch 4.3) をサブモジュールとして取得する。`SConstruct` は
+先頭で `godot-cpp/SConstruct` を読み込むため、これが無いとビルドできない。
 
 ```bash
 git submodule update --init godot-cpp
@@ -76,26 +89,48 @@ git submodule update --init godot-cpp
 
 ### 2. GDExtension ライブラリのビルド
 
+`SConstruct` のオプションは godot-cpp 準拠 (`platform` / `target` /
+`arch` 等)。並列ビルドは標準の `-j` を付与する。
+
 ```bash
-# Windows デバッグビルド (既定)
+# Windows デバッグビルド (既定: platform=windows target=template_debug)
 scons platform=windows target=template_debug
 
 # Linux ビルド
 scons platform=linux target=template_debug
 
 # リリースビルド
-scons target=template_release
+scons platform=linux target=template_release
+
+# 並列ビルド (推奨)
+scons platform=linux target=template_debug -j$(nproc)
 ```
 
-ビルド成果物は `bin/bakabakaband.<platform>.<target>.x86_64.<so|dll>` に出力される。
+ビルド成果物は `bin/bakabakaband.<platform>.<target>.x86_64.<so|dll>` に出力され、
+`godot_project/bakabakaband.gdextension` の `[libraries]` パス
+(`res://../bin/bakabakaband.<platform>.<target>.x86_64.<so|dll>`) と一致する。
+`bin/` は `.gitignore` 対象。
+
+`SConstruct` はゲームコアを glob で収集し、端末版バックエンド
+(`main-win` / `main-unix` / `main-x11` / `main-gcu` / `main-cap`)・`src/net/`
+(libcurl 依存)・`src/test/`・autotools の Makefile.am 未収録の孤立ソースを
+除外する。ソースを追加・除外する際は `SConstruct` の `exclude_dirs` /
+`exclude_files` / `exclude_paths` を合わせて更新すること。プラットフォーム
+別のチャーセット・例外・マクロ設定 (Windows: `/source-charset:utf-8` /
+CP932 実行文字コード / `WINDOWS`・`WIN32`・`JP`・`SJIS`、Linux: `-fexceptions`
+再付与 / POSIX フィーチャマクロ) も同スクリプトに集約されている。
 
 ### 3. Godot からの起動
 
-`godot_project/project.godot` を Godot エディタで開いて実行するか、
+`godot_project/project.godot` を Godot エディタ (4.3 以上) で開いて実行するか、
 
 ```bash
 godot --path godot_project
 ```
+
+`.gdextension` の `compatibility_minimum` は 4.3。ライブラリ (`bin/`) が
+未ビルドだと Godot 起動時に GDExtension のロードに失敗するため、先に
+ステップ 2 を済ませておくこと。
 
 ## bakabakaband への移植にあたっての改変点
 
