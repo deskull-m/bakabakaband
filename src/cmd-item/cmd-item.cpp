@@ -34,6 +34,7 @@
 #include "locale/japanese.h"
 #include "mind/snipe-types.h"
 #include "object-activation/activation-switcher.h"
+#include "object-enchant/tr-types.h"
 #include "object-hook/hook-magic.h"
 #include "object-use/quaff/quaff-execution.h"
 #include "object-use/read/read-execution.h"
@@ -307,8 +308,25 @@ void do_cmd_activate(CreatureEntity &creature)
 
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
     constexpr auto q = _("どのアイテムを始動させますか? ", "Activate which item? ");
-    constexpr auto s = _("始動できるアイテムを装備していない。", "You have nothing to activate.");
-    const auto &[item, i_idx] = choose_item(creature, q, s, (USE_EQUIP | IGNORE_BOTHHAND_SLOT), FuncItemTester(&ItemEntity::is_activatable));
+    constexpr auto s = _("始動できるアイテムを持っていない。", "You have nothing to activate.");
+    auto item_tester = FuncItemTester(
+        [](CreatureEntity &creature, const ItemEntity *o_ptr) {
+            if (!object_is_activatable(o_ptr)) {
+                return false;
+            }
+
+            // 装備中のアイテムはそのまま始動可能
+            for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+                if (creature.inventory[i_idx].get() == o_ptr) {
+                    return true;
+                }
+            }
+
+            // 装備していないアイテムは INVEN_ACTIVATE フラグ付きのみ始動可能
+            return o_ptr->get_flags().has(TR_INVEN_ACTIVATE);
+        },
+        creature);
+    const auto &[item, i_idx] = choose_item(creature, q, s, (USE_EQUIP | USE_INVEN | IGNORE_BOTHHAND_SLOT), item_tester);
     if (!item) {
         return;
     }
