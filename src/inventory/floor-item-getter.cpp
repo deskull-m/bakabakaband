@@ -665,7 +665,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
                 break;
             }
 
-            if (grid.o_idx_list.size() < 2) {
+            if (fis.floor_item_index.size() < 2) {
                 break;
             }
 
