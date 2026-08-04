@@ -1,6 +1,7 @@
 #include "core/player-processor.h"
 #include "action/run-execution.h"
 #include "action/travel-execution.h"
+#include "bot/bot-json-output.h"
 #include "core/disturbance.h"
 #include "core/special-internal-keys.h"
 #include "core/speed-table.h"
@@ -321,6 +322,7 @@ void process_player(CreatureEntity &creature)
             window_stuff(creature);
 
             can_save = true;
+            output_bot_json_snapshot(creature);
             InputKeyRequestor(creature, false).request_command();
             can_save = false;
             mark_monsters_present(creature);

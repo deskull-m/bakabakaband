@@ -59,4 +59,7 @@
 #define ENTRY_ALLIANCE 52
 
 class CreatureEntity;
+class ItemEntity;
+void calc_player_shot_params(CreatureEntity &creature, ItemEntity *o_ptr, int *shots, int *shot_frac);
+void calc_player_two_hands(CreatureEntity &creature, int *damage, int *to_h);
 void display_player_various(CreatureEntity &creature);

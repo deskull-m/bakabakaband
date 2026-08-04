@@ -156,6 +156,7 @@ public:
     QuestType &get_quest(QuestId id);
     const QuestType &get_quest(QuestId id) const;
     std::vector<QuestId> get_sorted_quest_ids() const;
+    tl::optional<QuestId> find_shallowest_random_quest_id() const;
 
     void set_defeated_monster(QuestId id, short numbers);
     void set_max_monster(QuestId id, short numbers);

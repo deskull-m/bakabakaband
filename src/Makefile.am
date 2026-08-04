@@ -135,6 +135,8 @@ hengband_SOURCES = \
 	avatar/avatar.h avatar/avatar.cpp \
 	avatar/avatar-changer.cpp avatar/avatar-changer.h \
 	\
+	bot/bot-json-output.cpp bot/bot-json-output.h \
+	\
 	birth/birth-explanations-table.cpp birth/birth-explanations-table.h \
 	birth/character-builder.cpp birth/character-builder.h \
 	birth/monster-birth.cpp birth/monster-birth.h \

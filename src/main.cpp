@@ -184,6 +184,8 @@ static void display_usage(const char *program)
     puts("  -d<def>  Define a 'lib' dir sub-path");
     puts("  --output-spoilers");
     puts("           Output auto generated spoilers and exit");
+    puts("  --bot-json-output[=path]");
+    puts("           Output bot-readable JSON Lines snapshots before player input");
     puts("");
 
 #ifdef USE_X11
@@ -222,7 +224,23 @@ static void display_usage(const char *program)
  */
 static bool parse_long_opt(const char *opt)
 {
-    if (strcmp(opt + 2, "output-spoilers") != 0) {
+    static constexpr std::string_view bot_json_output = "bot-json-output";
+    const std::string_view option(opt + 2);
+    if (option == bot_json_output) {
+        arg_bot_json_output = true;
+        return false;
+    }
+
+    if (option.starts_with(bot_json_output) && option[bot_json_output.size()] == '=') {
+        arg_bot_json_output = true;
+        const auto path = option.substr(bot_json_output.size() + 1);
+        if (!path.empty()) {
+            arg_bot_json_output_path = path;
+        }
+        return false;
+    }
+
+    if (option != "output-spoilers") {
         return true;
     }
 

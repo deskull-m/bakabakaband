@@ -3810,6 +3810,16 @@ ACTION_SKILL_POWER CreatureEntity::get_skill_device() const
     return this->skill_dev;
 }
 
+ACTION_SKILL_POWER CreatureEntity::get_skill_melee_hit() const
+{
+    return this->skill_thn;
+}
+
+ACTION_SKILL_POWER CreatureEntity::get_skill_shoot_hit() const
+{
+    return this->skill_thb;
+}
+
 void CreatureEntity::set_skill_device(ACTION_SKILL_POWER value)
 {
     this->skill_dev = value;
