@@ -1,4 +1,5 @@
 #include "store/cmd-store.h"
+#include "bot/bot-json-output.h"
 #include "cmd-io/macro-util.h"
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
@@ -163,6 +164,7 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
         }
 
         prt(_("コマンド:", "You may: "), 20 + xtra_stock, 0);
+        output_bot_json_store_snapshot(creature, store_num);
         InputKeyRequestor(creature, true).request_command();
         store_process_command(creature, store_num);
 

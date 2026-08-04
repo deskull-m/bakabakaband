@@ -2553,6 +2553,8 @@ public:
      * @brief 魔道具使用スキル
      */
     virtual ACTION_SKILL_POWER get_skill_device() const;
+    virtual ACTION_SKILL_POWER get_skill_melee_hit() const;
+    virtual ACTION_SKILL_POWER get_skill_shoot_hit() const;
     virtual void set_skill_device(ACTION_SKILL_POWER value);
     /*!
      * @brief 魔法防御スキル

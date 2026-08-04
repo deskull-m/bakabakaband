@@ -10,5 +10,7 @@ extern EnumClassFlagGroup<AutopickMethod> display_autopick;
 
 class DisplaySymbolPair;
 class CreatureEntity;
+class FloorType;
+bool is_revealed_wall(const FloorType &floor, const Pos2D &pos);
 DisplaySymbolPair map_info(CreatureEntity &creature, const Pos2D &pos);
 tl::optional<uint8_t> get_monochrome_display_color(CreatureEntity &creature);

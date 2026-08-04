@@ -2205,6 +2205,9 @@
     <ClCompile Include="..\..\src\avatar\avatar-changer.cpp">
       <Filter>avatar</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\bot\bot-json-output.cpp">
+      <Filter>bot</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\avatar\avatar.cpp">
       <Filter>avatar</Filter>
     </ClCompile>
@@ -5318,6 +5321,9 @@
     <ClInclude Include="..\..\src\avatar\avatar-changer.h">
       <Filter>avatar</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\bot\bot-json-output.h">
+      <Filter>bot</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\avatar\avatar.h">
       <Filter>avatar</Filter>
     </ClInclude>
@@ -6359,6 +6365,9 @@
     </Filter>
     <Filter Include="avatar">
       <UniqueIdentifier>{953acb44-db6d-4bd8-bb0b-5692524bad93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="bot">
+      <UniqueIdentifier>{b07a1a11-0b07-4b07-8b07-0b07b07b07b0}</UniqueIdentifier>
     </Filter>
     <Filter Include="player-base">
       <UniqueIdentifier>{0bd4660d-028e-44be-a5fe-c7cc7d3d00c2}</UniqueIdentifier>
