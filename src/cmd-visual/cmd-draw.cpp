@@ -1,4 +1,5 @@
 #include "cmd-visual/cmd-draw.h"
+#include "bot/bot-json-output.h"
 #include "core/asking-player.h"
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
@@ -168,6 +169,7 @@ static tl::optional<int> input_status_command(CreatureEntity &creature, int page
  */
 void do_cmd_player_status(CreatureEntity &creature)
 {
+    output_bot_json_character_snapshot(creature);
     auto page = 0;
     screen_save();
     constexpr auto player_prompt = _("['c'で名前変更, 'f'でファイルへ書出, 'g'でJSON書出, 'h'でモード変更, ESCで終了]", "['c' to change name, 'f' to file, 'g' to JSON, 'h' to change mode, or ESC]");
