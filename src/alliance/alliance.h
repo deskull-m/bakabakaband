@@ -87,6 +87,7 @@ enum class AllianceType : int {
     DIABOLIQUE = 69, //!< デアボリカ
     SOUKAIYA = 70, //!< ソウカイヤ
     YEEK_KINGDOM = 71, //!< イークの王国
+    EAGLE_CLAN = 72, //!< 大鷲の一族
     MAX,
 };
 
